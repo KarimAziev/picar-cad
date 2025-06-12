@@ -1,4 +1,3 @@
-
 plate_width                   = 38;
 plate_height                  = 50;
 plate_thickness               = 2;
@@ -11,7 +10,8 @@ screw_offset_y                = -4.2;
 screw_offset_y_top            = 8.54;
 M2_dia                        = 2.4;
 
-cam_centers                   = [ [0, -13], [0, 13] ];
+cam_center_offset             = 13;
+cam_centers                   = [[0, -cam_center_offset], [0, cam_center_offset]];
 
 back_plate_width              = plate_width * 0.9;
 back_plate_height             = plate_height/2;
@@ -28,10 +28,10 @@ servo_dia                     = 8;
 
 side_panel_slot_width         = side_panel_width * 0.8;
 side_panel_slot_height        = 2;
-side_panel_slot_ypos          = [ -9, +0.2 ];
+side_panel_slot_ypos          = [-9, +0.2];
 side_panel_hole_d             = 3;
 
-side_panel_top                = -side_panel_height*(4/15);
+side_panel_top                = -side_panel_height * (4/15);
 side_panel_curve_start        = side_panel_width * (1/2.1);
 side_panel_notch_y            = -side_panel_height * (7/14.2);
 side_panel_bottom             = side_panel_height * (1/4.9);
@@ -41,7 +41,7 @@ hole_offset                   = 4;
 
 hole_row_offsets              = [hole_offset * 2];
 
-x_positions                   = [ side_panel_width * 0.25, side_panel_width * 0.5, side_panel_width * 0.75 ];
+x_positions                   = [side_panel_width * 0.25, side_panel_width * 0.5, side_panel_width * 0.75];
 
 tilt_angle                    = 2370;
 tilt_rad                      = tilt_angle * 3.14159/180;
@@ -81,11 +81,9 @@ module back_plate_geometry() {
     slot_width = (back_plate_width) * 0.8;
     slot_height = 2;
 
-    slot_centers = [
-                    -back_plate_height * 0.2,
+    slot_centers = [-back_plate_height * 0.2,
                     -back_plate_height * 0.5,
-                    -back_plate_height * 0.8
-                    ];
+                    -back_plate_height * 0.8];
 
     for (center_y = slot_centers) {
       translate([0, center_y, 0])
@@ -96,7 +94,7 @@ module back_plate_geometry() {
     circle_dia = 3;
     circle_rad = circle_dia/2;
 
-    for (cc = [ -8, 0, 8 ])
+    for (cc = [-8, 0, 8])
       translate([cc, -back_plate_height/3, 0])
         cylinder(h = plate_thickness+0.2, r = circle_rad, center=true, $fn=50);
   }
@@ -109,15 +107,15 @@ module back_plate() {
 }
 
 function side_panel_pts(is_left) =
-  [ [0, -side_panel_top],
-    [side_panel_curve_start, -side_panel_notch_y],
-    [side_panel_width, -side_panel_notch_y],
-    [side_panel_width, -side_panel_bottom],
-    [side_panel_curve_start, -side_panel_curve_end],
-    [0, -side_panel_curve_end] ];
+  [[0, -side_panel_top],
+   [side_panel_curve_start, -side_panel_notch_y],
+   [side_panel_width, -side_panel_notch_y],
+   [side_panel_width, -side_panel_bottom],
+   [side_panel_curve_start, -side_panel_curve_end],
+   [0, -side_panel_curve_end]];
 
 function side_panel_servo_center() =
-  [ side_panel_width/2.0, -side_panel_height/2.0 ];
+  [side_panel_width/2.0, -side_panel_height/2.0];
 
 module dotted_line(y_pos, x_pos) {
   for (x = x_pos)
@@ -141,8 +139,8 @@ module side_panel_2d(is_left=true) {
     }
 
     for (slot_y = side_panel_slot_ypos) {
-      translate([ (side_panel_width - side_panel_slot_width) / 2, slot_y ])
-        square([ side_panel_slot_width, side_panel_slot_height ]);
+      translate([(side_panel_width - side_panel_slot_width) / 2, slot_y])
+        square([side_panel_slot_width, side_panel_slot_height]);
     }
 
     y_upper_base = side_panel_slot_ypos[1];
@@ -154,7 +152,10 @@ module side_panel_2d(is_left=true) {
       else
         dotted_line(y_lower_base + off, x_positions);
     }
-    dotted_line(hole_offset * 5, [ side_panel_width * 0.50, side_panel_width * 0.66, side_panel_width * +0.85 ]);
+
+    dotted_line(hole_offset * 5, [side_panel_width * 0.50,
+                                  side_panel_width * 0.66,
+                                  side_panel_width * +0.85]);
   }
 }
 
@@ -176,7 +177,8 @@ module side_panel(is_left=true) {
       rotate([0, 90, 0])
       side_panel_3d(true);
 }
-color("white") {
+
+module head_mount() {
   union() {
     main_plate();
     connector_plate(connector_plate_offset_bottom);
@@ -185,4 +187,8 @@ color("white") {
     side_panel(true);
     side_panel(false);
   }
+}
+
+color("white") {
+  head_mount();
 }

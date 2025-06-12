@@ -115,7 +115,7 @@ module wheels_bottom_plate_top() {
 
 module wheels_down_plate() {
   union(){
-    translate([0, body_height * 0.75, 0]) {
+    translate( [0, body_height * 0.75, 0]) {
       wheels_bottom_plate_top();
     }
     wheels_bottom_plate_body();
