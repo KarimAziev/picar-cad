@@ -1,3 +1,5 @@
+use <util.scad>;
+
 wheels_distance  = 120;
 wheel_height     = 20;
 wheel_screws_dia = 3;
@@ -6,35 +8,6 @@ body_width       = 40;
 body_height      = 40;
 top_plate_height = 15;
 top_plate_width  = 55;
-
-module rounded_rect(size, r=5, center=false) {
-  w = size[0];
-  h = size[1];
-  offset = center ? [-w/2, -h/2] : [0, 0];
-
-  hull() {
-    translate([ r, r ] + offset)         circle(r);
-    translate([ w - r, r ] + offset)     circle(r);
-    translate([ r, h - r ] + offset)     circle(r);
-    translate([ w - r, h - r ] + offset) circle(r);
-  }
-}
-
-module dotted_lines_fill_y(y_length, starts, y_offset, r) {
-  step = y_offset + 2*r;
-  amount = floor(y_length / step) + 1;
-  for(i = [0 : amount - 1]) {
-    translate([starts[0], starts[1] + i * step])
-      circle(r = r, $fn = 50);
-  }
-}
-module dotted_lines_y(amount, starts, y_offset, r) {
-  for (i = [0:amount-1]) {
-    translate([starts[0], starts[1] + i*(y_offset + r*2)]) {
-      circle(r = r, $fn = 50);
-    }
-  }
-}
 
 module wheels_bottom_plate_body() {
   union() {
@@ -45,10 +18,11 @@ module wheels_bottom_plate_body() {
       hole_x_offset = hole_base_offset - hole_body_offset;
       hole_y_offset = -(body_height / 2);
 
-      for (pair = [[-hole_x_offset, hole_y_offset],
-                   [hole_x_offset, hole_y_offset]]) {
-        dotted_lines_fill_y(body_height, [pair[0], hole_y_offset + body_screws_dia], 2,
-                            body_screws_dia/2);
+      for (offst = [-hole_x_offset, hole_x_offset]) {
+        dotted_lines_fill_y(y_length=body_height,
+                            starts=[offst, hole_y_offset + body_screws_dia],
+                            y_offset=2,
+                            r=body_screws_dia/2);
       }
       translate([0, body_height * 0.4]) {
         square([body_width * 0.5, 4 * 2], center=true);
@@ -60,6 +34,7 @@ module wheels_bottom_plate_body() {
 
       step = 7;
       amount = floor((body_height/2) / step) + 1;
+
       for (i = [0:amount-1]) {
         translate([0, 0 + -i * step + -1]) {
           rounded_rect([body_width * 0.5, 4], r=2, center=true);
@@ -74,7 +49,6 @@ module top_body_connector() {
   translate([0, -body_height * 0.5]) {
     square([body_width * 0.4, 3], center=true);
   }
-
 }
 
 module wheels_connector_plate_bottom() {
@@ -124,6 +98,7 @@ module wheels_connector_plate_bottom() {
     }
   }
 }
+
 module wheels_bottom_plate_top() {
   difference() {
     rounded_rect([top_plate_width, top_plate_height], center=true);
@@ -137,6 +112,7 @@ module wheels_bottom_plate_top() {
     }
   }
 }
+
 module wheels_down_plate() {
   union(){
     translate([0, body_height * 0.75, 0]) {
