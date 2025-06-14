@@ -44,10 +44,11 @@ hole_row_offsets              = [hole_offset * 2];
 x_positions                   = [side_panel_width * 0.25, side_panel_width * 0.5, side_panel_width * 0.75];
 
 // 41.4
-tilt_angle                    = 51;
+tilt_angle                    = atan2((-side_panel_curve_end) - (-side_panel_bottom),
+                                      side_panel_curve_start - side_panel_width);
 servo_screw_d                 = 1.5;
 
-servo_hole_distances          = [-15, -13, -11, -9, -6, 6, 9, 11, 13, 15];
+servo_hole_distances          = [-19, -17, -15, -13, -11, -9, -6, 6, 9, 11, 13, 15];
 
 module main_plate() {
   difference() {
@@ -106,14 +107,6 @@ module back_plate() {
     back_plate_geometry();
 }
 
-function side_panel_pts(is_left) =
-  [[0, -side_panel_top],
-   [side_panel_curve_start, -side_panel_notch_y],
-   [side_panel_width, -side_panel_notch_y],
-   [side_panel_width, -side_panel_bottom],
-   [side_panel_curve_start, -side_panel_curve_end],
-   [0, -side_panel_curve_end]];
-
 function side_panel_servo_center() =
   [side_panel_width/2.0, -side_panel_height/2.0];
 
@@ -123,9 +116,14 @@ module dotted_line(y_pos, x_pos) {
       circle(d = side_panel_hole_d, $fn = 50);
 }
 
-module side_panel_2d(is_left=true) {
+module side_panel_2d() {
   difference() {
-    polygon(points = side_panel_pts(is_left));
+    polygon(points = [[0, -side_panel_top],
+                      [side_panel_curve_start, -side_panel_notch_y],
+                      [side_panel_width, -side_panel_notch_y],
+                      [side_panel_width, -side_panel_bottom],
+                      [side_panel_curve_start, -side_panel_curve_end],
+                      [0, -side_panel_curve_end]]);
 
     translate(side_panel_servo_center())
       circle(d = servo_dia, $fn = 50);
@@ -157,9 +155,9 @@ module side_panel_2d(is_left=true) {
   }
 }
 
-module side_panel_3d(is_left=true) {
+module side_panel_3d() {
   linear_extrude(height = plate_thickness)
-    side_panel_2d(is_left);
+    side_panel_2d();
 }
 
 module side_panel(is_left=true) {
@@ -169,21 +167,23 @@ module side_panel(is_left=true) {
     translate([-(plate_width/2), side_panel_offset_y, 0])
       mirror([1,0,0])
       rotate([0, 90, 0])
-      side_panel_3d(true);
+      side_panel_3d();
   else
     translate([plate_width/2, side_panel_offset_y, 0])
       rotate([0, 90, 0])
-      side_panel_3d(true);
+      side_panel_3d();
 }
 
 module head_mount() {
-  union() {
-    main_plate();
-    connector_plate(connector_plate_offset_bottom);
-    connector_plate(connector_plate_offset_top);
-    back_plate();
-    side_panel(true);
-    side_panel(false);
+  rotate([0, 180, 0]) {
+    union() {
+      main_plate();
+      connector_plate(connector_plate_offset_bottom);
+      connector_plate(connector_plate_offset_top);
+      back_plate();
+      side_panel(true);
+      side_panel(false);
+    }
   }
 }
 
