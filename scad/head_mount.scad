@@ -43,8 +43,8 @@ hole_row_offsets              = [hole_offset * 2];
 
 x_positions                   = [side_panel_width * 0.25, side_panel_width * 0.5, side_panel_width * 0.75];
 
-tilt_angle                    = 2370;
-tilt_rad                      = tilt_angle * 3.14159/180;
+// 41.4
+tilt_angle                    = 51;
 servo_screw_d                 = 1.5;
 
 servo_hole_distances          = [-15, -13, -11, -9, -6, 6, 9, 11, 13, 15];
@@ -131,10 +131,8 @@ module side_panel_2d(is_left=true) {
       circle(d = servo_dia, $fn = 50);
 
     for (dist = servo_hole_distances) {
-      translate([
-                 side_panel_servo_center()[0] + dist * cos(tilt_rad),
-                 side_panel_servo_center()[1] + dist * sin(tilt_rad)
-                 ])
+      translate([side_panel_servo_center()[0] + dist * cos(tilt_angle),
+                 side_panel_servo_center()[1] + dist * sin(tilt_angle)])
         circle(d = servo_screw_d, $fn = 50);
     }
 
