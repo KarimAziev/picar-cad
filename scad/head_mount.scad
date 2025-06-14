@@ -43,7 +43,6 @@ hole_row_offsets              = [hole_offset * 2];
 
 x_positions                   = [side_panel_width * 0.25, side_panel_width * 0.5, side_panel_width * 0.75];
 
-// 41.4
 tilt_angle                    = atan2((-side_panel_curve_end) - (-side_panel_bottom),
                                       side_panel_curve_start - side_panel_width);
 servo_screw_d                 = 1.5;
