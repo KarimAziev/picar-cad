@@ -1,61 +1,37 @@
+// This file defines the models for the front wheels’ bottom plate connector and the steering servo horn.
+// Both 2D and 3D representations are provided, and parameters such as wheel separation, wheel height,
+// and screw diameters are defined for precise control of the design.
+
 use <util.scad>;
 
-wheels_distance  = 120;
-wheel_height     = 20;
-wheel_screws_dia = 3;
-body_screws_dia  = 3;
-body_width       = 40;
-body_height      = 40;
-top_plate_height = 15;
-top_plate_width  = 55;
+wheels_distance           = 180;
+wheel_height              = 30;
+servo_screw_d             = 1.5;
 
-module wheels_bottom_plate_body() {
-  union() {
-    difference() {
-      square([body_width, body_height], center=true);
-      hole_base_offset = body_width/2;
-      hole_body_offset = 4;
-      hole_x_offset = hole_base_offset - hole_body_offset;
-      hole_y_offset = -(body_height / 2);
+steering_wheel_screws_dia = 3.5;
+horn_height               = 6;
 
-      for (offst = [-hole_x_offset, hole_x_offset]) {
-        dotted_lines_fill_y(y_length=body_height,
-                            starts=[offst, hole_y_offset + body_screws_dia],
-                            y_offset=2,
-                            r=body_screws_dia/2);
-      }
-      translate([0, body_height * 0.4]) {
-        square([body_width * 0.5, 4 * 2], center=true);
-      }
+module side_screw_holes() {
+  line_w = 2;
+  screw_offset = 4;
 
-      translate([0, body_height * 0.15]) {
-        square([body_width * 0.5, 6], center=true);
-      }
-
-      step = 7;
-      amount = floor((body_height/2) / step) + 1;
-
-      for (i = [0:amount-1]) {
-        translate([0, 0 + -i * step + -1]) {
-          rounded_rect([body_width * 0.5, 4], r=2, center=true);
-        }
+  for (x_offsets = [[-wheels_distance/2 + screw_offset, steering_wheel_screws_dia + line_w], [wheels_distance/2 - screw_offset, -steering_wheel_screws_dia - line_w]]) {
+    x1 = x_offsets[0];
+    x2 = x_offsets[1];
+    translate([x1, 0, 0]) {
+      circle(d=steering_wheel_screws_dia, $fn=360);
+      translate([x2, 0, 0]) {
+        circle(d=steering_wheel_screws_dia, $fn=360);
       }
     }
-    top_body_connector();
   }
 }
 
-module top_body_connector() {
-  translate([0, -body_height * 0.5]) {
-    square([body_width * 0.4, 3], center=true);
-  }
-}
-
-module wheels_connector_plate_bottom() {
+module wheels_plate_down_2d() {
   difference() {
     rounded_rect([wheels_distance, wheel_height], r=wheel_height/2, center=true);
-
     neckline_width=wheels_distance / 1.8;
+
     neckline_height=wheel_height;
 
     translate([0, -wheel_height * 0.75, 0]) {
@@ -65,23 +41,8 @@ module wheels_connector_plate_bottom() {
     translate([0, wheel_height * 0.2, 0]) {
       rounded_rect([wheels_distance*0.5, wheel_height*0.13], r=1, center=true);
     }
-    line_w = 10;
-    line_h = 4;
 
-    for (x = [-wheels_distance/2 + 4, wheels_distance/2 - 4]) {
-      translate([x, 0, 0]) {
-        circle(r=wheel_screws_dia/2, $fn=360);
-        if (x < 0) {
-          translate([wheel_screws_dia + line_w/2, 0, 0]) {
-            square([line_w, line_h], center = true);
-          }
-        } else {
-          translate([-wheel_screws_dia - line_w/2, 0, 0]) {
-            square([line_w, line_h], center = true);
-          }
-        }
-      }
-    }
+    side_screw_holes();
 
     step = 10;
     amount = floor(wheel_height / step);
@@ -99,32 +60,29 @@ module wheels_connector_plate_bottom() {
   }
 }
 
-module wheels_bottom_plate_top() {
+module steering_servo_horn(height=2) {
   difference() {
-    rounded_rect([top_plate_width, top_plate_height], center=true);
-    translate([0, top_plate_height * 0.1, 0]) {
-      square([top_plate_width * 0.8, top_plate_height * 0.4], center = true);
-    }
-    for (x = [-top_plate_width/2 + 4, top_plate_width/2 - 4]) {
-      translate([x, -top_plate_height * 0.3, 0]) {
-        circle(r=wheel_screws_dia/2, $fn=360);
+
+    linear_extrude(height) {
+      difference() {
+
+        rounded_rect(size=[wheels_distance, horn_height], r=horn_height / 2, center=true);
+        side_screw_holes();
       }
     }
+    cylinder(h = 10, r = servo_screw_d / 2, center = true, $fn=360);
   }
 }
 
-module wheels_down_plate() {
-  union(){
-    translate([0, body_height * 0.75, 0]) {
-      wheels_bottom_plate_top();
-    }
-    wheels_bottom_plate_body();
-    translate([0, -body_height * 0.75, 0]) {
-      wheels_connector_plate_bottom();
-    }
+module wheels_plate_down_3d(height=2) {
+  linear_extrude(height) {
+    wheels_plate_down_2d();
   }
 }
 
-color("white"){
-  wheels_down_plate();
+color("white") {
+  wheels_plate_down_3d();
+  translate([0, wheel_height, 0]) {
+    steering_servo_horn();
+  }
 }

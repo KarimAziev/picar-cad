@@ -1,13 +1,31 @@
+// This file provides several utility modules that simplify common geometric constructions
+// throughout the design. It includes helper modules to create:
+//   - Dotted lines (both along the X and Y directions),
+//   - Rounded rectangles,
+//   - Debugging visualizations for polygons (with numbered vertices and directional arrows),
+//   - Cubes with corner holes, and
+//   - Common four-corner hole patterns.
 
 module dotted_lines_fill_y(y_length, starts, y_offset, r) {
   step = y_offset + 2*r;
   amount = floor(y_length / step) + 1;
 
-  for(i = [0 : amount - 1]) {
+  for (i = [0 : amount - 1]) {
     translate([starts[0], starts[1] + i * step])
       circle(r = r, $fn = 50);
   }
 }
+
+module dotted_lines_fill_x(length, starts, x_offset, r) {
+  step = x_offset + 2*r;
+  amount = floor(length / step) + 1;
+
+  for (i = [0 : amount - 1]) {
+    translate([starts[0], starts[1] + i * step])
+      circle(r = r, $fn = 50);
+  }
+}
+
 module dotted_lines_y(amount, starts, y_offset, r) {
   for (i = [0:amount-1]) {
     translate([starts[0], starts[1] + i*(y_offset + r*2)]) {
@@ -22,10 +40,14 @@ module rounded_rect(size, r=5, center=false) {
   offst = center ? [-w/2, -h/2] : [0, 0];
 
   hull() {
-    translate([r, r] + offst)         circle(r);
-    translate([w - r, r] + offst)     circle(r);
-    translate([r, h - r] + offst)     circle(r);
-    translate([w - r, h - r] + offst) circle(r);
+    translate([r, r] + offst)
+      circle(r);
+    translate([w - r, r] + offst)
+      circle(r);
+    translate([r, h - r] + offst)
+      circle(r);
+    translate([w - r, h - r] + offst)
+      circle(r);
   }
 }
 
@@ -70,4 +92,32 @@ module debug_polygon(points, paths=undef, convexity=undef, debug=false,
         }
     }
   }
+}
+
+module cube_with_corner_holes(size = [10, 10, 10], center = false, hole_dia = 3) {
+  difference() {
+    cube(size, center = center);
+    z_center = center ? 0 : size[2] / 2;
+    for (x_ind = [0, 1])
+      for (y_ind = [0, 1]) {
+        x_pos = (center ? -size[0] / 2 : 0) + x_ind * size[0];
+        y_pos = (center ? -size[1] / 2 : 0) + y_ind * size[1];
+
+        translate([x_pos, y_pos, z_center])
+          cylinder(h = size[2] + 2, r = hole_dia / 2, center = true, $fn = 360);
+      }
+  }
+}
+
+module four_corner_holes(size = [10, 10, 10], center = false, hole_dia = 3) {
+  z_center = center ? 0 : size[2] / 2;
+  for (x_ind = [0, 1])
+    for (y_ind = [0, 1]) {
+
+      x_pos = (center ? -size[0] / 2 : 0) + x_ind * size[0];
+      y_pos = (center ? -size[1] / 2 : 0) + y_ind * size[1];
+
+      translate([x_pos, y_pos, z_center])
+        cylinder(h = size[2] + 2, r = hole_dia / 2, center = center, $fn = 360);
+    }
 }

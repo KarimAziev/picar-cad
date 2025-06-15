@@ -1,3 +1,8 @@
+// This module defines the robot head component designed to support two Raspberry Pi Camera Module 2 units.
+// It features a main mounting plate, connector plates, a back plate, and side panels with accurately placed holes for screws.
+// The head mount design assumes it will be attached via the side panel’s mounting hole on the servo assembly.
+// Detailed parameters control the dimensions and placement of each constituent element to ensure proper alignment and aesthetics.
+
 plate_width                   = 38;
 plate_height                  = 50;
 plate_thickness               = 2;
@@ -31,6 +36,7 @@ side_panel_slot_height        = 2;
 side_panel_slot_ypos          = [-9, +0.2];
 side_panel_hole_d             = 3;
 
+// Don't try to find a lot of sense in the calculations of the side panel polygon, this is an aesthetic choice.
 side_panel_top                = -side_panel_height * (4/15);
 side_panel_curve_start        = side_panel_width * (1/2.1);
 side_panel_notch_y            = -side_panel_height * (7/14.2);
