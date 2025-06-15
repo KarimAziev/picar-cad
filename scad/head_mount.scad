@@ -92,9 +92,11 @@ module back_plate_geometry() {
                     -back_plate_height * 0.8];
 
     for (center_y = slot_centers) {
-      translate([0, center_y, 0])
-        translate([-slot_width/2, 0, -1.1])
-        cube([slot_width, slot_height, plate_thickness+0.2], center=false);
+      translate([0, center_y, 0]) {
+        translate([-slot_width/2, 0, -1.1]) {
+          cube([slot_width, slot_height, plate_thickness+0.2], center=false);
+        }
+      }
     }
 
     circle_dia = 3;
@@ -116,9 +118,11 @@ function side_panel_servo_center() =
   [side_panel_width/2.0, -side_panel_height/2.0];
 
 module dotted_line(y_pos, x_pos) {
-  for (x = x_pos)
-    translate([x, y_pos])
+  for (x = x_pos) {
+    translate([x, y_pos]) {
       circle(d = side_panel_hole_d, $fn = 50);
+    }
+  }
 }
 
 module side_panel_2d() {
@@ -130,28 +134,34 @@ module side_panel_2d() {
                       [side_panel_curve_start, -side_panel_curve_end],
                       [0, -side_panel_curve_end]]);
 
-    translate(side_panel_servo_center())
+    translate(side_panel_servo_center()) {
       circle(d = servo_dia, $fn = 50);
+    }
 
     for (dist = servo_hole_distances) {
       translate([side_panel_servo_center()[0] + dist * cos(tilt_angle),
-                 side_panel_servo_center()[1] + dist * sin(tilt_angle)])
+                 side_panel_servo_center()[1] + dist * sin(tilt_angle)]) {
         circle(d = servo_screw_d, $fn = 50);
+      }
     }
 
     for (slot_y = side_panel_slot_ypos) {
-      translate([(side_panel_width - side_panel_slot_width) / 2, slot_y])
+      translate([(side_panel_width - side_panel_slot_width) / 2, slot_y]) {
         square([side_panel_slot_width, side_panel_slot_height]);
+      }
     }
 
     y_upper_base = side_panel_slot_ypos[1];
     y_lower_base = side_panel_slot_ypos[0];
 
     for (off = hole_row_offsets) {
-      if (off >= 0)
+      if (off >= 0) {
         dotted_line(y_upper_base + off, x_positions);
-      else
+      }
+
+      else {
         dotted_line(y_lower_base + off, x_positions);
+      }
     }
 
     dotted_line(hole_offset * 5, [side_panel_width * 0.50,

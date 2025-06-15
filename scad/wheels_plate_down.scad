@@ -4,7 +4,7 @@
 
 use <util.scad>;
 
-wheels_distance           = 180;
+wheels_distance           = 160;
 wheel_height              = 30;
 servo_screw_d             = 1.5;
 
