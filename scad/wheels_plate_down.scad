@@ -4,7 +4,7 @@
 
 use <util.scad>;
 
-wheels_distance           = 160;
+wheels_distance           = 170;
 wheel_height              = 30;
 servo_screw_d             = 1.5;
 
@@ -15,8 +15,10 @@ module side_screw_holes() {
   line_w = 2;
   screw_offset = 4;
 
-  for (x_offsets = [[-wheels_distance/2 + screw_offset, steering_wheel_screws_dia + line_w],
-                    [wheels_distance/2 - screw_offset, -steering_wheel_screws_dia - line_w]]) {
+  for (x_offsets = [[-wheels_distance/2 + screw_offset,
+                     steering_wheel_screws_dia + line_w],
+                    [wheels_distance/2 - screw_offset,
+                     -steering_wheel_screws_dia - line_w]]) {
     x1 = x_offsets[0];
     x2 = x_offsets[1];
     translate([x1, 0, 0]) {
