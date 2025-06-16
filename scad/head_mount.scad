@@ -62,28 +62,31 @@ module main_plate() {
 
     for (i = [0: len(cam_centers)-1]) {
       c = cam_centers[i];
-      translate([c[0], c[1], 0]) {
 
+      translate([c[0], c[1], 0]) {
         cube([lens_width, lens_height, plate_thickness+0.1], center=true);
 
         for (dx = [1, -1])
           for (dy = [1, -1])
-            translate([dx * screw_offset_x, (dy == 1 ? screw_offset_y_top : screw_offset_y), 0])
+            translate([dx * screw_offset_x, (dy == 1 ? screw_offset_y_top : screw_offset_y), 0]) {
               cylinder(h = plate_thickness+0.1, r = M2_dia/2, center=true, $fn=50);
+            }
       }
     }
   }
 }
 
 module connector_plate(y_offset) {
-  translate([0, y_offset, 0])
+  translate([0, y_offset, 0]) {
     cube([connector_width, connector_height, plate_thickness], center=true);
+  }
 }
 
 module back_plate_geometry() {
   difference() {
-    translate([-back_plate_width/2, -back_plate_height, -1])
+    translate([-back_plate_width/2, -back_plate_height, -1]) {
       cube([back_plate_width, back_plate_height, plate_thickness], center = false);
+    }
 
     slot_width = (back_plate_width) * 0.8;
     slot_height = 2;
@@ -104,15 +107,18 @@ module back_plate_geometry() {
     circle_rad = circle_dia/2;
 
     for (cc = [-8, 0, 8])
-      translate([cc, -back_plate_height/3, 0])
+      translate([cc, -back_plate_height/3, 0]) {
         cylinder(h = plate_thickness+0.2, r = circle_rad, center=true, $fn=50);
+      }
   }
 }
 
 module back_plate() {
-  translate([0, plate_height/2 + 4, 0])
-    rotate([90, 0, 0])
-    back_plate_geometry();
+  translate([0, plate_height/2 + 4, 0]) {
+    rotate([90, 0, 0]) {
+      back_plate_geometry();
+    }
+  }
 }
 
 function side_panel_servo_center() =
@@ -172,14 +178,20 @@ module side_panel(is_left=true) {
   side_panel_offset_y = plate_height/4;
 
   if (is_left)
-    translate([-(plate_width/2), side_panel_offset_y, 0])
-      mirror([1,0,0])
-      rotate([0, 90, 0])
-      side_panel_3d();
+    translate([-(plate_width/2), side_panel_offset_y, 0]) {
+      mirror([1,0,0]) {
+        rotate([0, 90, 0]) {
+          side_panel_3d();
+        }
+      }
+    }
+
   else
-    translate([plate_width/2, side_panel_offset_y, 0])
-      rotate([0, 90, 0])
-      side_panel_3d();
+    translate([plate_width/2, side_panel_offset_y, 0]) {
+      rotate([0, 90, 0]) {
+        side_panel_3d();
+      }
+    }
 }
 
 module head_mount() {
