@@ -16,33 +16,33 @@ use <util.scad>;
 use <wheels_plate_down.scad>;
 use <back_mount.scad>;
 
-body_width                  = 100;
-body_height                 = 235;
-body_depth                  = 2;
+body_width                        = 100;
+body_height                       = 235;
+body_depth                        = 2;
 
-steering_servo_hole_width   = 24;
-steering_servo_hole_height  = 12;
-steering_servo_screw_dia    = 2;
+steering_servo_hole_width         = 24;
+steering_servo_hole_height        = 12;
+steering_servo_screw_dia          = 2;
 
-pan_servo_hole_dia          = 7;
+pan_servo_hole_dia                = 7;
 
-motor_wall_height           = 10;
-motor_mount_width           = 3;
-motor_wall_depth            = 30;
+motor_wall_height                 = 10;
+motor_mount_width                 = 3;
+motor_wall_depth                  = 30;
 
-m2_hole_dia                 = 2.4;
-m25_hole_dia                = 2.8;
-m3_hole_dia                 = 3.2;
+m2_hole_dia                       = 2.4;
+m25_hole_dia                      = 2.8;
+m3_hole_dia                       = 3.2;
 
-wheels_offset_y             = body_height * 0.3;
+wheels_offset_y                   = body_height * 0.3;
 
-raspberry_pi_offset         = body_height * 0.03;
+raspberry_pi_offset               = body_height * 0.03;
+raspberry_pi5_screws_size         = [50, 60, 10];
 
-raspberry_pi5_screws_size   = [50, 60, 10];
+battery_holders_screws_size       = [20, 70, 10];
+extra_battery_holders_screws_size = [0, 20, 10];
 
-battery_holders_screws_size = [20, 70, 10];
-
-ups_hat_screws_size         = [48, 86, 10];
+ups_hat_screws_size               = [48, 86, 10];
 
 module rear_wheel_motor_mount() {
   translate([0, 0, motor_wall_depth * 0.5]) {
@@ -99,6 +99,16 @@ module battery_holders_screws() {
                     hole_dia = m2_hole_dia);
 }
 
+module extra_battery_holders_screws() {
+  for (y = [0, -50, -100]) {
+    translate([0, y, 0]) {
+      four_corner_holes(size = extra_battery_holders_screws_size,
+                        center = true,
+                        hole_dia = m2_hole_dia);
+    }
+  }
+}
+
 module steering_servo_cutout_2d() {
   translate([(steering_servo_hole_width * 0.25) + 1, wheels_offset_y + 2, 0]) {
     square([steering_servo_hole_width, steering_servo_hole_height], center=true);
@@ -114,8 +124,11 @@ module steering_servo_cutout_2d() {
 module pan_servo_cutout_2d() {
   translate([0, wheels_offset_y + 35, 0]) {
     circle(r=pan_servo_hole_dia / 2, $fn=360);
-    servo_screws_x = concat([for (i = [-33:4:-5]) i], [for (i = [5:4:33]) i]);
-    dotted_screws_line(servo_screws_x, 0, 3);
+    servo_screw_d = 1.5;
+    step = servo_screw_d + 0.5;
+    end = (body_width / 2) - pan_servo_hole_dia;
+    servo_screws_x = concat([for (i = [-end:step:-5]) i], [for (i = [5:step:end]) i]);
+    dotted_screws_line_y(servo_screws_x, y=0, d=1.5);
   }
 }
 
@@ -194,22 +207,7 @@ module chassis_plate() {
       battery_holders_screws();
     }
 
-    extra_battery_hilders_screws = [0, 20, 10];
-
-    four_corner_holes(size = extra_battery_hilders_screws,
-                      center = true,
-                      hole_dia = m2_hole_dia);
-
-    translate([0, -50, 0]) {
-      four_corner_holes(size = extra_battery_hilders_screws,
-                        center = true,
-                        hole_dia = m2_hole_dia);
-      translate([0, -50, 0]) {
-        four_corner_holes(size = extra_battery_hilders_screws,
-                          center = true,
-                          hole_dia = m2_hole_dia);
-      }
-    }
+    extra_battery_holders_screws();
   }
 }
 

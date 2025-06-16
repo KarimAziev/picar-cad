@@ -138,10 +138,10 @@ module four_corner_holes(size = [10, 10, 10], center = false, hole_dia = 3) {
   }
 }
 
-module dotted_screws_line(x_pos, y_pos, screw_dia=3) {
-  for (x = x_pos) {
-    translate([x, y_pos]) {
-      circle(d = screw_dia, $fn = 50);
+module dotted_screws_line_y(x_poses, y, d=1.5) {
+  for (x = x_poses) {
+    translate([x, y]) {
+      circle(d = d, $fn = 50);
     }
   }
 }

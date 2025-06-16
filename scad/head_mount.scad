@@ -2,6 +2,7 @@
 // It features a main mounting plate, connector plates, a back plate, and side panels with accurately placed holes for screws.
 // The head mount design assumes it will be attached via the side panel’s mounting hole on the servo assembly.
 // Detailed parameters control the dimensions and placement of each constituent element to ensure proper alignment and aesthetics.
+use <util.scad>;
 
 plate_width                   = 38;
 plate_height                  = 50;
@@ -117,14 +118,6 @@ module back_plate() {
 function side_panel_servo_center() =
   [side_panel_width/2.0, -side_panel_height/2.0];
 
-module dotted_line(y_pos, x_pos) {
-  for (x = x_pos) {
-    translate([x, y_pos]) {
-      circle(d = side_panel_hole_d, $fn = 50);
-    }
-  }
-}
-
 module side_panel_2d() {
   difference() {
     polygon(points = [[0, -side_panel_top],
@@ -156,17 +149,17 @@ module side_panel_2d() {
 
     for (off = hole_row_offsets) {
       if (off >= 0) {
-        dotted_line(y_upper_base + off, x_positions);
+        dotted_screws_line_y(x_positions, y=y_upper_base + off, d=3);
       }
 
       else {
-        dotted_line(y_lower_base + off, x_positions);
+        dotted_screws_line_y(x_positions, y=y_lower_base + off, d=3);
       }
     }
 
-    dotted_line(hole_offset * 5, [side_panel_width * 0.50,
-                                  side_panel_width * 0.66,
-                                  side_panel_width * +0.85]);
+    dotted_screws_line_y([side_panel_width * 0.50,
+                          side_panel_width * 0.66,
+                          side_panel_width * +0.85], y=hole_offset * 5, d=3);
   }
 }
 
