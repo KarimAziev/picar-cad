@@ -44,6 +44,8 @@ extra_battery_holders_screws_size = [0, 20, 10];
 
 ups_hat_screws_size               = [48, 86, 10];
 
+extra_cutouts_dia                 = 15;
+
 module rear_wheel_motor_mount() {
   translate([0, 0, motor_wall_depth * 0.5]) {
     difference() {
@@ -108,6 +110,56 @@ module extra_battery_holders_screws() {
     }
   }
 }
+module extra_cutout_square() {
+  translate([49, 18, 0]) {
+    rotate([0, 0, 23]) {
+      square([14, 40], center=true);
+      translate([6, 32, 0]) {
+        square([20, 40], center=true);
+      }
+
+      translate([0, -26, 0]) {
+        square([15, 40], center=true);
+      }
+    }
+  }
+  translate([35, -116, 0]) {
+    rotate([0, 0, 44]) {
+      square([30, 20], center=true);
+    }
+  }
+}
+module extra_cutouts_2d() {
+
+  translate([0, 50, 0]) {
+    square([30, 10], center=true);
+  }
+
+  translate([-22, 81, 0]) {
+    square([10, 6], center=true);
+  }
+
+  dotted_lines_fill_x(body_height, starts=[-48, 42], x_offset=body_height / 2, r=16);
+  dotted_lines_fill_x(body_height, starts=[48, 42], x_offset=body_height / 2, r=16);
+
+  extra_cutout_square();
+  mirror([1, 0, 0]) {
+    extra_cutout_square();
+  }
+
+  translate([0, -10, 0]) {
+    translate([0, -10, 0]) {
+      dotted_screws_line_y([-(body_width * 0.4), (body_width * 0.4)], y=0, d=8);
+    }
+    translate([0, 0, 0]) {
+      dotted_screws_line_y([-(body_width * 0.4), (body_width * 0.4)], y=0, d=8);
+    }
+
+    translate([0, -20, 0]) {
+      dotted_screws_line_y([-(body_width * 0.4), (body_width * 0.4)], y=0, d=8);
+    }
+  }
+}
 
 module steering_servo_cutout_2d() {
   translate([(steering_servo_hole_width * 0.25) + 1, wheels_offset_y + 2, 0]) {
@@ -122,13 +174,22 @@ module steering_servo_cutout_2d() {
 }
 
 module pan_servo_cutout_2d() {
-  translate([0, wheels_offset_y + 35, 0]) {
+  translate([0, wheels_offset_y + 32, 0]) {
     circle(r=pan_servo_hole_dia / 2, $fn=360);
     servo_screw_d = 1.5;
     step = servo_screw_d + 0.5;
     end = (body_width / 2) - pan_servo_hole_dia;
     servo_screws_x = concat([for (i = [-end:step:-5]) i], [for (i = [5:step:end]) i]);
     dotted_screws_line_y(servo_screws_x, y=0, d=1.5);
+    translate([0, 10, 0]) {
+      square([10, 5], center = true);
+    }
+    translate([0, -10, 0]) {
+      square([10, 5], center = true);
+    }
+    translate([0, -18, 0]) {
+      square([10, 5], center = true);
+    }
   }
 }
 
@@ -140,7 +201,7 @@ module chassis_front_wheel_cutouts_2d() {
   }
   for (x = [body_width, -body_width]) {
     translate([x * 0.5, body_height * 0.4, 0]) {
-      rounded_rect(size=[80, 5], center=true);
+      rounded_rect(size=[80, 4], r=2, center=true);
     }
   }
 }
@@ -150,6 +211,7 @@ module chassis_base_2d() {
     difference() {
       rounded_rect(size=[body_width, body_height], center=true);
       chassis_front_wheel_cutouts_2d();
+      extra_cutouts_2d();
     }
     translate([0, wheels_offset_y, 0]) {
       wheels_plate_down_2d();
