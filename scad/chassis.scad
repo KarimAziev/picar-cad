@@ -37,7 +37,7 @@ m3_hole_dia                       = 3.2;
 wheels_offset_y                   = body_height * 0.3;
 
 raspberry_pi_offset               = body_height * 0.03;
-raspberry_pi5_screws_size         = [50, 60, 10];
+raspberry_pi5_screws_size         = [50, 58, 10];
 
 battery_holders_screws_size       = [20, 70, 10];
 extra_battery_holders_screws_size = [0, 20, 10];
