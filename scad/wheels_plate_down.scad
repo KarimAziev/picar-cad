@@ -15,7 +15,8 @@ module side_screw_holes() {
   line_w = 2;
   screw_offset = 4;
 
-  for (x_offsets = [[-wheels_distance/2 + screw_offset, steering_wheel_screws_dia + line_w], [wheels_distance/2 - screw_offset, -steering_wheel_screws_dia - line_w]]) {
+  for (x_offsets = [[-wheels_distance/2 + screw_offset, steering_wheel_screws_dia + line_w],
+                    [wheels_distance/2 - screw_offset, -steering_wheel_screws_dia - line_w]]) {
     x1 = x_offsets[0];
     x2 = x_offsets[1];
     translate([x1, 0, 0]) {
@@ -30,8 +31,8 @@ module side_screw_holes() {
 module wheels_plate_down_2d() {
   difference() {
     rounded_rect([wheels_distance, wheel_height], r=wheel_height/2, center=true);
-    neckline_width=wheels_distance / 1.8;
 
+    neckline_width=wheels_distance / 1.8;
     neckline_height=wheel_height;
 
     translate([0, -wheel_height * 0.75, 0]) {
@@ -62,10 +63,8 @@ module wheels_plate_down_2d() {
 
 module steering_servo_horn(height=2) {
   difference() {
-
     linear_extrude(height) {
       difference() {
-
         rounded_rect(size=[wheels_distance, horn_height], r=horn_height / 2, center=true);
         side_screw_holes();
       }
