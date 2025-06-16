@@ -6,8 +6,6 @@
 //   - Cubes with corner holes, and
 //   - Common four-corner hole patterns.
 
-side_panel_hole_d = 3;
-
 module dotted_lines_fill_y(y_length, starts, y_offset, r) {
   step = y_offset + 2*r;
   amount = floor(y_length / step) + 1;
@@ -140,10 +138,10 @@ module four_corner_holes(size = [10, 10, 10], center = false, hole_dia = 3) {
   }
 }
 
-module dotted_line(y_pos, x_pos) {
+module dotted_screws_line(x_pos, y_pos, screw_dia=3) {
   for (x = x_pos) {
     translate([x, y_pos]) {
-      circle(d = side_panel_hole_d, $fn = 50);
+      circle(d = screw_dia, $fn = 50);
     }
   }
 }
