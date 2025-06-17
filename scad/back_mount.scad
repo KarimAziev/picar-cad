@@ -8,7 +8,7 @@ hole_dia          = 12;
 module back_mount() {
   difference() {
     cube(size = [back_mount_width, back_mount_height, back_wheel_depth], center = true);
-    offsets = [-20, 20];
+    offsets = [-16, 16];
     for (x = offsets) {
       translate([x, 0, 0]) {
         cylinder(10, r=hole_dia / 2, center=true);
