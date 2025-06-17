@@ -22,7 +22,7 @@ color("white") {
       steering_servo_horn();
     }
   }
-  translate([body_width, 0, 0]) {
-    head_mount();
-  }
+  // translate([body_width, 0, 0]) {
+  //   head_mount();
+  // }
 }

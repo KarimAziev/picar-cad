@@ -17,12 +17,14 @@ module dotted_lines_fill_y(y_length, starts, y_offset, r) {
   }
 }
 
+function number_sequence(from, to, step) = [for (i = [from : step : to]) i];
+
 module dotted_lines_fill_x(length, starts, x_offset, r) {
   step = x_offset + 2*r;
   amount = floor(length / step) + 1;
 
   for (i = [0 : amount - 1]) {
-    translate([starts[0], starts[1] + i * step]) {
+    translate([starts[0] + i * step, starts[1]]) {
       circle(r = r, $fn = 50);
     }
   }

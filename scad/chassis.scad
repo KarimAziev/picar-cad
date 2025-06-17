@@ -17,6 +17,7 @@ use <wheels_plate_down.scad>;
 use <back_mount.scad>;
 
 body_width                        = 100;
+
 body_height                       = 235;
 body_depth                        = 2;
 
@@ -36,7 +37,7 @@ m3_hole_dia                       = 3.2;
 
 wheels_offset_y                   = body_height * 0.3;
 
-raspberry_pi_offset               = body_height * 0.03;
+raspberry_pi_offset               = body_height * 0.06;
 raspberry_pi5_screws_size         = [50, 58, 10];
 
 battery_holders_screws_size       = [20, 70, 10];
@@ -44,7 +45,7 @@ extra_battery_holders_screws_size = [0, 20, 10];
 
 ups_hat_screws_size               = [48, 86, 10];
 
-extra_cutouts_dia                 = 15;
+extra_cutouts_dia                 = 8;
 
 module rear_wheel_motor_mount() {
   translate([0, 0, motor_wall_depth * 0.5]) {
@@ -102,7 +103,26 @@ module battery_holders_screws() {
 }
 
 module extra_battery_holders_screws() {
-  for (y = [0, -50, -100]) {
+  x_offst = 24;
+  for (y = number_sequence(-102, 40, 10)) {
+    translate([0, y, 0]) {
+      four_corner_holes(size = [20, 10, 5],
+                        center = true,
+                        hole_dia = m2_hole_dia);
+    }
+    translate([-x_offst, y, 0]) {
+      four_corner_holes(size = [20, 10, 5],
+                        center = true,
+                        hole_dia = m2_hole_dia);
+    }
+
+    translate([x_offst, y, 0]) {
+      four_corner_holes(size = [20, 10, 5],
+                        center = true,
+                        hole_dia = m2_hole_dia);
+    }
+  }
+  for (y = number_sequence(-100, 100, 20)) {
     translate([0, y, 0]) {
       four_corner_holes(size = extra_battery_holders_screws_size,
                         center = true,
@@ -110,53 +130,94 @@ module extra_battery_holders_screws() {
     }
   }
 }
-module extra_cutout_square() {
-  translate([49, 18, 0]) {
-    rotate([0, 0, 23]) {
-      square([14, 40], center=true);
-      translate([6, 32, 0]) {
-        square([20, 40], center=true);
-      }
 
-      translate([0, -26, 0]) {
-        square([15, 40], center=true);
+// module extra_cutout_square() {
+//   translate([49, 18, 0]) {
+//     rotate([0, 0, 23]) {
+//       square([14, 40], center=true);
+//       translate([6, 32, 0]) {
+//         square([20, 40], center=true);
+//       }
+
+//       translate([0, -26, 0]) {
+//         square([15, 40], center=true);
+//       }
+//     }
+//   }
+//   translate([35, -116, 0]) {
+//     rotate([0, 0, 44]) {
+//       square([30, 20], center=true);
+//     }
+//   }
+// }
+
+module extra_cutout_square() {
+  offset1_x = 0.49 * body_width;
+  offset1_y = 18/235 * body_height;
+  rot1 = 23;
+
+  sq1_w = 14/100 * body_width;
+  sq1_h = 55/235 * body_height;
+  sq2_w = 26/100 * body_width;
+  sq2_h = 40/235 * body_height;
+  sq3_w = 15/100 * body_width;
+  sq3_h = 40/235 * body_height;
+
+  tx_for_sq2 = 6/100 * body_width;
+  ty_for_sq2 = 32/235 * body_height;
+  ty_for_sq3 = -26/235 * body_height;
+
+  offset2_x = 35/100 * body_width;
+  offset2_y = -116/235 * body_height;
+  rot2 = 44;
+  sq4_w = 30/100 * body_width;
+  sq4_h = body_width * 0.25;
+
+  translate([offset1_x, offset1_y, 0]) {
+    rotate([0, 0, rot1]) {
+      square([sq1_w, sq1_h], center=true);
+      translate([tx_for_sq2, ty_for_sq2, 0]) {
+        square([sq2_w, sq2_h], center=true);
+      }
+      translate([0, ty_for_sq3, 0]) {
+        square([sq3_w, sq3_h], center=true);
       }
     }
   }
-  translate([35, -116, 0]) {
-    rotate([0, 0, 44]) {
-      square([30, 20], center=true);
+  translate([offset2_x, offset2_y, 0]) {
+    rotate([0, 0, rot2]) {
+      square([sq4_w, sq4_h], center=true);
     }
   }
 }
+
 module extra_cutouts_2d() {
-
-  translate([0, 50, 0]) {
-    square([30, 10], center=true);
+  translate([0, 50/235 * body_height, 0]) {
+    square([30/100 * body_width, 10/235 * body_height], center=true);
   }
 
-  translate([-22, 81, 0]) {
-    square([10, 6], center=true);
+  translate([-22/100 * body_width, 81/235 * body_height, 0]) {
+    square([10/100 * body_width, 6/235 * body_height], center=true);
   }
 
-  dotted_lines_fill_x(body_height, starts=[-48, 42], x_offset=body_height / 2, r=16);
-  dotted_lines_fill_x(body_height, starts=[48, 42], x_offset=body_height / 2, r=16);
+  /* for (x = [-0.48 * body_width, 0.48 * body_width]) { */
+  /*   dotted_lines_fill_y(body_height, */
+  /*                       starts = [x, 42/235 * body_height], */
+  /*                       body_height / 2, */
+  /*                       r = 15); */
+  /* } */
 
   extra_cutout_square();
-  mirror([1, 0, 0]) {
+  mirror([1, 0, 0])
     extra_cutout_square();
-  }
 
-  translate([0, -10, 0]) {
-    translate([0, -10, 0]) {
-      dotted_screws_line_y([-(body_width * 0.4), (body_width * 0.4)], y=0, d=8);
-    }
-    translate([0, 0, 0]) {
-      dotted_screws_line_y([-(body_width * 0.4), (body_width * 0.4)], y=0, d=8);
-    }
-
-    translate([0, -20, 0]) {
-      dotted_screws_line_y([-(body_width * 0.4), (body_width * 0.4)], y=0, d=8);
+  translate([0, -10/235 * body_height, 0]) {
+    for (offset = [-10/235 * body_height, 0, -20/235 * body_height]) {
+      translate([0, offset, 0])
+        dotted_screws_line_y([-(body_width*0.5 - extra_cutouts_dia),
+                              body_width*0.5 - extra_cutouts_dia],
+                             y = 0,
+                             d = extra_cutouts_dia);
     }
   }
 }
@@ -179,7 +240,8 @@ module pan_servo_cutout_2d() {
     servo_screw_d = 1.5;
     step = servo_screw_d + 0.5;
     end = (body_width / 2) - pan_servo_hole_dia;
-    servo_screws_x = concat([for (i = [-end:step:-5]) i], [for (i = [5:step:end]) i]);
+    servo_screws_x = concat([for (i = [-end:step:-5]) i],
+                            [for (i = [5:step:end]) i]);
     dotted_screws_line_y(servo_screws_x, y=0, d=1.5);
     translate([0, 10, 0]) {
       square([10, 5], center = true);
@@ -204,6 +266,11 @@ module chassis_front_wheel_cutouts_2d() {
       rounded_rect(size=[80, 4], r=2, center=true);
     }
   }
+}
+
+module chassis_battery_screws_2d(y_offset=10) {
+  dotted_lines_fill_y(body_height * 0.7, starts=[-10, -body_height / 2], y_offset=y_offset, r=m2_hole_dia / 2);
+  dotted_lines_fill_y(body_height * 0.7, starts=[10, -body_height / 2], y_offset=y_offset, r=m2_hole_dia / 2);
 }
 
 module chassis_base_2d() {
@@ -253,7 +320,7 @@ module chassis_plate() {
       }
     }
 
-    translate([0, -(body_height / 2) + 55]) {
+    translate([0, -(body_height / 2) + 42]) {
       rotate([0, 0, 90]) {
         ups_hat_screws();
       }
@@ -265,7 +332,7 @@ module chassis_plate() {
         raspberry_pi5_screws();
       }
     }
-    translate([0, raspberry_pi_offset + -20, 0]) {
+    translate([0, raspberry_pi_offset + -22, 0]) {
       battery_holders_screws();
     }
 
