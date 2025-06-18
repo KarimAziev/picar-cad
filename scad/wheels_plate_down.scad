@@ -4,8 +4,8 @@
 
 use <util.scad>;
 
-wheels_distance           = 155;
-wheel_height              = 30;
+wheels_distance           = 120;
+wheel_height              = 13;
 servo_screw_d             = 1.5;
 
 steering_wheel_screws_dia = 3.5;
@@ -37,6 +37,19 @@ module wheels_plate_down_2d() {
     neckline_width=wheels_distance / 1.8;
     neckline_height=wheel_height;
 
+    // translate([-wheels_distance * 0.5, -10, 0]) {
+    //   square([30, 10], center = true);
+    // }
+
+    // translate([wheels_distance * 0.5, -10, 0]) {
+    //   square([30, 10], center = true);
+    // }
+    // translate([-wheels_distance * 0.5, 10, 0]) {
+    //   square([30, 10], center = true);
+    // }
+    // translate([wheels_distance * 0.5, 10, 0]) {
+    //   square([30, 10], center = true);
+    // }
     translate([0, -wheel_height * 0.75, 0]) {
       rounded_rect([neckline_width, neckline_height], center=true);
     }

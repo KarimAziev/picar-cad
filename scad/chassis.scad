@@ -16,7 +16,7 @@ use <util.scad>;
 use <wheels_plate_down.scad>;
 use <back_mount.scad>;
 
-body_width                        = 100;
+body_width                        = 110;
 
 body_height                       = 235;
 body_depth                        = 2;
@@ -66,7 +66,7 @@ module rear_wheel_motor_mount() {
 module front_wall() {
   rotate([90, 0, 0]) {
     difference() {
-      size = body_width * 0.8;
+      size = body_width * 0.6;
       linear_extrude(1) {
         rounded_rect(size=[size, motor_wall_depth], r=5, center=true);
       }
@@ -156,7 +156,7 @@ module extra_cutout_square() {
   offset1_y = 18/235 * body_height;
   rot1 = 23;
 
-  sq1_w = 14/100 * body_width;
+  sq1_w = 15/100 * body_width;
   sq1_h = 55/235 * body_height;
   sq2_w = 26/100 * body_width;
   sq2_h = 40/235 * body_height;
@@ -168,7 +168,7 @@ module extra_cutout_square() {
   ty_for_sq3 = -26/235 * body_height;
 
   offset2_x = 35/100 * body_width;
-  offset2_y = -116/235 * body_height;
+  offset2_y = -125/235 * body_height;
   rot2 = 44;
   sq4_w = 30/100 * body_width;
   sq4_h = body_width * 0.25;
@@ -189,6 +189,14 @@ module extra_cutout_square() {
       square([sq4_w, sq4_h], center=true);
     }
   }
+  translate([35, 58, 0]) {
+    hull() {
+      circle(r = 10);
+      translate([8, -30, 0]) {
+        circle(r = 5);
+      }
+    }
+  }
 }
 
 module extra_cutouts_2d() {
@@ -196,28 +204,18 @@ module extra_cutouts_2d() {
     square([30/100 * body_width, 10/235 * body_height], center=true);
   }
 
-  translate([-22/100 * body_width, 81/235 * body_height, 0]) {
-    square([10/100 * body_width, 6/235 * body_height], center=true);
-  }
-
-  /* for (x = [-0.48 * body_width, 0.48 * body_width]) { */
-  /*   dotted_lines_fill_y(body_height, */
-  /*                       starts = [x, 42/235 * body_height], */
-  /*                       body_height / 2, */
-  /*                       r = 15); */
-  /* } */
-
   extra_cutout_square();
   mirror([1, 0, 0])
     extra_cutout_square();
 
   translate([0, -10/235 * body_height, 0]) {
     for (offset = [-10/235 * body_height, 0, -20/235 * body_height]) {
-      translate([0, offset, 0])
+      translate([0, offset, 0]) {
         dotted_screws_line_y([-(body_width*0.5 - extra_cutouts_dia),
                               body_width*0.5 - extra_cutouts_dia],
                              y = 0,
                              d = extra_cutouts_dia);
+      }
     }
   }
 }
@@ -234,15 +232,28 @@ module steering_servo_cutout_2d() {
   }
 }
 
+module pan_servo_screws_2d() {
+  servo_screw_d = m2_hole_dia;
+  step = servo_screw_d + 0.2;
+  servo_screws_x = number_sequence(from = -18, to = -6, step = step);
+  translate([2.4, 0, 0]) {
+    dotted_screws_line_y(servo_screws_x, y=0, d=m2_hole_dia);
+  }
+}
+
 module pan_servo_cutout_2d() {
   translate([0, wheels_offset_y + 32, 0]) {
     circle(r=pan_servo_hole_dia / 2, $fn=360);
-    servo_screw_d = 1.5;
+    servo_screw_d = m2_hole_dia;
     step = servo_screw_d + 0.5;
     end = (body_width / 2) - pan_servo_hole_dia;
-    servo_screws_x = concat([for (i = [-end:step:-5]) i],
-                            [for (i = [5:step:end]) i]);
-    dotted_screws_line_y(servo_screws_x, y=0, d=1.5);
+    servo_screws_x = number_sequence(from = -16, to = -6, step = step);
+
+    pan_servo_screws_2d();
+    mirror([1, 0, 0]) {
+      pan_servo_screws_2d();
+    }
+
     translate([0, 10, 0]) {
       square([10, 5], center = true);
     }
@@ -273,13 +284,26 @@ module chassis_battery_screws_2d(y_offset=10) {
   dotted_lines_fill_y(body_height * 0.7, starts=[10, -body_height / 2], y_offset=y_offset, r=m2_hole_dia / 2);
 }
 
+module chassis_front_cutout_2d() {
+  translate([-body_width * 0.5, (body_height * 0.5) - 20]) {
+    rotate([20, 45, 0]) {
+      square([body_width * 0.9, (body_height * 0.2)], center=true);
+    }
+  }
+}
+
 module chassis_base_2d() {
   union() {
     difference() {
       rounded_rect(size=[body_width, body_height], center=true);
       chassis_front_wheel_cutouts_2d();
       extra_cutouts_2d();
+      chassis_front_cutout_2d();
+      mirror([1, 0, 0]) {
+        chassis_front_cutout_2d();
+      }
     }
+
     translate([0, wheels_offset_y, 0]) {
       wheels_plate_down_2d();
     }

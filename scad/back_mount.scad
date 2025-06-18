@@ -1,6 +1,6 @@
 // This is a plate with two 12-mm mounting holes for two tumblers (switch buttons)
 
-back_mount_width  = 60;
+back_mount_width  = 52;
 back_mount_height = 25;
 back_wheel_depth  = 2;
 hole_dia          = 12;
