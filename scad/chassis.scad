@@ -43,7 +43,7 @@ raspberry_pi5_screws_size         = [50, 58, 10];
 battery_holders_screws_size       = [20, 70, 10];
 extra_battery_holders_screws_size = [0, 20, 10];
 
-ups_hat_screws_size               = [48, 86, 10];
+ups_hat_screws_size               = [46, 86, 10];
 
 extra_cutouts_dia                 = 8;
 
