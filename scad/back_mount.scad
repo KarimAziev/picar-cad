@@ -1,21 +1,18 @@
 // This is a plate with two 12-mm mounting holes for two tumblers (switch buttons)
 
-back_mount_width  = 52;
-back_mount_height = 25;
-back_wheel_depth  = 2;
-hole_dia          = 12;
+include <parameters.scad>
 
-module back_mount() {
+module back_mount(size=back_wheel_size, tumbler_switch_dia = tumbler_switch_hole_dia, x_offsets = [-16, 16]) {
   difference() {
-    cube(size = [back_mount_width, back_mount_height, back_wheel_depth], center = true);
-    offsets = [-16, 16];
-    for (x = offsets) {
+    cube(size = size, center = true);
+    for (x = x_offsets) {
       translate([x, 0, 0]) {
-        cylinder(10, r=hole_dia / 2, center=true);
+        cylinder(10, r=tumbler_switch_dia / 2, center=true);
       }
     }
   }
 }
+
 rotate([90, 0, 0]) {
   back_mount();
 }

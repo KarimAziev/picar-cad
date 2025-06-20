@@ -147,3 +147,15 @@ module dotted_screws_line_y(x_poses, y, d=1.5) {
     }
   }
 }
+
+module two_x_screws_3d(x=0, d=2.4, center=true, h=10) {
+  translate([x, 0, 0]) {
+    cylinder(h, r=d / 2, $fn=360, center=center);
+  }
+
+  mirror([1, 0, 0]) {
+    translate([x, 0, 0]) {
+      cylinder(h, r=d / 2, $fn=360, center=center);
+    }
+  }
+}

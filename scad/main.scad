@@ -7,22 +7,24 @@
 //   - One for the motor driver HAT, and
 //   - One for a UPS module (e.g., UPS_Module_3S) that can power the Raspberry Pi 5.
 
-use <head_mount.scad>;
+include <parameters.scad>
 include <chassis.scad>;
+use <head_mount.scad>;
 use <wheels_plate_down.scad>;
 
 color("white") {
-  translate([-(body_width / 2)-40, -40, 0]) {
+  translate([-(chassis_width / 2) - 26, -40, 0]) {
     rotate([0, 0, 90]) {
       wheels_plate_down_3d();
     }
   }
-  translate([-(body_width / 2) - 10, -40, 0]) {
+
+  translate([-(chassis_width / 2) - 10, -40, 0]) {
     rotate([0, 0, 90]) {
       steering_servo_horn();
     }
   }
-  // translate([body_width, 0, 0]) {
+  // translate([chassis_width, 0, 0]) {
   //   head_mount();
   // }
 }
