@@ -54,7 +54,7 @@ tilt_angle                    = atan2((-side_panel_curve_end) - (-side_panel_bot
                                       side_panel_curve_start - side_panel_width);
 servo_screw_d                 = 1.5;
 
-servo_hole_distances          = [-19, -17, -15, -13, -11, -9, -6, 6, 9, 11, 13, 15];
+servo_hole_distances          = number_sequence(from=-17, to=13, step=2);
 
 module main_plate() {
   difference() {
