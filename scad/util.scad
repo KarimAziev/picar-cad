@@ -125,7 +125,7 @@ module cube_with_corner_holes(size = [10, 10, 10], center = false, hole_dia = 3)
   }
 }
 
-module four_corner_holes(size = [10, 10, 10], center = false, hole_dia = 3) {
+module four_corner_holes(size = [10, 10, 10], center = false, hole_dia = 3, fn_val = 360) {
   z_center = center ? 0 : size[2] / 2;
   for (x_ind = [0, 1]) {
     for (y_ind = [0, 1]) {
@@ -134,10 +134,20 @@ module four_corner_holes(size = [10, 10, 10], center = false, hole_dia = 3) {
       y_pos = (center ? -size[1] / 2 : 0) + y_ind * size[1];
 
       translate([x_pos, y_pos, z_center]) {
-        cylinder(h = size[2] + 2, r = hole_dia / 2, center = center, $fn = 360);
+        cylinder(h = size[2] + 2, r = hole_dia / 2, center = center, $fn = fn_val);
       }
     }
   }
+}
+
+module four_corner_holes_2d(size = [10, 10], center = false, hole_dia = 3, fn_val = 24) {
+  for (x_ind = [0, 1])
+    for (y_ind = [0, 1]) {
+      x_pos = (center ? -size[0] / 2 : 0) + x_ind * size[0];
+      y_pos = (center ? -size[1] / 2 : 0) + y_ind * size[1];
+      translate([x_pos, y_pos])
+        circle(r = hole_dia / 2, $fn = fn_val);
+    }
 }
 
 module dotted_screws_line_y(x_poses, y, d=1.5) {

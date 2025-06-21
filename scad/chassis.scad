@@ -38,31 +38,47 @@ module battery_holders_screws() {
                     hole_dia = m2_hole_dia);
 }
 
-module extra_battery_holders_screws() {
-  x_offst = 24;
-  for (y = number_sequence(-102, 40, 10)) {
-    translate([0, y, 0]) {
-      four_corner_holes(size = [20, 10, 10],
-                        center = true,
-                        hole_dia = m2_hole_dia);
-    }
-    translate([-x_offst, y, 0]) {
-      four_corner_holes(size = [20, 10, 10],
-                        center = true,
-                        hole_dia = m2_hole_dia);
+module extra_battery_holders_screws_2d(x_offst=24, hole_fn=360) {
+  union() {
+    for (y = number_sequence(-102, 40, 10)) {
+      translate([0, y, 0]) {
+        four_corner_holes_2d(size = [20, 10, 10],
+                             center = true,
+                             hole_dia = m2_hole_dia,
+                             fn_val = hole_fn);
+      }
+
+      translate([-x_offst, y, 0]) {
+        four_corner_holes_2d(size = [20, 10, 10],
+                             center = true,
+                             hole_dia = m2_hole_dia,
+                             fn_val = hole_fn);
+      }
+
+      translate([x_offst, y, 0]) {
+        four_corner_holes_2d(size = [20, 10, 10],
+                             center = true,
+                             hole_dia = m2_hole_dia,
+                             fn_val = hole_fn);
+      }
     }
 
-    translate([x_offst, y, 0]) {
-      four_corner_holes(size = [20, 10, 10],
-                        center = true,
-                        hole_dia = m2_hole_dia);
+    for (y = number_sequence(-100, 100, 20)) {
+      translate([0, y, 0]) {
+        four_corner_holes_2d(size = extra_battery_holders_screws_size,
+                             center = true,
+                             hole_dia = m2_hole_dia,
+                             fn_val = hole_fn);
+      }
     }
   }
-  for (y = number_sequence(-100, 100, 20)) {
-    translate([0, y, 0]) {
-      four_corner_holes(size = extra_battery_holders_screws_size,
-                        center = true,
-                        hole_dia = m2_hole_dia);
+}
+
+module extra_battery_holders_screws(hole_fn=24, x_offst = 24) {
+  z_offst=0.5;
+  translate([0, 0, -z_offst]) {
+    linear_extrude(height = chassis_thickness + z_offst * 2) {
+      extra_battery_holders_screws_2d();
     }
   }
 }
