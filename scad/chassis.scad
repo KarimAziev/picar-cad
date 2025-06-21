@@ -199,6 +199,7 @@ module chassis_base_3d() {
       pan_servo_cutout_2d();
     }
   }
+
   translate([0, wheels_offset_y, 0]) {
     wheels_plate_axle();
   }
@@ -215,8 +216,6 @@ module chassis_plate() {
   difference() {
     union() {
       chassis_base_3d();
-
-      offsets = [chassis_width, 20];
       motor_wall();
       mirror([1, 0, 0]) {
         motor_wall();
