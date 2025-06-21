@@ -1,4 +1,4 @@
-// This module defines a robot chassis designed for a four-wheeled vehicle.t
+// This module defines a robot chassis designed for a four-wheeled vehicle.
 // The front wheels are controlled by servo steering while the rear wheels are powered by two separate motors.
 
 // Key design features include:++
@@ -14,11 +14,11 @@
 
 include <parameters.scad>
 use <util.scad>;
-use <front_wall.scad>
-use <wheels_plate_down.scad>;
+use <front_panel.scad>
+use <steering_system.scad>;
 use <back_mount.scad>;
 use <pan_servo.scad>;
-use <motor_wall_mount.scad>;
+use <motor_mount_panel.scad>;
 
 module raspberry_pi5_screws() {
   four_corner_holes(size = raspberry_pi5_screws_size,
@@ -201,14 +201,15 @@ module chassis_base_3d() {
   }
 
   translate([0, wheels_offset_y, 0]) {
-    wheels_plate_axle();
+    steering_upper_chassis_link();
   }
 }
 
-module motor_wall() {
-  translate([(chassis_width * 0.5) - (motor_wall_thickness * 0.5), (-chassis_len * 0.5 + motor_wall_width * 0.5) + 20,
+module rear_motor_mount_wall() {
+  translate([(chassis_width * 0.5) - (motor_mount_panel_thickness * 0.5),
+             (-chassis_len * 0.5 + motor_mount_panel_width * 0.5) + 20,
              0.5]) {
-    motor_wall_mount();
+    motor_mount_panel();
   }
 }
 
@@ -216,13 +217,13 @@ module chassis_plate() {
   difference() {
     union() {
       chassis_base_3d();
-      motor_wall();
+      rear_motor_mount_wall();
       mirror([1, 0, 0]) {
-        motor_wall();
+        rear_motor_mount_wall();
       }
 
-      translate([0, chassis_len * 0.5, front_wall_height * 0.5]) {
-        front_wall();
+      translate([0, chassis_len * 0.5, front_panel_height * 0.5]) {
+        front_panel();
       }
 
       translate([0, -(chassis_len / 2) + 1, 25 / 2]) {

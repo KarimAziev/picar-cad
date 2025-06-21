@@ -10,18 +10,18 @@
 include <parameters.scad>
 include <chassis.scad>;
 use <head_mount.scad>;
-use <wheels_plate_down.scad>;
+use <steering_system.scad>;
 
 color("white") {
   translate([-(chassis_width / 2) - 26, -40, 0]) {
     rotate([0, 0, 90]) {
-      wheels_plate_down_3d();
+      steering_lower_link_detachable();
     }
   }
 
   translate([-(chassis_width / 2) - 10, -40, 0]) {
     rotate([0, 0, 90]) {
-      steering_servo_horn();
+      steering_tie_rod();
     }
   }
   // translate([chassis_width, 0, 0]) {

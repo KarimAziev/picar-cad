@@ -1,11 +1,17 @@
-// This module defines the front panel of the car and includes mounting slots
-// for the standard ultrasonic distance sensor HC-SR04, which is attached using
+// front_panel.scad - Defines the front panel of the vehicle.
+//
+// This module includes:
+// - A base front panel with rounded corners and mount holes
+// - Slots for the HC-SR04 ultrasonic sensor, which is attached using
 // an R3090 rivet.
+//
+// Sensor: HC-SR04
+// Attachment: R3090 rivet
 
 include <parameters.scad>
 use <util.scad>;
 
-module ultrasonic_eyes_slots(d=17, distance=9, center=true, h=10) {
+module ultrasonic_sensor_mounts(d=17, distance=9, center=true, h=10) {
   x_offset = d / 2 + distance / 2;
   translate([-x_offset, 0, 0]) {
     cylinder(h, r=d/2, $fn=360, center=center);
@@ -31,11 +37,11 @@ module ultrasonic_slots() {
       }
     }
 
-    ultrasonic_eyes_slots();
+    ultrasonic_sensor_mounts();
   }
 }
 
-module front_wall_base(w=front_wall_width, h=front_wall_height, thickness=2) {
+module front_panel_base(w=front_panel_width, h=front_panel_height, thickness=2) {
   difference() {
     linear_extrude(thickness) {
       rounded_rect(size=[w, h], r=5, center=true);
@@ -45,10 +51,10 @@ module front_wall_base(w=front_wall_width, h=front_wall_height, thickness=2) {
   }
 }
 
-module front_wall(w=front_wall_width, h=front_wall_height, thickness=1) {
+module front_panel(w=front_panel_width, h=front_panel_height, thickness=1) {
   rotate([90, 180, 0]) {
     difference() {
-      front_wall_base();
+      front_panel_base();
       translate([0, -2, 0]) {
         ultrasonic_slots();
       }
@@ -56,12 +62,6 @@ module front_wall(w=front_wall_width, h=front_wall_height, thickness=1) {
   }
 }
 
-module front_mount_wall(w=front_wall_width, h=front_wall_height, thickness=1) {
-  difference() {
-    front_wall_base();
-  }
-}
-
 color("white") {
-  front_wall();
+  front_panel();
 }

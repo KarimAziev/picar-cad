@@ -157,7 +157,6 @@ module side_panel_2d() {
       if (off >= 0) {
         dotted_screws_line_y(x_positions, y=y_upper_base + off, d=3);
       }
-
       else {
         dotted_screws_line_y(x_positions, y=y_lower_base + off, d=3);
       }
@@ -165,33 +164,36 @@ module side_panel_2d() {
 
     dotted_screws_line_y([side_panel_width * 0.50,
                           side_panel_width * 0.66,
-                          side_panel_width * +0.85], y=hole_offset * 5, d=3);
+                          side_panel_width * 0.85],
+                         y=hole_offset * 5,
+                         d=3);
   }
 }
 
 module side_panel_3d() {
-  linear_extrude(height = plate_thickness)
+  linear_extrude(height = plate_thickness) {
     side_panel_2d();
+  }
 }
 
 module side_panel(is_left=true) {
-  side_panel_offset_y = plate_height/4;
+  offsets = [plate_width/2, plate_height / 4];
 
-  if (is_left)
-    translate([-(plate_width/2), side_panel_offset_y, 0]) {
+  if (is_left) {
+    translate([-offsets[0], offsets[1], 0]) {
       mirror([1,0,0]) {
         rotate([0, 90, 0]) {
           side_panel_3d();
         }
       }
     }
-
-  else
-    translate([plate_width/2, side_panel_offset_y, 0]) {
+  } else {
+    translate([offsets[0], offsets[1], 0]) {
       rotate([0, 90, 0]) {
         side_panel_3d();
       }
     }
+  }
 }
 
 module head_mount() {
