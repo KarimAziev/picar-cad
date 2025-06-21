@@ -53,8 +53,6 @@ motor_mount_panel_height              = 26;
 raspberry_pi_offset                   = chassis_len * 0.06; // Y offset for the Raspberry Pi slot
 raspberry_pi5_screws_size             = [50, 58, 10];
 
-battery_holders_screws_size           = [20, 70, 10];
-extra_battery_holders_screws_size     = [0, 20, 10];
 ups_hat_screws_size                   = [46, 86, 10];
 
 // Additional cutouts:
@@ -64,3 +62,34 @@ extra_cutouts_dia                     = 8; // diameter of the three extra holes 
 // A vertical rear plate with dimensions including two 13-mm mounting holes for switch buttons.
 rear_panel_size                       = [52, 25, 2];
 rear_panel_switch_slot_dia            = 13;
+
+// Battery holder screws along each side of the chassis
+
+// Vertical offsets for extra battery holder screws along the Y-axis
+extra_battery_screws_y_offset_start   = -102;  // Starting Y-offset for extra battery screws
+extra_battery_screws_y_offset_end     = 40;    // Ending Y-offset for extra battery screws
+extra_battery_screws_y_offset_step    = 10;    // Step/increment along the Y-axis for extra battery screws
+
+// Dimensions for the screw hole pattern (width, height)
+extra_battery_screws_y_size           = [20, 10]; // [width, height] of the screw pattern
+
+// Horizontal offset for the screws on the sides (distance from center)
+extra_battery_screws_x_offset         = 24;    // X-offset for positioning screws relative to the center
+
+// Screw hole parameters for extra battery holders
+extra_battery_screws_dia              = m2_hole_dia;  // Diameter of the screw holes (uses global m2_hole_dia)
+extra_battery_screws_fn_val           = 360;  // Number of fragments for rendering circle (defines resolution)
+
+// Battery holder screws placed at the center of the chassis
+
+// Vertical offsets for center battery screws along the Y-axis
+battery_screws_center_y_offset_start  = -100;  // Starting Y-offset for center battery screws
+battery_screws_center_y_offset_end    = 100;   // Ending Y-offset for center battery screws
+battery_screws_center_y_step          = 20;    // Step/increment along the Y-axis for center battery screws
+
+// Dimensions for the screw hole pattern at the center; note that the X-size is 0 to indicate a central alignment
+battery_screws_center_size            = [0, 20];  // [width, height] of the center screw pattern
+
+// Screw hole parameters for center battery holders
+battery_screws_center_dia             = m2_hole_dia;  // Diameter of the screw holes (uses same m2_hole_dia)
+battery_screws_center_fn_val          = 360;  // Number of fragments for rendering circle (defines resolution)
