@@ -10,7 +10,7 @@
 // - Attachments using M3 screws
 
 include <parameters.scad>
-use <util.scad>;
+use <util.scad>
 
 module motor_mount_connector(size=[motor_mount_panel_width * 0.8, 5], thickness=motor_mount_panel_thickness) {
   linear_extrude(height=thickness) {

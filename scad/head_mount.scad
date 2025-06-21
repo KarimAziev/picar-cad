@@ -2,7 +2,7 @@
 // It features a main mounting plate, connector plates, a back plate, and side panels with accurately placed holes for screws.
 // The head mount design assumes it will be attached via the side panel’s mounting hole on the servo assembly.
 // Detailed parameters control the dimensions and placement of each constituent element to ensure proper alignment and aesthetics.
-use <util.scad>;
+use <util.scad>
 
 plate_width                   = 38;
 plate_height                  = 50;

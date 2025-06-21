@@ -1,7 +1,7 @@
 // This module defines a slot for pan servo
 
 include <parameters.scad>
-use <util.scad>;
+use <util.scad>
 
 module pan_servo_screws_2d(servo_screw_d = m2_hole_dia) {
   step = servo_screw_d + 0.5;

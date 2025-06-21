@@ -13,12 +13,12 @@
 //   - A power module for the Raspberry Pi 5 itself.
 
 include <parameters.scad>
-use <util.scad>;
+use <util.scad>
 use <front_panel.scad>
-use <steering_system.scad>;
-use <rear_panel.scad>;
-use <pan_servo.scad>;
-use <motor_mount_panel.scad>;
+use <steering_system.scad>
+use <rear_panel.scad>
+use <pan_servo.scad>
+use <motor_mount_panel.scad>
 
 module raspberry_pi5_screws() {
   four_corner_holes(size = raspberry_pi5_screws_size,

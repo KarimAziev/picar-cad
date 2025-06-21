@@ -26,7 +26,7 @@
  */
 
 include <parameters.scad>
-use <util.scad>;
+use <util.scad>
 
 // This module creates a cutout (slot) for the steering servo.
 module steering_servo_cutout_2d(size=[steering_servo_slot_width, steering_servo_slot_height],

@@ -9,7 +9,7 @@
 // Attachment: R3090 rivet
 
 include <parameters.scad>
-use <util.scad>;
+use <util.scad>
 
 module ultrasonic_sensor_mounts(d=front_panel_ultrasonic_sensor_dia,
                                 distance=front_panel_ultrasonic_sensors_offset,

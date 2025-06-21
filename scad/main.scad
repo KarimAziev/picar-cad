@@ -8,9 +8,9 @@
 //   - One for a UPS module (e.g., UPS_Module_3S) that can power the Raspberry Pi 5.
 
 include <parameters.scad>
-include <chassis.scad>;
-use <head_mount.scad>;
-use <steering_system.scad>;
+include <chassis.scad>
+use <head_mount.scad>
+use <steering_system.scad>
 
 color("white") {
   translate([-(chassis_width / 2) - 26, -40, 0]) {
