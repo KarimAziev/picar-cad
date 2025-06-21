@@ -11,13 +11,19 @@
 include <parameters.scad>
 use <util.scad>;
 
-module ultrasonic_sensor_mounts(d=17, distance=9, center=true, h=10) {
-  x_offset = d / 2 + distance / 2;
+module ultrasonic_sensor_mounts(d=front_panel_ultrasonic_sensor_dia,
+                                distance=front_panel_ultrasonic_sensors_offset,
+                                center=true,
+                                h=10) {
+  rad = d / 2;
+
+  x_offset = rad + distance / 2;
+
   translate([-x_offset, 0, 0]) {
-    cylinder(h, r=d/2, $fn=360, center=center);
+    cylinder(h, r=rad, $fn=360, center=center);
   }
   translate([x_offset, 0, 0]) {
-    cylinder(h, r=d/2, $fn=360, center=center);
+    cylinder(h, r=rad, $fn=360, center=center);
   }
 }
 
@@ -41,20 +47,26 @@ module ultrasonic_slots() {
   }
 }
 
-module front_panel_base(w=front_panel_width, h=front_panel_height, thickness=2) {
+module front_panel_base(w=front_panel_width,
+                        h=front_panel_height,
+                        screws_x_offset=front_panel_screws_x_offset,
+                        thickness=2) {
   difference() {
     linear_extrude(thickness) {
-      rounded_rect(size=[w, h], r=5, center=true);
+      rounded_rect(size=[w, h], r=h * 0.18, center=true);
     }
 
-    two_x_screws_3d(-27, m3_hole_dia);
+    two_x_screws_3d(screws_x_offset, m3_hole_dia);
   }
 }
 
-module front_panel(w=front_panel_width, h=front_panel_height, thickness=1) {
+module front_panel(w=front_panel_width,
+                   h=front_panel_height,
+                   screws_x_offset=front_panel_screws_x_offset,
+                   thickness=2) {
   rotate([90, 180, 0]) {
     difference() {
-      front_panel_base();
+      front_panel_base(w, h, screws_x_offset, thickness);
       translate([0, -2, 0]) {
         ultrasonic_slots();
       }

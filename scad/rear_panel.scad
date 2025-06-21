@@ -2,7 +2,7 @@
 
 include <parameters.scad>
 
-module back_mount(size=back_wheel_size, tumbler_switch_dia = tumbler_switch_hole_dia, x_offsets = [-16, 16]) {
+module rear_panel(size=rear_panel_size, tumbler_switch_dia = rear_panel_switch_slot_dia, x_offsets = [-16, 16]) {
   difference() {
     cube(size = size, center = true);
     for (x = x_offsets) {
@@ -14,5 +14,5 @@ module back_mount(size=back_wheel_size, tumbler_switch_dia = tumbler_switch_hole
 }
 
 rotate([90, 0, 0]) {
-  back_mount();
+  rear_panel();
 }

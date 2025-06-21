@@ -13,10 +13,10 @@ module pan_servo_screws_2d(servo_screw_d = m2_hole_dia) {
 
 module pan_servo_cutout_2d() {
   translate([0, wheels_offset_y + 32, 0]) {
-    circle(r=pan_servo_hole_dia / 2, $fn=360);
+    circle(r=pan_servo_slot_dia / 2, $fn=360);
     servo_screw_d = m2_hole_dia;
     step = servo_screw_d + 0.5;
-    end = (chassis_width / 2) - pan_servo_hole_dia;
+    end = (chassis_width / 2) - pan_servo_slot_dia;
     servo_screws_x = number_sequence(from = -16, to = -6, step = step);
 
     pan_servo_screws_2d();

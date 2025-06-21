@@ -24,7 +24,7 @@ color("white") {
       steering_tie_rod();
     }
   }
-  // translate([chassis_width, 0, 0]) {
-  //   head_mount();
-  // }
+  translate([chassis_width / 2 + 38, 0, 0]) {
+    head_mount();
+  }
 }

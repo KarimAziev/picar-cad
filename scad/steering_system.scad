@@ -5,7 +5,7 @@
  *
  * - Mounting holes on the steering knuckles - for attaching components using
  *   R3065 rivets (the screw diameter is controlled by
- *   steering_wheel_screws_dia).
+ *   steering_knuckle_screws_dia).
  *
  * - Lower detachable steering link - a 2D profile is defined and then extruded
  *   to generate a 3D part. This link acts as a rigid beam joining both steering
@@ -28,6 +28,22 @@
 include <parameters.scad>
 use <util.scad>;
 
+// This module creates a cutout (slot) for the steering servo.
+module steering_servo_cutout_2d(size=[steering_servo_slot_width, steering_servo_slot_height],
+                                screws_dia=steering_servo_screw_dia,
+                                screws_offset=steering_servo_screws_offset) {
+  translate([(size[0] * 0.25) + 1, wheels_offset_y + 2, 0]) {
+    square([size[0], size[1]], center=true);
+    offst_x = (size[0] / 2 + screws_dia * 0.5) + screws_offset;
+
+    for (x = [-offst_x, offst_x]) {
+      translate([x, 0, 0]) {
+        circle(r=screws_dia * 0.5, $fn=360);
+      }
+    }
+  }
+}
+
 //  Creates the two mounting holes used for attaching the steering knuckle components.
 //  Two pairs of circular holes are generated with an X-offset relative to the wheel distance,
 //  based on a screw_offset and the defined screw diameter.
@@ -36,15 +52,15 @@ module steering_knuckle_mount_holes() {
   screw_offset = 4;
 
   for (x_offsets = [[-wheels_distance/2 + screw_offset,
-                     steering_wheel_screws_dia + line_w],
+                     steering_knuckle_screws_dia + line_w],
                     [wheels_distance/2 - screw_offset,
-                     -steering_wheel_screws_dia - line_w]]) {
+                     -steering_knuckle_screws_dia - line_w]]) {
     x1 = x_offsets[0];
     x2 = x_offsets[1];
     translate([x1, 0, 0]) {
-      circle(d=steering_wheel_screws_dia, $fn=360);
+      circle(d=steering_knuckle_screws_dia, $fn=360);
       translate([x2, 0, 0]) {
-        circle(d=steering_wheel_screws_dia, $fn=360);
+        circle(d=steering_knuckle_screws_dia, $fn=360);
       }
     }
   }
@@ -53,23 +69,23 @@ module steering_knuckle_mount_holes() {
 //  Generates a 2D shape of the lower detachable steering link.
 module steering_lower_link_detachable_2d() {
   difference() {
-    rounded_rect([wheels_distance, bottom_wheel_plate_width], r=bottom_wheel_plate_width/2, center=true);
+    rounded_rect([wheels_distance, steering_link_width], r=steering_link_width/2, center=true);
 
     neckline_width=wheels_distance / 1.8;
-    neckline_height=bottom_wheel_plate_width;
+    neckline_height=steering_link_width;
 
-    translate([0, -bottom_wheel_plate_width * 0.75, 0]) {
+    translate([0, -steering_link_width * 0.75, 0]) {
       rounded_rect([neckline_width, neckline_height], center=true);
     }
 
-    translate([0, bottom_wheel_plate_width * 0.2, 0]) {
-      rounded_rect([wheels_distance * 0.5, bottom_wheel_plate_width * 0.13], r=1, center=true);
+    translate([0, steering_link_width * 0.2, 0]) {
+      rounded_rect([wheels_distance * 0.5, steering_link_width * 0.13], r=1, center=true);
     }
 
     steering_knuckle_mount_holes();
 
     step = 10;
-    amount = floor(bottom_wheel_plate_width / step);
+    amount = floor(steering_link_width / step);
     cutoff_w = wheels_distance * 0.65;
 
     for (i = [0:amount-1]) {
@@ -101,10 +117,10 @@ module steering_upper_chassis_link(height=steering_upper_chassis_link_thickness)
       }
     }
     translate([-35, 0, 0]) {
-      cylinder(height, r1=bottom_wheel_plate_width/2, r2=bottom_wheel_plate_width/2);
+      cylinder(height, r1=steering_link_width / 2, r2=steering_link_width/2);
     }
     translate([35, 0, 0]) {
-      cylinder(height, r1=bottom_wheel_plate_width/2, r2=bottom_wheel_plate_width/2);
+      cylinder(height, r1=steering_link_width / 2, r2=steering_link_width/2);
     }
   }
 }
@@ -127,7 +143,7 @@ module steering_tie_rod(size=[wheels_distance, steering_tie_rod_width], height=2
 
 color("white") {
   steering_lower_link_detachable();
-  translate([0, bottom_wheel_plate_width, 0]) {
+  translate([0, steering_link_width, 0]) {
     steering_tie_rod();
   }
 }
