@@ -35,7 +35,6 @@ servo_dia                     = 8;
 side_panel_slot_width         = side_panel_width * 0.8;
 side_panel_slot_height        = 2;
 side_panel_slot_ypos          = [-9, +0.2];
-side_panel_hole_d             = 3;
 
 // Don't try to find a lot of sense in the calculations of the side panel polygon, this is an aesthetic choice.
 side_panel_top                = -side_panel_height * (4/15);
