@@ -1,12 +1,15 @@
 // front_panel.scad - Defines the front panel of the vehicle.
-//
+
 // This module includes:
-// - A base front panel with rounded corners and mount holes
-// - Slots for the HC-SR04 ultrasonic sensor, which is attached using
-// an R3090 rivet.
 //
-// Sensor: HC-SR04
-// Attachment: R3090 rivet
+//  - The main chassis-integrated front panel with integrated slots for mounting the HC-SR04 ultrasonic sensor.
+//  - A detachable back panel that secures the ultrasonic sensor from behind.
+//  - A separate sensor fixation detail which is secured using two R3090 rivets.
+//
+// Sensor and Attachment Information:
+//
+//  - Sensor: HC-SR04 ultrasonic sensor
+//  - Attachment Hardware: R3090 rivet
 
 include <parameters.scad>
 use <util.scad>
