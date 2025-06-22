@@ -8,23 +8,39 @@
 //   - One for a UPS module (e.g., UPS_Module_3S) that can power the Raspberry Pi 5.
 
 include <parameters.scad>
-include <chassis.scad>
+use <chassis.scad>
 use <head_mount.scad>
 use <steering_system.scad>
+use <front_panel.scad>
 
 color("white") {
-  translate([-(chassis_width / 2) - 26, -40, 0]) {
+  chassis_plate();
+  half_wheels_distance = wheels_distance * 0.5;
+
+  translate([-(chassis_width / 2) - (steering_link_width + steering_tie_rod_width + 4),
+             -half_wheels_distance,
+             0]) {
     rotate([0, 0, 90]) {
       steering_lower_link_detachable();
     }
   }
 
-  translate([-(chassis_width / 2) - 10, -40, 0]) {
+  translate([-(chassis_width / 2) - steering_tie_rod_width - 4,
+             -half_wheels_distance,
+             0]) {
     rotate([0, 0, 90]) {
       steering_tie_rod();
     }
   }
-  translate([chassis_width / 2 + 38, 0, 0]) {
+  translate([(chassis_width / 2 + head_plate_width * 0.5) + 6, 0, 0]) {
     head_mount();
+  }
+
+  translate([-(wheels_distance / 2) - front_panel_height * 0.5,
+             half_wheels_distance,
+             0]) {
+    rotate([0, 0, 90]) {
+      front_panel_back_mount();
+    }
   }
 }
