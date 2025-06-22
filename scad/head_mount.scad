@@ -2,88 +2,120 @@
 // It features a main mounting plate, connector plates, a back plate, and side panels with accurately placed holes for screws.
 // The head mount design assumes it will be attached via the side panel’s mounting hole on the servo assembly.
 // Detailed parameters control the dimensions and placement of each constituent element to ensure proper alignment and aesthetics.
+include <parameters.scad>
 use <util.scad>
 
-plate_width                   = 38;
-plate_height                  = 50;
-plate_thickness               = 2;
+plate_width               = 38;
+plate_height              = 50;
+plate_thickness           = 2;
 
-lens_width                    = 14;
-lens_height                   = 23;
+lens_width                = 14;
+lens_height               = 23;
 
-screw_offset_x                = 10.3;
-screw_offset_y                = -4.2;
-screw_offset_y_top            = 8.54;
-M2_dia                        = 2.4;
+camera_screw_offset_x     = 10.3;
+camera_screw_offset_y     = -4.2;
+camera_screw_offset_y_top = 8.54;
+camera_screw_dia          = m2_hole_dia;
 
-cam_center_offset             = 13;
-cam_centers                   = [[0, -cam_center_offset], [0, cam_center_offset]];
+cam_center_offset         = 13;
+cam_centers               = [[0, -cam_center_offset], [0, cam_center_offset]];
 
-back_plate_width              = plate_width * 0.9;
-back_plate_height             = plate_height/2;
+back_plate_width          = plate_width * 0.9;
+back_plate_height         = plate_height / 2;
 
-connector_width               = back_plate_width * 0.7;
-connector_height              = 4;
+upper_connector_width     = back_plate_width * 0.7;
+upper_connector_height    = 4;
 
-connector_plate_offset_bottom = plate_height/2 + 2;
-connector_plate_offset_top    = -(plate_height/2 + 2);
+lower_connector_width     = back_plate_width * 0.6;
+lower_connector_height    = 2;
 
-side_panel_height             = plate_height;
-side_panel_width              = plate_width * 1.2;
-servo_dia                     = 8;
+side_panel_height         = plate_height;
+side_panel_width          = plate_width * 1.2;
+servo_dia                 = 7;
 
-side_panel_slot_width         = side_panel_width * 0.8;
-side_panel_slot_height        = 2;
-side_panel_slot_ypos          = [-9, +0.2];
+side_panel_slot_width     = side_panel_width * 0.8;
+side_panel_slot_height    = 2;
+side_panel_slot_ypos      = [-9, +0.2];
 
 // Don't try to find a lot of sense in the calculations of the side panel polygon, this is an aesthetic choice.
-side_panel_top                = -side_panel_height * (4/15);
-side_panel_curve_start        = side_panel_width * (1/2.1);
-side_panel_notch_y            = -side_panel_height * (7/14.2);
-side_panel_bottom             = side_panel_height * (1/4.9);
-side_panel_curve_end          = side_panel_height * (3/4.0);
+side_panel_top            = -side_panel_height * (4/15);
+side_panel_curve_start    = side_panel_width * (1/2.1);
+side_panel_notch_y        = -side_panel_height * (7/14.2);
+side_panel_bottom         = side_panel_height * (1/4.9);
+side_panel_curve_end      = side_panel_height * (3/4.0);
 
-hole_offset                   = 4;
+hole_offset               = 4;
 
-hole_row_offsets              = [hole_offset * 2];
+hole_row_offsets          = [hole_offset * 2];
 
-x_positions                   = [side_panel_width * 0.25, side_panel_width * 0.5, side_panel_width * 0.75];
+x_positions               = [side_panel_width * 0.25, side_panel_width * 0.5, side_panel_width * 0.75];
 
-tilt_angle                    = atan2((-side_panel_curve_end) - (-side_panel_bottom),
-                                      side_panel_curve_start - side_panel_width);
-servo_screw_d                 = 1.5;
+tilt_angle                = atan2((-side_panel_curve_end) - (-side_panel_bottom),
+                                  side_panel_curve_start - side_panel_width);
+servo_screw_d             = 1.5;
 
-servo_hole_distances          = number_sequence(from=-17, to=13, step=2);
+servo_hole_distances      = number_sequence(from=-17, to=13, step=2);
 
 module main_plate() {
   difference() {
     cube([plate_width, plate_height, plate_thickness], center=true);
 
-    for (i = [0: len(cam_centers)-1]) {
+    for (i = [0: len(cam_centers) - 1]) {
       c = cam_centers[i];
 
       translate([c[0], c[1], 0]) {
-        cube([lens_width, lens_height, plate_thickness+0.1], center=true);
+        cube([lens_width, lens_height, plate_thickness + 0.1], center=true);
 
-        for (dx = [1, -1])
-          for (dy = [1, -1])
-            translate([dx * screw_offset_x, (dy == 1 ? screw_offset_y_top : screw_offset_y), 0]) {
-              cylinder(h = plate_thickness+0.1, r = M2_dia/2, center=true, $fn=50);
+        for (dx = [1, -1]) {
+          for (dy = [1, -1]) {
+            x = dx * camera_screw_offset_x;
+            y = dy == 1 ? camera_screw_offset_y_top : camera_screw_offset_y;
+            translate([x, y, 0]) {
+              cylinder(h = plate_thickness + 0.1,
+                       r = camera_screw_dia / 2,
+                       center=true,
+                       $fn=50);
             }
+          }
+        }
       }
     }
   }
 }
 
-module connector_plate(y_offset) {
-  translate([0, y_offset, 0]) {
-    cube([connector_width, connector_height, plate_thickness], center=true);
+module connector_plate_up(y_offset) {
+  y = plate_height / 2 + (upper_connector_height * 0.5);
+  translate([0, y, -plate_thickness * 0.48]) {
+    linear_extrude(height = plate_thickness) {
+      difference() {
+        square([upper_connector_width, upper_connector_height],
+               center=true);
+        d = upper_connector_height * 0.5;
+        translate([0, -d * 0.55, 0]) {
+          circle(d=d, $fn=60);
+        }
+      }
+    }
+  }
+}
+
+module connector_plate_down() {
+  y_offst = -(plate_height * 0.5);
+  translate([0, y_offst, -plate_thickness / 2]) {
+    linear_extrude(height = plate_thickness) {
+      difference() {
+        rounded_rect([lower_connector_width, lower_connector_height], r=lower_connector_height / 2, center=true);
+        translate([0, (lower_connector_height * 0.5)]) {
+          square([lower_connector_width, lower_connector_height], center = true);
+        }
+      }
+    }
   }
 }
 
 module back_plate_geometry() {
   difference() {
-    translate([-back_plate_width/2, -back_plate_height, -1]) {
+    translate([-back_plate_width / 2, -back_plate_height, 0]) {
       cube([back_plate_width, back_plate_height, plate_thickness], center = false);
     }
 
@@ -97,7 +129,7 @@ module back_plate_geometry() {
     for (center_y = slot_centers) {
       translate([0, center_y, 0]) {
         translate([-slot_width/2, 0, -1.1]) {
-          cube([slot_width, slot_height, plate_thickness+0.2], center=false);
+          cube([slot_width, slot_height, plate_thickness+upper_connector_height * 0.5], center=false);
         }
       }
     }
@@ -107,13 +139,13 @@ module back_plate_geometry() {
 
     for (cc = [-8, 0, 8])
       translate([cc, -back_plate_height/3, 0]) {
-        cylinder(h = plate_thickness+0.2, r = circle_rad, center=true, $fn=50);
+        cylinder(h = plate_thickness + upper_connector_height * 0.5, r = circle_rad, center=true, $fn=50);
       }
   }
 }
 
 module back_plate() {
-  translate([0, plate_height/2 + 4, 0]) {
+  translate([0, back_plate_height + upper_connector_height, plate_thickness / 2]) {
     rotate([90, 0, 0]) {
       back_plate_geometry();
     }
@@ -199,8 +231,8 @@ module head_mount() {
   rotate([0, 180, 0]) {
     union() {
       main_plate();
-      connector_plate(connector_plate_offset_bottom);
-      connector_plate(connector_plate_offset_top);
+      connector_plate_up();
+      connector_plate_down();
       back_plate();
       side_panel(true);
       side_panel(false);
