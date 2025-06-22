@@ -21,6 +21,18 @@
  *   the side openings align with the mounting holes to transfer the servo turn
  *   to a movement in the knuckles.
  *
+ * - Knuckle: the steering knuckle for the front wheels. The knuckle is a printed part and
+ *   you must print two identical knuckle components. Each knuckle is used to connect the wheel to both
+ *   the tie rod and the steering links.
+ *
+ *   Mounting:
+ *     - Each knuckle is mounted to the wheel using R3065 rivets. The rivet hole diameter is defined by
+ *       the parameter steering_knuckle_screws_dia (modify this value if you switch to a different fastener).
+ *     - The knuckle also provides mounting features for the tie rod and links, creating the mechanical
+ *       connection for the steering system.
+ *
+ *
+ *
  * Note:
  *   - Custom parameters are imported from parameters.scad.
  */
@@ -141,9 +153,118 @@ module steering_tie_rod(size=[wheels_distance, steering_tie_rod_width], height=2
   }
 }
 
+module knuckle_wheel_connector(w=steering_knuckle_width, h=steering_knuckle_lower_height, thickness=steering_knuckle_thickness) {
+  linear_extrude(thickness) {
+    union() {
+      difference() {
+        // rounded_rect(size = [w, h], r = h * 0.2, center = true);
+        square(size = [w, h], center = true);;
+        circle(r = steering_knuckle_screws_dia * 0.5, $fn=360);
+      }
+      translate([-w * 0.5, steering_knuckle_upper_height * 0.5, 0]) {
+        knuckle_upper_pan();
+      }
+    }
+  }
+}
+
+module knuckle_upper_pan(w=steering_knuckle_width * 0.5, h=steering_knuckle_upper_height, fillet_r = 0.4) {
+  pts = [[0, 0],
+         [0, h * 0.8],
+         [w * 0.05, h * 0.8],
+         [w * 0.35, h],
+         [w, h],
+         [w, h * 0.5],
+         [w, 0],];
+
+  difference() {
+    offset(r = fillet_r, chamfer = false) {
+      offset(r = -fillet_r, chamfer = false) {
+        polygon(points = pts);
+      }
+    }
+  }
+}
+
+module knuckle_upper_connector(w=steering_knuckle_width * 0.5, h=steering_knuckle_upper_height, fillet_r = 0.4) {
+  pts = [[0, 0],
+         [0, h * 0.8],
+         [w * 0.05, h * 0.8],
+         [w * 0.35, h],
+         [w, h],
+         [w, h * 0.5],
+         [w, 0],];
+
+  difference() {
+    offset(r = fillet_r, chamfer = false) {
+      offset(r = -fillet_r, chamfer = false) {
+        polygon(points = pts);
+      }
+    }
+  }
+}
+
+module knuckle_inner_side(w=steering_knuckle_side_width,
+                          h=steering_knuckle_lower_height,
+                          side_offset=steering_knuckle_side_hole_offset,
+                          thickness=steering_knuckle_thickness) {
+  linear_extrude(height = thickness) {
+    difference() {
+      rounded_rect(size = [w, h], r = h * 0.1, center = true);
+
+      translate([steering_knuckle_side_hole_offset, 0, 0]) {
+        circle(r = steering_knuckle_screws_dia * 0.5, $fn=360);
+      }
+    }
+  }
+}
+
+module knuckle() {
+  rotate([180, 0, 0]) {
+    union() {
+      knuckle_wheel_connector();
+
+      half_knuckle_w = steering_knuckle_width * 0.5;
+      z_offset = -steering_knuckle_side_width * 0.5 + steering_knuckle_thickness;
+
+      translate([half_knuckle_w, 0, z_offset]) {
+        rotate([0, 90, 0]) {
+          union() {
+            knuckle_inner_side();
+          }
+        }
+      }
+
+      translate([-half_knuckle_w, steering_knuckle_upper_height * 0.5, z_offset]) {
+        rotate([0, 90, 0]) {
+          knuckle_inner_side(h=steering_knuckle_lower_height + steering_knuckle_upper_height);
+        }
+      }
+
+      inner_h = steering_knuckle_upper_height * 0.9;
+      translate([0, steering_knuckle_upper_height + steering_knuckle_upper_height * 0.1, z_offset]) {
+        rotate([0, 90, 0]) {
+          knuckle_inner_side(h=inner_h);
+        }
+      }
+    }
+  }
+}
+
 color("white") {
   steering_lower_link_detachable();
   translate([0, steering_link_width, 0]) {
     steering_tie_rod();
+  }
+
+  translate([0, steering_knuckle_lower_height + steering_knuckle_upper_height + steering_link_width, 0]) {
+    union() {
+      translate([-steering_knuckle_width, 0, 0]) {
+        knuckle();
+      }
+      translate([steering_knuckle_width, 0, 0]) {
+        knuckle();
+      }
+    }
   }
 }

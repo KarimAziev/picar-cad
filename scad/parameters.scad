@@ -39,10 +39,18 @@ steering_servo_screw_dia              = 2;    // diameter of the fastening screw
 steering_servo_screws_offset          = 1.4;  // offset between the servo slot and the fastening screws
 
 steering_link_width                   = 13;
-steering_knuckle_screws_dia           = 3.5; // diameter of R3065 Rivet
 steering_tie_rod_center_screw_d       = 1.5;
 steering_tie_rod_width                = 6;
 steering_upper_chassis_link_thickness = 2;
+
+// Knuckle
+steering_knuckle_screws_dia           = 3.5; // Diameter of the R3065 Rivet used for mounting.
+steering_knuckle_width                = 20;  // Overall width of the knuckle.
+steering_knuckle_lower_height         = 15;  // Height of the lower part of the knuckle.
+steering_knuckle_upper_height         = 8;   // Height of the upper part of the knuckle.
+steering_knuckle_side_width           = 13;  // Width of the side feature of the knuckle.
+steering_knuckle_side_hole_offset     = 2;   // Offset for positioning side mounting holes.
+steering_knuckle_thickness            = 1;   // Thickness of the knuckle walls.
 
 pan_servo_slot_dia                    = 7;    // diameter of the pan servo mounting hole at the front of the chassis
 
