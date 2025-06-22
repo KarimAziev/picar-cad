@@ -50,6 +50,15 @@ module ultrasonic_slots() {
   }
 }
 
+module ultrasonic_screws_2d(size=[42.5, 17.5], d=m1_hole_dia) {
+  y_offsets = number_sequence(from = 0, to = 4, step = m1_hole_dia + 0.4);
+  for (y = y_offsets) {
+    translate([0, -y, 0]) {
+      four_corner_holes_2d(size=size, center=true, hole_dia=d);
+    }
+  }
+}
+
 module front_panel(w=front_panel_width,
                    h=front_panel_height,
                    screws_x_offset=front_panel_screws_x_offset,
@@ -57,12 +66,16 @@ module front_panel(w=front_panel_width,
   rotate([90, 180, 0]) {
     difference() {
       linear_extrude(thickness) {
-        rounded_rect(size=[w, h], r=h * 0.18, center=true);
+        difference() {
+          rounded_rect(size=[w, h], r=h * 0.18, center=true);
+          ultrasonic_screws_2d();
+        }
       }
 
       translate([0, -1, 0]) {
         two_x_screws_3d(screws_x_offset, m3_hole_dia);
       }
+
       translate([0, -2, 0]) {
         ultrasonic_slots();
       }
@@ -87,6 +100,8 @@ module front_panel_back_mount(w=front_panel_width,
       }
       four_corner_holes_2d(size=screws_square_size, center=true,
                            hole_dia=screws_square_dia);
+
+      ultrasonic_screws_2d();
     }
   }
 }

@@ -1,6 +1,7 @@
 
 // This module defines a robot parameters
 
+m1_hole_dia                           = 1.2; // M1 screw hole diameter
 m2_hole_dia                           = 2.4; // M2 screw hole diameter
 m25_hole_dia                          = 2.8; // M2.5 screw hole diameter
 m3_hole_dia                           = 3.2; // M3 screw hole diameter
