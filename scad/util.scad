@@ -169,3 +169,14 @@ module two_x_screws_3d(x=0, d=2.4, center=true, h=10) {
     }
   }
 }
+module two_x_screws_2d(x=0, d=2.4) {
+  translate([x, 0, 0]) {
+    circle(r = d / 2, $fn=360);
+  }
+
+  mirror([1, 0, 0]) {
+    translate([x, 0, 0]) {
+      circle(r = d / 2, $fn=360);
+    }
+  }
+}
