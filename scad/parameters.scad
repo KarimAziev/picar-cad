@@ -93,3 +93,12 @@ battery_screws_center_size            = [0, 20];  // [width, height] of the cent
 // Screw hole parameters for center battery holders
 battery_screws_center_dia             = m2_hole_dia;  // Diameter of the screw holes (uses same m2_hole_dia)
 battery_screws_center_fn_val          = 360;  // Number of fragments for rendering circle (defines resolution)
+
+// head
+head_plate_width                      = 38;
+head_plate_height                     = 50;
+head_plate_thickness                  = 2;
+
+// head camera
+head_camera_lens_width                = 14;
+head_camera_lens_height               = 23;
