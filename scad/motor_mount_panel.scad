@@ -19,13 +19,11 @@ module motor_mount_connector(size=[motor_mount_panel_width * 0.8, 5], thickness=
 }
 
 module rear_motor_mount_3d(height=motor_mount_panel_thickness) {
-  difference() {
-    linear_extrude(height=height) {
+  linear_extrude(height=height) {
+    difference() {
       rounded_rect([motor_mount_panel_width, motor_mount_panel_height], 1, center=true);
-    }
-    translate([0, 1, -1]) {
-      linear_extrude(height = height + 2) {
-        offst = 9;
+      offst = 9;
+      translate([0, 0, -1]) {
         for (y = [-offst, offst]) {
           translate([0, y, 0]) {
             circle(r = m3_hole_dia / 2, $fn = 360);
