@@ -180,3 +180,70 @@ module two_x_screws_2d(x=0, d=2.4) {
     }
   }
 }
+
+// Creates an isosceles trapezoid.
+module trapezoid(b = 20, t = 10, h = 15, center = false) {
+  m = (b - t) / 2;
+
+  pts = [[0, 0],
+         [b, 0],
+         [b - m, h],
+         [m, h]];
+
+  polygon(points = center ?
+          [for (p = pts) [p[0] - b/2, p[1] - h/2]] :
+          pts);
+}
+
+// Creates an isosceles trapezoid with rounded corners
+module trapezoid_rounded(b = 20, t = 10, h = 15, r = 2, center = false) {
+  m = (b - t) / 2;
+
+  pts = [[0, 0],
+         [b, 0],
+         [b - m, h],
+         [m, h]];
+
+  offset(r = r, chamfer = false)
+    offset(r = -r, chamfer = false)
+    polygon(points = center ? [for (p = pts) [p[0] - b/2, p[1] - h/2]] : pts);
+}
+
+module rounded_rect_two(size, r=5, center=false, segments=10) {
+  w = size[0];
+  h = size[1];
+  offst = center ? [-w/2, -h/2] : [0, 0];
+
+  pts_bottom = [[0, 0], [w, 0]];
+  pts_right = [[w, 0], [w, h - r]];
+  arc_top_right = [for (i = [1 : segments])
+      let (a = i * (90 / segments))
+        [(w - r) + r * cos(a), (h - r) + r * sin(a)]];
+  pts_top_edge = [[w - r, h], [r, h]];
+
+  arc_top_left = [for (i = [1 : segments])
+      let (a = 90 + i * (90 / segments))
+        [r + r * cos(a), (h - r) + r * sin(a)]];
+
+  pts_left = [[0, h - r], [0, 0]];
+
+  pts = concat(pts_bottom, pts_right, arc_top_right, pts_top_edge, arc_top_left, pts_left);
+
+  translate(offst)
+    polygon(points = pts);
+}
+
+module cylinder_cutted(h=10, r=5, cutted_w = 1) {
+  difference() {
+    cylinder(h = h, r = r, center = true);
+
+    y = h + 1;
+    d = r * 2;
+    translate([d - cutted_w * 0.5, 0, 0]) {
+      cube([d, d, h + 1], center=true);
+    }
+    translate([-d + cutted_w * 0.5, 0, 0]) {
+      cube([d, d, h + 1], center=true);
+    }
+  }
+}

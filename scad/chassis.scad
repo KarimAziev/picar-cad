@@ -15,10 +15,11 @@
 include <parameters.scad>
 use <util.scad>
 use <front_panel.scad>
-use <steering_system.scad>
 use <rear_panel.scad>
 use <pan_servo.scad>
 use <motor_mount_panel.scad>
+use <steering_system/chassis_servo_slot.scad>
+use <steering_system/steering_chassis_upper_link.scad>
 
 module raspberry_pi5_screws() {
   four_corner_holes(size = raspberry_pi5_screws_size,
@@ -61,16 +62,16 @@ module battery_holders_screws_2d(x_offst=extra_battery_screws_x_offset) {
       }
     }
 
-    for (y = number_sequence(from=battery_screws_center_y_offset_start,
-                             to=battery_screws_center_y_offset_end,
-                             step=battery_screws_center_y_step)) {
-      translate([0, y, 0]) {
-        four_corner_holes_2d(size = battery_screws_center_size,
-                             center = true,
-                             hole_dia = battery_screws_center_dia,
-                             fn_val = battery_screws_center_fn_val);
-      }
-    }
+    // for (y = number_sequence(from=battery_screws_center_y_offset_start,
+    //                          to=battery_screws_center_y_offset_end,
+    //                          step=battery_screws_center_y_step)) {
+    //   translate([0, y, 0]) {
+    //     four_corner_holes_2d(size = battery_screws_center_size,
+    //                          center = true,
+    //                          hole_dia = battery_screws_center_dia,
+    //                          fn_val = battery_screws_center_fn_val);
+    //   }
+    // }
   }
 }
 
@@ -132,11 +133,12 @@ module chassis_shape_cutouts() {
 }
 
 module chassis_extra_cutouts_2d() {
-  translate([0, 61/235 * chassis_len, 0]) {
-    square([30/100 * chassis_width, 7/235 * chassis_len], center=true);
-  }
-  translate([0, 50/235 * chassis_len, 0]) {
-    square([30/100 * chassis_width, 10/235 * chassis_len], center=true);
+  translate([0, 50/600 * chassis_len, 0]) {
+    y = 10/235 * chassis_len;
+    square([30/100 * chassis_width, y], center=true);
+    translate([0, y, 0]) {
+      square([30/100 * chassis_width, 7/235 * chassis_len], center=true);
+    }
   }
 
   chassis_shape_cutouts();
@@ -168,11 +170,11 @@ module chassis_front_cutout_2d() {
       circle(r = 35);
     }
   }
-  for (x = [chassis_width, -chassis_width]) {
-    translate([x * 0.5, chassis_len * 0.4, 0]) {
-      rounded_rect(size=[80, 4], r=2, center=true);
-    }
-  }
+  // for (x = [chassis_width, -chassis_width]) {
+  //   translate([x * 0.5, chassis_len * 0.4, 0]) {
+  //     rounded_rect(size=[80, 4], r=2, center=true);
+  //   }
+  // }
 }
 
 module chassis_base_2d() {
@@ -192,7 +194,10 @@ module chassis_base_3d() {
   linear_extrude(chassis_thickness, center = false) {
     difference() {
       chassis_base_2d();
-      steering_servo_cutout_2d();
+      translate([0, -30, 0]) {
+        steering_servo_cutout_2d();
+      }
+
       pan_servo_cutout_2d();
     }
   }

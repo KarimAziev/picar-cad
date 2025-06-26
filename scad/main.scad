@@ -1,43 +1,54 @@
-// This file arranges all robot parts on the printer’s build plate for fabrication.
-// It assembles a robot chassis with a four-wheeled configuration:
-//   - The front wheels are steered via a servo mechanism.
-//   - The rear wheels are driven by two motors.
-// In addition, the design prioritizes mounting options for multiple independent power modules - for example:
-//   - One for the servo HAT,
-//   - One for the motor driver HAT, and
-//   - One for a UPS module (e.g., UPS_Module_3S) that can power the Raspberry Pi 5.
+/* Module: Robot Build Plate Arrangement
+
+   This file arranges all robot parts on the printer’s build plate for fabrication.
+
+   It assembles a robot chassis with a four-wheeled configuration:
+   - The front wheels are steered via a servo mechanism.
+   - The rear wheels are driven by two motors.
+
+   In addition, the design prioritizes mounting options for multiple independent power modules - for example:
+   - One for the servo HAT,
+   - One for the motor driver HAT, and
+   - One for a UPS module (e.g., UPS_Module_3S) that can power the Raspberry Pi 5.
+
+   Author: Karim Aziiev <karim.aziiev@gmail.com>
+   License: GPL-3.0-or-later
+*/
 
 include <parameters.scad>
 use <chassis.scad>
 use <head_mount.scad>
-use <steering_system.scad>
+use <head_neck_mount.scad>
+use <steering_system/ackermann.scad>
+use <steering_system/knuckle.scad>
 use <front_panel.scad>
 
 color("white") {
   chassis_plate();
   half_wheels_distance = wheels_distance * 0.5;
 
-  translate([-(chassis_width / 2) - (steering_link_width + steering_tie_rod_width + 4),
-             -half_wheels_distance,
-             0]) {
+  translate([-(chassis_width / 2) - steering_link_width,
+             chassis_len * 0.5 - steering_long_linkage_len - steering_short_linkage_len, 0]) {
     rotate([0, 0, 90]) {
-      steering_lower_link_detachable();
+      ackermann_print_plate();
     }
   }
 
-  translate([-(chassis_width / 2) - steering_tie_rod_width - 4,
-             -half_wheels_distance,
-             0]) {
-    rotate([0, 0, 90]) {
-      steering_tie_rod();
-    }
-  }
   translate([(chassis_width / 2 + head_plate_width * 0.5) + 6, 0, 0]) {
     head_mount();
+    translate([0, -head_plate_height, 0]) {
+      head_neck_mount();
+    }
+  }
+
+  translate([chassis_width / 2 + steering_knuckle_width * 2,
+             -chassis_len * 0.5 + steering_knuckle_width * 2,
+             0]) {
+    knuckles_print_plate();
   }
 
   translate([-(wheels_distance / 2) - front_panel_height * 0.5,
-             half_wheels_distance,
+             chassis_len * 0.5 - front_panel_width * 0.5,
              0]) {
     rotate([0, 0, 90]) {
       front_panel_back_mount();

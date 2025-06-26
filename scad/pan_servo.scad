@@ -12,7 +12,7 @@ module pan_servo_screws_2d(servo_screw_d = m2_hole_dia) {
 }
 
 module pan_servo_cutout_2d() {
-  translate([0, wheels_offset_y + 32, 0]) {
+  translate([0, wheels_offset_y + pan_servo_wheels_y_offset, 0]) {
     circle(r=pan_servo_slot_dia / 2, $fn=360);
     servo_screw_d = m2_hole_dia;
     step = servo_screw_d + 0.5;
@@ -24,14 +24,18 @@ module pan_servo_cutout_2d() {
       pan_servo_screws_2d();
     }
 
+    translate([0, 20, 0]) {
+      square([20, 5], center = true);
+    }
+
     translate([0, 10, 0]) {
-      square([10, 5], center = true);
+      square([30, 5], center = true);
     }
     translate([0, -10, 0]) {
-      square([10, 5], center = true);
+      square([30, 5], center = true);
     }
     translate([0, -18, 0]) {
-      square([10, 5], center = true);
+      square([30, 5], center = true);
     }
   }
 }
