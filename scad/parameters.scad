@@ -48,16 +48,16 @@ steering_upper_chassis_link_thickness  = 2;
 steering_linkage_connector_len         = 30;
 
 steering_linkage_connector_height      = steering_tie_rod_width;
-steering_linkage_connector_bracket_len = 20;
+steering_linkage_connector_bracket_len = 25;
 steering_long_linkage_len              = wheels_distance - steering_linkage_connector_bracket_len - 10;
 steering_short_linkage_len             = steering_long_linkage_len * 0.8;
 
 // Knuckle
 front_wheel_knuckle_dia                = r4120_dia; // Diameter of screws for knuckle and front wheel
 steering_knuckle_screws_dia            = r3065_dia; // Diameter of screws for knuckle and linkage
-steering_knuckle_width                 = 20;  // Overall width of the knuckle.
-steering_knuckle_lower_height          = 20;  // Height of the lower part of the knuckle.
-steering_knuckle_upper_height          = 10;   // Height of the upper part of the knuckle.
+steering_knuckle_width                 = 22;  // Overall width of the knuckle.
+steering_knuckle_lower_height          = 15;  // Height of the lower part of the knuckle.
+steering_knuckle_upper_height          = 8;   // Height of the upper part of the knuckle.
 steering_knuckle_side_width            = 13;  // Width of the side feature of the knuckle.
 steering_knuckle_side_hole_offset      = 2;   // Offset for positioning side mounting holes.
 steering_knuckle_thickness             = 2;   // Thickness of the knuckle walls.
