@@ -1,17 +1,23 @@
-// This module defines a robot chassis designed for a four-wheeled vehicle.
-// The front wheels are controlled by servo steering while the rear wheels are powered by two separate motors.
-
-// Key design features include:++
-//   - A top plate with cutouts for a Raspberry Pi 5 and a UPS Module 3S
-//     (refer to: https://www.waveshare.com/wiki/UPS_Module_3S),
-//   - A bottom plate with openings for standard battery holders (accommodating two 18650 LiPo batteries),
-//   - Back plate provisions with holes for mounting two switch buttons (tumblers).
-//
-// The overall design focuses on providing flexible mounting options for separate power suppliers, such as:
-//   - A power supply for the servo HAT,
-//   - A power supply for the motor driver HAT, and
-//   - A power module for the Raspberry Pi 5 itself.
-
+/**
+ * Module: a robot chassis
+ *
+ * This module defines a robot chassis designed for a four-wheeled vehicle.
+ * The front wheels are controlled by servo steering while the rear wheels are powered by two separate motors.
+ *
+ * Key design features include:++
+ *   - A top plate with cutouts for a Raspberry Pi 5 and a UPS Module 3S
+ *     (refer to: https://www.waveshare.com/wiki/UPS_Module_3S),
+ *   - A bottom plate with openings for standard battery holders (accommodating two 18650 LiPo batteries),
+ *   - Back plate provisions with holes for mounting two switch buttons (tumblers).
+ *
+ * The overall design focuses on providing flexible mounting options for separate power suppliers, such as:
+ *   - A power supply for the servo HAT,
+ *   - A power supply for the motor driver HAT, and
+ *   - A power module for the Raspberry Pi 5 itself.
+ *
+ * Author: Karim Aziiev <karim.aziiev@gmail.com>
+ * License: GPL-3.0-or-later
+ */
 include <parameters.scad>
 use <util.scad>
 use <front_panel.scad>

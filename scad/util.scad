@@ -1,10 +1,17 @@
-// This file provides several utility modules that simplify common geometric constructions
-// throughout the design. It includes helper modules to create:
-//   - Dotted lines (both along the X and Y directions),
-//   - Rounded rectangles,
-//   - Debugging visualizations for polygons (with numbered vertices and directional arrows),
-//   - Cubes with corner holes, and
-//   - Common four-corner hole patterns.
+/**
+ * Module: Utility modules that simplify common geometric constructions.
+ *
+ * This file provides several utility modules that simplify common geometric constructions
+ * throughout the design. It includes helper modules to create:
+ *   - Dotted lines (both along the X and Y directions),
+ *   - Rounded rectangles,
+ *   - Debugging visualizations for polygons (with numbered vertices and directional arrows),
+ *   - Cubes with corner holes, and
+ *   - Common four-corner hole patterns.
+ *
+ * Author: Karim Aziiev <karim.aziiev@gmail.com>
+ * License: GPL-3.0-or-later
+ */
 
 module dotted_lines_fill_y(y_length, starts, y_offset, r) {
   step = y_offset + 2*r;

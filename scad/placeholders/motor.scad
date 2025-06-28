@@ -1,3 +1,10 @@
+/**
+ * Module: A dummy mockup of the motor.
+ *
+ * Author: Karim Aziiev <karim.aziiev@gmail.com>
+ * License: GPL-3.0-or-later
+ */
+
 include <../parameters.scad>
 use <../util.scad>
 

@@ -1,13 +1,20 @@
-// motor_mount_panel.scad - Defines the rear motor mount and connecting wall structure for the vehicle's chassis.
-//
-// This module includes:
-// - Rear wheel motor mount with screw holes for M3 fasteners
-// - A 3D extruded version of the mount panel with rounded corners
-// - A connector to attach the motor mount to the main chassis wall
-//
-// Components:
-// - Motor and rear wheel assembly
-// - Attachments using M3 screws
+/**
+ * Module: The front panel of the vehicle.
+ *
+ * This module includes:
+ *
+ *  - The main chassis-integrated front panel with integrated slots for mounting the HC-SR04 ultrasonic sensor.
+ *  - A detachable back panel that secures the ultrasonic sensor from behind.
+ *  - A separate sensor fixation detail which is secured using two R3090 rivets.
+ *
+ * Sensor and Attachment Information:
+ *
+ *  - Sensor: HC-SR04 ultrasonic sensor
+ *  - Attachment Hardware: R3090 rivet
+ *
+ * Author: Karim Aziiev <karim.aziiev@gmail.com>
+ * License: GPL-3.0-or-later
+ */
 
 include <parameters.scad>
 use <util.scad>

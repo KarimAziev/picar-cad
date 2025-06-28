@@ -1,3 +1,9 @@
+/**
+ * Module: Front and rear wheels without tires.
+ *
+ * Author: Karim Aziiev <karim.aziiev@gmail.com>
+ * License: GPL-3.0-or-later
+ */
 include <../parameters.scad>
 use <../util.scad>
 
@@ -140,8 +146,17 @@ module wheel(w = 22, d = 52, is_rear=true, thickness = 1.5, rim_h = 1, rim_w = 0
   }
 }
 
-module front_wheel(w = 22, d = 52, is_rear=true, thickness = 1.5, rim_h = 1, rim_w = 0.4, rim_bend = 0.5) {
-  wheel(w=w,d=d, thickness=thickness, rim_h=rim_h, rim_w=rim_w, rim_bend=rim_bend, is_rear=false);
+module front_wheel(w = 22, d = 52,
+                   thickness = 1.5,
+                   rim_h = 1,
+                   rim_w = 0.4,
+                   rim_bend = 0.5) {
+  wheel(w=w,d=d,
+        thickness=thickness,
+        rim_h=rim_h,
+        rim_w=rim_w,
+        rim_bend=rim_bend,
+        is_rear=false);
 }
 
 module front_shaft(shaft_d=5.4, solid_d=3.7, tolerance=0.3) {
@@ -150,6 +165,8 @@ module front_shaft(shaft_d=5.4, solid_d=3.7, tolerance=0.3) {
   }
 }
 
-color("white") {
-  front_wheel(w=20);
+union() {
+  color("white") {
+    wheel(w=24);
+  }
 }

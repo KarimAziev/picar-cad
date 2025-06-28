@@ -1,14 +1,22 @@
-// This file shows the complete 3D assembled model for demonstration purposes.
+/**
+ * Module: Assembly view.
+ *
+ * The module shows the complete 3D assembled model for demonstration purposes.
+ *
+ * Author: Karim Aziiev <karim.aziiev@gmail.com>
+ * License: GPL-3.0-or-later
+ */
 
 include <parameters.scad>
-use <head_mount.scad>
+use <head/head_assembly.scad>
+use <head/head_mount.scad>
+use <head/head_neck_mount.scad>
 use <chassis.scad>
 use <steering_system/ackermann.scad>
 use <steering_system/knuckle.scad>
 use <steering_system/ackermann_assembly.scad>
 use <placeholders/motor.scad>
 use <placeholders/wheel.scad>
-use <head_neck_mount.scad>
 
 module motor_right() {
   translate([-9, 15, -14]) {
@@ -56,14 +64,9 @@ union() {
 
   translate([0, wheels_offset_y + pan_servo_wheels_y_offset - cam_pan_servo_slot_height * 0.5 - 1,
              chassis_thickness]) {
-    rotate([0, 0, 90]) {
-      head_neck_assembly();
-    }
-    translate([pan_servo_extra_h * 0.01, 29.8, 38.5]) {
-      rotate([90, 0, 0]) {
-        color("white") {
-          head_mount();
-        }
+    translate([-2, 7.4, 25.9]) {
+      rotate([0, 0, 180]) {
+        head_assembly();
       }
     }
   }

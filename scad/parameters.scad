@@ -48,7 +48,7 @@ steering_upper_chassis_link_thickness  = 2;
 steering_linkage_connector_len         = 30;
 
 steering_linkage_connector_height      = steering_tie_rod_width;
-steering_linkage_connector_bracket_len = 25;
+steering_linkage_connector_bracket_len = 22;
 steering_long_linkage_len              = wheels_distance - steering_linkage_connector_bracket_len - 10;
 steering_short_linkage_len             = steering_long_linkage_len * 0.8;
 
@@ -120,9 +120,23 @@ head_plate_width                       = 38;
 head_plate_height                      = 50;
 head_plate_thickness                   = 2;
 
+head_side_panel_height                 = head_plate_height;
+head_side_panel_width                  = head_plate_width * 1.2;
+// the diameter of the side hole for mounting servo
+head_servo_mount_dia                   = 7;
+// the diameter of the screws for servo. They are placed around the side hole for mounting servo
+head_servo_screw_dia                   = 1.5;
+
+head_upper_plate_width                 = head_plate_width * 0.9;
+head_upper_plate_height                = head_plate_height / 2;
+
 // head camera
 head_camera_lens_width                 = 14;
 head_camera_lens_height                = 23;
+camera_screw_offset_x                  = 10.3;
+camera_screw_offset_y                  = -4.2;
+camera_screw_offset_y_top              = 8.54;
+camera_screw_dia                       = m2_hole_dia;
 
 cam_pan_servo_slot_width               = 24;
 cam_pan_servo_slot_height              = 12;
@@ -137,6 +151,8 @@ cam_tilt_servo_screw_dia               = 2;
 cam_tilt_servo_screws_offset           = 0.6;
 cam_tilt_servo_slot_thickness          = 2;
 cam_tilt_servo_height                  = 20;
+cam_tilt_servo_extra_w                 = 4;
+cam_tilt_servo_extra_h                 = 2;
 
 pan_servo_extra_h                      = 14;
 pan_servo_extra_w                      = 4;

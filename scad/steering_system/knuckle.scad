@@ -117,12 +117,12 @@ module knuckle_right() {
 
 // Produces a print plate that includes both left and right knuckles for
 // simultaneous printing.
-module knuckles_print_plate() {
+module knuckles_print_plate(offst=5) {
   union() {
-    translate([(-steering_knuckle_upper_height - steering_knuckle_lower_height) * 0.5, 0, 0]) {
+    translate([-steering_knuckle_width * 0.5 - offst, 0, 0]) {
       knuckle_left();
     }
-    translate([(steering_knuckle_upper_height + steering_knuckle_lower_height) * 0.5, 0, 0]) {
+    translate([steering_knuckle_width * 0.5 + offst, 0, 0]) {
       knuckle_right();
     }
   }

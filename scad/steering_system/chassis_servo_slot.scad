@@ -29,3 +29,5 @@ module steering_servo_cutout_2d(size=[steering_servo_slot_width, steering_servo_
     }
   }
 }
+
+steering_servo_cutout_2d();

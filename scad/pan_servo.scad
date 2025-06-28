@@ -1,4 +1,9 @@
-// This module defines a slot for pan servo
+/**
+ * Module: A slot for pan servo
+ *
+ * Author: Karim Aziiev <karim.aziiev@gmail.com>
+ * License: GPL-3.0-or-later
+ */
 
 include <parameters.scad>
 use <util.scad>

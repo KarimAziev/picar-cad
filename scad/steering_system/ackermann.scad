@@ -26,7 +26,8 @@ use <steering_lower_link_detachable.scad>
 //     - One central hole intended for the servo horn,
 //     - Two side holes that connect to the long linkage, forming the trapezoid
 //       of the Ackermann steering linkage.
-module ackermann_steering_linkage_short(size=[steering_short_linkage_len, steering_tie_rod_width],
+module ackermann_steering_linkage_short(size=[steering_short_linkage_len,
+                                              steering_tie_rod_width],
                                         center_screw_dia=steering_tie_rod_center_screw_d,
                                         thickness=2) {
   linear_extrude(thickness, center=true) {
@@ -40,7 +41,8 @@ module ackermann_steering_linkage_short(size=[steering_short_linkage_len, steeri
 
 //   Creates a long linkage piece for the Ackermann steering mechanism,
 //   featuring a rounded rectangular shape with mounting holes.
-module ackermann_steering_linkage_long(size=[steering_long_linkage_len, steering_tie_rod_width],
+module ackermann_steering_linkage_long(size=[steering_long_linkage_len,
+                                             steering_tie_rod_width],
                                        thickness=2) {
   linear_extrude(thickness, center=true) {
     difference() {
@@ -128,7 +130,8 @@ module ackermann_print_plate() {
 
     translate([0, offst, 0]) {
       union() {
-        base_x_offsts = [steering_long_linkage_len * 0.5, steering_linkage_connector_len * 0.5];
+        base_x_offsts = [steering_long_linkage_len * 0.5,
+                         steering_linkage_connector_len * 0.5];
         translate([base_x_offsts[0] + base_x_offsts[1], -offst, 0]) {
           ackermann_linkage_connector_left();
         }
