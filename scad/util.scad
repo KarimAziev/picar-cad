@@ -14,7 +14,7 @@
  */
 
 module dotted_lines_fill_y(y_length, starts, y_offset, r) {
-  step = y_offset + 2*r;
+  step = y_offset + 2 * r;
   amount = floor(y_length / step) + 1;
 
   for (i = [0 : amount - 1]) {
@@ -27,7 +27,7 @@ module dotted_lines_fill_y(y_length, starts, y_offset, r) {
 function number_sequence(from, to, step) = [for (i = [from : step : to]) i];
 
 module dotted_lines_fill_x(length, starts, x_offset, r) {
-  step = x_offset + 2*r;
+  step = x_offset + 2 * r;
   amount = floor(length / step) + 1;
 
   for (i = [0 : amount - 1]) {
