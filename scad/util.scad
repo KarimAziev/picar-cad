@@ -254,3 +254,29 @@ module cylinder_cutted(h=10, r=5, cutted_w = 1) {
     }
   }
 }
+
+module ring_2d(r, w, d) {
+  r = is_undef(r) ? d / 2 : r;
+  difference() {
+    circle(r=r);
+    circle(r=r - w);
+  }
+}
+
+module star_2d(n = 5, r_outer = 20, r_inner = 10) {
+  pts = [for (i = [0 : 2*n - 1])
+      let (angle = 360 / (2*n) * i,
+           r = (i % 2 == 0) ? r_outer : r_inner)
+        [r * cos(angle), r * sin(angle)]];
+  polygon(points = pts);
+}
+
+module star_3d(n=5, r_outer=20, r_inner=10, h=2) {
+  linear_extrude(height=h, center=false) {
+    star_2d(n=n, r_outer=r_outer, r_inner=r_inner);
+  }
+}
+
+function truncate(val, dec=1) =
+  (val >= 0) ? floor(val * pow(10, dec)) / pow(10, dec)
+  : ceil(val * pow(10, dec)) / pow(10, dec);

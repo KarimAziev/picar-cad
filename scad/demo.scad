@@ -16,7 +16,7 @@ use <steering_system/ackermann.scad>
 use <steering_system/knuckle.scad>
 use <steering_system/ackermann_assembly.scad>
 use <placeholders/motor.scad>
-use <placeholders/wheel.scad>
+use <wheel.scad>
 
 module motor_right() {
   translate([-9, 15, -14]) {
@@ -49,7 +49,7 @@ module front_wheel_right() {
                (-chassis_len * 0.5 + motor_mount_panel_width * 0.5) + 20,
                0.5]) {
       rotate([180, 90, 0]) {
-        front_wheel();
+        wheel(is_rear=false);
       }
     }
   }
