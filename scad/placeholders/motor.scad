@@ -20,6 +20,7 @@ motor_body_neck_len   = 11.4;
 motor_can_len         = 9.6;
 endcap_len            = 8.5;
 motor_shaft_len       = 35;
+motor_shaft_rad       = 2.8;
 
 gearbox_neck_rad      = gearbox_height / 2;
 motor_can_rad         = gearbox_neck_rad  * 0.9;
@@ -100,7 +101,7 @@ module motor() {
         rotate([0, 0, 90]) {
           color(motor_shaft_color) {
             difference() {
-              cylinder_cutted(h=motor_shaft_len, r=2.8, cutted_w=2);
+              cylinder_cutted(h=motor_shaft_len, r=motor_shaft_rad, cutted_w=2);
               cylinder(h = motor_shaft_len + 1, r = 0.7, center = true, $fn=60);
             }
           }

@@ -9,16 +9,16 @@ use <util.scad>
 
 wheel_dia          = 52;
 wheel_w            = 22;
-wheel_thickness    = 1.5;
-wheel_rim_h        = 1.6;
+wheel_thickness    = 1.0;
+wheel_rim_h        = 1.8;
 wheel_rim_w        =  1;
 wheel_rim_bend     = 0.8;
-wheel_shaft_offset = 1.2;
+wheel_shaft_offset =  0;
 wheel_spokes       =  5;
-wheel_spoke_w      = 2.2;
-wheel_shaft_d      = 5.4;
-wheel_hub_rad      = truncate(wheel_shaft_d * 0.78); // 4.2
-wheel_hub_solid_d  = truncate(wheel_hub_rad * 0.9); // 3.7
+wheel_spoke_w      = 1.8;
+wheel_shaft_d      = 6.4;
+wheel_hub_rad      = truncate(wheel_shaft_d * 0.78);
+wheel_hub_solid_d  = truncate(wheel_hub_rad * 0.9);
 wheel_tolerance    = 0.3;
 
 module wheel(w=wheel_w,
@@ -39,45 +39,39 @@ module wheel(w=wheel_w,
   inner_d = d - rim_h;
   difference() {
     union() {
-      difference() {
-        union() {
-          linear_extrude(height = w, center = true) {
-            circle(r = inner_d / 2, $fn = 360);
-          }
+      union() {
+        linear_extrude(height = w + rim_w * 2, center = true) {
+          ring_2d(r=inner_d / 2, w=thickness, fn=360);
+        }
 
-          z_offset_parts = [w * 0.5, rim_w * 0.5];
-          for (i = [0 : 1]) {
-            z = i == 0
-              ? z_offset_parts[0] + z_offset_parts[1]
-              : -z_offset_parts[0] - z_offset_parts[1];
-            bend_z = i == 0 ? -1 : 1;
-            translate([0, 0, z]) {
-              rad = inner_d / 2 + rim_h;
-              inner_rad = rad - rim_bend;
+        z_offset_parts = [w * 0.5, rim_w * 0.5];
+        for (i = [0 : 1]) {
+          z = i == 0
+            ? z_offset_parts[0] + z_offset_parts[1]
+            : -z_offset_parts[0] - z_offset_parts[1];
+          bend_z = i == 0 ? -rim_bend : rim_bend;
+          translate([0, 0, z]) {
+            rad = inner_d / 2 + rim_h;
+            inner_rad = rad - rim_bend;
 
-              difference() {
+            difference() {
+              linear_extrude(height = rim_w, center = true) {
+                ring_2d(r=rad, w=rim_h, fn=360);
+              }
+
+              translate([0, 0, bend_z]) {
                 linear_extrude(height = rim_w, center = true) {
-                  circle(r = rad, $fn = 360);
-                }
-
-                translate([0, 0, bend_z]) {
-                  linear_extrude(height = rim_w) {
-                    w = rim_h - rim_bend;
-                    ring_2d(r=inner_rad, w=w);
-                  }
+                  w = rim_h - rim_bend;
+                  ring_2d(r=inner_rad, w=w);
                 }
               }
             }
           }
         }
-
-        linear_extrude(height = w+thickness + rim_bend + rim_h, center = true) {
-          circle(r = d / 2 - thickness, $fn = 360);
-        }
       }
       translate([0, 0, -w]) {
         wheel_blades(d=inner_d,
-                     w=w,
+                     w=w + rim_w * 2,
                      spokes=spokes,
                      shaft_offset=shaft_offset,
                      hub_r=hub_r,
@@ -132,7 +126,7 @@ module wheel_blades(d=wheel_dia - wheel_rim_h,
             rotate([0, 0, angle]) {
               translate([0, inradius/2, 0]) {
                 polygon(points=[[-spoke_w/2, -inradius/2],
-                                [spoke_w/2, -inradius/2],
+                                [spoke_w, -inradius/2],
                                 [0, inradius/2]]);
               }
             }
@@ -142,7 +136,7 @@ module wheel_blades(d=wheel_dia - wheel_rim_h,
       }
     }
     if (is_rear) {
-      shaft_3d(h=w+shaft_offset,
+      shaft_3d(h=w + shaft_offset,
                hub_r=hub_r,
                solid_d=hub_solid_d,
                d=shaft_d);
@@ -227,8 +221,8 @@ module shaft_3d(h,
                 solid_d=wheel_hub_solid_d,
                 tolerance=wheel_tolerance,
                 front_offset=0) {
-  translate([0, 0, front_offset]) {
-    linear_extrude(height=h) {
+  translate([0, 0, h / 2]) {
+    linear_extrude(height=h, center=true) {
       difference() {
         circle(r=hub_r);
         shaft_2d(d=d, solid_d=solid_d, tolerance=tolerance);
@@ -257,4 +251,4 @@ module shaft_2d(d=wheel_shaft_d,
   }
 }
 
-front_and_rear_wheels(front_n=2, rear_n=2);
+wheel();
