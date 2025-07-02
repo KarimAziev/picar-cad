@@ -11,7 +11,7 @@ r3065_dia                              = 3.5;
 // Chassis dimensions:
 chassis_width                          = 110;  // width of the chassis
 chassis_len                            = 235;  // length of the chassis
-chassis_thickness                      = 3;    // chassis thickness
+chassis_thickness                      =  3;    // chassis thickness
 
 // Front panel dimensions:
 // This panel is vertical and includes mounting holes for the ultrasonic sensors.
@@ -19,7 +19,7 @@ front_panel_width                      = 66;   // panel width
 front_panel_height                     = 28;   // panel height
 
 front_panel_ultrasonic_sensor_dia      = 17;   // diameter of each mounting hole ("eye") for the ultrasonic sensors
-front_panel_ultrasonic_sensors_offset  = 9;    // distance between the two ultrasonic sensor mounting holes
+front_panel_ultrasonic_sensors_offset  =  9;    // distance between the two ultrasonic sensor mounting holes
 
 front_panel_screws_x_offset            = 27;   // horizontal offset between the ultrasonic sensor mounting holes
 
@@ -37,13 +37,13 @@ wheels_offset_y                        = chassis_len * 0.3;
 steering_servo_slot_width              = 24;
 steering_servo_slot_height             = 12;
 
-steering_servo_screw_dia               = 2;    // diameter of the fastening screws for the servo
+steering_servo_screw_dia               =  2;    // diameter of the fastening screws for the servo
 steering_servo_screws_offset           = 1.4;  // offset between the servo slot and the fastening screws
 
 steering_link_width                    = 13;
 steering_tie_rod_center_screw_d        = 1.5;
-steering_tie_rod_width                 = 8;
-steering_upper_chassis_link_thickness  = 2;
+steering_tie_rod_width                 =  8;
+steering_upper_chassis_link_thickness  =  2;
 
 steering_linkage_connector_len         = 30;
 
@@ -57,18 +57,18 @@ front_wheel_knuckle_dia                = r4120_dia; // Diameter of screws for kn
 steering_knuckle_screws_dia            = r3065_dia; // Diameter of screws for knuckle and linkage
 steering_knuckle_width                 = 22;  // Overall width of the knuckle.
 steering_knuckle_lower_height          = 15;  // Height of the lower part of the knuckle.
-steering_knuckle_upper_height          = 8;   // Height of the upper part of the knuckle.
+steering_knuckle_upper_height          =  8;   // Height of the upper part of the knuckle.
 steering_knuckle_side_width            = 13;  // Width of the side feature of the knuckle.
-steering_knuckle_side_hole_offset      = 2;   // Offset for positioning side mounting holes.
-steering_knuckle_thickness             = 2;   // Thickness of the knuckle walls.
+steering_knuckle_side_hole_offset      =  2;   // Offset for positioning side mounting holes.
+steering_knuckle_thickness             =  2;   // Thickness of the knuckle walls.
 steering_ackernmann_connector_angle    = 120;   // Angle of the linkage connectors for ackermann
 
-pan_servo_slot_dia                     = 7;    // diameter of the pan servo mounting hole at the front of the chassis
+pan_servo_slot_dia                     =  7;    // diameter of the pan servo mounting hole at the front of the chassis
 pan_servo_wheels_y_offset              = 18;
 
 // rear motor panel
 motor_mount_panel_width                = 10;
-motor_mount_panel_thickness            = 3;
+motor_mount_panel_thickness            =  3;
 motor_mount_panel_height               = 26;
 
 raspberry_pi_offset                    = chassis_len * 0.06; // Y offset for the Raspberry Pi slot
@@ -77,7 +77,7 @@ raspberry_pi5_screws_size              = [50, 58, 10];
 ups_hat_screws_size                    = [46, 86, 10];
 
 // Additional cutouts:
-extra_cutouts_dia                      = 8; // diameter of the three extra holes on the left and right sides of the chassis
+extra_cutouts_dia                      =  8; // diameter of the three extra holes on the left and right sides of the chassis
 
 // Rear panel:
 // A vertical rear plate with dimensions including two 13-mm mounting holes for switch buttons.
@@ -88,7 +88,7 @@ rear_panel_switch_slot_dia             = 13;
 
 // Vertical offsets for extra battery holder screws along the Y-axis
 extra_battery_screws_y_offset_start    = -30;  // Starting Y-offset for extra battery screws
-extra_battery_screws_y_offset_end      = 0;    // Ending Y-offset for extra battery screws
+extra_battery_screws_y_offset_end      =  0;    // Ending Y-offset for extra battery screws
 extra_battery_screws_y_offset_step     = 10;    // Step/increment along the Y-axis for extra battery screws
 
 // Dimensions for the screw hole pattern (width, height)
@@ -118,12 +118,12 @@ battery_screws_center_fn_val           = 360;  // Number of fragments for render
 // head
 head_plate_width                       = 38;
 head_plate_height                      = 50;
-head_plate_thickness                   = 2;
+head_plate_thickness                   =  2;
 
 head_side_panel_height                 = head_plate_height;
 head_side_panel_width                  = head_plate_width * 1.2;
 // the diameter of the side hole for mounting servo
-head_servo_mount_dia                   = 7;
+head_servo_mount_dia                   =  7;
 // the diameter of the screws for servo. They are placed around the side hole for mounting servo
 head_servo_screw_dia                   = 1.5;
 
@@ -141,18 +141,42 @@ camera_screw_dia                       = m2_hole_dia;
 cam_pan_servo_slot_width               = 24;
 cam_pan_servo_slot_height              = 12;
 cam_pan_servo_height                   = 20;
-cam_pan_servo_screw_dia                = 2;
+cam_pan_servo_screw_dia                =  2;
 cam_pan_servo_screws_offset            = 0.6;
-cam_pan_servo_slot_thickness           = 2;
+cam_pan_servo_slot_thickness           =  2;
 
 cam_tilt_servo_slot_width              = 24;
 cam_tilt_servo_slot_height             = 12;
-cam_tilt_servo_screw_dia               = 2;
+cam_tilt_servo_screw_dia               =  2;
 cam_tilt_servo_screws_offset           = 0.6;
-cam_tilt_servo_slot_thickness          = 2;
+cam_tilt_servo_slot_thickness          =  2;
 cam_tilt_servo_height                  = 20;
-cam_tilt_servo_extra_w                 = 4;
-cam_tilt_servo_extra_h                 = 2;
+cam_tilt_servo_extra_w                 =  4;
+cam_tilt_servo_extra_h                 =  2;
 
 pan_servo_extra_h                      = 14;
-pan_servo_extra_w                      = 4;
+pan_servo_extra_w                      =  4;
+
+// Parameters for hub dimensions and screw properties.
+wheel_hub_d                            = 22;
+wheel_hub_h                            = 7.4;
+wheel_hub_inner_rim_h                  = 1.4;
+wheel_hub_inner_rim_w                  = 1.2;
+wheel_hub_screws                       = m3_hole_dia;
+wheel_screws_n                         =  6;
+wheel_hub_outer_d                      = 48.2;
+wheel_screw_boss_w                     =  1;
+wheel_screw_boss_h                     =  2;
+
+wheel_dia                              = 50;
+wheel_w                                = 22;
+wheel_thickness                        = 1.0;
+wheel_rim_h                            = 1.8;
+wheel_rim_w                            =  1;
+wheel_rim_bend                         = 0.8;
+wheel_shaft_offset                     =  0;
+wheel_spokes                           =  5;
+
+wheel_spoke_w                          = 22.8;
+wheel_shaft_d                          = 6.4;
+wheel_tolerance                        = 0.3;

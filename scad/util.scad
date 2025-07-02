@@ -255,11 +255,27 @@ module cylinder_cutted(h=10, r=5, cutted_w = 1) {
   }
 }
 
-module ring_2d(r, w, d, fn) {
+module ring_2d_outer(r, w, d, fn) {
+  r = is_undef(r) ? d / 2 : r;
+  difference() {
+    circle(r=r + w, $fn=fn);
+    circle(r=r, $fn=fn);
+  }
+}
+
+module ring_2d_inner(r, w, d, fn) {
   r = is_undef(r) ? d / 2 : r;
   difference() {
     circle(r=r, $fn=fn);
     circle(r=r - w, $fn=fn);
+  }
+}
+
+module ring_2d(r, w, d, fn, outer) {
+  if (outer) {
+    ring_2d_outer(r, w, d, fn);
+  } else {
+    ring_2d_inner(r, w, d, fn);
   }
 }
 
