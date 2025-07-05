@@ -16,9 +16,10 @@ include <../parameters.scad>
 use <../util.scad>
 
 cam_center_offset            = 13;
-cam_centers                  = [[0, -cam_center_offset], [0, cam_center_offset]];
 
+cam_centers                  = [[0, -cam_center_offset], [0, cam_center_offset]];
 upper_connector_width        = head_upper_plate_width * 0.7;
+
 upper_connector_height       = 4;
 
 lower_connector_width        = head_upper_plate_width * 0.6;
