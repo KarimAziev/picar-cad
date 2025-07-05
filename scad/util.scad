@@ -13,34 +13,67 @@
  * License: GPL-3.0-or-later
  */
 
-module dotted_lines_fill_y(y_length, starts, y_offset, r) {
-  step = y_offset + 2 * r;
-  amount = floor(y_length / step) + 1;
+/**
+ * Calculates the translation positions for screws.
+ *
+ * Parameters:
+ *   slot_w:    The width of the centered parent slot.
+ *   screw_dia: The diameter of the screw.
+ *   distance:  The desired distance between the centered parent slot and the screw.
+ */
+function screw_x_offst(slot_w, screw_dia, distance) = (slot_w * 0.5 + screw_dia * 0.5) + distance;
 
-  for (i = [0 : amount - 1]) {
-    translate([starts[0], starts[1] + i * step]) {
-      circle(r = r, $fn = 50);
-    }
-  }
-}
+/**
+ * Returns an array of numbers starting at `from` and incremented by `step`.
+ *
+ * The `from` value is always included, and `to` is included if the sequence
+ * lands on it exactly, otherwise, the last number is the largest value that
+ * does not exceed `to`.
+ */
 
 function number_sequence(from, to, step) = [for (i = [from : step : to]) i];
 
-module dotted_lines_fill_x(length, starts, x_offset, r) {
-  step = x_offset + 2 * r;
-  amount = floor(length / step) + 1;
+/**
+ * Truncate a number to a specified number of decimal places.
+ *
+ * Parameters:
+ * val:  The input number to truncate.
+ * dec:  The number of decimal places to retain (default is 1).
+ *
+ * Example:
+ *   truncate(3.14159, 2)  // returns 3.14
+ *   truncate(-2.718, 1)   // returns -2.7
+ */
+function truncate(val, dec=1) =
+  (val >= 0) ? floor(val * pow(10, dec)) / pow(10, dec)
+  : ceil(val * pow(10, dec)) / pow(10, dec);
 
-  for (i = [0 : amount - 1]) {
-    translate([starts[0] + i * step, starts[1]]) {
-      circle(r = r, $fn = 50);
-    }
-  }
-}
+/**
+ *
+ * Draws a horizontal row of circles spanning a given total width.
+ *
+ * Parameters:
+ *   total_width:  The total width available for the row. This value is used to determine how many circles fit.
+ *   d:            The diameter of each circle.
+ *   spacing:      The additional distance between circles (beyond the circle diameter).
+ *   starts:       An optional two-element list [x, y] that specifies the starting coordinate for the row.
+ *                 Defaults to [0, 0] if not provided.
+ *
+ * For example, the code below will create 3 circles:
 
-module dotted_lines_y(amount, starts, y_offset, r) {
-  for (i = [0:amount-1]) {
-    translate([starts[0], starts[1] + i*(y_offset + r*2)]) {
-      circle(r = r, $fn = 50);
+ * row_of_circles(total_width=20, d=5, spacing=1);
+ *
+ */
+
+module row_of_circles(total_width, d, spacing, starts=[0, 0]) {
+  step = spacing + d;
+  amount = floor(total_width / step);
+
+  if (amount > 0) {
+    for (i = [0 : amount - 1]) {
+      translate([starts[0] + i * step, starts[1]]) {
+        circle(r = d / 2, $fn = 360);
+      }
     }
   }
 }
@@ -48,20 +81,31 @@ module dotted_lines_y(amount, starts, y_offset, r) {
 module rounded_rect(size, r=5, center=false) {
   w = size[0];
   h = size[1];
-  offst = center ? [-w/2, -h/2] : [0, 0];
+  if (r == 0) {
+    square(size, center=center);
+  } else {
+    offst = center ? [-w/2, -h/2] : [0, 0];
 
-  hull() {
-    translate([r, r] + offst) {
-      circle(r);
+    hull() {
+      translate([r, r] + offst) {
+        circle(r);
+      }
+      translate([w - r, r] + offst) {
+        circle(r);
+      }
+      translate([r, h - r] + offst) {
+        circle(r);
+      }
+      translate([w - r, h - r] + offst)
+        circle(r);
     }
-    translate([w - r, r] + offst) {
-      circle(r);
-    }
-    translate([r, h - r] + offst) {
-      circle(r);
-    }
-    translate([w - r, h - r] + offst)
-      circle(r);
+  }
+}
+
+module rounded_cube(size, r=undef, center=true) {
+  rad = is_undef(r) ? size[1] * 0.3 : r;
+  linear_extrude(height = size[2], center=center) {
+    rounded_rect(size, r=rad, center=center);
   }
 }
 
@@ -236,8 +280,9 @@ module rounded_rect_two(size, r=5, center=false, segments=10) {
 
   pts = concat(pts_bottom, pts_right, arc_top_right, pts_top_edge, arc_top_left, pts_left);
 
-  translate(offst)
+  translate(offst) {
     polygon(points = pts);
+  }
 }
 
 module cylinder_cutted(h=10, r=5, cutted_w = 1) {
@@ -293,6 +338,26 @@ module star_3d(n=5, r_outer=20, r_inner=10, h=2) {
   }
 }
 
-function truncate(val, dec=1) =
-  (val >= 0) ? floor(val * pow(10, dec)) / pow(10, dec)
-  : ceil(val * pow(10, dec)) / pow(10, dec);
+module l_bracket(size, thickness=1, y_r=undef, z_r=undef, center=true) {
+  x = size[0];
+  y = size[1];
+  z = size[2];
+
+  ur = (y_r == undef) ? 0 : y_r;
+  lr = (z_r == undef) ? 0 : z_r;
+
+  union() {
+    linear_extrude(height=thickness) {
+      rounded_rect_two([x, y], center=center, r=ur);
+    }
+    translate([0, -y / 2, z / 2]) {
+      rotate([90, 0, 0]) {
+        linear_extrude(height=thickness) {
+          rounded_rect_two([x, z], center=center, r=lr);
+        }
+      }
+    }
+  }
+}
+
+row_of_circles(total_width=20, d=5, spacing=1);
