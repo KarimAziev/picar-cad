@@ -34,11 +34,12 @@ wheels_offset_y                        = chassis_len * 0.3;
 // Tested with the EMAX ES08MA II servo (23 x 11.5 x 24 mm).
 // The popular SG90 servo measures approximately 23mm x 12.2mm x 29mm, so you may
 // want to adjust steering_servo_slot_width and steering_servo_slot_height as needed.
-steering_servo_slot_width              = 24;
+steering_servo_slot_width              = 23.6;
 steering_servo_slot_height             = 12;
 
 steering_servo_screw_dia               =  2;    // diameter of the fastening screws for the servo
-steering_servo_screws_offset           = 1.4;  // offset between the servo slot and the fastening screws
+steering_servo_screws_offset           =  1;  // offset between the servo slot and the fastening screws
+steering_servo_hat_w                   = 33;
 
 steering_link_width                    = 13;
 steering_tie_rod_center_screw_d        = 1.5;
@@ -138,17 +139,17 @@ camera_screw_offset_y                  = -4.2;
 camera_screw_offset_y_top              = 8.54;
 camera_screw_dia                       = m2_hole_dia;
 
-cam_pan_servo_slot_width               = 24;
+cam_pan_servo_slot_width               = 23.6;
 cam_pan_servo_slot_height              = 12;
 cam_pan_servo_height                   = 20;
 cam_pan_servo_screw_dia                =  2;
-cam_pan_servo_screws_offset            = 0.6;
+cam_pan_servo_screws_offset            =  1;
 cam_pan_servo_slot_thickness           =  2;
 
-cam_tilt_servo_slot_width              = 24;
+cam_tilt_servo_slot_width              = 23.6;
 cam_tilt_servo_slot_height             = 12;
 cam_tilt_servo_screw_dia               =  2;
-cam_tilt_servo_screws_offset           = 0.6;
+cam_tilt_servo_screws_offset           =  1;
 cam_tilt_servo_slot_thickness          =  2;
 cam_tilt_servo_height                  = 20;
 cam_tilt_servo_extra_w                 =  4;
