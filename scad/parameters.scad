@@ -182,10 +182,9 @@ wheel_spoke_w                          = 22.8;
 wheel_shaft_d                          = 6.4;
 wheel_tolerance                        = 0.3;
 
-rack_len                               = 70;
+rack_len                               = 60;
 rack_pan_full_len                      = 120;
 
-knuckle_connector_angle                = 110;
 tooth_h                                = 4;
 tooth_pitch                            = 3;
 
@@ -202,6 +201,7 @@ lower_knuckle_d                        = 8;
 
 knuckle_ring_inner_w                   = 1;
 
+knuckle_connector_angle                = 110;
 rack_width                             = 6;
 rack_base_h                            = 3;
 rack_rad                               = 0.5;
@@ -213,6 +213,7 @@ rack_side_connector_screws_dia         = m2_hole_dia;
 raw_connector_len                      = rack_side_connector_screws_dia * 2 + rack_side_connector_thickness;
 
 rack_side_connector_size               = [rack_width, rack_base_h, raw_connector_len];
+rack_knuckle_connector_dia             = 6;
 
 shaft_height                           = 50;
 shaft_dia                              = 8;
@@ -221,11 +222,11 @@ distance_between_rack_and_knuckle      = (((rack_pan_full_len / 2) - upper_knuck
 bracket_screws_dia                     = m2_hole_dia;
 bracket_thickness                      = 3;
 
-bracket_rack_side_length               = 12; // The bracket's part that is connected to the rack
-// bracket_knuckle_side_len               = 11;  // The bracket's part that is connected to the knuckle's shaft connector (should be calculated automatically)
-knuckle_shaft_len                      = 10; // the length of the knuckle's shaft connector
-bracket_cut_offset                     = (knuckle_shaft_len / tan(knuckle_connector_angle));
-bracket_knuckle_side_len               = distance_between_rack_and_knuckle - abs(bracket_cut_offset);
+bracket_rack_side_length               = 17; // The bracket's part that is connected to the rack
+// bracket_knuckle_side_len               = 11;  // The bracket's part that is connected to the knuckle's shaft connector
+knuckle_shaft_len                      = 6; // the length of the knuckle's shaft connector
+bracket_cut_offset                     = (bracket_rack_side_length / tan(knuckle_connector_angle));
+bracket_knuckle_side_len               = distance_between_rack_and_knuckle + bracket_cut_offset + rack_side_connector_screws_dia / 2 + 0.5;
 
 bracket_size                           = [4, bracket_rack_side_length, bracket_knuckle_side_len];
 

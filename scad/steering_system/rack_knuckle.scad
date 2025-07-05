@@ -7,12 +7,13 @@ use <rack_connector.scad>
 module knuckle(shaft_h,
                connector_shaft_h=knuckle_shaft_len,
                connector_angle=knuckle_connector_angle,
+               shaft_connector_dia=rack_knuckle_connector_dia,
                upper_knuckle_d=upper_knuckle_d,
                shaft_dia=shaft_dia,
                upper_knuckle_h=upper_knuckle_h,
                lower_knuckle_h=lower_knuckle_h,
                lower_knuckle_d=lower_knuckle_d,
-               connector_size=[4, 3, m2_hole_dia * 2],
+               connector_size=rack_side_connector_size,
                connector_thickness=1,
                connector_screws_dia=m2_hole_dia,
                center_screw_dia=m2_hole_dia) {
@@ -34,9 +35,10 @@ module knuckle(shaft_h,
       }
 
       rotate([0, 0, connector_angle]) {
-        translate([connector_shaft_h / 2, 0, -upper_knuckle_h / 2 + connector_thickness / 2]) {
+        translate([connector_shaft_h / 2 + upper_rad - 0.5, 0, -upper_knuckle_h / 2 - connector_thickness / 2]) {
           union() {
-            shaft(d=shaft_dia, h=connector_shaft_h);
+
+            shaft(d=shaft_connector_dia, h=connector_shaft_h + 0.5);
             translate([connector_shaft_h / 2, 0, 0]) {
               rack_side_connector(size=connector_size,
                                   thickness=connector_thickness,
@@ -98,6 +100,21 @@ module knuckle_lower_connector(upper_knuckle_d=upper_knuckle_d,
   }
 }
 
+module knuckle_assembly() {
+  echo("bracket_size", bracket_size)
+    knuckle(shaft_h=shaft_height,
+            connector_shaft_h=knuckle_shaft_len,
+            connector_angle=knuckle_connector_angle,
+            shaft_dia=shaft_dia,
+            upper_knuckle_h=upper_knuckle_h,
+            lower_knuckle_h=lower_knuckle_h,
+            lower_knuckle_d=lower_knuckle_d,
+            connector_size=rack_side_connector_size,
+            connector_thickness=rack_side_connector_thickness,
+            connector_screws_dia=m2_hole_dia,
+            center_screw_dia=m2_hole_dia);
+}
+
 union() {
 
   // translate([0, 30, -0]) {
@@ -108,15 +125,5 @@ union() {
   //                           center_screw_dia=m2_hole_dia);
   // }
 
-  knuckle(shaft_h=50,
-          connector_shaft_h=10,
-          connector_angle=110,
-          shaft_dia=shaft_dia,
-          upper_knuckle_h=upper_knuckle_h,
-          lower_knuckle_h=lower_knuckle_h,
-          lower_knuckle_d=lower_knuckle_d,
-          connector_size=[4, 3, m2_hole_dia * 2],
-          connector_thickness=1,
-          connector_screws_dia=m2_hole_dia,
-          center_screw_dia=m2_hole_dia);
+  knuckle_assembly();
 }

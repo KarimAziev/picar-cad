@@ -116,9 +116,9 @@ module steering_servo_panel(size=[servo_hat_w, rack_width, pinion_d + steering_s
 }
 
 module bracket_assembly() {
-  x_offst = -rack_len / 2 - rack_side_connector_size[0];
-  y_offst = bracket_size[1] + bracket_screws_dia;
-  z_offst = bracket_thickness / 2 + rack_side_connector_size[0] / 2 + rack_side_connector_thickness;
+  x_offst = -rack_len / 2 - rack_side_connector_size[0] - rack_side_connector_thickness / 2;
+  y_offst = bracket_size[1] + bracket_screws_dia - 1;
+  z_offst = bracket_thickness / 2 + rack_side_connector_size[0] / 2 + rack_side_connector_thickness + 0.5;
 
   translate([x_offst, y_offst, z_offst]) {
     rotate([0, 0, 90]) {
@@ -129,7 +129,7 @@ module bracket_assembly() {
 
 module knuckle_assembly() {
   echo("bracket_size", bracket_size)
-    translate([rack_pan_full_len / 2 - upper_knuckle_d / 2, extra_w / 2, upper_knuckle_h]) {
+    translate([rack_pan_full_len / 2 - upper_knuckle_d / 2, extra_w / 2, upper_knuckle_h + lower_knuckle_h]) {
     knuckle(shaft_h=shaft_height,
             connector_shaft_h=knuckle_shaft_len,
             connector_angle=knuckle_connector_angle,
@@ -145,7 +145,7 @@ module knuckle_assembly() {
 }
 
 module rack_mount() {
-  translate([0, 0, 0]) {
+  translate([0, 0, 1]) {
     rack(size=[rack_len, rack_width, rack_base_h],
          pinion_d=pinion_d,
          tooth_pitch=tooth_pitch,
@@ -171,7 +171,7 @@ module pinion_mount() {
 
 module assembly() {
   union() {
-    steering_servo_panel(show_servo=true);
+    // steering_servo_panel(show_servo=true);
 
     translate([0, extra_w / 2,
                rack_base_h / 2 + lower_knuckle_h / 2 - wall_thickness / 2]) {
@@ -203,12 +203,12 @@ module assembly() {
 
 union() {
 
-  steering_servo_panel();
+  // steering_servo_panel();
   // translate([0, 30, 0]) {
   //   rack_mount();
   //   translate([0, 30, 0]) {
   //     pinion_mount();
   //   }
   // }
-  // assembly();
+  assembly();
 }
