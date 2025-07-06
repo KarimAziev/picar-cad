@@ -230,6 +230,8 @@ bracket_knuckle_side_len               = distance_between_rack_and_knuckle + bra
 
 bracket_size                           = [4, bracket_rack_side_length, bracket_knuckle_side_len];
 
+steering_servo_panel_thickness         = 2;
+
 // translate([-50, 10, 20]) {
 //   color("red") {
 //     l = ((rack_pan_full_len / 2) - upper_knuckle_d) * 2;
