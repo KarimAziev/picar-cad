@@ -13,32 +13,27 @@ function steering_servo_panel_extra_w() = (servo_gearbox_h + servo_gear_h / 2);
 
 extra_w = steering_servo_panel_extra_w();
 
-module rack_mount_panel(rack_size=[rack_len / 3,
+module rack_mount_panel(rack_size=[rack_pan_full_len,
                                    rack_rail_width,
-                                   rack_base_h + lower_knuckle_h],
-                        rack_r=rack_rad,
-                        panel_len=rack_pan_full_len) {
-  x = rack_size[0];
+                                   rack_base_h],
+                        rack_r=rack_rad) {
+  panel_len = rack_size[0];
   y = rack_size[1];
   z = rack_size[2];
   offst = panel_len / 2;
   rad = y / 2;
   side_offsets = [-offst + rad, offst - rad];
-  difference() {
-    union() {
-      linear_extrude(height=steering_servo_panel_thickness, center=true) {
-        rounded_rect(size=[panel_len, y], center=true, r=rad);
-      }
-      for (x = side_offsets) {
-        translate([x, 0, 0]) {
-          translate([0, 0, lower_knuckle_h]) {
-            knuckle_lower_connector(upper_knuckle_d=upper_knuckle_d,
-                                    upper_knuckle_h=upper_knuckle_h,
-                                    lower_knuckle_h=lower_knuckle_h,
-                                    lower_knuckle_d=lower_knuckle_d,
-                                    center_screw_dia=m2_hole_dia);
-          }
-        }
+  union() {
+    linear_extrude(height=z, center=true) {
+      rounded_rect(size=[panel_len, y], center=true, r=rad);
+    }
+    for (x = side_offsets) {
+      translate([x, 0, lower_knuckle_h]) {
+        knuckle_lower_connector(upper_knuckle_d=upper_knuckle_d,
+                                upper_knuckle_h=upper_knuckle_h,
+                                lower_knuckle_h=lower_knuckle_h,
+                                lower_knuckle_d=lower_knuckle_d,
+                                center_screw_dia=m2_hole_dia);
       }
     }
   }
@@ -49,7 +44,6 @@ module steering_servo_panel(size=[servo_hat_w,
                                   pinion_d + steering_servo_slot_width],
                             thickness=steering_servo_panel_thickness,
                             front_h=rack_base_h + lower_knuckle_h,
-                            panel_len=rack_pan_full_len,
                             z_r=undef,
                             center=true,
                             show_servo=false) {
