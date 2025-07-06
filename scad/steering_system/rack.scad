@@ -2,16 +2,6 @@ include <../parameters.scad>
 use <rack_connector.scad>
 use <rack_util.scad>
 
-// tooth_h                   = 4;
-// tooth_pitch               = 3;
-// pinion_d                  = 25;
-// rack_len                  = 70;
-// rack_width                = 4;
-// rack_base_h               = 3;
-// rack_rad                  = 0.5;
-
-rack_connector_screws_dia = m2_hole_dia;
-
 module rack(size=[rack_len, rack_width, rack_base_h],
             pinion_d=25,
             tooth_pitch=tooth_pitch,
@@ -75,9 +65,6 @@ module rack(size=[rack_len, rack_width, rack_base_h],
 }
 
 union() {
-  // rack_side_connector_thickness  =  1;
-  // rack_side_connector_screws_dia = m2_hole_dia;
-  // rack_side_connector_size       = [rack_width, rack_base_h, rack_side_connector_screws_dia * 2];
   rack(size=[rack_len, rack_width, rack_base_h],
        pinion_d=pinion_d,
        tooth_pitch=tooth_pitch,
