@@ -1,3 +1,43 @@
+/**
+ * Module: Steering servo panel
+ *
+ *
+ **************************************************************************************
+ *                          Simplified View (A frontal perspective)
+ **************************************************************************************
+ *                          +---------------------------+
+ *                          |                           |
+ *                          |         M2 screws         |
+ *                          |        /         \        |
+ *                          |       *          *        |
+ *                          |      +-------------+      |
+ *                          |      |             |      |
+ *                          |      |  vertical   |      |
+ *                          |      |  servo slot |      |
+ *                          |      |  hole for   |      |
+ *                          |      |  pinion     |      |
+ *                          |      |             |      |
+ *                          |      |             |      |
+ * knuckle_lower_connector  |      |             |      |                   knuckle_lower_connector
+ * ---------                |      |             |      |                  ----------
+ *    |                     |      |             |      |                     |
+ *    v                     |      |             |      |                     v
+ *   +---+                 +-----------------------------+                 +---+
+ *   |   |                 |         front_h             |                 |   |
+ *   +---+-----------------+-----------------------------+-----------------+---+
+ *   |                         rack_mount_panel()                              |
+ *   +-------------------------------------------------------------------------+
+ *
+ *  z
+ *  |
+ *  y---x
+ *
+ *
+ *
+ * Author: Karim Aziiev <karim.aziiev@gmail.com>
+ * License: GPL-3.0-or-later
+ */
+
 include <../parameters.scad>
 use <../util.scad>
 include <../placeholders/servo.scad>
