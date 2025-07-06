@@ -1,6 +1,7 @@
 include <../parameters.scad>
 use <rack_connector.scad>
 use <rack_util.scad>
+use <../util.scad>
 
 module rack(size=[rack_len, rack_width, rack_base_h],
             pinion_d=25,
@@ -64,7 +65,7 @@ module rack(size=[rack_len, rack_width, rack_base_h],
   }
 }
 
-union() {
+module rack_mount() {
   rack(size=[rack_len, rack_width, rack_base_h],
        pinion_d=pinion_d,
        tooth_pitch=tooth_pitch,
@@ -76,3 +77,5 @@ union() {
        connector_thickness=rack_side_connector_thickness,
        screws_d=rack_side_connector_screws_dia);
 }
+
+rack_mount();
