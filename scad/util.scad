@@ -359,5 +359,3 @@ module l_bracket(size, thickness=1, y_r=undef, z_r=undef, center=true) {
     }
   }
 }
-
-row_of_circles(total_width=20, d=5, spacing=1);
