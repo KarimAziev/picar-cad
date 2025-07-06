@@ -100,30 +100,18 @@ module knuckle_lower_connector(upper_knuckle_d=upper_knuckle_d,
   }
 }
 
-module knuckle_assembly() {
-  echo("bracket_size", bracket_size)
-    knuckle(shaft_h=shaft_height,
-            connector_shaft_h=knuckle_shaft_len,
-            connector_angle=knuckle_connector_angle,
-            shaft_dia=shaft_dia,
-            upper_knuckle_h=upper_knuckle_h,
-            lower_knuckle_h=lower_knuckle_h,
-            lower_knuckle_d=lower_knuckle_d,
-            connector_size=rack_side_connector_size,
-            connector_thickness=rack_side_connector_thickness,
-            connector_screws_dia=m2_hole_dia,
-            center_screw_dia=m2_hole_dia);
+module knuckle_mount() {
+  knuckle(shaft_h=shaft_height,
+          connector_shaft_h=knuckle_shaft_len,
+          connector_angle=knuckle_connector_angle,
+          shaft_dia=shaft_dia,
+          upper_knuckle_h=upper_knuckle_h,
+          lower_knuckle_h=lower_knuckle_h,
+          lower_knuckle_d=lower_knuckle_d,
+          connector_size=rack_side_connector_size,
+          connector_thickness=rack_side_connector_thickness,
+          connector_screws_dia=m2_hole_dia,
+          center_screw_dia=m2_hole_dia);
 }
 
-union() {
-
-  // translate([0, 30, -0]) {
-  //   knuckle_lower_connector(upper_knuckle_d=upper_knuckle_d,
-  //                           upper_knuckle_h=upper_knuckle_h,
-  //                           lower_knuckle_h=lower_knuckle_h,
-  //                           lower_knuckle_d=lower_knuckle_d,
-  //                           center_screw_dia=m2_hole_dia);
-  // }
-
-  knuckle_assembly();
-}
+knuckle_mount();
