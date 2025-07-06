@@ -1,9 +1,7 @@
+
 include <../parameters.scad>
 use <../util.scad>
 use <rack_util.scad>
-
-servo_dia       = 6.5;
-servo_screw_dia = 1.5;
 
 module pinion_screw(r_pitch, d, height, start_offst, x_offst) {
   linear_extrude(height=height, center=true) {
@@ -16,8 +14,8 @@ module pinion_screw(r_pitch, d, height, start_offst, x_offst) {
 
 module pinion_screws(r_pitch,
                      thickness,
-                     servo_dia=servo_dia,
-                     screw_dia=servo_screw_dia,
+                     servo_dia=pinion_servo_dia,
+                     screw_dia=pinion_screw_dia,
                      x_offst=0.5,
                      offst_from_center_hole=1.5) {
   union() {
@@ -46,10 +44,11 @@ module pinion_screws(r_pitch,
 module pinion(d=pinion_d,
               tooth_height=tooth_h,
               thickness=pinion_thickness,
-              servo_dia=servo_dia,
+              servo_dia=pinion_servo_dia,
               tooth_pitch=tooth_pitch,
-              screw_dia=servo_screw_dia,
-              rack_len=80) {
+              screw_dia=pinion_screw_dia,
+              rack_len=rack_len,
+              offset_rad=rack_rad) {
   shared_params = pinion_sync_params(d, tooth_pitch, rack_len);
   gear_teeth       = shared_params[0];
 
@@ -65,7 +64,7 @@ module pinion(d=pinion_d,
     linear_extrude(height=thickness, center=true) {
       for (i = [0 : gear_teeth - 1]) {
         rotate(i * tooth_angle) {
-          offset(r = 0.5) {
+          offset(r = offset_rad) {
             polygon(points=[[r_dedendum * cos(half_tooth),  r_dedendum * sin(half_tooth)],
                             [r_pitch    * cos(half_tooth),  r_pitch    * sin(half_tooth)],
                             [r_addendum,                    0],
@@ -86,15 +85,6 @@ module pinion(d=pinion_d,
     pinion_screws(r_pitch=r_pitch / 2,
                   servo_dia=servo_dia,
                   thickness=thickness,
-                  screw_dia=servo_screw_dia);
+                  screw_dia=screw_dia);
   }
-}
-
-union() {
-  pinion(d=pinion_d,
-         tooth_height=tooth_h,
-         thickness=pinion_thickness,
-         servo_dia=servo_dia,
-         tooth_pitch=tooth_pitch,
-         rack_len=80);
 }
