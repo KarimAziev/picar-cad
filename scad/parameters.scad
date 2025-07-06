@@ -187,12 +187,12 @@ rack_pan_full_len                      = 120;
 
 tooth_h                                = 4;
 tooth_pitch                            = 3;
-
 pinion_d                               = 25;
 pinion_servo_dia                       = 6.5;
 pinion_thickness                       = 2;
 pinion_screw_dia                       = 1.5;
-pinion_z_offst                         = 5;
+pinion_center_hole_dia                 = 6.5;
+pinion_z_offst                         = 4;
 
 upper_knuckle_h                        = 9;
 lower_knuckle_h                        = 5;
