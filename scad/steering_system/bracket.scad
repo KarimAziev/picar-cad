@@ -29,7 +29,7 @@ module bracket(a_len=bracket_rack_side_w_length,
             rounded_rect([a_full_len, w], center=true, fn=360, r=0.4);
           }
 
-          translate([-a_full_len / 2 - w, 0, -thickness / 2]) {
+          translate([-a_full_len / 2 - connector_d / 2 + 1, 0, -thickness / 2]) {
             lower_ring_connector(d = connector_d,
                                  h = connector_a_h + thickness,
                                  connector_h = connector_h,
@@ -49,7 +49,7 @@ module bracket(a_len=bracket_rack_side_w_length,
         }
 
         translate([x_offst,
-                   b_len + w,
+                   b_len + connector_d / 2 - 1,
                    -connector_b_h - thickness / 2]) {
           upper_ring_connector(d = connector_d,
                                h = connector_b_h + thickness,
@@ -128,7 +128,7 @@ module rack_connector_assembly() {
   rack_connector();
 
   translate([-bracket_rack_side_w_length / 2 ,
-             -bracket_rack_side_h_length - rack_bracket_width,
+             -bracket_rack_side_h_length - rack_outer_connector_d / 2 + 1,
              0]) {
     color([1, 0, 0], alpha = 0.6) {
       bracket(connector_height=rack_bracket_connector_h);
