@@ -186,7 +186,7 @@ module chassis_front_cutout_2d() {
 module chassis_base_2d() {
   union() {
     difference() {
-      rounded_rect(size=[chassis_width, chassis_len], center=true);
+      rounded_rect(size=[chassis_width, chassis_len], center=true, r=5);
       chassis_extra_cutouts_2d();
       chassis_front_cutout_2d();
       mirror([1, 0, 0]) {
@@ -200,16 +200,8 @@ module chassis_base_3d() {
   linear_extrude(chassis_thickness, center = false) {
     difference() {
       chassis_base_2d();
-      translate([0, -30, 0]) {
-        steering_servo_cutout_2d();
-      }
-
       pan_servo_cutout_2d();
     }
-  }
-
-  translate([0, wheels_offset_y, 0]) {
-    steering_upper_chassis_link();
   }
 }
 

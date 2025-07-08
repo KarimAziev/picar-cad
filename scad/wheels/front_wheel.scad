@@ -9,13 +9,6 @@ use <../util.scad>
 use <wheel.scad>
 use <wheel_hub.scad>
 
-wheel_dia       = 50;
-wheel_w         = 22;
-wheel_thickness = 1.0;
-wheel_rim_h     = 1.8;
-wheel_rim_w     =  1;
-wheel_rim_bend  = 0.8;
-
 module front_wheel(w=wheel_w,
                    d=wheel_dia,
                    thickness=wheel_thickness,

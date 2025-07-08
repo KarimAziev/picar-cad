@@ -17,7 +17,7 @@
  *   to be identical.
  * - connector_d : Diameter of the connector. This value must not exceed the diameter
  *   of the main cylinder (d). In upper_ring_connector, it is the diameter of the
- *   inner cylinder within the cut-out; in lower_ring_connector, it is the diameter
+ f *   inner cylinder within the cut-out; in lower_ring_connector, it is the diameter
  *   of the hole in the protruding cylinder that fits into the cut-out of the
  *   upper_ring_connector. For a matching pair, this parameter must be the same.
  * - ring_w : Width of the rim surrounding the connector. For a matching pair,
@@ -37,26 +37,34 @@ use <bracket.scad>
 use <shaft.scad>
 use <rack_connector.scad>
 
-module upper_ring_connector(d,
-                            h,
-                            connector_h,
-                            connector_d,
+function calculate_params_from_dia(d=rack_outer_connector_d, center_dia, tolerance=0.4) =
+  let (center_d = is_num(center_dia) ? max(center_dia, 0.3 * d) : 0.3 * d,
+       ring_w = ((d - center_d) / 4) - ceil(tolerance * 2),
+       connector_d = center_d + ring_w * 2)
+  [connector_d, ring_w, tolerance];
+
+module upper_ring_connector(d=rack_outer_connector_d,
+                            h=rack_knuckle_total_connector_h,
+                            connector_h=rack_bracket_connector_h,
                             center_dia,
-                            ring_w=1,
                             tolerance=0.4,
                             fn=360,
                             base_color,
-                            connector_color) {
+                            connector_color,
+                            center=true) {
+  params = calculate_params_from_dia(d=d, center_dia=center_dia);
+  connector_d = params[0];
+  ring_w = params[1];
 
   difference() {
     translate([0, 0, h / 2]) {
       if (is_undef(base_color)) {
-        linear_extrude(height=h, center=true) {
+        linear_extrude(height=h, center=center) {
           circle(r=d / 2, $fn=fn);
         }
       } else {
         color(base_color) {
-          linear_extrude(height=h, center=true) {
+          linear_extrude(height=h, center=center) {
             circle(r=d / 2, $fn=fn);
           }
         }
@@ -65,14 +73,14 @@ module upper_ring_connector(d,
     offst = 0.5;
     translate([0, 0, connector_h / 2 - offst / 2]) {
       if (is_undef(connector_color)) {
-        linear_extrude(height=connector_h + offst, center=true) {
+        linear_extrude(height=connector_h + offst, center=center) {
           ring_2d(r=(connector_d / 2),
                   w=ring_w + tolerance,
                   fn=fn, outer=true);
         }
       } else {
         color(connector_color) {
-          linear_extrude(height=connector_h + offst, center=true) {
+          linear_extrude(height=connector_h + offst, center=center) {
             ring_2d(r=(connector_d / 2),
                     w=ring_w + tolerance,
                     fn=fn, outer=true);
@@ -83,7 +91,7 @@ module upper_ring_connector(d,
     if (is_num(center_dia)) {
       height = h + offst;
       translate([0, 0, height / 2 - offst / 2]) {
-        linear_extrude(height=height, center=true) {
+        linear_extrude(height=height, center=center) {
           circle(r=center_dia / 2, $fn=fn);
         }
       }
@@ -91,26 +99,28 @@ module upper_ring_connector(d,
   }
 }
 
-module lower_ring_connector(d,
-                            h,
-                            connector_h,
-                            connector_d,
+module lower_ring_connector(d=rack_outer_connector_d,
+                            h=rack_knuckle_total_connector_h,
+                            connector_h=rack_bracket_connector_h,
                             center_dia,
-                            ring_w=1,
+                            center=true,
                             tolerance=0.4,
                             fn=360) {
+  params = calculate_params_from_dia(d=d, center_dia=center_dia);
+  connector_d = params[0];
+  ring_w = params[1];
 
   lower_height = h - connector_h;
 
   difference() {
     union() {
       translate([0, 0, lower_height / 2]) {
-        linear_extrude(height=lower_height, center=true) {
+        linear_extrude(height=lower_height, center=center) {
           circle(r=d / 2, $fn=fn);
         }
       }
       translate([0, 0, connector_h / 2 + lower_height]) {
-        linear_extrude(height=connector_h, center=true) {
+        linear_extrude(height=connector_h, center=center) {
           ring_2d(r=connector_d / 2, w=ring_w, fn=fn, outer=true);
         }
       }
@@ -120,7 +130,7 @@ module lower_ring_connector(d,
       offst = 0.5;
       height = h + offst;
       translate([0, 0, height / 2 - offst / 2]) {
-        linear_extrude(height=height, center=true) {
+        linear_extrude(height=height, center=center) {
           circle(r=center_dia / 2, $fn=fn);
         }
       }
@@ -128,12 +138,10 @@ module lower_ring_connector(d,
   }
 }
 
-module print_plate(d = 14,
-                   h = 19,
-                   connector_h = 10,
-                   connector_d = 8,
-                   center_dia = 2,
-                   ring_w = 1.5,
+module print_plate(d=rack_outer_connector_d,
+                   h=rack_knuckle_total_connector_h,
+                   connector_h=rack_bracket_connector_h,
+                   center_dia=m2_hole_dia,
                    step_offset = 5) {
 
   rotate([180, 0, 0]) {
@@ -142,9 +150,7 @@ module print_plate(d = 14,
         upper_ring_connector(d=d,
                              h=h,
                              connector_h=connector_h,
-                             ring_w=ring_w,
-                             center_dia = 2,
-                             connector_d=connector_d);
+                             center_dia=center_dia);
       }
     }
   }
@@ -153,18 +159,14 @@ module print_plate(d = 14,
     lower_ring_connector(d=d,
                          h=h,
                          connector_h=connector_h,
-                         ring_w=ring_w,
-                         center_dia = 2,
-                         connector_d=connector_d);
+                         center_dia=center_dia);
   }
 }
 
-module assembly_view(d = 14,
-                     h = 19,
-                     connector_h = 10,
-                     connector_d = 8,
-                     center_dia = 2,
-                     ring_w = 1.5,
+module assembly_view(d=rack_outer_connector_d,
+                     h=rack_knuckle_total_connector_h,
+                     connector_h=rack_bracket_connector_h,
+                     center_dia=m2_hole_dia,
                      animation_z_offset = 5) {
 
   end_h = h + animation_z_offset;
@@ -174,17 +176,13 @@ module assembly_view(d = 14,
   lower_ring_connector(d=d,
                        h=h,
                        connector_h=connector_h,
-                       ring_w=ring_w,
-                       center_dia=center_dia,
-                       connector_d=connector_d);
+                       center_dia=center_dia);
 
   translate([0, 0, z_offst]) {
     upper_ring_connector(d=d,
                          h=h,
                          connector_h=connector_h,
-                         ring_w=ring_w,
                          center_dia=center_dia,
-                         connector_d=connector_d,
                          base_color=[1, 0, 0, 0.2],
                          connector_color="green");
   }

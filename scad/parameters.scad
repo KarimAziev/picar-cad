@@ -169,7 +169,7 @@ wheel_hub_outer_d                      = 48.2;
 wheel_screw_boss_w                     = 1;
 wheel_screw_boss_h                     = 2;
 
-wheel_dia                              = 50;
+wheel_dia                              = 52;
 wheel_w                                = 22;
 wheel_thickness                        = 1.0;
 wheel_rim_h                            = 1.8;
@@ -183,7 +183,7 @@ wheel_shaft_d                          = 6.4;
 wheel_tolerance                        = 0.3;
 
 rack_len                               = 60;
-rack_pan_full_len                      = 120;
+rack_pan_full_len                      = 125;
 
 tooth_h                                = 4;
 tooth_pitch                            = 3;
@@ -192,7 +192,7 @@ pinion_servo_dia                       = 6.5;
 pinion_thickness                       = 2;
 pinion_screw_dia                       = 1.5;
 pinion_center_hole_dia                 = 6.5;
-pinion_z_offst                         = 4;
+pinion_z_offst                         = 5;
 
 upper_knuckle_h                        = 9;
 lower_knuckle_h                        = 5;
@@ -201,7 +201,7 @@ lower_knuckle_d                        = 8;
 
 knuckle_ring_inner_w                   = 1;
 
-knuckle_connector_angle                = 110;
+knuckle_connector_angle                = 109;
 rack_width                             = 6;
 rack_base_h                            = 3;
 rack_rad                               = 0.5;
@@ -212,32 +212,29 @@ rack_side_connector_thickness          = 3;
 rack_side_connector_screws_dia         = m2_hole_dia;
 raw_connector_len                      = rack_side_connector_screws_dia * 2 + rack_side_connector_thickness;
 
-rack_side_connector_size               = [rack_width, rack_base_h, raw_connector_len];
-rack_knuckle_connector_dia             = 6;
-
-shaft_height                           = 50;
+shaft_height                           = 40;
 shaft_dia                              = 8;
 
-distance_between_rack_and_knuckle      = (((rack_pan_full_len / 2) - upper_knuckle_d) * 2 - (rack_len + raw_connector_len * 2));
+distance_between_rack_and_knuckle      = (((rack_pan_full_len / 2) - upper_knuckle_d) * 2 - (rack_len));
 bracket_screws_dia                     = m2_hole_dia;
 bracket_thickness                      = 3;
 
-bracket_rack_side_length               = 17; // The bracket's part that is connected to the rack
-// bracket_knuckle_side_len               = 11;  // The bracket's part that is connected to the knuckle's shaft connector
-knuckle_shaft_len                      = 6; // the length of the knuckle's shaft connector
-bracket_cut_offset                     = (bracket_rack_side_length / tan(knuckle_connector_angle));
-bracket_knuckle_side_len               = distance_between_rack_and_knuckle + bracket_cut_offset + rack_side_connector_screws_dia / 2 + 0.5;
+// d = h / sin(α)
+// or
+// d = dx / cos(α)
+rack_outer_connector_d                 = 12;
+bracket_rack_side_h_length             = 13; // The bracket's part that is connected to the rack
+rack_bracket_width                     = 5;
+// bracket_rack_side_w_length             = 17; // The bracket's part that is connected to the rack
 
-bracket_size                           = [4, bracket_rack_side_length, bracket_knuckle_side_len];
+// bracket_rack_side_w_length               = 11;  // The bracket's part that is connected to the knuckle's shaft connector
+knuckle_shaft_len                      = 6; // the length of the knuckle's shaft connector
+bracket_cut_offset                     = ((bracket_rack_side_h_length) / sin(knuckle_connector_angle));
+
+bracket_rack_side_w_length             = bracket_cut_offset - rack_outer_connector_d / 2;
 
 steering_servo_panel_thickness         = 2;
 
-// translate([-50, 10, 20]) {
-//   color("red") {
-//     l = ((rack_pan_full_len / 2) - upper_knuckle_d) * 2;
-//     rack_l = (rack_len + rack_side_connector_size[2] * 2);
-//     dist = (((rack_pan_full_len / 2) - upper_knuckle_d) * 2 - (rack_len + rack_side_connector_size[2] * 2));
-//     square(size = [5, knuckle_shaft_len - shaft_dia / 2], center = true);
-//   }
-// }
-// echo("bracket_knuckle_side_len", bracket_knuckle_side_len, "distance_between_rack_and_knuckle", distance_between_rack_and_knuckle, bracket_cut_offset, "tan", tan(knuckle_connector_angle));
+rack_knuckle_total_connector_h         = 7;
+rack_bracket_connector_h               = 4;
+rack_bracket_thickness                 = 3;

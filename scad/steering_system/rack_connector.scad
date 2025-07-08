@@ -1,5 +1,7 @@
 include <../parameters.scad>
 use <../util.scad>
+use <ring_connector.scad>
+use <bracket.scad>
 
 /**
  * +-----------------------------+
@@ -57,7 +59,28 @@ module rack_side_connector_bracket(size=[4, 3, 5], thickness=1, screws_d=m2_hole
 }
 
 union() {
-  rack_side_connector(thickness=rack_side_connector_thickness,
-                      size=rack_side_connector_size,
-                      screws_d=rack_side_connector_screws_dia);
+  // mirror([1, 0, 0]) {
+  //   rotate([0, 0, 180]) {
+  //     bracket();
+  //   }
+  // }
+
+  // translate([0, 35, 0]) {
+  //   rotate([0, 0, 180]) {
+  //     bracket();
+  //   }
+  // }
+
+  rotate([0, 0, 180]) {
+    translate([bracket_rack_side_w_length / 2,
+               bracket_rack_side_h_length - rack_bracket_width / 2,
+               -rack_knuckle_total_connector_h -
+               (rack_bracket_connector_h * 0.7) / 2 -6]) {
+      rack_connector();
+    }
+
+    color([1, 0, 0], alpha = 0.9) {
+      bracket(connector_height=rack_bracket_connector_h);
+    }
+  }
 }

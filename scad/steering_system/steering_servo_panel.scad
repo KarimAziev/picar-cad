@@ -84,6 +84,7 @@ module steering_servo_panel(size=[servo_hat_w,
                                   pinion_d + steering_servo_slot_width],
                             thickness=steering_servo_panel_thickness,
                             front_h=rack_base_h + lower_knuckle_h,
+                            front_w=10,
                             z_r=undef,
                             center=true,
                             show_servo=false) {
@@ -112,13 +113,13 @@ module steering_servo_panel(size=[servo_hat_w,
               translate([0, (front_h + thickness) / 2, -y / 2]) {
                 translate([0, 0, rack_width + thickness / 2]) {
                   linear_extrude(height=thickness, center=true) {
-                    rounded_rect([x, front_h], center=center, r=0);
+                    rounded_rect([front_w, front_h], center=center, r=0);
                   }
                 }
 
                 translate([0, 0, -thickness / 2]) {
                   linear_extrude(height=thickness, center=true) {
-                    rounded_rect([x, front_h], center=center, r=0);
+                    rounded_rect([front_w, front_h], center=center, r=0);
                   }
                 }
               }

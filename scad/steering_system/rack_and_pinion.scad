@@ -4,19 +4,6 @@ use <rack_connector.scad>
 use <rack_util.scad>
 use <rack.scad>
 
-module rack_mount() {
-  rack(size=[rack_len, rack_width, rack_base_h],
-       pinion_d=pinion_d,
-       tooth_pitch=tooth_pitch,
-       tooth_height=tooth_h,
-       r=rack_rad,
-       connector_screws_dia=rack_side_connector_screws_dia,
-       connector_z_offst=0,
-       connector_size=rack_side_connector_size,
-       connector_thickness=rack_side_connector_thickness,
-       screws_d=rack_side_connector_screws_dia);
-}
-
 module pinion_mount() {
   pinion(d=pinion_d,
          tooth_height=tooth_h,

@@ -202,7 +202,7 @@ module screw_bosses_pockets(r, w=1, d, h, n, y, fn) {
 }
 
 union() {
-  wheel_hub_lower();
+  // wheel_hub_lower();
   translate([wheel_hub_outer_d + 10, 0, 0]) {
     wheel_hub_upper(screw_boss_h=wheel_screw_boss_h);
   }

@@ -12,9 +12,7 @@ use <head/head_assembly.scad>
 use <head/head_mount.scad>
 use <head/head_neck_mount.scad>
 use <chassis.scad>
-use <steering_system/ackermann.scad>
-use <steering_system/knuckle.scad>
-use <steering_system/ackermann_assembly.scad>
+use <steering_system/rack_and_pinion_assembly.scad>
 use <placeholders/motor.scad>
 use <wheels/rear_wheel.scad>
 use <wheels/front_wheel.scad>
@@ -57,9 +55,11 @@ module front_wheel_right() {
 }
 
 union() {
-  translate([0, 70, -14]) {
+  translate([0, 65, -24]) {
     rotate([0, 0, 0]) {
-      ackermann_assembly_demo();
+      color("#191919") {
+        steering_system_assembly();
+      }
     }
   }
 

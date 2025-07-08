@@ -88,3 +88,5 @@ module pinion(d=pinion_d,
                   screw_dia=screw_dia);
   }
 }
+
+pinion();

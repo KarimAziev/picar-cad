@@ -78,26 +78,27 @@ module row_of_circles(total_width, d, spacing, starts=[0, 0]) {
   }
 }
 
-module rounded_rect(size, r=5, center=false) {
+module rounded_rect(size, r=undef, center=false, fn) {
   w = size[0];
   h = size[1];
-  if (r == 0) {
+  rad = is_undef(r) ? h * 0.3 : r;
+  if (rad == 0) {
     square(size, center=center);
   } else {
     offst = center ? [-w/2, -h/2] : [0, 0];
 
     hull() {
-      translate([r, r] + offst) {
-        circle(r);
+      translate([rad, rad] + offst) {
+        circle(rad, $fn=fn);
       }
-      translate([w - r, r] + offst) {
-        circle(r);
+      translate([w - rad, rad] + offst) {
+        circle(rad, $fn=fn);
       }
-      translate([r, h - r] + offst) {
-        circle(r);
+      translate([rad, h - rad] + offst) {
+        circle(rad, $fn=fn);
       }
-      translate([w - r, h - r] + offst)
-        circle(r);
+      translate([w - rad, h - rad] + offst)
+        circle(rad, $fn=fn);
     }
   }
 }
@@ -260,23 +261,24 @@ module trapezoid_rounded(b = 20, t = 10, h = 15, r = 2, center = false) {
     polygon(points = center ? [for (p = pts) [p[0] - b/2, p[1] - h/2]] : pts);
 }
 
-module rounded_rect_two(size, r=5, center=false, segments=10) {
+module rounded_rect_two(size, r=undef, center=false, segments=10) {
   w = size[0];
   h = size[1];
+  rad = is_undef(r) ? h / 2 : r;
   offst = center ? [-w/2, -h/2] : [0, 0];
 
   pts_bottom = [[0, 0], [w, 0]];
-  pts_right = [[w, 0], [w, h - r]];
+  pts_right = [[w, 0], [w, h - rad]];
   arc_top_right = [for (i = [1 : segments])
       let (a = i * (90 / segments))
-        [(w - r) + r * cos(a), (h - r) + r * sin(a)]];
-  pts_top_edge = [[w - r, h], [r, h]];
+        [(w - rad) + rad * cos(a), (h - rad) + rad * sin(a)]];
+  pts_top_edge = [[w - rad, h], [rad, h]];
 
   arc_top_left = [for (i = [1 : segments])
       let (a = 90 + i * (90 / segments))
-        [r + r * cos(a), (h - r) + r * sin(a)]];
+        [rad + rad * cos(a), (h - rad) + rad * sin(a)]];
 
-  pts_left = [[0, h - r], [0, 0]];
+  pts_left = [[0, h - rad], [0, 0]];
 
   pts = concat(pts_bottom, pts_right, arc_top_right, pts_top_edge, arc_top_left, pts_left);
 
@@ -347,7 +349,7 @@ module l_bracket(size, thickness=1, y_r=undef, z_r=undef, center=true) {
   lr = (z_r == undef) ? 0 : z_r;
 
   union() {
-    linear_extrude(height=thickness) {
+    linear_extrude(height=thickness, center=true) {
       rounded_rect_two([x, y], center=center, r=ur);
     }
     translate([0, -y / 2, z / 2]) {
