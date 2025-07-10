@@ -12,6 +12,7 @@ r3065_dia                              = 3.5;
 chassis_width                          = 110;  // width of the chassis
 chassis_len                            = 235;  // length of the chassis
 chassis_thickness                      = 3;    // chassis thickness
+chassis_offset_rad                     = 1;
 
 // Front panel dimensions:
 // This panel is vertical and includes mounting holes for the ultrasonic sensors.
@@ -64,7 +65,7 @@ steering_knuckle_side_hole_offset      = 2;   // Offset for positioning side mou
 steering_knuckle_thickness             = 2;   // Thickness of the knuckle walls.
 steering_ackernmann_connector_angle    = 120;   // Angle of the linkage connectors for ackermann
 
-pan_servo_slot_dia                     = 7;    // diameter of the pan servo mounting hole at the front of the chassis
+pan_servo_slot_dia                     = 6.5;    // diameter of the pan servo mounting hole at the front of the chassis
 pan_servo_wheels_y_offset              = 18;
 
 // rear motor panel
@@ -73,9 +74,9 @@ motor_mount_panel_thickness            = 3;
 motor_mount_panel_height               = 26;
 
 raspberry_pi_offset                    = chassis_len * 0.06; // Y offset for the Raspberry Pi slot
-raspberry_pi5_screws_size              = [50, 58, 10];
+raspberry_pi5_screws_size              = [50, 58];
 
-ups_hat_screws_size                    = [46, 86, 10];
+ups_hat_screws_size                    = [86, 46];
 
 // Additional cutouts:
 extra_cutouts_dia                      = 8; // diameter of the three extra holes on the left and right sides of the chassis
@@ -124,7 +125,7 @@ head_plate_thickness                   = 2;
 head_side_panel_height                 = head_plate_height;
 head_side_panel_width                  = head_plate_width * 1.2;
 // the diameter of the side hole for mounting servo
-head_servo_mount_dia                   = 7;
+head_servo_mount_dia                   = 6.5;
 // the diameter of the screws for servo. They are placed around the side hole for mounting servo
 head_servo_screw_dia                   = 1.5;
 

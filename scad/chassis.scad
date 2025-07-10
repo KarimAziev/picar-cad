@@ -24,19 +24,21 @@ use <front_panel.scad>
 use <rear_panel.scad>
 use <pan_servo.scad>
 use <motor_mount_panel.scad>
-use <steering_system/chassis_servo_slot.scad>
-use <steering_system/steering_chassis_upper_link.scad>
 
-module raspberry_pi5_screws() {
-  four_corner_holes(size = raspberry_pi5_screws_size,
-                    center = true,
-                    hole_dia = m25_hole_dia);
+module raspberry_pi5_screws_2d(vertical=false) {
+  size = vertical
+    ? [raspberry_pi5_screws_size[1],
+       raspberry_pi5_screws_size[0]]
+    : raspberry_pi5_screws_size;
+  four_corner_holes_2d(size=size,
+                       center=true,
+                       hole_dia=m25_hole_dia);
 }
 
-module ups_hat_screws() {
-  four_corner_holes(size = ups_hat_screws_size,
-                    center = true,
-                    hole_dia = m3_hole_dia);
+module ups_hat_screws_2d() {
+  four_corner_holes_2d(size=ups_hat_screws_size,
+                       center=true,
+                       hole_dia=m3_hole_dia);
 }
 
 // This module generates a lot of the 2D profiles for battery screw holes for both the extra battery holders
@@ -81,63 +83,6 @@ module battery_holders_screws_2d(x_offst=extra_battery_screws_x_offset) {
   }
 }
 
-module battery_holders_screws() {
-  z_offst=0.5;
-  translate([0, 0, -z_offst]) {
-    linear_extrude(height = chassis_thickness + z_offst * 2) {
-      battery_holders_screws_2d();
-    }
-  }
-}
-
-module chassis_shape_cutouts() {
-  offset1_x = 0.49 * chassis_width;
-  offset1_y = 18/235 * chassis_len;
-  rot1 = 23;
-
-  sq1_w = 15/100 * chassis_width;
-  sq1_h = 55/235 * chassis_len;
-  sq2_w = 26/100 * chassis_width;
-  sq2_h = 40/235 * chassis_len;
-  sq3_w = 15/100 * chassis_width;
-  sq3_h = 40/235 * chassis_len;
-
-  tx_for_sq2 = 6/100 * chassis_width;
-  ty_for_sq2 = 32/235 * chassis_len;
-  ty_for_sq3 = -26/235 * chassis_len;
-
-  offset2_x = 35/100 * chassis_width;
-  offset2_y = -125/235 * chassis_len;
-  rot2 = 44;
-  sq4_w = 30/100 * chassis_width;
-  sq4_h = chassis_width * 0.25;
-
-  translate([offset1_x, offset1_y, 0]) {
-    rotate([0, 0, rot1]) {
-      square([sq1_w, sq1_h], center=true);
-      translate([tx_for_sq2, ty_for_sq2, 0]) {
-        square([sq2_w, sq2_h], center=true);
-      }
-      translate([0, ty_for_sq3, 0]) {
-        square([sq3_w, sq3_h], center=true);
-      }
-    }
-  }
-  translate([offset2_x, offset2_y, 0]) {
-    rotate([0, 0, rot2]) {
-      square([sq4_w, sq4_h], center=true);
-    }
-  }
-  translate([35, 58, 0]) {
-    hull() {
-      circle(r = 10);
-      translate([8, -30, 0]) {
-        circle(r = 5);
-      }
-    }
-  }
-}
-
 module chassis_extra_cutouts_2d() {
   translate([0, 50/600 * chassis_len, 0]) {
     y = 10/235 * chassis_len;
@@ -147,16 +92,11 @@ module chassis_extra_cutouts_2d() {
     }
   }
 
-  chassis_shape_cutouts();
-  mirror([1, 0, 0]) {
-    chassis_shape_cutouts();
-  }
-
   translate([0, -10/235 * chassis_len, 0]) {
-    for (offset = [-10/235 * chassis_len, 0, -20/235 * chassis_len]) {
-      translate([0, offset, 0]) {
-        dotted_screws_line_y([-(chassis_width*0.5 - extra_cutouts_dia),
-                              chassis_width*0.5 - extra_cutouts_dia],
+    for (y_offset = [-10/235 * chassis_len, 0, -20/235 * chassis_len]) {
+      translate([0, y_offset, 0]) {
+        dotted_screws_line_y([-(chassis_width * 0.5 - extra_cutouts_dia),
+                              chassis_width * 0.5 - extra_cutouts_dia],
                              y = 0,
                              d = extra_cutouts_dia);
       }
@@ -164,44 +104,58 @@ module chassis_extra_cutouts_2d() {
   }
 }
 
-module chassis_front_cutout_2d() {
-  translate([-chassis_width * 0.5, (chassis_len * 0.5) - 20]) {
-    rotate([20, 45, 0]) {
-      square([chassis_width * 0.9, (chassis_len * 0.2)], center=true);
-    }
+module chassis_base_2d() {
+  init_pos_x = 0;
+  init_pos_y = 0 - chassis_len / 2;
+  base_width = chassis_width / 2;
+  target = ceil(0.34 * abs(init_pos_y));
+  rear_panel_base_w = rear_panel_size[0] / 2;
+
+  points = [[init_pos_x, init_pos_y],
+            [-rear_panel_base_w, init_pos_y],
+            [((-base_width - rear_panel_base_w) / 2) + 6, init_pos_y + 5],
+            [(-base_width - rear_panel_base_w) / 2, init_pos_y + 5],
+            [-base_width + 6, init_pos_y + 0.5],
+            [-base_width, init_pos_y + 2],
+            [-base_width, init_pos_y + ceil(0.34 * abs(init_pos_y))],
+            [-base_width + 2, init_pos_y + chassis_len / 2 + 5],
+            [-base_width * 0.65, init_pos_y + chassis_len / 1.4],
+            [-base_width * 0.25, chassis_len / 2],
+            [0, chassis_len / 2]];
+
+  offset(r = chassis_offset_rad) {
+    polygon(points = points);
   }
 
-  for (x = [-chassis_width, chassis_width]) {
-    translate([x * 0.7, wheels_offset_y, 0]) {
-      circle(r = 35);
+  mirror([1, 0, 0]) {
+    offset(r = chassis_offset_rad) {
+      polygon(points = points);
     }
   }
-  // for (x = [chassis_width, -chassis_width]) {
-  //   translate([x * 0.5, chassis_len * 0.4, 0]) {
-  //     rounded_rect(size=[80, 4], r=2, center=true);
-  //   }
-  // }
 }
 
-module chassis_base_2d() {
-  union() {
-    difference() {
-      rounded_rect(size=[chassis_width, chassis_len], center=true, r=5);
-      chassis_extra_cutouts_2d();
-      chassis_front_cutout_2d();
-      mirror([1, 0, 0]) {
-        chassis_front_cutout_2d();
-      }
+module chassis_2d() {
+  chassis_len_half = (chassis_len / 2);
+  difference() {
+    chassis_base_2d();
+    chassis_extra_cutouts_2d();
+    battery_holders_screws_2d();
+
+    pan_servo_cutout_2d();
+
+    translate([0, raspberry_pi_offset, 0]) {
+      raspberry_pi5_screws_2d();
+      raspberry_pi5_screws_2d(vertical=true);
+    }
+    translate([0, -chassis_len_half + round(chassis_len_half * 0.36)]) {
+      ups_hat_screws_2d();
     }
   }
 }
 
 module chassis_base_3d() {
-  linear_extrude(chassis_thickness, center = false) {
-    difference() {
-      chassis_base_2d();
-      pan_servo_cutout_2d();
-    }
+  linear_extrude(chassis_thickness, center=false) {
+    chassis_2d();
   }
 }
 
@@ -214,39 +168,23 @@ module rear_motor_mount_wall() {
 }
 
 module chassis_plate() {
-  difference() {
-    union() {
-      chassis_base_3d();
+  union() {
+    chassis_base_3d();
+
+    rear_motor_mount_wall();
+    mirror([1, 0, 0]) {
       rear_motor_mount_wall();
-      mirror([1, 0, 0]) {
-        rear_motor_mount_wall();
-      }
-
-      translate([0, chassis_len * 0.5, front_panel_height * 0.5]) {
-        front_panel();
-      }
-
-      translate([0, -(chassis_len / 2) + 1, 25 / 2]) {
-        rotate([90, 0, 0]) {
-          rear_panel();
-        }
-      }
     }
 
-    translate([0, -(chassis_len / 2) + 42]) {
-      rotate([0, 0, 90]) {
-        ups_hat_screws();
-      }
+    translate([0, chassis_len * 0.5 + chassis_offset_rad, front_panel_height * 0.5]) {
+      front_panel();
     }
 
-    translate([0, raspberry_pi_offset, 0]) {
-      raspberry_pi5_screws();
-      rotate([0, 0, 90]) {
-        raspberry_pi5_screws();
+    translate([0, -(chassis_len / 2) + 1, 25 / 2]) {
+      rotate([90, 0, 0]) {
+        rear_panel();
       }
     }
-
-    battery_holders_screws();
   }
 }
 
