@@ -49,7 +49,6 @@ module rack(size=[rack_len, rack_width, rack_base_h],
 
     offst = [-rack_len / 2 + rack_margin / 2 - rack_outer_connector_d / 2, 0, 0];
     translate(offst) {
-
       if (show_brackets) {
         rack_connector_assembly();
       } else {
@@ -89,18 +88,12 @@ module bracket_assembly() {
   rack_margin      = shared_params[3];
   x_offst = -rack_len / 2 - rack_margin / 2 - rack_outer_connector_d / 2 - rack_bracket_width;
   y_offst = bracket_rack_side_h_length;
-  z_offst = lower_knuckle_h / 2 + steering_servo_panel_thickness / 2 + rack_bracket_connector_h;
+  z_offst = knuckle_pin_lower_height / 2 + steering_servo_panel_thickness / 2 + rack_bracket_connector_h;
 
   offst = [x_offst,
            -y_offst - 1,
            z_offst + 2];
 
-  // translate([bracket_rack_side_w_length / 2,
-  //              bracket_rack_side_h_length - rack_bracket_width / 2,
-  //              -rack_knuckle_total_connector_h -
-  //              (rack_bracket_connector_h * 0.7) / 2]) {
-  //     rack_connector();
-  //   }
   translate(offst) {
     bracket();
   }

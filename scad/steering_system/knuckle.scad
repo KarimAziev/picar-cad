@@ -1,133 +1,152 @@
-/* knuckle.scad - Steering knuckles for the front wheels.
- *
- * This file defines printable modules for steering knuckles.
- * There are two primary modules: knuckle_right and knuckle_left.
- * Additionally, the knuckles_print_plate module combines both for convenient printing.
- *
- * Each knuckle mechanically connects the wheel to the tie rod and the steering links.
- *
- * Mounting:
- *   - The knuckle is attached to the wheel using R4120 rivets.
- *     (You can specify an alternate diameter by setting the variable
- *      'front_wheel_knuckle_dia' in ../parameters.scad.)
- *
- *   - The steering linkage is connected to the knuckles using R3065 rivets.
- *     (See the variable 'steering_knuckle_screws_dia' for details.)
- *
- */
 include <../parameters.scad>
 use <../util.scad>
+use <bracket.scad>
+use <shaft.scad>
+use <ring_connector.scad>
+use <rack_connector.scad>
+use <../wheels/wheel_hub.scad>
 
-//   Creates the knuckle section that connects to the wheel geometry.
-module knuckle_wheel_connector(w=steering_knuckle_width,
-                               h=steering_knuckle_lower_height,
-                               thickness=steering_knuckle_thickness,
-                               screws_dia=front_wheel_knuckle_dia) {
-  linear_extrude(thickness) {
-    union() {
-      difference() {
-        square(size = [w, h], center = true);
-        circle(r = screws_dia * 0.5, $fn=360);
+function knuckle_full_h() = wheel_hub_full_height(knuckle_height * 2, knuckle_hub_inner_rim_h);
+
+module knuckle_mount(center=true) {
+  total_h = knuckle_full_h();
+  union() {
+    translate([0, 0, center ? total_h / 4 - knuckle_hub_inner_rim_h * 2 : 0]) {
+      wheel_hub_lower(d=knuckle_bearing_outer_dia,
+                      h=knuckle_height * 2,
+                      upper_d=knuckle_dia,
+                      outer_d=knuckle_dia,
+                      inner_rim_h=knuckle_hub_inner_rim_h,
+                      inner_rim_w=knuckle_hub_inner_rim_w,
+                      screws_dia=0,
+                      screws_n=0,
+                      screw_boss_h=0,
+                      screw_boss_w=0,
+                      center_screws=false);
+      shaft_z_offst = -knuckle_height + knuckle_shaft_dia / 2;
+
+      R = knuckle_dia / 2;
+      notch_width = knuckle_dia - 2 * sqrt((R * R) - ((knuckle_shaft_dia/2) * (knuckle_shaft_dia/2)));
+
+      union() {
+        translate([knuckle_shaft_len / 2 + knuckle_dia / 2, 0, shaft_z_offst]) {
+          shaft(d=knuckle_shaft_dia, h=knuckle_shaft_len + notch_width);
+        }
       }
-      translate([-w * 0.5, steering_knuckle_upper_height * 0.5, 0]) {
-        knuckle_upper_pan();
-      }
-    }
-  }
-}
 
-// Creates the upper pan geometry for the knuckle.
-module knuckle_upper_pan(w=steering_knuckle_width * 0.5,
-                         h=steering_knuckle_upper_height,
-                         fillet_r = 0.4) {
-  pts = [[0, 0],
-         [0, h * 0.8],
-         [w * 0.05, h * 0.8],
-         [w * 0.35, h],
-         [w, h],
-         [w, h * 0.5],
-         [w, 0]];
+      rotate([0, 0, knuckle_bracket_connector_angle]) {
+        w = knuckle_bracket_connector_len;
+        params = calculate_params_from_dia(d=rack_outer_connector_d, center_dia=m2_hole_dia);
+        connector_d = params[0];
+        ring_w = params[1];
+        tolerance = params[2];
+        notch_width = knuckle_dia - 2 * sqrt((R * R) - ((w/2) * (w/2)));
 
-  difference() {
-    offset(r = fillet_r, chamfer = false) {
-      offset(r = -fillet_r, chamfer = false) {
-        polygon(points = pts);
-      }
-    }
-  }
-}
+        extra_wall = notch_width;
 
-// Constructs a side piece for the knuckle with an integrated screw hole.
-// The shape is a rounded rectangle with a circular cutout for the screw.
-module knuckle_inner_side(w=steering_knuckle_side_width,
-                          h=steering_knuckle_lower_height,
-                          side_x_screw_offset=steering_knuckle_side_hole_offset,
-                          side_y_screw_offset=0,
-                          thickness=steering_knuckle_thickness) {
-  linear_extrude(height = thickness) {
-    difference() {
-      rounded_rect(size = [w, h], r = h * 0.1, center = true);
+        translate([w / 2, 0, -knuckle_bracket_connector_height / 2]) {
+          linear_extrude(height = knuckle_bracket_connector_height, center=true) {
+            difference() {
+              square([extra_wall, rack_outer_connector_d], center=true);
+              translate([-knuckle_dia / 2, 0, 0]) {
+                circle(d=knuckle_dia, $fn=60);
+              }
+            }
+          }
+        }
 
-      translate([side_x_screw_offset, side_y_screw_offset, 0]) {
-        circle(r = steering_knuckle_screws_dia * 0.5, $fn=360);
-      }
-    }
-  }
-}
+        translate([knuckle_dia / 2 + w / 2, 0,
+                   -knuckle_bracket_connector_height / 2]) {
 
-// Generates the left steering knuckle.
-module knuckle_left() {
-  rotate([180, 0, 0]) {
-    union() {
-      knuckle_wheel_connector();
-
-      half_knuckle_w = steering_knuckle_width * 0.5;
-      z_offset = -steering_knuckle_side_width * 0.5 + steering_knuckle_thickness;
-
-      translate([half_knuckle_w, 0, z_offset]) {
-        rotate([0, 90, 0]) {
           union() {
-            knuckle_inner_side();
+            linear_extrude(height = knuckle_bracket_connector_height, center = true) {
+              difference() {
+                square([w, rack_outer_connector_d], center=true);
+                translate([rack_outer_connector_d / 2, 0, 0]) {
+                  circle(d=connector_d + ((ring_w + tolerance) * 2 + 2), $fn=360);
+                }
+              }
+            }
+
+            translate([rack_outer_connector_d / 2, 0, -knuckle_bracket_connector_height / 2]) {
+              upper_ring_connector(d=rack_outer_connector_d,
+                                   h=knuckle_bracket_connector_height,
+                                   connector_h=rack_bracket_connector_h,
+                                   center_dia=m2_hole_dia);
+            }
           }
         }
       }
-
-      translate([-half_knuckle_w, steering_knuckle_upper_height * 0.5, z_offset]) {
-        height = steering_knuckle_lower_height + steering_knuckle_upper_height;
-        rotate([0, 90, 0]) {
-          knuckle_inner_side(h=height, side_y_screw_offset=-height * 0.3);
-        }
-      }
-
-      inner_h = steering_knuckle_upper_height * 0.9;
-      translate([0, steering_knuckle_upper_height + steering_knuckle_upper_height * 0.1, z_offset]) {
-        rotate([0, 90, 0]) {
-          knuckle_inner_side(h=inner_h);
-        }
-      }
     }
   }
 }
-// Generates the right steering knuckle by mirroring the left knuckle.
-module knuckle_right() {
-  mirror([1, 0, 0]) {
-    knuckle_left();
-  }
-}
 
-// Produces a print plate that includes both left and right knuckles for
-// simultaneous printing.
-module knuckles_print_plate(offst=5) {
+module knuckle_lower_connector(upper_dia=knuckle_dia,
+                               lower_h=knuckle_pin_lower_height,
+                               chamfer_h=knuckle_pin_chamfer_height,
+                               shaft_dia=knuckle_bearing_inner_dia) {
+
+  upper_rad = upper_dia / 2;
+
+  lower_z_offset = -lower_h / 2;
+
+  bearing_total_h = knuckle_pin_bearing_height;
+  h1 = bearing_total_h - chamfer_h;
+
   union() {
-    translate([-steering_knuckle_width * 0.5 - offst, 0, 0]) {
-      knuckle_left();
-    }
-    translate([steering_knuckle_width * 0.5 + offst, 0, 0]) {
-      knuckle_right();
+    translate([0, 0, lower_z_offset]) {
+      linear_extrude(height=lower_h, center=true) {
+        circle(r=upper_rad, $fn=360);
+      }
+
+      translate([0, 0, -lower_z_offset]) {
+        union() {
+          translate([0, 0, 0]) {
+            linear_extrude(height=h1, center=false) {
+              circle(r=shaft_dia / 2, $fn=360);
+            }
+          }
+
+          scale_factor = ((shaft_dia / 2) - chamfer_h) / (shaft_dia / 2);
+
+          translate([0, 0, bearing_total_h - chamfer_h]) {
+            linear_extrude(height = chamfer_h,
+                           center=false,
+                           scale=scale_factor) {
+              circle(r=shaft_dia / 2, $fn=360);
+            }
+          }
+        }
+      }
     }
   }
 }
 
-color("white") {
-  knuckles_print_plate();
+module knuckle_probes() {
+  vals = [5.0, 5.1, 5.2, 5.3];
+
+  union() {
+    for (i = [0:len(vals) - 1]) {
+      translate([i * knuckle_dia, 0, 0]) {
+        knuckle_lower_connector(lower_h=0, shaft_dia=vals[i]);
+      }
+    }
+  }
+  translate([-knuckle_dia / 2, -knuckle_dia / 2, 0]) {
+    linear_extrude(height = 2, center=true) {
+      square([knuckle_dia * len(vals), knuckle_dia]);
+    }
+  }
+}
+
+union() {
+  rotate([180, 0, 0]) {
+    knuckle_mount();
+
+    translate([-30, 0, 0]) {
+      mirror([1, 0, 0]) {
+        knuckle_mount();
+      }
+    }
+  }
 }

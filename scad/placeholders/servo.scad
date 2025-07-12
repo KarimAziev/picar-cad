@@ -25,7 +25,7 @@ module servo_screws_hat(size,
                         thickness=servo_hat_thickness) {
   w = size[0];
   h = size[1];
-  linear_extrude(height = thickness, center = true) {
+  linear_extrude(height=thickness, center=true) {
     difference() {
       rounded_rect(size = [w, h], r = h * 0.1, center = true);
       two_x_screws_2d(x_offset, d=d);

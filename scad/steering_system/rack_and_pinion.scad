@@ -5,12 +5,14 @@ use <rack_util.scad>
 use <rack.scad>
 
 module pinion_mount() {
-  pinion(d=pinion_d,
-         tooth_height=tooth_h,
-         thickness=pinion_thickness,
-         servo_dia=pinion_servo_dia,
-         tooth_pitch=tooth_pitch,
-         rack_len=rack_len);
+  rotate([90, 1, 0]) {
+    pinion(d=pinion_d,
+           tooth_height=tooth_h,
+           thickness=pinion_thickness,
+           servo_dia=pinion_servo_dia,
+           tooth_pitch=tooth_pitch,
+           rack_len=rack_len);
+  }
 }
 
 module rack_and_pinion(pinion_color="#fa8072", rack_color="#b0c4de") {

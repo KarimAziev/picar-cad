@@ -15,7 +15,8 @@ use <../util.scad>
 
 function wheel_hub_full_height(h, inner_rim_h) = h + inner_rim_h * 2;
 function wheel_hub_width(d, outer_d) = (outer_d - d) / 2;
-function wheel_hub_screws_offset(d, screws_dia, screw_boss_w) =  d - screws_dia - screw_boss_w * 2 - 0.4;
+function wheel_hub_screws_offset(d, screws_dia, screw_boss_w, inner_rim_w, tolerance=0.4, center, out_d) =
+  center ? (d / 2) + (((out_d - d) / 2) / 2) :  (d / 2 + (screws_dia + screw_boss_w) / 2) + 1;
 
 /**
  * Creates a half-hub of the specified height featuring screw boss pockets for added functionality.
@@ -30,7 +31,10 @@ module wheel_hub_lower(d=wheel_hub_d,
                        screws_n=wheel_screws_n,
                        screw_boss_h=wheel_screw_boss_h,
                        screw_boss_w=wheel_screw_boss_w,
-                       upper_d=wheel_hub_outer_d * 0.90) {
+                       center_screws=true,
+                       tolerance=0.4,
+                       upper_d) {
+  upper_dia = is_undef(upper_d) ? outer_d * 0.9 : upper_d;
   full_h = wheel_hub_full_height(h, inner_rim_h);
   w = wheel_hub_width(d, outer_d);
   union() {
@@ -43,20 +47,20 @@ module wheel_hub_lower(d=wheel_hub_d,
                      screws_dia=screws_dia,
                      screws_n=screws_n,
                      screw_boss_h=screw_boss_h,
-                     screw_boss_w=screw_boss_w);
+                     screw_boss_w=screw_boss_w,
+                     upper_d=upper_dia,
+                     center_screws=center_screws);
       translate([0, 0, -screw_boss_h / 2]) {
         screw_bosses_pockets(h=screw_boss_h + 0.4,
-                             y=wheel_hub_screws_offset(d, screws_dia, screw_boss_w),
-                             d=screws_dia + screw_boss_w + 0.4,
+                             y=wheel_hub_screws_offset(d, screws_dia, screw_boss_w, inner_rim_w, center=center_screws, out_d=upper_dia),
+                             d=screws_dia + screw_boss_w + tolerance,
                              n=screws_n,
                              w=screw_boss_w,
                              fn=360);
       }
     }
-    translate([0, 0, 0]) {
-      linear_extrude(height = 2, center = true) {
-        ring_2d(r=(upper_d / 2) + 0.4, w=(outer_d - upper_d) / 2 - 0.4, fn=360, outer=true);
-      }
+    linear_extrude(height = 2, center = true) {
+      ring_2d(r=(upper_dia / 2) + 0.4, w=(outer_d - upper_dia) / 2 - 0.4, fn=360, outer=true);
     }
   }
 }
@@ -72,7 +76,8 @@ module wheel_hub_upper(d=wheel_hub_d,
                        screws_dia=wheel_hub_screws,
                        screws_n=wheel_screws_n,
                        screw_boss_h=wheel_screw_boss_h,
-                       screw_boss_w=wheel_screw_boss_w) {
+                       screw_boss_w=wheel_screw_boss_w,
+                       center_screws=true) {
   union() {
     wheel_hub_part(d=d,
                    outer_d=outer_d,
@@ -82,10 +87,16 @@ module wheel_hub_upper(d=wheel_hub_d,
                    screws_dia=screws_dia,
                    screws_n=screws_n,
                    screw_boss_h=screw_boss_h,
-                   screw_boss_w=screw_boss_w);
+                   screw_boss_w=screw_boss_w,
+                   center_screws=center_screws);
     translate([0, 0, screw_boss_h / 2]) {
       screw_bosses(h=screw_boss_h,
-                   y=wheel_hub_screws_offset(d, screws_dia, screw_boss_w),
+                   y=wheel_hub_screws_offset(d,
+                                             screws_dia,
+                                             screw_boss_w,
+                                             inner_rim_w,
+                                             center=center_screws,
+                                             out_d=outer_d),
                    d=screws_dia,
                    n=screws_n,
                    w=screw_boss_w);
@@ -104,7 +115,9 @@ module wheel_hub(d=wheel_hub_d,
                  screws_dia=wheel_hub_screws,
                  screws_n=wheel_screws_n,
                  screw_boss_h=wheel_screw_boss_h,
-                 screw_boss_w=wheel_screw_boss_w) {
+                 screw_boss_w=wheel_screw_boss_w,
+                 center_screws=true,
+                 upper_d) {
   // Calculate the ring width and full height including inner rims.
   w = wheel_hub_width(d, outer_d);
   full_h = wheel_hub_full_height(h, inner_rim_h);
@@ -118,7 +131,12 @@ module wheel_hub(d=wheel_hub_d,
         for (i=[0:1:screws_n-1]) {
           angle = i * (360 / screws_n);
           rotate([0, 0, angle]) {
-            y = wheel_hub_screws_offset(d, screws_dia, screw_boss_w);
+            y = wheel_hub_screws_offset(d,
+                                        screws_dia,
+                                        screw_boss_w,
+                                        inner_rim_w,
+                                        center=center_screws,
+                                        out_d=is_undef(upper_d) ? outer_d : upper_d);
             translate([0, y, 0]) {
               circle(r=screws_dia / 2, $fn=360);
             }
@@ -131,7 +149,7 @@ module wheel_hub(d=wheel_hub_d,
     for (direction = [-1, 1]) {
       z = direction > 0 ? base_z_ofst[0] - base_z_ofst[1] : -base_z_ofst[0] + base_z_ofst[1];
       translate([0, 0, z]) {
-        linear_extrude(height = inner_rim_h, center = true) {
+        linear_extrude(height = inner_rim_h, center=true) {
           ring_2d(r=d / 2, w=inner_rim_w, fn=360, outer=false);
         }
       }
@@ -150,7 +168,9 @@ module wheel_hub_part(d=wheel_hub_d,
                       screws_dia=wheel_hub_screws,
                       screws_n=wheel_screws_n,
                       screw_boss_h=wheel_screw_boss_h,
-                      screw_boss_w=wheel_screw_boss_w) {
+                      screw_boss_w=wheel_screw_boss_w,
+                      center_screws=true,
+                      upper_d) {
   full_h = wheel_hub_full_height(h, inner_rim_h);
   difference() {
     wheel_hub(d=d,
@@ -161,7 +181,9 @@ module wheel_hub_part(d=wheel_hub_d,
               screws_dia=screws_dia,
               screws_n=screws_n,
               screw_boss_h=screw_boss_h,
-              screw_boss_w=screw_boss_w);
+              screw_boss_w=screw_boss_w,
+              upper_d=upper_d,
+              center_screws=center_screws);
 
     translate([0, 0, full_h / 2]) {
       linear_extrude(height = full_h, center = true) {
@@ -202,8 +224,10 @@ module screw_bosses_pockets(r, w=1, d, h, n, y, fn) {
 }
 
 union() {
-  // wheel_hub_lower();
-  translate([wheel_hub_outer_d + 10, 0, 0]) {
-    wheel_hub_upper(screw_boss_h=wheel_screw_boss_h);
+  translate([-wheel_hub_outer_d / 2, 0, 0]) {
+    wheel_hub_lower(screw_boss_h=wheel_screw_boss_h, center_screws=true);
+  }
+  translate([wheel_hub_outer_d / 2 + 5, 0, 0]) {
+    wheel_hub_upper(screw_boss_h=wheel_screw_boss_h, center_screws=true);
   }
 }

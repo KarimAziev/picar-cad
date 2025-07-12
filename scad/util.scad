@@ -81,7 +81,7 @@ module row_of_circles(total_width, d, spacing, starts=[0, 0]) {
 module rounded_rect(size, r=undef, center=false, fn) {
   w = size[0];
   h = size[1];
-  rad = is_undef(r) ? h * 0.3 : r;
+  rad = is_undef(r) ? (min(h, w)) * 0.3 : r;
   if (rad == 0) {
     square(size, center=center);
   } else {
@@ -110,9 +110,9 @@ module rounded_cube(size, r=undef, center=true) {
   }
 }
 
-module debug_polygon(points, paths=undef, convexity=undef, debug=false,
+module debug_polygon(points, paths=undef, convexity=undef, debug=true,
                      arrow_size=1, font_size=4, font_color="red",
-                     show_arrows=true) {
+                     show_arrows=false) {
   polygon(points=points, paths=paths, convexity=convexity);
 
   if (debug) {
@@ -192,7 +192,7 @@ module four_corner_holes(size = [10, 10, 10], center = false, hole_dia = 3, fn_v
   }
 }
 
-module four_corner_holes_2d(size = [10, 10], center = false, hole_dia = 3, fn_val = 24) {
+module four_corner_holes_2d(size = [10, 10], center = false, hole_dia = 3, fn_val = 60) {
   for (x_ind = [0, 1])
     for (y_ind = [0, 1]) {
       x_pos = (center ? -size[0] / 2 : 0) + x_ind * size[0];
@@ -264,7 +264,7 @@ module trapezoid_rounded(b = 20, t = 10, h = 15, r = 2, center = false) {
 module rounded_rect_two(size, r=undef, center=false, segments=10) {
   w = size[0];
   h = size[1];
-  rad = is_undef(r) ? h / 2 : r;
+  rad = is_undef(r) ? (min(h, w)) / 2 : r;
   offst = center ? [-w/2, -h/2] : [0, 0];
 
   pts_bottom = [[0, 0], [w, 0]];
@@ -349,7 +349,7 @@ module l_bracket(size, thickness=1, y_r=undef, z_r=undef, center=true) {
   lr = (z_r == undef) ? 0 : z_r;
 
   union() {
-    linear_extrude(height=thickness, center=true) {
+    linear_extrude(height=thickness, center=center) {
       rounded_rect_two([x, y], center=center, r=ur);
     }
     translate([0, -y / 2, z / 2]) {
