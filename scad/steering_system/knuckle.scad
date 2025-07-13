@@ -4,6 +4,7 @@ use <bracket.scad>
 use <shaft.scad>
 use <ring_connector.scad>
 use <rack_connector.scad>
+use <bearing_shaft.scad>
 use <../wheels/wheel_hub.scad>
 use <../wheels/front_wheel.scad>
 
@@ -84,65 +85,6 @@ module knuckle_mount(center=true, show_wheels=false) {
           }
         }
       }
-    }
-  }
-}
-
-module knuckle_lower_connector(upper_dia=knuckle_dia,
-                               lower_h=knuckle_pin_lower_height,
-                               chamfer_h=knuckle_pin_chamfer_height,
-                               shaft_dia=knuckle_bearing_inner_dia) {
-
-  upper_rad = upper_dia / 2;
-
-  lower_z_offset = -lower_h / 2;
-
-  bearing_total_h = knuckle_pin_bearing_height;
-  h1 = bearing_total_h - chamfer_h;
-
-  union() {
-    translate([0, 0, lower_z_offset]) {
-      linear_extrude(height=lower_h, center=true) {
-        circle(r=upper_rad, $fn=360);
-      }
-
-      translate([0, 0, -lower_z_offset]) {
-        union() {
-          translate([0, 0, 0]) {
-            linear_extrude(height=h1, center=false) {
-              circle(r=shaft_dia / 2, $fn=360);
-            }
-          }
-
-          scale_factor = ((shaft_dia / 2) - chamfer_h) / (shaft_dia / 2);
-
-          translate([0, 0, bearing_total_h - chamfer_h]) {
-            linear_extrude(height = chamfer_h,
-                           center=false,
-                           scale=scale_factor) {
-              circle(r=shaft_dia / 2, $fn=360);
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-module knuckle_probes() {
-  bigger_val = 4.2;
-  vals = [3.0, 3.1, 3.2, 3.8, 3.9, 4.0, 4.1, bigger_val];
-
-  union() {
-    for (i = [0:len(vals) - 1]) {
-      translate([i * knuckle_dia, 0, 0]) {
-        knuckle_lower_connector(lower_h=0, shaft_dia=vals[i]);
-      }
-    }
-  }
-  translate([-knuckle_dia / 2, -(bigger_val + 2) / 2, 0]) {
-    linear_extrude(height = 2, center=true) {
-      square([knuckle_dia * len(vals), bigger_val + 2]);
     }
   }
 }

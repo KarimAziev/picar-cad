@@ -47,10 +47,33 @@ use <knuckle.scad>
 use <rack_connector.scad>
 use <rack.scad>
 use <pinion.scad>
+use <bearing_shaft.scad>
 
 function steering_servo_panel_extra_w() = (servo_gearbox_h + servo_gear_h / 2);
 
 extra_w = steering_servo_panel_extra_w();
+
+module knuckle_lower_connector(upper_dia=knuckle_dia,
+                               lower_h=knuckle_pin_lower_height,
+                               shaft_height=knuckle_pin_bearing_height,
+                               chamfer_h=knuckle_pin_chamfer_height,
+                               shaft_dia=knuckle_bearing_inner_dia) {
+
+  upper_rad = upper_dia / 2;
+  lower_z_offset = -lower_h / 2;
+
+  union() {
+    translate([0, 0, lower_z_offset]) {
+      linear_extrude(height=lower_h, center=true) {
+        circle(r=upper_dia / 2, $fn=360);
+      }
+
+      translate([0, 0, -lower_z_offset]) {
+        bearing_shaft(d=shaft_dia, h=shaft_height, chamfer_h=chamfer_h);
+      }
+    }
+  }
+}
 
 module rack_mount_panel(rack_size=[rack_pan_full_len,
                                    rack_rail_width,
