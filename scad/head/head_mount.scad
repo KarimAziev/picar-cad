@@ -47,8 +47,6 @@ x_positions                  = [head_side_panel_width * 0.25,
 tilt_angle                   = atan2((-side_panel_curve_end) - (-side_panel_bottom),
                                      side_panel_curve_start - head_side_panel_width);
 
-servo_hole_distances         = number_sequence(from=-17, to=13, step=2);
-
 module head_front_plate() {
   difference() {
     cube([head_plate_width,
@@ -94,7 +92,7 @@ module connector_plate_up(y_offset) {
                center=true);
         d = upper_connector_height * 0.5;
         translate([0, -d * 0.55, 0]) {
-          circle(d=d, $fn=60);
+          circle(d=d, $fn=40);
         }
       }
     }
@@ -167,7 +165,7 @@ module head_upper_plate() {
 }
 
 function side_panel_servo_center() =
-  [head_side_panel_width/2.0, -head_side_panel_height/2.0];
+  [head_side_panel_width / 2.0, -head_side_panel_height / 2.0];
 
 module side_panel_extra_slots_2d() {
   for (slot_y = side_panel_extra_slot_ypos) {
@@ -193,15 +191,31 @@ module side_panel_extra_slots_2d() {
                        d=3);
 }
 
-module side_panel_servo_slots() {
-  translate(side_panel_servo_center()) {
-    circle(d = head_servo_mount_dia, $fn = 50);
-  }
+module side_panel_servo_slots(offst_from_center_hole = 2.0, screws_distance = 0.5) {
+  centers = side_panel_servo_center();
 
-  for (dist = servo_hole_distances) {
-    translate([side_panel_servo_center()[0] + dist * cos(tilt_angle),
-               side_panel_servo_center()[1] + dist * sin(tilt_angle)]) {
-      circle(d = head_servo_screw_dia, $fn = 50);
+  angle_cos = cos(tilt_angle);
+  angle_sin = sin(tilt_angle);
+  step = head_servo_screw_dia + screws_distance;
+  amount = floor((head_side_panel_height / 2) / step);
+
+  translate(centers) {
+    circle(d = head_servo_mount_dia, $fn = 360);
+
+    for (dir = [-1, 1]) {
+      group_offst = (dir < 0
+                     ? -head_servo_screw_dia / 2 - offst_from_center_hole
+                     : head_servo_screw_dia / 2 + offst_from_center_hole);
+
+      for (i = [1 : (amount/2)]) {
+        base_offst = i * step * dir;
+        x = (group_offst + base_offst) * angle_cos;
+        y = (group_offst + base_offst) * angle_sin;
+
+        translate([x, y, 0]) {
+          circle(r = head_servo_screw_dia/2, $fn = 360);
+        }
+      }
     }
   }
 }
