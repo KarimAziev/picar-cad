@@ -15,7 +15,6 @@ use <chassis.scad>
 use <steering_system/rack_and_pinion_assembly.scad>
 use <placeholders/motor.scad>
 use <wheels/rear_wheel.scad>
-use <wheels/front_wheel.scad>
 
 module motor_right() {
   translate([-9, 15, -14]) {
@@ -42,20 +41,8 @@ module rear_wheel_right() {
   }
 }
 
-module front_wheel_right() {
-  translate([18, 159.6, -15]) {
-    translate([(chassis_width * 0.5) - (motor_mount_panel_thickness * 0.5),
-               (-chassis_len * 0.5 + motor_mount_panel_width * 0.5) + 20,
-               0.5]) {
-      rotate([0, 90, 0]) {
-        front_wheel();
-      }
-    }
-  }
-}
-
 union() {
-  translate([0, 65, -24]) {
+  translate([0, 45, -25]) {
     rotate([0, 0, 0]) {
       color("#191919") {
         steering_system_assembly();
@@ -86,10 +73,6 @@ union() {
     rear_wheel_right();
     mirror([1, 0, 0]) {
       rear_wheel_right();
-    }
-    front_wheel_right();
-    mirror([1, 0, 0]) {
-      front_wheel_right();
     }
   }
 }

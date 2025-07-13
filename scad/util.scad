@@ -49,6 +49,23 @@ function truncate(val, dec=1) =
   : ceil(val * pow(10, dec)) / pow(10, dec);
 
 /**
+ * Computes the depth (or reduction in width) at the notch on a circle.
+ *
+ * This function calculates the notch width by determining the chord’s offset
+ * from the circle’s edge. It subtracts two times the distance from the circle's
+ * center to the chord (computed using the Pythagorean theorem) from the full diameter.
+ *
+ * Parameters:
+ *   dia - The diameter of the circle.
+ *   w   - The chord length corresponding to the notch width at the circle’s center.
+ *
+ * Returns:
+ *   The calculated notch width, which is the reduction in the diameter due to the notch.
+ */
+
+function calc_notch_width(dia, w) = dia - 2 * sqrt(((dia / 2) * (dia / 2)) - ((w / 2) * (w / 2)));
+
+/**
  *
  * Draws a horizontal row of circles spanning a given total width.
  *

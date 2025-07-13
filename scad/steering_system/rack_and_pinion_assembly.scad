@@ -38,7 +38,7 @@ module knuckle_assembly() {
   translate([rack_pan_full_len / 2 - knuckle_dia / 2 - 0.5,
              extra_w / 2,
              knuckle_height]) {
-    knuckle_mount();
+    knuckle_mount(show_wheels=true);
   }
 }
 

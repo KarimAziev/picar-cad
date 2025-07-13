@@ -5,10 +5,11 @@ use <shaft.scad>
 use <ring_connector.scad>
 use <rack_connector.scad>
 use <../wheels/wheel_hub.scad>
+use <../wheels/front_wheel.scad>
 
 function knuckle_full_h() = wheel_hub_full_height(knuckle_height * 2, knuckle_hub_inner_rim_h);
 
-module knuckle_mount(center=true) {
+module knuckle_mount(center=true, show_wheels=false) {
   total_h = knuckle_full_h();
   union() {
     translate([0, 0, center ? total_h / 4 - knuckle_hub_inner_rim_h * 2 : 0]) {
@@ -25,12 +26,18 @@ module knuckle_mount(center=true) {
                       center_screws=false);
       shaft_z_offst = -knuckle_height + knuckle_shaft_dia / 2;
 
-      R = knuckle_dia / 2;
-      notch_width = knuckle_dia - 2 * sqrt((R * R) - ((knuckle_shaft_dia/2) * (knuckle_shaft_dia/2)));
+      knuckle_rad = knuckle_dia / 2;
+      notch_width = calc_notch_width(knuckle_dia, knuckle_shaft_dia);
 
       union() {
         translate([knuckle_shaft_len / 2 + knuckle_dia / 2, 0, shaft_z_offst]) {
           shaft(d=knuckle_shaft_dia, h=knuckle_shaft_len + notch_width);
+          if (show_wheels) {
+            rotate([90, 0, 90]) {
+              color("#232323")
+                front_wheel();
+            }
+          }
         }
       }
 
@@ -40,7 +47,7 @@ module knuckle_mount(center=true) {
         connector_d = params[0];
         ring_w = params[1];
         tolerance = params[2];
-        notch_width = knuckle_dia - 2 * sqrt((R * R) - ((w/2) * (w/2)));
+        notch_width = calc_notch_width(knuckle_dia, w);;
 
         extra_wall = notch_width;
 
@@ -123,7 +130,8 @@ module knuckle_lower_connector(upper_dia=knuckle_dia,
 }
 
 module knuckle_probes() {
-  vals = [5.0, 5.1, 5.2, 5.3];
+  bigger_val = 4.2;
+  vals = [3.0, 3.1, 3.2, 3.8, 3.9, 4.0, 4.1, bigger_val];
 
   union() {
     for (i = [0:len(vals) - 1]) {
@@ -132,9 +140,9 @@ module knuckle_probes() {
       }
     }
   }
-  translate([-knuckle_dia / 2, -knuckle_dia / 2, 0]) {
+  translate([-knuckle_dia / 2, -(bigger_val + 2) / 2, 0]) {
     linear_extrude(height = 2, center=true) {
-      square([knuckle_dia * len(vals), knuckle_dia]);
+      square([knuckle_dia * len(vals), bigger_val + 2]);
     }
   }
 }
