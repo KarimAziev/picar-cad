@@ -32,6 +32,28 @@ module bearing_shaft(d,
   }
 }
 
+module bearing_shaft_connector(lower_d,
+                               lower_h,
+                               shaft_h,
+                               shaft_d,
+                               chamfer_h,) {
+
+  upper_rad = lower_d / 2;
+  lower_z_offset = -lower_h / 2;
+
+  union() {
+    translate([0, 0, lower_z_offset]) {
+      linear_extrude(height=lower_h, center=true) {
+        circle(r=lower_d / 2, $fn=360);
+      }
+
+      translate([0, 0, -lower_z_offset]) {
+        bearing_shaft(d=shaft_d, h=shaft_h, chamfer_h=chamfer_h);
+      }
+    }
+  }
+}
+
 module bearing_shaft_probes(from=4.0, to=4.4, step=0.1, h=8.0, chamfer_h=undef) {
   vals = number_sequence(from, to, step);
   offst = to * 3;

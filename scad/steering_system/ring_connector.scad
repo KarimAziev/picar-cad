@@ -26,7 +26,6 @@ include <../parameters.scad>
 use <../util.scad>
 use <bracket.scad>
 use <shaft.scad>
-use <rack_connector.scad>
 
 function calculate_params_from_dia(d=rack_outer_connector_d, center_dia, tolerance=ring_connector_tolerance) =
   let (center_d = is_num(center_dia) ? max(center_dia, 0.3 * d) : 0.3 * d,
