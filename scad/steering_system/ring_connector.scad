@@ -101,7 +101,6 @@ module lower_ring_connector(d=rack_outer_connector_d,
   connector_d = params[0];
   connector_rad = (connector_d / 2);
   ring_w = max(params[1] - tolerance, 0.5);
-  echo("ring_w", ring_w, "connector_d", connector_d);
 
   lower_height = h - connector_h;
 
