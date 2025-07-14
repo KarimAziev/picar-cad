@@ -27,13 +27,13 @@ use <../util.scad>
 use <bracket.scad>
 use <shaft.scad>
 
-function calculate_params_from_dia(d=rack_outer_connector_d, center_dia, tolerance=ring_connector_tolerance) =
+function calculate_params_from_dia(d=bracket_bearing_outer_d, center_dia, tolerance=ring_connector_tolerance) =
   let (center_d = is_num(center_dia) ? max(center_dia, 0.3 * d) : 0.3 * d,
        ring_w = ((d - center_d) / 4) - tolerance * 2,
        connector_d = center_d + ring_w * 4)
   [connector_d, ring_w, tolerance];
 
-module upper_ring_connector(d=rack_outer_connector_d,
+module upper_ring_connector(d=bracket_bearing_outer_d,
                             h=knuckle_bracket_connector_height,
                             connector_h=rack_bracket_connector_h,
                             center_dia,
@@ -89,7 +89,7 @@ module upper_ring_connector(d=rack_outer_connector_d,
   }
 }
 
-module lower_ring_connector(d=rack_outer_connector_d,
+module lower_ring_connector(d=bracket_bearing_outer_d,
                             h=knuckle_bracket_connector_height,
                             connector_h=rack_bracket_connector_h,
                             center_dia,
@@ -129,7 +129,7 @@ module lower_ring_connector(d=rack_outer_connector_d,
   }
 }
 
-module print_plate(d=rack_outer_connector_d,
+module print_plate(d=bracket_bearing_outer_d,
                    h=knuckle_bracket_connector_height,
                    connector_h=rack_bracket_connector_h,
                    center_dia=m2_hole_dia,
@@ -154,7 +154,7 @@ module print_plate(d=rack_outer_connector_d,
   }
 }
 
-module assembly_view(d=rack_outer_connector_d,
+module assembly_view(d=bracket_bearing_outer_d,
                      h=knuckle_bracket_connector_height,
                      connector_h=rack_bracket_connector_h,
                      center_dia=m2_hole_dia,

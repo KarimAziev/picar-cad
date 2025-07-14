@@ -108,25 +108,23 @@ module vertical_servo_plate(size=[steering_servo_slot_width,
   w = extra_w + screws_dia * 2 + slot_w;
   h = slot_h + extra_w;
 
-  translate([0, 0, 0]) {
-    rotate([90, 0, 0]) {
-      linear_extrude(height=thickness, center=center) {
-        full_h = h + extra_h;
-        translate([0, full_h, 0]) {
-          difference() {
-            union() {
-              rounded_rect_two([h, w], r=4, center=true);
-              translate([0, -w / 2 - extra_h / 2, 0]) {
-                square([h, extra_h], center=true);
-              }
+  rotate([90, 0, 0]) {
+    linear_extrude(height=thickness, center=center) {
+      full_h = h + extra_h;
+      translate([0, full_h, 0]) {
+        difference() {
+          union() {
+            rounded_rect_two([h, w], r=4, center=true);
+            translate([0, -w / 2 - extra_h / 2, 0]) {
+              square([h, extra_h], center=true);
             }
+          }
 
-            square([slot_h, slot_w], center=true);
+          square([slot_h, slot_w], center=true);
 
-            for (x = [-screws_offst_x, screws_offst_x]) {
-              translate([0, x, 0]) {
-                circle(r=screws_dia * 0.5, $fn=360);
-              }
+          for (x = [-screws_offst_x, screws_offst_x]) {
+            translate([0, x, 0]) {
+              circle(r=screws_dia * 0.5, $fn=360);
             }
           }
         }

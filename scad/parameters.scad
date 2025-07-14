@@ -182,6 +182,8 @@ knuckle_bearing_inner_dia             = 5.1;  // Inside diameter + tolerance of 
 knuckle_shaft_len                     = 25;
 // The diameter of the knuckle's wheel shaft for the 608ZZ bearing
 knuckle_shaft_dia                     = 8;
+knuckle_shaft_bottom_height           = 10;
+knuckle_shaft_bottom_len              = 10;
 
 // The height of the upper pins on each side of the frame onto which the bearings of the steering knuckles are mounted
 knuckle_pin_bearing_height            = 8.0;
@@ -196,6 +198,13 @@ knuckle_bracket_connector_len         = 11.0;
 // The height (thickness) of the knuckle L-bracket's connector
 knuckle_bracket_connector_height      = 7;
 
+bracket_bearing_shaft_h               = 9;
+bracket_bearing_lower_h               = 4;
+
+bracket_bearing_outer_d               = 10.0; // Outside diameter of ball bearing 693 ZZ / 2Z (3x8x4) which is inserted bearing connector
+bracket_bearing_d                     = 8.0; // Outside diameter of ball bearing 693 ZZ / 2Z (3x8x4) which is inserted bearing connector
+bracket_bearing_shaft_d               = 3.1; // Inside diameter + tolerance of flanged ball bearing 693 2Z (3x8x4)
+
 rack_len                              = 49;
 rack_pan_full_len                     = 125;
 rack_width                            = 6;
@@ -207,15 +216,13 @@ rack_side_connector_thickness         = 3;
 
 rack_side_connector_screws_dia        = m2_hole_dia;
 
-rack_outer_connector_d                = 9;
-
 // The length of the L-bracket part that is connected to the rack
-bracket_rack_side_h_length            = 11.25;
+bracket_rack_side_h_length            = 10.30;
 // The length of the L-bracket part that is connected to the knuckle
-bracket_rack_side_w_length            = 11.81; // The L-bracket's part that is connected to the rack
+bracket_rack_side_w_length            = 9.5; // The L-bracket's part that is connected to the rack
 
 rack_bracket_width                    = 5;
 
-rack_bracket_connector_h              = 4;
+rack_bracket_connector_h              = knuckle_bracket_connector_height;
 rack_bracket_thickness                = 3;
 ring_connector_tolerance              = 0.4;

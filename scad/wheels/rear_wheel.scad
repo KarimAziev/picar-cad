@@ -39,30 +39,25 @@ module rear_wheel(w=wheel_w,
         star_out_rad = inner_d / 2;
         star_inner_rad = star_out_rad * 0.25;
         wheel_blades(d=inner_d,
-                     w=w + rim_w * 2,
                      spokes=spokes,
                      shaft_offset=shaft_offset,
                      rear_hub_r=rear_hub_r,
                      spoke_w=spoke_w);
       }
     }
-    translate([0, 0, 0]) {
-      shaft_3d(h=w + shaft_offset,
-               rear_hub_r=rear_hub_r,
-               solid_d=hub_solid_d,
-               d=shaft_d);
-    }
+    shaft_3d(h=w + shaft_offset,
+             rear_hub_r=rear_hub_r,
+             solid_d=hub_solid_d,
+             d=shaft_d);
   }
 }
 
 module wheel_blades(d=wheel_dia - wheel_rim_h,
-                    w=wheel_w,
                     shaft_offset=wheel_shaft_offset,
                     rear_hub_r=rear_wheel_hub_rad,
                     spokes=wheel_spokes,
                     spoke_w=wheel_spoke_w) {
   outradius = d / 2;
-  height = w;
   union() {
     translate([0, 0, spoke_w / 2]) {
       linear_extrude(height=spoke_w, center=true) {
@@ -105,9 +100,7 @@ module shaft_2d(d=wheel_shaft_d,
   solid_w = solid_d / 2 + tol;
 
   difference() {
-    translate([0, 0, 0]) {
-      circle(r=shaft_rad);
-    }
+    circle(r=shaft_rad);
     translate([0, shaft_rad * 2 - solid_w / 2, 0]) {
       square(shaft_rad * 2, center=true);
     }

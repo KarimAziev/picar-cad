@@ -6,13 +6,10 @@ use <bracket.scad>
 use <../util.scad>
 
 module rack(size=[rack_len, rack_width, rack_base_h],
-            pinion_d=25,
+            pinion_d=pinion_d,
             tooth_pitch=tooth_pitch,
             tooth_height=tooth_h,
             r=rack_rad,
-            connector_screws_dia=m2_hole_dia,
-            connector_z_offst=0,
-            screws_d=m2_hole_dia,
             show_brackets=false) {
   rack_len = size[0];
   shared_params = pinion_sync_params(pinion_d, tooth_pitch, rack_len);
@@ -47,7 +44,7 @@ module rack(size=[rack_len, rack_width, rack_base_h],
       }
     }
 
-    offst = [-rack_len / 2 + rack_margin / 2 - rack_outer_connector_d / 2, 0, 0];
+    offst = [-rack_len / 2 + rack_margin / 2 - bracket_bearing_outer_d / 2, 0, 0];
     translate(offst) {
       if (show_brackets) {
         rack_connector_assembly();
@@ -67,50 +64,19 @@ module rack(size=[rack_len, rack_width, rack_base_h],
   }
 }
 
-module rack_mount() {
+module rack_mount(show_brackets=false) {
   rotate([0, 0, 180]) {
     rack(size=[rack_len, rack_width, rack_base_h],
          pinion_d=pinion_d,
          tooth_pitch=tooth_pitch,
          tooth_height=tooth_h,
          r=rack_rad,
-         connector_screws_dia=rack_side_connector_screws_dia,
-         connector_z_offst=0,
-         screws_d=rack_side_connector_screws_dia);
-  }
-}
-
-module bracket_assembly() {
-  shared_params = pinion_sync_params(pinion_d, tooth_pitch, rack_len);
-  gear_teeth       = shared_params[0];
-  actual_pitch     = shared_params[1];
-  rack_teeth       = shared_params[2];
-  rack_margin      = shared_params[3];
-  x_offst = -rack_len / 2 - rack_margin / 2 - rack_outer_connector_d / 2 - rack_bracket_width;
-  y_offst = bracket_rack_side_h_length;
-  z_offst = knuckle_pin_lower_height / 2 + steering_servo_panel_thickness / 2 + rack_bracket_connector_h;
-
-  offst = [x_offst,
-           -y_offst - 1,
-           z_offst + 2];
-
-  translate(offst) {
-    bracket();
+         show_brackets=show_brackets);
   }
 }
 
 module rack_assembly(show_brackets=true) {
-  rotate([0, 0, 180]) {
-    rack(size=[rack_len, rack_width, rack_base_h],
-         pinion_d=pinion_d,
-         tooth_pitch=tooth_pitch,
-         tooth_height=tooth_h,
-         r=rack_rad,
-         connector_screws_dia=rack_side_connector_screws_dia,
-         connector_z_offst=0,
-         screws_d=rack_side_connector_screws_dia,
-         show_brackets=true);
-  }
+  rack_mount(show_brackets=show_brackets);
 }
 
 rack_mount();

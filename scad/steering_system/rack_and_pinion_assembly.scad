@@ -13,31 +13,11 @@ use <rack_util.scad>
 
 extra_w = steering_servo_panel_extra_w();
 
-module bracket_assembly() {
-  shared_params = pinion_sync_params(pinion_d, tooth_pitch, rack_len);
-  gear_teeth       = shared_params[0];
-  actual_pitch     = shared_params[1];
-  rack_teeth       = shared_params[2];
-  rack_margin      = shared_params[3];
-  x_offst = -rack_len / 2 - rack_margin / 2 - rack_outer_connector_d / 2 - rack_bracket_width;
-  y_offst = bracket_rack_side_h_length;
-  z_offst = knuckle_pin_lower_height / 2 + steering_servo_panel_thickness / 2 + rack_bracket_connector_h;
-
-  offst = [x_offst,
-           -y_offst - 1,
-           z_offst + 2];
-
-  rotate([0, 0, 180]) {
-    translate(offst) {
-      bracket();
-    }
-  }
-}
-
 module knuckle_assembly() {
   translate([rack_pan_full_len / 2 - knuckle_dia / 2 - 0.5,
              extra_w / 2,
              knuckle_height]) {
+
     knuckle_mount(show_wheels=true);
   }
 }

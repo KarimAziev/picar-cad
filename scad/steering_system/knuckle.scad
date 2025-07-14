@@ -2,9 +2,10 @@ include <../parameters.scad>
 use <../util.scad>
 use <bracket.scad>
 use <shaft.scad>
-use <ring_connector.scad>
+
 use <rack_connector.scad>
 use <bearing_shaft.scad>
+use <bearing_connector.scad>
 use <../wheels/wheel_hub.scad>
 use <../wheels/front_wheel.scad>
 
@@ -44,7 +45,7 @@ module knuckle_mount(center=true, show_wheels=false) {
 
       rotate([0, 0, knuckle_bracket_connector_angle]) {
         w = knuckle_bracket_connector_len;
-        params = calculate_params_from_dia(d=rack_outer_connector_d, center_dia=m2_hole_dia);
+        params = calculate_params_from_dia(d=bracket_bearing_outer_d, center_dia=m2_hole_dia);
         connector_d = params[0];
         ring_w = params[1];
         tolerance = params[2];
@@ -55,7 +56,7 @@ module knuckle_mount(center=true, show_wheels=false) {
         translate([w / 2, 0, -knuckle_bracket_connector_height / 2]) {
           linear_extrude(height = knuckle_bracket_connector_height, center=true) {
             difference() {
-              square([extra_wall, rack_outer_connector_d], center=true);
+              square([extra_wall, bracket_bearing_outer_d], center=true);
               translate([-knuckle_dia / 2, 0, 0]) {
                 circle(d=knuckle_dia, $fn=60);
               }
@@ -69,18 +70,15 @@ module knuckle_mount(center=true, show_wheels=false) {
           union() {
             linear_extrude(height = knuckle_bracket_connector_height, center = true) {
               difference() {
-                square([w, rack_outer_connector_d], center=true);
-                translate([rack_outer_connector_d / 2, 0, 0]) {
+                square([w, bracket_bearing_outer_d], center=true);
+                translate([bracket_bearing_outer_d / 2, 0, 0]) {
                   circle(d=connector_d + ((ring_w + tolerance) * 2 + 2), $fn=360);
                 }
               }
             }
 
-            translate([rack_outer_connector_d / 2, 0, -knuckle_bracket_connector_height / 2]) {
-              upper_ring_connector(d=rack_outer_connector_d,
-                                   h=knuckle_bracket_connector_height,
-                                   connector_h=rack_bracket_connector_h,
-                                   center_dia=m2_hole_dia);
+            translate([bracket_bearing_outer_d / 2, 0, -knuckle_bracket_connector_height / 2]) {
+              bearing_upper_connector();
             }
           }
         }

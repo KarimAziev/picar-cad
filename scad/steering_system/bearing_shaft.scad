@@ -36,7 +36,7 @@ module bearing_shaft_connector(lower_d,
                                lower_h,
                                shaft_h,
                                shaft_d,
-                               chamfer_h,) {
+                               chamfer_h) {
 
   upper_rad = lower_d / 2;
   lower_z_offset = -lower_h / 2;
