@@ -1,16 +1,11 @@
 include <../parameters.scad>
+include <../colors.scad>
 use <../util.scad>
 use <../placeholders/servo.scad>
 use <rack_connector.scad>
 use <bracket.scad>
 use <ring_connector.scad>
 use <bearing_connector.scad>
-
-function calculate_params_from_dia(d=bracket_bearing_outer_d, center_dia, tolerance=0.4) =
-  let (center_d = is_num(center_dia) ? max(center_dia, 0.3 * d) : 0.3 * d,
-       ring_w = ((d - center_d) / 4) - ceil(tolerance * 2),
-       connector_d = center_d + ring_w * 2)
-  [connector_d, ring_w, tolerance];
 
 module rack_connector(x = bracket_bearing_outer_d, stopper_w=3) {
   union() {
@@ -49,13 +44,15 @@ module rack_connector(x = bracket_bearing_outer_d, stopper_w=3) {
   }
 }
 
-module rack_connector_assembly() {
-  rack_connector();
+module rack_connector_assembly(bracket_color=blue_grey_carbon, rack_color=blue_grey_carbon) {
+  color(rack_color) {
+    rack_connector();
+  }
 
   translate([-bracket_rack_side_w_length / 2 ,
              -bracket_rack_side_h_length - bracket_bearing_outer_d / 2,
              0.5]) {
-    color([1, 0, 0], alpha = 0.6) {
+    color(bracket_color, alpha = 0.6) {
       bracket();
     }
   }

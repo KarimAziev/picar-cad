@@ -1,34 +1,23 @@
-/**
- * Module: The front panel of the vehicle.
- *
- * This module includes:
- *
- *  - The main chassis-integrated front panel with integrated slots for mounting the HC-SR04 ultrasonic sensor.
- *  - A detachable back panel that secures the ultrasonic sensor from behind.
- *  - A separate sensor fixation detail which is secured using two R3090 rivets.
- *
- * Sensor and Attachment Information:
- *
- *  - Sensor: HC-SR04 ultrasonic sensor
- *  - Attachment Hardware: R3090 rivet
- *
- * Author: Karim Aziiev <karim.aziiev@gmail.com>
- * License: GPL-3.0-or-later
- */
 
 include <parameters.scad>
+include <placeholders/motor.scad>
 use <util.scad>
 
 module motor_mount_connector(size=[motor_mount_panel_width * 0.8, 5], thickness=motor_mount_panel_thickness) {
-  linear_extrude(height=thickness) {
-    square(size, center = true);
+  union() {
+    linear_extrude(height=thickness) {
+      square(size, center=true);
+    }
   }
 }
 
 module rear_motor_mount_3d(height=motor_mount_panel_thickness) {
   linear_extrude(height=height) {
     difference() {
-      rounded_rect([motor_mount_panel_width, motor_mount_panel_height], 1, center=true);
+      rotate([180, 0, 0]) {
+        rounded_rect_two([motor_mount_panel_width, motor_mount_panel_height], center=true);
+      }
+
       offst = 9;
       translate([0, 0, -1]) {
         for (y = [-offst, offst]) {
@@ -41,17 +30,47 @@ module rear_motor_mount_3d(height=motor_mount_panel_thickness) {
   }
 }
 
-// Combines the motor mount panel with a connector that attaches to the chassis.
-// The assembly is rotated and translated into position.
-module motor_mount_panel() {
-  connector_size = [motor_mount_panel_width * 1.5, chassis_thickness + 1];
-  rotate([180, 0, 0]) {
-    translate([0, 0, -(motor_mount_panel_height * 0.5) - (connector_size[1] * 0.5) - 1]) {
-      rotate([90, 0, 90]) {
-        union() {
-          rear_motor_mount_3d();
-          translate([0, (motor_mount_panel_height * 0.5) + (connector_size[1] * 0.5) - 1, 0]) {
-            motor_mount_connector([connector_size[0], connector_size[1]]);
+module motor_bracket_screws_2d(d=m2_hole_dia) {
+  for (y = motor_bracket_screws) {
+    translate([0, y, 0]) {
+      circle(r = d / 2, $fn = 360);
+    }
+  }
+}
+
+module motor_bracket(size=[motor_mount_panel_width, motor_bracket_panel_height, motor_bracket_panel_height],
+                     thickness=motor_mount_panel_thickness, y_r=motor_mount_panel_width / 2,
+                     z_r=motor_mount_panel_width / 2,
+                     show_wheel_and_motor=false) {
+  x = size[0];
+  y = size[1];
+  z = size[2];
+
+  ur = (y_r == undef) ? 0 : y_r;
+  lr = (z_r == undef) ? 0 : z_r;
+
+  union() {
+    linear_extrude(height=thickness, center=false) {
+      difference() {
+        rounded_rect_two([x, y], center=true, r=ur);
+        motor_bracket_screws_2d(m2_hole_dia);
+      }
+    }
+    translate([0, -y / 2, z / 2]) {
+      rotate([90, 0, 0]) {
+        linear_extrude(height=thickness, center=false) {
+          difference() {
+            rounded_rect_two([x, z], center=true, r=lr);
+            motor_bracket_screws_2d(m3_hole_dia);
+          }
+        }
+        if (show_wheel_and_motor) {
+
+          translate([gearbox_body_main_len / 2 - motor_body_neck_len / 2, 0,
+                     -gearbox_side_height / 2]) {
+            rotate([180, 180, 0]) {
+              motor(show_wheel=true);
+            }
           }
         }
       }
@@ -59,6 +78,10 @@ module motor_mount_panel() {
   }
 }
 
-color("white") {
-  motor_mount_panel();
+// motor_mount_panel();
+
+rotate([0, 0, 90]) {
+  translate([10, 14, 0]) {
+    motor_bracket(show_wheel_and_motor=true);
+  }
 }

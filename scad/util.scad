@@ -369,7 +369,7 @@ module l_bracket(size, thickness=1, y_r=undef, z_r=undef, center=true) {
     linear_extrude(height=thickness, center=center) {
       rounded_rect_two([x, y], center=center, r=ur);
     }
-    translate([0, -y / 2, z / 2]) {
+    translate([0, -y / 2, z / 2 - thickness / 2]) {
       rotate([90, 0, 0]) {
         linear_extrude(height=thickness) {
           rounded_rect_two([x, z], center=center, r=lr);

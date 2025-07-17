@@ -7,6 +7,7 @@
 include <../parameters.scad>
 use <../util.scad>
 use <wheel.scad>
+use <tire.scad>
 
 rear_wheel_hub_rad     = truncate(wheel_shaft_d * 0.78);
 rear_wheel_hub_solid_d = truncate(rear_wheel_hub_rad * 0.9);
@@ -149,6 +150,17 @@ module spoke(w=10, h=15, thickness=1, top_coef=2.5) {
   }
 }
 
+module rear_wheel_animated() {
+  rotate([0, 0, -360 * $t]) {
+    color("#343434") {
+      rear_wheel();
+    }
+    color("white") {
+      tire();
+    }
+  }
+}
+
 union() {
-  rear_wheel();
+  rear_wheel_animated();
 }

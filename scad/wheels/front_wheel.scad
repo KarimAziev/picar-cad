@@ -5,9 +5,12 @@
  * License: GPL-3.0-or-later
  */
 include <../parameters.scad>
+include <../colors.scad>
 use <../util.scad>
+use <../placeholders/ball_bearing.scad>
 use <wheel.scad>
 use <wheel_hub.scad>
+use <tire.scad>
 
 module front_wheel(w=wheel_w,
                    d=wheel_dia,
@@ -22,21 +25,27 @@ module front_wheel(w=wheel_w,
                    screws_dia=wheel_hub_screws,
                    screws_n=wheel_screws_n,
                    screw_boss_h=wheel_screw_boss_h,
-                   screw_boss_w=wheel_screw_boss_w) {
+                   screw_boss_w=wheel_screw_boss_w,
+                   show_bearing=false,
+                   ball_bearing_color=metalic_grey,
+                   wheel_color=jet_black,
+                   hub_lower_color=matte_black) {
 
   inner_d = wheel_inner_d(d, rim_h);
   full_h = wheel_hub_full_height(hub_h, hub_inner_rim_h);
 
   difference() {
     union() {
-      wheel(d=d,
-            w=w, thickness=thickness,
-            rim_h=rim_h,
-            rim_w=rim_w,
-            rim_bend=rim_bend);
+      color(wheel_color) {
+        wheel(d=d,
+              w=w, thickness=thickness,
+              rim_h=rim_h,
+              rim_w=rim_w,
+              rim_bend=rim_bend);
+      }
 
       translate([0, 0, -(w / 2 - full_h / 2 + rim_w)]) {
-        difference() {
+        color(hub_lower_color) {
           wheel_hub_lower(d=hub_d,
                           outer_d=inner_d,
                           h=hub_h,
@@ -48,10 +57,26 @@ module front_wheel(w=wheel_w,
                           screw_boss_w=screw_boss_w);
         }
       }
+      if (show_bearing) {
+        translate([0, 0, -(w / 2 - full_h / 2 + rim_w) - 7]) {
+          color(ball_bearing_color) {
+            ball_bearing();
+          }
+        }
+      }
+    }
+  }
+}
+
+module front_wheel_animated() {
+  rotate([0, 0, -360 * $t]) {
+    front_wheel(show_bearing=true);
+    color("white") {
+      tire();
     }
   }
 }
 
 union() {
-  front_wheel();
+  front_wheel_animated();
 }

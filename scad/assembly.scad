@@ -16,63 +16,26 @@ use <steering_system/rack_and_pinion_assembly.scad>
 use <placeholders/motor.scad>
 use <wheels/rear_wheel.scad>
 
-module motor_right() {
-  translate([-9, 15, -14]) {
-    translate([(chassis_width * 0.5) - (motor_mount_panel_thickness * 0.5),
-               (-chassis_len * 0.5 + motor_mount_panel_width * 0.5) + 17,
-               -1.5]) {
-      rotate([90, 0, -90]) {
-        motor();
+module assembly_view() {
+  union() {
+    translate([chassis_width / 2 + wheel_w + wheel_w / 2 + 5, 0, wheel_dia / 2 + 25]) {
+      translate([0, steering_servo_chassis_offset, steering_servo_panel_thickness]) {
+        rotate([0, 0, 0])
+          steering_system_assembly();
+      }
+
+      translate([0, steering_servo_chassis_offset + pan_servo_wheels_y_offset, chassis_thickness]) {
+        translate([-2, 0, 25.9]) {
+          rotate([0, 0, 180]) {
+            head_assembly();
+          }
+        }
+      }
+      rotate([0, 180, 0]) {
+        chassis_plate(show_motor_and_rear_wheels=true);
       }
     }
   }
 }
 
-module rear_wheel_right() {
-  translate([17, 18.2, -17]) {
-    translate([(chassis_width * 0.5) - (motor_mount_panel_thickness * 0.5),
-               (-chassis_len * 0.5 + motor_mount_panel_width * 0.5) + 20,
-               0.5]) {
-
-      rotate([180, 90, 0]) {
-        rear_wheel();
-      }
-    }
-  }
-}
-
-union() {
-  translate([0, 45, -25]) {
-    rotate([0, 0, 0]) {
-      color("#191919") {
-        steering_system_assembly();
-      }
-    }
-  }
-
-  translate([0, wheels_offset_y + pan_servo_wheels_y_offset - cam_pan_servo_slot_height * 0.5 - 1,
-             chassis_thickness]) {
-    translate([-2, 7.4, 25.9]) {
-      rotate([0, 0, 180]) {
-        head_assembly();
-      }
-    }
-  }
-  color("white") {
-
-    rotate([0, 180, 0]) {
-      chassis_plate();
-    }
-  }
-  motor_right();
-  mirror([1, 0, 0]) {
-    motor_right();
-  }
-
-  color("grey") {
-    rear_wheel_right();
-    mirror([1, 0, 0]) {
-      rear_wheel_right();
-    }
-  }
-}
+assembly_view();

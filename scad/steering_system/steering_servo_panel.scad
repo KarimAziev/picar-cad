@@ -49,10 +49,6 @@ use <rack.scad>
 use <pinion.scad>
 use <bearing_shaft.scad>
 
-function steering_servo_panel_extra_w() = (servo_gearbox_h + servo_gear_h / 2);
-
-extra_w = steering_servo_panel_extra_w();
-
 module knuckle_lower_connector() {
   bearing_shaft_connector(lower_d=knuckle_dia,
                           lower_h=knuckle_pin_lower_height,
@@ -74,13 +70,16 @@ module rack_mount_panel(rack_size=[rack_pan_full_len,
   difference() {
     union() {
       linear_extrude(height=z, center=true) {
-        rounded_rect(size=[panel_len, y], center=true, r=rad);
+        difference() {
+          rounded_rect(size=[panel_len, y], center=true, r=rad);
+          four_corner_holes_2d(steering_servo_panel_screws_offsets,
+                               hole_dia=steering_servo_panel_screws_dia,
+                               center=true);
+        }
       }
 
       translate([0, -y / 2, -z / 2]) {
-        color("lightcoral") {
-          vertical_servo_plate();
-        }
+        vertical_servo_plate();
       }
       for (x = side_offsets) {
         translate([x, 0, knuckle_pin_lower_height]) {
@@ -120,7 +119,7 @@ module vertical_servo_plate(size=[steering_servo_slot_width,
             }
           }
 
-          square([slot_h, slot_w], center=true);
+          square([slot_h + 0.2, slot_w + 0.4], center=true);
 
           for (x = [-screws_offst_x, screws_offst_x]) {
             translate([0, x, 0]) {
@@ -137,7 +136,7 @@ module steering_servo_panel(size=[servo_hat_w,
                                   rack_width,
                                   pinion_d + steering_servo_slot_width],
                             thickness=steering_servo_panel_thickness,
-                            front_h=rack_base_h + knuckle_pin_lower_height,
+                            front_h=rack_base_h + tooth_h,
                             front_w=10,
                             z_r=undef,
                             center=true,
@@ -153,23 +152,26 @@ module steering_servo_panel(size=[servo_hat_w,
   union() {
     difference() {
       union() {
-        translate([0, extra_w / 2, 0]) {
-          union() {
+        color("white") {
+          translate([0, 0, 0]) {
+            union() {
 
-            rack_mount_panel();
+              rack_mount_panel();
 
-            rotate([90, 0, 0]) {
-              thickness = 1;
-              translate([0, (front_h + thickness) / 2, -y / 2]) {
-                translate([0, 0, rack_width + thickness / 2]) {
-                  linear_extrude(height=thickness, center=true) {
-                    rounded_rect([front_w, front_h], center=center, r=0);
+              rotate([90, 0, 0]) {
+                thickness = 1;
+                translate([0, (front_h + thickness) / 2, -y / 2]) {
+                  rad = min(front_w, front_h) * 0.3;
+                  translate([0, 0, rack_width + thickness / 2]) {
+                    linear_extrude(height=thickness, center=true) {
+                      rounded_rect_two([front_w, front_h], center=center, r=rad);
+                    }
                   }
-                }
 
-                translate([0, 0, -thickness / 2]) {
-                  linear_extrude(height=thickness, center=true) {
-                    rounded_rect([front_w, front_h], center=center, r=0);
+                  translate([0, 0, -thickness / 2]) {
+                    linear_extrude(height=thickness, center=true) {
+                      rounded_rect_two([front_w, front_h], center=center, r=rad);
+                    }
                   }
                 }
               }
@@ -194,4 +196,3 @@ module steering_servo_panel(size=[servo_hat_w,
 }
 
 steering_servo_panel();
-// vertical_servo_plate();

@@ -10,9 +10,12 @@ r3065_dia                             = 3.5;
 
 // Chassis dimensions:
 chassis_width                         = 110;  // width of the chassis
-chassis_len                           = 235;  // length of the chassis
+chassis_len                           = 250;  // length of the chassis
 chassis_thickness                     = 3;    // chassis thickness
 chassis_offset_rad                    = 1;
+
+motor_bracket_screws                  = [-7.5, 10.5];
+motor_bracket_offest                  = 25;
 
 // Front panel dimensions:
 // This panel is vertical and includes mounting holes for the ultrasonic sensors.
@@ -26,11 +29,9 @@ front_panel_screws_x_offset           = 27;   // horizontal offset between the u
 
 // Wheels:
 wheels_distance                       = 124; // distance between front wheels
+
 // Offset for the front wheels and the steering servo slot. Also affects the position of the pan servo slot.
-wheels_offset_y                       = chassis_len * 0.3;
-
-// Steering system:
-
+steering_servo_chassis_offset         = 65;
 // Dimensions for the slot that accommodates the steering servo motor.
 // Tested with the EMAX ES08MA II servo (23 x 11.5 x 24 mm).
 // The popular SG90 servo measures approximately 23mm x 12.2mm x 29mm, so you may
@@ -45,17 +46,23 @@ steering_servo_hat_w                  = 33;
 steering_servo_panel_thickness        = 2;
 
 pan_servo_slot_dia                    = 6.5;    // diameter of the pan servo mounting hole at the front of the chassis
-pan_servo_wheels_y_offset             = 18;
+pan_servo_wheels_y_offset             = 50;
 
 // rear motor panel
 motor_mount_panel_width               = 10;
 motor_mount_panel_thickness           = 3;
 motor_mount_panel_height              = 26;
+motor_bracket_panel_height            = 29;
 
-raspberry_pi_offset                   = chassis_len * 0.06; // Y offset for the Raspberry Pi slot
+raspberry_pi_offset                   = 2.7; // Y offset for the Raspberry Pi slot 14.7
 raspberry_pi5_screws_size             = [50, 58];
 
+ups_hat_offset                        = 40; // Y offset for the UPS HAT from Raspberry Pi
 ups_hat_screws_size                   = [86, 46];
+
+steering_servo_panel_screws_offsets   = [5, 11.5];
+
+steering_servo_panel_screws_dia       = m2_hole_dia;
 
 // Additional cutouts:
 extra_cutouts_dia                     = 8; // diameter of the three extra holes on the left and right sides of the chassis
@@ -170,10 +177,8 @@ pinion_thickness                      = 2;
 pinion_screw_dia                      = 1.5;
 pinion_z_offst                        = 5;
 
-// The height of the knuckle. The total height is knuckle_height + knuckle_hub_inner_rim_h
+// The height of the knuckle.
 knuckle_height                        = 14.0;
-knuckle_hub_inner_rim_h               = 1.4; // Additional height of the knuckle
-knuckle_hub_inner_rim_w               = 0; // The width of the rim at the bottom of the knuckle. May be useful for some bearings.
 knuckle_dia                           = 14.0; // Diameter of the steering knuckle
 knuckle_bearing_outer_dia             = 11.0; // Outside diameter of ball bearing 685-Z (5x11x5) which is inserted inside knuckle
 knuckle_bearing_inner_dia             = 5.1;  // Inside diameter + tolerance of ball bearing 685-Z (5x11x5)
@@ -182,8 +187,10 @@ knuckle_bearing_inner_dia             = 5.1;  // Inside diameter + tolerance of 
 knuckle_shaft_len                     = 25;
 // The diameter of the knuckle's wheel shaft for the 608ZZ bearing
 knuckle_shaft_dia                     = 8;
-knuckle_shaft_bottom_height           = 10;
-knuckle_shaft_bottom_len              = 10;
+
+knuckle_shaft_vertical_len            = 20;
+knuckle_shaft_upper_horiz_len         = 5;
+knuckle_shaft_lower_horiz_len         = 25;
 
 // The height of the upper pins on each side of the frame onto which the bearings of the steering knuckles are mounted
 knuckle_pin_bearing_height            = 8.0;
@@ -194,7 +201,7 @@ knuckle_pin_lower_height              = 5;
 // The angle of the shaft that connects the knuckle with the bracket
 knuckle_bracket_connector_angle       = 120.0;
 // The length of the rotated shaft that connects the knuckle with the bracket.
-knuckle_bracket_connector_len         = 11.0;
+knuckle_bracket_connector_len         = 12.2;
 // The height (thickness) of the knuckle L-bracket's connector
 knuckle_bracket_connector_height      = 7;
 

@@ -1,4 +1,5 @@
 include <../parameters.scad>
+include <../colors.scad>
 use <rack_connector.scad>
 use <rack_util.scad>
 use <ring_connector.scad>
@@ -10,7 +11,9 @@ module rack(size=[rack_len, rack_width, rack_base_h],
             tooth_pitch=tooth_pitch,
             tooth_height=tooth_h,
             r=rack_rad,
-            show_brackets=false) {
+            show_brackets=false,
+            bracket_color=blue_grey_carbon,
+            rack_color=blue_grey_carbon) {
   rack_len = size[0];
   shared_params = pinion_sync_params(pinion_d, tooth_pitch, rack_len);
   gear_teeth       = shared_params[0];
@@ -36,28 +39,35 @@ module rack(size=[rack_len, rack_width, rack_base_h],
   union() {
     translate([-rack_len * 0.5, 0, r]) {
       rotate([90, 0, 0]) {
-        linear_extrude(height=h, center=true) {
-          offset(r=r) {
-            polygon(points = pts);
+        color(rack_color) {
+          linear_extrude(height=h, center=true) {
+            offset(r=r) {
+              polygon(points = pts);
+            }
           }
         }
       }
     }
 
     offst = [-rack_len / 2 + rack_margin / 2 - bracket_bearing_outer_d / 2, 0, 0];
+
     translate(offst) {
       if (show_brackets) {
-        rack_connector_assembly();
+        rack_connector_assembly(bracket_color=bracket_color);
       } else {
-        rack_connector();
+        color(rack_color) {
+          rack_connector();
+        }
       }
     }
     mirror([1, 0, 0]) {
       translate(offst) {
         if (show_brackets) {
-          rack_connector_assembly();
+          rack_connector_assembly(bracket_color=bracket_color);
         } else {
-          rack_connector();
+          color(rack_color) {
+            rack_connector();
+          }
         }
       }
     }
@@ -75,7 +85,7 @@ module rack_mount(show_brackets=false) {
   }
 }
 
-module rack_assembly(show_brackets=true) {
+module rack_assembly(show_brackets=true, rack_color=blue_grey_carbon) {
   rack_mount(show_brackets=show_brackets);
 }
 

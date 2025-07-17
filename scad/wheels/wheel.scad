@@ -5,7 +5,9 @@
  * License: GPL-3.0-or-later
  */
 include <../parameters.scad>
+include <../colors.scad>
 use <../util.scad>
+use <tire.scad>
 
 function wheel_inner_d(d, rim_h) =  d - rim_h;
 
@@ -38,7 +40,7 @@ module wheel(w=wheel_w,
           }
 
           translate([0, 0, bend_z]) {
-            linear_extrude(height = rim_w, center = true) {
+            linear_extrude(height = rim_w, center=true) {
               w = rim_h - rim_bend;
               ring_2d(r=inner_rad, w=w);
             }
@@ -50,5 +52,13 @@ module wheel(w=wheel_w,
 }
 
 union() {
-  wheel();
+  color(matte_black) {
+    wheel();
+  }
+  color("white", alpha=0.6) {
+
+    translate([0, 0, 0]) {
+      tire();
+    }
+  }
 }

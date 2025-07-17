@@ -17,7 +17,8 @@ module head_assembly(head_color="white",
                      tilt_servo_color="#343434",
                      animation_z_offset=-12) {
   union() {
-    rotate([30 * sin(360 * $t), 0, 0]) {
+
+    rotate([0, 0, 90 * sin(360 * $t)]) {
       translate([0, 0, animation_z_offset]) {
         translate([0, -head_side_panel_width * 0.5,
                    head_side_panel_height * 0.5]) {
@@ -28,14 +29,13 @@ module head_assembly(head_color="white",
           }
         }
       }
-    }
-
-    translate([0, 0, animation_z_offset]) {
-      translate([-2, 6, -(cam_pan_servo_slot_height + cam_pan_servo_height) * 0.5 + 2]) {
-        rotate([0, 0, -90]) {
-          head_neck_assembly(neck_color=neck_color,
-                             pan_servo_color=pan_servo_color,
-                             tilt_servo_color=tilt_servo_color);
+      translate([0, 0, animation_z_offset]) {
+        translate([-2, 6, -(cam_pan_servo_slot_height + cam_pan_servo_height) * 0.5 + 2]) {
+          rotate([0, 0, -90]) {
+            head_neck_assembly(neck_color=neck_color,
+                               pan_servo_color=pan_servo_color,
+                               tilt_servo_color=tilt_servo_color);
+          }
         }
       }
     }

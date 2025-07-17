@@ -7,6 +7,7 @@
 
 include <../parameters.scad>
 use <../util.scad>
+use <../wheels/rear_wheel.scad>
 
 motor_shaft_color     = "#e6e6e6";
 gearbox_color         = "#ffde1a";
@@ -21,6 +22,7 @@ motor_can_len         = 9.6;
 endcap_len            = 8.5;
 motor_shaft_len       = 35;
 motor_shaft_rad       = 2.8;
+motor_shaft_offset    = 12;
 
 gearbox_neck_rad      = gearbox_height / 2;
 motor_can_rad         = gearbox_neck_rad  * 0.9;
@@ -73,7 +75,7 @@ module motor_gearbox() {
   }
 }
 
-module motor() {
+module motor(show_wheel=false) {
   difference() {
     union() {
       rotate([0, 0, 90]) {
@@ -97,11 +99,14 @@ module motor() {
         }
       }
 
-      translate([-gearbox_body_main_len * 0.5 + 12, 0, 0]) {
+      translate([-gearbox_body_main_len * 0.5 + motor_shaft_offset, 0, 0]) {
         rotate([0, 0, 90]) {
           color(motor_shaft_color) {
             difference() {
-              cylinder_cutted(h=motor_shaft_len, r=motor_shaft_rad, cutted_w=2);
+              rotate([0, 0, 360 * $t]) {
+                cylinder_cutted(h=motor_shaft_len, r=motor_shaft_rad, cutted_w=2);
+              }
+
               cylinder(h = motor_shaft_len + 1, r = 0.7, center = true, $fn=60);
             }
           }
@@ -111,13 +116,22 @@ module motor() {
             cylinder(h=2, r=2, $fn=50, center=true);
           }
         }
+
+        translate([0, 0, gearbox_height / 2 + wheel_w]) {
+          if (show_wheel) {
+            rotate([0, 180, 0]) {
+              rear_wheel_animated();
+            }
+          }
+        }
       }
 
-      translate([-gearbox_body_main_len * 0.5 - 2.4, 0, 0]) {
+      x = 5;
+      y = 5;
+      z = 3;
+
+      translate([-gearbox_body_main_len * 0.5 - x / 2, 0, 0]) {
         difference() {
-          x = 5;
-          y = 5;
-          z = 3;
           color(gearbox_color) {
             cube([x, y, z], center=true);
           }
@@ -128,5 +142,3 @@ module motor() {
     }
   }
 }
-
-motor();

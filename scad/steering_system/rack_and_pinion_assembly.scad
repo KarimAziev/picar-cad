@@ -1,4 +1,5 @@
 include <../parameters.scad>
+include <../colors.scad>
 use <../util.scad>
 include <../placeholders/servo.scad>
 use <bracket.scad>
@@ -11,13 +12,10 @@ use <rack.scad>
 use <pinion.scad>
 use <rack_util.scad>
 
-extra_w = steering_servo_panel_extra_w();
-
 module knuckle_assembly() {
   translate([rack_pan_full_len / 2 - knuckle_dia / 2 - 0.5,
-             extra_w / 2,
-             knuckle_height]) {
-
+             0,
+             knuckle_pin_lower_height]) {
     knuckle_mount(show_wheels=true);
   }
 }
@@ -33,15 +31,13 @@ module pinion_mount() {
   }
 }
 
-module steering_system_assembly() {
+module steering_system_assembly(rack_color=blue_grey_carbon, pinion_color=black_1) {
   union() {
     steering_servo_panel(show_servo=true);
-
     translate([0,
-               extra_w / 2,
+               0,
                knuckle_pin_lower_height / 2 - steering_servo_panel_thickness / 2]) {
-
-      rack_assembly();
+      rack_assembly(rack_color=rack_color);
     }
 
     knuckle_assembly();
@@ -52,7 +48,7 @@ module steering_system_assembly() {
     rotate([90, 0, 0]) {
       translate([0, pinion_d + knuckle_pin_lower_height / 2 + servo_gearbox_h / 2 - pinion_z_offst,
                  -servo_gear_h / 2 - pinion_thickness / 2]) {
-        color("#191919") {
+        color(pinion_color) {
           pinion_mount();
         }
       }
@@ -60,6 +56,4 @@ module steering_system_assembly() {
   }
 }
 
-union() {
-  steering_system_assembly();
-}
+steering_system_assembly();
