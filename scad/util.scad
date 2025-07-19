@@ -378,3 +378,11 @@ module l_bracket(size, thickness=1, y_r=undef, z_r=undef, center=true) {
     }
   }
 }
+
+module fillet(r) {
+  offset(r = -r) {
+    offset(delta = r) {
+      children();
+    }
+  }
+}

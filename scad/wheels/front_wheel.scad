@@ -7,7 +7,7 @@
 include <../parameters.scad>
 include <../colors.scad>
 use <../util.scad>
-use <../placeholders/ball_bearing.scad>
+use <../placeholders/bearing.scad>
 use <wheel.scad>
 use <wheel_hub.scad>
 use <tire.scad>
@@ -59,9 +59,8 @@ module front_wheel(w=wheel_w,
       }
       if (show_bearing) {
         translate([0, 0, -(w / 2 - full_h / 2 + rim_w) - 7]) {
-          color(ball_bearing_color) {
-            ball_bearing();
-          }
+          bearing(rings=[[2, metalic_yellow_silver],
+                         [1, onyx]]);
         }
       }
     }

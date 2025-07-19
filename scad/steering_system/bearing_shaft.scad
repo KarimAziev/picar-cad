@@ -10,23 +10,33 @@ use <../util.scad>
 
 module bearing_shaft(d,
                      h,
+                     stopper_h = 1,
+                     stopper_extra_r = 0.8,
                      chamfer_h) {
 
   chamfer_height = is_undef(chamfer_h) ? h * 0.2 : chamfer_h;
 
-  h1 = h - chamfer_height;
+  h1 = h - chamfer_height - (is_undef(stopper_h) ? 0 : stopper_h);
   scale_factor = ((d / 2) - chamfer_height) / (d / 2);
 
   union() {
-    linear_extrude(height=h1, center=false) {
-      circle(r=d / 2, $fn=360);
+    if (!is_undef(stopper_h)) {
+      linear_extrude(height=stopper_h, center=false) {
+        circle(r=d / 2 + stopper_extra_r, $fn=360);
+      }
     }
 
-    translate([0, 0, h - chamfer_height]) {
-      linear_extrude(height = chamfer_height,
-                     center=false,
-                     scale=scale_factor) {
+    translate([0, 0, is_undef(stopper_h) ? 0 : stopper_h]) {
+      linear_extrude(height=h1, center=false) {
         circle(r=d / 2, $fn=360);
+      }
+
+      translate([0, 0, h1]) {
+        linear_extrude(height = chamfer_height,
+                       center=false,
+                       scale=scale_factor) {
+          circle(r=d / 2, $fn=360);
+        }
       }
     }
   }
@@ -36,20 +46,18 @@ module bearing_shaft_connector(lower_d,
                                lower_h,
                                shaft_h,
                                shaft_d,
-                               chamfer_h) {
+                               chamfer_h,
+                               stopper_h) {
 
   upper_rad = lower_d / 2;
-  lower_z_offset = -lower_h / 2;
 
   union() {
-    translate([0, 0, lower_z_offset]) {
-      linear_extrude(height=lower_h, center=true) {
-        circle(r=lower_d / 2, $fn=360);
-      }
+    linear_extrude(height=lower_h, center=false) {
+      circle(r=lower_d / 2, $fn=360);
+    }
 
-      translate([0, 0, -lower_z_offset]) {
-        bearing_shaft(d=shaft_d, h=shaft_h, chamfer_h=chamfer_h);
-      }
+    translate([0, 0, lower_h]) {
+      bearing_shaft(d=shaft_d, h=shaft_h, chamfer_h=chamfer_h, stopper_h=stopper_h);
     }
   }
 }
@@ -57,6 +65,7 @@ module bearing_shaft_connector(lower_d,
 module bearing_shaft_probes(from=4.0, to=4.4, step=0.1, h=8.0, chamfer_h=undef) {
   vals = number_sequence(from, to, step);
   offst = to * 3;
+  plate_height = 2;
 
   union() {
     for (i = [0:len(vals) - 1]) {
@@ -65,8 +74,9 @@ module bearing_shaft_probes(from=4.0, to=4.4, step=0.1, h=8.0, chamfer_h=undef) 
       }
     }
   }
-  translate([-offst / 2, -(to + 2) / 2, 0]) {
-    linear_extrude(height = 2, center=true) {
+
+  translate([-offst / 2, -(to + 2) / 2, -plate_height]) {
+    linear_extrude(height = plate_height, center=false) {
       square([offst * len(vals), to + 2]);
     }
   }

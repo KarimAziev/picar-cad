@@ -1,13 +1,18 @@
-blue_grey_carbon = "#293542";
-black_1          = "#191919";
-onyx             = "#353935";
-matte_black      = "#28282B";
-jet_black        = "#343434";
-midnight_blue    = "#191970";
-licorice         = "#1B1212";
-metalic_silver   = "#C0C0C0";
-metalic_grey     = "#808080";
+blue_grey_carbon      = "#293542";
+black_1               = "#191919";
+onyx                  = "#353935";
+matte_black           = "#28282B";
+jet_black             = "#343434";
+midnight_blue         = "#191970";
+licorice              = "#1B1212";
+metalic_silver_1      = "#C0C0C0";
+metalic_silver_2      = "#999B9B";
+metalic_silver_3      = "#7D8488";
 
+metalic_grey          = "#808080";
+metalic_yellow_silver = "#D4D4C8";
+
+// #999B9B
 // Black	#000000	rgb(0, 0, 0)
 // Charcoal	#36454F	rgb(54, 69, 79)
 // Dark Green	#023020	rgb(2, 48, 32)

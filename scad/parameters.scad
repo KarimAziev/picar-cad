@@ -30,21 +30,6 @@ front_panel_screws_x_offset           = 27;   // horizontal offset between the u
 // Wheels:
 wheels_distance                       = 124; // distance between front wheels
 
-// Offset for the front wheels and the steering servo slot. Also affects the position of the pan servo slot.
-steering_servo_chassis_offset         = 65;
-// Dimensions for the slot that accommodates the steering servo motor.
-// Tested with the EMAX ES08MA II servo (23 x 11.5 x 24 mm).
-// The popular SG90 servo measures approximately 23mm x 12.2mm x 29mm, so you may
-// want to adjust steering_servo_slot_width and steering_servo_slot_height as needed.
-steering_servo_slot_width             = 23.6;
-steering_servo_slot_height            = 12;
-
-steering_servo_screw_dia              = 2;    // diameter of the fastening screws for the servo
-steering_servo_screws_offset          = 1;  // offset between the servo slot and the fastening screws
-steering_servo_hat_w                  = 33;
-
-steering_servo_panel_thickness        = 2;
-
 pan_servo_slot_dia                    = 6.5;    // diameter of the pan servo mounting hole at the front of the chassis
 pan_servo_wheels_y_offset             = 50;
 
@@ -60,9 +45,9 @@ raspberry_pi5_screws_size             = [50, 58];
 ups_hat_offset                        = 40; // Y offset for the UPS HAT from Raspberry Pi
 ups_hat_screws_size                   = [86, 46];
 
-steering_servo_panel_screws_offsets   = [5, 11.5];
-
+steering_servo_panel_screws_offsets   = [5.5, 12.0];
 steering_servo_panel_screws_dia       = m2_hole_dia;
+steering_servo_extra_width            = 4;
 
 // Additional cutouts:
 extra_cutouts_dia                     = 8; // diameter of the three extra holes on the left and right sides of the chassis
@@ -145,7 +130,91 @@ cam_tilt_servo_extra_h                = 2;
 pan_servo_extra_h                     = 14;
 pan_servo_extra_w                     = 4;
 
-// Parameters for hub dimensions and screw properties.
+// Offset for the front wheels and the steering servo slot. Also affects the position of the pan servo slot.
+steering_servo_chassis_offset         = 65;
+// Dimensions for the slot that accommodates the steering servo motor.
+// Tested with the EMAX ES08MA II servo (23 x 11.5 x 24 mm).
+// The popular SG90 servo measures approximately 23mm x 12.2mm x 29mm, so you may
+// want to adjust steering_servo_slot_width and steering_servo_slot_height as needed.
+steering_servo_slot_width             = 23.6;
+steering_servo_slot_height            = 12;
+
+steering_servo_screw_dia              = 2;    // diameter of the fastening screws for the servo
+steering_servo_screws_offset          = 1;  // offset between the servo slot and the fastening screws
+steering_servo_hat_w                  = 33;
+
+steering_servo_panel_thickness        = 2;
+
+rack_mount_panel_len                  = 124;
+rack_mount_panel_thickness            = 3;
+rack_mount_panel_width                = 15.5;
+
+tooth_h                               = 4;
+tooth_pitch                           = 3;
+pinion_d                              = 25;
+pinion_servo_dia                      = 6.5;
+pinion_thickness                      = 2;
+pinion_screw_dia                      = 1.5;
+
+// The height of the knuckle.
+knuckle_height                        = 14.0;
+knuckle_dia                           = 14.0; // Diameter of the steering knuckle
+knuckle_bearing_outer_dia             = 11.0; // Outside diameter of the bearing 685-Z (5x11x5) which is inserted inside knuckle
+knuckle_bearing_inner_dia             = 5.2;  // Inside diameter + tolerance of the bearing 685-Z (5x11x5)
+knuckle_bearing_height                = 5;
+knuckle_bearing_flanged_height        = 0.5;
+knuckle_bearing_flanged_width         = 0.5;
+
+// The length of the knuckle's wheel shaft
+knuckle_shaft_len                     = 25;
+// The diameter of the knuckle's wheel shaft for the 608ZZ bearing
+knuckle_shaft_dia                     = 8;
+
+knuckle_shaft_vertical_len            = 20;
+knuckle_shaft_upper_horiz_len         = 5;
+knuckle_shaft_lower_horiz_len         = 25;
+
+// The height of the upper pins on each side of the frame onto which the bearings of the steering knuckles are mounted
+knuckle_pin_bearing_height            = 8.0;
+// The height of the chamfer at the top of the bearing pin
+knuckle_pin_chamfer_height            = 2.5;
+// The height of the lower pins on each side of the frame with bearing pins at the top
+knuckle_pin_lower_height              = 6;
+knuckle_pin_stopper_height            = 1;
+// The angle of the shaft that connects the knuckle with the bracket
+knuckle_bracket_connector_angle       = 120.0;
+// The length of the rotated shaft that connects the knuckle with the bracket.
+knuckle_bracket_connector_len         = 12.2;
+// The height (thickness) of the knuckle L-bracket's connector
+knuckle_bracket_connector_height      = 7;
+
+bracket_bearing_shaft_h               = 7;
+bracket_bearing_lower_h               = 4;
+
+bracket_bearing_outer_d               = 10.0; // Outside diameter of the flanged bearing 693 ZZ / 2Z (3x8x4) which is inserted bearing connector
+bracket_bearing_d                     = 8.0; // Outside diameter of the flanged bearing 693 ZZ / 2Z (3x8x4) which is inserted bearing connector
+bracket_bearing_shaft_d               = 3.1; // Inside diameter + tolerance of flanged the bearing 693 2Z (3x8x4)
+bracket_bearing_stopper_height        = 1;
+
+bracket_bearing_height                = 4;
+bracket_bearing_flanged_height        = 0.5;
+bracket_bearing_flanged_width         = 0.5;
+
+// The length of the L-bracket part that is connected to the rack
+bracket_rack_side_h_length            = 10.30;
+// The length of the L-bracket part that is connected to the knuckle
+bracket_rack_side_w_length            = 9.5; // The L-bracket's part that is connected to the rack
+
+rack_len                              = 49;
+rack_width                            = 6;
+rack_base_h                           = 3;
+rack_rad                              = 0.5;
+
+rack_bracket_width                    = 5;
+rack_bracket_thickness                = 3;
+rack_connector_lower_h                = 5;
+
+// Parameters for wheel dimensions and screw properties.
 wheel_hub_outer_d                     = 48.2;
 wheel_hub_d                           = 22;
 wheel_hub_h                           = 7.4;
@@ -168,68 +237,3 @@ wheel_spokes                          = 5;
 wheel_spoke_w                         = 22.8;
 wheel_shaft_d                         = 6.4;
 wheel_tolerance                       = 0.3;
-
-tooth_h                               = 4;
-tooth_pitch                           = 3;
-pinion_d                              = 25;
-pinion_servo_dia                      = 6.5;
-pinion_thickness                      = 2;
-pinion_screw_dia                      = 1.5;
-pinion_z_offst                        = 5;
-
-// The height of the knuckle.
-knuckle_height                        = 14.0;
-knuckle_dia                           = 14.0; // Diameter of the steering knuckle
-knuckle_bearing_outer_dia             = 11.0; // Outside diameter of ball bearing 685-Z (5x11x5) which is inserted inside knuckle
-knuckle_bearing_inner_dia             = 5.1;  // Inside diameter + tolerance of ball bearing 685-Z (5x11x5)
-
-// The length of the knuckle's wheel shaft
-knuckle_shaft_len                     = 25;
-// The diameter of the knuckle's wheel shaft for the 608ZZ bearing
-knuckle_shaft_dia                     = 8;
-
-knuckle_shaft_vertical_len            = 20;
-knuckle_shaft_upper_horiz_len         = 5;
-knuckle_shaft_lower_horiz_len         = 25;
-
-// The height of the upper pins on each side of the frame onto which the bearings of the steering knuckles are mounted
-knuckle_pin_bearing_height            = 8.0;
-// The height of the chamfer at the top of the bearing pin
-knuckle_pin_chamfer_height            = 2.5;
-// The height of the lower pins on each side of the frame with bearing pins at the top
-knuckle_pin_lower_height              = 5;
-// The angle of the shaft that connects the knuckle with the bracket
-knuckle_bracket_connector_angle       = 120.0;
-// The length of the rotated shaft that connects the knuckle with the bracket.
-knuckle_bracket_connector_len         = 12.2;
-// The height (thickness) of the knuckle L-bracket's connector
-knuckle_bracket_connector_height      = 7;
-
-bracket_bearing_shaft_h               = 9;
-bracket_bearing_lower_h               = 4;
-
-bracket_bearing_outer_d               = 10.0; // Outside diameter of ball bearing 693 ZZ / 2Z (3x8x4) which is inserted bearing connector
-bracket_bearing_d                     = 8.0; // Outside diameter of ball bearing 693 ZZ / 2Z (3x8x4) which is inserted bearing connector
-bracket_bearing_shaft_d               = 3.1; // Inside diameter + tolerance of flanged ball bearing 693 2Z (3x8x4)
-
-rack_len                              = 49;
-rack_pan_full_len                     = 125;
-rack_width                            = 6;
-rack_base_h                           = 3;
-rack_rad                              = 0.5;
-rack_rail_width                       = 15;
-
-rack_side_connector_thickness         = 3;
-
-rack_side_connector_screws_dia        = m2_hole_dia;
-
-// The length of the L-bracket part that is connected to the rack
-bracket_rack_side_h_length            = 10.30;
-// The length of the L-bracket part that is connected to the knuckle
-bracket_rack_side_w_length            = 9.5; // The L-bracket's part that is connected to the rack
-
-rack_bracket_width                    = 5;
-
-rack_bracket_connector_h              = knuckle_bracket_connector_height;
-rack_bracket_thickness                = 3;
-ring_connector_tolerance              = 0.4;

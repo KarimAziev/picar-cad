@@ -2,7 +2,6 @@ include <../parameters.scad>
 include <../colors.scad>
 use <rack_connector.scad>
 use <rack_util.scad>
-use <ring_connector.scad>
 use <bracket.scad>
 use <../util.scad>
 
@@ -74,19 +73,20 @@ module rack(size=[rack_len, rack_width, rack_base_h],
   }
 }
 
-module rack_mount(show_brackets=false) {
+module rack_mount(show_brackets=false, rack_color=blue_grey_carbon) {
   rotate([0, 0, 180]) {
     rack(size=[rack_len, rack_width, rack_base_h],
          pinion_d=pinion_d,
          tooth_pitch=tooth_pitch,
          tooth_height=tooth_h,
          r=rack_rad,
-         show_brackets=show_brackets);
+         show_brackets=show_brackets,
+         rack_color=rack_color);
   }
 }
 
 module rack_assembly(show_brackets=true, rack_color=blue_grey_carbon) {
-  rack_mount(show_brackets=show_brackets);
+  rack_mount(show_brackets=show_brackets, rack_color=rack_color);
 }
 
-rack_mount();
+rack_mount(show_brackets=false);

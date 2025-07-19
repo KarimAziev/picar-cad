@@ -1,5 +1,5 @@
 // Dimensions for inner features
-shaft_rad              = 4;
+ball_bearing_inner_rad = 4;
 bearing_section_height = 7;
 inner_gap_rad          = 7.2;
 outer_bearing_rad      = 11;
@@ -20,10 +20,10 @@ function circle_point(theta, radius_val, section_height) =
    radius_val * sin(theta),
    section_height / 2];
 
-module ball_bearing(shaft_rad        = shaft_rad,
+module ball_bearing(inner_rad        = ball_bearing_inner_rad,
                     gap_rad          = inner_gap_rad,
-                    bearing_rad      = outer_bearing_rad,
-                    section_height   = bearing_section_height,
+                    h                = bearing_section_height,
+                    outer_rad        = outer_bearing_rad,
                     ball_rad         = ball_radius_mm,
                     num_balls        = ball_count,
                     ring_rad         = carrier_ring_rad,
@@ -36,30 +36,30 @@ module ball_bearing(shaft_rad        = shaft_rad,
       difference() {
         union() {
 
-          translate([shaft_rad, 0, 0])
-            square([gap_rad - shaft_rad - (ball_rad / 2), section_height]);
+          translate([inner_rad, 0, 0])
+            square([gap_rad - inner_rad - (ball_rad / 2), h]);
 
           translate([gap_rad + (ball_rad / 2), 0, 0])
-            square([bearing_rad - gap_rad - (ball_rad / 2), section_height]);
+            square([outer_rad - gap_rad - (ball_rad / 2), h]);
         }
 
-        translate([gap_rad, section_height / 2, 0])
+        translate([gap_rad, h / 2, 0])
           circle(ball_rad);
       }
     }
 
-    translate([gap_rad, 0, section_height / 2])
-      cylinder(h = section_height / 2 + 1, r = ball_rad);
+    translate([gap_rad, 0, h / 2])
+      cylinder(h = h / 2 + 1, r = ball_rad);
   }
 
   ball_positions = [for (i = [0 : (fn / num_balls) : fn - 1])
       let (angle_deg = i * 360 / fn)
-        circle_point(angle_deg, gap_rad, section_height)];
+        circle_point(angle_deg, gap_rad, h)];
 
   difference() {
     rotate_extrude(angle = 360) {
       translate([gap_rad - (ring_rad / 2), 0, 0])
-        square([ring_rad, section_height / 2 + 0.5 * ball_rad]);
+        square([ring_rad, h / 2 + 0.5 * ball_rad]);
     }
 
     for (idx = [0 : len(ball_positions) - 1]) {

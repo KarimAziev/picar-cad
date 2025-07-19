@@ -24,33 +24,34 @@
 
 include <../parameters.scad>
 use <../util.scad>
+use <../placeholders/bearing.scad>
 use <bracket.scad>
 use <bearing_shaft.scad>
 use <../wheels/wheel_hub.scad>
 
-module bearing_upper_connector(connector_color) {
-  translate([0, 0, rack_bracket_connector_h / 2]) {
-    if (is_undef(connector_color)) {
-      linear_extrude(height = rack_bracket_connector_h, center=true) {
-        ring_2d(r=bracket_bearing_d / 2, w=(bracket_bearing_outer_d - bracket_bearing_d) / 2, fn=360, outer=true);
-      }
-    } else {
-      color(connector_color) {
-        linear_extrude(height = rack_bracket_connector_h, center=true) {
-          ring_2d(r=bracket_bearing_d / 2, w=(bracket_bearing_outer_d - bracket_bearing_d) / 2, fn=360, outer=true);
-        }
+module bearing_upper_connector(connector_color, h=knuckle_bracket_connector_height) {
+  union() {
+    color(connector_color) {
+      linear_extrude(height = h) {
+        ring_2d(r=bracket_bearing_d / 2,
+                w=(bracket_bearing_outer_d - bracket_bearing_d) / 2,
+                fn=360,
+                outer=true);
       }
     }
   }
 }
 
-module bearing_lower_connector() {
-  translate([0, 0, bracket_bearing_lower_h]) {
-    bearing_shaft_connector(lower_d=bracket_bearing_outer_d,
-                            lower_h=bracket_bearing_lower_h,
-                            shaft_h=bracket_bearing_shaft_h,
-                            shaft_d=bracket_bearing_shaft_d);
-  }
+module bearing_lower_connector(lower_d=bracket_bearing_outer_d,
+                               lower_h=bracket_bearing_lower_h,
+                               shaft_h=bracket_bearing_shaft_h,
+                               shaft_d=bracket_bearing_shaft_d,
+                               stopper_h=bracket_bearing_stopper_height) {
+  bearing_shaft_connector(lower_d=lower_d,
+                          lower_h=lower_h,
+                          shaft_h=shaft_h,
+                          shaft_d=shaft_d,
+                          stopper_h=stopper_h);
 }
 
 module print_plate(step_offset = 5) {
@@ -78,6 +79,7 @@ module assembly_view(animation_z_offset=5) {
 
 union() {
   print_plate(step_offset=2);
+
   // assembly_view();
 
   // translate([-20, 0, 0]) {

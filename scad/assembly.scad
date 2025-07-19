@@ -19,7 +19,7 @@ use <wheels/rear_wheel.scad>
 module assembly_view() {
   union() {
     translate([chassis_width / 2 + wheel_w + wheel_w / 2 + 5, 0, wheel_dia / 2 + 25]) {
-      translate([0, steering_servo_chassis_offset, steering_servo_panel_thickness]) {
+      translate([0, steering_servo_chassis_offset, rack_mount_panel_thickness / 2]) {
         rotate([0, 0, 0])
           steering_system_assembly();
       }
