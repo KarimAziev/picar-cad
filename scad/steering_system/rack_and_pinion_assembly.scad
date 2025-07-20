@@ -3,7 +3,6 @@ include <../colors.scad>
 use <../util.scad>
 include <../placeholders/servo.scad>
 use <bracket.scad>
-use <shaft.scad>
 use <steering_servo_panel.scad>
 use <knuckle.scad>
 use <rack_connector.scad>
@@ -11,7 +10,7 @@ use <rack.scad>
 use <pinion.scad>
 use <rack_util.scad>
 
-module knuckle_assembly(show_wheels=true, show_bearing=true) {
+module knuckle_assembly(show_wheel=true, show_bearing=true, show_shaft=true) {
   x_offst = rack_mount_panel_len / 2 - knuckle_dia / 2;
 
   z_offst = knuckle_pin_lower_height
@@ -20,7 +19,7 @@ module knuckle_assembly(show_wheels=true, show_bearing=true) {
     + knuckle_bearing_flanged_height;
 
   translate([x_offst, 0, z_offst]) {
-    knuckle_mount(show_wheels=show_wheels, show_bearing=show_bearing);
+    knuckle_mount(show_wheel=show_wheel, show_bearing=show_bearing, show_shaft=show_shaft);
   }
 }
 
@@ -36,9 +35,9 @@ module steering_system_assembly(rack_color=blue_grey_carbon,
       rack_mount(show_brackets=show_brackets, rack_color=rack_color);
     }
 
-    knuckle_assembly(show_wheels=show_wheels, show_bearing=show_bearing);
+    knuckle_assembly(show_wheel=show_wheels, show_bearing=show_bearing);
     mirror([1, 0, 0]) {
-      knuckle_assembly(show_wheels=show_wheels, show_bearing=show_bearing);
+      knuckle_assembly(show_wheel=show_wheels, show_bearing=show_bearing);
     }
 
     translate([0, 0, pinion_d / 2

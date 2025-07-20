@@ -14,11 +14,12 @@ use <head/head_neck_mount.scad>
 use <chassis.scad>
 use <steering_system/rack_and_pinion_assembly.scad>
 use <placeholders/motor.scad>
+use <steering_system/knuckle_shaft.scad>
 use <wheels/rear_wheel.scad>
 
 module assembly_view() {
   union() {
-    translate([chassis_width / 2 + wheel_w + wheel_w / 2 + 5, 0, wheel_dia / 2 + 25]) {
+    translate([chassis_width / 2 + fron_wheel_offset() + wheel_w, 0, wheel_dia - chassis_thickness]) {
       translate([0, steering_servo_chassis_offset, rack_mount_panel_thickness / 2]) {
         rotate([0, 0, 0])
           steering_system_assembly();

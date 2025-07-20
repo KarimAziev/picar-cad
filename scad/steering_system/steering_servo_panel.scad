@@ -42,7 +42,6 @@ include <../parameters.scad>
 use <../util.scad>
 include <../placeholders/servo.scad>
 use <bracket.scad>
-use <shaft.scad>
 use <knuckle.scad>
 use <rack_connector.scad>
 use <rack.scad>

@@ -80,10 +80,10 @@ module bracket(a_len=bracket_rack_side_w_length,
 union() {
   rotate([0, 0, 180]) {
     bracket();
-    translate([bracket_rack_side_w_length + bracket_bearing_outer_d + 5, 0, 0]) {
-      mirror([1, 0, 0]) {
-        bracket();
-      }
-    }
+    // translate([bracket_rack_side_w_length + bracket_bearing_outer_d + 5, 0, 0]) {
+    //   mirror([1, 0, 0]) {
+    //     bracket();
+    //   }
+    // }
   }
 }

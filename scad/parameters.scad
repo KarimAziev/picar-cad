@@ -3,7 +3,7 @@
 
 m1_hole_dia                           = 1.2; // M1 screw hole diameter
 m2_hole_dia                           = 2.4; // M2 screw hole diameter
-m25_hole_dia                          = 2.8; // M2.5 screw hole diameter
+m25_hole_dia                          = 2.6; // M2.5 screw hole diameter
 m3_hole_dia                           = 3.2; // M3 screw hole diameter
 r4120_dia                             = 4.6; // diameter in millimeters
 r3065_dia                             = 3.5;
@@ -165,13 +165,15 @@ knuckle_bearing_height                = 5;
 knuckle_bearing_flanged_height        = 0.5;
 knuckle_bearing_flanged_width         = 0.5;
 
-// The length of the knuckle's wheel shaft
-knuckle_shaft_len                     = 25;
 // The diameter of the knuckle's wheel shaft for the 608ZZ bearing
 knuckle_shaft_dia                     = 8;
+knuckle_shaft_connector_dia           = knuckle_shaft_dia * 1.4;
 
-knuckle_shaft_vertical_len            = 20;
-knuckle_shaft_upper_horiz_len         = 5;
+knuckle_shaft_screws_dia              = m25_hole_dia;
+knuckle_shaft_screws_offset           = 3; // distance from top of the shaft to the screws holes
+
+knuckle_shaft_vertical_len            = 30;
+knuckle_shaft_upper_horiz_len         = 0;
 knuckle_shaft_lower_horiz_len         = 25;
 
 // The height of the upper pins on each side of the frame onto which the bearings of the steering knuckles are mounted
