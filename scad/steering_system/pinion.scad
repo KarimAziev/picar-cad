@@ -49,6 +49,7 @@ module pinion(d=pinion_d,
               screw_dia=pinion_screw_dia,
               rack_len=rack_len,
               offset_rad=rack_rad) {
+
   shared_params = pinion_sync_params(d, tooth_pitch, rack_len);
   gear_teeth       = shared_params[0];
 
@@ -60,16 +61,21 @@ module pinion(d=pinion_d,
 
   tooth_angle = 360 / gear_teeth;
   half_tooth  = tooth_angle / 2;
+
   difference() {
     linear_extrude(height=thickness, center=true) {
       for (i = [0 : gear_teeth - 1]) {
         rotate(i * tooth_angle) {
           offset(r = offset_rad) {
-            polygon(points=[[r_dedendum * cos(half_tooth),  r_dedendum * sin(half_tooth)],
-                            [r_pitch    * cos(half_tooth),  r_pitch    * sin(half_tooth)],
-                            [r_addendum,                    0],
-                            [r_pitch    * cos(-half_tooth), r_pitch    * sin(-half_tooth)],
-                            [r_dedendum * cos(-half_tooth), r_dedendum * sin(-half_tooth)]]);
+            polygon(points=[[r_dedendum * cos(half_tooth),
+                             r_dedendum * sin(half_tooth)],
+                            [r_pitch    * cos(half_tooth),
+                             r_pitch    * sin(half_tooth)],
+                            [r_addendum,                0],
+                            [r_pitch    * cos(-half_tooth),
+                             r_pitch    * sin(-half_tooth)],
+                            [r_dedendum * cos(-half_tooth),
+                             r_dedendum * sin(-half_tooth)]]);
           }
         }
       }

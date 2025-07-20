@@ -48,7 +48,9 @@ module rack(size=[rack_len, rack_width, rack_base_h],
       }
     }
 
-    offst = [-rack_len / 2 + rack_margin / 2 - bracket_bearing_outer_d / 2, 0, 0];
+    offst = [-rack_len / 2 + rack_margin / 2 - bracket_bearing_outer_d / 2,
+             0,
+             0];
 
     translate(offst) {
       if (show_brackets) {

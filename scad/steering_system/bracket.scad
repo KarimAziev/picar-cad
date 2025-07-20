@@ -27,9 +27,13 @@ module bracket(a_len=bracket_rack_side_w_length,
       color(bracket_color) {
         difference() {
           union() {
-            linear_extrude(height = thickness, center = true) {
+            linear_extrude(height=thickness,
+                           center=true) {
               translate([-notch_w / 2, 0, 0]) {
-                rounded_rect([a_full_len + notch_w, w], center=true, fn=360, r=0.4);
+                rounded_rect([a_full_len + notch_w, w],
+                             center=true,
+                             fn=360,
+                             r=0.4);
               }
             }
 
@@ -43,7 +47,7 @@ module bracket(a_len=bracket_rack_side_w_length,
       union() {
         x_offst = a_full_len / 2 - w / 2;
         color(bracket_color) {
-          linear_extrude(height=thickness, center = true) {
+          linear_extrude(height=thickness, center=true) {
 
             translate([x_offst, b_len / 2, 0]) {
               square([w, b_len + notch_w], center=true);
@@ -80,10 +84,11 @@ module bracket(a_len=bracket_rack_side_w_length,
 union() {
   rotate([0, 0, 180]) {
     bracket();
-    // translate([bracket_rack_side_w_length + bracket_bearing_outer_d + 5, 0, 0]) {
-    //   mirror([1, 0, 0]) {
-    //     bracket();
-    //   }
-    // }
+    translate([bracket_rack_side_w_length + bracket_bearing_outer_d
+               + 5, 0, 0]) {
+      mirror([1, 0, 0]) {
+        bracket();
+      }
+    }
   }
 }

@@ -57,12 +57,19 @@ module bearing_shaft_connector(lower_d,
     }
 
     translate([0, 0, lower_h]) {
-      bearing_shaft(d=shaft_d, h=shaft_h, chamfer_h=chamfer_h, stopper_h=stopper_h);
+      bearing_shaft(d=shaft_d,
+                    h=shaft_h,
+                    chamfer_h=chamfer_h,
+                    stopper_h=stopper_h);
     }
   }
 }
 
-module bearing_shaft_probes(from=4.0, to=4.4, step=0.1, h=8.0, chamfer_h=undef) {
+module bearing_shaft_probes(from=4.0,
+                            to=4.4,
+                            step=0.1,
+                            h=8.0,
+                            chamfer_h=undef) {
   vals = number_sequence(from, to, step);
   offst = to * 3;
   plate_height = 2;

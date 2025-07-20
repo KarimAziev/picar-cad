@@ -24,12 +24,11 @@
 
 include <../parameters.scad>
 use <../util.scad>
-use <../placeholders/bearing.scad>
-use <bracket.scad>
 use <bearing_shaft.scad>
 use <../wheels/wheel_hub.scad>
 
-module bearing_upper_connector(connector_color, h=knuckle_bracket_connector_height) {
+module bearing_upper_connector(connector_color,
+                               h=knuckle_bracket_connector_height) {
   union() {
     color(connector_color) {
       linear_extrude(height = h) {
@@ -64,7 +63,7 @@ module print_plate(step_offset = 5) {
   }
 }
 
-module assembly_view(animation_z_offset=5) {
+module bearing_connector_assembly_view(animation_z_offset=5) {
 
   end_h = knuckle_bracket_connector_height + animation_z_offset;
   base_h = bracket_bearing_lower_h;
@@ -80,12 +79,12 @@ module assembly_view(animation_z_offset=5) {
 union() {
   print_plate(step_offset=2);
 
-  // assembly_view();
+  // bearing_connector_assembly_view();
 
   // translate([-20, 0, 0]) {
   //   bearing_upper_connector();
   // }
   // bearing_lower_connector();
 
-  // assembly_view(animation_z_offset = 5);
+  // bearing_connector_assembly_view(animation_z_offset = 5);
 }

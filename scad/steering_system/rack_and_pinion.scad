@@ -19,7 +19,8 @@ module rack_and_pinion(pinion_color="#fa8072", rack_color="#b0c4de") {
   pinion_full_h = pinion_d + rack_rad + tooth_h * 2;
   rack_full_h = rack_base_h + rack_rad + tooth_h;
 
-  translate([0, rack_width / 2, pinion_full_h / 2 + rack_full_h - tooth_h / 2 + 2.0]) {
+  translate([0, rack_width / 2,
+             pinion_full_h / 2 + rack_full_h - tooth_h / 2 + 2.0]) {
     rotate([90, 88, 0]) {
       if (is_undef(pinion_color)) {
         pinion_mount();

@@ -19,7 +19,9 @@ module knuckle_assembly(show_wheel=true, show_bearing=true, show_shaft=true) {
     + knuckle_bearing_flanged_height;
 
   translate([x_offst, 0, z_offst]) {
-    knuckle_mount(show_wheel=show_wheel, show_bearing=show_bearing, show_shaft=show_shaft);
+    knuckle_mount(show_wheel=show_wheel,
+                  show_bearing=show_bearing,
+                  show_shaft=show_shaft);
   }
 }
 
