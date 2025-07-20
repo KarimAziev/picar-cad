@@ -172,7 +172,7 @@ knuckle_shaft_connector_dia           = knuckle_shaft_dia * 1.4;
 knuckle_shaft_screws_dia              = m25_hole_dia;
 knuckle_shaft_screws_offset           = 3; // distance from top of the shaft to the screws holes
 
-knuckle_shaft_vertical_len            = 30;
+knuckle_shaft_vertical_len            = 34;
 knuckle_shaft_upper_horiz_len         = 0;
 knuckle_shaft_lower_horiz_len         = 25;
 
