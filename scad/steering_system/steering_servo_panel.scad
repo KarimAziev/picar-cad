@@ -58,14 +58,17 @@ module knuckle_lower_connector() {
 
 module rack_mount_panel() {
   half_of_len = rack_mount_panel_len / 2;
+  half_of_width = rack_mount_panel_width / 2;
   rad = rack_mount_panel_width / 2;
-  knuckle_connectors_x_offsets = [-half_of_len + knuckle_dia / 2, half_of_len - knuckle_dia / 2];
+  knuckle_connectors_x_offsets = [-half_of_len + knuckle_dia / 2,
+                                  half_of_len - knuckle_dia / 2];
 
   difference() {
     union() {
       linear_extrude(height=rack_mount_panel_thickness, center=true) {
         difference() {
-          rounded_rect(size=[rack_mount_panel_len, rack_mount_panel_width], center=true, r=rad);
+          rounded_rect(size=[rack_mount_panel_len, rack_mount_panel_width],
+                       center=true, r=rad);
           four_corner_holes_2d(steering_servo_panel_screws_offsets,
                                hole_dia=steering_servo_panel_screws_dia,
                                center=true);
@@ -75,11 +78,14 @@ module rack_mount_panel() {
       translate([0, -rack_mount_panel_width / 2, 0]) {
         vertical_servo_plate();
       }
-      translate([0, -rack_mount_panel_width / 2 - steering_servo_panel_thickness / 2, -rack_mount_panel_thickness / 2]) {
+
+      translate([0,
+                 -half_of_width - steering_servo_panel_thickness / 2,
+                 -rack_mount_panel_thickness / 2]) {
         width = steering_servo_extra_width + steering_servo_slot_height;
         linear_extrude(height = rack_mount_panel_thickness) {
-          square([width,
-                  steering_servo_panel_thickness], center=true);
+          square([width, steering_servo_panel_thickness],
+                 center=true);
         }
       }
       for (x = knuckle_connectors_x_offsets) {
@@ -152,11 +158,8 @@ module steering_servo_panel(size=[servo_hat_w,
         color("white") {
           union() {
             rack_mount_panel();
-
             rotate([90, 0, 0]) {
-
               translate([0, (front_h + thickness) / 2, -y / 2]) {
-
                 rad = min(front_w, front_h) * 0.3;
 
                 translate([0, 0, rack_width + thickness / 2]) {
