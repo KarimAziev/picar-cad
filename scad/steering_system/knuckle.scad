@@ -93,17 +93,19 @@ module knuckle_bent_shaft_connector(knuckle_color=blue_grey_carbon,
                                     fn=100) {
   notch_width = calc_notch_width(knuckle_dia, knuckle_shaft_connector_dia);
 
+  offst = knuckle_shaft_upper_horiz_len + knuckle_shaft_connector_dia / 2;
+  screw_holes_z = knuckle_shaft_screws_dia / 2 + knuckle_shaft_screws_offset;
+
   rotate([0, 0, -90]) {
-    translate([knuckle_dia / 2 - notch_width,
-               0,
-               0]) {
+    translate([knuckle_dia / 2 - notch_width, 0, 0]) {
       difference() {
         union() {
           color(knuckle_color) {
             linear_extrude(height = knuckle_height, center=false) {
               difference() {
                 translate([0, -knuckle_shaft_connector_dia / 2, 0]) {
-                  square([notch_width, knuckle_shaft_connector_dia], center=false);
+                  square([notch_width, knuckle_shaft_connector_dia],
+                         center=false);
                 }
                 translate([-notch_width / 2 + border_w / 2, 0, 0]) {
                   circle(d=knuckle_dia, $fn=60);
@@ -113,18 +115,15 @@ module knuckle_bent_shaft_connector(knuckle_color=blue_grey_carbon,
           }
 
           translate([knuckle_shaft_connector_dia / 2 - 0.1, 0, 0]) {
-
             union() {
               color(knuckle_color) {
                 linear_extrude(height = knuckle_height, center=false) {
                   difference() {
                     translate([0, -knuckle_shaft_connector_dia / 2, 0]) {
                       difference() {
-                        square([knuckle_shaft_upper_horiz_len + knuckle_shaft_connector_dia / 2,
-                                knuckle_shaft_connector_dia],
+                        square([offst, knuckle_shaft_connector_dia],
                                center=false);
-                        translate([knuckle_shaft_upper_horiz_len + knuckle_shaft_connector_dia / 2,
-                                   knuckle_shaft_connector_dia / 2, 0]) {
+                        translate([offst, knuckle_shaft_connector_dia / 2, 0]) {
                           circle(d=knuckle_shaft_dia, $fn=360);
                         }
                       }
@@ -132,14 +131,12 @@ module knuckle_bent_shaft_connector(knuckle_color=blue_grey_carbon,
                   }
                 }
               }
-
-              translate([knuckle_shaft_upper_horiz_len + knuckle_shaft_connector_dia / 2,
-                         0,
-                         0]) {
+              translate([offst, 0, 0]) {
+                ring_w = (knuckle_shaft_connector_dia - knuckle_shaft_dia) / 2;
                 color(knuckle_color) {
                   linear_extrude(height = knuckle_height) {
                     ring_2d(r=knuckle_shaft_dia / 2,
-                            w=(knuckle_shaft_connector_dia - knuckle_shaft_dia) / 2,
+                            w=ring_w,
                             fn=360,
                             outer=true);
                   }
@@ -148,33 +145,32 @@ module knuckle_bent_shaft_connector(knuckle_color=blue_grey_carbon,
             }
           }
         }
-        translate([knuckle_shaft_connector_dia / 2, 0, 0]) {
-          translate([knuckle_shaft_upper_horiz_len +
-                     knuckle_shaft_connector_dia / 2, 0, 0]) {
-            translate([0, 0, knuckle_shaft_screws_dia / 2 + knuckle_shaft_screws_offset]) {
-              knuckle_screws_slots(d=knuckle_shaft_screws_dia,
-                                   h=knuckle_shaft_connector_dia + 1);
 
-              translate([0, 0, knuckle_shaft_screws_dia / 2 + knuckle_shaft_screws_offset]) {
-                knuckle_screws_slots(d=knuckle_shaft_screws_dia,
-                                     h=knuckle_shaft_connector_dia + 1);
-              }
-            }
+        translate([knuckle_shaft_connector_dia / 2 + offst,
+                   0,
+                   screw_holes_z]) {
+          knuckle_screws_slots(d=knuckle_shaft_screws_dia,
+                               h=knuckle_shaft_connector_dia + 1);
+
+          translate([0, 0, screw_holes_z]) {
+            knuckle_screws_slots(d=knuckle_shaft_screws_dia,
+                                 h=knuckle_shaft_connector_dia + 1);
           }
         }
       }
     }
   }
-  translate([0, -knuckle_dia / 2 + notch_width, 0]) {
-    if (show_shaft) {
-      translate([0, -knuckle_shaft_connector_dia / 2, 0]) {
-        translate([0, -knuckle_shaft_upper_horiz_len - knuckle_shaft_connector_dia / 2, 0]) {
-          translate([0, 0, -knuckle_screws_offset() - knuckle_shaft_screws_dia / 2 + knuckle_shaft_screws_offset]) {
-            knuckle_shaft(show_wheel=show_wheel,
-                          knuckle_shaft_color=knuckle_shaft_color);
-          }
-        }
-      }
+  if (show_shaft) {
+    x_offst = -knuckle_dia / 2 + notch_width
+      - knuckle_shaft_connector_dia / 2 - offst;
+    z_offst = -knuckle_screws_offset()
+      - knuckle_shaft_screws_dia / 2
+      + knuckle_shaft_screws_offset;
+    translate([0,
+               x_offst,
+               z_offst]) {
+      knuckle_shaft(show_wheel=show_wheel,
+                    knuckle_shaft_color=knuckle_shaft_color);
     }
   }
 }
@@ -187,7 +183,7 @@ module knuckle_bearing_bracket_connector(border_w=border_w,
                0,
                knuckle_bracket_connector_height]) {
       color(knuckle_color) {
-        linear_extrude(height = knuckle_bracket_connector_height, center=false) {
+        linear_extrude(height=knuckle_bracket_connector_height, center=false) {
           difference() {
             square([border_w, bracket_bearing_outer_d], center=true);
             translate([-knuckle_dia / 2, 0, 0]) {
@@ -200,9 +196,11 @@ module knuckle_bearing_bracket_connector(border_w=border_w,
       translate([knuckle_bracket_connector_len / 2, 0, 0]) {
         union() {
           color(knuckle_color) {
-            linear_extrude(height = knuckle_bracket_connector_height, center=false) {
+            linear_extrude(height = knuckle_bracket_connector_height,
+                           center=false) {
               difference() {
-                square([knuckle_bracket_connector_len, bracket_bearing_outer_d], center=true);
+                square([knuckle_bracket_connector_len, bracket_bearing_outer_d],
+                       center=true);
                 translate([knuckle_bracket_connector_len / 2, 0, 0]) {
                   circle(d=bracket_bearing_d, $fn=360);
                 }
