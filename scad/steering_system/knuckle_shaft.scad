@@ -24,7 +24,7 @@
  * - knuckle_screws_slots:
  *     Cuts a slot for a screw that fixes the shaft in place.
  *
- * - print_plate:
+ * - knuckle_shaft_print_plate:
  *     Optional helper that places and mirrors the shaft for 3D printing layout.
  *
  * Parameters:
@@ -44,7 +44,9 @@ function fron_wheel_offset() = wheel_w > knuckle_shaft_lower_horiz_len
   ? knuckle_shaft_lower_horiz_len
   : wheel_w + (wheel_w - knuckle_shaft_lower_horiz_len);
 
-function knuckle_screws_offset() = -knuckle_shaft_dia / 2 - knuckle_shaft_screws_dia / 2 - knuckle_shaft_screws_offset;
+function knuckle_screws_offset() = -knuckle_shaft_dia / 2
+  - knuckle_shaft_screws_dia / 2
+  - knuckle_shaft_screws_offset;
 
 module knuckle_shaft(show_wheel=false,
                      knuckle_shaft_color=matte_black) {
@@ -57,7 +59,10 @@ module knuckle_shaft(show_wheel=false,
                  knuckle_screws_offset()]) {
         rotate([0, 0, -90]) {
           knuckle_screws_slots(d=knuckle_shaft_screws_dia);
-          translate([0, 0, -knuckle_shaft_screws_dia / 2 - knuckle_shaft_screws_offset]) {
+          translate([0,
+                     0,
+                     - knuckle_shaft_screws_dia / 2
+                     - knuckle_shaft_screws_offset]) {
             knuckle_screws_slots(d=knuckle_shaft_screws_dia);
           }
         }
@@ -135,31 +140,20 @@ module knuckle_screws_slots(d,
                             h=knuckle_shaft_dia + 1,
                             fn=360) {
   rotate([90, 0, 0]) {
-    cylinder(h=h,
-             r=d / 2,
-             center=true,
-             $fn=fn);
+    cylinder(h=h, r=d / 2, center=true, $fn=fn);
   }
 }
 
-module print_plate() {
-
-  rotate([0, 0, 0]) {
-    offst = knuckle_shaft_lower_horiz_len +
-      knuckle_dia +
-      knuckle_shaft_upper_horiz_len +
-      knuckle_bracket_connector_height +
-      knuckle_shaft_dia;
-    translate([offst / 2, 0, 0]) {
+module knuckle_shaft_print_plate() {
+  offst = knuckle_dia;
+  translate([offst / 2, 0, 0]) {
+    knuckle_shaft();
+  }
+  translate([-offst / 2, 0, 0]) {
+    mirror([1, 0, 0]) {
       knuckle_shaft();
     }
-    translate([-offst / 2, 0, 0]) {
-      mirror([1, 0, 0]) {
-        knuckle_shaft();
-      }
-    }
   }
 }
 
-// print_plate();
-knuckle_shaft();
+knuckle_shaft_print_plate();
