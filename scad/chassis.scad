@@ -32,7 +32,7 @@ module raspberry_pi5_screws_2d(vertical=false) {
     : raspberry_pi5_screws_size;
   four_corner_holes_2d(size=size,
                        center=true,
-                       hole_dia=m25_hole_dia);
+                       hole_dia=raspberry_pi5_screws_hole_size);
 }
 
 module ups_hat_screws_2d() {

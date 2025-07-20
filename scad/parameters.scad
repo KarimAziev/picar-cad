@@ -41,6 +41,7 @@ motor_bracket_panel_height            = 29;
 
 raspberry_pi_offset                   = 2.7; // Y offset for the Raspberry Pi slot 14.7
 raspberry_pi5_screws_size             = [50, 58];
+raspberry_pi5_screws_hole_size        = m2_hole_dia;
 
 ups_hat_offset                        = 40; // Y offset for the UPS HAT from Raspberry Pi
 ups_hat_screws_size                   = [86, 46];
