@@ -8,9 +8,9 @@ use <bearing_connector.scad>
 module rack_connector(stopper_w=3) {
   extra_h = 1;
   half_of_rw = rack_width / 2;
-  stopper_h = rack_connector_lower_h
+  stopper_h = rack_pin_base_height
     + bracket_bearing_stopper_height
-    + rack_bracket_thickness
+    + steering_bracket_linkage_thickness
     + extra_h;
 
   notch_w = calc_notch_width(bracket_bearing_outer_d, stopper_w);
@@ -19,8 +19,8 @@ module rack_connector(stopper_w=3) {
     + half_of_rw;
 
   union() {
-    bearing_lower_connector(lower_h=rack_connector_lower_h);
-    translate([rack_bracket_width / 2, half_of_rw, 0]) {
+    bearing_lower_connector(lower_h=rack_pin_base_height);
+    translate([steering_bracket_linkage_width / 2, half_of_rw, 0]) {
       rotate([0, 90, 0]) {
         linear_extrude(height = stopper_w) {
           points = [[0, -stopper_len],
@@ -46,7 +46,7 @@ module rack_connector_assembly(bracket_color=blue_grey_carbon,
   }
   translate([-bracket_rack_side_w_length / 2 ,
              -bracket_rack_side_h_length - bracket_bearing_outer_d / 2,
-             rack_connector_lower_h + bracket_bearing_stopper_height
+             rack_pin_base_height + bracket_bearing_stopper_height
              + bracket_bearing_flanged_height]) {
     bracket(show_bearing=true, bracket_color=bracket_color);
   }

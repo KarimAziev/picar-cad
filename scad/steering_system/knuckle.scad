@@ -93,7 +93,7 @@ module knuckle_bent_shaft_connector(knuckle_color=blue_grey_carbon,
                                     fn=100) {
   notch_width = calc_notch_width(knuckle_dia, knuckle_shaft_connector_dia);
 
-  offst = knuckle_shaft_upper_horiz_len + knuckle_shaft_connector_dia / 2;
+  offst = knuckle_shaft_connector_extra_len + knuckle_shaft_connector_dia / 2;
   screw_holes_z = knuckle_shaft_screws_dia / 2 + knuckle_shaft_screws_offset;
 
   rotate([0, 0, -90]) {
@@ -181,7 +181,7 @@ module knuckle_bearing_bracket_connector(border_w=border_w,
   rotate([0, 0, knuckle_bracket_connector_angle]) {
     translate([knuckle_dia / 2 - border_w,
                0,
-               knuckle_bracket_connector_height]) {
+               knuckle_height - knuckle_bracket_connector_height]) {
       color(knuckle_color) {
         linear_extrude(height=knuckle_bracket_connector_height, center=false) {
           difference() {
@@ -196,7 +196,7 @@ module knuckle_bearing_bracket_connector(border_w=border_w,
       translate([knuckle_bracket_connector_len / 2, 0, 0]) {
         union() {
           color(knuckle_color) {
-            linear_extrude(height = knuckle_bracket_connector_height,
+            linear_extrude(height=knuckle_bracket_connector_height,
                            center=false) {
               difference() {
                 square([knuckle_bracket_connector_len, bracket_bearing_outer_d],
@@ -239,7 +239,6 @@ module knuckle_print_plate(show_bearing=false,
   rotate([180, 0, 0]) {
     offst = knuckle_shaft_lower_horiz_len +
       knuckle_dia +
-      knuckle_bracket_connector_height +
       knuckle_shaft_dia;
     translate([offst / 2, 0, 0]) {
       knuckle_mount(show_bearing=show_bearing,

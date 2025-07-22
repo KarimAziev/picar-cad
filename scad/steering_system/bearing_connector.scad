@@ -42,8 +42,8 @@ module bearing_upper_connector(connector_color,
 }
 
 module bearing_lower_connector(lower_d=bracket_bearing_outer_d,
-                               lower_h=bracket_bearing_lower_h,
-                               shaft_h=bracket_bearing_shaft_h,
+                               lower_h=bracket_bearing_pin_base_height,
+                               shaft_h=bracket_bearing_pin_height,
                                shaft_d=bracket_bearing_shaft_d,
                                stopper_h=bracket_bearing_stopper_height) {
   bearing_shaft_connector(lower_d=lower_d,
@@ -53,7 +53,7 @@ module bearing_lower_connector(lower_d=bracket_bearing_outer_d,
                           stopper_h=stopper_h);
 }
 
-module print_plate(step_offset = 5) {
+module bearing_print_plate(step_offset = 5) {
   translate([bracket_bearing_outer_d / 2 + step_offset, 0, 0]) {
     bearing_upper_connector();
   }
@@ -66,7 +66,7 @@ module print_plate(step_offset = 5) {
 module bearing_connector_assembly_view(animation_z_offset=5) {
 
   end_h = knuckle_bracket_connector_height + animation_z_offset;
-  base_h = bracket_bearing_lower_h;
+  base_h = bracket_bearing_pin_base_height;
   z_offst = $t >= 0.7 ? base_h : end_h + ((base_h - end_h) * $t);
 
   bearing_lower_connector();
@@ -77,7 +77,7 @@ module bearing_connector_assembly_view(animation_z_offset=5) {
 }
 
 union() {
-  print_plate(step_offset=2);
+  bearing_print_plate(step_offset=2);
 
   // bearing_connector_assembly_view();
 

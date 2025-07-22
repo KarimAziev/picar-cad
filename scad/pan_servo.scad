@@ -36,6 +36,4 @@ module pan_servo_cutout_2d() {
   }
 }
 
-color("white") {
-  pan_servo_cutout_2d();
-}
+pan_servo_cutout_2d();

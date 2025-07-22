@@ -8,14 +8,14 @@ use <bearing_connector.scad>
 
 module bracket(a_len=bracket_rack_side_w_length,
                b_len=bracket_rack_side_h_length,
-               w=rack_bracket_width,
-               thickness=rack_bracket_thickness,
+               w=steering_bracket_linkage_width,
+               thickness=steering_bracket_linkage_thickness,
                connector_d=bracket_bearing_outer_d,
                show_bearing=false,
                bearing_flanged_h=bracket_bearing_flanged_height,
                bearing_flanged_w=bracket_bearing_flanged_width,
                bearing_shaft_d = round(bracket_bearing_shaft_d),
-               bearing_h = bracket_bearing_height,
+               bearing_h=bracket_bearing_height,
                bracket_color=blue_grey_carbon) {
 
   a_full_len = a_len + w;
@@ -58,7 +58,7 @@ module bracket(a_len=bracket_rack_side_w_length,
         translate([x_offst, b_len + connector_d / 2, -thickness / 2]) {
           union() {
             color(bracket_color, alpha=0.6) {
-              bearing_upper_connector(h=bracket_bearing_lower_h);
+              bearing_upper_connector(h=bracket_bearing_pin_base_height);
             }
 
             if (show_bearing) {

@@ -100,13 +100,13 @@ module knuckle_bent_shaft(show_wheel=false,
         translate([0, 0, -r]) {
           rotate([-90, 0, 0]) {
             color(knuckle_shaft_color) {
-              cylinder(h=knuckle_shaft_upper_horiz_len + knuckle_dia / 2,
+              cylinder(h=knuckle_shaft_connector_extra_len + knuckle_dia / 2,
                        r=r,
                        center=false);
             }
           }
           translate([r,
-                     knuckle_shaft_upper_horiz_len + knuckle_dia / 2,
+                     knuckle_shaft_connector_extra_len + knuckle_dia / 2,
                      0]) {
             rotate([0, 0, 90]) {
               knuckle_bent(angle=90, r=r, bent_color=matte_black);
