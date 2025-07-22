@@ -5,7 +5,8 @@
  * part of the hub into which the 608ZZ bearing is inserted, followed by the
  * `wheel_hub_upper`. Then, both modules are secured with M3 bolts.
  *
- * The `wheel_hub_lower` can be used either as a standalone component or as part of the wheel.
+ * The `wheel_hub_lower` can be used either as a standalone component or as part
+ * of the wheel.
  *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
@@ -15,12 +16,20 @@ use <../util.scad>
 
 function wheel_hub_full_height(h, inner_rim_h) = h + inner_rim_h * 2;
 function wheel_hub_width(d, outer_d) = (outer_d - d) / 2;
-function wheel_hub_screws_offset(d, screws_dia, screw_boss_w, inner_rim_w, tolerance=0.4, center, out_d) =
-  center ? (d / 2) + (((out_d - d) / 2) / 2) :  (d / 2 + (screws_dia + screw_boss_w) / 2) + 1;
+function wheel_hub_screws_offset(d,
+                                 screws_dia,
+                                 screw_boss_w,
+                                 inner_rim_w,
+                                 tolerance=0.4,
+                                 center,
+                                 out_d) = center
+  ? (d / 2) + (((out_d - d) / 2) / 2)
+  :  (d / 2 + (screws_dia + screw_boss_w) / 2) + 1;
 
 /**
- * Creates a half-hub of the specified height featuring screw boss pockets for added functionality.
- * It is intended for use as part of the wheel, but it can also serve as a standalone component.
+ * Creates a half-hub of the specified height featuring screw boss pockets for
+ * added functionality. It is intended for use as part of the wheel, but it can
+ * also serve as a standalone component.
  */
 module wheel_hub_lower(d=wheel_hub_d,
                        outer_d=wheel_hub_outer_d,
@@ -52,7 +61,12 @@ module wheel_hub_lower(d=wheel_hub_d,
                      center_screws=center_screws);
       translate([0, 0, -screw_boss_h / 2]) {
         screw_bosses_pockets(h=screw_boss_h + 0.4,
-                             y=wheel_hub_screws_offset(d, screws_dia, screw_boss_w, inner_rim_w, center=center_screws, out_d=upper_dia),
+                             y=wheel_hub_screws_offset(d,
+                                                       screws_dia,
+                                                       screw_boss_w,
+                                                       inner_rim_w,
+                                                       center=center_screws,
+                                                       out_d=upper_dia),
                              d=screws_dia + screw_boss_w + tolerance,
                              n=screws_n,
                              w=screw_boss_w,
@@ -60,13 +74,17 @@ module wheel_hub_lower(d=wheel_hub_d,
       }
     }
     linear_extrude(height = 2, center = true) {
-      ring_2d(r=(upper_dia / 2) + 0.4, w=(outer_d - upper_dia) / 2 - 0.4, fn=360, outer=true);
+      ring_2d(r=(upper_dia / 2) + 0.4,
+              w=(outer_d - upper_dia) / 2 - 0.4,
+              fn=360,
+              outer=true);
     }
   }
 }
 
 /**
- * Creates a mountable half-hub from the specified height with screw boss pockets.
+ * Creates a mountable half-hub from the specified height with screw boss
+ * pockets.
  */
 module wheel_hub_upper(d=wheel_hub_d,
                        outer_d=wheel_hub_outer_d * 0.90,
@@ -136,7 +154,9 @@ module wheel_hub(d=wheel_hub_d,
                                         screw_boss_w,
                                         inner_rim_w,
                                         center=center_screws,
-                                        out_d=is_undef(upper_d) ? outer_d : upper_d);
+                                        out_d=is_undef(upper_d)
+                                        ? outer_d
+                                        : upper_d);
             translate([0, y, 0]) {
               circle(r=screws_dia / 2, $fn=360);
             }
@@ -147,9 +167,10 @@ module wheel_hub(d=wheel_hub_d,
 
     base_z_ofst = [full_h / 2, inner_rim_h / 2];
     for (direction = [-1, 1]) {
-      z = direction > 0 ? base_z_ofst[0] - base_z_ofst[1] : -base_z_ofst[0] + base_z_ofst[1];
+      z = direction > 0 ? base_z_ofst[0] - base_z_ofst[1]
+        : -base_z_ofst[0] + base_z_ofst[1];
       translate([0, 0, z]) {
-        linear_extrude(height = inner_rim_h, center=true) {
+        linear_extrude(height=inner_rim_h, center=true) {
           ring_2d(r=d / 2, w=inner_rim_w, fn=360, outer=false);
         }
       }

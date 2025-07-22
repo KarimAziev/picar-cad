@@ -6,13 +6,14 @@
  */
 
 include <../parameters.scad>
+include <../colors.scad>
 use <../util.scad>
 use <../wheels/rear_wheel.scad>
 
-motor_shaft_color     = "#e6e6e6";
-gearbox_color         = "#ffde1a";
+motor_shaft_color     = light_grey;
+gearbox_color         = yellow_1;
 motor_can_color       = "silver";
-endcap_color          = "#191919";
+endcap_color          = black_1;
 
 gearbox_body_main_len = 37;
 gearbox_height        = 22.6;
@@ -58,11 +59,14 @@ module motor_gearbox() {
   color(gearbox_color) {
     linear_extrude(height = gearbox_side_height, center=true) {
       difference() {
-        rounded_rect_two([gearbox_height, gearbox_body_main_len], r=3, center=true);
+        rounded_rect_two([gearbox_height, gearbox_body_main_len],
+                         r=3,
+                         center=true);
         offst_a = 7.8;
         offst_b = 1.6;
         offst_c = 3.0;
-        for (x = [[-offst_a, offst_b, -offst_c], [offst_a, -offst_b, -offst_c]]) {
+        for (x = [[-offst_a, offst_b, -offst_c],
+                  [offst_a, -offst_b, -offst_c]]) {
           translate([x[0], -gearbox_body_main_len * 0.5 + 6, 0]) {
             circle(r = m3_hole_dia / 2, $fn=60);
             translate([x[1], x[2], 0]) {
@@ -82,12 +86,16 @@ module motor(show_wheel=false) {
         motor_gearbox();
       }
 
-      translate([gearbox_body_main_len * 0.5 + motor_body_neck_len * 0.5, 0, 0]) {
+      translate([gearbox_body_main_len * 0.5 + motor_body_neck_len * 0.5,
+                 0,
+                 0]) {
         rotate([0, 90, 0]) {
           union() {
             color(gearbox_color) {
               difference() {
-                cylinder_cutted(h=motor_body_neck_len, r=gearbox_neck_rad, cutted_w=5);
+                cylinder_cutted(h=motor_body_neck_len,
+                                r=gearbox_neck_rad,
+                                cutted_w=5);
                 cube([gearbox_side_height, 5, 2], center=true);
               }
             }
@@ -104,7 +112,9 @@ module motor(show_wheel=false) {
           color(motor_shaft_color) {
             difference() {
               rotate([0, 0, 360 * $t]) {
-                cylinder_cutted(h=motor_shaft_len, r=motor_shaft_rad, cutted_w=2);
+                cylinder_cutted(h=motor_shaft_len,
+                                r=motor_shaft_rad,
+                                cutted_w=2);
               }
 
               cylinder(h = motor_shaft_len + 1, r = 0.7, center = true, $fn=60);

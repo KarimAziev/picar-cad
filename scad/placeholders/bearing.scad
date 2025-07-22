@@ -9,6 +9,7 @@ shaft_ring_w           = 2;
 outer_bearing_d        = 22;
 rings                  = [[2, metalic_yellow_silver],
                           [1, onyx]];
+
 module bearing(rings = [[0]],
                d = outer_bearing_d,
                outer_ring_w = outer_ring_w,

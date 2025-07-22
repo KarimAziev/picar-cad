@@ -8,13 +8,14 @@
  */
 
 include <../parameters.scad>
+include <../colors.scad>
 use <head_mount.scad>
 use <head_neck_mount.scad>
 
 module head_assembly(head_color="white",
                      neck_color="white",
-                     pan_servo_color="#343434",
-                     tilt_servo_color="#343434",
+                     pan_servo_color=jet_black,
+                     tilt_servo_color=jet_black,
                      animation_z_offset=-12) {
   union() {
 
@@ -30,7 +31,10 @@ module head_assembly(head_color="white",
         }
       }
       translate([0, 0, animation_z_offset]) {
-        translate([-2, 6, -(cam_pan_servo_slot_height + cam_pan_servo_height) * 0.5 + 2]) {
+        z_offst = -(cam_pan_servo_slot_height + cam_pan_servo_height) * 0.5 + 2;
+        translate([-2,
+                   6,
+                   z_offst]) {
           rotate([0, 0, -90]) {
             head_neck_assembly(neck_color=neck_color,
                                pan_servo_color=pan_servo_color,

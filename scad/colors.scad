@@ -12,13 +12,6 @@ metalic_silver_3      = "#7D8488";
 metalic_grey          = "#808080";
 metalic_yellow_silver = "#D4D4C8";
 
-// #999B9B
-// Black	#000000	rgb(0, 0, 0)
-// Charcoal	#36454F	rgb(54, 69, 79)
-// Dark Green	#023020	rgb(2, 48, 32)
-// Dark Purple	#301934	rgb(48, 25, 52)
-// Jet Black	#343434	rgb(52, 52, 52)
-// Licorice	#1B1212	rgb(27, 18, 18)
-// Matte Black	#28282B	rgb(40, 40, 43)
-// Midnight Blue	#191970	rgb(25, 25, 112)
-// Onyx	#353935
+yellow_1              = "#ffde1a";
+
+light_grey            = "#e6e6e6";

@@ -6,6 +6,7 @@
  */
 
 include <../parameters.scad>
+include <../colors.scad>
 use <../util.scad>
 
 servo_size          = [23, 11.6, 20];
@@ -35,7 +36,8 @@ module servo_screws_hat(size,
 
 module servo(size=servo_size,
              screws_dia=steering_servo_screw_dia,
-             servo_offset=steering_servo_screws_offset + (abs(steering_servo_slot_width - servo_size[0]) / 2),
+             servo_offset=steering_servo_screws_offset
+             + (abs(steering_servo_slot_width - servo_size[0]) / 2),
              gearbox_height=servo_gearbox_h,
              gear_height=servo_gear_h,
              servo_hat_w=servo_hat_w,
@@ -44,8 +46,8 @@ module servo(size=servo_size,
              screws_hat_z_offset=screws_hat_z_offset,
              gear_dia=servo_gear_d,
              gearbox_rad=servo_gearbox_rad,
-             servo_color="#343434",
-             servo_gear_color="#3E3E3E",
+             servo_color=jet_black,
+             servo_gear_color=jet_black,
              servo_text="EMAX ES08MA II",
              text_depth=0.5,
              text_size=1,
@@ -65,7 +67,8 @@ module servo(size=servo_size,
       translate([-size[1] + len(servo_text) * 0.5, size[1] * 0.5, 0]) {
         rotate([180 + 90, 0, 0]) {
           linear_extrude(height=text_depth) {
-            text(servo_text, size=text_size,
+            text(servo_text,
+                 size=text_size,
                  halign="center",
                  valign="center");
           }
@@ -159,7 +162,9 @@ module servo_slot_3d(size=[steering_servo_slot_width,
                      center=true) {
 
   linear_extrude(height=thickness, center=center) {
-    servo_slot_2d(size=size, screws_dia=screws_dia, screws_offset=screws_offset);
+    servo_slot_2d(size=size,
+                  screws_dia=screws_dia,
+                  screws_offset=screws_offset);
   }
 }
 
@@ -175,12 +180,18 @@ module servo_slot_wall(size=[steering_servo_slot_width,
   linear_extrude(height=thickness, center=center) {
     difference() {
       square(size = [w, size[1] + 4], center=center);
-      servo_slot_2d(size=size, screws_dia=screws_dia, screws_offset=screws_offset, center=center);
+      servo_slot_2d(size=size,
+                    screws_dia=screws_dia,
+                    screws_offset=screws_offset,
+                    center=center);
     }
   }
 }
 
-module servo_align(thickness=undef, hat_z_offset=screws_hat_z_offset, hat_thickness=servo_hat_thickness, servo_size=servo_size) {
+module servo_align(thickness=undef,
+                   hat_z_offset=screws_hat_z_offset,
+                   hat_thickness=servo_hat_thickness,
+                   servo_size=servo_size) {
   for (i = [0 : $children - 1])
     translate([0, 0, servo_size[2] / 2 - hat_z_offset + servo_hat_thickness]) {
       children(i);

@@ -31,10 +31,12 @@
 */
 
 include <../parameters.scad>
+include <../colors.scad>
 use <../util.scad>
 use <../placeholders/servo.scad>
 
-module head_neck_pan_mount(size=[cam_pan_servo_slot_width, cam_pan_servo_slot_height],
+module head_neck_pan_mount(size=[cam_pan_servo_slot_width,
+                                 cam_pan_servo_slot_height],
                            screws_dia=cam_pan_servo_screw_dia,
                            screws_offset=cam_pan_servo_screws_offset,
                            thickness=cam_pan_servo_slot_thickness,
@@ -47,12 +49,15 @@ module head_neck_pan_mount(size=[cam_pan_servo_slot_width, cam_pan_servo_slot_he
   linear_extrude(height=thickness, center=true) {
     difference() {
       rounded_rect_two(size = [w, h], r = h * 0.1, center = true);
-      servo_slot_2d(size=size, screws_dia=screws_dia, screws_offset=screws_offset);
+      servo_slot_2d(size=size,
+                    screws_dia=screws_dia,
+                    screws_offset=screws_offset);
     }
   }
 }
 
-module head_neck_tilt_mount(size=[cam_tilt_servo_slot_width, cam_tilt_servo_slot_height],
+module head_neck_tilt_mount(size=[cam_tilt_servo_slot_width,
+                                  cam_tilt_servo_slot_height],
                             screws_dia=cam_tilt_servo_screw_dia,
                             screws_offset=cam_tilt_servo_screws_offset,
                             servo_height=cam_pan_servo_height,
@@ -69,21 +74,25 @@ module head_neck_tilt_mount(size=[cam_tilt_servo_slot_width, cam_tilt_servo_slot
       translate([0, servo_height * 0.5 + h * 0.5, 0]) {
         difference() {
           rounded_rect_two(size = [w, h], r = h * 0.1, center = true);
-          servo_slot_2d(size=size, screws_dia=screws_dia, screws_offset=screws_offset);
+          servo_slot_2d(size=size,
+                        screws_dia=screws_dia,
+                        screws_offset=screws_offset);
         }
       }
     }
   }
 }
 
-module head_neck_mount(pan_servo_size=[cam_pan_servo_slot_width, cam_pan_servo_slot_height],
+module head_neck_mount(pan_servo_size=[cam_pan_servo_slot_width,
+                                       cam_pan_servo_slot_height],
                        pan_screws_dia=cam_pan_servo_screw_dia,
                        pan_screws_offset=cam_pan_servo_screws_offset,
                        pan_thickness=cam_pan_servo_slot_thickness,
                        pan_servo_height=cam_pan_servo_height,
                        pan_servo_extra_w=pan_servo_extra_w,
                        pan_servo_extra_h=pan_servo_extra_h,
-                       tilt_servo_size=[cam_tilt_servo_slot_width, cam_tilt_servo_slot_height],
+                       tilt_servo_size=[cam_tilt_servo_slot_width,
+                                        cam_tilt_servo_slot_height],
                        tilt_screws_dia=cam_tilt_servo_screw_dia,
                        tilt_screws_offset=cam_tilt_servo_screws_offset,
                        tilt_thickness=cam_tilt_servo_slot_thickness,
@@ -94,18 +103,24 @@ module head_neck_mount(pan_servo_size=[cam_pan_servo_slot_width, cam_pan_servo_s
   color(neck_color) {
     union() {
       rotate([180, 0, 0]) {
+        extra_h = pan_servo_extra_h + tilt_thickness + pan_thickness;
         head_neck_pan_mount(size=pan_servo_size,
                             screws_dia=pan_screws_dia,
                             screws_offset=pan_screws_offset,
                             thickness=pan_thickness,
                             extra_w=pan_servo_extra_w,
-                            extra_h=pan_servo_extra_h + tilt_thickness + pan_thickness);
+                            extra_h=extra_h);
       }
       total_h = tilt_servo_size[1] + tilt_servo_extra_h;
       total_w = pan_servo_size[0] + pan_servo_extra_w;
 
-      translate([0, pan_servo_size[1] * 0.5 + pan_servo_extra_h * 0.5 + tilt_thickness * 0.5,
-                 pan_servo_size[0] * 0.5 - tilt_thickness]) {
+      y_offst = pan_servo_size[1] * 0.5
+        + pan_servo_extra_h * 0.5
+        + tilt_thickness * 0.5;
+
+      z_offst = pan_servo_size[0] * 0.5 - tilt_thickness;
+
+      translate([0, y_offst, z_offst]) {
         rotate([90, 0, 0]) {
           head_neck_tilt_mount(size=[tilt_servo_size[0], tilt_servo_size[1]],
                                screws_dia=tilt_screws_dia,
@@ -120,14 +135,16 @@ module head_neck_mount(pan_servo_size=[cam_pan_servo_slot_width, cam_pan_servo_s
   }
 }
 
-module head_neck_assembly(pan_servo_size=[cam_pan_servo_slot_width, cam_pan_servo_slot_height],
+module head_neck_assembly(pan_servo_size=[cam_pan_servo_slot_width,
+                                          cam_pan_servo_slot_height],
                           pan_screws_dia=cam_pan_servo_screw_dia,
                           pan_screws_offset=cam_pan_servo_screws_offset,
                           pan_thickness=cam_pan_servo_slot_thickness,
                           pan_servo_height=cam_pan_servo_height,
                           pan_servo_extra_w=pan_servo_extra_w,
                           pan_servo_extra_h=pan_servo_extra_h,
-                          tilt_servo_size=[cam_tilt_servo_slot_width, cam_tilt_servo_slot_height],
+                          tilt_servo_size=[cam_tilt_servo_slot_width,
+                                           cam_tilt_servo_slot_height],
                           tilt_screws_dia=cam_tilt_servo_screw_dia,
                           tilt_screws_offset=cam_tilt_servo_screws_offset,
                           tilt_thickness=cam_tilt_servo_slot_thickness,
@@ -135,8 +152,8 @@ module head_neck_assembly(pan_servo_size=[cam_pan_servo_slot_width, cam_pan_serv
                           tilt_servo_extra_h=cam_tilt_servo_extra_h,
                           tilt_servo_height=cam_tilt_servo_height,
                           neck_color="white",
-                          pan_servo_color = "#343434",
-                          tilt_servo_color = "#343434") {
+                          pan_servo_color=jet_black,
+                          tilt_servo_color=jet_black) {
   union() {
     union() {
       head_neck_mount(pan_servo_size=pan_servo_size,

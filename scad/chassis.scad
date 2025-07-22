@@ -19,6 +19,7 @@
  * License: GPL-3.0-or-later
  */
 include <parameters.scad>
+include <colors.scad>
 use <util.scad>
 use <front_panel.scad>
 use <rear_panel.scad>
@@ -48,13 +49,6 @@ module battery_holders_screws_2d(x_offst=extra_battery_screws_x_offset) {
     for (y = number_sequence(from=extra_battery_screws_y_offset_start,
                              to=extra_battery_screws_y_offset_end,
                              step=extra_battery_screws_y_offset_step)) {
-      // translate([0, y, 0]) {
-      //   four_corner_holes_2d(size = extra_battery_screws_y_size,
-      //                        center = true,
-      //                        hole_dia = extra_battery_screws_dia,
-      //                        fn_val = extra_battery_screws_fn_val);
-      // }
-
       translate([-x_offst, y, 0]) {
         four_corner_holes_2d(size = extra_battery_screws_y_size,
                              center = true,
@@ -69,17 +63,6 @@ module battery_holders_screws_2d(x_offst=extra_battery_screws_x_offset) {
                              fn_val = extra_battery_screws_fn_val);
       }
     }
-
-    // for (y = number_sequence(from=battery_screws_center_y_offset_start,
-    //                          to=battery_screws_center_y_offset_end,
-    //                          step=battery_screws_center_y_step)) {
-    //   translate([0, y, 0]) {
-    //     four_corner_holes_2d(size = battery_screws_center_size,
-    //                          center = true,
-    //                          hole_dia = battery_screws_center_dia,
-    //                          fn_val = battery_screws_center_fn_val);
-    //   }
-    // }
   }
 }
 
@@ -146,7 +129,8 @@ module chassis_2d() {
     battery_holders_screws_2d();
     translate([0, steering_servo_chassis_offset, 0]) {
       four_corner_holes_2d(steering_servo_panel_screws_offsets,
-                           hole_dia=steering_servo_panel_screws_dia, center=true);
+                           hole_dia=steering_servo_panel_screws_dia,
+                           center=true);
     }
 
     motor_bracket_screws();
@@ -163,7 +147,7 @@ module chassis_2d() {
 
     translate([0, raspberry_pi_offset, 0]) {
       raspberry_pi5_screws_2d();
-      // raspberry_pi5_screws_2d(vertical=true);
+
       translate([0, -ups_hat_offset - raspberry_pi5_screws_size[1], 0]) {
         ups_hat_screws_2d();
       }
@@ -172,7 +156,9 @@ module chassis_2d() {
 }
 
 module motor_bracket_screws(extra_x=0, extra_y=0) {
-  translate([motor_bracket_x_pos() + extra_x, motor_bracket_y_pos() + extra_y, 0]) {
+  translate([motor_bracket_x_pos() + extra_x,
+             motor_bracket_y_pos() + extra_y,
+             0]) {
     for (x = motor_bracket_screws) {
       translate([x, 0, 0]) {
         circle(r = m2_hole_dia / 2, $fn = 360);
@@ -181,8 +167,11 @@ module motor_bracket_screws(extra_x=0, extra_y=0) {
   }
 }
 
-function motor_bracket_y_pos() = (-chassis_len * 0.5 + motor_mount_panel_width * 0.5) + motor_bracket_offest;
-function motor_bracket_x_pos() = (chassis_width * 0.5) - (motor_bracket_panel_height * 0.5);
+function motor_bracket_y_pos() =
+  (-chassis_len * 0.5 + motor_mount_panel_width * 0.5) + motor_bracket_offest;
+
+function motor_bracket_x_pos() =
+  (chassis_width * 0.5) - (motor_bracket_panel_height * 0.5);
 
 module chassis_base_3d() {
   linear_extrude(chassis_thickness, center=false) {
@@ -214,7 +203,9 @@ module chassis_plate(show_motor_and_rear_wheels=false) {
     }
 
     color("white") {
-      translate([0, chassis_len * 0.5 + chassis_offset_rad, front_panel_height * 0.5]) {
+      translate([0,
+                 chassis_len * 0.5 + chassis_offset_rad,
+                 front_panel_height * 0.5]) {
         front_panel();
       }
 

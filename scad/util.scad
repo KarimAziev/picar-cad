@@ -21,7 +21,8 @@
  *   screw_dia: The diameter of the screw.
  *   distance:  The desired distance between the centered parent slot and the screw.
  */
-function screw_x_offst(slot_w, screw_dia, distance) = (slot_w * 0.5 + screw_dia * 0.5) + distance;
+function screw_x_offst(slot_w, screw_dia, distance) =
+  (slot_w * 0.5 + screw_dia * 0.5) + distance;
 
 /**
  * Returns an array of numbers starting at `from` and incremented by `step`.
@@ -63,7 +64,8 @@ function truncate(val, dec=1) =
  *   The calculated notch width, which is the reduction in the diameter due to the notch.
  */
 
-function calc_notch_width(dia, w) = dia - 2 * sqrt(((dia / 2) * (dia / 2)) - ((w / 2) * (w / 2)));
+function calc_notch_width(dia, w) =
+  dia - 2 * sqrt(((dia / 2) * (dia / 2)) - ((w / 2) * (w / 2)));
 
 /**
  *
@@ -151,7 +153,8 @@ module debug_polygon(points, paths=undef, convexity=undef, debug=true,
     }
 
     if (show_arrows) {
-      all_paths = paths == undef ? [[for (i = [0 : len(points)-1]) i]] : paths;
+      all_paths = paths == undef ?
+        [[for (i = [0 : len(points)-1]) i]] : paths;
 
       for (path = all_paths)
         for (i = [0 : len(path) - 1]) {
@@ -167,7 +170,9 @@ module debug_polygon(points, paths=undef, convexity=undef, debug=true,
             translate([mid[0], mid[1], 0.1]) {
               rotate([0, 0, angle]) {
                 linear_extrude(height = 0.5) {
-                  polygon(points=[[0,0],[arrow_size,arrow_size/2],[arrow_size,-arrow_size/2]]);
+                  polygon(points=[[0, 0],
+                                  [arrow_size,arrow_size / 2],
+                                  [arrow_size, -arrow_size / 2]]);
                 }
               }
             }
@@ -177,39 +182,10 @@ module debug_polygon(points, paths=undef, convexity=undef, debug=true,
   }
 }
 
-module cube_with_corner_holes(size = [10, 10, 10], center = false, hole_dia = 3) {
-  difference() {
-    cube(size, center = center);
-    z_center = center ? 0 : size[2] / 2;
-    for (x_ind = [0, 1]) {
-      for (y_ind = [0, 1]) {
-        x_pos = (center ? -size[0] / 2 : 0) + x_ind * size[0];
-        y_pos = (center ? -size[1] / 2 : 0) + y_ind * size[1];
-
-        translate([x_pos, y_pos, z_center]) {
-          cylinder(h = size[2] + 2, r = hole_dia / 2, center = true, $fn = 360);
-        }
-      }
-    }
-  }
-}
-
-module four_corner_holes(size = [10, 10, 10], center = false, hole_dia = 3, fn_val = 360) {
-  z_center = center ? 0 : size[2] / 2;
-  for (x_ind = [0, 1]) {
-    for (y_ind = [0, 1]) {
-
-      x_pos = (center ? -size[0] / 2 : 0) + x_ind * size[0];
-      y_pos = (center ? -size[1] / 2 : 0) + y_ind * size[1];
-
-      translate([x_pos, y_pos, z_center]) {
-        cylinder(h = size[2] + 2, r = hole_dia / 2, center = center, $fn = fn_val);
-      }
-    }
-  }
-}
-
-module four_corner_holes_2d(size = [10, 10], center = false, hole_dia = 3, fn_val = 60) {
+module four_corner_holes_2d(size=[10, 10],
+                            center=false,
+                            hole_dia=3,
+                            fn_val=60) {
   for (x_ind = [0, 1])
     for (y_ind = [0, 1]) {
       x_pos = (center ? -size[0] / 2 : 0) + x_ind * size[0];
@@ -297,14 +273,19 @@ module rounded_rect_two(size, r=undef, center=false, segments=10) {
 
   pts_left = [[0, h - rad], [0, 0]];
 
-  pts = concat(pts_bottom, pts_right, arc_top_right, pts_top_edge, arc_top_left, pts_left);
+  pts = concat(pts_bottom,
+               pts_right,
+               arc_top_right,
+               pts_top_edge,
+               arc_top_left,
+               pts_left);
 
   translate(offst) {
     polygon(points = pts);
   }
 }
 
-module cylinder_cutted(h=10, r=5, cutted_w = 1) {
+module cylinder_cutted(h=10, r=5, cutted_w=1) {
   difference() {
     cylinder(h = h, r = r, center = true);
 
@@ -343,8 +324,8 @@ module ring_2d(r, w, d, fn, outer) {
   }
 }
 
-module star_2d(n = 5, r_outer = 20, r_inner = 10) {
-  pts = [for (i = [0 : 2*n - 1])
+module star_2d(n=5, r_outer=20, r_inner=10) {
+  pts = [for (i = [0 : 2 * n - 1])
       let (angle = 360 / (2*n) * i,
            r = (i % 2 == 0) ? r_outer : r_inner)
         [r * cos(angle), r * sin(angle)]];

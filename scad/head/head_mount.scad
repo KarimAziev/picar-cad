@@ -17,7 +17,8 @@ use <../util.scad>
 
 cam_center_offset            = 13;
 
-cam_centers                  = [[0, -cam_center_offset], [0, cam_center_offset]];
+cam_centers                  = [[0, -cam_center_offset],
+                                [0, cam_center_offset]];
 upper_connector_width        = head_upper_plate_width * 0.7;
 
 upper_connector_height       = 4;
@@ -44,8 +45,10 @@ x_positions                  = [head_side_panel_width * 0.25,
                                 head_side_panel_width * 0.5,
                                 head_side_panel_width * 0.75];
 
-tilt_angle                   = atan2((-side_panel_curve_end) - (-side_panel_bottom),
-                                     side_panel_curve_start - head_side_panel_width);
+tilt_angle                   = atan2((-side_panel_curve_end)
+                                     - (-side_panel_bottom),
+                                     side_panel_curve_start
+                                     - head_side_panel_width);
 
 module head_front_plate() {
   difference() {
@@ -177,10 +180,14 @@ module side_panel_extra_slots_2d() {
 
   for (off = hole_row_offsets) {
     if (off >= 0) {
-      dotted_screws_line_y(x_positions, y=side_panel_extra_slot_ypos[1] + off, d=3);
+      dotted_screws_line_y(x_positions,
+                           y=side_panel_extra_slot_ypos[1] + off,
+                           d=3);
     }
     else {
-      dotted_screws_line_y(x_positions, y=side_panel_extra_slot_ypos[0] + off, d=3);
+      dotted_screws_line_y(x_positions,
+                           y=side_panel_extra_slot_ypos[0] + off,
+                           d=3);
     }
   }
 
@@ -191,7 +198,8 @@ module side_panel_extra_slots_2d() {
                        d=3);
 }
 
-module side_panel_servo_slots(offst_from_center_hole = 2.0, screws_distance = 0.5) {
+module side_panel_servo_slots(offst_from_center_hole=2.0,
+                              screws_distance=0.5) {
   centers = side_panel_servo_center();
 
   angle_cos = cos(tilt_angle);

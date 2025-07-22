@@ -96,10 +96,12 @@ module front_panel_back_mount(w=front_panel_width,
       rounded_rect(size=[w, h], r=h * 0.18, center=true);
       two_x_screws_2d(screws_x_offset, m3_hole_dia);
       translate([0, -h * 0.5 + bottom_cutout_size[1] * 0.5]) {
-        square(size = [bottom_cutout_size[0], bottom_cutout_size[1]], center = true);
+        square(size = [bottom_cutout_size[0], bottom_cutout_size[1]],
+               center=true);
       }
-      four_corner_holes_2d(size=screws_square_size, center=true,
-                           hole_dia=screws_square_dia);
+      four_corner_holes_2d(size=screws_square_size,
+                           hole_dia=screws_square_dia,
+                           center=true);
 
       ultrasonic_screws_2d();
     }

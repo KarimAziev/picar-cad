@@ -19,13 +19,18 @@ use <wheels/rear_wheel.scad>
 
 module assembly_view() {
   union() {
-    translate([chassis_width / 2 + fron_wheel_offset() + wheel_w, 0, wheel_dia - chassis_thickness]) {
-      translate([0, steering_servo_chassis_offset, rack_mount_panel_thickness / 2]) {
+    translate([chassis_width / 2 + fron_wheel_offset() + wheel_w,
+               0,
+               wheel_dia - chassis_thickness]) {
+      translate([0,
+                 steering_servo_chassis_offset,
+                 rack_mount_panel_thickness / 2]) {
         rotate([0, 0, 0])
           steering_system_assembly();
       }
 
-      translate([0, steering_servo_chassis_offset + pan_servo_wheels_y_offset, chassis_thickness]) {
+      translate([0, steering_servo_chassis_offset + pan_servo_wheels_y_offset,
+                 chassis_thickness]) {
         translate([-2, 0, 25.9]) {
           rotate([0, 0, 180]) {
             head_assembly();
