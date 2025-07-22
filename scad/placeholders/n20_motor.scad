@@ -1,0 +1,123 @@
+/**
+ * Module: A dummy mockup of the N20-Motor
+ *
+ * Author: Karim Aziiev <karim.aziiev@gmail.com>
+ * License: GPL-3.0-or-later
+ */
+
+include <../parameters.scad>
+include <../colors.scad>
+use <../util.scad>
+use <../wheels/rear_wheel.scad>
+
+n20_reductor_dia            = 14;
+n20_reductor_height         = 9;
+n20_shaft_height            = 9;
+n20_shaft_dia               = 3;
+n20_shaft_cutout_w          = 2;
+n20_can_height              = 15;
+
+n20_can_dia                 = 12;
+n20_can_cutout_w            = 7;
+n20_end_cap_h               = 0.8;
+n20_end_circle_h            = 0.5;
+n20_end_cap_circle_dia      = 5;
+n20_end_cap_circle_hole_dia = 3;
+
+module n20_motor_reductor() {
+  cylinder(h=n20_reductor_height, r=n20_reductor_dia / 2, center=false);
+}
+
+module n20_motor_shaft() {
+  notched_circle(d=n20_shaft_dia,
+                 cutout_w=n20_shaft_cutout_w,
+                 h=n20_shaft_height,
+                 x_cutouts_n=1,
+                 y_cutouts_n=0);
+}
+
+module n20_motor_can() {
+  union() {
+    total_end_cap_h = n20_end_cap_h + n20_end_circle_h;
+    translate([0, 0, n20_can_height - n20_end_cap_h]) {
+      union() {
+        difference() {
+          color(black_1) {
+            notched_circle(h=n20_end_cap_h,
+                           d=n20_can_dia,
+                           cutout_w=n20_can_cutout_w,
+                           x_cutouts_n=2);
+            translate([0, 0, n20_end_cap_h]) {
+              linear_extrude(height=n20_end_circle_h) {
+                circle(d=n20_end_cap_circle_dia, $fn=30);
+              }
+            }
+          }
+
+          translate([0, 0, -total_end_cap_h / 2]) {
+            linear_extrude(height=total_end_cap_h + 1) {
+              circle(d=n20_end_cap_circle_hole_dia, $fn=30);
+            }
+          }
+        }
+
+        x = 1;
+        y = 1.2;
+
+        color("silver") {
+          for (pos = [[0, -n20_end_cap_circle_dia + 2, y],
+                      [0, n20_end_cap_circle_dia - 2, y]]) {
+            translate(pos) {
+              rotate([90, 0, 0]) {
+                linear_extrude(height=0.4, center=true) {
+                  difference() {
+                    square(size = [x, y], center = true);
+                    translate([0, y * 0.4 / 2, 0]) {
+                      square(size = [x * 0.8, y * 0.4], center = true);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    color("silver") {
+      notched_circle(h=n20_can_height - n20_end_cap_h,
+                     d=n20_can_dia,
+                     cutout_w=n20_can_cutout_w,
+                     x_cutouts_n=2);
+    }
+  }
+}
+
+module n20_motor(show_wheel=false) {
+  union() {
+    translate([0, 0, n20_shaft_height]) {
+      union() {
+        color(dark_gold_1) {
+          n20_motor_reductor();
+        }
+        translate([0, 0, -n20_reductor_height]) {
+          color(metalic_silver_3) {
+            n20_motor_shaft();
+          }
+        }
+        translate([0, 0, n20_reductor_height]) {
+          n20_motor_can();
+        }
+      }
+    }
+
+    wheel_shaft_outer_h = wheel_w / 2 + wheel_shaft_offset;
+
+    if (show_wheel) {
+      translate([0, 0, -(wheel_w / 2) - wheel_shaft_outer_h]) {
+        rear_wheel();
+      }
+    }
+  }
+}
+
+n20_motor(show_wheel=true);

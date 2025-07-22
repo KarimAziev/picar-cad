@@ -285,17 +285,16 @@ module rounded_rect_two(size, r=undef, center=false, segments=10) {
   }
 }
 
-module cylinder_cutted(h=10, r=5, cutted_w=1) {
+module cylinder_cutted(h=10, r=5, cutted_w=1, center=true, fn) {
   difference() {
-    cylinder(h = h, r = r, center = true);
+    cylinder(h = h, r = r, center=center, $fn=fn);
 
-    y = h + 1;
     d = r * 2;
     translate([d - cutted_w * 0.5, 0, 0]) {
-      cube([d, d, h + 1], center=true);
+      cube([d, d, h + 1], center=center);
     }
     translate([-d + cutted_w * 0.5, 0, 0]) {
-      cube([d, d, h + 1], center=true);
+      cube([d, d, h + 1], center=center);
     }
   }
 }
@@ -364,6 +363,36 @@ module fillet(r) {
   offset(r = -r) {
     offset(delta = r) {
       children();
+    }
+  }
+}
+
+module notched_circle(d,
+                      cutout_w,
+                      h,
+                      x_cutouts_n=1,
+                      y_cutouts_n=0,
+                      center=false) {
+  r = d / 2;
+  L = sqrt(r * r - (cutout_w / 2) * (cutout_w / 2));
+  square_center_x = L + cutout_w / 2;
+  linear_extrude(h=h, center=center) {
+    difference() {
+      circle(r=d / 2, $fn=360);
+      if (x_cutouts_n > 0) {
+        for (i = [1:x_cutouts_n]) {
+          translate([i == 1 ? square_center_x : -square_center_x, 0]) {
+            square([cutout_w, cutout_w], center=true);
+          }
+        }
+      }
+      if (y_cutouts_n > 0) {
+        for (i = [1:y_cutouts_n]) {
+          translate([0, i == 1 ? square_center_x : -square_center_x]) {
+            square([cutout_w, cutout_w], center=true);
+          }
+        }
+      }
     }
   }
 }
