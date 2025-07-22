@@ -229,9 +229,9 @@ wheel_screw_boss_w                    = 1;
 wheel_screw_boss_h                    = 2;
 
 wheel_dia                             = 52;
-wheel_w                               = 22;
+wheel_w                               = 21.6;
 wheel_thickness                       = 1.0;
-wheel_rim_h                           = 1.8;
+wheel_rim_h                           = 1.2;
 wheel_rim_w                           = 1;
 wheel_rim_bend                        = 0.8;
 wheel_shaft_offset                    = 0;
@@ -240,3 +240,22 @@ wheel_spokes                          = 5;
 wheel_spoke_w                         = 22.8;
 wheel_shaft_d                         = 6.4;
 wheel_tolerance                       = 0.3;
+
+// A small radial offset applied during the subtraction
+// operation to slightly enlarge the cut-out, providing extra clearance
+// between the tire and adjacent wheel elements.
+tire_offset                           = 0.5;
+
+// The gap value used in the offset operation to round the
+// corners of the tire cross-section.
+tire_fillet_gap                       = 0.5;
+
+// The added thickness to the wheel's inner radius for computing
+// the overall cross-sectional depth of the tire.
+tire_thickness                        = 3.5;
+
+// The effective width of the tire
+tire_width                            = wheel_w - wheel_rim_w;
+
+// The polygon facet count used with circle-based operations
+tire_fn                               = 360;
