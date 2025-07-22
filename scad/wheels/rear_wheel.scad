@@ -5,6 +5,7 @@
  * License: GPL-3.0-or-later
  */
 include <../parameters.scad>
+include <../colors.scad>
 use <../util.scad>
 use <wheel.scad>
 use <tire.scad>
@@ -26,7 +27,7 @@ module rear_wheel(w=wheel_w,
                   shaft_d=wheel_shaft_d,
                   tolerance=wheel_tolerance) {
 
-  inner_d = d - rim_h;
+  inner_d = wheel_inner_d(d, rim_h);
   union() {
     wheel(d=d,
           w=w, thickness=thickness,
@@ -37,8 +38,6 @@ module rear_wheel(w=wheel_w,
     translate([0, 0, -w * 0.5]) {
       rotation_angle = 90;
       rotate([0, 0, rotation_angle]) {
-        star_out_rad = inner_d / 2;
-        star_inner_rad = star_out_rad * 0.25;
         wheel_blades(d=inner_d,
                      spokes=spokes,
                      shaft_offset=shaft_offset,
@@ -152,7 +151,7 @@ module spoke(w=10, h=15, thickness=1, top_coef=2.5) {
 
 module rear_wheel_animated() {
   rotate([0, 0, -360 * $t]) {
-    color("#343434") {
+    color(jet_black) {
       rear_wheel();
     }
     color("white") {
