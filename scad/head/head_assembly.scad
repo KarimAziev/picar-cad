@@ -13,7 +13,7 @@ use <head_mount.scad>
 use <head_neck_mount.scad>
 
 module head_assembly(head_color="white",
-                     neck_color="white",
+                     neck_color=matte_black,
                      pan_servo_color=jet_black,
                      tilt_servo_color=jet_black,
                      animation_z_offset=-12) {

@@ -24,7 +24,8 @@ use <util.scad>
 use <front_panel.scad>
 use <rear_panel.scad>
 use <pan_servo.scad>
-use <motor_mount_panel.scad>
+use <motor_brackets/standard_motor_bracket.scad>
+use <motor_brackets/n20_motor_bracket.scad>
 
 module raspberry_pi5_screws_2d(vertical=false) {
   size = vertical
@@ -97,17 +98,18 @@ module chassis_base_2d() {
   target = ceil(0.2 * abs(init_pos_y));
   rear_panel_base_w = rear_panel_size[0] / 2;
 
-  points = [[init_pos_x, init_pos_y],
-            [-rear_panel_base_w, init_pos_y],
-            [((-base_width - rear_panel_base_w) / 2) + 6, init_pos_y + 5],
-            [(-base_width - rear_panel_base_w) / 2, init_pos_y + 5],
-            [-base_width + 6, init_pos_y],
-            [-base_width, init_pos_y + 5],
-            [-base_width, init_pos_y + target],
-            [-base_width + 2, (init_pos_y + chassis_len / 2) + 10],
-            [-base_width * 0.65, init_pos_y + chassis_len / 1.35],
-            [-base_width * 0.25, chassis_len / 2],
-            [0, chassis_len / 2]];
+  points =
+    [[init_pos_x, init_pos_y],
+     [-rear_panel_base_w, init_pos_y],
+     [((-base_width - rear_panel_base_w) / 2) + 6, init_pos_y + 5],
+     [(-base_width - rear_panel_base_w) / 2, init_pos_y + 5],
+     [-base_width + 6, init_pos_y],
+     [-base_width, init_pos_y + 5],
+     [-base_width, init_pos_y + target],
+     [-base_width + 2, (init_pos_y + chassis_len / 2) + 0.02 * chassis_len],
+     [-base_width * 0.65, init_pos_y + chassis_len / 1.68],
+     [-base_width * 0.25, chassis_len / 2],
+     [0, chassis_len / 2]];
 
   offset(r = chassis_offset_rad) {
     polygon(points = points);
@@ -127,10 +129,15 @@ module chassis_2d() {
     chassis_extra_cutouts_2d();
 
     battery_holders_screws_2d();
-    translate([0, steering_servo_chassis_offset, 0]) {
+    translate([0, steering_servo_chassis_y_offset, 0]) {
       four_corner_holes_2d(steering_servo_panel_screws_offsets,
                            hole_dia=steering_servo_panel_screws_dia,
                            center=true);
+    }
+
+    n20_bracket_screws();
+    mirror([1, 0, 0]) {
+      n20_bracket_screws();
     }
 
     motor_bracket_screws();
@@ -179,26 +186,61 @@ module chassis_base_3d() {
   }
 }
 
-module rear_motor_mount_wall(show_wheel_and_motor=false) {
+module rear_motor_mount_wall(show_motor=false, show_wheel=false) {
   translate([motor_bracket_x_pos(),
              motor_bracket_y_pos(),
              motor_mount_panel_thickness]) {
     rotate([0, 0, 90]) {
-      motor_bracket(show_wheel_and_motor=show_wheel_and_motor);
+      motor_bracket(show_wheel_and_motor=show_motor || show_wheel);
     }
   }
 }
 
-module chassis_plate(show_motor_and_rear_wheels=false) {
+module n20_bracket_left(show_motor=false, show_wheel=false) {
+  translate([-(chassis_width * 0.5) - n20_motor_chassis_x_distance,
+             -chassis_len * 0.5 + n20_motor_screws_panel_len() / 2
+             + n20_motor_chassis_y_distance,
+             n20_motor_screws_panel_x_offset() +
+             chassis_thickness + n20_motor_screws_panel_thickness()]) {
+    rotate([0, 90, 0]) {
+      n20_motor_assembly(show_motor=show_motor, show_wheel=show_wheel);
+    }
+  }
+}
+
+module n20_bracket_screws(show_motor=false, show_wheel=false) {
+  pan_len = n20_motor_screws_panel_len();
+  x = -chassis_width * 0.5 - n20_motor_chassis_x_distance + n20_can_height / 2;
+  y = -chassis_len * 0.5 + pan_len / 2 + n20_motor_chassis_y_distance;
+  z = n20_motor_screws_panel_x_offset()
+    + n20_motor_screws_panel_thickness()
+    + chassis_thickness;
+
+  translate([x, y, z]) {
+    rotate([0, 0, 90]) {
+      n20_motor_screw_holes();
+    }
+  }
+}
+
+module chassis_plate(show_motor=false,
+                     show_wheels=false,
+                     motor_type=motor_type) {
   union() {
     color("white") {
       chassis_base_3d();
     }
 
-    if (show_motor_and_rear_wheels) {
-      rear_motor_mount_wall(show_wheel_and_motor=show_motor_and_rear_wheels);
+    if (motor_type == "standard") {
+      rear_motor_mount_wall(show_motor=show_motor, show_wheel=show_wheels);
       mirror([1, 0, 0]) {
-        rear_motor_mount_wall(show_wheel_and_motor=show_motor_and_rear_wheels);
+        rear_motor_mount_wall(show_motor=show_motor, show_wheel=show_wheels);
+      }
+    }
+    if (motor_type == "n20") {
+      n20_bracket_left(show_motor=show_motor, show_wheel=show_wheels);
+      mirror([1, 0, 0]) {
+        n20_bracket_left(show_motor=show_motor, show_wheel=show_wheels);
       }
     }
 
@@ -218,4 +260,4 @@ module chassis_plate(show_motor_and_rear_wheels=false) {
   }
 }
 
-chassis_plate(show_motor_and_rear_wheels=false);
+chassis_plate(motor_type=undef);

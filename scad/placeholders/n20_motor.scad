@@ -10,20 +10,6 @@ include <../colors.scad>
 use <../util.scad>
 use <../wheels/rear_wheel.scad>
 
-n20_reductor_dia            = 14;
-n20_reductor_height         = 9;
-n20_shaft_height            = 9;
-n20_shaft_dia               = 3;
-n20_shaft_cutout_w          = 2;
-n20_can_height              = 15;
-
-n20_can_dia                 = 12;
-n20_can_cutout_w            = 7;
-n20_end_cap_h               = 0.8;
-n20_end_circle_h            = 0.5;
-n20_end_cap_circle_dia      = 5;
-n20_end_cap_circle_hole_dia = 3;
-
 module n20_motor_reductor() {
   cylinder(h=n20_reductor_height, r=n20_reductor_dia / 2, center=false);
 }
@@ -46,7 +32,7 @@ module n20_motor_can() {
             notched_circle(h=n20_end_cap_h,
                            d=n20_can_dia,
                            cutout_w=n20_can_cutout_w,
-                           x_cutouts_n=2);
+                           x_cutouts_n=2, $fn=360);
             translate([0, 0, n20_end_cap_h]) {
               linear_extrude(height=n20_end_circle_h) {
                 circle(d=n20_end_cap_circle_dia, $fn=30);
@@ -92,32 +78,22 @@ module n20_motor_can() {
   }
 }
 
-module n20_motor(show_wheel=false) {
-  union() {
-    translate([0, 0, n20_shaft_height]) {
-      union() {
-        color(dark_gold_1) {
-          n20_motor_reductor();
-        }
-        translate([0, 0, -n20_reductor_height]) {
-          color(metalic_silver_3) {
-            n20_motor_shaft();
-          }
-        }
-        translate([0, 0, n20_reductor_height]) {
-          n20_motor_can();
+module n20_motor() {
+  translate([0, 0, n20_shaft_height]) {
+    union() {
+      color(dark_gold_1) {
+        n20_motor_reductor();
+      }
+      translate([0, 0, -n20_reductor_height]) {
+        color(metalic_silver_3) {
+          n20_motor_shaft();
         }
       }
-    }
-
-    wheel_shaft_outer_h = wheel_w / 2 + wheel_shaft_offset;
-
-    if (show_wheel) {
-      translate([0, 0, -(wheel_w / 2) - wheel_shaft_outer_h]) {
-        rear_wheel();
+      translate([0, 0, n20_reductor_height]) {
+        n20_motor_can();
       }
     }
   }
 }
 
-n20_motor(show_wheel=true);
+n20_motor();

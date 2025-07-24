@@ -122,10 +122,9 @@ module rounded_rect(size, r=undef, center=false, fn) {
   }
 }
 
-module rounded_cube(size, r=undef, center=true) {
-  rad = is_undef(r) ? size[1] * 0.3 : r;
-  linear_extrude(height = size[2], center=center) {
-    rounded_rect(size, r=rad, center=center);
+module rounded_cube(size, r=undef, center=true, z_center=false, fn) {
+  linear_extrude(height = size[2], center=z_center) {
+    rounded_rect(size, r=r, center=center, fn=fn);
   }
 }
 
@@ -190,8 +189,9 @@ module four_corner_holes_2d(size=[10, 10],
     for (y_ind = [0, 1]) {
       x_pos = (center ? -size[0] / 2 : 0) + x_ind * size[0];
       y_pos = (center ? -size[1] / 2 : 0) + y_ind * size[1];
-      translate([x_pos, y_pos])
-        circle(r = hole_dia / 2, $fn = fn_val);
+      translate([x_pos, y_pos]) {
+        circle(r=hole_dia / 2, $fn=fn_val);
+      }
     }
 }
 
@@ -367,18 +367,23 @@ module fillet(r) {
   }
 }
 
+function notched_circle_square_center_x(r, cutout_w) =
+  let (L = sqrt(r * r - (cutout_w / 2) * (cutout_w / 2)))
+  L + cutout_w / 2;
+
+function cutout_depth(r, cutout_w) = r - sqrt(r * r - (cutout_w / 2) * (cutout_w / 2));
+
 module notched_circle(d,
                       cutout_w,
                       h,
                       x_cutouts_n=1,
                       y_cutouts_n=0,
-                      center=false) {
-  r = d / 2;
-  L = sqrt(r * r - (cutout_w / 2) * (cutout_w / 2));
-  square_center_x = L + cutout_w / 2;
+                      center=false,
+                      fn=360) {
+  square_center_x = notched_circle_square_center_x(r=d / 2, cutout_w=cutout_w);
   linear_extrude(h=h, center=center) {
     difference() {
-      circle(r=d / 2, $fn=360);
+      circle(r=d / 2, $fn=fn);
       if (x_cutouts_n > 0) {
         for (i = [1:x_cutouts_n]) {
           translate([i == 1 ? square_center_x : -square_center_x, 0]) {

@@ -1,5 +1,5 @@
 /**
- * Module: A dummy mockup of the motor.
+ * Module: A dummy mockup of the cheap and popular yellow motor.
  *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later

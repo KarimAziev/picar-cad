@@ -1,7 +1,14 @@
+/**
+ * Module: A dummy mockup of the cheap and popular yellow motor.
+ *
+ * Author: Karim Aziiev <karim.aziiev@gmail.com>
+ * License: GPL-3.0-or-later
+ */
 
-include <parameters.scad>
-include <placeholders/motor.scad>
-use <util.scad>
+include <../parameters.scad>
+include <../colors.scad>
+use <../util.scad>
+include <../placeholders/motor.scad>
 
 module motor_bracket_screws_2d(d=m2_hole_dia) {
   for (y = motor_bracket_screws) {
@@ -52,8 +59,6 @@ module motor_bracket(size=[motor_mount_panel_width,
     }
   }
 }
-
-// motor_mount_panel();
 
 rotate([0, 0, 90]) {
   translate([10, 14, 0]) {

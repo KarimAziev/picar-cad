@@ -17,19 +17,22 @@ use <placeholders/motor.scad>
 use <steering_system/knuckle_shaft.scad>
 use <wheels/rear_wheel.scad>
 
-module assembly_view() {
+module assembly_view(motor_type=motor_type, show_motor=true, show_wheels=true) {
   union() {
-    translate([chassis_width / 2 + fron_wheel_offset() + wheel_w,
+    translate([chassis_width / 2 + front_wheel_offset() + wheel_w,
                0,
-               wheel_dia - chassis_thickness]) {
+               knuckle_shaft_vertical_len + knuckle_shaft_dia
+               + tire_thickness +
+               wheel_rim_h * 2]) {
       translate([0,
-                 steering_servo_chassis_offset,
+                 steering_servo_chassis_y_offset,
                  rack_mount_panel_thickness / 2]) {
         rotate([0, 0, 0])
           steering_system_assembly();
       }
 
-      translate([0, steering_servo_chassis_offset + pan_servo_wheels_y_offset,
+      translate([0, steering_servo_chassis_y_offset
+                 + pan_servo_y_offset_from_steering_panel,
                  chassis_thickness]) {
         translate([-2, 0, 25.9]) {
           rotate([0, 0, 180]) {
@@ -38,7 +41,9 @@ module assembly_view() {
         }
       }
       rotate([0, 180, 0]) {
-        chassis_plate(show_motor_and_rear_wheels=true);
+        chassis_plate(show_motor=show_motor,
+                      show_wheels=show_wheels,
+                      motor_type=motor_type);
       }
     }
   }

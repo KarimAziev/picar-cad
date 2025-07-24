@@ -40,7 +40,7 @@ include <../colors.scad>
 use <../util.scad>
 use <../wheels/front_wheel.scad>
 
-function fron_wheel_offset() = wheel_w > knuckle_shaft_lower_horiz_len
+function front_wheel_offset() = wheel_w > knuckle_shaft_lower_horiz_len
   ? knuckle_shaft_lower_horiz_len
   : wheel_w + (wheel_w - knuckle_shaft_lower_horiz_len);
 
@@ -121,7 +121,7 @@ module knuckle_bent_shaft(show_wheel=false,
                 }
 
                 if (show_wheel) {
-                  wheel_offst = fron_wheel_offset();
+                  wheel_offst = front_wheel_offset();
 
                   translate([0, 0, wheel_offst]) {
                     front_wheel_animated();
