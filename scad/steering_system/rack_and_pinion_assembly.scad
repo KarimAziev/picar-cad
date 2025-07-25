@@ -43,7 +43,7 @@ module steering_system_assembly(rack_color=blue_grey_carbon,
     }
 
     translate([0, 0, pinion_d / 2
-               + tooth_h * 2 - 0.5
+               + tooth_h * 2 - 1
                + rack_mount_panel_thickness / 2
                + rack_base_h]) {
 

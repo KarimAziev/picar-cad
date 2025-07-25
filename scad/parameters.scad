@@ -186,9 +186,13 @@ rack_mount_panel_len                   = 124;
 // knuckles at each side
 rack_mount_panel_width                 = 15.5;
 
+// The width of the panel that holds the rack and the pins for the steering
+// knuckles at each side
+rack_mount_rack_panel_width            = 8;
+
 // The thickness of the panel that holds the rack and the pins for the steering
 // knuckles at each side
-rack_mount_panel_thickness             = 3;
+rack_mount_panel_thickness             = 4;
 
 // The height of the pinion and rack teeth
 tooth_h                                = 4;
