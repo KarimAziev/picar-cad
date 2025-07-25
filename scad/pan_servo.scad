@@ -18,7 +18,7 @@ module pan_servo_screws_2d(servo_screw_d=1.5,
   slot_rad = pan_servo_slot_dia / 2;
 
   union() {
-    circle(d = pan_servo_slot_dia, $fn = 360);
+    circle(d=pan_servo_slot_dia, $fn=360);
     for (dir = [-1, 1]) {
       group_offst = (dir < 0
                      ? -slot_rad - screw_rad - screws_distance
@@ -28,7 +28,7 @@ module pan_servo_screws_2d(servo_screw_d=1.5,
         for (i = [0 : amount - 1]) {
           x = i * step * dir;
           translate([x, 0, 0]) {
-            circle(r = head_servo_screw_dia/2, $fn = 360);
+            circle(r=head_servo_screw_dia/2, $fn=360);
           }
         }
       }
