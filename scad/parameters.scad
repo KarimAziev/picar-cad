@@ -78,8 +78,14 @@ extra_cutouts_dia                      = 8;
 
 // Rear panel:
 // A vertical rear plate with dimensions including two 13-mm mounting holes for switch buttons.
-rear_panel_size                        = [52, 25, 2];
+rear_panel_size                        = [52, 25, 10];
 rear_panel_switch_slot_dia             = 13;
+
+rear_panel_holes_x_offsets             = [-16, 16];
+rear_panel_screw_holes_x_offsets       = [-16, 0, 16];
+rear_panel_screw_hole_dia              = m25_hole_dia;
+rear_panel_thickness                   = 2;
+rear_panel_screw_offset                = 3;
 
 // Battery holder screws along each side of the chassis
 

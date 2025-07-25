@@ -347,12 +347,22 @@ module l_bracket(size, thickness=1, y_r=undef, z_r=undef, center=true) {
 
   union() {
     linear_extrude(height=thickness, center=center) {
-      rounded_rect_two([x, y], center=center, r=ur);
+      difference() {
+        rounded_rect_two([x, y], center=center, r=ur);
+        if ($children > 0) {
+          children(0);
+        }
+      }
     }
     translate([0, -y / 2, z / 2 - thickness / 2]) {
       rotate([90, 0, 0]) {
         linear_extrude(height=thickness) {
-          rounded_rect_two([x, z], center=center, r=lr);
+          difference() {
+            rounded_rect_two([x, z], center=center, r=lr);
+            if ($children > 1) {
+              children([1:$children-1]);
+            }
+          }
         }
       }
     }

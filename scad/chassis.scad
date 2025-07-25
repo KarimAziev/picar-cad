@@ -123,7 +123,7 @@ module chassis_base_2d() {
 }
 
 module chassis_2d() {
-  chassis_len_half = (chassis_len / 2);
+  chassis_len_half = chassis_len / 2;
   difference() {
     chassis_base_2d();
     chassis_extra_cutouts_2d();
@@ -157,6 +157,19 @@ module chassis_2d() {
 
       translate([0, -ups_hat_offset - raspberry_pi5_screws_size[1], 0]) {
         ups_hat_screws_2d();
+      }
+    }
+    rear_panel_bracket_w = rear_panel_screw_panel_width();
+
+    translate([0,
+               -chassis_len_half
+               + rear_panel_bracket_w / 2
+               - rear_panel_screw_hole_dia / 2,
+               0]) {
+
+      rear_panel_screw_holes();
+      translate([0, rear_panel_screw_offset + rear_panel_screw_hole_dia, 0]) {
+        rear_panel_screw_holes();
       }
     }
   }
@@ -225,10 +238,30 @@ module n20_bracket_screws(show_motor=false, show_wheel=false) {
 
 module chassis_plate(show_motor=false,
                      show_wheels=false,
+                     show_rear_panel=false,
+                     show_front_panel=false,
                      motor_type=motor_type) {
   union() {
     color("white") {
       chassis_base_3d();
+      if (show_front_panel) {
+        translate([0,
+                   chassis_len * 0.5 + chassis_offset_rad,
+                   front_panel_height * 0.5]) {
+          front_panel();
+        }
+        if (show_rear_panel) {
+          translate([0,
+                     -chassis_len / 2,
+                     rear_panel_size[1] / 2
+                     + rear_panel_thickness
+                     + chassis_thickness]) {
+            rotate([90, 0, 180]) {
+              rear_panel();
+            }
+          }
+        }
+      }
     }
 
     if (motor_type == "standard") {
@@ -243,21 +276,11 @@ module chassis_plate(show_motor=false,
         n20_bracket_left(show_motor=show_motor, show_wheel=show_wheels);
       }
     }
-
-    color("white") {
-      translate([0,
-                 chassis_len * 0.5 + chassis_offset_rad,
-                 front_panel_height * 0.5]) {
-        front_panel();
-      }
-
-      translate([0, -(chassis_len / 2) + 1, 25 / 2]) {
-        rotate([90, 0, 0]) {
-          rear_panel();
-        }
-      }
-    }
   }
 }
 
-chassis_plate(motor_type=undef);
+chassis_plate(motor_type=undef,
+              show_motor=false,
+              show_wheels=false,
+              show_rear_panel=false,
+              show_front_panel=true);

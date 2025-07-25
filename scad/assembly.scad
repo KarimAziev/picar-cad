@@ -17,7 +17,11 @@ use <placeholders/motor.scad>
 use <steering_system/knuckle_shaft.scad>
 use <wheels/rear_wheel.scad>
 
-module assembly_view(motor_type=motor_type, show_motor=true, show_wheels=true) {
+module assembly_view(motor_type=motor_type,
+                     show_motor=true,
+                     show_wheels=true,
+                     show_rear_panel=true,
+                     show_front_panel=true) {
   union() {
     translate([chassis_width / 2 + front_wheel_offset() + wheel_w,
                0,
@@ -43,7 +47,9 @@ module assembly_view(motor_type=motor_type, show_motor=true, show_wheels=true) {
       rotate([0, 180, 0]) {
         chassis_plate(show_motor=show_motor,
                       show_wheels=show_wheels,
-                      motor_type=motor_type);
+                      motor_type=motor_type,
+                      show_rear_panel=show_rear_panel,
+                      show_front_panel=show_front_panel);
       }
     }
   }
