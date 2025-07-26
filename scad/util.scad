@@ -249,9 +249,13 @@ module trapezoid_rounded(b = 20, t = 10, h = 15, r = 2, center = false) {
          [b - m, h],
          [m, h]];
 
-  offset(r = r, chamfer = false)
-    offset(r = -r, chamfer = false)
-    polygon(points = center ? [for (p = pts) [p[0] - b/2, p[1] - h/2]] : pts);
+  offset(r = r, chamfer = false) {
+    offset(r = -r, chamfer = false) {
+      polygon(points = center
+              ? [for (p = pts) [p[0] - b/2, p[1] - h/2]]
+              : pts);
+    }
+  }
 }
 
 module rounded_rect_two(size, r=undef, center=false, segments=10) {
