@@ -16,7 +16,8 @@ module bracket(a_len=bracket_rack_side_w_length,
                bearing_flanged_w=bracket_bearing_flanged_width,
                bearing_shaft_d = round(bracket_bearing_shaft_d),
                bearing_h=bracket_bearing_height,
-               bracket_color=blue_grey_carbon) {
+               bracket_color=blue_grey_carbon,
+               show_text=false) {
 
   a_full_len = a_len + w;
 
@@ -43,6 +44,18 @@ module bracket(a_len=bracket_rack_side_w_length,
           }
         }
       }
+      if (show_text) {
+        color("white") {
+          linear_extrude(height=thickness + 2, center=true) {
+            translate([-notch_w / 2, 0, 0]) {
+              text(str("D: ", a_len),
+                   size=4, halign="center",
+                   valign="center",
+                   font = "Liberation Sans:style=Bold Italic");
+            }
+          }
+        }
+      }
 
       union() {
         x_offst = a_full_len / 2 - w / 2;
@@ -51,6 +64,20 @@ module bracket(a_len=bracket_rack_side_w_length,
 
             translate([x_offst, b_len / 2, 0]) {
               square([w, b_len + notch_w], center=true);
+            }
+          }
+        }
+        if (show_text) {
+          color("white") {
+            translate([0, 0, 5]) {
+              linear_extrude(height=thickness, center=true) {
+                translate([x_offst, b_len / 2, 0]) {
+                  text(str("C: ", b_len),
+                       size=4,
+                       valign="bottom",
+                       font = "Liberation Sans:style=Bold Italic");
+                }
+              }
             }
           }
         }

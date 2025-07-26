@@ -9,9 +9,7 @@ include <parameters.scad>
 use <util.scad>
 
 module pan_servo_screws_2d(servo_screw_d=1.5,
-                           screws_distance=0.5,
-                           offst_from_center_hole=1.0) {
-  centers = [0, 0, 0];
+                           screws_distance=0.5) {
   step = servo_screw_d + screws_distance;
   amount = floor(((chassis_width * 0.25) / 2) / step);
   screw_rad = servo_screw_d / 2;
@@ -28,7 +26,7 @@ module pan_servo_screws_2d(servo_screw_d=1.5,
         for (i = [0 : amount - 1]) {
           x = i * step * dir;
           translate([x, 0, 0]) {
-            circle(r=head_servo_screw_dia/2, $fn=360);
+            circle(r=head_servo_screw_dia / 2, $fn=360);
           }
         }
       }
@@ -40,12 +38,6 @@ module pan_servo_cutout_2d() {
   translate([0, steering_servo_chassis_y_offset +
              pan_servo_y_offset_from_steering_panel, 0]) {
     pan_servo_screws_2d();
-    translate([0, -30, 0]) {
-      square([36, 5], center = true);
-    }
-    translate([0, -36, 0]) {
-      square([36, 5], center = true);
-    }
   }
 }
 

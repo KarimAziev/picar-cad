@@ -57,6 +57,10 @@ module knuckle_lower_connector() {
                           stopper_h=knuckle_pin_stopper_height);
 }
 
+function steering_servo_panel_center_rect_y() =
+  steering_servo_panel_screws_offsets[1]
+  + steering_servo_panel_screws_dia * 2 + 3;
+
 module rack_mount_panel() {
   half_of_len = rack_mount_panel_len / 2;
   half_of_width = rack_mount_panel_width / 2;
@@ -75,10 +79,10 @@ module rack_mount_panel() {
             circle(r = knuckle_rad, $fn=360);
           }
           rounded_rect(size=[steering_servo_slot_width,
-                             steering_servo_panel_screws_offsets[1]
-                             + steering_servo_panel_screws_dia * 2 + 3],
-                       center=true, r=min(steering_servo_slot_width,
-                                          rack_mount_panel_width) * 0.2);
+                             steering_servo_panel_center_rect_y()],
+                       center=true,
+                       r=min(steering_servo_slot_width,
+                             rack_mount_panel_width) * 0.2);
           rounded_rect(size=[rack_mount_panel_len,
                              rack_mount_rack_panel_width],
                        center=true);

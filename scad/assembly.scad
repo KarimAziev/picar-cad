@@ -21,7 +21,8 @@ module assembly_view(motor_type=motor_type,
                      show_motor=true,
                      show_wheels=true,
                      show_rear_panel=true,
-                     show_front_panel=true) {
+                     show_front_panel=true,
+                     show_ackermann_triangle=true) {
   union() {
     translate([chassis_width / 2 + front_wheel_offset() + wheel_w,
                0,
@@ -31,8 +32,7 @@ module assembly_view(motor_type=motor_type,
       translate([0,
                  steering_servo_chassis_y_offset,
                  rack_mount_panel_thickness / 2]) {
-        rotate([0, 0, 0])
-          steering_system_assembly();
+        steering_system_assembly();
       }
 
       translate([0, steering_servo_chassis_y_offset
@@ -49,7 +49,8 @@ module assembly_view(motor_type=motor_type,
                       show_wheels=show_wheels,
                       motor_type=motor_type,
                       show_rear_panel=show_rear_panel,
-                      show_front_panel=show_front_panel);
+                      show_front_panel=show_front_panel,
+                      show_ackermann_triangle=show_ackermann_triangle);
       }
     }
   }

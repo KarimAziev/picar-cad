@@ -17,11 +17,6 @@ function n20_motor_screws_panel_thickness() =
   n20_reductor_dia -
   (n20_can_dia -  cutout_depth(r=n20_can_dia / 2, cutout_w=n20_can_cutout_w));
 
-function n20_motor_screws_panel_len() =
-  n20_motor_width()
-  + (n20_motor_screws_dia * 2)
-  + (n20_motor_screws_panel_len * 2);
-
 function n20_motor_screws_panel_x_offset() =
   notched_circle_square_center_x(r=n20_can_dia / 2,
                                  cutout_w=n20_can_cutout_w)
@@ -29,7 +24,7 @@ function n20_motor_screws_panel_x_offset() =
 
 module n20_motor_screw_holes() {
   screws_rad = n20_motor_screws_dia / 2;
-  w = n20_motor_screws_panel_len();
+  w = n20_motor_screws_panel_len;
   for (i = [0:1]) {
     offst = w / 2 - n20_motor_screws_dia / 2;
     translate([i == 0
@@ -47,7 +42,7 @@ module n20_motor_screws_panel() {
                                             cutout_w=n20_can_cutout_w);
   cutout_depth = cutout_depth(r=n20_can_dia / 2, cutout_w=n20_can_cutout_w);
   h = n20_can_height / 2;
-  w = n20_motor_screws_panel_len();
+  w = n20_motor_screws_panel_len;
 
   effective_h = n20_motor_screws_panel_thickness();
 

@@ -1,4 +1,4 @@
-
+use <util.scad>
 // This module defines a robot parameters
 
 m1_hole_dia                            = 1.2; // M1 screw hole diameter
@@ -9,9 +9,9 @@ r4120_dia                              = 4.6; // diameter in millimeters
 r3065_dia                              = 3.5;
 
 // Chassis dimensions:
-chassis_width                          = 110;  // width of the chassis
+chassis_width                          = 120;  // width of the chassis
 chassis_len                            = 254;  // length of the chassis
-chassis_thickness                      = 3;    // chassis thickness
+chassis_thickness                      = 4.0;    // chassis thickness
 chassis_offset_rad                     = 1; // The amount by which to offset the chassis
 
 // Type of the DC motor to use. Either "n20" or "standard". "n20" refers to
@@ -26,24 +26,38 @@ motor_bracket_offest                   = 25;
 
 // Front panel dimensions:
 // This panel is vertical and includes mounting holes for the ultrasonic sensors.
+front_panel_chassis_y_offset           = 5;
 front_panel_width                      = 66;   // panel width
 front_panel_height                     = 28;   // panel height
+front_panel_thickness                  = 2;   // panel thickness
+front_panel_rear_panel_thickness       = 1.5;
+front_panel_connector_screw_dia        = m25_hole_dia;
+front_panel_connector_len              = 15;
+front_panel_connector_width            = chassis_width / 4;
+front_panel_connector_screw_offsets    = [[4, 3], [0, 3], [-4, 3]];
 
-front_panel_ultrasonic_sensor_dia      = 17;   // diameter of each mounting hole ("eye") for the ultrasonic sensors
-front_panel_ultrasonic_sensors_offset  = 9;    // distance between the two ultrasonic sensor mounting holes
+// diameter of each mounting hole ("eye") for the ultrasonic sensors
+front_panel_ultrasonic_sensor_dia      = 17;
 
-front_panel_screws_x_offset            = 27;   // horizontal offset between the ultrasonic sensor mounting holes
+// distance between the two ultrasonic sensor mounting holes
+front_panel_ultrasonic_sensors_offset  = 9;
 
-pan_servo_slot_dia                     = 6.5;  // diameter of the pan servo mounting hole at the front of the chassis
+// horizontal offset between the ultrasonic sensor mounting holes
+front_panel_screws_x_offset            = 27;
 
-// Position of the steering panel relative to the chassis center.
-// This panel houses the rack and pinion assembly implementing Ackerman steering geometry for the wheels.
+// diameter of the pan servo mounting hole at the front of the chassis
+pan_servo_slot_dia                     = 6.5;
+
+// Position of the steering panel relative to the chassis center. This panel
+// houses the rack and pinion assembly implementing Ackerman steering geometry
+// for the wheels.
 steering_servo_chassis_y_offset        = 65;
 
-// Vertical offset, measured from the steering panel's position, for the pan servo cut-out.
-// The pan servo is mounted on a bottom horizontal panel (with a gear hole interfacing with the chassis)
-// that is part of the robot’s head (which also carries the cameras). Its placement is determined by
-// adding this offset to steering_servo_chassis_y_offset.
+// Vertical offset, measured from the steering panel's position, for the pan
+// servo cut-out. The pan servo is mounted on a bottom horizontal panel (with a
+// gear hole interfacing with the chassis) that is part of the robot’s head
+// (which also carries the cameras). Its placement is determined by adding this
+// offset to steering_servo_chassis_y_offset.
 pan_servo_y_offset_from_steering_panel = 47;
 
 // rear motor panel for the "standard" yellow motor (see motor_type)
@@ -62,7 +76,8 @@ raspberry_pi5_screws_size              = [50, 58];
 // The diameter of the screw holes for the Raspberry Pi 5 slot.
 raspberry_pi5_screws_hole_size         = m2_hole_dia;
 
-// Y offset for the UPS HAT slot, measured from the Raspberry Pi (raspberry_pi_offset) position to the end of the chassis
+// Y offset for the UPS HAT slot, measured from the Raspberry Pi
+// (raspberry_pi_offset) position to the end of the chassis
 ups_hat_offset                         = 40;
 
 // The X and Y dimensions of the screw positions for the UPS HAT slot.
@@ -73,11 +88,12 @@ steering_servo_panel_screws_offsets    = [5.5, 12.0];
 steering_servo_panel_screws_dia        = m2_hole_dia;
 steering_servo_extra_width             = 4;
 
-// The diameter of the three extra holes on the left and right sides of the chassis
+// The diameter of the three extra holes on the left and right sides of the
+// chassis
 extra_cutouts_dia                      = 8;
 
-// Rear panel:
-// A vertical rear plate with dimensions including two 13-mm mounting holes for switch buttons.
+// Rear panel: A vertical rear plate with dimensions including two 13-mm
+// mounting holes for switch buttons.
 rear_panel_size                        = [52, 25, 10];
 rear_panel_switch_slot_dia             = 13;
 
@@ -87,22 +103,36 @@ rear_panel_screw_hole_dia              = m25_hole_dia;
 rear_panel_thickness                   = 2;
 rear_panel_screw_offset                = 3;
 
-// Battery holder screws along each side of the chassis
+/**
+ * Battery holder screws along each side of the chassis
+ */
 
 // Vertical offsets for extra battery holder screws along the Y-axis
-extra_battery_screws_y_offset_start    = -30;  // Starting Y-offset for extra battery screws
-extra_battery_screws_y_offset_end      = 0;    // Ending Y-offset for extra battery screws
-extra_battery_screws_y_offset_step     = 10;    // Step/increment along the Y-axis for extra battery screws
+
+// Starting Y-offset for extra battery screws
+extra_battery_screws_y_offset_start    = -30;
+
+// Ending Y-offset for extra battery screws
+extra_battery_screws_y_offset_end      = 0;
+
+// Step/increment along the Y-axis for extra battery screws
+extra_battery_screws_y_offset_step     = 10;
 
 // Dimensions for the screw hole pattern (width, height)
 extra_battery_screws_y_size            = [20, 10]; // [width, height] of the screw pattern
 
 // Horizontal offset for the screws on the sides (distance from center)
-extra_battery_screws_x_offset          = 24;    // X-offset for positioning screws relative to the center
+
+// X-offset for positioning screws relative to the center
+extra_battery_screws_x_offset          = 24;
 
 // Screw hole parameters for extra battery holders
-extra_battery_screws_dia               = m2_hole_dia;  // Diameter of the screw holes (uses global m2_hole_dia)
-extra_battery_screws_fn_val            = 360;  // Number of fragments for rendering circle (defines resolution)
+
+// Diameter of the screw holes (uses global m2_hole_dia)
+extra_battery_screws_dia               = m2_hole_dia;
+
+// Number of fragments for rendering circle (defines resolution)
+extra_battery_screws_fn_val            = 360;
 
 // Battery holder screws placed at the center of the chassis
 
@@ -186,7 +216,7 @@ steering_servo_panel_thickness         = 2;
 
 // The length of the panel that holds the rack and the pins for the steering
 // knuckles at each side
-rack_mount_panel_len                   = 124;
+rack_mount_panel_len                   = 134;
 
 // The width of the panel that holds the rack and the pins for the steering
 // knuckles at each side
@@ -281,11 +311,8 @@ knuckle_pin_lower_height               = 6;
 // the bearing and the frame
 knuckle_pin_stopper_height             = 1;
 
-// The angle of the shaft that connects the knuckle with the bracket
-knuckle_bracket_connector_angle        = 120.0;
-
 // The length of the rotated shaft that connects the knuckle with the bracket
-knuckle_bracket_connector_len          = 12.2;
+// knuckle_bracket_connector_len          = 12.2;
 
 // The height (thickness) of the knuckle connector with the 685-Z bearing that
 // is connected to the bracket
@@ -325,12 +352,12 @@ bracket_bearing_flanged_height         = 0.5;
 bracket_bearing_flanged_width          = 0.5;
 
 // The length of the L-bracket part that is connected to the rack
-bracket_rack_side_h_length             = 10.30;
+bracket_rack_side_h_length             = 11.30;
 
 // The length of the L-bracket part that is connected to the knuckle connector
-bracket_rack_side_w_length             = 9.5;
+// bracket_rack_side_w_length             = 12.5;
 
-rack_len                               = 49;    // The length of the steering rack
+rack_len                               = 59;    // The length of the steering rack
 rack_width                             = 6;     // The width of the steering rack
 
 // The height of the steering rack, excluding the height of the teeth
@@ -343,8 +370,11 @@ rack_pin_base_height                   = 5;
 // The amount by which to offset the rack teeth
 rack_rad                               = 0.5;
 
-steering_bracket_linkage_width         = 5;     // The width of the L-bracket connector
-steering_bracket_linkage_thickness     = 3;     // The thickness of the L-bracket connector
+// The width of the L-bracket connector
+steering_bracket_linkage_width         = 5;
+
+// The thickness of the L-bracket connector
+steering_bracket_linkage_thickness     = 3;
 
 // Parameters for wheel dimensions and screw properties.
 wheel_hub_outer_d                      = 48.2;
@@ -428,8 +458,44 @@ n20_end_cap_circle_hole_dia            = 3;
 
 n20_motor_bracket_thickness            = 1;
 n20_motor_screws_panel_offset          = 1;
-n20_motor_screws_panel_len             = 4;
+n20_motor_screws_panel_length          = 4;
 n20_motor_screws_dia                   = m25_hole_dia;
 
 n20_motor_chassis_y_distance           = 15;
 n20_motor_chassis_x_distance           = -9;
+
+n20_motor_screws_panel_len             = n20_can_dia + n20_motor_bracket_thickness * 2 +
+  n20_motor_screws_dia * 2 + n20_motor_screws_panel_length * 2;
+
+// Ackerman geometry
+
+// Knuckle center along X
+x_left_knuckle                         = -rack_mount_panel_len / 2 + knuckle_dia / 2;
+
+// Calculation of the Y-coordinate for the convergence point of the tie rod extensions (at the rear axle)
+y_intersection                         = -chassis_len * 0.5 + n20_motor_screws_panel_len / 2
+  + n20_motor_chassis_y_distance - steering_servo_chassis_y_offset;
+
+// The angle of the shaft that connects the knuckle with the bracket
+bracket_border_w                       = (bracket_bearing_outer_d - bracket_bearing_d) / 2;
+ackermann_angle_deg                    = round(atan(abs(x_left_knuckle) / abs(y_intersection)));
+ackerman_alpha_deg                     = 90 + ackermann_angle_deg;
+bracket_notch_w                        = calc_notch_width(bracket_bearing_outer_d, steering_bracket_linkage_width);
+// Rack connector center along X
+rack_left_connector_x                  = -rack_len / 2 - bracket_bearing_outer_d / 2 + bracket_border_w;
+
+knuckle_border_w                       = (knuckle_dia - knuckle_bearing_outer_dia) / 2;
+distance_between_knuckle_and_rack      = abs(x_left_knuckle) - abs(rack_left_connector_x);
+
+bracket_h_full_len                     = bracket_rack_side_h_length;
+
+bracket_bearing_super_d                = bracket_bearing_outer_d - bracket_border_w;
+
+knuckle_bracket_connector_len          = (bracket_rack_side_h_length  / sin(180 - ackerman_alpha_deg));
+bracket_offst                          = -bracket_bearing_outer_d + bracket_notch_w / 2;
+
+ackerman_dx                            = (bracket_rack_side_h_length / tan(ackerman_alpha_deg)) + bracket_offst;
+
+bracket_rack_side_w_length             = abs(distance_between_knuckle_and_rack + ackerman_dx);
+
+// bracket_rack_side_w_length             = 12.5;

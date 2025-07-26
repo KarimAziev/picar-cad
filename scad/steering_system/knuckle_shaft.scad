@@ -105,15 +105,15 @@ module knuckle_bent_shaft(show_wheel=false,
                        center=false);
             }
           }
-          translate([r,
+          translate([-r,
                      knuckle_shaft_connector_extra_len + knuckle_dia / 2,
                      0]) {
-            rotate([0, 0, 90]) {
+            rotate([0, 0, 0]) {
               knuckle_bent(angle=90, r=r, bent_color=matte_black);
             }
 
             translate([0, r, 0]) {
-              rotate([0, 90, 0]) {
+              rotate([0, -90, 0]) {
                 color(knuckle_shaft_color) {
                   cylinder(h=knuckle_shaft_lower_horiz_len,
                            r=r,
@@ -146,10 +146,10 @@ module knuckle_screws_slots(d,
 
 module knuckle_shaft_print_plate() {
   offst = knuckle_dia;
-  translate([offst / 2, 0, 0]) {
+  translate([offst / 2 + knuckle_shaft_lower_horiz_len, 0, 0]) {
     knuckle_shaft();
   }
-  translate([-offst / 2, 0, 0]) {
+  translate([-offst / 2 - knuckle_shaft_lower_horiz_len, 0, 0]) {
     mirror([1, 0, 0]) {
       knuckle_shaft();
     }

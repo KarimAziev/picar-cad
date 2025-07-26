@@ -227,7 +227,7 @@ module two_x_screws_2d(x=0, d=2.4) {
 }
 
 // Creates an isosceles trapezoid.
-module trapezoid(b = 20, t = 10, h = 15, center = false) {
+module trapezoid(b=20, t=10, h=15, center=false) {
   m = (b - t) / 2;
 
   pts = [[0, 0],
@@ -241,19 +241,11 @@ module trapezoid(b = 20, t = 10, h = 15, center = false) {
 }
 
 // Creates an isosceles trapezoid with rounded corners
-module trapezoid_rounded(b = 20, t = 10, h = 15, r = 2, center = false) {
-  m = (b - t) / 2;
-
-  pts = [[0, 0],
-         [b, 0],
-         [b - m, h],
-         [m, h]];
-
-  offset(r = r, chamfer = false) {
-    offset(r = -r, chamfer = false) {
-      polygon(points = center
-              ? [for (p = pts) [p[0] - b/2, p[1] - h/2]]
-              : pts);
+module trapezoid_rounded(b=20, t=10, h=15, r=undef, center=false) {
+  rad = is_undef(r) ? min(b, t, h) * 0.1 : r;
+  offset(r=rad, chamfer=false) {
+    offset(r=-rad, chamfer=false) {
+      trapezoid(b=b, t=t, h=h, center=center);
     }
   }
 }
@@ -385,7 +377,8 @@ function notched_circle_square_center_x(r, cutout_w) =
   let (L = sqrt(r * r - (cutout_w / 2) * (cutout_w / 2)))
   L + cutout_w / 2;
 
-function cutout_depth(r, cutout_w) = r - sqrt(r * r - (cutout_w / 2) * (cutout_w / 2));
+function cutout_depth(r, cutout_w) =
+  r - sqrt(r * r - (cutout_w / 2) * (cutout_w / 2));
 
 module notched_circle(d,
                       cutout_w,

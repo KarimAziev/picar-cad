@@ -58,11 +58,49 @@ module ultrasonic_screws_2d(size=[42.5, 17.5], d=m1_hole_dia) {
     }
   }
 }
+module front_panel_connector_screws() {
+  half_of_len = front_panel_connector_len / 2;
+  half_of_w = front_panel_connector_width / 2;
+  screw_rad = front_panel_connector_screw_dia / 2;
+  offst = 4;
+
+  for (pair = front_panel_connector_screw_offsets) {
+    distance_x = pair[0];
+    distance_y = pair[1];
+    x = distance_x > 0
+      ? (half_of_w - screw_rad - distance_x)
+      : distance_x < 0
+      ? (-half_of_w + screw_rad - distance_x)
+      : 0;
+
+    y = distance_y > 0
+      ? (half_of_len - screw_rad - distance_y)
+      : distance_y < 0
+      ? (-half_of_len + screw_rad - distance_y)
+      : 0;
+
+    translate([x, y, 0]) {
+      circle(r=screw_rad, $fn=360);
+    }
+  }
+}
+
+module front_panel_connector() {
+  linear_extrude(height=front_panel_thickness, center=false) {
+    difference() {
+      rounded_rect_two(size = [front_panel_connector_width,
+                               front_panel_connector_len],
+                       center=true,
+                       r=3);
+      front_panel_connector_screws();
+    }
+  }
+}
 
 module front_panel(w=front_panel_width,
                    h=front_panel_height,
                    screws_x_offset=front_panel_screws_x_offset,
-                   thickness=2) {
+                   thickness=front_panel_thickness) {
   rotate([90, 180, 0]) {
     difference() {
       linear_extrude(thickness) {
@@ -80,6 +118,13 @@ module front_panel(w=front_panel_width,
         ultrasonic_slots();
       }
     }
+    translate([0, front_panel_connector_width / 2
+               + front_panel_thickness,
+               front_panel_connector_len / 2]) {
+      rotate([90, 0, 0]) {
+        front_panel_connector();
+      }
+    }
   }
 }
 
@@ -90,7 +135,7 @@ module front_panel_back_mount(w=front_panel_width,
                               side_screws_dia=m3_hole_dia,
                               screws_square_size=[25, 10],
                               screws_square_dia=m3_hole_dia,
-                              thickness=1.5) {
+                              thickness=front_panel_rear_panel_thickness) {
   linear_extrude(thickness) {
     difference() {
       rounded_rect(size=[w, h], r=h * 0.18, center=true);
@@ -116,6 +161,9 @@ color("white") {
   }
 
   translate([-front_panel_width * 0.55, 0, 0]) {
-    front_panel_back_mount();
+    // front_panel_back_mount();
+  }
+  translate([0, front_panel_height, 0]) {
+    // front_panel_connector();
   }
 }
