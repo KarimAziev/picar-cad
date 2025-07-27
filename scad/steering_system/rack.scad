@@ -1,3 +1,14 @@
+/**
+ * File: rack.scad
+ *
+ * This file contains modules to generate a rack for a steering system. The rack
+ * is designed with a toothed profile to mesh with a pinion and integrates the
+ * appropriate mounting connectors both sides.
+ *
+ * Author: Karim Aziiev <karim.aziiev@gmail.com>
+ * License: GPL-3.0-or-later
+ */
+
 include <../parameters.scad>
 include <../colors.scad>
 use <rack_connector.scad>

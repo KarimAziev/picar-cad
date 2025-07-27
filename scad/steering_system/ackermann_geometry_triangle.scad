@@ -1,3 +1,13 @@
+/**
+ * Module: Ackermann Geometry Triangle
+ *
+ * This is a simple visualization of the Ackermann geometry for developer purposes
+ * and it is not supposed to be printed.
+ *
+ * Author: Karim Aziiev <karim.aziiev@gmail.com>
+ * License: GPL-3.0-or-later
+ */
+
 include <../parameters.scad>
 
 module ackermann_geometry_triangle() {
