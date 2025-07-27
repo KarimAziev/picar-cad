@@ -280,11 +280,14 @@ module rear_motor_mount_wall(show_motor=false, show_wheel=false) {
 }
 
 module n20_bracket_left(show_motor=false, show_wheel=false) {
-  translate([-(chassis_width * 0.5) - n20_motor_chassis_x_distance,
-             -chassis_len * 0.5 + n20_motor_screws_panel_len / 2
-             + n20_motor_chassis_y_distance,
-             n20_motor_screws_panel_x_offset() +
-             chassis_thickness + n20_motor_screws_panel_thickness()]) {
+  x = -(chassis_width * 0.5) - n20_motor_chassis_x_distance;
+  y = -chassis_len * 0.5 + n20_motor_screws_panel_len / 2
+    + n20_motor_chassis_y_distance;
+  z = n20_motor_screws_panel_x_offset() +
+    chassis_thickness + n20_motor_screws_panel_thickness();
+  translate([x,
+             y,
+             z]) {
     rotate([0, 90, 0]) {
       n20_motor_assembly(show_motor=show_motor, show_wheel=show_wheel);
     }
@@ -335,6 +338,7 @@ module chassis_plate(motor_type=motor_type,
         rear_motor_mount_wall(show_motor=show_motor, show_wheel=show_wheels);
       }
     }
+
     if (motor_type == "n20") {
       n20_bracket_left(show_motor=show_motor, show_wheel=show_wheels);
       mirror([1, 0, 0]) {
@@ -348,14 +352,17 @@ module chassis_plate(motor_type=motor_type,
                    + chassis_offset_rad
                    + front_panel_thickness
                    + front_panel_chassis_y_offset,
-                   front_panel_height * 0.5]) {
+                   front_panel_height * 0.5
+                   + chassis_thickness
+                   + front_panel_thickness]) {
           front_panel();
         }
       }
     }
+
     if (show_ackermann_triangle) {
       translate([0, steering_servo_chassis_y_offset, -chassis_thickness]) {
-        color("red", alpha=0.3) {
+        color("yellowgreen", alpha=0.2) {
           ackermann_geometry_triangle();
         }
       }
@@ -363,9 +370,16 @@ module chassis_plate(motor_type=motor_type,
   }
 }
 
-chassis_plate(motor_type=undef,
-              show_motor=false,
-              show_wheels=false,
-              show_rear_panel=false,
-              show_front_panel=false,
-              show_ackermann_triangle=false);
+translate([0, 0, chassis_thickness +
+           n20_motor_screws_panel_x_offset()
+           + n20_motor_screws_panel_thickness()
+           + wheel_dia  / 2 + tire_thickness + (tire_fillet_gap * 2)]) {
+  rotate([180, 0, 0]) {
+    chassis_plate(motor_type="n20",
+                  show_motor=true,
+                  show_wheels=true,
+                  show_rear_panel=true,
+                  show_front_panel=true,
+                  show_ackermann_triangle=false);
+  }
+}

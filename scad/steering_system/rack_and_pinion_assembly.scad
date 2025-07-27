@@ -27,7 +27,7 @@ module knuckle_assembly(show_wheel=true, show_bearing=true, show_shaft=true) {
 }
 
 module steering_system_distance_between_rack_and_knuckle(w=5) {
-  translate([-(rack_len / 2) - bracket_bearing_outer_d / 2 + bracket_border_w -
+  translate([rack_left_connector_x -
              distance_between_knuckle_and_rack, 0,
              knuckle_height + knuckle_pin_lower_height]) {
 
@@ -52,7 +52,7 @@ module steering_system_distance_between_rack_and_knuckle(w=5) {
 
 module steering_system_assembly(rack_color=blue_grey_carbon,
                                 pinion_color=matte_black,
-                                show_ackermann_triangle=true,
+                                show_ackermann_triangle=false,
                                 show_wheels=true,
                                 show_bearing=true,
                                 show_brackets=true,
@@ -95,8 +95,11 @@ module steering_system_assembly(rack_color=blue_grey_carbon,
       }
     }
     if (show_ackermann_triangle) {
-      translate([0, 0, -chassis_thickness]) {
-        color("red", alpha=0.3) {
+      translate([0, 0, knuckle_height + knuckle_pin_lower_height
+                 + rack_mount_panel_thickness / 2
+                 + knuckle_pin_stopper_height
+                 + knuckle_bearing_flanged_height]) {
+        color("yellowgreen", alpha=0.2) {
           ackermann_geometry_triangle();
         }
       }

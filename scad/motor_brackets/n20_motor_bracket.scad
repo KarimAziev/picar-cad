@@ -118,7 +118,7 @@ module n20_motor_assembly(show_motor=true, show_wheel=false) {
       translate([0, 0, -n20_shaft_height - n20_reductor_height]) {
         n20_motor();
         if (show_wheel) {
-          wheel_shaft_outer_h = wheel_w / 2 + wheel_shaft_offset;
+          wheel_shaft_outer_h = wheel_shaft_offset;
           translate([0,
                      0,
                      -(wheel_w / 2) - wheel_shaft_outer_h

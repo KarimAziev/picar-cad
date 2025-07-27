@@ -16,6 +16,7 @@ use <steering_system/rack_and_pinion_assembly.scad>
 use <placeholders/motor.scad>
 use <steering_system/knuckle_shaft.scad>
 use <wheels/rear_wheel.scad>
+use <motor_brackets/n20_motor_bracket.scad>
 
 module assembly_view(motor_type=motor_type,
                      show_motor=true,
@@ -24,11 +25,12 @@ module assembly_view(motor_type=motor_type,
                      show_front_panel=true,
                      show_ackermann_triangle=true) {
   union() {
-    translate([chassis_width / 2 + front_wheel_offset() + wheel_w,
+    translate([chassis_width / 2 + (front_wheel_offset() * 2),
                0,
-               knuckle_shaft_vertical_len + knuckle_shaft_dia
-               + tire_thickness +
-               wheel_rim_h * 2]) {
+               chassis_thickness +
+               n20_motor_screws_panel_x_offset()
+               + n20_motor_screws_panel_thickness()
+               + wheel_dia  / 2 + tire_thickness + (tire_fillet_gap * 2)]) {
       translate([0,
                  steering_servo_chassis_y_offset,
                  rack_mount_panel_thickness / 2]) {
@@ -44,6 +46,7 @@ module assembly_view(motor_type=motor_type,
           }
         }
       }
+
       rotate([0, 180, 0]) {
         chassis_plate(show_motor=show_motor,
                       show_wheels=show_wheels,

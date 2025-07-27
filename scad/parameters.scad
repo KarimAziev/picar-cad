@@ -178,13 +178,13 @@ cam_pan_servo_slot_height              = 12;
 cam_pan_servo_height                   = 20;
 cam_pan_servo_screw_dia                = 2;
 cam_pan_servo_screws_offset            = 1;
-cam_pan_servo_slot_thickness           = 2;
+cam_pan_servo_slot_thickness           = 2.5;
 
 cam_tilt_servo_slot_width              = 23.6;
 cam_tilt_servo_slot_height             = 12;
 cam_tilt_servo_screw_dia               = 2;
 cam_tilt_servo_screws_offset           = 1;
-cam_tilt_servo_slot_thickness          = 2;
+cam_tilt_servo_slot_thickness          = 2.5;
 cam_tilt_servo_height                  = 20;
 cam_tilt_servo_extra_w                 = 4;
 cam_tilt_servo_extra_h                 = 2;
@@ -282,11 +282,12 @@ knuckle_shaft_connector_dia            = knuckle_shaft_dia * 1.4;
 knuckle_shaft_screws_dia               = m25_hole_dia;
 
 // The distance from the top of the shaft to the screw holes
-knuckle_shaft_screws_offset            = 3;
+knuckle_shaft_screws_offset            = 1;
+knuckle_shaft_screws_distance          = 2;
 
 // The length of the vertical part of the (curved) axle shaft that connects the
 // steering knuckle to the wheel hub
-knuckle_shaft_vertical_len             = 28;
+knuckle_shaft_vertical_len             = 20 + knuckle_height;
 
 // The additional length of the connector for the shaft in the knuckle and the
 // corresponding curved axle shaft
@@ -294,7 +295,7 @@ knuckle_shaft_connector_extra_len      = 0;
 
 // The length of the lower horizontal part of the (curved) axle shaft that is
 // inserted into the wheel hub
-knuckle_shaft_lower_horiz_len          = 25;
+knuckle_shaft_lower_horiz_len          = 27;
 
 // The height of the upper pins on each side of the frame onto which the
 // steering knuckle bearings are mounted
@@ -393,7 +394,7 @@ wheel_thickness                        = 1.0;
 wheel_rim_h                            = 1.2;
 wheel_rim_w                            = 1;
 wheel_rim_bend                         = 0.8;
-wheel_shaft_offset                     = 0;
+wheel_shaft_offset                     = 10.8;
 
 // Number of rear wheel spokes.
 rear_wheel_spokes_count                = 5;
@@ -476,25 +477,21 @@ x_left_knuckle                         = -rack_mount_panel_len / 2 + knuckle_dia
 y_intersection                         = -chassis_len * 0.5 + n20_motor_screws_panel_len / 2
   + n20_motor_chassis_y_distance - steering_servo_chassis_y_offset;
 
-// The angle of the shaft that connects the knuckle with the bracket
-bracket_border_w                       = (bracket_bearing_outer_d - bracket_bearing_d) / 2;
-ackermann_angle_deg                    = round(atan(abs(x_left_knuckle) / abs(y_intersection)));
-ackerman_alpha_deg                     = 90 + ackermann_angle_deg;
-bracket_notch_w                        = calc_notch_width(bracket_bearing_outer_d, steering_bracket_linkage_width);
-// Rack connector center along X
-rack_left_connector_x                  = -rack_len / 2 - bracket_bearing_outer_d / 2 + bracket_border_w;
+bracket_bearing_border_w               = (bracket_bearing_outer_d - bracket_bearing_d) / 2;
 
-knuckle_border_w                       = (knuckle_dia - knuckle_bearing_outer_dia) / 2;
+// The angle of the shaft that connects the knuckle with the bracket
+ackermann_angle_deg                    = round(atan(abs(x_left_knuckle) / abs(y_intersection)));
+ackerman_alpha_deg                     = ackermann_angle_deg + 90;
+// Rack connector center along X
+rack_left_connector_x                  = -rack_len / 2 - bracket_bearing_outer_d / 2 + bracket_bearing_border_w;
+
 distance_between_knuckle_and_rack      = abs(x_left_knuckle) - abs(rack_left_connector_x);
 
-bracket_h_full_len                     = bracket_rack_side_h_length;
+knuckle_bracket_connector_len          = (bracket_rack_side_h_length  / sin(180 - ackerman_alpha_deg)) - (bracket_bearing_outer_d + bracket_bearing_border_w) / 2;
+bracket_bearing_ackerman_offst         = -bracket_bearing_outer_d +
+  (calc_notch_width(bracket_bearing_outer_d, steering_bracket_linkage_width) / 2);
 
-bracket_bearing_super_d                = bracket_bearing_outer_d - bracket_border_w;
-
-knuckle_bracket_connector_len          = (bracket_rack_side_h_length  / sin(180 - ackerman_alpha_deg));
-bracket_offst                          = -bracket_bearing_outer_d + bracket_notch_w / 2;
-
-ackerman_dx                            = (bracket_rack_side_h_length / tan(ackerman_alpha_deg)) + bracket_offst;
+ackerman_dx                            = (bracket_rack_side_h_length / tan(ackerman_alpha_deg)) + bracket_bearing_ackerman_offst;
 
 bracket_rack_side_w_length             = abs(distance_between_knuckle_and_rack + ackerman_dx);
 

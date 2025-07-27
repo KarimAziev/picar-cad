@@ -40,31 +40,27 @@ include <../colors.scad>
 use <../util.scad>
 use <../wheels/front_wheel.scad>
 
-function front_wheel_offset() = wheel_w > knuckle_shaft_lower_horiz_len
-  ? knuckle_shaft_lower_horiz_len
-  : wheel_w + (wheel_w - knuckle_shaft_lower_horiz_len);
-
-function knuckle_screws_offset() = -knuckle_shaft_dia / 2
-  - knuckle_shaft_screws_dia / 2
-  - knuckle_shaft_screws_offset;
+function front_wheel_offset() = wheel_w / 2 +
+  (wheel_shaft_offset - (knuckle_shaft_dia / 2));
 
 module knuckle_shaft(show_wheel=false,
                      knuckle_shaft_color=matte_black) {
-  translate([0, 0, knuckle_shaft_dia / 2]) {
-    difference() {
+  difference() {
+    translate([0, 0, knuckle_shaft_dia / 2]) {
       knuckle_bent_shaft(show_wheel=show_wheel,
                          knuckle_shaft_color=knuckle_shaft_color);
-      translate([0,
-                 0,
-                 knuckle_screws_offset()]) {
-        rotate([0, 0, -90]) {
+    }
+
+    translate([0,
+               0,
+               -knuckle_shaft_screws_offset]) {
+      rotate([0, 0, 90]) {
+        knuckle_screws_slots(d=knuckle_shaft_screws_dia);
+        translate([0,
+                   0,
+                   - knuckle_shaft_screws_dia
+                   - knuckle_shaft_screws_distance]) {
           knuckle_screws_slots(d=knuckle_shaft_screws_dia);
-          translate([0,
-                     0,
-                     - knuckle_shaft_screws_dia / 2
-                     - knuckle_shaft_screws_offset]) {
-            knuckle_screws_slots(d=knuckle_shaft_screws_dia);
-          }
         }
       }
     }
@@ -136,11 +132,13 @@ module knuckle_bent_shaft(show_wheel=false,
   }
 }
 
-module knuckle_screws_slots(d,
+module knuckle_screws_slots(d=knuckle_shaft_screws_dia,
                             h=knuckle_shaft_dia + 1,
                             fn=360) {
-  rotate([90, 0, 0]) {
-    cylinder(h=h, r=d / 2, center=true, $fn=fn);
+  translate([0, 0, -d / 2]) {
+    rotate([90, 0, 0]) {
+      cylinder(h=h, r=d / 2, center=true, $fn=fn);
+    }
   }
 }
 

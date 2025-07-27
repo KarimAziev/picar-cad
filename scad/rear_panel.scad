@@ -9,7 +9,8 @@ include <parameters.scad>
 use <util.scad>
 
 function rear_panel_screw_panel_width() =
-  max(rear_panel_screw_hole_dia + rear_panel_screw_offset * 2, rear_panel_size[2]);
+  max(rear_panel_screw_hole_dia + rear_panel_screw_offset * 2,
+      rear_panel_size[2]);
 
 module rear_panel_screw_holes() {
   yw = rear_panel_screw_panel_width();
