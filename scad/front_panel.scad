@@ -4,12 +4,12 @@
 //
 //  - The main chassis-integrated front panel with integrated slots for mounting the HC-SR04 ultrasonic sensor.
 //  - A detachable back panel that secures the ultrasonic sensor from behind.
-//  - A separate sensor fixation detail which is secured using two R3090 rivets.
+//  - A separate sensor fixation detail which is secured using either two R3090 rivets, or M2.5 screws.
 //
 // Sensor and Attachment Information:
 //
 //  - Sensor: HC-SR04 ultrasonic sensor
-//  - Attachment Hardware: R3090 rivet
+//  - Attachment Hardware: R3090 rivet or M2.5 screws
 
 include <parameters.scad>
 use <util.scad>
@@ -62,7 +62,6 @@ module front_panel_connector_screws() {
   half_of_len = front_panel_connector_len / 2;
   half_of_w = front_panel_connector_width / 2;
   screw_rad = front_panel_connector_screw_dia / 2;
-  offst = 4;
 
   for (pair = front_panel_connector_screw_offsets) {
     distance_x = pair[0];
@@ -118,8 +117,7 @@ module front_panel(w=front_panel_width,
         ultrasonic_slots();
       }
     }
-    translate([0, front_panel_connector_width / 2
-               + front_panel_thickness,
+    translate([0, h / 2 + thickness,
                front_panel_connector_len / 2]) {
       rotate([90, 0, 0]) {
         front_panel_connector();
