@@ -20,7 +20,7 @@ module wheel(w=wheel_w,
 
   inner_d = wheel_inner_d(d, rim_h);
   union() {
-    linear_extrude(height = w + rim_w * 2, center=true) {
+    linear_extrude(height = w + rim_w * 2, center=true, convexity=2) {
       ring_2d(r=inner_d / 2,
               w=thickness,
               fn=360);
