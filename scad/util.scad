@@ -390,9 +390,10 @@ module notched_circle(d,
                       x_cutouts_n=1,
                       y_cutouts_n=0,
                       center=false,
+                      convexity=1,
                       fn=360) {
   square_center_x = notched_circle_square_center_x(r=d / 2, cutout_w=cutout_w);
-  linear_extrude(h=h, center=center) {
+  linear_extrude(h=h, center=center, convexity=convexity) {
     difference() {
       circle(r=d / 2, $fn=fn);
       if (x_cutouts_n > 0) {
