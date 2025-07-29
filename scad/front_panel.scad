@@ -132,6 +132,7 @@ module front_panel_back_mount(w=front_panel_width,
                               bottom_cutout_size = [15, 5],
                               side_screws_dia=m3_hole_dia,
                               screws_square_size=[25, 10],
+
                               screws_square_dia=m3_hole_dia,
                               thickness=front_panel_rear_panel_thickness) {
   linear_extrude(thickness) {
@@ -159,7 +160,7 @@ color("white") {
   }
 
   translate([-front_panel_width * 0.55, 0, 0]) {
-    // front_panel_back_mount();
+    front_panel_back_mount();
   }
   translate([0, front_panel_height, 0]) {
     // front_panel_connector();
