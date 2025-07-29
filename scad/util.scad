@@ -215,11 +215,7 @@ module two_x_screws_3d(x=0, d=2.4, center=true, h=10) {
   }
 }
 module two_x_screws_2d(x=0, d=2.4) {
-  translate([x, 0, 0]) {
-    circle(r = d / 2, $fn=360);
-  }
-
-  mirror([1, 0, 0]) {
+  mirror_copy([1, 0, 0]) {
     translate([x, 0, 0]) {
       circle(r = d / 2, $fn=360);
     }
@@ -283,7 +279,7 @@ module rounded_rect_two(size, r=undef, center=false, segments=10) {
 
 module cylinder_cutted(h=10, r=5, cutted_w=1, center=true, fn) {
   difference() {
-    cylinder(h = h, r = r, center=center, $fn=fn);
+    cylinder(h=h, r=r, center=center, $fn=fn);
 
     d = r * 2;
     translate([d - cutted_w * 0.5, 0, 0]) {
@@ -373,6 +369,14 @@ module fillet(r) {
   }
 }
 
+// Generates the mirrored object in addition to the original one.
+module mirror_copy(v = [1, 0, 0]) {
+  children();
+  mirror(v) {
+    children();
+  }
+}
+
 function notched_circle_square_center_x(r, cutout_w) =
   let (L = sqrt(r * r - (cutout_w / 2) * (cutout_w / 2)))
   L + cutout_w / 2;
@@ -403,6 +407,44 @@ module notched_circle(d,
           translate([0, i == 1 ? square_center_x : -square_center_x]) {
             square([cutout_w, cutout_w], center=true);
           }
+        }
+      }
+    }
+  }
+}
+
+module offset_3d(r=1, size=20, fn=12) {
+  if (r == 0) {
+    children();
+  } else if (r > 0) {
+    minkowski(convexity=5) {
+      children();
+      sphere(r, $fn=fn);
+    }
+  }
+  else {
+    size2 = size * [1, 1, 1];
+    size1 = size2 * 2;
+
+    difference() {
+      cube(size2, center=true);
+      minkowski(convexity=5) {
+        difference() {
+          cube(size1, center=true);
+          children();
+        }
+        sphere(-r, $fn=fn);
+      }
+    }
+  }
+}
+
+module offset_vertices_2d(r, fn) {
+  offset(-r, $fn=fn) {
+    offset(r, $fn=fn) {
+      offset(r, $fn=fn) {
+        offset(-r, $fn=fn) {
+          children();
         }
       }
     }
