@@ -3,12 +3,12 @@ include <../colors.scad>
 use <../util.scad>
 include <../placeholders/servo.scad>
 use <ackermann_geometry_triangle.scad>
+use <steering_pinion.scad>
 use <bracket.scad>
 use <steering_servo_panel.scad>
 use <knuckle.scad>
 use <rack_connector.scad>
 use <rack.scad>
-use <pinion.scad>
 use <rack_util.scad>
 
 module knuckle_assembly(show_wheel=true, show_bearing=true, show_shaft=true) {
@@ -56,9 +56,11 @@ module steering_system_assembly(rack_color=blue_grey_carbon,
                                 show_wheels=true,
                                 show_bearing=true,
                                 show_brackets=true,
-                                show_distance=false) {
+                                show_distance=false,
+                                show_pinion=true,
+                                show_servo=true) {
   union() {
-    steering_servo_panel(show_servo=true);
+    steering_servo_panel(show_servo=show_servo, show_pinion=show_pinion);
     if (show_distance) {
       steering_system_distance_between_rack_and_knuckle();
     }
@@ -78,22 +80,6 @@ module steering_system_assembly(rack_color=blue_grey_carbon,
       }
     }
 
-    translate([0, 0, pinion_d / 2
-               + tooth_h * 2 - 1
-               + rack_mount_panel_thickness / 2
-               + rack_base_h]) {
-
-      rotate([90, 5, 0]) {
-        color(pinion_color) {
-          pinion(d=pinion_d,
-                 tooth_height=tooth_h,
-                 thickness=pinion_thickness,
-                 servo_dia=pinion_servo_dia,
-                 tooth_pitch=tooth_pitch,
-                 rack_len=rack_len);
-        }
-      }
-    }
     if (show_ackermann_triangle) {
       translate([0, 0, knuckle_height + knuckle_pin_lower_height
                  + rack_mount_panel_thickness / 2

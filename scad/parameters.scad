@@ -233,11 +233,11 @@ rack_mount_panel_thickness             = 4;
 // The height of the pinion and rack teeth
 tooth_h                                = 4;
 
-// The pitch of the pinion and rack teeth
-tooth_pitch                            = 3;
-
 // The diameter of the pinion
 pinion_d                               = 25;
+
+// The diameter of the steering pinion
+steering_pinion_d                      = 28.8;
 
 // The diameter of the hole for the servo at the center of the pinion
 pinion_servo_dia                       = 6.5;
@@ -247,6 +247,17 @@ pinion_thickness                       = 2;
 
 // The diamater of the screw holes for the servo arm around the pinion_servo_dia
 pinion_screw_dia                       = 1.5;
+
+// The diamater of the screw holes for the servo arm around the pinion_servo_dia
+steering_pinion_teeth_count            = 15;
+
+steering_pinion_screws_spacing         = 0.5;
+
+steering_pinion_screws_servo_distance  = 0.8;
+steering_pinion_clearance              = 0;
+
+// The number of degrees of the straightness of the tooth
+steering_pinion_pressure_angle         = 28;
 
 // The height of the steering knuckle
 knuckle_height                         = 14.0;
@@ -306,7 +317,7 @@ knuckle_pin_chamfer_height             = 2.5;
 
 // The height of the lower pins on each side of the frame that have bearing pins
 // at the top
-knuckle_pin_lower_height               = 6;
+knuckle_pin_lower_height               = 2;
 
 // The height of the wider lower part of the pin that prevents contact between
 // the bearing and the frame
@@ -358,18 +369,18 @@ bracket_rack_side_h_length             = 11.30;
 // The length of the L-bracket part that is connected to the knuckle connector
 // bracket_rack_side_w_length             = 12.5;
 
-rack_len                               = 59;    // The length of the steering rack
+rack_len                               = 59.0;    // The length of the steering rack
 rack_width                             = 6;     // The width of the steering rack
 
 // The height of the steering rack, excluding the height of the teeth
-rack_base_h                            = 3.5;
+rack_base_h                            = 3.8;
 
 // The height of the cylindrical pedestals on each side of the rack onto which
 // the bearing shaft that connects with the bracket’s bearing is placed
 rack_pin_base_height                   = 5;
 
 // The amount by which to offset the rack teeth
-rack_rad                               = 0.5;
+rack_rad                               = 1.0;
 
 // The width of the L-bracket connector
 steering_bracket_linkage_width         = 5;
@@ -493,6 +504,6 @@ bracket_bearing_ackerman_offst         = -bracket_bearing_outer_d +
 
 ackerman_dx                            = (bracket_rack_side_h_length / tan(ackerman_alpha_deg)) + bracket_bearing_ackerman_offst;
 
-bracket_rack_side_w_length             = abs(distance_between_knuckle_and_rack + ackerman_dx);
+bracket_rack_side_w_length             = 11.4;
 
 // bracket_rack_side_w_length             = 12.5;

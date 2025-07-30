@@ -15,21 +15,19 @@ use <rack_connector.scad>
 use <rack_util.scad>
 use <bracket.scad>
 use <../util.scad>
+use <steering_pinion.scad>
 
 module rack(size=[rack_len, rack_width, rack_base_h],
             pinion_d=pinion_d,
-            tooth_pitch=tooth_pitch,
-            tooth_height=tooth_h,
+            tooth_pitch = steering_pinion_tooth_pitch(),
+            tooth_height = steering_pinion_tooth_height(),
             r=rack_rad,
             show_brackets=false,
             bracket_color=blue_grey_carbon,
             rack_color=blue_grey_carbon) {
   rack_len = size[0];
-  shared_params = pinion_sync_params(pinion_d, tooth_pitch, rack_len);
-  gear_teeth       = shared_params[0];
-  actual_pitch     = shared_params[1];
-  rack_teeth       = shared_params[2];
-  rack_margin      = shared_params[3];
+  rack_teeth       = ceil(rack_len / tooth_pitch);
+  rack_margin = rack_len - rack_teeth * tooth_pitch;
 
   h = size[1];
   base_h = size[2];
@@ -43,15 +41,22 @@ module rack(size=[rack_len, rack_width, rack_base_h],
                          gen_teeth(i + 1, n, pitch, base, tooth));
 
   pts = concat([[rack_margin, 0], [rack_margin, base_h]],
-               gen_teeth(0, rack_teeth, actual_pitch, base_h, tooth_height),
-               [[rack_margin + rack_teeth * actual_pitch, 0]]);
+               gen_teeth(0, rack_teeth, tooth_pitch, base_h, tooth_height * 2.1),
+               [[rack_margin + rack_teeth * tooth_pitch, 0]]);
 
   union() {
-    translate([-rack_len * 0.5, 0, r]) {
+    color(rack_color) {
+      linear_extrude(height=base_h, center=false) {
+        square([rack_len + abs(rack_margin), h], center=true);
+      }
+    }
+
+    translate([-rack_len * 0.5, 0, 0]) {
+      fn = 7;
       rotate([90, 0, 0]) {
         color(rack_color) {
           linear_extrude(height=h, center=true) {
-            offset(r=r) {
+            offset_vertices_2d(r=r) {
               polygon(points = pts);
             }
           }
@@ -59,7 +64,7 @@ module rack(size=[rack_len, rack_width, rack_base_h],
       }
     }
 
-    offst = [-rack_len / 2 + rack_margin / 2 - bracket_bearing_outer_d / 2,
+    offst = [-rack_len / 2 + rack_margin / 2 - bracket_bearing_outer_d / 2 - 0.4,
              0,
              0];
 
@@ -88,13 +93,11 @@ module rack(size=[rack_len, rack_width, rack_base_h],
 
 module rack_mount(show_brackets=false, rack_color=blue_grey_carbon) {
   rotate([0, 0, 180]) {
-    rack(size=[rack_len, rack_width, rack_base_h],
-         pinion_d=pinion_d,
-         tooth_pitch=tooth_pitch,
-         tooth_height=tooth_h,
-         r=rack_rad,
-         show_brackets=show_brackets,
-         rack_color=rack_color);
+    rack(tooth_pitch = steering_pinion_tooth_pitch(),
+         tooth_height = steering_pinion_tooth_height(),
+         r = rack_rad,
+         show_brackets = show_brackets,
+         rack_color = rack_color);
   }
 }
 
@@ -103,3 +106,11 @@ module rack_assembly(show_brackets=true, rack_color=blue_grey_carbon) {
 }
 
 rack_mount(show_brackets=false);
+
+// rotate([0, 0, 0]) {
+//   translate([0, 0, steering_pinion_d - 5.9]) {
+//     rotate([90, 32, 0]) {
+//       steering_pinion();
+//     }
+//   }
+// }
