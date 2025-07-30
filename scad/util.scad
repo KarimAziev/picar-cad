@@ -84,14 +84,23 @@ function calc_notch_width(dia, w) =
  *
  */
 
-module row_of_circles(total_width, d, spacing, starts=[0, 0]) {
+module row_of_circles(total_width,
+                      d,
+                      spacing,
+                      starts=[0, 0],
+                      vertical=false,
+                      direction=1) {
   step = spacing + d;
   amount = floor(total_width / step);
 
   if (amount > 0) {
     for (i = [0 : amount - 1]) {
-      translate([starts[0] + i * step, starts[1]]) {
-        circle(r = d / 2, $fn = 360);
+      let (s = i * step,
+           x = vertical ? starts[0] : starts[0] + s,
+           y=vertical ? starts[1] + s : starts[1]) {
+        translate([direction > 0 ? x : -x, direction > 0 ? y : -y]) {
+          circle(r = d / 2, $fn = 360);
+        }
       }
     }
   }
