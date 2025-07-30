@@ -1,6 +1,4 @@
 /**
- * File: rack.scad
- *
  * This file contains modules to generate a rack for a steering system. The rack
  * is designed with a toothed profile to mesh with a pinion and integrates the
  * appropriate mounting connectors both sides.
@@ -16,61 +14,82 @@ use <rack_util.scad>
 use <bracket.scad>
 use <../util.scad>
 use <steering_pinion.scad>
+use <../gear.scad>
 
-module rack(size=[rack_len, rack_width, rack_base_h],
-            pinion_d=pinion_d,
-            tooth_pitch = steering_pinion_tooth_pitch(),
-            tooth_height = steering_pinion_tooth_height(),
-            r=rack_rad,
-            show_brackets=false,
-            bracket_color=blue_grey_carbon,
-            rack_color=blue_grey_carbon) {
-  rack_len = size[0];
-  rack_teeth       = ceil(rack_len / tooth_pitch);
-  rack_margin = rack_len - rack_teeth * tooth_pitch;
+module shifted_tooth(points, height) {
+  translate([0, -min(points[0]), 0]) {
+    linear_extrude(height = height, center = false) {
+      polygon(points);
+    }
+  }
+}
 
-  h = size[1];
-  base_h = size[2];
+module steering_rack(length=rack_len,
+                     width=rack_width,
+                     base_height=rack_base_h,
+                     r_pitch=steering_pinion_d / 2,
+                     teeth_count=steering_pinion_teeth_count,
+                     pressure_angle=steering_pinion_pressure_angle,
+                     clearance=steering_pinion_clearance,
+                     backlash=steering_pinion_backlash,
+                     show_brackets=false,
+                     bracket_color=blue_grey_carbon,
+                     rack_color=blue_grey_carbon) {
 
-  function gen_tooth(i, pitch, base, tooth) =
-    [[i * pitch + pitch/2, base + tooth],
-     [(i + 1) * pitch,     base]];
+  circular_pitch = calc_circular_pitch(r_pitch, teeth_count);
+  tooth_height = calc_tooth_height(r_pitch, teeth_count, clearance);
+  base_circle_rad = r_pitch * cos(pressure_angle);
+  root_rad = r_pitch - (circular_pitch / PI) - clearance;
+  outer_rad = outer_radius(r_pitch, circular_pitch, clearance);
+  inv_angle = -involute_angle(base_circle_rad, r_pitch)
+    - (circular_pitch / 2 - backlash / 2) / (2 * r_pitch) / PI * 180;
 
-  function gen_teeth(i, n, pitch, base, tooth) =
-    i >= n ? [] : concat(gen_tooth(i, pitch, base, tooth),
-                         gen_teeth(i + 1, n, pitch, base, tooth));
-
-  pts = concat([[rack_margin, 0], [rack_margin, base_h]],
-               gen_teeth(0, rack_teeth, tooth_pitch, base_h, tooth_height * 2.1),
-               [[rack_margin + rack_teeth * tooth_pitch, 0]]);
+  total_teeth = round(length / circular_pitch);
 
   union() {
     color(rack_color) {
-      linear_extrude(height=base_h, center=false) {
-        square([rack_len + abs(rack_margin), h], center=true);
+      linear_extrude(height=base_height, center=false) {
+        square([length, width], center=true);
       }
-    }
 
-    translate([-rack_len * 0.5, 0, 0]) {
-      fn = 7;
-      rotate([90, 0, 0]) {
-        color(rack_color) {
-          linear_extrude(height=h, center=true) {
-            offset_vertices_2d(r=r) {
-              polygon(points = pts);
+      tooth_points = concat([polar_to_cartesian(root_rad, -180 / total_teeth)],
+                            [for (f = [0:5])
+                                involute_point_at_fraction(f / 5, root_rad,
+                                                           base_circle_rad,
+                                                           outer_rad,
+                                                           inv_angle, 1)],
+                            [for (f = [5:-1:0])
+                                involute_point_at_fraction(f / 5, root_rad,
+                                                           base_circle_rad,
+                                                           outer_rad,
+                                                           inv_angle,
+                                                           -1)],
+                            [polar_to_cartesian(root_rad, 180 / total_teeth)]);
+      shifted_points = [for (pt = tooth_points) [pt[0], pt[1] - root_rad]];
+
+      ys = abs(min([for (pt = shifted_points) pt[1]]));
+
+      translate([circular_pitch / 2, width / 2, ys + base_height]) {
+        rotate([90, 0, 0]) {
+          translate([-length * 0.5, 0, 0]) {
+            linear_extrude(height=width, center=false, convexity = 10) {
+              for (i = [0 : total_teeth - 1]) {
+                translate([i * circular_pitch, 0, 0]) {
+                  polygon(shifted_points);
+                }
+              }
             }
           }
         }
       }
     }
-
-    offst = [-rack_len / 2 + rack_margin / 2 - bracket_bearing_outer_d / 2 - 0.4,
+    offst = [-rack_len / 2 - bracket_bearing_outer_d / 2 - 0.4,
              0,
              0];
 
     translate(offst) {
       if (show_brackets) {
-        rack_connector_assembly(bracket_color=bracket_color);
+        rack_connector_assembly(bracket_color=bracket_color, rotation_dir=1);
       } else {
         color(rack_color) {
           rack_connector();
@@ -80,7 +99,7 @@ module rack(size=[rack_len, rack_width, rack_base_h],
     mirror([1, 0, 0]) {
       translate(offst) {
         if (show_brackets) {
-          rack_connector_assembly(bracket_color=bracket_color);
+          rack_connector_assembly(bracket_color=bracket_color, rotation_dir=-1);
         } else {
           color(rack_color) {
             rack_connector();
@@ -92,12 +111,9 @@ module rack(size=[rack_len, rack_width, rack_base_h],
 }
 
 module rack_mount(show_brackets=false, rack_color=blue_grey_carbon) {
-  rotate([0, 0, 180]) {
-    rack(tooth_pitch = steering_pinion_tooth_pitch(),
-         tooth_height = steering_pinion_tooth_height(),
-         r = rack_rad,
-         show_brackets = show_brackets,
-         rack_color = rack_color);
+  translate([rack_offset($t), 0, 0]) {
+    steering_rack(show_brackets = show_brackets,
+                  rack_color = rack_color);
   }
 }
 
@@ -107,10 +123,11 @@ module rack_assembly(show_brackets=true, rack_color=blue_grey_carbon) {
 
 rack_mount(show_brackets=false);
 
-// rotate([0, 0, 0]) {
-//   translate([0, 0, steering_pinion_d - 5.9]) {
-//     rotate([90, 32, 0]) {
-//       steering_pinion();
-//     }
+// translate([0, 0, steering_pinion_d / 2 +
+//            rack_base_h +
+//            steering_pinion_tooth_height() / 2
+//            + 0.6]) {
+//   rotate([90, 37.5, 0]) {
+//     steering_pinion();
 //   }
 // }

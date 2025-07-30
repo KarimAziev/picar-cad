@@ -249,12 +249,13 @@ pinion_thickness                       = 2;
 pinion_screw_dia                       = 1.5;
 
 // The diamater of the screw holes for the servo arm around the pinion_servo_dia
-steering_pinion_teeth_count            = 15;
+steering_pinion_teeth_count            = 18;
 
 steering_pinion_screws_spacing         = 0.5;
 
 steering_pinion_screws_servo_distance  = 0.8;
-steering_pinion_clearance              = 0;
+steering_pinion_clearance              = 0.0;
+steering_pinion_backlash               = 0;
 
 // The number of degrees of the straightness of the tooth
 steering_pinion_pressure_angle         = 28;
@@ -373,7 +374,7 @@ rack_len                               = 59.0;    // The length of the steering 
 rack_width                             = 6;     // The width of the steering rack
 
 // The height of the steering rack, excluding the height of the teeth
-rack_base_h                            = 3.8;
+rack_base_h                            = 5.8;
 
 // The height of the cylindrical pedestals on each side of the rack onto which
 // the bearing shaft that connects with the bracket’s bearing is placed
@@ -386,7 +387,7 @@ rack_rad                               = 1.0;
 steering_bracket_linkage_width         = 5;
 
 // The thickness of the L-bracket connector
-steering_bracket_linkage_thickness     = 3;
+steering_bracket_linkage_thickness     = 4;
 
 // Parameters for wheel dimensions and screw properties.
 wheel_hub_outer_d                      = 48.2;

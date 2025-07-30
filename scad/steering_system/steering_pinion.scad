@@ -16,7 +16,7 @@ module steering_pinion_screws_2d(r_pitch,
                                  thickness,
                                  servo_dia=pinion_servo_dia,
                                  screw_dia=pinion_screw_dia,
-                                 offst_from_center_hole=steering_pinion_screws_servo_distance,
+                                 offst_c=steering_pinion_screws_servo_distance,
                                  spacing=steering_pinion_screws_spacing) {
   union() {
     initial_pos = servo_dia / 2 + screw_dia / 2;
@@ -26,10 +26,10 @@ module steering_pinion_screws_2d(r_pitch,
                   [0, -1],
                   [0, 1]];
 
-    specs = [[[initial_pos, 0], [offst_from_center_hole, 0], 1, false],
-             [[-initial_pos, 0], [offst_from_center_hole, 0], -1, false],
-             [[0, initial_pos], [0, offst_from_center_hole], 1, true],
-             [[0, -initial_pos], [0, offst_from_center_hole], -1, true]];
+    specs = [[[initial_pos, 0], [offst_c, 0], 1, false],
+             [[-initial_pos, 0], [offst_c, 0], -1, false],
+             [[0, initial_pos], [0, offst_c], 1, true],
+             [[0, -initial_pos], [0, offst_c], -1, true]];
 
     for (spec = specs) {
       translate(spec[0]) {
@@ -57,7 +57,7 @@ module steering_pinion() {
                               servo_dia=pinion_servo_dia,
                               thickness=pinion_thickness,
                               screw_dia=pinion_screw_dia,
-                              offst_from_center_hole=steering_pinion_screws_servo_distance,
+                              offst_c=steering_pinion_screws_servo_distance,
                               spacing=steering_pinion_screws_spacing);
   }
 }

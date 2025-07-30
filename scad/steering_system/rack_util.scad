@@ -1,24 +1,29 @@
+include <../parameters.scad>
 
-function calc_gear_teeth(pinion_d, tooth_pitch) =
-  round((PI * pinion_d) / tooth_pitch);
-function calc_actual_pitch(pinion_d, gear_teeth) =
-  (PI * pinion_d) / gear_teeth;
-function calc_rack_teeth(rack_len, actual_pitch) =
-  floor(rack_len / actual_pitch);
+rack_offset_default_min_dist = rack_len / 2
+  - bracket_bearing_outer_d
+  - steering_bracket_linkage_thickness * 2;
 
-// Returns [gear_teeth, actual_pitch]
-function pinion_compute_shared_params(pinion_d, tooth_pitch) =
-  [calc_gear_teeth(pinion_d, tooth_pitch),
-   calc_actual_pitch(pinion_d, calc_gear_teeth(pinion_d, tooth_pitch))];
+function rack_offset(t, min_dist=rack_offset_default_min_dist) =
+  (t < 0.25) ?
+  ((t / 0.25) * min_dist) :
+  (t < 0.5) ?
+  (min_dist * (1 - ((t - 0.25) / 0.25))) :
+  (t < 0.75) ?
+  (- min_dist * ((t - 0.5) / 0.25)) :
+  (- min_dist * (1 - ((t - 0.75) / 0.25)));
 
-// Returns [gear_teeth, actual_pitch, rack_teeth, rack_margin]
-function pinion_add_rack_margin(core_params, rack_len) =
-  [core_params[0],
-   core_params[1],
-   calc_rack_teeth(rack_len, core_params[1]),
-   (rack_len - calc_rack_teeth(rack_len, core_params[1]) * core_params[1])];
+function pinion_angle_sync(t) =
+  rack_offset(t) / steering_pinion_d / 2 * (180 / PI);
 
-// Returns [gear_teeth, actual_pitch, rack_teeth, rack_margin]
-function pinion_sync_params(pinion_d, tooth_pitch, rack_len) =
-  pinion_add_rack_margin(pinion_compute_shared_params(pinion_d, tooth_pitch),
-                         rack_len);
+function pinion_angle(t,
+                      r=steering_pinion_d / 2,
+                      min_dist=rack_offset_default_min_dist) =
+  let (offst = (t < 0.25) ?
+       ((t / 0.25) * min_dist) :
+       (t < 0.5) ?
+       (min_dist*(1 - ((t - 0.25) / 0.25))) :
+       (t < 0.75) ?
+       (- min_dist * ((t - 0.5) / 0.25)) :
+       (- min_dist*(1 - ((t - 0.75) / 0.25))))
+  offst / r * (180 / PI);
