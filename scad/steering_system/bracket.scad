@@ -89,7 +89,7 @@ module bracket(a_len=bracket_rack_side_w_length,
             }
 
             if (show_bearing) {
-              translate([0, 0, -bearing_flanged_h]) {
+              translate([0, 0, bearing_flanged_h]) {
                 bearing(d=bracket_bearing_d,
                         h=bearing_h,
                         flanged_w=bearing_flanged_w,
