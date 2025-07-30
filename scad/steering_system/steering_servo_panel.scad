@@ -42,6 +42,7 @@ include <../parameters.scad>
 use <../util.scad>
 include <../placeholders/servo.scad>
 include <../colors.scad>
+use <steering_pinion.scad>
 use <bracket.scad>
 use <knuckle.scad>
 use <rack_connector.scad>
@@ -155,12 +156,13 @@ module vertical_servo_plate(size=[steering_servo_slot_width,
 
 module steering_servo_panel(size=[servo_hat_w,
                                   rack_width],
-                            front_h=rack_base_h + tooth_h,
+                            front_h=rack_base_h,
                             thickness=1,
                             front_w=10,
                             z_r=undef,
                             center=true,
-                            show_servo=false) {
+                            show_servo=false,
+                            show_pinion=true) {
 
   x = size[0];
   y = size[1];
@@ -207,11 +209,23 @@ module steering_servo_panel(size=[servo_hat_w,
 
       translate([0, y_offst, servo_hat_w / 2 + z_offst / 2]) {
         rotate([90, -90, 0]) {
-          servo();
+          if (show_pinion) {
+            servo() {
+              translate([0, 0, 0]) {
+                rotate([0, 0, 15.5]) {
+                  translate([0, 0, 2]) {
+                    steering_pinion();
+                  }
+                }
+              }
+            }
+          } else {
+            servo();
+          }
         }
       }
     }
   }
 }
 
-steering_servo_panel(show_servo=false);
+steering_servo_panel(show_servo=true);

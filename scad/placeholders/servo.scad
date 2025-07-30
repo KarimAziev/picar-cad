@@ -19,6 +19,14 @@ servo_gear_h        = 2;
 servo_gear_d        = 3;
 servo_gearbox_h     = 6;
 servo_gearbox_rad   = servo_size[1] * 0.5;
+servo_gearbox_x     = servo_size[1] - servo_gearbox_rad;
+servo_gearbox_y     = -servo_size[2] * 0.5;
+
+servo_gear_lower_h  = (servo_gear_h * 0.9);
+
+function servo_gear_z_pos(gearbox_height=servo_gearbox_h,
+                          gear_height=servo_gear_h) =
+  -gearbox_height * 0.4 - gear_height * 0.5;
 
 module servo_screws_hat(size,
                         x_offset,
@@ -50,6 +58,9 @@ module servo(size=servo_size,
              servo_gear_color=jet_black,
              servo_text="EMAX ES08MA II",
              text_depth=0.5,
+             gear_lower_h=servo_gear_lower_h,
+             servo_gearbox_x=servo_gearbox_x,
+             servo_gearbox_y=servo_gearbox_y,
              text_size=1,
              tolerance=0.3) {
   union() {
@@ -76,7 +87,7 @@ module servo(size=servo_size,
       }
     }
 
-    translate([size[1] - gearbox_rad, 0, -size[2] * 0.5]) {
+    translate([servo_gearbox_x, 0, servo_gearbox_y]) {
       union() {
         color(servo_gear_color) {
           hull() {
@@ -90,27 +101,27 @@ module servo(size=servo_size,
           }
         }
 
-        translate([0, 0, -gearbox_height * 0.4 - gear_height * 0.5]) {
+        translate([0, 0, servo_gear_z_pos(gearbox_height=gearbox_height,
+                                          gear_height=gear_height)]) {
           rotate([180, 0, 0]) {
             union() {
-              color("#b8860b") {
-                cylinder(h = gear_height,
-                         r = gear_dia * 0.3,
+              color(dark_gold_2) {
+                cylinder(h=gear_height,
+                         r=gear_dia * 0.3,
                          center = true,
                          $fn=30);
               }
-              lower_h = (gear_height * 0.9);
 
-              translate([0, 0, lower_h / 2]) {
+              translate([0, 0, gear_lower_h / 2]) {
                 difference() {
-                  color("#b8860b") {
-                    cylinder(h = lower_h,
+                  color(dark_gold_2) {
+                    cylinder(h = gear_lower_h,
                              r = gear_dia * 0.5,
                              center = true,
                              $fn=20);
                   }
 
-                  color("black") {
+                  color(matte_black) {
                     cylinder(h = gear_height,
                              r = gear_dia * 0.2,
                              center = true,
@@ -118,6 +129,7 @@ module servo(size=servo_size,
                   }
                 }
               }
+              children();
             }
           }
         }
