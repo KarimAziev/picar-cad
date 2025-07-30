@@ -148,16 +148,19 @@ module knuckle_bearing_bracket_connector(border_w=border_w,
   offst = bracket_bearing_outer_d / 2;
 
   rotate([0, 0, ackerman_alpha_deg]) {
+
     translate([0, 0, knuckle_height - knuckle_bracket_connector_height]) {
       knuckle_connector(parent_dia=knuckle_dia,
                         outer_d=bracket_bearing_outer_d,
                         inner_d=bracket_bearing_d,
                         h=knuckle_bracket_connector_height,
+
                         length=knuckle_bracket_connector_len,
                         border_w=border_w,
                         connector_color=knuckle_color) {
         if (show_bearing) {
-          translate([0, 0, -bracket_bearing_flanged_height]) {
+          translate([bracket_bearing_outer_d / 2, 0,
+                     -bracket_bearing_flanged_height]) {
             bearing(d=bracket_bearing_d,
                     h=bracket_bearing_height,
                     flanged_w=bracket_bearing_flanged_width,
