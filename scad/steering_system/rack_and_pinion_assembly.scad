@@ -11,18 +11,23 @@ use <rack_connector.scad>
 use <rack.scad>
 use <rack_util.scad>
 
-module knuckle_assembly(show_wheel=true, show_bearing=true, show_shaft=true) {
+module knuckle_assembly(show_wheel=true,
+                        show_bearing=true,
+                        show_shaft=true,
+                        rotation_dir=1) {
   x_offst = rack_mount_panel_len / 2 - knuckle_dia / 2;
 
   z_offst = knuckle_pin_lower_height
     + rack_mount_panel_thickness / 2
     + knuckle_pin_stopper_height
     + knuckle_bearing_flanged_height;
-
+  angle = $t > 0.0 ? pinion_angle_sync($t) : 0;
   translate([x_offst, 0, z_offst]) {
-    knuckle_mount(show_wheel=show_wheel,
-                  show_bearing=show_bearing,
-                  show_shaft=show_shaft);
+    rotate([0, 0, rotation_dir * angle]) {
+      knuckle_mount(show_wheel=show_wheel,
+                    show_bearing=show_bearing,
+                    show_shaft=show_shaft);
+    }
   }
 }
 
@@ -65,18 +70,20 @@ module steering_system_assembly(rack_color=blue_grey_carbon,
       steering_system_distance_between_rack_and_knuckle();
     }
 
-    rotate([0, 0, 180]) {
-      translate([0, 0, rack_mount_panel_thickness / 2]) {
-        rack_mount(show_brackets=show_brackets, rack_color=rack_color);
-      }
+    translate([0, 0, rack_mount_panel_thickness / 2]) {
+      rack_mount(show_brackets=show_brackets, rack_color=rack_color);
     }
 
     rotate([0, 0, 180]) {
-      knuckle_assembly(show_wheel=show_wheels, show_bearing=show_bearing);
+      knuckle_assembly(show_wheel=show_wheels,
+                       show_bearing=show_bearing,
+                       rotation_dir=3.6);
     }
     rotate([0, 0, 180]) {
       mirror([1, 0, 0]) {
-        knuckle_assembly(show_wheel=show_wheels, show_bearing=show_bearing);
+        knuckle_assembly(show_wheel=show_wheels,
+                         show_bearing=show_bearing,
+                         rotation_dir=-3.6);
       }
     }
 

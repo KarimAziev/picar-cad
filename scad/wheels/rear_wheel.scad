@@ -10,7 +10,7 @@ use <../util.scad>
 use <wheel.scad>
 use <tire.scad>
 
-rear_wheel_hub_rad = truncate(rear_wheel_shaft_outer_dia * 0.78);
+rear_wheel_hub_rad = rear_wheel_shaft_outer_dia / 2;
 
 module rear_wheel(w=wheel_w,
                   d=wheel_dia,
@@ -19,7 +19,6 @@ module rear_wheel(w=wheel_w,
                   rim_w=wheel_rim_w,
                   rim_bend=wheel_rim_bend,
                   shaft_offset=wheel_shaft_offset,
-                  rear_hub_r=rear_wheel_hub_rad,
                   spokes=rear_wheel_spokes_count,
                   spoke_w=rear_wheel_spoke_w,
                   shaft_hole_d=rear_wheel_shaft_inner_dia,
@@ -27,8 +26,11 @@ module rear_wheel(w=wheel_w,
                   shaft_hole_height=rear_wheel_motor_shaft_height,
                   inner_shaft_d=rear_wheel_shaft_inner_dia) {
 
+  rear_hub_r = shaft_d / 2;
+
   inner_d = wheel_inner_d(d, rim_h);
   shaft_full_h = w + shaft_offset;
+  shaft_top_z =  shaft_full_h - w / 2;
 
   difference() {
     union() {
@@ -44,8 +46,9 @@ module rear_wheel(w=wheel_w,
       }
 
       translate([0, 0, -w / 2]) {
-        linear_extrude(height=shaft_full_h, center=false) {
-          circle(r=rear_hub_r, $fn=360);
+        linear_extrude(height=shaft_full_h,
+                       center=false) {
+          circle(r=rear_hub_r);
         }
       }
 
@@ -56,11 +59,29 @@ module rear_wheel(w=wheel_w,
             rim_w=rim_w,
             rim_bend=rim_bend);
     }
-    translate([0, 0, shaft_full_h - shaft_hole_height - w / 2]) {
+    translate([0, 0, shaft_top_z -
+               (shaft_hole_height + 0.4)]) {
       notched_circle(d=shaft_hole_d,
-                     h=shaft_hole_height + 0.4,
+                     h=shaft_hole_height + 0.8,
                      cutout_w=rear_wheel_shaft_flat_len,
-                     x_cutouts_n=rear_wheel_shaft_flat_count);
+                     x_cutouts_n=rear_wheel_shaft_flat_count,
+                     center=false);
+    }
+
+    // a small hole to better visually indicate the flat part
+    if (rear_wheel_shaft_flat_len <= 2
+        && rear_wheel_shaft_flat_count <= 1) {
+      hole_h = 1;
+      square_center_x =
+        notched_circle_square_center_x(r=shaft_hole_d / 2,
+                                       cutout_w=rear_wheel_shaft_flat_len);
+
+      translate([square_center_x + 0.4, 0, shaft_top_z
+                 - hole_h / 2]) {
+        linear_extrude(height=hole_h, center=false) {
+          square([0.5, rear_wheel_shaft_flat_len + 0.4], center=true);
+        }
+      }
     }
   }
 }
@@ -109,7 +130,9 @@ module wheel_blades(d=wheel_dia - wheel_rim_h,
         }
       }
     }
-    linear_extrude(height=spoke_w, center=true) {
+    linear_extrude(height=spoke_w,
+                   center=true,
+                   convexity=2) {
       ring_2d(d=d + thickness, w=thickness);
     }
   }
@@ -182,7 +205,7 @@ module rear_wheel_animated(show_tire=true) {
       rear_wheel();
     }
     if (show_tire) {
-      color("white") {
+      color(black_1) {
         tire();
       }
     }
@@ -212,5 +235,6 @@ module rear_wheel_shaft_probes(from=3.1,
 }
 
 union() {
-  rear_wheel_animated(show_tire=false);
+  rear_wheel_animated(show_tire=true);
+  // rear_wheel();
 }

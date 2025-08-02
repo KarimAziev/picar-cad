@@ -67,7 +67,7 @@ module knuckle_shaft(show_wheel=false,
   }
 }
 
-module knuckle_bent(angle, r, fn, bent_color=matte_black) {
+module knuckle_bent(angle, r, fn=360, bent_color=matte_black) {
   color(bent_color) {
     rotate_extrude(angle=angle) {
       translate([r, 0, 0]) {
@@ -86,7 +86,7 @@ module knuckle_bent_shaft(show_wheel=false,
                0,
                -knuckle_shaft_vertical_len - r]) {
       color(knuckle_shaft_color) {
-        cylinder(h=knuckle_shaft_vertical_len, r=r, center=false);
+        cylinder(h=knuckle_shaft_vertical_len, r=r, center=false, $fn=360);
       }
 
       translate([0, r, 0]) {
@@ -98,7 +98,8 @@ module knuckle_bent_shaft(show_wheel=false,
             color(knuckle_shaft_color) {
               cylinder(h=knuckle_shaft_connector_extra_len + knuckle_dia / 2,
                        r=r,
-                       center=false);
+                       center=false,
+                       $fn=360);
             }
           }
           translate([-r,
@@ -113,7 +114,8 @@ module knuckle_bent_shaft(show_wheel=false,
                 color(knuckle_shaft_color) {
                   cylinder(h=knuckle_shaft_lower_horiz_len,
                            r=r,
-                           center=false);
+                           center=false,
+                           $fn=360);
                 }
 
                 if (show_wheel) {

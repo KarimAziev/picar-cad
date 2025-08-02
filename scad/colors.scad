@@ -13,8 +13,11 @@ metalic_grey          = "#808080";
 metalic_yellow_silver = "#D4D4C8";
 
 yellow_1              = "#ffde1a";
+metalic_yellow_1      = "#FDCC0D";
 
 light_grey            = "#e6e6e6";
 
 dark_gold_1           = "#B59410";
 dark_gold_2           = "#b8860b";
+
+green_1               = "#6CC04A";

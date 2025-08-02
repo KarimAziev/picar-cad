@@ -21,8 +21,10 @@ module tire() {
   inner_r = wheel_dia / 2;
   outer_r = inner_r + tire_thickness + wheel_rim_h;
   half_of_width = tire_width / 2;
-  rotate_extrude(convexity=10, $fn=tire_fn) {
-    children();
+  if ($children > 0) {
+    rotate_extrude(convexity=10, $fn=tire_fn) {
+      children();
+    }
   }
 
   difference() {

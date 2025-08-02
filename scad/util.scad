@@ -67,6 +67,10 @@ function truncate(val, dec=1) =
 function calc_notch_width(dia, w) =
   dia - 2 * sqrt(((dia / 2) * (dia / 2)) - ((w / 2) * (w / 2)));
 
+function sum(v) = [for (p=v) 1]*v;
+
+function count_circles_len(total_width, d, spacing) = floor(total_width / (spacing + d));
+
 /**
  *
  * Draws a horizontal row of circles spanning a given total width.
@@ -89,6 +93,7 @@ module row_of_circles(total_width,
                       spacing,
                       starts=[0, 0],
                       vertical=false,
+                      fn=360,
                       direction=1) {
   step = spacing + d;
   amount = floor(total_width / step);
@@ -97,9 +102,9 @@ module row_of_circles(total_width,
     for (i = [0 : amount - 1]) {
       let (s = i * step,
            x = vertical ? starts[0] : starts[0] + s,
-           y=vertical ? starts[1] + s : starts[1]) {
+           y = vertical ? starts[1] + s : starts[1]) {
         translate([direction > 0 ? x : -x, direction > 0 ? y : -y]) {
-          circle(r = d / 2, $fn = 360);
+          circle(r = d / 2, $fn=fn);
         }
       }
     }
@@ -200,6 +205,7 @@ module four_corner_holes_2d(size=[10, 10],
       y_pos = (center ? -size[1] / 2 : 0) + y_ind * size[1];
       translate([x_pos, y_pos]) {
         circle(r=hole_dia / 2, $fn=fn_val);
+        children();
       }
     }
 }
@@ -460,3 +466,11 @@ module offset_vertices_2d(r, fn) {
     }
   }
 }
+
+function poly_width_at_y(pts, y_target) =
+  let (intersections = [for (i = [0 : len(pts)-1])
+           if (((pts[i][1] - y_target) * (pts[(i+1) % len(pts)][1] - y_target) <= 0)
+               && (pts[(i+1) % len(pts)][1] - pts[i][1] != 0))
+             pts[i][0] + ((y_target - pts[i][1]) / (pts[(i+1) % len(pts)][1] - pts[i][1]))
+               * (pts[(i+1) % len(pts)][0] - pts[i][0])])
+  (max(intersections) - min(intersections));

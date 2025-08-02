@@ -15,6 +15,7 @@ use <chassis.scad>
 use <steering_system/rack_and_pinion_assembly.scad>
 use <placeholders/motor.scad>
 use <steering_system/knuckle_shaft.scad>
+use <placeholders/rpi_5.scad>
 use <wheels/rear_wheel.scad>
 use <motor_brackets/n20_motor_bracket.scad>
 
@@ -23,21 +24,27 @@ module assembly_view(motor_type=motor_type,
                      show_wheels=true,
                      show_rear_panel=true,
                      show_front_panel=true,
-                     show_ackermann_triangle=true) {
-  union() {
-    translate([chassis_width / 2 + (front_wheel_offset() * 2),
-               0,
-               chassis_thickness +
-               n20_motor_screws_panel_x_offset()
-               + n20_motor_screws_panel_thickness()
-               + wheel_dia  / 2 + tire_thickness + (tire_fillet_gap * 2)]) {
-      translate([0,
-                 steering_servo_chassis_y_offset,
-                 rack_mount_panel_thickness / 2]) {
-        steering_system_assembly();
-      }
-
-      translate([0, steering_servo_chassis_y_offset
+                     show_ackermann_triangle=true,
+                     show_ups_hat=true,
+                     show_steering=true,
+                     show_wheels=true,
+                     show_bearing=true,
+                     show_brackets=true,
+                     show_rpi=true,
+                     show_head=true) {
+  chassis_assembly(show_motor=show_motor,
+                   show_wheels=show_wheels,
+                   motor_type=motor_type,
+                   show_ups_hat=show_ups_hat,
+                   show_rear_panel=show_rear_panel,
+                   show_front_panel=show_front_panel,
+                   show_ackermann_triangle=show_ackermann_triangle,
+                   show_rpi=show_rpi,
+                   show_steering=show_steering,
+                   show_bearing=show_bearing,
+                   show_brackets=show_brackets) {
+    if (show_head) {
+      translate([0, steering_panel_y_position_from_center
                  + pan_servo_y_offset_from_steering_panel,
                  chassis_thickness]) {
         translate([-2, 0, 25.9]) {
@@ -46,17 +53,18 @@ module assembly_view(motor_type=motor_type,
           }
         }
       }
-
-      rotate([0, 180, 0]) {
-        chassis_plate(show_motor=show_motor,
-                      show_wheels=show_wheels,
-                      motor_type=motor_type,
-                      show_rear_panel=show_rear_panel,
-                      show_front_panel=show_front_panel,
-                      show_ackermann_triangle=show_ackermann_triangle);
-      }
     }
   }
 }
 
-assembly_view();
+assembly_view(show_wheels=true,
+              show_motor=true,
+              show_rear_panel=true,
+              show_front_panel=true,
+              show_ups_hat=true,
+              show_rpi=true,
+              show_ackermann_triangle=false,
+              show_steering=true,
+              show_bearing=true,
+              show_brackets=true,
+              show_head=true);

@@ -83,28 +83,28 @@ module n20_motor_bracket() {
       }
       n20_motor_screws_panel();
 
-      translate([0,
-                 0,
-                 n20_can_height + n20_end_cap_h + n20_end_circle_h - 0.5]) {
-        rad = 1;
-        h = n20_end_cap_h + n20_end_circle_h + n20_motor_bracket_thickness;
-        rotate([90, 0, 0]) {
-          linear_extrude(height = n20_motor_bracket_thickness, center=false) {
-            difference() {
-              rounded_rect_two(size = [n20_can_dia, h],
-                               r=rad,
-                               center=true);
-              translate([0, -n20_motor_bracket_thickness, 0]) {
-                rounded_rect_two(size = [n20_can_dia -
-                                         n20_motor_bracket_thickness * 2,
-                                         h],
-                                 r=rad,
-                                 center=true);
-              }
-            }
-          }
-        }
-      }
+      // translate([0,
+      //            0,
+      //            n20_can_height + n20_end_cap_h + n20_end_circle_h - 0.5]) {
+      //   rad = 1;
+      //   h = n20_end_cap_h + n20_end_circle_h + n20_motor_bracket_thickness;
+      //   rotate([90, 0, 0]) {
+      //     linear_extrude(height = n20_motor_bracket_thickness, center=false) {
+      //       difference() {
+      //         rounded_rect_two(size = [n20_can_dia, h],
+      //                          r=rad,
+      //                          center=true);
+      //         translate([0, -n20_motor_bracket_thickness, 0]) {
+      //           rounded_rect_two(size = [n20_can_dia -
+      //                                    n20_motor_bracket_thickness * 2,
+      //                                    h],
+      //                            r=rad,
+      //                            center=true);
+      //         }
+      //       }
+      //     }
+      //   }
+      // }
     }
   }
 }

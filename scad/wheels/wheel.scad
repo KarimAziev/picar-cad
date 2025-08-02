@@ -20,7 +20,9 @@ module wheel(w=wheel_w,
 
   inner_d = wheel_inner_d(d, rim_h);
   union() {
-    linear_extrude(height = w + rim_w * 2, center=true, convexity=2) {
+    linear_extrude(height = w + rim_w * 2,
+                   center=true,
+                   convexity=2) {
       ring_2d(r=inner_d / 2,
               w=thickness,
               fn=360);
@@ -37,13 +39,16 @@ module wheel(w=wheel_w,
         inner_rad = rad - rim_bend;
 
         difference() {
-          linear_extrude(height = rim_w, center=true) {
+          linear_extrude(height = rim_w,
+                         center=true,
+                         convexity=2) {
             ring_2d(r=rad, w=rim_h, fn=360);
           }
 
           translate([0, 0, bend_z]) {
             linear_extrude(height=rim_w,
-                           center=true) {
+                           center=true,
+                           convexity=2) {
               w = rim_h - rim_bend;
               ring_2d(r=inner_rad, w=w);
             }
@@ -58,7 +63,7 @@ union() {
   color(matte_black) {
     wheel();
   }
-  color("white", alpha=0.7) {
+  color(jet_black, alpha=0.7) {
     translate([0, 0, 0]) {
       tire();
     }

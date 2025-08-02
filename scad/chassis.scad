@@ -24,12 +24,18 @@ use <util.scad>
 use <front_panel.scad>
 use <rear_panel.scad>
 use <pan_servo.scad>
+use <placeholders/rpi_5.scad>
+use <placeholders/ups_hat.scad>
 use <motor_brackets/standard_motor_bracket.scad>
 use <motor_brackets/n20_motor_bracket.scad>
 use <steering_system/steering_servo_panel.scad>
 use <steering_system/ackermann_geometry_triangle.scad>
+use <steering_system/rack_and_pinion_assembly.scad>
+use <placeholders/motor.scad>
+use <steering_system/knuckle_shaft.scad>
+use <wheels/rear_wheel.scad>
 
-module raspberry_pi5_screws_2d(vertical=false) {
+module raspberry_pi5_screws_2d(vertical=false, show_rpi=false) {
   size = vertical
     ? [raspberry_pi5_screws_size[1],
        raspberry_pi5_screws_size[0]]
@@ -69,44 +75,8 @@ module battery_holders_screws_2d(x_offst=extra_battery_screws_x_offset) {
   }
 }
 
-chassis_square_holes_len = 8;
-chassis_square_holes_h = 3;
-chassis_square_wiring_holes = [[10, 10]];
-
 module chassis_extra_cutouts_2d() {
-  wiring_holes = [];
-  now = raspberry_pi5_screws_size[1] / 2 - raspberry_pi_offset
-    - chassis_square_holes_len;
-  translate([0, now, 0]) {
-    y = 10;
-    trapezoid_rounded(b=chassis_width / 2,
-                      t=chassis_width / 2.9,
-                      h=y,
-                      center=true);
-    translate([0, chassis_square_holes_len + 3, 0]) {
-      trapezoid_rounded(b=chassis_width * 0.35,
-                        t=chassis_width * 0.29,
-                        h=y * 0.6,
-                        center=true);
-      translate([0, chassis_square_holes_len + 3, 0]) {
-        trapezoid_rounded(b=chassis_width * 0.4,
-                          t=chassis_width * 0.36,
-                          h=y * 0.8,
-                          center=true);
-      }
-    }
-  }
-
-  translate([0, -ups_hat_offset / 2 -
-             raspberry_pi5_screws_size[1] +
-             raspberry_pi_offset + extra_cutouts_dia, 0]) {
-    for (i = [0:1:4]) {
-      translate([0, i * (extra_cutouts_dia * 1.7), 0]) {
-        circle(r=extra_cutouts_dia / 2);
-      }
-    }
-  }
-
+  raspberry_pi_extra_holes();
   translate([0, -0.04 * chassis_len, 0]) {
     for (y_offset = [-10/235 * chassis_len, 0, -20/235 * chassis_len]) {
       translate([0, y_offset, 0]) {
@@ -120,102 +90,208 @@ module chassis_extra_cutouts_2d() {
 }
 
 module chassis_base_2d() {
-  init_pos_x = 0;
-  init_pos_y = 0 - chassis_len / 2;
-  base_width = chassis_width / 2;
-  target = ceil(0.2 * abs(init_pos_y));
-  rear_panel_base_w = rear_panel_size[0] / 2;
-
-  points =
-    [[init_pos_x, init_pos_y],
-     [-rear_panel_base_w, init_pos_y],
-     [((-base_width - rear_panel_base_w) / 2) + 6, init_pos_y + 5],
-     [(-base_width - rear_panel_base_w) / 2, init_pos_y + 5],
-     [-base_width + 6, init_pos_y],
-     [-base_width, init_pos_y + 5],
-     [-base_width, init_pos_y + target],
-     [-base_width + 2, (init_pos_y + chassis_len / 2) + 0.02 * chassis_len],
-     [-base_width * 0.6, init_pos_y + chassis_len / 1.68],
-     [-base_width * 0.24, chassis_len / 2],
-     [0, chassis_len / 2]];
-
-  offset(r = chassis_offset_rad) {
-    polygon(points = points);
-  }
-
-  mirror([1, 0, 0]) {
+  mirror_copy([1, 0, 0]) {
     offset(r = chassis_offset_rad) {
-      polygon(points = points);
+      polygon(points=chassis_shape_points);
     }
   }
 }
 
-steering_servo_to_pan_hole_wiring_holes_size = [36, 5];
-pan_to_steering_square_hole_distance = 3;
+function raspberry_pi_y_positions() =
+  let (chassis_len_half = chassis_len / 2,
+       basic_y = (raspberry_pi5_screws_size[1]) / 2 + rpi_5_screws_offset(),
+       end = -chassis_len / 2 + raspberry_pi_offset - basic_y,
+       start = end + rpi_len)
+  [start, end];
 
-module steering_servo_to_head_rect_holes() {
-  distance_between_pan_and_steering_start = steering_servo_chassis_y_offset
-    + steering_servo_panel_screws_offsets[1];
-  distance_between_pan_and_steering_end = steering_servo_chassis_y_offset
-    + pan_servo_y_offset_from_steering_panel - cam_pan_servo_slot_width / 2;
-  distance = distance_between_pan_and_steering_end
-    - distance_between_pan_and_steering_start;
-  step = pan_to_steering_square_hole_distance
-    + steering_servo_to_pan_hole_wiring_holes_size[1];
-  amount = floor(distance / step);
+module raspberry_pi_extra_holes() {
+  positions = raspberry_pi_y_positions();
+  half_of_chassis = chassis_len / 2;
+  start = positions[0];
+  end = positions[1];
+  spacing = 4;
+  rpi_screws_offst = -rpi_5_screws_offset();
+  horizontal_holes_y = [-rpi_screws_offst + spacing,
+                        rpi_screws_offst,
+                        rpi_screws_offst * 2 - spacing];
+  step = spacing + extra_cutouts_dia;
+  nums = number_sequence(from=-ups_hat_offset / 2 -
+                         raspberry_pi5_screws_size[1] +
+                         -chassis_len / 2 + raspberry_pi_offset,
+                         to=start
+                         - spacing
+                         - extra_cutouts_dia
+                         - chassis_square_holes_len,
+                         step=step);
 
-  if (amount > 0) {
-    for (i = [0 : amount - 1]) {
-      translate([0, i * step + distance_between_pan_and_steering_start, 0]) {
-        trapezoid_rounded(b=steering_servo_to_pan_hole_wiring_holes_size[0],
-                          t=steering_servo_to_pan_hole_wiring_holes_size[0]
-                          * 0.8,
-                          h=steering_servo_to_pan_hole_wiring_holes_size[1],
+  for (i = [0 : len(nums) - 1]) {
+    y = nums[i];
+    translate([0, y - rpi_screws_offst, 0]) {
+      curr_y = y + extra_cutouts_dia;
+      if (curr_y < extra_battery_screws_y_offset_start
+          && curr_y > end) {
+        circle(r=extra_cutouts_dia / 2);
+      } else {
+        circle(r=extra_cutouts_dia / 2);
+      }
+
+      if (curr_y < extra_battery_screws_y_offset_start
+          && (curr_y < end || y - extra_cutouts_dia > end)) {
+        for (i = [0 : 2]) {
+          translate([i * step, 0, 0]) {
+            circle(r=extra_cutouts_dia / 2, $fn=10);
+          }
+        }
+        for (i = [0 : 2]) {
+          translate([-i * step, 0, 0]) {
+            circle(r=extra_cutouts_dia / 2, $fn=10);
+          }
+        }
+      };
+    }
+  }
+
+  x = number_sequence(from=extra_battery_screws_y_offset_end,
+                      to=extra_battery_screws_y_offset_end,
+                      step=extra_battery_screws_y_offset_step);
+
+  y = 8;
+  translate([0, start - chassis_square_holes_len, 0]) {
+    trapezoid_rounded(b=chassis_width / 2.2,
+                      t=chassis_width / 3.2,
+                      h=y,
+                      center=true);
+    translate([0, chassis_square_holes_len + 3, 0]) {
+      trapezoid_rounded(b=chassis_width * 0.35,
+                        t=chassis_width * 0.29,
+                        h=y * 0.8,
+                        center=true);
+      translate([0, chassis_square_holes_len + 3, 0]) {
+        trapezoid_rounded(b=chassis_width * 0.35,
+                          t=chassis_width * 0.29,
+                          h=y * 0.8,
                           center=true);
       }
     }
   }
 }
 
+module steering_servo_to_head_rect_holes() {
+  distance_between_pan_and_steering_start = steering_panel_y_position_from_center
+    + steering_servo_panel_center_screws_offsets[1];
+  distance_between_pan_and_steering_end = steering_panel_y_position_from_center
+    + pan_servo_y_offset_from_steering_panel - cam_pan_servo_slot_width / 2;
+  distance = distance_between_pan_and_steering_end
+    - distance_between_pan_and_steering_start;
+  step = pan_to_steering_square_hole_distance
+    + steering_servo_to_pan_hole_wiring_holes_size[1];
+  amount = floor(distance / step);
+  position = step + distance_between_pan_and_steering_start;
+  height = 4;
+  side_height = 9;
+  width_1 = poly_width_at_y(chassis_shape_points, step + distance_between_pan_and_steering_start) * 2;
+  width_2 = poly_width_at_y(chassis_shape_points, step + distance_between_pan_and_steering_start
+                            + side_height) * 2;
+
+  if (amount > 0) {
+    for (i = [0 : amount - 1]) {
+      translate([0, i * step + distance_between_pan_and_steering_start, 0]) {
+        if (i > 0) {
+          translate([0, 0, 0]) {
+            let (length=width_1,
+                 h=side_height,
+                 sq_w=max(width_2 * 0.4, 20),
+                 side_distance=2,
+                 t1=width_1 * 0.05,
+                 t2=width_2 * 0.05) {
+
+              translate([width_1 / 2 - t1 - side_distance, -side_height / 2, 0]) {
+                offset_vertices_2d(r=0.5) {
+                  polygon([[- t1, 0],
+                           [0 - t1, h],
+                           [t2 - 1.5, ++h],
+                           [t1, 0]]);
+                }
+              }
+              translate([0, -height / 2, 0]) {
+                rounded_rect([sq_w, height], center=true, r=0.2);
+                translate([0, height / 2 + 3, 0]) {
+                  rounded_rect([sq_w, height], center=true, r=0.2);
+                }
+              }
+
+              translate([-width_1 / 2 + t1 + side_distance, -side_height / 2, 0]) {
+                offset_vertices_2d(r=0.5) {
+                  polygon([[- t1, 0],
+                           [- t2 + 1.5, h],
+                           [t1, h],
+                           [t1, 0]]);
+                }
+              }
+            }
+          }
+        } else {
+          trapezoid_rounded(b=steering_servo_to_pan_hole_wiring_holes_size[0],
+                            t=steering_servo_to_pan_hole_wiring_holes_size[0]
+                            * 0.95,
+                            h=steering_servo_to_pan_hole_wiring_holes_size[1],
+                            center=true);
+        }
+      }
+    }
+  }
+}
+
+function ups_hat_y_pos() = -chassis_len / 2
+  + ups_hat_screws_size[1] / 2
+  + chassis_base_rear_cutout_depth
+  + m3_hole_dia / 2 + ups_hat_offset;
+
 module chassis_2d() {
   chassis_len_half = chassis_len / 2;
   rear_panel_bracket_w = rear_panel_screw_panel_width();
 
   difference() {
-    chassis_base_2d();
+    union() {
+      chassis_base_2d();
+      translate([0, steering_panel_y_position_from_center, 0]) {
+        steering_chassis_bar_2d();
+      }
+    }
+
+    mirror_copy([1, 0, 0]) {
+      steering_panel_hinges_screws_holes();
+    }
+
     chassis_extra_cutouts_2d();
 
     battery_holders_screws_2d();
     steering_servo_to_head_rect_holes();
-    translate([0, steering_servo_chassis_y_offset, 0]) {
-      four_corner_holes_2d(steering_servo_panel_screws_offsets,
-                           hole_dia=steering_servo_panel_screws_dia,
+    translate([0, steering_panel_y_position_from_center, 0]) {
+      four_corner_holes_2d(steering_servo_panel_center_screws_offsets,
+                           hole_dia=steering_servo_panel_center_screw_dia,
                            center=true);
     }
 
-    n20_bracket_screws();
-    mirror([1, 0, 0]) {
+    mirror_copy([1, 0, 0]) {
       n20_bracket_screws();
-    }
-
-    motor_bracket_screws();
-    mirror([1, 0, 0]) {
       motor_bracket_screws();
     }
 
-    motor_bracket_screws(-motor_mount_panel_thickness * 2);
-    mirror([1, 0, 0]) {
+    mirror_copy([1, 0, 0]) {
       motor_bracket_screws(-motor_mount_panel_thickness * 2);
     }
 
     pan_servo_cutout_2d();
 
-    translate([0, raspberry_pi_offset, 0]) {
+    translate([0, -chassis_len_half + raspberry_pi_offset, 0]) {
       raspberry_pi5_screws_2d();
+    }
 
-      translate([0, -ups_hat_offset - raspberry_pi5_screws_size[1], 0]) {
-        ups_hat_screws_2d();
-      }
+    raspberry_pi5_screws_2d();
+
+    translate([0, ups_hat_y_pos(), 0]) {
+      ups_hat_screws_2d();
     }
 
     translate([0,
@@ -226,7 +302,8 @@ module chassis_2d() {
 
       rear_panel_screw_holes();
 
-      translate([0, rear_panel_screw_offset + rear_panel_screw_hole_dia, 0]) {
+      translate([0, rear_panel_screw_offset
+                 + rear_panel_screw_hole_dia, 0]) {
         rear_panel_screw_holes();
       }
     }
@@ -309,12 +386,83 @@ module n20_bracket_screws(show_motor=false, show_wheel=false) {
   }
 }
 
+module chassis_assembly(show_rpi=true,
+                        motor_type=motor_type,
+                        show_motor=false,
+                        show_wheels=false,
+                        show_rear_panel=false,
+                        show_front_panel=false,
+                        show_ackermann_triangle=false,
+                        show_ups_hat=false,
+                        show_steering=false,
+                        show_bearing=true,
+                        show_brackets=true,
+                        chassis_color="white") {
+  translate([chassis_width / 2 + (front_wheel_offset() * 2),
+             0,
+             chassis_thickness +
+             n20_motor_screws_panel_x_offset()
+             + n20_motor_screws_panel_thickness()
+             + wheel_dia  / 2 + tire_thickness + (tire_fillet_gap * 2)]) {
+
+    children();
+
+    if (show_steering) {
+      translate([0,
+                 steering_panel_y_position_from_center,
+                 rack_mount_panel_thickness / 2]) {
+        steering_system_assembly(show_wheels=show_wheels,
+                                 show_bearing=show_bearing,
+                                 show_brackets=show_brackets);
+      }
+    }
+
+    if (show_rpi) {
+      standow_lower_h = chassis_thickness + 1;
+      y = (raspberry_pi5_screws_size[1]) / 2 + rpi_5_screws_offset();
+      end = -chassis_len / 2 + raspberry_pi_offset - y;
+
+      z = chassis_thickness + rpi_standoff_height - standow_lower_h;
+      translate([-rpi_width / 2,
+                 end,
+                 z]) {
+        rpi_5(show_standoffs=true, standoff_height=rpi_standoff_height,
+              standoff_lower_height=standow_lower_h);
+      }
+    }
+    if (show_ups_hat) {
+      rotate([0, 0, 0]) {
+        translate([-ups_hat_size[0] / 2,
+                   ups_hat_y_pos() + -ups_hat_size[1] / 2,
+                   0]) {
+          rotate([0, 0, 0]) {
+            translate([0, 0, 0]) {
+              ups_hat();
+            }
+          }
+        }
+      }
+    }
+
+    rotate([0, 180, 0]) {
+      chassis_plate(show_motor=show_motor,
+                    show_wheels=show_wheels,
+                    motor_type=motor_type,
+                    show_rear_panel=show_rear_panel,
+                    show_front_panel=show_front_panel,
+                    show_ackermann_triangle=show_ackermann_triangle,
+                    show_rpi=show_rpi);
+    }
+  }
+}
+
 module chassis_plate(motor_type=motor_type,
                      show_motor=false,
                      show_wheels=false,
                      show_rear_panel=false,
                      show_front_panel=false,
                      show_ackermann_triangle=false,
+                     show_rpi=false,
                      chassis_color="white") {
   union() {
     color(chassis_color) {
@@ -332,14 +480,14 @@ module chassis_plate(motor_type=motor_type,
       }
     }
 
-    if (motor_type == "standard") {
+    if (show_motor && motor_type == "standard") {
       rear_motor_mount_wall(show_motor=show_motor, show_wheel=show_wheels);
       mirror([1, 0, 0]) {
         rear_motor_mount_wall(show_motor=show_motor, show_wheel=show_wheels);
       }
     }
 
-    if (motor_type == "n20") {
+    if (show_motor && motor_type == "n20") {
       n20_bracket_left(show_motor=show_motor, show_wheel=show_wheels);
       mirror([1, 0, 0]) {
         n20_bracket_left(show_motor=show_motor, show_wheel=show_wheels);
@@ -361,7 +509,7 @@ module chassis_plate(motor_type=motor_type,
     }
 
     if (show_ackermann_triangle) {
-      translate([0, steering_servo_chassis_y_offset, -chassis_thickness]) {
+      translate([0, steering_panel_y_position_from_center, -chassis_thickness]) {
         color("yellowgreen", alpha=0.2) {
           ackermann_geometry_triangle();
         }
@@ -370,16 +518,14 @@ module chassis_plate(motor_type=motor_type,
   }
 }
 
-translate([0, 0, chassis_thickness +
-           n20_motor_screws_panel_x_offset()
-           + n20_motor_screws_panel_thickness()
-           + wheel_dia  / 2 + tire_thickness + (tire_fillet_gap * 2)]) {
-  rotate([180, 0, 0]) {
-    chassis_plate(motor_type="n20",
-                  show_motor=true,
-                  show_wheels=true,
-                  show_rear_panel=true,
-                  show_front_panel=true,
-                  show_ackermann_triangle=false);
-  }
-}
+chassis_assembly(motor_type=undef,
+                 show_motor=false,
+                 show_wheels=false,
+                 show_rear_panel=false,
+                 show_front_panel=false,
+                 show_rpi=false,
+                 show_ackermann_triangle=false,
+                 show_steering=false,
+                 show_ups_hat=false);
+
+// #chassis_base_2d();

@@ -70,12 +70,18 @@ module front_wheel(w=wheel_w,
 module front_wheel_animated() {
   rotate([0, 0, -360 * $t]) {
     front_wheel(show_bearing=true);
-    color("white") {
+    color(black_1) {
       tire();
     }
   }
 }
 
 union() {
-  front_wheel_animated();
+  // front_wheel_animated();
+  front_wheel();
+  // translate([0, 0, 20]) {
+  //   rotate([180, 0, 0]) {
+  //     wheel_hub_upper();
+  //   }
+  // }
 }
