@@ -24,6 +24,18 @@ use <motor_brackets/n20_motor_bracket.scad>
 batteries_holder_assembly_y_idx = len(baterry_holes_y_positions) / 2 + 1;
 
 chassis_assembly_center         = true;
+show_motor                      = true;
+show_wheels                     = true;
+show_rear_panel                 = true;
+show_front_panel                = true;
+show_ackermann_triangle         = false;
+show_ups_hat                    = true;
+show_steering                   = true;
+show_bearing                    = true;
+show_brackets                   = true;
+show_battery_holders            = true;
+show_rpi                        = true;
+show_head                       = true;
 
 module chassis_assembly(center=false,
                         show_rpi=true,
@@ -130,19 +142,18 @@ module chassis_assembly(center=false,
 
 module assembly_view(center=chassis_assembly_center,
                      motor_type=motor_type,
-                     show_motor=true,
-                     show_wheels=true,
-                     show_rear_panel=true,
-                     show_front_panel=true,
-                     show_ackermann_triangle=true,
-                     show_ups_hat=true,
-                     show_steering=true,
-                     show_wheels=true,
-                     show_bearing=true,
-                     show_brackets=true,
-                     show_battery_holders=true,
-                     show_rpi=true,
-                     show_head=true) {
+                     show_motor=show_motor,
+                     show_wheels=show_wheels,
+                     show_rear_panel=show_rear_panel,
+                     show_front_panel=show_front_panel,
+                     show_ackermann_triangle=show_ackermann_triangle,
+                     show_ups_hat=show_ups_hat,
+                     show_steering=show_steering,
+                     show_bearing=show_bearing,
+                     show_brackets=show_bearing,
+                     show_battery_holders=show_battery_holders,
+                     show_rpi=show_rpi,
+                     show_head=show_head) {
 
   union() {
     chassis_assembly(show_motor=show_motor,
@@ -173,14 +184,17 @@ module assembly_view(center=chassis_assembly_center,
   }
 }
 
-assembly_view(show_wheels=true,
-              show_motor=true,
-              show_rear_panel=true,
-              show_front_panel=true,
-              show_ups_hat=true,
-              show_rpi=true,
-              show_ackermann_triangle=false,
-              show_steering=true,
-              show_bearing=true,
-              show_brackets=true,
-              show_head=true);
+assembly_view(center=chassis_assembly_center,
+              motor_type=motor_type,
+              show_motor=show_motor,
+              show_wheels=show_wheels,
+              show_rear_panel=show_rear_panel,
+              show_front_panel=show_front_panel,
+              show_ackermann_triangle=show_ackermann_triangle,
+              show_ups_hat=show_ups_hat,
+              show_steering=show_steering,
+              show_bearing=show_bearing,
+              show_brackets=show_bearing,
+              show_battery_holders=show_battery_holders,
+              show_rpi=show_rpi,
+              show_head=show_head);
