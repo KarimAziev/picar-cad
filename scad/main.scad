@@ -23,7 +23,7 @@ use <head/head_neck_mount.scad>
 use <front_panel.scad>
 
 color("white") {
-  chassis_plate();
+  chassis();
   half_wheels_distance = rack_mount_panel_len * 0.5;
 
   translate([(chassis_width / 2 + head_plate_width * 0.5) + 6, 0, 0]) {

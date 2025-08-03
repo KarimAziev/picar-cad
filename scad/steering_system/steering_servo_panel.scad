@@ -65,7 +65,7 @@ function steering_servo_panel_center_rect_y() =
 
 function steering_panel_hinges_calc_distance_from_center() =
   poly_width_at_y(chassis_shape_points,
-                  steering_panel_y_position_from_center
+                  steering_panel_y_pos_from_center
                   - steering_panel_hinge_length)
   - rack_mount_rack_panel_width / 2;
 
@@ -104,7 +104,7 @@ module steering_panel_hinges_screws_holes() {
                (-rack_mount_rack_panel_width / 2
                 -steering_panel_hinge_length / 2
                 + steering_panel_hinge_rad)
-               + steering_panel_y_position_from_center - y / 2
+               + steering_panel_y_pos_from_center - y / 2
                + steering_panel_hinge_screw_distance
                + steering_panel_hinge_screw_dia / 2,
                0]) {
@@ -276,7 +276,9 @@ module steering_servo_panel(size=[servo_hat_w,
                 translate([0, 0, 0]) {
                   rotate([0, 0, $t == 0 ? 12.0 : 7 + pinion_angle(t=$t)]) {
                     translate([0, 0, 2]) {
-                      steering_pinion();
+                      color(blue_grey_carbon, alpha=1) {
+                        steering_pinion();
+                      }
                     }
                   }
                 }

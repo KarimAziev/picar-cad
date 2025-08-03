@@ -52,7 +52,7 @@ pan_servo_slot_dia                                 = 6.5;
 // servo cut-out. The pan servo is mounted on a bottom horizontal panel (with a
 // gear hole interfacing with the chassis) that is part of the robot’s head
 // (which also carries the cameras). Its placement is determined by adding this
-// offset to steering_panel_y_position_from_center.
+// offset to steering_panel_y_pos_from_center.
 pan_servo_y_offset_from_steering_panel             = 47;
 
 // rear motor panel for the "standard" yellow motor (see motor_type)
@@ -129,32 +129,19 @@ extra_battery_screws_y_offset_step                 = 10;
 // Dimensions for the screw hole pattern (width, height)
 extra_battery_screws_y_size                        = [20, 10]; // [width, height] of the screw pattern
 
-// Horizontal offset for the screws on the sides (distance from center)
-
-// X-offset for positioning screws relative to the center
-extra_battery_screws_x_offset                      = 24;
-
-// Screw hole parameters for extra battery holders
-
 // Diameter of the screw holes (uses global m2_hole_dia)
 extra_battery_screws_dia                           = m2_hole_dia;
 
 // Number of fragments for rendering circle (defines resolution)
 extra_battery_screws_fn_val                        = 360;
 
-// Battery holder screws placed at the center of the chassis
+// X-offset for positioning screws relative to the center
+extra_battery_screws_x_offset                      = 24;
 
-// Vertical offsets for center battery screws along the Y-axis
-battery_screws_center_y_offset_start               = -100;  // Starting Y-offset for center battery screws
-battery_screws_center_y_offset_end                 = 100;   // Ending Y-offset for center battery screws
-battery_screws_center_y_step                       = 20;    // Step/increment along the Y-axis for center battery screws
-
-// Dimensions for the screw hole pattern at the center; note that the X-size is 0 to indicate a central alignment
-battery_screws_center_size                         = [0, 20];  // [width, height] of the center screw pattern
-
-// Screw hole parameters for center battery holders
-battery_screws_center_dia                          = m2_hole_dia;  // Diameter of the screw holes (uses same m2_hole_dia)
-battery_screws_center_fn_val                       = 360;  // Number of fragments for rendering circle (defines resolution)
+// Y offsets for positioning screws relative to the center
+baterry_holes_y_positions = number_sequence(from=extra_battery_screws_y_offset_start,
+                                            to=extra_battery_screws_y_offset_end,
+                                            step=extra_battery_screws_y_offset_step);
 
 // head
 head_plate_width                                   = 38;
@@ -240,7 +227,7 @@ rack_mount_panel_thickness                         = 5;
 // Position of the steering panel relative to the chassis center. This panel
 // houses the rack and pinion assembly implementing Ackerman steering geometry
 // for the wheels.
-steering_panel_y_position_from_center              = 65;
+steering_panel_y_pos_from_center                   = 65;
 steering_panel_hinge_length                        = 10;
 steering_panel_hinge_screw_dia                     = m25_hole_dia;
 steering_panel_hinge_rad                           = min(rack_mount_rack_panel_width, steering_panel_hinge_length) * 0.5;
@@ -500,7 +487,7 @@ x_left_knuckle                                     = -rack_mount_panel_len / 2 +
 
 // Calculation of the Y-coordinate for the convergence point of the tie rod extensions (at the rear axle)
 y_intersection                                     = -chassis_len * 0.5 + n20_motor_screws_panel_len / 2
-  + n20_motor_chassis_y_distance - steering_panel_y_position_from_center;
+  + n20_motor_chassis_y_distance - steering_panel_y_pos_from_center;
 
 bracket_bearing_border_w                           = (bracket_bearing_outer_d - bracket_bearing_d) / 2;
 
