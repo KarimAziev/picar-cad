@@ -113,15 +113,15 @@ module chassis_assembly(center=false,
         half_of_holder_width = full_holder_width / 2;
 
         translate([0, battery_holder_y_pos, chassis_thickness]) {
-          translate([extra_battery_screws_x_offset - half_of_holder_width,
+          translate([battery_screws_x_offset - half_of_holder_width,
                      battery_holder_y_pos - half_of_holder_len,
                      0]) {
             battery_holder();
           }
 
           if (battery_holder_batteries_count <= 2) {
-            translate([- extra_battery_screws_x_offset
-                       - extra_battery_screws_x_offset,
+            translate([- battery_screws_x_offset
+                       - battery_screws_x_offset,
                        battery_holder_y_pos - half_of_holder_len,
                        0]) {
               battery_holder();
