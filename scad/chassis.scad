@@ -201,7 +201,7 @@ module steering_servo_to_head_rect_holes() {
   if (amount > 0) {
     for (i = [0 : amount - 1]) {
       translate([0, i * step + distance_between_pan_and_steering_start, 0]) {
-        if (i > 0) {
+        if (i == amount - 1) {
           translate([0, 0, 0]) {
             let (length=width_1,
                  h=side_height,
