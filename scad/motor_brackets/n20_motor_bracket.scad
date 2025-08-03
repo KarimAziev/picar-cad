@@ -74,23 +74,32 @@ module n20_motor_screws_panel() {
 module n20_motor_bracket() {
   center_x = notched_circle_square_center_x(r=n20_can_dia / 2,
                                             cutout_w=n20_can_cutout_w);
+  full_dia = n20_motor_width();
 
-  translate([0, 0, 0]) {
-    union() {
-      difference() {
+  union() {
+    difference() {
+      union() {
         notched_circle(h=n20_can_height,
-                       d=n20_motor_width(),
+                       d=full_dia,
                        cutout_w=n20_can_cutout_w,
-                       x_cutouts_n=1, $fn=360);
-        translate([0, 0, -1]) {
-          notched_circle(h=n20_can_height + 2,
-                         d=n20_can_dia + 0.4,
-                         cutout_w=n20_can_cutout_w,
-                         x_cutouts_n=2, $fn=360);
+                       x_cutouts_n=1,
+                       $fn=360);
+        linear_extrude(height=n20_can_height, center=false) {
+          translate([0, -full_dia / 2, 0]) {
+            square([full_dia / 2, full_dia], center=false);
+          }
         }
       }
-      n20_motor_screws_panel();
+
+      translate([0, 0, -1]) {
+        notched_circle(h=n20_can_height + 2,
+                       d=n20_can_dia +
+                       n20_motor_bracket_tolerance,
+                       cutout_w=n20_can_cutout_w,
+                       x_cutouts_n=2, $fn=360);
+      }
     }
+    n20_motor_screws_panel();
   }
 }
 
