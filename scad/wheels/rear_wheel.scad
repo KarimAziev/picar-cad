@@ -23,8 +23,7 @@ module rear_wheel(w=wheel_w,
                   spoke_w=rear_wheel_spoke_w,
                   shaft_hole_d=rear_wheel_shaft_inner_dia,
                   shaft_d=rear_wheel_shaft_outer_dia,
-                  shaft_hole_height=rear_wheel_motor_shaft_height,
-                  inner_shaft_d=rear_wheel_shaft_inner_dia) {
+                  shaft_hole_height=rear_wheel_motor_shaft_height) {
 
   rear_hub_r = shaft_d / 2;
 
@@ -235,6 +234,6 @@ module rear_wheel_shaft_probes(from=3.1,
 }
 
 union() {
-  rear_wheel_animated(show_tire=true);
-  // rear_wheel();
+  // rear_wheel_animated(show_tire=true);
+  rear_wheel();
 }
