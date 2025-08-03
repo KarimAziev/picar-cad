@@ -491,7 +491,7 @@ rear_wheel_shaft_outer_dia                 = 9.8;
 
 // The inner diameter of the hole for the motor’s shaft in the rear wheel’s
 // shaft.
-rear_wheel_shaft_inner_dia                 = motor_type == "n20" ? 3.2 : 5.2;
+rear_wheel_shaft_inner_dia                 = motor_type == "n20" ? 3.1 : 5.2;
 
 // Number of flat sections on the motor shaft.
 // Common values:

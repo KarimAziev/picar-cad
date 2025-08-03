@@ -70,7 +70,7 @@ module rear_wheel(w=wheel_w,
     // a small hole to better visually indicate the flat part
     if (rear_wheel_shaft_flat_len <= 2
         && rear_wheel_shaft_flat_count <= 1) {
-      hole_h = 1;
+      hole_h = 2;
       square_center_x =
         notched_circle_square_center_x(r=shaft_hole_d / 2,
                                        cutout_w=rear_wheel_shaft_flat_len);
@@ -78,7 +78,7 @@ module rear_wheel(w=wheel_w,
       translate([square_center_x + 0.4, 0, shaft_top_z
                  - hole_h / 2]) {
         linear_extrude(height=hole_h, center=false) {
-          square([0.5, rear_wheel_shaft_flat_len + 0.4], center=true);
+          square([1, rear_wheel_shaft_flat_len + 0.4], center=true);
         }
       }
     }
@@ -211,8 +211,8 @@ module rear_wheel_animated(show_tire=true) {
   }
 }
 
-module rear_wheel_shaft_probes(from=3.1,
-                               to=3.5,
+module rear_wheel_shaft_probes(from=3.0,
+                               to=3.2,
                                step=0.1) {
   vals = number_sequence(from, to, step);
   offst = (rear_wheel_hub_rad * 2) + 2;
@@ -236,4 +236,5 @@ module rear_wheel_shaft_probes(from=3.1,
 union() {
   // rear_wheel_animated(show_tire=true);
   rear_wheel();
+  // rear_wheel_shaft_probes();
 }
