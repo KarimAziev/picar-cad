@@ -1,3 +1,10 @@
+/**
+ * Module: Rack And Pinion Assembly
+ *
+ * Author: Karim Aziiev <karim.aziiev@gmail.com>
+ * License: GPL-3.0-or-later
+ */
+
 include <../parameters.scad>
 include <../colors.scad>
 use <../util.scad>

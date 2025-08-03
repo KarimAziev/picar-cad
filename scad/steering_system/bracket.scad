@@ -1,3 +1,28 @@
+/**
+ * Module: Bracket
+ *
+ * This module defines an L-shaped bracket used in the steering linkage system.
+ * The bracket connects the rack (via a flanged bearing interface) to the
+ * steering knuckles, forming a critical joint for steering motion transfer.
+ *
+ * STRUCTURE OVERVIEW:
+ * - Shape:
+ *     L-shaped profile, consisting of two arms of configurable lengths (a_len and b_len),
+ *     connected at a right angle and extruded to a specified thickness.
+ *
+ * - Purpose:
+ *     The horizontal section attaches to the rack using a flanged 685-Z bearing seated
+ *     in a circular connector. The vertical arm then links to the steering knuckle
+ *     through a similarly connected bearing pin via the knuckle bracket.
+ *
+ * - Bearing Support:
+ *     Optional rendering of a representation of the bearing (toggle with `show_bearing`).
+ *     This helps visualize alignment with both rack and knuckle interfaces.
+ *
+ * Author: Karim Aziiev <karim.aziiev@gmail.com>
+ * License: GPL-3.0-or-later
+ */
+
 include <../parameters.scad>
 include <../colors.scad>
 use <../util.scad>

@@ -1,6 +1,12 @@
 /**
  * Module: Steering servo panel
  *
+ * This module defines the main steering servo mounting structure responsible for
+ * housing and aligning the servo motor and its associated steering pinion with
+ * the rack-and-pinion steering mechanism. It functions as the core frame
+ * for motion transfer from a servo to the rack, and ultimately to the front wheels
+ * via brackets and steering knuckles.
+ *
  *
  **************************************************************************************
  *                          Simplified View (A frontal perspective)

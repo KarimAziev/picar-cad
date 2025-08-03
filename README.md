@@ -1,14 +1,28 @@
-This repository contains the 3D model source files for a custom four-wheeled robot with a head mount for two Raspberry Pi Camera Module 2 sensors, and side panels for mounting to a pan-servo setup. The models are written entirely in [OpenSCAD](https://openscad.org/), do not require any external libraries, and are designed to be 3D-printed.
+This repository contains the 3D model source files for a four-wheeled robot chassis and steering system, written entirely in [OpenSCAD](https://openscad.org/). The design supports 3D printing and does not rely on external libraries.
 
 ![Demo](./demo/picar-cad-assembly.gif)
 
-![Demo Full](./demo/picar-cad-full.jpg)
+![Photo](./demo/picar-cad-real-photo.jpg)
 
-The design focuses on a four-wheeled robot with the following features:
+## Overview
 
-- The front wheels are steered by a servo mechanism using Ackermann geometry.
-- The rear wheels are driven by two motors.
-- A head mount is designed to support two Raspberry Pi Camera Modules.
-- Multiple independent power modules can be mounted (for example, one for the Servo HAT, one for the Motor Driver HAT, and one for a UPS module that powers a Raspberry Pi 5).
+The robot model is designed around the following core elements:
 
-![Demo Head](./demo/picar-cad-head-demo.gif)
+- **Ackermann Steering**: Front wheels are steered via a pinion and rack assembly driven by a standard servo.
+- **Rear-Wheel Drive**: Two individual motors drive the rear wheels. Both standard yellow DC motors and N20-type motors are supported.
+- **Modular Head Mount**: The head mount is designed to accommodate two Raspberry Pi Camera Module 2 sensors (e.g., day/night configuration).
+- **Extendable Power Tiers**: Side and center slots allow for independent modules for power management: servo driver HAT, motor driver HAT, UPS for Raspberry Pi 5, etc.
+- **Raspberry Pi**: The chassis includes placements and screw holes for the Raspberry Pi 5 and multiple 18650 battery holders.
+
+## Structure
+
+The project is organized into several reusable modules under the `scad/` directory:
+
+- `parameters.scad`: Central configuration for physical dimensions (units in millimeters).
+- `chassis.scad`: Main robot chassis, mounting platforms, wiring cutouts.
+- `steering_system/`: Rack-and-pinion implementation based on Ackermann geometry.
+- `head/`: Mounting system for dual Raspberry Pi cameras.
+  ![Demo Head](./demo/picar-cad-head-demo.gif)
+- `motor_brackets/`: Brackets for both "yellow" and N20-style motors.
+- `wheels/`: Components for rear and front wheels, including hubs and tires.
+- `placeholders/`: Placeholder geometry for components such as Raspberry Pi, servo motors, and HATs.

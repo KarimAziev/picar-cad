@@ -1,3 +1,30 @@
+/**
+ * Module: Rack Connector
+ *
+ * The rack connector forms the interface at each end of the steering rack,
+ * where it attaches to L-shaped brackets holding flanged bearings.
+ *
+ * Purpose:
+ * - Mechanically connects the rack to the L-brackets used in the steering linkage.
+ * - Provides fixed geometry to seat bracket pins and bearing connectors.
+ * - Forms part of the guided horizontal motion system for the rack.
+ *
+ * Structure:
+ * - A central pin connector extrusion into which a bearing pin can be inserted.
+ * - A stopper wall with embedded fillets that prevent over-travel of the linkage bracket.
+ * - Bottom notch and stopper pads that provide alignment and restrict vertical movement.
+ *
+ * Placement:
+ * - One rack connector is mirrored to each side of the rack using rack_connector_assembly().
+ * - Located at both ends of the rack, aligned with mating L-brackets and steering knuckles.
+ *
+ * Use rack_connector_assembly() if you want to visualize the connector with its attached
+ * bracket in motion with servo-actuated steering.
+ *
+ * Author: Karim Aziiev <karim.aziiev@gmail.com>
+ * License: GPL-3.0-or-later
+ */
+
 include <../parameters.scad>
 include <../colors.scad>
 use <../util.scad>

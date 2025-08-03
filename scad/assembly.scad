@@ -102,7 +102,8 @@ module chassis_assembly(center=false,
     rotate([0, 180, 0]) {
       if (show_battery_holders && len(baterry_holes_y_positions) > 0) {
         batteries_holder_assembly_y_idx = batteries_holder_assembly_y_idx;
-        battery_holder_y_pos = is_undef(baterry_holes_y_positions[batteries_holder_assembly_y_idx])
+        battery_holder_y_pos = is_undef(baterry_holes_y_positions
+                                        [batteries_holder_assembly_y_idx])
           ? baterry_holes_y_positions[batteries_holder_assembly_y_idx - 1]
           : baterry_holes_y_positions[batteries_holder_assembly_y_idx];
         full_holder_len = battery_holder_full_len(battery_holder_thickness)
