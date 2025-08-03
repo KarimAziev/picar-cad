@@ -125,6 +125,13 @@ module steering_rack(length=rack_len,
           square([hole_w, hole_depth], center=false);
         }
       }
+      translate([steering_servo_panel_rail_len / 2,
+                 -rack_width / 2 - hole_depth / 2,
+                 min(1, base_height)]) {
+        linear_extrude(height=hole_h, center=false) {
+          square([hole_w, hole_depth], center=false);
+        }
+      }
     }
   }
 }
