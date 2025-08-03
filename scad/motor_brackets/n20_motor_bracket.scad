@@ -1,5 +1,5 @@
 /**
- * Module: A dummy mockup of the N20-Motor
+ * Module: A bracket for the N20-Motor
  *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
@@ -55,14 +55,22 @@ module n20_motor_screws_panel() {
     rotate([90, 0, 90]) {
       linear_extrude(height=effective_h, center=false) {
         difference() {
-          rounded_rect(size = [w, h], r=min(h, w) * 0.3, center=true);
+          union() {
+            rounded_rect(size = [w, h],
+                         r=min(h, w) * 0.5,
+                         center=true,
+                         fn=360);
+            rounded_rect(size = [w, h * 2],
+                         r=min(h, w) * 0.5,
+                         center=true, fn=360);
+          }
           n20_motor_screw_holes();
         }
       }
     }
   }
 }
-// (7.057370639048867 9.848077530122083 18.79385241571817 70 0 350 100)
+
 module n20_motor_bracket() {
   center_x = notched_circle_square_center_x(r=n20_can_dia / 2,
                                             cutout_w=n20_can_cutout_w);
@@ -76,35 +84,12 @@ module n20_motor_bracket() {
                        x_cutouts_n=1, $fn=360);
         translate([0, 0, -1]) {
           notched_circle(h=n20_can_height + 2,
-                         d=n20_can_dia + 0.2,
+                         d=n20_can_dia + 0.4,
                          cutout_w=n20_can_cutout_w,
                          x_cutouts_n=2, $fn=360);
         }
       }
       n20_motor_screws_panel();
-
-      // translate([0,
-      //            0,
-      //            n20_can_height + n20_end_cap_h + n20_end_circle_h - 0.5]) {
-      //   rad = 1;
-      //   h = n20_end_cap_h + n20_end_circle_h + n20_motor_bracket_thickness;
-      //   rotate([90, 0, 0]) {
-      //     linear_extrude(height = n20_motor_bracket_thickness, center=false) {
-      //       difference() {
-      //         rounded_rect_two(size = [n20_can_dia, h],
-      //                          r=rad,
-      //                          center=true);
-      //         translate([0, -n20_motor_bracket_thickness, 0]) {
-      //           rounded_rect_two(size = [n20_can_dia -
-      //                                    n20_motor_bracket_thickness * 2,
-      //                                    h],
-      //                            r=rad,
-      //                            center=true);
-      //         }
-      //       }
-      //     }
-      //   }
-      // }
     }
   }
 }
