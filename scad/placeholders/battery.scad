@@ -12,25 +12,29 @@ module battery(d=battery_dia,
                h=battery_height,
                positive_pole_dia=battery_positive_pole_dia,
                positive_pole_h=battery_positive_pole_height,
+               top_border_h=1,
                fn=25) {
+
+  base_len = battery_height -
+    ((top_border_h * 2) - battery_positive_pole_height);
   union() {
     color("springgreen") {
       translate([0, 0, 1]) {
 
-        linear_extrude(height=battery_height - 2, center=false) {
+        linear_extrude(height=base_len, center=false) {
           circle(r=d / 2, $fn=fn);
         }
       }
     }
 
     color("white", alpha=1) {
-      translate([0, 0, battery_height - 1]) {
+      translate([0, 0, battery_height - top_border_h]) {
         linear_extrude(height=1, center=false) {
           circle(r=d / 2, $fn=fn);
         }
       }
       translate([0, 0, 0]) {
-        linear_extrude(height=1, center=false) {
+        linear_extrude(height=top_border_h, center=false) {
           circle(r=d / 2, $fn=fn);
         }
       }

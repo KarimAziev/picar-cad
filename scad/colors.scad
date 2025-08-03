@@ -14,6 +14,7 @@ metalic_yellow_silver = "#D4D4C8";
 
 yellow_1              = "#ffde1a";
 metalic_yellow_1      = "#FDCC0D";
+metalic_gold_2        = "#C8A145";
 
 light_grey            = "#e6e6e6";
 

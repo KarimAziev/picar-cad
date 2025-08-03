@@ -611,20 +611,42 @@ chassis_square_wiring_holes                        = [[10, 10]];
 
 chassis_shape_init_pos_x                           = 0;
 chassis_shape_init_pos_y                           = - chassis_len / 2;
+
+// The half of the width is used because the polygon will be mirrored.
 chassis_shape_base_width                           = chassis_width / 2;
 chassis_shape_target                               = ceil(0.2 * abs(chassis_shape_init_pos_y));
 chassis_shape_rear_panel_base_w                    = rear_panel_size[0] / 2;
 
-chassis_shape_points                               = [[chassis_shape_init_pos_x, chassis_shape_init_pos_y],
-                                                      [-chassis_shape_rear_panel_base_w, chassis_shape_init_pos_y],
-                                                      [((-chassis_shape_base_width - chassis_shape_rear_panel_base_w) / 2) + 6,
+chassis_shape_rear_cutout_x_offset                 = 6;  // Horizontal offset for the rear cutout
+chassis_shape_rear_cutout_y_offset                 = 5;  // Vertical offset for the rear cutout
+
+chassis_rear_join_x                                = (-chassis_shape_base_width - chassis_shape_rear_panel_base_w) / 2;
+
+chassis_shape_points                               = [[chassis_shape_init_pos_x,
+                                                       chassis_shape_init_pos_y],
+                                                      [-chassis_shape_rear_panel_base_w,
+                                                       chassis_shape_init_pos_y],
+                                                      [chassis_rear_join_x + chassis_shape_rear_cutout_x_offset,
                                                        chassis_shape_init_pos_y + chassis_base_rear_cutout_depth],
-                                                      [(-chassis_shape_base_width - chassis_shape_rear_panel_base_w) / 2,
-                                                       chassis_shape_init_pos_y + 5],
-                                                      [-chassis_shape_base_width + 6, chassis_shape_init_pos_y],
-                                                      [-chassis_shape_base_width, chassis_shape_init_pos_y + 5],
-                                                      [-chassis_shape_base_width, chassis_shape_init_pos_y + chassis_shape_target],
-                                                      [-chassis_shape_base_width + 2, (chassis_shape_init_pos_y + chassis_len / 2) + 0.02 * chassis_len],
-                                                      [-chassis_shape_base_width * 0.6, chassis_shape_init_pos_y + chassis_len / 1.68],
-                                                      [-chassis_shape_base_width * 0.24, chassis_len / 2],
+                                                      [chassis_rear_join_x,
+                                                       chassis_shape_init_pos_y
+                                                       + chassis_shape_rear_cutout_y_offset],
+                                                      [-chassis_shape_base_width
+                                                       + chassis_shape_rear_cutout_x_offset,
+                                                       chassis_shape_init_pos_y],
+                                                      [-chassis_shape_base_width,
+                                                       chassis_shape_init_pos_y
+                                                       + chassis_shape_rear_cutout_y_offset],
+                                                      [-chassis_shape_base_width,
+                                                       chassis_shape_init_pos_y + chassis_shape_target],
+                                                      [-chassis_shape_base_width + 2,
+                                                       (chassis_shape_init_pos_y + chassis_len / 2)
+                                                       + 0.02 * chassis_len],
+                                                      [-chassis_shape_base_width * 0.6,
+                                                       chassis_shape_init_pos_y + chassis_len / 1.68],
+                                                      [-chassis_shape_base_width * 0.24,
+                                                       chassis_len / 2],
                                                       [0, chassis_len / 2]];
+
+battery_holder_thickness                           = 1.82;
+battery_holder_batteries_count                     = 2;

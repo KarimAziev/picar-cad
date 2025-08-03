@@ -392,6 +392,13 @@ module mirror_copy(v = [1, 0, 0]) {
   }
 }
 
+module translate_copy(v) {
+  children();
+  translate(v) {
+    children();
+  }
+}
+
 function notched_circle_square_center_x(r, cutout_w) =
   let (L = sqrt(r * r - (cutout_w / 2) * (cutout_w / 2)))
   L + cutout_w / 2;
