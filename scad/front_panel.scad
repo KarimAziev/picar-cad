@@ -152,17 +152,17 @@ module front_panel_back_mount(w=front_panel_width,
   }
 }
 
-color("white") {
-  rotate(a = [90, 0, 0]) {
+module front_panel_printable() {
+  rotate(a = [-90, 0, 0]) {
     translate([front_panel_width * 0.55, 0, 0]) {
       front_panel();
     }
   }
-
   translate([-front_panel_width * 0.55, 0, 0]) {
     front_panel_back_mount();
   }
-  translate([0, front_panel_height, 0]) {
-    // front_panel_connector();
-  }
+}
+
+color("white") {
+  front_panel_printable();
 }

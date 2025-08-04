@@ -133,14 +133,19 @@ module bracket(a_len=steering_bracket_rack_side_w_length,
   }
 }
 
-union() {
-  rotate([0, 0, 180]) {
-    bracket();
-    translate([steering_bracket_rack_side_w_length + steering_bracket_bearing_outer_d
-               + 5, 0, 0]) {
-      mirror([1, 0, 0]) {
-        bracket();
+module steering_brackets_printable() {
+  union() {
+    rotate([0, 0, 180]) {
+      bracket();
+      translate([steering_bracket_rack_side_w_length
+                 + steering_bracket_bearing_outer_d
+                 + 5, 0, 0]) {
+        mirror([1, 0, 0]) {
+          bracket();
+        }
       }
     }
   }
 }
+
+steering_brackets_printable();

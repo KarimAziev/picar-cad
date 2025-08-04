@@ -30,8 +30,8 @@ module front_and_rear_wheels(w=wheel_w,
                              screw_boss_w=wheel_screw_boss_w,
                              y_distance=5,
                              x_distance=5,
-                             front_n=1,
-                             rear_n=1) {
+                             front_n=2,
+                             rear_n=2) {
   union() {
     if (front_n > 0) {
       for (i = [0:front_n - 1]) {
