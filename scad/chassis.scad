@@ -399,6 +399,7 @@ module chassis_base_2d() {
 
 module chassis(motor_type=motor_type,
                show_motor=false,
+               show_motor_brackets=false,
                show_wheels=false,
                show_rear_panel=false,
                show_front_panel=false,
@@ -421,16 +422,14 @@ module chassis(motor_type=motor_type,
       }
     }
 
-    if (show_motor && motor_type == "standard") {
-      rear_motor_mount_wall(show_motor=show_motor, show_wheel=show_wheels);
-      mirror([1, 0, 0]) {
+    if ((show_motor || show_motor_brackets) && motor_type == "standard") {
+      mirror_copy([1, 0, 0]) {
         rear_motor_mount_wall(show_motor=show_motor, show_wheel=show_wheels);
       }
     }
 
-    if (show_motor && motor_type == "n20") {
-      n20_bracket_left(show_motor=show_motor, show_wheel=show_wheels);
-      mirror([1, 0, 0]) {
+    if ((show_motor || show_motor_brackets) && motor_type == "n20") {
+      mirror_copy([1, 0, 0]) {
         n20_bracket_left(show_motor=show_motor, show_wheel=show_wheels);
       }
     }

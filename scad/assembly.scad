@@ -25,6 +25,7 @@ batteries_holder_assembly_y_idx = len(baterry_holes_y_positions) / 2 + 1;
 
 chassis_assembly_center         = true;
 show_motor                      = true;
+show_motor_brackets             = true;
 show_wheels                     = true;
 show_rear_panel                 = true;
 show_front_panel                = true;
@@ -36,6 +37,7 @@ show_brackets                   = true;
 show_battery_holders            = true;
 show_rpi                        = true;
 show_head                       = true;
+chassis_color                   = "white";
 
 module chassis_assembly(center=false,
                         show_rpi=true,
@@ -50,6 +52,7 @@ module chassis_assembly(center=false,
                         show_bearing=true,
                         show_brackets=true,
                         show_battery_holders=false,
+                        show_motor_brackets=false,
                         chassis_color="white") {
   global_x_offset = chassis_width / 2 + (front_wheel_offset() * 2);
   global_z_offset = chassis_thickness +
@@ -130,13 +133,15 @@ module chassis_assembly(center=false,
           }
         }
       }
-      chassis(show_motor=show_motor,
+      chassis(motor_type=motor_type,
+              show_motor=show_motor,
+              show_motor_brackets=show_motor_brackets,
               show_wheels=show_wheels,
-              motor_type=motor_type,
               show_rear_panel=show_rear_panel,
               show_front_panel=show_front_panel,
               show_ackermann_triangle=show_ackermann_triangle,
-              show_rpi=show_rpi);
+              show_rpi=show_rpi,
+              chassis_color=chassis_color);
     }
   }
 }
@@ -154,12 +159,16 @@ module assembly_view(center=chassis_assembly_center,
                      show_brackets=show_bearing,
                      show_battery_holders=show_battery_holders,
                      show_rpi=show_rpi,
-                     show_head=show_head) {
+                     show_head=show_head,
+                     show_motor_brackets=show_motor_brackets,
+                     chassis_color=chassis_color) {
 
   union() {
-    chassis_assembly(show_motor=show_motor,
+    chassis_assembly(motor_type=motor_type,
+                     show_motor=show_motor,
                      show_wheels=show_wheels,
-                     motor_type=motor_type,
+                     chassis_color=chassis_color,
+                     show_motor_brackets=show_motor_brackets,
                      show_ups_hat=show_ups_hat,
                      show_rear_panel=show_rear_panel,
                      show_front_panel=show_front_panel,
