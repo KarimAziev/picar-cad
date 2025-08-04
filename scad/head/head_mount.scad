@@ -254,7 +254,7 @@ module side_panel(is_left=true) {
 
   if (is_left) {
     translate([-offsets[0], offsets[1], 0]) {
-      mirror([1,0,0]) {
+      mirror([1, 0, 0]) {
         rotate([0, 90, 0]) {
           side_panel_3d();
         }
