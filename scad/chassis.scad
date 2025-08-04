@@ -354,7 +354,7 @@ module rear_motor_mount_wall(show_motor=false, show_wheel=false) {
              motor_bracket_y_pos(),
              motor_mount_panel_thickness]) {
     rotate([0, 0, 90]) {
-      motor_bracket(show_wheel_and_motor=show_motor || show_wheel);
+      motor_bracket(show_motor=show_motor, show_wheel=show_wheel);
     }
   }
 }
@@ -459,4 +459,4 @@ module chassis(motor_type=motor_type,
   }
 }
 
-chassis();
+chassis(motor_type="standard", show_motor_brackets=true, show_motor=true);
