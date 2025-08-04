@@ -53,8 +53,6 @@ module motor_bracket(size=[motor_mount_panel_width,
   }
 }
 
-// motor_mount_panel();
-
 rotate([0, 0, 90]) {
   translate([10, 14, 0]) {
     motor_bracket(show_wheel_and_motor=true);
