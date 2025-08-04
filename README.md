@@ -25,4 +25,4 @@ The project is organized into several reusable modules under the `scad/` directo
   ![Demo Head](./demo/picar-cad-head-demo.gif)
 - `motor_brackets/`: Brackets for both "yellow" and N20-style motors.
 - `wheels/`: Components for rear and front wheels, including hubs and tires.
-- `placeholders/`: Placeholder geometry for components such as Raspberry Pi, servo motors, and HATs.
+- `placeholders/`: Placeholder geometry for components such as Raspberry Pi, servo and DC-motors, batteries holders, HATs.
