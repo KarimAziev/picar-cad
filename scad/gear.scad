@@ -1,3 +1,47 @@
+/**
+ * Gear Module
+ *
+ *
+ * This module generates a parametric involute spur gear with customizable pitch
+ * radius, number of teeth, pressure angle, backlash, clearance, thickness, and
+ * central bore diameter for fitting onto servos or motors.
+ *
+ * Functions:
+ * - polar_to_cartesian(rad, theta): Converts polar coordinates to Cartesian.
+ * - involute_angle(b, d): Calculates the involute angle for a given base and current radius.
+ * - involute_point(b, s, t, d): Generates an involute curve point for gear tooth geometry.
+ * - involute_point_at_fraction(f, r, b, r2, t, s): Interpolates involute point along the tooth.
+ * - radius_pitch(circular_pitch, teeth_count): Calculates pitch radius.
+ * - outer_radius(r_pitch, circular_pitch, clearance): Computes gear's outer radius.
+ * - calc_circular_pitch(r_pitch, teeth_count): Computes circular pitch.
+ * - calc_tooth_height(r_pitch, teeth_count, clearance): Computes total tooth height.
+ *
+ * Module:
+ * gear(...)
+ *   Creates a 3D involute gear with the specified parameters.
+ *
+ * Parameters:
+ * - r_pitch          : Pitch radius of the gear.
+ * - teeth_count      : Number of teeth on the gear.
+ * - thickness        : Gear thickness in the Z direction.
+ * - servo_dia        : Diameter of the center hole for motor shaft.
+ * - teeth_to_hide    : Number of teeth to omit for partial gears.
+ * - pressure_angle   : Pressure angle in degrees (typically 20-28 deg).
+ * - clearance        : Radial clearance from gear root.
+ * - backlash         : Amount of intentional tooth space increase.
+ *
+ * Example usage:
+ *   gear(teeth_count=24, r_pitch=30, backlash=0.5);
+ *
+ * Notes:
+ * - Default gear will render with 12 teeth and 14.4 mm pitch radius.
+ * - You can nest modules or geometry inside gear{} to subtract their shape from the final gear.
+ * - Set backlash > 0 to ensure intermeshing gears have space for proper mesh fit.
+ *
+ * Author: Karim Aziiev <karim.aziiev@gmail.com>
+ * License: GPL-3.0-or-later
+ */
+
 /* Convert a length and polar angle to Cartesian coordinates */
 function polar_to_cartesian(rad, theta) = [rad * sin(theta), rad * cos(theta)];
 
@@ -43,7 +87,7 @@ module gear(r_pitch         = 14.4,
             thickness       = 2,
             servo_dia       = 6.5,
             teeth_to_hide   = 0,
-            pressure_angle  = +28,
+            pressure_angle  = 20,
             clearance       = 0.0,
             backlash        = 0.0) {
 
