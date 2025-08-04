@@ -1,5 +1,25 @@
 /**
- * Module: A bracket for the N20-Motor
+ * Module: A mounting bracket for the N20 micro gear motor.
+ *
+ * This module provides a mechanical bracket for securely mounting an N20 motor
+ * to a robot or chassis, using two side screw holes. The bracket surrounds the
+ * cylindrical body of the motor and includes a screw panel that can be mounted
+ * to a flat surface (e.g., robot chassis).
+ *
+ * The bracket includes:
+ * - A circular cutout with notches to hold the motor's flattened sides, preventing rotation.
+ * - A screw panel with two mounting holes to affix the bracket securely to a surface.
+ * - An integrated support structure to ensure a snug and vibration-resistant fit.
+ *
+ * The `n20_motor_assembly()` module visualizes how the motor (and optionally a rear wheel)
+ * appears within the bracket and in the context of the chassis.
+ *
+ * @modules:
+ * - `n20_motor_bracket()`: Renders the actual bracket geometry.
+ * - `n20_motor_screw_holes()`: Renders the mounting holes on the screw panel.
+ * - `n20_motor_screws_panel()`: Renders the panel containing mounting holes.
+ * - `n20_motor_assembly(show_motor=true, show_wheel=false)`: Full motor-bracket assembly:
+ *    including the motor and optionally a rear wheel.
  *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
@@ -28,8 +48,8 @@ module n20_motor_screw_holes() {
   for (i = [0:1]) {
     offst = w / 2 - n20_motor_screws_dia / 2;
     translate([i == 0
-               ? (w / 2) - screws_rad - n20_motor_screws_panel_offset
-               : (-w / 2) + screws_rad + n20_motor_screws_panel_offset,
+               ? -n20_motor_screws_panel_offset
+               : n20_motor_screws_panel_offset,
                0,
                0]) {
       circle(r=screws_rad, $fn=360);
@@ -45,9 +65,7 @@ module n20_motor_screws_panel() {
   effective_h = n20_motor_screws_panel_thickness();
   x_offst = n20_motor_screws_panel_x_offset();
 
-  translate([x_offst,
-             0,
-             h]) {
+  translate([x_offst, 0, h]) {
     rotate([90, 0, 90]) {
       linear_extrude(height=effective_h, center=false) {
         difference() {
@@ -120,4 +138,4 @@ module n20_motor_assembly(show_motor=true, show_wheel=false) {
   }
 }
 
-n20_motor_assembly(show_motor=false, show_wheel=false);
+n20_motor_assembly(show_motor=true, show_wheel=false);

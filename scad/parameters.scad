@@ -544,8 +544,8 @@ n20_end_cap_circle_dia                     = 5;
 n20_end_cap_circle_hole_dia                = 3;
 
 n20_motor_bracket_tolerance                = 0.3;
-n20_motor_bracket_thickness                = 1;
-n20_motor_screws_panel_offset              = 1;
+n20_motor_bracket_thickness                = 3;
+n20_motor_screws_panel_offset              = 11.3;
 n20_motor_screws_panel_length              = 4;
 n20_motor_screws_dia                       = m25_hole_dia;
 
