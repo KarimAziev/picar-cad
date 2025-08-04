@@ -16,10 +16,10 @@ module front_and_rear_wheels(w=wheel_w,
                              rim_h=wheel_rim_h,
                              rim_w=wheel_rim_w,
                              rim_bend=wheel_rim_bend,
-                             shaft_offset=wheel_shaft_offset,
-                             spokes=rear_wheel_spokes_count,
-                             spoke_w=rear_wheel_spoke_w,
-                             shaft_d=rear_wheel_shaft_outer_dia,
+                             shaft_offset=wheel_rear_shaft_protrusion_height,
+                             spokes=wheel_rear_spokes_count,
+                             spoke_w=wheel_rear_wheel_spoke_w,
+                             shaft_d=wheel_rear_shaft_outer_dia,
                              hub_d=wheel_hub_d,
                              hub_h=wheel_hub_h,
                              hub_inner_rim_h=wheel_hub_inner_rim_h,
@@ -68,7 +68,7 @@ module front_and_rear_wheels(w=wheel_w,
                      shaft_offset=shaft_offset,
                      spokes=spokes,
                      spoke_w=spoke_w,
-                     shaft_d=rear_wheel_shaft_outer_dia);
+                     shaft_d=wheel_rear_shaft_outer_dia);
         }
       }
     }

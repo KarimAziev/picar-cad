@@ -29,7 +29,7 @@ use <placeholders/battery_holder.scad>
 use <placeholders/ups_hat.scad>
 use <motor_brackets/standard_motor_bracket.scad>
 use <motor_brackets/n20_motor_bracket.scad>
-use <steering_system/steering_servo_panel.scad>
+use <steering_system/steering_panel.scad>
 use <steering_system/ackermann_geometry_triangle.scad>
 use <steering_system/rack_and_pinion_assembly.scad>
 use <placeholders/motor.scad>
@@ -38,29 +38,30 @@ use <wheels/rear_wheel.scad>
 
 function raspberry_pi_y_positions() =
   let (chassis_len_half = chassis_len / 2,
-       basic_y = (raspberry_pi5_screws_size[1]) / 2 + rpi_5_screws_offset(),
-       end = -chassis_len / 2 + raspberry_pi_offset - basic_y,
+       basic_y = (rpi_screws_size[1]) / 2 + rpi_5_screws_offset(),
+       end = -chassis_len / 2 + rpi_chassis_y_position - basic_y,
        start = end + rpi_len)
   [start, end];
 
 function motor_bracket_y_pos() =
-  (-chassis_len * 0.5 + motor_mount_panel_width * 0.5) + motor_bracket_offest;
+  (-chassis_len * 0.5 + standard_motor_bracket_width * 0.5)
+  + standard_motor_bracket_y_offset;
 
 function motor_bracket_x_pos() =
-  (chassis_width * 0.5) - (motor_bracket_panel_height * 0.5);
+  (chassis_width * 0.5) - (standard_motor_bracket_height * 0.5);
 
 module raspberry_pi5_screws_2d(vertical=false, show_rpi=false) {
   size = vertical
-    ? [raspberry_pi5_screws_size[1],
-       raspberry_pi5_screws_size[0]]
-    : raspberry_pi5_screws_size;
+    ? [rpi_screws_size[1],
+       rpi_screws_size[0]]
+    : rpi_screws_size;
   four_corner_holes_2d(size=size,
                        center=true,
-                       hole_dia=raspberry_pi5_screws_hole_size);
+                       hole_dia=rpi_screw_hole_dia);
 }
 
 module ups_hat_screws_2d() {
-  four_corner_holes_2d(size=ups_hat_screws_size,
+  four_corner_holes_2d(size=battery_ups_module_screws_size,
                        center=true,
                        hole_dia=m3_hole_dia);
 }
@@ -101,10 +102,10 @@ module chassis_center_wiring_cutouts(dia=chassis_center_cutout_dia,
   x_offsets = [-1, 0, 1];
 
   // Horizontal rows of circles (in line with RPi screw zone)
-  vertical_positions = number_sequence(from = -ups_hat_offset / 2
-                                       - raspberry_pi5_screws_size[1]
+  vertical_positions = number_sequence(from = -battery_ups_offset / 2
+                                       - rpi_screws_size[1]
                                        - half_of_chassis
-                                       + raspberry_pi_offset,
+                                       + rpi_chassis_y_position,
                                        to = start - spacing - dia -
                                        chassis_center_wiring_cutout_y_margin,
                                        step = spacing + dia);
@@ -179,11 +180,11 @@ module chassis_head_wiring_pass_through_holes(hole_size                = chassis
 
   // Compute top and bottom Y ranges for hole placements
   cutout_spacing_y_start = steering_panel_y_pos_from_center
-    + steering_servo_panel_center_screws_offsets[1];
+    + steering_panel_center_screws_offsets[1];
 
   cutout_spacing_y_end = steering_panel_y_pos_from_center
-    + pan_servo_y_offset_from_steering_panel
-    - cam_pan_servo_slot_width / 2;
+    + chassis_pan_servo_y_distance_from_steering
+    - head_neck_pan_servo_slot_width / 2;
 
   vertical_distance = cutout_spacing_y_end - cutout_spacing_y_start;
   step_y = hole_spacing + wiring_h;
@@ -253,9 +254,9 @@ module chassis_head_wiring_pass_through_holes(hole_size                = chassis
 }
 
 function ups_hat_y_pos() = -chassis_len / 2
-  + ups_hat_screws_size[1] / 2
+  + battery_ups_module_screws_size[1] / 2
   + chassis_base_rear_cutout_depth
-  + m3_hole_dia / 2 + ups_hat_offset;
+  + m3_hole_dia / 2 + battery_ups_offset;
 
 module chassis_2d() {
   chassis_len_half = chassis_len / 2;
@@ -277,23 +278,23 @@ module chassis_2d() {
     battery_holders_screws_2d();
     chassis_head_wiring_pass_through_holes();
     translate([0, steering_panel_y_pos_from_center, 0]) {
-      four_corner_holes_2d(steering_servo_panel_center_screws_offsets,
-                           hole_dia=steering_servo_panel_center_screw_dia,
+      four_corner_holes_2d(steering_panel_center_screws_offsets,
+                           hole_dia=steering_panel_center_screw_dia,
                            center=true);
     }
 
     mirror_copy([1, 0, 0]) {
       n20_bracket_screws();
-      motor_bracket_screws();
+      standard_standard_motor_bracket_screws_size();
     }
 
     mirror_copy([1, 0, 0]) {
-      motor_bracket_screws(-motor_mount_panel_thickness * 2);
+      standard_standard_motor_bracket_screws_size(-standard_motor_bracket_thickness * 2);
     }
 
     pan_servo_cutout_2d();
 
-    translate([0, -chassis_len_half + raspberry_pi_offset, 0]) {
+    translate([0, -chassis_len_half + rpi_chassis_y_position, 0]) {
       raspberry_pi5_screws_2d();
     }
 
@@ -331,11 +332,11 @@ module chassis_2d() {
   }
 }
 
-module motor_bracket_screws(extra_x=0, extra_y=0) {
+module standard_standard_motor_bracket_screws_size(extra_x=0, extra_y=0) {
   translate([motor_bracket_x_pos() + extra_x,
              motor_bracket_y_pos() + extra_y,
              0]) {
-    for (x = motor_bracket_screws) {
+    for (x = standard_motor_bracket_screws_size) {
       translate([x, 0, 0]) {
         circle(r = m2_hole_dia / 2, $fn = 360);
       }
@@ -352,9 +353,9 @@ module chassis_base_3d() {
 module rear_motor_mount_wall(show_motor=false, show_wheel=false) {
   translate([motor_bracket_x_pos(),
              motor_bracket_y_pos(),
-             motor_mount_panel_thickness]) {
+             standard_motor_bracket_thickness]) {
     rotate([0, 0, 90]) {
-      motor_bracket(show_motor=show_motor, show_wheel=show_wheel);
+      standard_motor_bracket(show_motor=show_motor, show_wheel=show_wheel);
     }
   }
 }
@@ -459,4 +460,4 @@ module chassis(motor_type=motor_type,
   }
 }
 
-chassis(motor_type="standard", show_motor_brackets=true, show_motor=true);
+chassis();

@@ -24,7 +24,7 @@ use <front_panel.scad>
 
 color("white") {
   chassis();
-  half_wheels_distance = rack_mount_panel_len * 0.5;
+  half_wheels_distance = steering_panel_length * 0.5;
 
   translate([(chassis_width / 2 + head_plate_width * 0.5) + 6, 0, 0]) {
     head_mount();
@@ -33,7 +33,7 @@ color("white") {
     }
   }
 
-  translate([-(rack_mount_panel_len / 2) - front_panel_height * 0.5,
+  translate([-(steering_panel_length / 2) - front_panel_height * 0.5,
              chassis_len * 0.5 - front_panel_width * 0.5,
              0]) {
     rotate([0, 0, 90]) {

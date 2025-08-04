@@ -1,6 +1,6 @@
 /**
  * Module: Uninterruptible Power Supply Module 3S
- * https://www.waveshare.com/ups-module-3s.htm
+ * https://www.waveshare.com/ups-module-3s.html
  *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
@@ -22,9 +22,9 @@ function ups_hat_polygon_cutout_points(max_len, max_height) =
    [end_x, 0.46 * end_y],
    [end_x, 0]];
 
-module ups_hat(size=ups_hat_size,
-               holder_size=ups_hat_battery_holder_size,
-               holder_thickness=ups_hat_battery_holder_thickness,
+module ups_hat(size=battery_ups_size,
+               holder_size=battery_ups_holder_size,
+               holder_thickness=battery_ups_holder_thickness,
                standoff_lower_height=4,
                screw_dia=m3_hole_dia,
                standoff_h=5,
@@ -61,10 +61,10 @@ module ups_hat(size=ups_hat_size,
             rounded_rect([total_len, total_w],
                          r=total_len * 0.05,
                          center=false);
-            translate([(total_len - ups_hat_screws_size[0]) / 2,
-                       (total_w - ups_hat_screws_size[1]) / 2,
+            translate([(total_len - battery_ups_module_screws_size[0]) / 2,
+                       (total_w - battery_ups_module_screws_size[1]) / 2,
                        0]) {
-              four_corner_holes_2d(size=ups_hat_screws_size,
+              four_corner_holes_2d(size=battery_ups_module_screws_size,
                                    center=false,
                                    hole_dia=m3_hole_dia,
                                    fn_val=10);
@@ -122,13 +122,13 @@ module ups_hat(size=ups_hat_size,
     }
   }
   color("gold", alpha=1) {
-    translate([(total_len - ups_hat_screws_size[0]) / 2,
-               (total_w - ups_hat_screws_size[1]) / 2,
+    translate([(total_len - battery_ups_module_screws_size[0]) / 2,
+               (total_w - battery_ups_module_screws_size[1]) / 2,
                0]) {
       for (x_ind = [0, 1])
         for (y_ind = [0, 1]) {
-          x_pos = x_ind * ups_hat_screws_size[0];
-          y_pos = y_ind * ups_hat_screws_size[1];
+          x_pos = x_ind * battery_ups_module_screws_size[0];
+          y_pos = y_ind * battery_ups_module_screws_size[1];
           translate([x_pos, y_pos]) {
             linear_extrude(height=standoff_h, center=false) {
               circle(r=screw_dia / 2);
@@ -139,9 +139,9 @@ module ups_hat(size=ups_hat_size,
   }
 }
 
-module ups_hat_wall_cutout(max_len=ups_hat_battery_holder_size[0] - 4,
-                           max_height=ups_hat_battery_holder_size[2],
-                           thickness=ups_hat_battery_holder_thickness + 1,
+module ups_hat_wall_cutout(max_len=battery_ups_holder_size[0] - 4,
+                           max_height=battery_ups_holder_size[2],
+                           thickness=battery_ups_holder_thickness + 1,
                            offset_rad=1,
                            points) {
 

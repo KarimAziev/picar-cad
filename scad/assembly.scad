@@ -21,15 +21,12 @@ use <wheels/rear_wheel.scad>
 use <placeholders/battery_holder.scad>
 use <motor_brackets/n20_motor_bracket.scad>
 
-batteries_holder_assembly_y_idx = len(baterry_holes_y_positions) / 2 + 1;
-
 chassis_assembly_center         = true;
 show_motor                      = true;
 show_motor_brackets             = true;
 show_wheels                     = true;
 show_rear_panel                 = true;
 show_front_panel                = true;
-show_ackermann_triangle         = false;
 show_ups_hat                    = true;
 show_steering                   = true;
 show_bearing                    = true;
@@ -37,7 +34,9 @@ show_brackets                   = true;
 show_battery_holders            = true;
 show_rpi                        = true;
 show_head                       = true;
+show_ackermann_triangle         = false;
 chassis_color                   = "white";
+batteries_holder_assembly_y_idx = len(baterry_holes_y_positions) / 2 + 1;
 
 module chassis_assembly(center=false,
                         show_rpi=true,
@@ -58,7 +57,7 @@ module chassis_assembly(center=false,
   global_z_offset = chassis_thickness +
     n20_motor_screws_panel_x_offset()
     + n20_motor_screws_panel_thickness()
-    + wheel_dia  / 2 + tire_thickness + (tire_fillet_gap * 2);
+    + wheel_dia  / 2 + wheel_tire_thickness + (wheel_tire_fillet_gap * 2);
   translate([center ? 0 : global_x_offset,
              0,
              global_z_offset]) {
@@ -68,7 +67,7 @@ module chassis_assembly(center=false,
     if (show_steering) {
       translate([0,
                  steering_panel_y_pos_from_center,
-                 rack_mount_panel_thickness / 2]) {
+                 steering_rack_support_thickness / 2]) {
         steering_system_assembly(show_wheels=show_wheels,
                                  show_bearing=show_bearing,
                                  show_brackets=show_brackets);
@@ -77,8 +76,8 @@ module chassis_assembly(center=false,
 
     if (show_rpi) {
       standow_lower_h = chassis_thickness + 1;
-      y = (raspberry_pi5_screws_size[1]) / 2 + rpi_5_screws_offset();
-      end = -chassis_len / 2 + raspberry_pi_offset - y;
+      y = (rpi_screws_size[1]) / 2 + rpi_5_screws_offset();
+      end = -chassis_len / 2 + rpi_chassis_y_position - y;
 
       z = chassis_thickness + rpi_standoff_height - standow_lower_h;
       translate([-rpi_width / 2,
@@ -90,8 +89,8 @@ module chassis_assembly(center=false,
     }
     if (show_ups_hat) {
       rotate([0, 0, 0]) {
-        translate([-ups_hat_size[0] / 2,
-                   ups_hat_y_pos() + -ups_hat_size[1] / 2,
+        translate([-battery_ups_size[0] / 2,
+                   ups_hat_y_pos() + -battery_ups_size[1] / 2,
                    0]) {
           rotate([0, 0, 0]) {
             translate([0, 0, 0]) {
@@ -181,7 +180,7 @@ module assembly_view(center=chassis_assembly_center,
                      center=center) {
       if (show_head) {
         translate([0, steering_panel_y_pos_from_center
-                   + pan_servo_y_offset_from_steering_panel,
+                   + chassis_pan_servo_y_distance_from_steering,
                    chassis_thickness]) {
           translate([-2, 0, 25.9]) {
             rotate([0, 0, 180]) {

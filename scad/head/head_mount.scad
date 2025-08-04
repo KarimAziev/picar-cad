@@ -68,14 +68,14 @@ module head_front_plate() {
 
         for (dx = [1, -1]) {
           for (dy = [1, -1]) {
-            x = dx * camera_screw_offset_x;
+            x = dx * head_camera_screw_offset_x;
             y = dy == 1
-              ? camera_screw_offset_y_top
-              : camera_screw_offset_y;
+              ? head_camera_screw_offset_y_top
+              : head_camera_screw_offset_y;
 
             translate([x, y, 0]) {
               cylinder(h = head_plate_thickness + 0.1,
-                       r = camera_screw_dia / 2,
+                       r = head_camera_screw_dia / 2,
                        center=true,
                        $fn=50);
             }

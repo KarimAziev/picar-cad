@@ -13,10 +13,10 @@ module pan_servo_screws_2d(servo_screw_d=1.5,
   step = servo_screw_d + screws_distance;
   amount = floor(((chassis_width * 0.25) / 2) / step);
   screw_rad = servo_screw_d / 2;
-  slot_rad = pan_servo_slot_dia / 2;
+  slot_rad = chassis_pan_servo_slot_dia / 2;
 
   union() {
-    circle(d=pan_servo_slot_dia, $fn=360);
+    circle(d=chassis_pan_servo_slot_dia, $fn=360);
     for (dir = [-1, 1]) {
       group_offst = (dir < 0
                      ? -slot_rad - screw_rad - screws_distance
@@ -36,7 +36,7 @@ module pan_servo_screws_2d(servo_screw_d=1.5,
 
 module pan_servo_cutout_2d() {
   translate([0, steering_panel_y_pos_from_center +
-             pan_servo_y_offset_from_steering_panel, 0]) {
+             chassis_pan_servo_y_distance_from_steering, 0]) {
     pan_servo_screws_2d();
   }
 }

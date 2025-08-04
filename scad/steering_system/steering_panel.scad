@@ -31,7 +31,7 @@
  *   +---+                  |      |_ +--------+_|      |                  +---+
  *   |   |                  |         | front_h|        |                  |   |
  *   +---+------------------+--------+--------+---------+------------------+---+
- *   |                         rack_mount_panel()                              |
+ *   |                         steering_rack_support()                              |
  *   +-------------------------------------------------------------------------+
  *
  *  z
@@ -65,18 +65,18 @@ module knuckle_lower_connector() {
                           stopper_h=knuckle_pin_stopper_height);
 }
 
-function steering_servo_panel_center_rect_y() =
-  steering_servo_panel_center_screws_offsets[1]
-  + steering_servo_panel_center_screw_dia * 2 + 3;
+function steering_panel_center_rect_y() =
+  steering_panel_center_screws_offsets[1]
+  + steering_panel_center_screw_dia * 2 + 3;
 
 function steering_panel_hinges_calc_distance_from_center() =
   poly_width_at_y(chassis_shape_points,
                   steering_panel_y_pos_from_center
                   - steering_panel_hinge_length)
-  - rack_mount_rack_panel_width / 2;
+  - steering_rack_support_width / 2;
 
 function knuckle_connectors_x_offsets() =
-  let (half_of_len=rack_mount_panel_len / 2,
+  let (half_of_len=steering_panel_length / 2,
        knuckle_rad = knuckle_dia / 2)
   [half_of_len - knuckle_rad,
    -half_of_len + knuckle_rad];
@@ -85,7 +85,7 @@ module steering_panel_hinge_2d() {
   y = steering_panel_hinge_length
     + steering_panel_hinge_rad;
   difference() {
-    rounded_rect(size=[rack_mount_rack_panel_width, y],
+    rounded_rect(size=[steering_rack_support_width, y],
                  center=true,
                  r=steering_panel_hinge_rad,
                  fn=100);
@@ -107,7 +107,7 @@ module steering_panel_hinges_screws_holes() {
 
   difference() {
     translate([side_connector_offst_x,
-               (-rack_mount_rack_panel_width / 2
+               (-steering_rack_support_width / 2
                 -steering_panel_hinge_length / 2
                 + steering_panel_hinge_rad)
                + steering_panel_y_pos_from_center - y / 2
@@ -121,31 +121,31 @@ module steering_panel_hinges_screws_holes() {
 
 module steering_chassis_bar_2d(x_offsets) {
   difference() {
-    rounded_rect(size=[rack_mount_panel_len,
-                       rack_mount_rack_panel_width],
+    rounded_rect(size=[steering_panel_length,
+                       steering_rack_support_width],
                  center=true,
-                 r=rack_mount_rack_panel_width * 0.5);
+                 r=steering_rack_support_width * 0.5);
     for (x = is_undef(x_offsets)
            ? knuckle_connectors_x_offsets()
            : x_offsets) {
-      translate([x, 0, rack_mount_panel_thickness / 2]) {
+      translate([x, 0, steering_rack_support_thickness / 2]) {
         circle(r=steering_panel_hinge_screw_dia / 2, $fn=360);
       }
     }
   }
 }
 
-module rack_mount_panel(show_rack=false) {
-  half_of_len = rack_mount_panel_len / 2;
+module steering_rack_support(show_rack=false) {
+  half_of_len = steering_panel_length / 2;
   knuckle_rad = knuckle_dia / 2;
   knuckle_x_poses = [half_of_len - knuckle_rad,
                      -half_of_len + knuckle_rad];
 
-  center_panel_width = steering_servo_panel_center_rect_y();
+  center_panel_width = steering_panel_center_rect_y();
   side_connector_offst_x = steering_panel_hinges_calc_distance_from_center();
 
   union() {
-    linear_extrude(height=rack_mount_panel_thickness,
+    linear_extrude(height=steering_rack_support_thickness,
                    center=true) {
       difference() {
         union() {
@@ -164,30 +164,14 @@ module rack_mount_panel(show_rack=false) {
                                  center_panel_width) * 0.1);
           steering_chassis_bar_2d(knuckle_x_poses);
         }
-        four_corner_holes_2d(steering_servo_panel_center_screws_offsets,
-                             hole_dia=steering_servo_panel_center_screw_dia,
+        four_corner_holes_2d(steering_panel_center_screws_offsets,
+                             hole_dia=steering_panel_center_screw_dia,
                              center=true);
-      }
-    }
-
-    translate([0, -rack_mount_panel_width / 2, 0]) {
-      vertical_servo_plate();
-      translate([0,
-                 -steering_servo_panel_thickness / 2,
-                 -rack_mount_panel_thickness / 2]) {
-        width = steering_servo_extra_width + steering_servo_slot_height;
-        rotate([0, 0, 180]) {
-          linear_extrude(height=rack_mount_panel_thickness) {
-            rounded_rect_two([steering_servo_slot_width,
-                              steering_servo_panel_thickness],
-                             center=true);
-          }
-        }
       }
     }
 
     for (x = knuckle_x_poses) {
-      translate([x, 0, rack_mount_panel_thickness
+      translate([x, 0, steering_rack_support_thickness
                  / 2]) {
         knuckle_lower_connector();
       }
@@ -195,11 +179,11 @@ module rack_mount_panel(show_rack=false) {
 
     mirror_copy([1, 0, 0]) {
       translate([side_connector_offst_x,
-                 -rack_mount_rack_panel_width / 2
+                 -steering_rack_support_width / 2
                  -steering_panel_hinge_length / 2
                  + steering_panel_hinge_rad,
-                 -rack_mount_panel_thickness / 2]) {
-        linear_extrude(height=max(rack_mount_panel_thickness * 0.4, 1),
+                 -steering_rack_support_thickness / 2]) {
+        linear_extrude(height=max(steering_rack_support_thickness * 0.4, 1),
                        center=false) {
           steering_panel_hinge_2d();
         }
@@ -207,23 +191,23 @@ module rack_mount_panel(show_rack=false) {
     }
 
     if (show_rack) {
-      translate([0, 0, rack_mount_panel_thickness / 2]) {
+      translate([0, 0, steering_rack_support_thickness / 2]) {
         rack_mount(show_brackets=true);
       }
     }
   }
 }
 
-module steering_servo_panel(size=[servo_hat_w,
-                                  rack_width],
-                            front_h=steering_servo_panel_rail_height,
-                            thickness=steering_servo_panel_rail_thickness,
-                            front_w=steering_servo_panel_rail_len,
-                            show_rack=false,
-                            z_r=undef,
-                            center=true,
-                            show_servo=false,
-                            show_pinion=true) {
+module steering_panel(size=[servo_hat_w,
+                            steering_rack_width],
+                      front_h=steering_panel_rail_height,
+                      thickness=steering_panel_rail_thickness,
+                      front_w=steering_panel_rail_len,
+                      show_rack=false,
+                      z_r=undef,
+                      center=true,
+                      show_servo=false,
+                      show_pinion=true) {
 
   x = size[0];
   y = size[1];
@@ -232,23 +216,36 @@ module steering_servo_panel(size=[servo_hat_w,
   z_r = y / 2;
 
   union() {
-    color(blue_grey_carbon) {
-      union() {
-        rack_mount_panel(show_rack=show_rack);
-        rotate([90, 0, 0]) {
-          translate([0, (front_h + thickness) / 2, -y / 2]) {
-            rad = min((min(front_w, front_h) * 0.1), 2);
-
-            translate([0, 0, rack_width + thickness / 2]) {
-              linear_extrude(height=thickness, center=true) {
-                rounded_rect_two([front_w, front_h], center=center, r=rad);
-              }
+    union() {
+      steering_rack_support(show_rack=show_rack);
+      translate([0, -steering_center_panel_width / 2, 0]) {
+        steering_vertical_servo_mount();
+        translate([0,
+                   -steering_vertical_panel_thickness / 2,
+                   -steering_rack_support_thickness / 2]) {
+          width = steering_servo_extra_width + steering_servo_slot_height;
+          rotate([0, 0, 180]) {
+            linear_extrude(height=steering_rack_support_thickness) {
+              rounded_rect_two([steering_servo_slot_width,
+                                steering_vertical_panel_thickness],
+                               center=true);
             }
+          }
+        }
+      }
+      rotate([90, 0, 0]) {
+        translate([0, (front_h + thickness) / 2, -y / 2]) {
+          rad = min((min(front_w, front_h) * 0.1), 2);
 
-            translate([0, 0, -thickness / 2 - 0.1]) {
-              linear_extrude(height=thickness, center=true) {
-                rounded_rect_two([front_w, front_h], center=center, r=rad);
-              }
+          translate([0, 0, steering_rack_width + thickness / 2]) {
+            linear_extrude(height=thickness, center=true) {
+              rounded_rect_two([front_w, front_h], center=center, r=rad);
+            }
+          }
+
+          translate([0, 0, -thickness / 2 - 0.1]) {
+            linear_extrude(height=thickness, center=true) {
+              rounded_rect_two([front_w, front_h], center=center, r=rad);
             }
           }
         }
@@ -260,7 +257,7 @@ module steering_servo_panel(size=[servo_hat_w,
       slot_h = steering_servo_slot_height;
       screws_dia = steering_servo_screw_dia;
       screws_offset=steering_servo_screws_offset;
-      extra_h=rack_mount_panel_thickness + steering_servo_extra_h;
+      extra_h=steering_rack_support_thickness + steering_servo_extra_h;
       extra_w=steering_servo_extra_width;
       screws_offst_x = screw_x_offst(slot_w, screws_dia, screws_offset);
       w = extra_w + screws_dia * 2 + slot_w;
@@ -269,9 +266,9 @@ module steering_servo_panel(size=[servo_hat_w,
       z_offst = 0;
 
       y_offst = -servo_size[2] / 2
-        - rack_mount_panel_width / 2
+        - steering_center_panel_width / 2
         + screws_hat_z_offset
-        - steering_servo_panel_thickness
+        - steering_vertical_panel_thickness
         - servo_hat_thickness / 2;
 
       translate([0, 0, full_h]) {
@@ -299,15 +296,16 @@ module steering_servo_panel(size=[servo_hat_w,
   }
 }
 
-module vertical_servo_plate(size=[steering_servo_slot_width,
-                                  steering_servo_slot_height],
-                            screws_dia=steering_servo_screw_dia,
-                            screws_offset=steering_servo_screws_offset,
-                            extra_h=rack_mount_panel_thickness
-                            + steering_servo_extra_h,
-                            extra_w=steering_servo_extra_width,
-                            thickness=steering_servo_panel_thickness,
-                            center=false) {
+module steering_vertical_servo_mount(size=[steering_servo_slot_width,
+                                           steering_servo_slot_height],
+                                     screws_dia=steering_servo_screw_dia,
+                                     screws_offset=steering_servo_screws_offset,
+                                     extra_h=steering_rack_support_thickness
+                                     + steering_servo_extra_h,
+                                     extra_w=steering_servo_extra_width,
+                                     thickness=
+                                     steering_vertical_panel_thickness,
+                                     center=false) {
 
   slot_w = size[0];
   slot_h = size[1];
@@ -340,6 +338,6 @@ module vertical_servo_plate(size=[steering_servo_slot_width,
   }
 }
 
-steering_servo_panel(show_servo=false,
-                     show_rack=false,
-                     show_pinion=true);
+steering_panel(show_servo=false,
+               show_rack=false,
+               show_pinion=true);

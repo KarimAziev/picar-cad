@@ -31,16 +31,16 @@ use <rack_connector.scad>
 use <bearing_shaft.scad>
 use <bearing_connector.scad>
 
-module bracket(a_len=bracket_rack_side_w_length,
-               b_len=bracket_rack_side_h_length,
+module bracket(a_len=steering_bracket_rack_side_w_length,
+               b_len=steering_bracket_rack_side_h_length,
                w=steering_bracket_linkage_width,
                thickness=steering_bracket_linkage_thickness,
-               connector_d=bracket_bearing_outer_d,
+               connector_d=steering_bracket_bearing_outer_d,
                show_bearing=false,
-               bearing_flanged_h=bracket_bearing_flanged_height,
-               bearing_flanged_w=bracket_bearing_flanged_width,
-               bearing_shaft_d = round(bracket_bearing_shaft_d),
-               bearing_h=bracket_bearing_height,
+               bearing_flanged_h=steering_bracket_bearing_flanged_height,
+               bearing_flanged_w=steering_breacket_bearing_flanged_width,
+               bearing_shaft_d = round(steering_bracket_bearing_shaft_d),
+               bearing_h=steering_bracket_bearing_height,
                bracket_color=blue_grey_carbon,
                show_text=false) {
 
@@ -110,12 +110,12 @@ module bracket(a_len=bracket_rack_side_w_length,
         translate([x_offst, b_len + connector_d / 2, -thickness / 2]) {
           union() {
             color(bracket_color, alpha=0.6) {
-              bearing_upper_connector(h=bracket_bearing_pin_base_height);
+              bearing_upper_connector(h=steering_bracket_bearing_bearing_pin_base_h);
             }
 
             if (show_bearing) {
               translate([0, 0, bearing_flanged_h]) {
-                bearing(d=bracket_bearing_d,
+                bearing(d=steering_bracket_bearing_d,
                         h=bearing_h,
                         flanged_w=bearing_flanged_w,
                         flanged_h=bearing_flanged_h,
@@ -136,7 +136,7 @@ module bracket(a_len=bracket_rack_side_w_length,
 union() {
   rotate([0, 0, 180]) {
     bracket();
-    translate([bracket_rack_side_w_length + bracket_bearing_outer_d
+    translate([steering_bracket_rack_side_w_length + steering_bracket_bearing_outer_d
                + 5, 0, 0]) {
       mirror([1, 0, 0]) {
         bracket();

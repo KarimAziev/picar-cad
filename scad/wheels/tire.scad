@@ -19,17 +19,17 @@ include <../parameters.scad>
 
 module tire() {
   inner_r = wheel_dia / 2;
-  outer_r = inner_r + tire_thickness + wheel_rim_h;
-  half_of_width = tire_width / 2;
+  outer_r = inner_r + wheel_tire_thickness + wheel_rim_h;
+  half_of_width = wheel_tire_width / 2;
   if ($children > 0) {
-    rotate_extrude(convexity=10, $fn=tire_fn) {
+    rotate_extrude(convexity=10, $fn=wheel_tire_fn) {
       children();
     }
   }
 
   difference() {
-    rotate_extrude(convexity=10, $fn=tire_fn) {
-      offset(r=tire_fillet_gap) {
+    rotate_extrude(convexity=10, $fn=wheel_tire_fn) {
+      offset(r=wheel_tire_fillet_gap) {
         polygon(points=[[inner_r, -half_of_width],
                         [inner_r,  half_of_width],
                         [outer_r,  half_of_width],
@@ -37,7 +37,7 @@ module tire() {
       }
     }
     cylinder(h=wheel_w - wheel_rim_w * 2,
-             r=wheel_dia / 2 + tire_offset,
+             r=wheel_dia / 2 + wheel_tire_offset,
              center=true,
              $fn=360);
   }

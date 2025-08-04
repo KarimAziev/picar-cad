@@ -41,7 +41,7 @@ use <../util.scad>
 use <../wheels/front_wheel.scad>
 
 function front_wheel_offset() = wheel_w / 2 +
-  (wheel_shaft_offset - (knuckle_shaft_dia / 2));
+  (wheel_rear_shaft_protrusion_height - (knuckle_shaft_dia / 2));
 
 module knuckle_shaft(show_wheel=false,
                      knuckle_shaft_color=matte_black) {

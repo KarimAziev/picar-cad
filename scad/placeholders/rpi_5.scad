@@ -332,7 +332,7 @@ module rpi_standoffs(standoff_height=10,
     translate([0, 0, -standoff_height]) {
       linear_extrude(height=standoff_height, center=false) {
         translate([rpi_5_screws_offset(), rpi_5_screws_offset(), 0]) {
-          four_corner_holes_2d(size=raspberry_pi5_screws_size,
+          four_corner_holes_2d(size=rpi_screws_size,
                                center=false,
                                hole_dia=m2_hole_dia);
         }
@@ -341,7 +341,7 @@ module rpi_standoffs(standoff_height=10,
     translate([0, 0, -standoff_height - standoff_lower_height]) {
       linear_extrude(height=standoff_lower_height, center=false) {
         translate([rpi_5_screws_offset(), rpi_5_screws_offset(), 0]) {
-          four_corner_holes_2d(size=raspberry_pi5_screws_size,
+          four_corner_holes_2d(size=rpi_screws_size,
                                center=false,
                                hole_dia=m2_hole_dia / 2);
         }
@@ -349,7 +349,7 @@ module rpi_standoffs(standoff_height=10,
     }
     translate([rpi_5_screws_offset(), rpi_5_screws_offset(), 0]) {
       linear_extrude(height=standoff_lower_height, center=false) {
-        four_corner_holes_2d(size=raspberry_pi5_screws_size,
+        four_corner_holes_2d(size=rpi_screws_size,
                              center=false,
                              hole_dia=m2_hole_dia / 2);
       }
@@ -367,7 +367,7 @@ module rpi_5(show_standoffs=false,
         difference() {
           rounded_rect([rpi_width, rpi_len], r=rpi_offset_rad);
           translate([rpi_5_screws_offset(), rpi_5_screws_offset(), 0]) {
-            four_corner_holes_2d(size=raspberry_pi5_screws_size,
+            four_corner_holes_2d(size=rpi_screws_size,
                                  center=false,
                                  hole_dia=m25_hole_dia);
           }
@@ -394,8 +394,8 @@ module rpi_5(show_standoffs=false,
         linear_extrude(height=0.1, center=false) {
           for (x_ind = [0, 1])
             for (y_ind = [0, 1]) {
-              x_pos = x_ind * raspberry_pi5_screws_size[0];
-              y_pos = y_ind * raspberry_pi5_screws_size[1];
+              x_pos = x_ind * rpi_screws_size[0];
+              y_pos = y_ind * rpi_screws_size[1];
               translate([x_pos + m25_hole_dia + hole_offst,
                          y_pos + m25_hole_dia + hole_offst]) {
                 ring_2d(r=m25_hole_dia / 2, w = 1, outer=true, fn=100);
@@ -444,9 +444,9 @@ module rpi_5(show_standoffs=false,
       }
       rpi_usb_hdmi_connectors();
 
-      translate([raspberry_pi5_screws_size[0]
+      translate([rpi_screws_size[0]
                  - rpi_csi_size[0] / 2 - 2,
-                 raspberry_pi5_screws_size[1] -
+                 rpi_screws_size[1] -
                  m25_hole_dia - 1,
                  0]) {
         csi_camera_connector(size=rpi_csi_size);

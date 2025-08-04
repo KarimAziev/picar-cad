@@ -21,8 +21,8 @@ function steering_pinion_tooth_height() =
 
 module steering_pinion_screws_2d(r_pitch,
                                  thickness,
-                                 servo_dia=pinion_servo_dia,
-                                 screw_dia=pinion_screw_dia,
+                                 servo_dia=steering_pinion_center_hole_dia,
+                                 screw_dia=steering_pinion_screw_dia,
                                  offst_c=steering_pinion_screws_servo_distance,
                                  spacing=steering_pinion_screws_spacing) {
   union() {
@@ -55,15 +55,15 @@ module steering_pinion() {
   r_pitch = steering_pinion_d / 2;
   gear(r_pitch=r_pitch,
        teeth_count=steering_pinion_teeth_count,
-       servo_dia=pinion_servo_dia,
-       thickness=pinion_thickness,
+       servo_dia=steering_pinion_center_hole_dia,
+       thickness=steering_pinion_thickness,
        pressure_angle=steering_pinion_pressure_angle,
        clearance=steering_pinion_clearance,
        backlash=steering_pinion_backlash) {
     steering_pinion_screws_2d(r_pitch=r_pitch / 2,
-                              servo_dia=pinion_servo_dia,
-                              thickness=pinion_thickness,
-                              screw_dia=pinion_screw_dia,
+                              servo_dia=steering_pinion_center_hole_dia,
+                              thickness=steering_pinion_thickness,
+                              screw_dia=steering_pinion_screw_dia,
                               offst_c=steering_pinion_screws_servo_distance,
                               spacing=steering_pinion_screws_spacing);
   }

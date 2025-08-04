@@ -31,7 +31,7 @@ module head_assembly(head_color="white",
         }
       }
       translate([0, 0, animation_z_offset]) {
-        z_offst = -(cam_pan_servo_slot_height + cam_pan_servo_height) * 0.5 + 2;
+        z_offst = -(head_neck_pan_servo_slot_height + head_neck_pan_servo_height) * 0.5 + 2;
         translate([-2,
                    6,
                    z_offst]) {

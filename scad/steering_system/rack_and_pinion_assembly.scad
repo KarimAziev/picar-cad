@@ -12,7 +12,7 @@ include <../placeholders/servo.scad>
 use <ackermann_geometry_triangle.scad>
 use <steering_pinion.scad>
 use <bracket.scad>
-use <steering_servo_panel.scad>
+use <steering_panel.scad>
 use <knuckle.scad>
 use <rack_connector.scad>
 use <rack.scad>
@@ -22,10 +22,10 @@ module knuckle_assembly(show_wheel=true,
                         show_bearing=true,
                         show_shaft=true,
                         rotation_dir=1) {
-  x_offst = rack_mount_panel_len / 2 - knuckle_dia / 2;
+  x_offst = steering_panel_length / 2 - knuckle_dia / 2;
 
   z_offst = knuckle_pin_lower_height
-    + rack_mount_panel_thickness / 2
+    + steering_rack_support_thickness / 2
     + knuckle_pin_stopper_height
     + knuckle_bearing_flanged_height;
   angle = $t > 0.0 ? pinion_angle_sync($t) : 0;
@@ -39,20 +39,20 @@ module knuckle_assembly(show_wheel=true,
 }
 
 module steering_system_distance_between_rack_and_knuckle(w=5) {
-  translate([rack_left_connector_x -
-             distance_between_knuckle_and_rack, 0,
+  translate([steering_rack_connector_x_pos -
+             steering_distance_between_knuckle_and_rack, 0,
              knuckle_height + knuckle_pin_lower_height]) {
 
     color("chartreuse", alpha=0.6) {
       linear_extrude(height=1, center=false) {
-        square([distance_between_knuckle_and_rack, w], center=false);
+        square([steering_distance_between_knuckle_and_rack, w], center=false);
       }
     }
 
-    translate([distance_between_knuckle_and_rack / 2, w * 0.1, 0]) {
+    translate([steering_distance_between_knuckle_and_rack / 2, w * 0.1, 0]) {
       color("darkblue") {
         linear_extrude(height=1, center=false) {
-          text(str("B: ", distance_between_knuckle_and_rack, "mm"),
+          text(str("B: ", steering_distance_between_knuckle_and_rack, "mm"),
                size=w * 0.7, halign="center",
                valign="bottom",
                font = "Liberation Sans:style=Bold Italic");
@@ -72,12 +72,12 @@ module steering_system_assembly(rack_color=blue_grey_carbon,
                                 show_pinion=true,
                                 show_servo=true) {
   union() {
-    steering_servo_panel(show_servo=show_servo, show_pinion=show_pinion);
+    steering_panel(show_servo=show_servo, show_pinion=show_pinion);
     if (show_distance) {
       steering_system_distance_between_rack_and_knuckle();
     }
 
-    translate([0, 0, rack_mount_panel_thickness / 2]) {
+    translate([0, 0, steering_rack_support_thickness / 2]) {
       rack_mount(show_brackets=show_brackets, rack_color=rack_color);
     }
 
@@ -96,7 +96,7 @@ module steering_system_assembly(rack_color=blue_grey_carbon,
 
     if (show_ackermann_triangle) {
       translate([0, 0, knuckle_height + knuckle_pin_lower_height
-                 + rack_mount_panel_thickness / 2
+                 + steering_rack_support_thickness / 2
                  + knuckle_pin_stopper_height
                  + knuckle_bearing_flanged_height]) {
         color("yellowgreen", alpha=0.2) {

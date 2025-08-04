@@ -144,28 +144,27 @@ module knuckle_bearing_bracket_connector(border_w=border_w,
                                          knuckle_color=blue_grey_carbon,
                                          show_text=false,
                                          show_bearing=false) {
-  notch_width = calc_notch_width(knuckle_dia, bracket_bearing_outer_d);
-  offst = bracket_bearing_outer_d / 2;
+  notch_width = calc_notch_width(knuckle_dia, steering_bracket_bearing_outer_d);
+  offst = steering_bracket_bearing_outer_d / 2;
 
-  rotate([0, 0, ackerman_alpha_deg]) {
+  rotate([0, 0, steering_alpha_deg]) {
 
     translate([0, 0, knuckle_height - knuckle_bracket_connector_height]) {
       knuckle_connector(parent_dia=knuckle_dia,
-                        outer_d=bracket_bearing_outer_d,
-                        inner_d=bracket_bearing_d,
+                        outer_d=steering_bracket_bearing_outer_d,
+                        inner_d=steering_bracket_bearing_d,
                         h=knuckle_bracket_connector_height,
-
-                        length=knuckle_bracket_connector_len,
+                        length=steering_knuckle_bracket_connector_len,
                         border_w=border_w,
                         connector_color=knuckle_color) {
         if (show_bearing) {
-          translate([bracket_bearing_outer_d / 2, 0,
-                     -bracket_bearing_flanged_height]) {
-            bearing(d=bracket_bearing_d,
-                    h=bracket_bearing_height,
-                    flanged_w=bracket_bearing_flanged_width,
-                    flanged_h=bracket_bearing_flanged_height,
-                    shaft_d=round(bracket_bearing_shaft_d),
+          translate([steering_bracket_bearing_outer_d / 2, 0,
+                     -steering_bracket_bearing_flanged_height]) {
+            bearing(d=steering_bracket_bearing_d,
+                    h=steering_bracket_bearing_height,
+                    flanged_w=steering_breacket_bearing_flanged_width,
+                    flanged_h=steering_bracket_bearing_flanged_height,
+                    shaft_d=round(steering_bracket_bearing_shaft_d),
                     shaft_ring_w=1,
                     outer_ring_w=0.5,
                     outer_col=metalic_silver_3,

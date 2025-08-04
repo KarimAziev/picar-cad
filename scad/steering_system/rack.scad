@@ -24,9 +24,9 @@ module shifted_tooth(points, height) {
   }
 }
 
-module steering_rack(length=rack_len,
-                     width=rack_width,
-                     base_height=rack_base_h,
+module steering_rack(length=steering_rack_teethed_length,
+                     width=steering_rack_width,
+                     base_height=steering_rack_base_height,
                      r_pitch=steering_pinion_d / 2,
                      teeth_count=steering_pinion_teeth_count,
                      pressure_angle=steering_pinion_pressure_angle,
@@ -62,7 +62,7 @@ module steering_rack(length=rack_len,
   shifted_points = [for (pt = tooth_points) [pt[0], pt[1] - root_rad]];
 
   ys = abs(min([for (pt = shifted_points) pt[1]]));
-  offst = [-rack_len / 2 - bracket_bearing_outer_d / 2 - 0.4,
+  offst = [-length / 2 - steering_bracket_bearing_outer_d / 2 - 0.4,
            0,
            0];
 
@@ -91,10 +91,10 @@ module steering_rack(length=rack_len,
             translate([0, 0, base_height / 2]) {
               extra_w = 2;
               linear_extrude(height=base_height, center=false) {
-                translate([-rack_len / 2 - bracket_bearing_outer_d,
+                translate([-length / 2 - steering_bracket_bearing_outer_d,
                            -width / 2 - extra_w / 2,
                            0]) {
-                  square([bracket_bearing_outer_d, width + extra_w]);
+                  square([steering_bracket_bearing_outer_d, width + extra_w]);
                 }
               }
             }
@@ -118,15 +118,15 @@ module steering_rack(length=rack_len,
       hole_depth = 0.8;
       hole_w = 0.5;
       hole_h = min(base_height * 0.8, 3);
-      translate([steering_servo_panel_rail_len / 2,
-                 rack_width / 2 - hole_depth / 2,
+      translate([steering_panel_rail_len / 2,
+                 steering_rack_width / 2 - hole_depth / 2,
                  min(1, base_height)]) {
         linear_extrude(height=hole_h, center=false) {
           square([hole_w, hole_depth], center=false);
         }
       }
-      translate([steering_servo_panel_rail_len / 2,
-                 -rack_width / 2 - hole_depth / 2,
+      translate([steering_panel_rail_len / 2,
+                 -steering_rack_width / 2 - hole_depth / 2,
                  min(1, base_height)]) {
         linear_extrude(height=hole_h, center=false) {
           square([hole_w, hole_depth], center=false);
@@ -150,7 +150,7 @@ module rack_assembly(show_brackets=true, rack_color=blue_grey_carbon) {
 rack_mount(show_brackets=false);
 
 // translate([0, 0, steering_pinion_d / 2 +
-//            rack_base_h +
+//            steering_rack_base_height +
 //            steering_pinion_tooth_height()]) {
 //   rotate([90, 41.7, 0]) {
 //     steering_pinion();

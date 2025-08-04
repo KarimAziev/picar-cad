@@ -35,11 +35,11 @@ include <../colors.scad>
 use <../util.scad>
 use <../placeholders/servo.scad>
 
-module head_neck_pan_mount(size=[cam_pan_servo_slot_width,
-                                 cam_pan_servo_slot_height],
-                           screws_dia=cam_pan_servo_screw_dia,
-                           screws_offset=cam_pan_servo_screws_offset,
-                           thickness=cam_pan_servo_slot_thickness,
+module head_neck_pan_mount(size=[head_neck_pan_servo_slot_width,
+                                 head_neck_pan_servo_slot_height],
+                           screws_dia=head_neck_pan_servo_screw_dia,
+                           screws_offset=head_neck_pan_servo_screws_offset,
+                           thickness=head_neck_pan_servo_slot_thickness,
                            extra_w=2,
                            extra_h=2) {
 
@@ -56,12 +56,12 @@ module head_neck_pan_mount(size=[cam_pan_servo_slot_width,
   }
 }
 
-module head_neck_tilt_mount(size=[cam_tilt_servo_slot_width,
-                                  cam_tilt_servo_slot_height],
-                            screws_dia=cam_tilt_servo_screw_dia,
-                            screws_offset=cam_tilt_servo_screws_offset,
-                            servo_height=cam_pan_servo_height,
-                            thickness=cam_tilt_servo_slot_thickness,
+module head_neck_tilt_mount(size=[head_neck_tilt_servo_slot_width,
+                                  head_neck_tilt_servo_slot_height],
+                            screws_dia=head_neck_tilt_servo_screw_dia,
+                            screws_offset=head_neck_tilt_servo_screws_offset,
+                            servo_height=head_neck_pan_servo_height,
+                            thickness=head_neck_tilt_servo_slot_thickness,
                             extra_w=2,
                             extra_h=2) {
 
@@ -83,39 +83,39 @@ module head_neck_tilt_mount(size=[cam_tilt_servo_slot_width,
   }
 }
 
-module head_neck_mount(pan_servo_size=[cam_pan_servo_slot_width,
-                                       cam_pan_servo_slot_height],
-                       pan_screws_dia=cam_pan_servo_screw_dia,
-                       pan_screws_offset=cam_pan_servo_screws_offset,
-                       pan_thickness=cam_pan_servo_slot_thickness,
-                       pan_servo_height=cam_pan_servo_height,
-                       pan_servo_extra_w=pan_servo_extra_w,
-                       pan_servo_extra_h=pan_servo_extra_h,
-                       tilt_servo_size=[cam_tilt_servo_slot_width,
-                                        cam_tilt_servo_slot_height],
-                       tilt_screws_dia=cam_tilt_servo_screw_dia,
-                       tilt_screws_offset=cam_tilt_servo_screws_offset,
-                       tilt_thickness=cam_tilt_servo_slot_thickness,
-                       tilt_servo_extra_w=cam_tilt_servo_extra_w,
-                       tilt_servo_extra_h=cam_tilt_servo_extra_h,
+module head_neck_mount(pan_servo_size=[head_neck_pan_servo_slot_width,
+                                       head_neck_pan_servo_slot_height],
+                       pan_screws_dia=head_neck_pan_servo_screw_dia,
+                       pan_screws_offset=head_neck_pan_servo_screws_offset,
+                       pan_thickness=head_neck_pan_servo_slot_thickness,
+                       pan_servo_height=head_neck_pan_servo_height,
+                       head_neck_pan_servo_extra_w=head_neck_pan_servo_extra_w,
+                       head_neck_pan_servo_extra_h=head_neck_pan_servo_extra_h,
+                       tilt_servo_size=[head_neck_tilt_servo_slot_width,
+                                        head_neck_tilt_servo_slot_height],
+                       tilt_screws_dia=head_neck_tilt_servo_screw_dia,
+                       tilt_screws_offset=head_neck_tilt_servo_screws_offset,
+                       tilt_thickness=head_neck_tilt_servo_slot_thickness,
+                       tilt_servo_extra_w=head_neck_tilt_servo_extra_w,
+                       tilt_servo_extra_h=head_neck_tilt_servo_extra_h,
                        neck_color="white") {
 
   color(neck_color) {
     union() {
       rotate([180, 0, 0]) {
-        extra_h = pan_servo_extra_h + tilt_thickness + pan_thickness;
+        extra_h = head_neck_pan_servo_extra_h + tilt_thickness + pan_thickness;
         head_neck_pan_mount(size=pan_servo_size,
                             screws_dia=pan_screws_dia,
                             screws_offset=pan_screws_offset,
                             thickness=pan_thickness,
-                            extra_w=pan_servo_extra_w,
+                            extra_w=head_neck_pan_servo_extra_w,
                             extra_h=extra_h);
       }
       total_h = tilt_servo_size[1] + tilt_servo_extra_h;
-      total_w = pan_servo_size[0] + pan_servo_extra_w;
+      total_w = pan_servo_size[0] + head_neck_pan_servo_extra_w;
 
       y_offst = pan_servo_size[1] * 0.5
-        + pan_servo_extra_h * 0.5
+        + head_neck_pan_servo_extra_h * 0.5
         + tilt_thickness * 0.5;
 
       z_offst = pan_servo_size[0] * 0.5 - tilt_thickness;
@@ -135,22 +135,22 @@ module head_neck_mount(pan_servo_size=[cam_pan_servo_slot_width,
   }
 }
 
-module head_neck_assembly(pan_servo_size=[cam_pan_servo_slot_width,
-                                          cam_pan_servo_slot_height],
-                          pan_screws_dia=cam_pan_servo_screw_dia,
-                          pan_screws_offset=cam_pan_servo_screws_offset,
-                          pan_thickness=cam_pan_servo_slot_thickness,
-                          pan_servo_height=cam_pan_servo_height,
-                          pan_servo_extra_w=pan_servo_extra_w,
-                          pan_servo_extra_h=pan_servo_extra_h,
-                          tilt_servo_size=[cam_tilt_servo_slot_width,
-                                           cam_tilt_servo_slot_height],
-                          tilt_screws_dia=cam_tilt_servo_screw_dia,
-                          tilt_screws_offset=cam_tilt_servo_screws_offset,
-                          tilt_thickness=cam_tilt_servo_slot_thickness,
-                          tilt_servo_extra_w=cam_tilt_servo_extra_w,
-                          tilt_servo_extra_h=cam_tilt_servo_extra_h,
-                          tilt_servo_height=cam_tilt_servo_height,
+module head_neck_assembly(pan_servo_size=[head_neck_pan_servo_slot_width,
+                                          head_neck_pan_servo_slot_height],
+                          pan_screws_dia=head_neck_pan_servo_screw_dia,
+                          pan_screws_offset=head_neck_pan_servo_screws_offset,
+                          pan_thickness=head_neck_pan_servo_slot_thickness,
+                          pan_servo_height=head_neck_pan_servo_height,
+                          head_neck_pan_servo_extra_w=head_neck_pan_servo_extra_w,
+                          head_neck_pan_servo_extra_h=head_neck_pan_servo_extra_h,
+                          tilt_servo_size=[head_neck_tilt_servo_slot_width,
+                                           head_neck_tilt_servo_slot_height],
+                          tilt_screws_dia=head_neck_tilt_servo_screw_dia,
+                          tilt_screws_offset=head_neck_tilt_servo_screws_offset,
+                          tilt_thickness=head_neck_tilt_servo_slot_thickness,
+                          tilt_servo_extra_w=head_neck_tilt_servo_extra_w,
+                          tilt_servo_extra_h=head_neck_tilt_servo_extra_h,
+                          tilt_servo_height=head_neck_tilt_servo_height,
                           neck_color="white",
                           pan_servo_color=jet_black,
                           tilt_servo_color=jet_black) {
@@ -161,8 +161,8 @@ module head_neck_assembly(pan_servo_size=[cam_pan_servo_slot_width,
                       pan_screws_offset=pan_screws_offset,
                       pan_thickness=pan_thickness,
                       pan_servo_height=pan_servo_height,
-                      pan_servo_extra_w=pan_servo_extra_w,
-                      pan_servo_extra_h=pan_servo_extra_h,
+                      head_neck_pan_servo_extra_w=head_neck_pan_servo_extra_w,
+                      head_neck_pan_servo_extra_h=head_neck_pan_servo_extra_h,
                       tilt_servo_size=tilt_servo_size,
                       tilt_screws_dia=tilt_screws_dia,
                       tilt_screws_offset=tilt_screws_offset,
@@ -178,7 +178,7 @@ module head_neck_assembly(pan_servo_size=[cam_pan_servo_slot_width,
     }
 
     translate([0,
-               -tilt_servo_size[1] * 0.5 + pan_servo_extra_h,
+               -tilt_servo_size[1] * 0.5 + head_neck_pan_servo_extra_h,
                pan_servo_height + tilt_servo_size[1] * 0.5]) {
       rotate([90, 0, 0]) {
         servo(size=[tilt_servo_size[0], tilt_servo_size[1], tilt_servo_height],

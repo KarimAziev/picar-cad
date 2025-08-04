@@ -18,22 +18,22 @@ include <../colors.scad>
 use <../util.scad>
 include <../placeholders/motor.scad>
 
-module motor_bracket_screws_2d(d=m2_hole_dia) {
-  for (y = motor_bracket_screws) {
+module standard_motor_bracket_screws_holes_2d(d=m2_hole_dia) {
+  for (y = standard_motor_bracket_screws_size) {
     translate([0, y, 0]) {
       circle(r = d / 2, $fn = 360);
     }
   }
 }
 
-module motor_bracket(size=[motor_mount_panel_width,
-                           motor_bracket_panel_height,
-                           motor_bracket_panel_height],
-                     thickness=motor_mount_panel_thickness,
-                     y_r=motor_mount_panel_width / 2,
-                     z_r=motor_mount_panel_width / 2,
-                     show_motor=false,
-                     show_wheel=false) {
+module standard_motor_bracket(size=[standard_motor_bracket_width,
+                                    standard_motor_bracket_height,
+                                    standard_motor_bracket_height],
+                              thickness=standard_motor_bracket_thickness,
+                              y_r=standard_motor_bracket_width / 2,
+                              z_r=standard_motor_bracket_width / 2,
+                              show_motor=false,
+                              show_wheel=false) {
   x = size[0];
   y = size[1];
   z = size[2];
@@ -46,7 +46,7 @@ module motor_bracket(size=[motor_mount_panel_width,
       linear_extrude(height=thickness, center=false) {
         difference() {
           rounded_rect_two([x, y], center=true, r=ur);
-          motor_bracket_screws_2d(m2_hole_dia);
+          standard_motor_bracket_screws_holes_2d(m2_hole_dia);
         }
       }
     }
@@ -56,7 +56,7 @@ module motor_bracket(size=[motor_mount_panel_width,
           linear_extrude(height=thickness, center=false) {
             difference() {
               rounded_rect_two([x, z], center=true, r=lr);
-              motor_bracket_screws_2d(m3_hole_dia);
+              standard_motor_bracket_screws_holes_2d(m3_hole_dia);
             }
           }
         }
@@ -75,6 +75,6 @@ module motor_bracket(size=[motor_mount_panel_width,
 
 rotate([0, 0, 90]) {
   translate([10, 14, 0]) {
-    motor_bracket(show_motor=false);
+    standard_motor_bracket(show_motor=false);
   }
 }
