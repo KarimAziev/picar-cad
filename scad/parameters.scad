@@ -1,5 +1,3 @@
-use <util.scad>
-
 // This module defines a robot parameters
 
 m1_hole_dia                                 = 1.2; // M1 screw hole diameter
