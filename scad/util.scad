@@ -451,3 +451,5 @@ function poly_width_at_y(pts, y_target) =
                           / (pts[(i+1) % len(pts)][1] - pts[i][1]))
                * (pts[(i+1) % len(pts)][0] - pts[i][0])])
   (max(intersections) - min(intersections));
+
+function reverse(list) = [for (i = [len(list)-1:-1:0]) list[i]];

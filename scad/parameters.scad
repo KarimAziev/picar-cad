@@ -1,13 +1,14 @@
 /**
  * Module: Parameters
  * This file defines most of the robot parameters
+ * All dimensions are in millimeters (mm)
  *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */
 
 include <colors.scad>
-
+use <util.scad>
 m1_hole_dia                                 = 1.2; // M1 screw hole diameter
 m2_hole_dia                                 = 2.4; // M2 screw hole diameter
 m25_hole_dia                                = 2.6; // M2.5 screw hole diameter
@@ -197,11 +198,75 @@ front_panel_screws_x_offset                 = 27;
 // ─────────────────────────────────────────────────────────────────────────────
 // Head
 // ─────────────────────────────────────────────────────────────────────────────
+
+head_camera_screw_dia                       = m2_hole_dia;
+
+head_camera_lens_width                      = 14;
+head_camera_lens_height                     = 23;
+
+// Dimensions of the hole for the Camera Module (lens opening).
+head_camera_module_3_size                   = [head_camera_lens_width,
+                                               head_camera_lens_height];
+
+// Dimensions for the screw hole area of the Camera Module.
+// These form a rectangle around the camera hole, with a screw hole
+// centered at each corner to secure the camera module.
+head_camera_module_3_screw_holes_size       = [head_camera_lens_width +
+                                               head_camera_screw_dia + 4.2,
+                                               12.73];
+
+// Vertical offset to move the screw hole grid below the top edge
+// of the camera lens hole.
+head_camera_screw_y_offset_from_camera_hole = 2.0;
+
+// List of camera mounting configurations.
+// Each item is an array of:
+// [ [lens_hole_width, lens_hole_height],
+//   vertical_offset_for_screw_holes_relative_to_camera_hole,
+//   [screw_hole_region_width, screw_hole_region_height] ]
+//
+// To configure a single camera, remove one of the internal elements.
+head_cameras                                = [[head_camera_module_3_size,
+                                                head_camera_screw_y_offset_from_camera_hole,
+                                                head_camera_module_3_screw_holes_size],
+                                               [head_camera_module_3_size,
+                                                head_camera_screw_y_offset_from_camera_hole,
+                                                head_camera_module_3_screw_holes_size]];
+
+// Vertical distance between camera modules (center-to-center spacing).
+// If more than one camera is present, a fixed spacing of 2 mm is used.
+// If only one camera is mounted, use half of its height for centering.
+head_cameras_y_distance                     = len(head_cameras) > 1
+  ? 2
+  : (head_cameras[0][0][1] / 2);
+
+// Width of the front face plate (in mm) where the camera modules are mounted.
 head_plate_width                            = 38;
-head_plate_height                           = 50;
+
+// Height of the front face plate (in mm), automatically calculated based on
+// the total height of all camera lens holes plus their vertical spacing.
+// Ensures a minimum height of 40 mm.
+head_plate_height                           = max(40,
+                                                  sum([for (j = [0 : len(head_cameras)-1])
+                                                          head_cameras[j][0][1]])
+                                                  + head_cameras_y_distance * len(head_cameras) - 1);
+
+// Thickness (depth) of all the main head plates (in mm), including front,
+// top, connector, and side plates.
 head_plate_thickness                        = 2;
 
+// Diameter (in mm) of the central hole in the side panel for mounting the servo motor.
+head_servo_mount_dia                        = 6.5;
+
+// Diameter (in mm) of the screws used to mount the servo motor.
+// The screws are placed radially around the main servo mounting hole.
+head_servo_screw_dia                        = 1.5;
+
+// Height (in mm) of the side panel of the head, matching the height of the front plate.
 head_side_panel_height                      = head_plate_height;
+
+// Width (in mm) of the side panel, based on a scaling factor relative to front plate width
+// to ensure appropriate coverage for the mounting surface.
 head_side_panel_width                       = head_plate_width * 1.2;
 
 // Don't try to find a lot of sense in the calculations of the side panel polygon, this is an aesthetic choice.
@@ -215,22 +280,34 @@ head_side_panel_extra_slot_width            = head_side_panel_width * 0.8;
 head_side_panel_extra_slot_height           = 2;
 head_side_panel_extra_slot_ypos             = [-9, +0.2];
 
-// the diameter of the side hole for mounting servo
-head_servo_mount_dia                        = 6.5;
-
-// the diameter of the screws for servo. They are placed around the side hole
-// for mounting servo
-head_servo_screw_dia                        = 1.5;
-
 head_upper_plate_width                      = head_plate_width * 0.9;
-head_upper_plate_height                     = head_plate_height / 2;
+head_upper_plate_height                     = 30;
 
-head_camera_lens_width                      = 14;
-head_camera_lens_height                     = 23;
-head_camera_screw_offset_x                  = 10.3;
-head_camera_screw_offset_y                  = -4.2;
-head_camera_screw_offset_y_top              = 8.54;
-head_camera_screw_dia                       = m2_hole_dia;
+head_top_slot_size                          = [head_upper_plate_width * 0.8, 2];
+
+head_lower_connector_width                  = head_upper_plate_width * 0.6;
+head_upper_connector_width                  = head_upper_plate_width * 0.7;
+
+head_extra_side_slots_x_positions           = [head_side_panel_width * 0.25,
+                                               head_side_panel_width * 0.5,
+                                               head_side_panel_width * 0.75];
+head_upper_connector_len                    = head_plate_thickness;
+head_upper_connector_height                 = 4;
+
+head_lower_connector_height                 = 2;
+
+head_extra_holes_offset                     = 4;
+
+head_hole_row_offsets                       = [head_extra_holes_offset * 2];
+
+head_extra_slots_dia                        = 3;
+
+// positions of the additional holes at the top plate
+
+head_top_holes_x_positions                  = [-8, 0, 8];
+
+head_top_slots_y_distance                   = 6;
+head_top_plate_extra_slots_dia              = 4;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Head neck bracket

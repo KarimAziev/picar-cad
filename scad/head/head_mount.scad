@@ -17,69 +17,52 @@
 include <../parameters.scad>
 use <../util.scad>
 
-cam_center_offset            = 13;
+tilt_angle = atan2((-head_side_panel_curve_end)
+                   - (-head_side_panel_bottom),
+                   head_side_panel_curve_start
+                   - head_side_panel_width);
 
-cam_centers                  = [[0, -cam_center_offset],
-                                [0, cam_center_offset]];
-upper_connector_width        = head_upper_plate_width * 0.7;
-
-upper_connector_height       = 4;
-
-lower_connector_width        = head_upper_plate_width * 0.6;
-lower_connector_height       = 2;
-
-// Don't try to find a lot of sense in the calculations of the side panel polygon, this is an aesthetic choice.
-side_panel_top               = -head_side_panel_height * (4/15);
-side_panel_curve_start       = head_side_panel_width * (1/2.1);
-side_panel_notch_y           = -head_side_panel_height * (7/14.2);
-side_panel_bottom            = head_side_panel_height * (1/4.9);
-side_panel_curve_end         = head_side_panel_height * (3/4.0);
-
-side_panel_extra_slot_width  = head_side_panel_width * 0.8;
-side_panel_extra_slot_height = 2;
-side_panel_extra_slot_ypos   = [-9, +0.2];
-
-extra_holes_offset           = 4;
-
-hole_row_offsets             = [extra_holes_offset * 2];
-
-x_positions                  = [head_side_panel_width * 0.25,
-                                head_side_panel_width * 0.5,
-                                head_side_panel_width * 0.75];
-
-tilt_angle                   = atan2((-side_panel_curve_end)
-                                     - (-side_panel_bottom),
-                                     side_panel_curve_start
-                                     - head_side_panel_width);
+function side_panel_servo_center() =
+  [head_side_panel_width / 2.0, -head_side_panel_height / 2.0];
 
 module head_front_plate() {
-  difference() {
-    cube([head_plate_width,
-          head_plate_height,
-          head_plate_thickness],
-         center=true);
+  head_cameras_reversed = reverse(head_cameras);
+  translate([0, head_plate_height / 2, 0]) {
+    rotate([0, 0, 180]) {
+      translate([0, 0, -head_plate_thickness]) {
+        linear_extrude(height = head_plate_thickness, center=false) {
+          difference() {
+            translate([0, head_plate_height / 2, 0]) {
+              square([head_plate_width, head_plate_height], center=true);
+            }
 
-    for (i = [0: len(cam_centers) - 1]) {
-      c = cam_centers[i];
+            translate([0, len(head_cameras) > 1 ? 0 :
+                       head_cameras_y_distance / 2, 0]) {
+              for (i = [0 : len(head_cameras)-1]) {
+                let (spec               = head_cameras[i],
+                     hole_size          = spec[0],
+                     screw_hole_y       = spec[1],
+                     screw_hole_size    = spec[2],
+                     prev_heights       = [for (j = [0 : i-1])
+                         head_cameras[j][0][1]],
+                     prev_y_holes       = [for (j = [0 : i])
+                         head_cameras[j][2]],
+                     prev_height        = i == 0 ? 0 : sum(prev_heights),
+                     y                  = prev_height,
+                     final_y            = y + (i * head_cameras_y_distance))
 
-      translate([c[0], c[1], 0]) {
-        cube([head_camera_lens_width,
-              head_camera_lens_height,
-              head_plate_thickness + 0.1],
-             center=true);
+                  translate([-hole_size[0] / 2, final_y, 0]) {
+                  square(hole_size, center = false);
 
-        for (dx = [1, -1]) {
-          for (dy = [1, -1]) {
-            x = dx * head_camera_screw_offset_x;
-            y = dy == 1
-              ? head_camera_screw_offset_y_top
-              : head_camera_screw_offset_y;
-
-            translate([x, y, 0]) {
-              cylinder(h = head_plate_thickness + 0.1,
-                       r = head_camera_screw_dia / 2,
-                       center=true,
-                       $fn=50);
+                  translate([hole_size[0] / 2, screw_hole_size[1] / 2
+                             + head_camera_screw_dia / 2
+                             + screw_hole_y, 0]) {
+                    four_corner_holes_2d(size=screw_hole_size, center = true,
+                                         hole_dia=head_camera_screw_dia,
+                                         fn_val=160);
+                  }
+                }
+              }
             }
           }
         }
@@ -89,14 +72,14 @@ module head_front_plate() {
 }
 
 module connector_plate_up(y_offset) {
-  y = head_plate_height / 2 + (upper_connector_height * 0.5);
-  translate([0, y, -head_plate_thickness * 0.48]) {
-    linear_extrude(height = head_plate_thickness) {
+  y = head_plate_height / 2 + (head_upper_connector_height * 0.5);
+  translate([0, y, -head_upper_connector_len]) {
+    linear_extrude(height = head_upper_connector_len) {
       difference() {
-        square([upper_connector_width, upper_connector_height],
+        square([head_upper_connector_width, head_upper_connector_height],
                center=true);
-        d = upper_connector_height * 0.5;
-        translate([0, -d * 0.55, 0]) {
+        d = head_upper_connector_height * 0.5;
+        translate([0, head_upper_connector_height / 2 - d, 0]) {
           circle(d=d, $fn=40);
         }
       }
@@ -106,13 +89,13 @@ module connector_plate_up(y_offset) {
 
 module connector_plate_down() {
   y_offst = -(head_plate_height * 0.5);
-  translate([0, y_offst, -head_plate_thickness / 2]) {
+  translate([0, y_offst, -head_plate_thickness]) {
     linear_extrude(height = head_plate_thickness) {
       difference() {
-        rounded_rect([lower_connector_width, lower_connector_height],
-                     r=lower_connector_height / 2, center=true);
-        translate([0, (lower_connector_height * 0.5)]) {
-          square([lower_connector_width, lower_connector_height],
+        rounded_rect([head_lower_connector_width, head_lower_connector_height],
+                     r=head_lower_connector_height / 2, center=true);
+        translate([0, (head_lower_connector_height * 0.5)]) {
+          square([head_lower_connector_width, head_lower_connector_height],
                  center = true);
         }
       }
@@ -120,84 +103,81 @@ module connector_plate_down() {
   }
 }
 
-module head_upper_plate_geometry() {
-  difference() {
-    translate([-head_upper_plate_width / 2,
-               -head_upper_plate_height,
-               0]) {
-      cube([head_upper_plate_width,
-            head_upper_plate_height,
-            head_plate_thickness], center = false);
-    }
+module head_top_plate() {
+  slot_w = head_top_slot_size[0];
+  slot_h = head_top_slot_size[1];
+  hole_rad = head_top_plate_extra_slots_dia / 2;
+  step = head_top_slots_y_distance + slot_h;
+  lines_amount = floor(head_upper_plate_height / step);
+  slot_x = (head_upper_plate_width - slot_w) / 2;
 
-    slot_width = (head_upper_plate_width) * 0.8;
-    slot_height = 2;
-
-    slot_centers = [-head_upper_plate_height * 0.2,
-                    -head_upper_plate_height * 0.5,
-                    -head_upper_plate_height * 0.8];
-
-    for (center_y = slot_centers) {
-      translate([0, center_y, 0]) {
-        translate([-slot_width/2, 0, -1.1]) {
-          cube([slot_width,
-                slot_height,
-                head_plate_thickness + upper_connector_height * 0.5],
-               center=false);
+  linear_extrude(height=head_plate_thickness, center=false) {
+    union() {
+      difference() {
+        square([head_upper_plate_width, head_upper_plate_height], center=false);
+        if (lines_amount > 0) {
+          translate([0, head_upper_plate_height * 0.2, 0]) {
+            for (i = [0 : lines_amount - 1]) {
+              let (s = i * step) {
+                translate([slot_x, s, 0]) {
+                  square([slot_w, slot_h], center=false);
+                  if (i > 0) {
+                    translate([slot_w / 2, 0, 0]) {
+                      for (x = head_top_holes_x_positions) {
+                        translate([x, -hole_rad - slot_h / 2, 0]) {
+                          circle(r=hole_rad, $fn=10);
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
-
-    circle_dia = 3;
-    circle_rad = circle_dia / 2;
-
-    for (cc = [-8, 0, 8])
-      translate([cc, -head_upper_plate_height/3, 0]) {
-        cylinder(h = head_plate_thickness
-                 + upper_connector_height * 0.5,
-                 r = circle_rad, center=true, $fn=50);
-      }
   }
 }
 
 module head_upper_plate() {
-  translate([0, head_upper_plate_height + upper_connector_height,
-             head_plate_thickness / 2]) {
+  translate([-head_upper_plate_width / 2,
+             head_plate_height / 2 + head_upper_connector_height
+             + head_plate_thickness,
+             -head_upper_plate_height]) {
     rotate([90, 0, 0]) {
-      head_upper_plate_geometry();
+      head_top_plate();
     }
   }
 }
 
-function side_panel_servo_center() =
-  [head_side_panel_width / 2.0, -head_side_panel_height / 2.0];
-
 module side_panel_extra_slots_2d() {
-  for (slot_y = side_panel_extra_slot_ypos) {
-    translate([(head_side_panel_width - side_panel_extra_slot_width) / 2,
+  for (slot_y = head_side_panel_extra_slot_ypos) {
+    translate([(head_side_panel_width - head_side_panel_extra_slot_width) / 2,
                slot_y]) {
-      square([side_panel_extra_slot_width, side_panel_extra_slot_height]);
+      square([head_side_panel_extra_slot_width,
+              head_side_panel_extra_slot_height]);
     }
   }
 
-  for (off = hole_row_offsets) {
+  for (off = head_hole_row_offsets) {
     if (off >= 0) {
-      dotted_screws_line_y(x_positions,
-                           y=side_panel_extra_slot_ypos[1] + off,
-                           d=3);
+      dotted_screws_line_y(head_extra_side_slots_x_positions,
+                           y=head_side_panel_extra_slot_ypos[1] + off,
+                           d=head_extra_slots_dia);
     }
     else {
-      dotted_screws_line_y(x_positions,
-                           y=side_panel_extra_slot_ypos[0] + off,
-                           d=3);
+      dotted_screws_line_y(head_extra_side_slots_x_positions,
+                           y=head_side_panel_extra_slot_ypos[0] + off,
+                           d=head_extra_slots_dia);
     }
   }
 
   dotted_screws_line_y([head_side_panel_width * 0.50,
                         head_side_panel_width * 0.66,
                         head_side_panel_width * 0.85],
-                       y=extra_holes_offset * 5,
-                       d=3);
+                       y=head_extra_holes_offset * 5,
+                       d=head_extra_slots_dia);
 }
 
 module side_panel_servo_slots(offst_from_center_hole=2.0,
@@ -232,12 +212,12 @@ module side_panel_servo_slots(offst_from_center_hole=2.0,
 
 module side_panel_2d() {
   difference() {
-    polygon(points = [[0, -side_panel_top],
-                      [side_panel_curve_start, -side_panel_notch_y],
-                      [head_side_panel_width, -side_panel_notch_y],
-                      [head_side_panel_width, -side_panel_bottom],
-                      [side_panel_curve_start, -side_panel_curve_end],
-                      [0, -side_panel_curve_end]]);
+    polygon(points = [[0, -head_side_panel_top],
+                      [head_side_panel_curve_start, -head_side_panel_notch_y],
+                      [head_side_panel_width, -head_side_panel_notch_y],
+                      [head_side_panel_width, -head_side_panel_bottom],
+                      [head_side_panel_curve_start, -head_side_panel_curve_end],
+                      [0, -head_side_panel_curve_end]]);
 
     side_panel_servo_slots();
     side_panel_extra_slots_2d();
