@@ -1,4 +1,5 @@
 // This module defines a robot parameters
+include <colors.scad>
 
 m1_hole_dia                                 = 1.2; // M1 screw hole diameter
 m2_hole_dia                                 = 2.4; // M2 screw hole diameter
@@ -196,6 +197,17 @@ head_plate_thickness                        = 2;
 head_side_panel_height                      = head_plate_height;
 head_side_panel_width                       = head_plate_width * 1.2;
 
+// Don't try to find a lot of sense in the calculations of the side panel polygon, this is an aesthetic choice.
+head_side_panel_top                         = -head_side_panel_height * (4/15);
+head_side_panel_curve_start                 = head_side_panel_width * (1/2.1);
+head_side_panel_notch_y                     = -head_side_panel_height * (7/14.2);
+head_side_panel_bottom                      = head_side_panel_height * (1/4.9);
+head_side_panel_curve_end                   = head_side_panel_height * (3/4.0);
+
+head_side_panel_extra_slot_width            = head_side_panel_width * 0.8;
+head_side_panel_extra_slot_height           = 2;
+head_side_panel_extra_slot_ypos             = [-9, +0.2];
+
 // the diameter of the side hole for mounting servo
 head_servo_mount_dia                        = 6.5;
 
@@ -206,9 +218,6 @@ head_servo_screw_dia                        = 1.5;
 head_upper_plate_width                      = head_plate_width * 0.9;
 head_upper_plate_height                     = head_plate_height / 2;
 
-head_neck_pan_servo_extra_h                 = 14;
-head_neck_pan_servo_extra_w                 = 4;
-
 head_camera_lens_width                      = 14;
 head_camera_lens_height                     = 23;
 head_camera_screw_offset_x                  = 10.3;
@@ -217,27 +226,345 @@ head_camera_screw_offset_y_top              = 8.54;
 head_camera_screw_dia                       = m2_hole_dia;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Head neck (pan servo slot)
+// Head neck bracket
 // ─────────────────────────────────────────────────────────────────────────────
+// Conceptually, this L-bracket combines:
+// - A pan servo on the horizontal base that rotates the entire structure horizontally.
+// - A tilt servo on the vertical plate that allows the attached head to tilt vertically.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ─────────────────────────────────────────────────────────────────────────────
+// HEAD NECK PANEL (Horizontal Bracket Base for Pan Servo)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Width (X-dimension) of the rectangular cutout slot for the pan servo.
+ * Typically matches or slightly exceeds the physical servo width.
+ * Units: mm
+ */
 head_neck_pan_servo_slot_width              = 23.6;
+
+/**
+ * Height (Y-dimension) of the rectangular pan servo slot.
+ * Matches the thickness (depth) of the servo body horizontally.
+ * Units: mm
+ */
 head_neck_pan_servo_slot_height             = 12;
-head_neck_pan_servo_height                  = 20;
+
+/**
+ * Diameter of the screw holes used to fasten the pan servo to the neck bracket.
+ * Two holes are centered on the width and offset laterally.
+ * Units: mm
+ */
 head_neck_pan_servo_screw_dia               = 2;
+
+/**
+ * Offset distance from the servo slot width to the screw hole center.
+ * Applies symmetrically on both sides of the slot.
+ * Units: mm
+ */
 head_neck_pan_servo_screws_offset           = 1;
+
+/**
+ * Thickness of the horizontal base panel of the bracket,
+ * which holds the pan servo.
+ * Units: mm
+ */
 head_neck_pan_servo_slot_thickness          = 2.5;
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Head neck (tilt servo slot)
-// ─────────────────────────────────────────────────────────────────────────────
-head_neck_tilt_servo_slot_width             = 23.6;
-head_neck_tilt_servo_slot_height            = 12;
-head_neck_tilt_servo_screw_dia              = 2;
-head_neck_tilt_servo_screws_offset          = 1;
-head_neck_tilt_servo_slot_thickness         = 2.5;
-head_neck_tilt_servo_height                 = 20;
-head_neck_tilt_servo_extra_w                = 4;
-head_neck_tilt_servo_extra_h                = 2;
+/**
+ * Extra width to add around the main bracket body to accommodate
+ * alignment, mechanical clearance, or additional structural space.
+ * Units: mm
+ */
+head_neck_pan_servo_extra_w                 = 4;
 
+// ─────────────────────────────────────────────────────────────────────────────
+// PAN SERVO CONFIGURATION (Dimensions & Visual Representation)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Physical size of the pan servo in [length (X), width (Y), height (Z)].
+ * Measured as the actuator body without hat or gearbox.
+ * Units: mm
+ */
+pan_servo_size                              = [23.48, 11.7, 20.3];
+
+/**
+ * Distance between the slot edge and screw center for fastening.
+ * Used during visualization and mounting slot generation.
+ * Units: mm
+ */
+pan_servo_screws_offset                     = 1;
+
+/**
+ * Width of the "hat" (top flange) on the servo.
+ * This includes mounting holes and is typically wider than the body.
+ * Units: mm
+ */
+pan_servo_hat_w                             = 32.11;
+
+/**
+ * Height (Y) dimension of the servo's "hat" section.
+ * Equal to servo width unless asymmetrically hatched.
+ * Units: mm
+ */
+pan_servo_hat_h                             = pan_servo_size[1];
+
+/**
+ * Vertical thickness of the servo hat, i.e., how thick the extension flange is.
+ * Units: mm
+ */
+pan_servo_hat_thickness                     = 1.7;
+
+/**
+ * Distance from the top of the servo body to the bottom of the hat.
+ * Accounts for mechanical separation between body and hat.
+ * Units: mm
+ */
+pan_screws_hat_z_offset                     = 4;
+
+/**
+ * Servo label text for visualization purposes.
+ * Each row is formatted as: [text_content, font_size, font_name]
+ */
+pan_servo_text                              = [["EMAX", 4, "Liberation Sans:style=Bold Italic"],
+                                               ["ES08MA II ANALOG SERVO", 1.2, "Ubuntu:style=Bold"]];
+
+/**
+ * Default size to use for servo label text when specific size is not defined.
+ * Units: font points
+ */
+pan_servo_text_size                         = 3;
+
+/**
+ * Height of the gearbox block directly above the servo body.
+ * The base volume that holds gears before the gear stack begins.
+ * Units: mm
+ */
+pan_servo_gearbox_h                         = 4;
+
+/**
+ * A list describing a stack of circular gear disks on the servo.
+ * Each gear is defined as: [height, diameter, color, (optional) resolution].
+ */
+pan_servo_gearbox_size                      = [[0.4, 6.09, matte_black],
+                                               [0.5, 4.35, dark_gold_2, 8],
+                                               [0.8, 2, dark_gold_2],
+                                               [2.45, 4, dark_gold_2, 10],
+                                               [0.05, 2.6, licorice, 8]];
+
+/**
+ * Diameter of the first (largest) gear or lid on the gear stack.
+ * Used to compute alignment and transitions.
+ * Units: mm
+ */
+pan_servo_gearbox_d1                        = 11.51;
+
+/**
+ * Diameter of the secondary gear/layer in the stack.
+ * Typically used for angled profiles and hull blending.
+ * Units: mm
+ */
+pan_servo_gearbox_d2                        = 6.56;
+
+/**
+ * Horizontal offset on the X-axis to place the second gear (d2)
+ * shifted relative to the first gear (d1), for hull or profile shaping.
+ * Units: mm
+ */
+pan_servo_gearbox_x_offset                  = 3;
+
+/**
+ * Mode used to generate the transition junction between d1 and d2 gearbox layers.
+ * - `"hull"`: meshes them with a smooth profile.
+ * - `"union"`: shows them as stacked cylinders.
+ */
+pan_servo_gearbox_mode                      = "hull";
+
+/**
+ * Color value used to render the body of the pan servo.
+ */
+pan_servo_color                             = jet_black;
+
+/**
+ * Length of the chamfered or cutout region at the bottom of the servo body.
+ * Used for display detail in component preview.
+ * Units: mm
+ */
+pan_servo_cutted_len                        = 3;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// HEAD NECK PANEL (Vertical Plate for Tilt Servo Mounting)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Width (X-axis) of the tilt servo mounting slot.
+ * Should closely match the physical width of the servo body.
+ * Units: mm
+ */
+head_neck_tilt_servo_slot_width             = 23.6;
+
+/**
+ * Height (Y-axis) of the tilt servo slot in the vertical bracket.
+ * Should correspond to the depth of the servo side profile.
+ * Units: mm
+ */
+head_neck_tilt_servo_slot_height            = 12;
+
+/**
+ * Diameter of the holes used for fastening the servo to the bracket.
+ * Applies to both pan and tilt servos.
+ * Units: mm
+ */
+head_neck_tilt_servo_screw_dia              = 2;
+
+/**
+ * Lateral horizontal offset from the slot centerline to each screw hole center.
+ * Units: mm
+ */
+head_neck_tilt_servo_screws_offset          = 1;
+
+/**
+ * Thickness of the vertical support plate in which the tilt servo is mounted.
+ * Same as the vertical thickness of the L-bracket.
+ * Units: mm
+ */
+head_neck_tilt_servo_slot_thickness         = 2.5;
+
+/**
+ * Additional width added beyond the tilt servo slot to ensure clearance and rigidity.
+ * Allow placement of head/servo structures with sufficient tolerance.
+ * Units: mm
+ */
+head_neck_tilt_servo_extra_w                = 4;
+
+/**
+ * Additional lower structural height added **below** tilt servo slot.
+ * Provides more support at the base and positions the servo higher.
+ * Units: mm
+ */
+head_neck_tilt_servo_extra_lower_h          = 2;
+
+/**
+ * Additional height added **above** the tilt servo placement.
+ * Allows for mounting clearance or screw pass-through from above.
+ * Units: mm
+ */
+head_neck_tilt_servo_extra_top_h            = 3;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TILT SERVO CONFIGURATION (Dimensions & Visual Representation)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Physical dimensions of the tilt servo: [Length, Width, Height].
+ * Measurement excludes mounting hat and gear housing.
+ * Units: mm
+ */
+tilt_servo_size                             = [23.48, 11.7, 20.3];
+
+/**
+ * Screw offset distance from the slot to centers of mounting holes.
+ * Used during servo slot modeling and visualization.
+ * Units: mm
+ */
+tilt_servo_screws_offset                    = 1;
+
+/**
+ * Width of the mounting flange ("hat") for the tilt servo.
+ * Usually wider than the central body to allow secure fastening.
+ * Units: mm
+ */
+tilt_servo_hat_w                            = 32.11;
+
+/**
+ * Height of the servo hat (Y axis).
+ * Should match the width of the servo body.
+ * Units: mm
+ */
+tilt_servo_hat_h                            = tilt_servo_size[1];
+
+/**
+ * Thickness of the tilt servo's mounting flange ("hat").
+ * Used to offset and extrude screw holders in 3D view.
+ * Units: mm
+ */
+tilt_servo_hat_thickness                    = 1.6;
+
+/**
+ * Distance from the top of the servo body to screw-holding surface (flange).
+ * Used to vertically position the hat relative to the main body.
+ * Units: mm
+ */
+tilt_screws_hat_z_offset                    = 4;
+
+/**
+ * Horizontal offset between the two gearbox shaft diameters
+ * (used when blending large/small gear diameters visually).
+ * Units: mm
+ */
+tilt_servo_gearbox_x_offset                 = 3;
+
+/**
+ * How to visually join `gearbox_d1` and `gearbox_d2`. Accepted values:
+ * - `"hull"`: Smooth shell connection.
+ * - `"union"`: Joined but visually distinct cylinders.
+ */
+tilt_servo_gearbox_mode                     = "hull";
+
+/**
+ * Labeling text for the tilt servo used in rendered previews.
+ * Format: [["Text Line", font size, font name], ...]
+ */
+tilt_servo_text                             = [["EMAX", 4, "Liberation Sans:style=Bold Italic"],
+                                               ["ES08MA II ANALOG SERVO", 1.2, "Ubuntu:style=Bold"]];
+
+/**
+ * Default text size for servo labels if none is explicitly specified.
+ */
+tilt_servo_text_size                        = 3;
+
+/**
+ * Height of the gearbox housing above the main servo body.
+ * Does not include stacked gears.
+ * Units: mm
+ */
+tilt_servo_gearbox_h                        = 4;
+
+/**
+ * Array representing a visual stack of gear disks or wheels.
+ * Each item: [height, diameter, color, (optional) faceting resolution].
+ */
+tilt_servo_gearbox_size                     = [[0.4, 6.09, matte_black],
+                                               [0.5, 4.35, dark_gold_2, 8],
+                                               [0.8, 2, dark_gold_2],
+                                               [2.45, 4, dark_gold_2, 10],
+                                               [0.05, 2.6, licorice, 8]];
+
+/**
+ * Diameter of the primary (largest) top gear in the tilt servo’s gearbox.
+ * Units: mm
+ */
+tilt_servo_gearbox_d1                       = 11.51;
+
+/**
+ * Diameter of secondary/inner gear used for visuals or profile blending.
+ * Units: mm
+ */
+tilt_servo_gearbox_d2                       = 6.56;
+
+/**
+ * Rendering color for the tilt servo body.
+ */
+tilt_servo_color                            = jet_black;
+
+/**
+ * Length of the angled cut (chamfer) at the servo body base.
+ * Used in visual model to distinguish component edges.
+ * Units: mm
+ */
+tilt_servo_cutted_len                       = 3;
 // ─────────────────────────────────────────────────────────────────────────────
 // Steering Knuckle
 // ─────────────────────────────────────────────────────────────────────────────
@@ -457,13 +784,53 @@ standard_motor_bracket_thickness            = 3;
 standard_motor_bracket_height               = 29;
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Steering servo
+// ─────────────────────────────────────────────────────────────────────────────
+// Dimensions for the slot that accommodates the steering servo motor.
+// Tested with the EMAX ES08MA II servo (23 x 11.5 x 24 mm).
+//
+// The popular SG90 servo measures approximately 23mm x 12.2mm x 29mm, so you
+// may want to adjust steering_servo_slot_width and steering_servo_slot_height
+// as needed.
+steering_servo_extra_width                  = 4;
+steering_servo_extra_h                      = 0;
+steering_servo_slot_width                   = 23.6;
+steering_servo_slot_height                  = 12;
+steering_servo_size                         = [23.48, 11.7, 20.3];
+
+// offset between the servo slot and the fastening screws
+steering_servo_screws_offset                = 1;
+
+steering_servo_hat_w                        = 33;
+steering_servo_hat_h                        = steering_servo_size[1];
+steering_servo_hat_thickness                = 1.6;
+steering_screws_hat_z_offset                = 4;
+steering_servo_gearbox_x_offset             = 3;
+steering_servo_gearbox_mode                 = "hull";
+steering_servo_text                         = [["EMAX",
+                                                4,
+                                                "Liberation Sans:style=Bold Italic"],
+                                               ["ES08MA II ANALOG SERVO",
+                                                1.2,
+                                                "Ubuntu:style=Bold"]];
+steering_servo_text_size                    = 3;
+steering_servo_gearbox_h                    = 4;
+steering_servo_gearbox_size                 = [[0.4, 6.09, matte_black],
+                                               [0.5, 4.35, dark_gold_2, 8],
+                                               [0.8, 2, dark_gold_2],
+                                               [2.45, 4, dark_gold_2, 10],
+                                               [0.05, 2.6, licorice, 8]];
+steering_servo_gearbox_d1                   = 8;
+steering_servo_gearbox_d2                   = 6;
+steering_servo_color                        = jet_black;
+steering_servo_cutted_len                   = 3;
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Steering panel
 // ─────────────────────────────────────────────────────────────────────────────
 
 steering_panel_center_screws_offsets        = [5.5, 12.0];
 steering_panel_center_screw_dia             = m2_hole_dia;
-steering_servo_extra_width                  = 4;
-steering_servo_extra_h                      = 0;
 
 // The length of the two rails in the center of the steering panel that holds
 // the rack
@@ -476,15 +843,6 @@ steering_panel_rail_height                  = 8;
 // The thickness of the two rails in the center of the steering panel that holds
 // the rack
 steering_panel_rail_thickness               = 1;
-
-// Dimensions for the slot that accommodates the steering servo motor.
-// Tested with the EMAX ES08MA II servo (23 x 11.5 x 24 mm).
-//
-// The popular SG90 servo measures approximately 23mm x 12.2mm x 29mm, so you
-// may want to adjust steering_servo_slot_width and steering_servo_slot_height
-// as needed.
-steering_servo_slot_width                   = 23.6;
-steering_servo_slot_height                  = 12;
 
 // The length of the panel that holds the rack and the pins for the steering
 // knuckles at each side
@@ -499,9 +857,6 @@ steering_rack_support_width                 = 8;
 
 // The diameter of the fastening screws for the servo
 steering_servo_screw_dia                    = 2;
-
-// offset between the servo slot and the fastening screws
-steering_servo_screws_offset                = 1;
 
 // The thickness of the panel that holds the rack and the pins for the steering
 // knuckles at each side
@@ -633,7 +988,7 @@ steering_knuckle_bracket_connector_len      = (steering_bracket_rack_side_h_leng
 // Parameters for wheels, common for front and rear
 // ─────────────────────────────────────────────────────────────────────────────
 wheel_dia                                   = 42;
-wheel_w                                     = 14.0;
+wheel_w                                     = 18.0;
 wheel_thickness                             = 2.0;
 wheel_rim_h                                 = 1.2;
 wheel_rim_w                                 = 1;

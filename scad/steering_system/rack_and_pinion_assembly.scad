@@ -8,7 +8,8 @@
 include <../parameters.scad>
 include <../colors.scad>
 use <../util.scad>
-include <../placeholders/servo.scad>
+use <../placeholders/servo.scad>
+use <../placeholders/steering_servo.scad>
 use <ackermann_geometry_triangle.scad>
 use <steering_pinion.scad>
 use <bracket.scad>
@@ -64,6 +65,7 @@ module steering_system_distance_between_rack_and_knuckle(w=5) {
 
 module steering_system_assembly(rack_color=blue_grey_carbon,
                                 pinion_color=matte_black,
+                                panel_color="white",
                                 show_ackermann_triangle=false,
                                 show_wheels=true,
                                 show_bearing=true,
@@ -72,7 +74,9 @@ module steering_system_assembly(rack_color=blue_grey_carbon,
                                 show_pinion=true,
                                 show_servo=true) {
   union() {
-    steering_panel(show_servo=show_servo, show_pinion=show_pinion);
+    steering_panel(show_servo=show_servo,
+                   show_pinion=show_pinion,
+                   panel_color=panel_color);
     if (show_distance) {
       steering_system_distance_between_rack_and_knuckle();
     }

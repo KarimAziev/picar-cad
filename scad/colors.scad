@@ -5,10 +5,12 @@ matte_black           = "#28282B";
 jet_black             = "#343434";
 midnight_blue         = "#191970";
 licorice              = "#1B1212";
+metalic_blue_1        = "#4F738E";
 metalic_silver_1      = "#C0C0C0";
 metalic_silver_2      = "#999B9B";
 metalic_silver_3      = "#7D8488";
-
+metalic_silver_4      = "#5F6367";
+cobalt_blue_metalic   = "#39699E";
 metalic_grey          = "#808080";
 metalic_yellow_silver = "#D4D4C8";
 

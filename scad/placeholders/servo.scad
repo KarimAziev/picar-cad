@@ -10,140 +10,270 @@ include <../colors.scad>
 use <../util.scad>
 
 servo_size          = [23, 11.6, 20];
-servo_offset        = steering_servo_screws_offset;
+servo_screw_offset  = steering_servo_screws_offset;
 servo_hat_w         = 33;
 servo_hat_h         = servo_size[1];
 servo_hat_thickness = 1.6;
 screws_hat_z_offset = 4;
-servo_gear_h        = 2;
-servo_gear_d        = 3;
 servo_gearbox_h     = 6;
 servo_gearbox_rad   = servo_size[1] * 0.5;
 servo_gearbox_x     = servo_size[1] - servo_gearbox_rad;
-servo_gearbox_y     = -servo_size[2] * 0.5;
+servo_gearbox_z     = -servo_size[2] * 0.5;
+servo_gear_h        = 2;
+servo_gear_d        = 3;
 
-servo_gear_lower_h  = (servo_gear_h * 0.9);
+servo_gear_lower_h  = 0.5;
 
-function servo_gear_z_pos(gearbox_height=servo_gearbox_h,
-                          gear_height=servo_gear_h) =
-  -gearbox_height * 0.4 - gear_height * 0.5;
+function servo_gear_total_height(gear_size) =
+  sum([for (i = [0 : len(gear_size) - 1]) gear_size[i][0]]);
+
+function servo_full_height(height, gearbox_h, gear_size) =
+  height + gearbox_h + servo_gear_total_height(gear_size);
+
+function servo_height_after_hat(h, z_offst, hat_thickness) =
+  h - z_offst - (hat_thickness / 2);
+
+function servo_height_before_hat(h, z_offst, hat_thickness) =
+  h - (h - z_offst + hat_thickness / 2);
+
+function servo_gear_center_x(length, d1) = length - d1;
 
 module servo_screws_hat(size,
                         x_offset,
                         d=steering_servo_screw_dia,
-                        thickness=servo_hat_thickness) {
+                        thickness=servo_hat_thickness,
+                        center=true) {
   w = size[0];
   h = size[1];
   linear_extrude(height=thickness, center=true) {
     difference() {
-      rounded_rect(size = [w, h], r = h * 0.1, center = true);
+      rounded_rect(size = [w, h], r = h * 0.1, center=center);
       two_x_screws_2d(x_offset, d=d);
     }
   }
 }
 
-module servo(size=servo_size,
-             screws_dia=steering_servo_screw_dia,
-             servo_offset=steering_servo_screws_offset
-             + (abs(steering_servo_slot_width - servo_size[0]) / 2),
-             gearbox_height=servo_gearbox_h,
-             gear_height=servo_gear_h,
-             servo_hat_w=servo_hat_w,
-             servo_hat_h=servo_hat_h,
-             servo_hat_thickness=servo_hat_thickness,
-             screws_hat_z_offset=screws_hat_z_offset,
-             gear_dia=servo_gear_d,
-             gearbox_rad=servo_gearbox_rad,
-             servo_color=jet_black,
-             servo_gear_color=jet_black,
-             servo_text="EMAX ES08MA II",
-             text_depth=0.5,
-             gear_lower_h=servo_gear_lower_h,
-             servo_gearbox_x=servo_gearbox_x,
-             servo_gearbox_y=servo_gearbox_y,
-             text_size=1,
-             tolerance=0.3) {
+module servo_body(size,
+                  screws_offset,
+                  servo_color=jet_black,
+                  alpha=1,
+                  cutted_len=0,
+                  servo_hat_w,
+                  screws_dia,
+                  servo_hat_h,
+                  servo_hat_thickness,
+                  screws_hat_z_offset,
+                  servo_text,
+                  text_size,
+                  font="Liberation Sans:style=Bold Italic",
+                  text_depth,
+                  tolerance) {
+  length = size[0];
+  w = size[1];
+  h = size[2];
   union() {
-    color(servo_color) {
-      difference() {
-        cube(size, center=true);
-        translate([size[1], 0, size[2] - 0.2]) {
-          rotate([0, 10, 0]) {
-            cube([size[0] + 1, size[1] + 1, size[2]], center=true);
+    translate([-length / 2, w / 2, 0]) {
+      color(servo_color, alpha=alpha) {
+        rotate([90, 0, 0]) {
+          linear_extrude(height=w, center=false) {
+            polygon([[cutted_len, 0],
+                     [0, cutted_len],
+                     [0, h],
+                     [length, h],
+                     [length,0]]);
+          }
+        }
+      }
+      if (alpha > 0 && servo_text) {
+        if (is_string(servo_text)) {
+          translate([length / 2, 0, h / 2]) {
+            rotate([90, 0, 180]) {
+              linear_extrude(height=0.01,
+                             center=false) {
+                text(servo_text,
+                     font=font,
+                     size=text_size,
+                     halign="center",
+                     valign="bottom");
+              }
+            }
+          }
+        } else {
+          translate([length / 2, 0, h / 2]) {
+            text_sizes = [for (i = [0 : len(servo_text) - 1])
+                is_undef(servo_text[i][1])
+                  ? text_size
+                  : servo_text[i][1]];
+            for (i = [0 : len(servo_text) - 1]) {
+              item = servo_text[i];
+              txt = item[0];
+              txt_size = text_sizes[i];
+              fnt = is_undef(item[2]) ? font : item[2];
+              z_offst = i > 0 ? sum(text_sizes, i) : 0;
+              translate([0, 0, -z_offst]) {
+                rotate([90, 0, 180]) {
+                  linear_extrude(height=0.01,
+                                 center=false) {
+                    text(txt,
+                         size=txt_size,
+                         font=fnt,
+                         halign="center",
+                         valign="bottom");
+                  }
+                }
+              }
+            }
           }
         }
       }
     }
     if (servo_text != undef) {
-      translate([-size[1] + len(servo_text) * 0.5, size[1] * 0.5, 0]) {
-        rotate([180 + 90, 0, 0]) {
-          linear_extrude(height=text_depth) {
-            text(servo_text,
-                 size=text_size,
-                 halign="center",
-                 valign="center");
-          }
-        }
-      }
     }
-
-    translate([servo_gearbox_x, 0, servo_gearbox_y]) {
-      union() {
-        color(servo_gear_color) {
-          hull() {
-            cylinder(h = gearbox_height, r = gearbox_rad, center=true);
-            translate([-gearbox_rad, 0, 0]) {
-              cylinder(h = gearbox_height,
-                       r = gearbox_rad * 0.4,
-                       center=true,
-                       $fn=30);
-            }
-          }
-        }
-
-        translate([0, 0, servo_gear_z_pos(gearbox_height=gearbox_height,
-                                          gear_height=gear_height)]) {
-          rotate([180, 0, 0]) {
-            union() {
-              color(dark_gold_2) {
-                cylinder(h=gear_height,
-                         r=gear_dia * 0.3,
-                         center = true,
-                         $fn=30);
-              }
-
-              translate([0, 0, gear_lower_h / 2]) {
-                difference() {
-                  color(dark_gold_2) {
-                    cylinder(h = gear_lower_h,
-                             r = gear_dia * 0.5,
-                             center = true,
-                             $fn=20);
-                  }
-
-                  color(matte_black) {
-                    cylinder(h = gear_height,
-                             r = gear_dia * 0.2,
-                             center = true,
-                             $fn=20);
-                  }
-                }
-              }
-              children();
-            }
-          }
-        }
-      }
-    }
-
-    color(servo_color) {
-      translate([0, 0, -size[2] * 0.5 + screws_hat_z_offset]) {
-        offst_x = screw_x_offst(size[0], screws_dia, servo_offset);
+    color(servo_color, alpha=alpha) {
+      translate([0, 0, h - screws_hat_z_offset]) {
+        offst_x = screw_x_offst(size[0], screws_dia, screws_offset);
 
         servo_screws_hat(size=[servo_hat_w, servo_hat_h],
                          x_offset=offst_x,
                          d=screws_dia + tolerance,
                          thickness=servo_hat_thickness);
+      }
+    }
+  }
+}
+
+module servo_gearbox(h,
+                     d1,
+                     r1,
+                     d2,
+                     r2,
+                     x_offset,
+                     mode, // hull or union
+                     box_color=jet_black,
+                     alpha=1,
+                     gear_size=[[0.5, 1, dark_gold_2],
+                                [2, 2, dark_gold_2]],
+                     center=true) {
+  r1 = is_undef(r1) ? d1 / 2 : r1;
+  r2 = is_undef(r2) ? is_undef(d2) ? r1 * 0.4 : d2 / 2 : r2;
+  x_offset = is_undef(x_offset) ? 0 : x_offset;
+
+  translate([center ? 0 : r1 + r2, 0, 0]) {
+    union() {
+      color(box_color, alpha=alpha) {
+        linear_extrude(height=h, center=false) {
+          r2_x = x_offset;
+          if (mode == "hull") {
+            translate([-r1 - r2, 0, 0]) {
+            }
+            hull() {
+              circle(r=r1);
+              translate([r1 + x_offset, 0, 0]) {
+                circle(r=r2);
+              }
+            }
+          } else {
+            union() {
+              circle(r=r1);
+              translate([r2_x, 0]) {
+                circle(r=r2);
+              }
+            }
+          }
+        }
+      }
+
+      max_dia = sum([for (i = [0 : len(gear_size) - 1]) gear_size[i][1]]);
+
+      translate([0, 0, h]) {
+        for (i = [0 : len(gear_size) - 1]) {
+          prev_heights = [for (i = [0 : i - 1]) gear_size[i][0]];
+          offst = i == 0 ? 0 : sum(prev_heights);
+          spec = gear_size[i];
+          gh = spec[0];
+          gd = spec[1];
+          gcol = spec[2];
+          color(gcol, alpha=alpha) {
+            translate([0, 0, offst]) {
+              linear_extrude(height=gh, center=false) {
+                circle(r=gd / 2, $fn=spec[3]);
+              }
+            }
+          }
+        }
+        children();
+      }
+    }
+  }
+}
+
+module servo(size,
+             screws_dia,
+             screws_offset,
+             servo_hat_w,
+             servo_hat_h,
+             servo_hat_thickness,
+             screws_hat_z_offset,
+             servo_color=jet_black,
+             alpha=1,
+             servo_text=["EMAX", "ES08MA II"],
+             font,
+             text_depth=0.5,
+             text_size=3,
+             tolerance=0.3,
+             cutted_len=3,
+             gearbox_h,
+             gearbox_d1,
+             gearbox_r1,
+             gearbox_d2,
+             gearbox_r2,
+             gearbox_x_offset,
+             gearbox_mode="hull", // hull or union
+             gearbox_box_color=jet_black,
+             gearbox_gear_size=[],
+             center=false) {
+  length = size[0];
+  w = size[1];
+  h = size[2];
+
+  gearbox_r1 = is_undef(gearbox_r1) ? gearbox_d1 / 2 : gearbox_r1;
+  gearbox_r2 = is_undef(gearbox_r2) ? is_undef(gearbox_d2)
+    ? gearbox_r1 * 0.4
+    : gearbox_d2 / 2
+    : gearbox_r2;
+  gearbox_x_offset = is_undef(gearbox_x_offset) ? 0 : gearbox_x_offset;
+  full_h = servo_full_height(h, gearbox_h, gearbox_gear_size);
+
+  translate([center ? 0 : length / 2, center ? 0 : w / 2, 0]) {
+    union() {
+      servo_body(size=size,
+                 screws_offset=screws_offset,
+                 servo_color=servo_color,
+                 alpha=alpha,
+                 cutted_len=cutted_len,
+                 servo_hat_w=servo_hat_w,
+                 screws_dia=screws_dia,
+                 servo_hat_h=servo_hat_h,
+                 servo_hat_thickness=servo_hat_thickness,
+                 screws_hat_z_offset=screws_hat_z_offset,
+                 servo_text=servo_text,
+                 text_size=text_size,
+                 text_depth=text_depth,
+                 font=font,
+                 tolerance=tolerance);
+      translate([-size[0] / 2 + gearbox_r1, 0, size[2]]) {
+        servo_gearbox(h=gearbox_h,
+                      d1=gearbox_d1,
+                      r1=gearbox_r1,
+                      r2=gearbox_r2,
+                      d2=gearbox_d2,
+                      x_offset=gearbox_x_offset,
+                      box_color=gearbox_box_color,
+                      gear_size=gearbox_gear_size,
+                      mode=gearbox_mode,
+                      alpha=alpha) {
+          children();
+        }
       }
     }
   }
@@ -155,13 +285,13 @@ module servo_slot_2d(size=[steering_servo_slot_width,
                      screws_offset=steering_servo_screws_offset,
                      center=true) {
 
-  square([size[0], size[1]], center=true);
-
-  offst_x = screw_x_offst(size[0], screws_dia, screws_offset);
-
-  for (x = [-offst_x, offst_x]) {
-    translate([x, 0, 0]) {
-      circle(r=screws_dia * 0.5, $fn=360);
+  translate([center ? 0 : size[0] / 2, center ? 0 : size[1] / 2, 0]) {
+    square([size[0], size[1]], center=true);
+    offst_x = screw_x_offst(size[0], screws_dia, screws_offset);
+    for (x = [-offst_x, offst_x]) {
+      translate([x, 0, 0]) {
+        circle(r=screws_dia * 0.5, $fn=360);
+      }
     }
   }
 }
@@ -179,39 +309,3 @@ module servo_slot_3d(size=[steering_servo_slot_width,
                   screws_offset=screws_offset);
   }
 }
-
-module servo_slot_wall(size=[steering_servo_slot_width,
-                             steering_servo_slot_height],
-                       screws_dia=steering_servo_screw_dia,
-                       screws_offset=steering_servo_screws_offset,
-                       thickness=2,
-                       center=true) {
-  offst_x = screw_x_offst(size[0], screws_dia, screws_offset);
-  w = 4 + screws_dia * 2 + size[0];
-
-  linear_extrude(height=thickness, center=center) {
-    difference() {
-      square(size = [w, size[1] + 4], center=center);
-      servo_slot_2d(size=size,
-                    screws_dia=screws_dia,
-                    screws_offset=screws_offset,
-                    center=center);
-    }
-  }
-}
-
-module servo_align(thickness=undef,
-                   hat_z_offset=screws_hat_z_offset,
-                   hat_thickness=servo_hat_thickness,
-                   servo_size=servo_size) {
-  for (i = [0 : $children - 1])
-    translate([0, 0, servo_size[2] / 2 - hat_z_offset + servo_hat_thickness]) {
-      children(i);
-    }
-}
-
-// servo_slot_wall();
-// servo_align(thickness=2, hat_z_offset=screws_hat_z_offset, hat_thickness=servo_hat_thickness) {
-//   servo();
-// }
-// servo();

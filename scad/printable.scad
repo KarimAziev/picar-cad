@@ -22,7 +22,7 @@ use <chassis.scad>
 use <front_panel.scad>
 use <rear_panel.scad>
 use <head/head_mount.scad>
-use <head/head_neck_mount.scad>
+use <head/head_neck.scad>
 use <motor_brackets/n20_motor_bracket.scad>
 use <motor_brackets/standard_motor_bracket.scad>
 use <steering_system/knuckle_shaft.scad>
@@ -74,7 +74,7 @@ module printable() {
                - head_neck_pan_servo_slot_height / 2, 0]) {
       if (show_head_neck) {
         color("white", alpha=1) {
-          head_neck_mount();
+          head_neck();
         }
       }
 

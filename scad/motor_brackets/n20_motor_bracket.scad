@@ -28,6 +28,7 @@
 include <../parameters.scad>
 include <../colors.scad>
 use <../util.scad>
+use <../l_bracket.scad>
 use <../wheels/rear_wheel.scad>
 use <../placeholders/n20_motor.scad>
 

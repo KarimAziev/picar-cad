@@ -1,12 +1,14 @@
 /**
  * Module: Robot head for two Raspberry Pi Camera Module 2 units.
 
- * This module defines the robot head component designed to support two Raspberry Pi Camera Module 2 units.
+ * This module defines the robot head component designed to support two
+ * Raspberry Pi Camera Module 2 units.
  *
- * It features a main mounting plate, connector plates, a upper plate, and side panels.
+ * It features a main mounting plate, connector plates, a upper plate, and side
+ * panels.
  *
- * The head mount design assumes it will be attached via the side panel's mounting hole on the servo assembly.
- * (See also head_assembly.scad).
+ * The head mount design assumes it will be attached via the side panel's
+ * mounting hole on the servo assembly.
  *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later

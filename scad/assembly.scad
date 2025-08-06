@@ -8,10 +8,11 @@
  */
 
 include <parameters.scad>
+include <colors.scad>
 use <placeholders/ups_hat.scad>
-use <head/head_assembly.scad>
+use <placeholders/pan_servo.scad>
 use <head/head_mount.scad>
-use <head/head_neck_mount.scad>
+use <head/head_neck.scad>
 use <chassis.scad>
 use <steering_system/rack_and_pinion_assembly.scad>
 use <placeholders/motor.scad>
@@ -34,7 +35,10 @@ show_brackets                   = true;
 show_battery_holders            = true;
 show_rpi                        = true;
 show_head                       = true;
+show_pan_servo                  = true;
+show_tilt_servo                 = true;
 show_ackermann_triangle         = false;
+head_color                      = "white";
 chassis_color                   = "white";
 batteries_holder_assembly_y_idx = len(baterry_holes_y_positions) / 2 + 1;
 
@@ -88,16 +92,10 @@ module chassis_assembly(center=false,
       }
     }
     if (show_ups_hat) {
-      rotate([0, 0, 0]) {
-        translate([-battery_ups_size[0] / 2,
-                   ups_hat_y_pos() + -battery_ups_size[1] / 2,
-                   0]) {
-          rotate([0, 0, 0]) {
-            translate([0, 0, 0]) {
-              ups_hat();
-            }
-          }
-        }
+      translate([-battery_ups_size[0] / 2,
+                 ups_hat_y_pos() + -battery_ups_size[1] / 2,
+                 0]) {
+        ups_hat();
       }
     }
 
@@ -159,6 +157,8 @@ module assembly_view(center=chassis_assembly_center,
                      show_battery_holders=show_battery_holders,
                      show_rpi=show_rpi,
                      show_head=show_head,
+                     show_tilt_servo=show_tilt_servo,
+                     show_pan_servo=show_pan_servo,
                      show_motor_brackets=show_motor_brackets,
                      chassis_color=chassis_color) {
 
@@ -179,13 +179,25 @@ module assembly_view(center=chassis_assembly_center,
                      show_battery_holders=show_battery_holders,
                      center=center) {
       if (show_head) {
-        translate([0, steering_panel_y_pos_from_center
-                   + chassis_pan_servo_y_distance_from_steering,
-                   chassis_thickness]) {
-          translate([-2, 0, 25.9]) {
-            rotate([0, 0, 180]) {
-              head_assembly();
-            }
+        head_x = -head_neck_full_pan_panel_h() / 2
+          - head_neck_tilt_servo_slot_thickness / 2;
+
+        head_full_w = head_neck_full_w();
+        slot_w = (head_full_w - pan_servo_size[0]) / 2;
+        head_y = steering_panel_y_pos_from_center
+          + chassis_pan_servo_y_distance_from_steering
+          + head_full_w - slot_w - pan_servo_gearbox_d1 / 2;
+
+        head_z = chassis_thickness + pan_servo_gear_height();
+
+        translate([head_x,
+                   head_y,
+                   head_z]) {
+          rotate([0, 0, -90]) {
+            head_neck(show_pan_servo=show_pan_servo,
+                      show_tilt_servo=show_tilt_servo,
+                      show_head=show_head,
+                      head_color=head_color);
           }
         }
       }

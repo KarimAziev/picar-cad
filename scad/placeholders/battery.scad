@@ -33,10 +33,8 @@ module battery(d=battery_dia,
           circle(r=d / 2, $fn=fn);
         }
       }
-      translate([0, 0, 0]) {
-        linear_extrude(height=top_border_h, center=false) {
-          circle(r=d / 2, $fn=fn);
-        }
+      linear_extrude(height=top_border_h, center=false) {
+        circle(r=d / 2, $fn=fn);
       }
       translate([0, 0, battery_height]) {
         linear_extrude(height=positive_pole_h, center=false) {

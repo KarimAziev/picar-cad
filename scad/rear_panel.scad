@@ -1,5 +1,6 @@
 /**
- * Module: a plate with two 12-mm mounting holes for two tumblers (switch buttons)
+ * Module: a plate with two 12-mm mounting holes for two tumblers (switch
+ * buttons)
  *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
@@ -7,6 +8,7 @@
 
 include <parameters.scad>
 use <util.scad>
+use <l_bracket.scad>
 
 function rear_panel_screw_panel_width() =
   max(rear_panel_screw_hole_dia + rear_panel_screw_offset * 2,
@@ -34,6 +36,8 @@ module rear_panel() {
   screws_panel_w = rear_panel_screw_panel_width();
   l_bracket(size=[w, h, screws_panel_w],
             thickness=rear_panel_thickness,
+            children_modes=[["difference", "horizontal"],
+                            ["difference", "vertical"]],
             y_r=3,
             z_r=3) {
 

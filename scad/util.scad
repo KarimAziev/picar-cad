@@ -67,9 +67,9 @@ function truncate(val, dec=1) =
 function calc_notch_width(dia, w) =
   dia - 2 * sqrt(((dia / 2) * (dia / 2)) - ((w / 2) * (w / 2)));
 
-function sum(v) = [for (p=v) 1]*v;
-
-function count_circles_len(total_width, d, spacing) = floor(total_width / (spacing + d));
+function sum(list, count=undef) =
+  let (l = is_undef(count) ? len(list) : count)
+  l < 2 ? list[0] : (list[l-1] + sum(list, l-1));
 
 /**
  *
@@ -344,38 +344,6 @@ module star_3d(n=5, r_outer=20, r_inner=10, h=2) {
   }
 }
 
-module l_bracket(size, thickness=1, y_r=undef, z_r=undef, center=true) {
-  x = size[0];
-  y = size[1];
-  z = size[2];
-
-  ur = (y_r == undef) ? 0 : y_r;
-  lr = (z_r == undef) ? 0 : z_r;
-
-  union() {
-    linear_extrude(height=thickness, center=center) {
-      difference() {
-        rounded_rect_two([x, y], center=center, r=ur);
-        if ($children > 0) {
-          children(0);
-        }
-      }
-    }
-    translate([0, -y / 2, z / 2 - thickness / 2]) {
-      rotate([90, 0, 0]) {
-        linear_extrude(height=thickness) {
-          difference() {
-            rounded_rect_two([x, z], center=center, r=lr);
-            if ($children > 1) {
-              children([1:$children-1]);
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
 module fillet(r) {
   offset(r = -r) {
     offset(delta = r) {
@@ -476,8 +444,10 @@ module offset_vertices_2d(r, fn) {
 
 function poly_width_at_y(pts, y_target) =
   let (intersections = [for (i = [0 : len(pts)-1])
-           if (((pts[i][1] - y_target) * (pts[(i+1) % len(pts)][1] - y_target) <= 0)
+           if (((pts[i][1] - y_target)
+                * (pts[(i+1) % len(pts)][1] - y_target) <= 0)
                && (pts[(i+1) % len(pts)][1] - pts[i][1] != 0))
-             pts[i][0] + ((y_target - pts[i][1]) / (pts[(i+1) % len(pts)][1] - pts[i][1]))
+             pts[i][0] + ((y_target - pts[i][1])
+                          / (pts[(i+1) % len(pts)][1] - pts[i][1]))
                * (pts[(i+1) % len(pts)][0] - pts[i][0])])
   (max(intersections) - min(intersections));
