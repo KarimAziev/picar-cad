@@ -1,4 +1,11 @@
-// This module defines a robot parameters
+/**
+ * Module: Parameters
+ * This file defines most of the robot parameters
+ *
+ * Author: Karim Aziiev <karim.aziiev@gmail.com>
+ * License: GPL-3.0-or-later
+ */
+
 include <colors.scad>
 
 m1_hole_dia                                 = 1.2; // M1 screw hole diameter
