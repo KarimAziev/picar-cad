@@ -444,7 +444,7 @@ head_neck_tilt_servo_extra_w                = 4;
  * Provides more support at the base and positions the servo higher.
  * Units: mm
  */
-head_neck_tilt_servo_extra_lower_h          = 2;
+head_neck_tilt_servo_extra_lower_h          = 5;
 
 /**
  * Additional height added **above** the tilt servo placement.
