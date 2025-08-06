@@ -159,6 +159,6 @@ module head_neck(show_tilt_servo=false,
   }
 }
 
-head_neck(show_tilt_servo=true,
+head_neck(show_tilt_servo=false,
           show_head=false,
-          show_pan_servo=true);
+          show_pan_servo=false);
