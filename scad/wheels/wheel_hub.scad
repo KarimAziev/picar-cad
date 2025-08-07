@@ -42,8 +42,7 @@ module wheel_hub_lower(d=wheel_hub_d,
                        screw_boss_h=wheel_screw_boss_h,
                        screw_boss_w=wheel_screw_boss_w,
                        center_screws=true,
-                       tolerance=0.4,
-                       upper_d) {
+                       tolerance=0.4) {
   full_h = wheel_hub_full_height(h, inner_rim_h);
   w = wheel_hub_width(d, outer_d);
   union() {
@@ -55,7 +54,6 @@ module wheel_hub_lower(d=wheel_hub_d,
                      inner_rim_w=inner_rim_w,
                      screws_dia=screws_dia,
                      screws_n=screws_n,
-                     screw_boss_h=screw_boss_h,
                      screw_boss_w=screw_boss_w,
                      upper_d=outer_ring_dia,
                      center_screws=center_screws);
@@ -105,7 +103,6 @@ module wheel_hub_upper(d=wheel_hub_d,
                      inner_rim_w=inner_rim_w,
                      screws_dia=screws_dia,
                      screws_n=screws_n,
-                     screw_boss_h=screw_boss_h,
                      screw_boss_w=screw_boss_w,
                      center_screws=center_screws);
       translate([0, 0, screw_boss_h / 2]) {
@@ -143,7 +140,6 @@ module wheel_hub(d=wheel_hub_d,
                  inner_rim_w=wheel_hub_inner_rim_w,
                  screws_dia=wheel_hub_screws,
                  screws_n=wheel_screws_n,
-                 screw_boss_h=wheel_screw_boss_h,
                  screw_boss_w=wheel_screw_boss_w,
                  center_screws=true,
                  upper_d) {
@@ -201,7 +197,6 @@ module wheel_hub_part(d=wheel_hub_d,
                       inner_rim_w=wheel_hub_inner_rim_w,
                       screws_dia=wheel_hub_screws,
                       screws_n=wheel_screws_n,
-                      screw_boss_h=wheel_screw_boss_h,
                       screw_boss_w=wheel_screw_boss_w,
                       center_screws=true,
                       upper_d) {
@@ -214,7 +209,6 @@ module wheel_hub_part(d=wheel_hub_d,
               inner_rim_w=inner_rim_w,
               screws_dia=screws_dia,
               screws_n=screws_n,
-              screw_boss_h=screw_boss_h,
               screw_boss_w=screw_boss_w,
               upper_d=upper_d,
               center_screws=center_screws);

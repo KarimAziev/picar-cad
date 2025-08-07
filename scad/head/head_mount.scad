@@ -26,7 +26,6 @@ function side_panel_servo_center() =
   [head_side_panel_width / 2.0, -head_side_panel_height / 2.0];
 
 module head_front_plate() {
-  head_cameras_reversed = reverse(head_cameras);
   translate([0, head_plate_height / 2, 0]) {
     rotate([0, 0, 180]) {
       translate([0, 0, -head_plate_thickness]) {
@@ -71,7 +70,7 @@ module head_front_plate() {
   }
 }
 
-module connector_plate_up(y_offset) {
+module connector_plate_up() {
   y = head_plate_height / 2 + (head_upper_connector_height * 0.5);
   translate([0, y, -head_upper_connector_len]) {
     linear_extrude(height = head_upper_connector_len) {

@@ -1,6 +1,6 @@
 /**
  * Module: Rack And Pinion Assembly
- *
+ > *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */
@@ -43,7 +43,6 @@ module steering_system_distance_between_rack_and_knuckle(w=5) {
   translate([steering_rack_connector_x_pos -
              steering_distance_between_knuckle_and_rack, 0,
              knuckle_height + knuckle_pin_lower_height]) {
-
     color("chartreuse", alpha=0.6) {
       linear_extrude(height=1, center=false) {
         square([steering_distance_between_knuckle_and_rack, w], center=false);
@@ -76,7 +75,8 @@ module steering_system_assembly(rack_color=blue_grey_carbon,
   union() {
     steering_panel(show_servo=show_servo,
                    show_pinion=show_pinion,
-                   panel_color=panel_color);
+                   panel_color=panel_color,
+                   pinion_color=pinion_color);
     if (show_distance) {
       steering_system_distance_between_rack_and_knuckle();
     }

@@ -35,8 +35,8 @@ module front_and_rear_wheels(w=wheel_w,
   union() {
     if (front_n > 0) {
       for (i = [0:front_n - 1]) {
-        y_offst = i == 0 ? 0 : (wheel_dia + y_distance) * i;
-        translate([wheel_dia * 0.5 + x_distance, y_offst, 0]) {
+        y_offst = i == 0 ? 0 : (d + y_distance) * i;
+        translate([d * 0.5 + x_distance, y_offst, 0]) {
           front_wheel(w=w,
                       d=d,
                       thickness=thickness,
@@ -57,10 +57,10 @@ module front_and_rear_wheels(w=wheel_w,
 
     if (rear_n > 0) {
       for (i = [0:rear_n - 1]) {
-        y_offst = i == 0 ? 0 : (wheel_dia + y_distance) * i;
-        translate([-wheel_dia * 0.5 - x_distance, y_offst, 0]) {
-          rear_wheel(w = w,
-                     d = d,
+        y_offst = i == 0 ? 0 : (d + y_distance) * i;
+        translate([-d * 0.5 - x_distance, y_offst, 0]) {
+          rear_wheel(w=w,
+                     d=d,
                      thickness = thickness,
                      rim_h = rim_h,
                      rim_w = rim_w,
@@ -68,7 +68,7 @@ module front_and_rear_wheels(w=wheel_w,
                      shaft_offset=shaft_offset,
                      spokes=spokes,
                      spoke_w=spoke_w,
-                     shaft_d=wheel_rear_shaft_outer_dia);
+                     shaft_d=shaft_d);
         }
       }
     }

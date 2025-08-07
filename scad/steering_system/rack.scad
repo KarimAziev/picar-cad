@@ -37,8 +37,6 @@ module steering_rack(length=steering_rack_teethed_length,
                      rack_color=blue_grey_carbon) {
 
   circular_pitch = calc_circular_pitch(r_pitch, teeth_count);
-
-  tooth_height = calc_tooth_height(r_pitch, teeth_count, clearance);
   base_circle_rad = r_pitch * cos(pressure_angle);
   root_rad = r_pitch - (circular_pitch / PI) - clearance;
   outer_rad = outer_radius(r_pitch, circular_pitch, clearance);

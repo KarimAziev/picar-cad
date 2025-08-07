@@ -46,12 +46,9 @@ module rack_connector() {
     + steering_bracket_linkage_thickness
     + extra_h;
 
-  notch_w = calc_notch_width(steering_bracket_bearing_outer_d, stopper_w);
   stopper_len = steering_bracket_rack_side_h_length
     + steering_bracket_bearing_outer_d / 2
     + half_of_rw;
-
-  fillet_rad = stopper_h / 2;
 
   union() {
     bearing_lower_connector(lower_h=steering_rack_pin_base_height);

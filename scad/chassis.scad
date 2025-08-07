@@ -50,7 +50,7 @@ function motor_bracket_y_pos() =
 function motor_bracket_x_pos() =
   (chassis_width * 0.5) - (standard_motor_bracket_height * 0.5);
 
-module raspberry_pi5_screws_2d(vertical=false, show_rpi=false) {
+module raspberry_pi5_screws_2d(vertical=false) {
   size = vertical
     ? [rpi_screws_size[1],
        rpi_screws_size[0]]
@@ -99,7 +99,6 @@ module chassis_center_wiring_cutouts(dia=chassis_center_cutout_dia,
   end = positions[1];
 
   screw_offset = -rpi_5_screws_offset();
-  x_offsets = [-1, 0, 1];
 
   // Horizontal rows of circles (in line with RPi screw zone)
   vertical_positions = number_sequence(from = -battery_ups_offset / 2
@@ -116,7 +115,7 @@ module chassis_center_wiring_cutouts(dia=chassis_center_cutout_dia,
     curr_y = y + dia;
 
     translate([0, corrected_y, 0]) {
-      circle(r = dia / 2);
+      circle(r=dia / 2);
       // Place 5 total circles only when within safe margin
       if (curr_y < battery_screws_y_start &&
           (curr_y < end || y - dia > end)) {
@@ -175,7 +174,6 @@ module chassis_head_wiring_pass_through_holes(hole_size                = chassis
                                               min_center_cutout_width  = chassis_head_min_cutout_w,
                                               trapezoid_corner_offset  = chassis_head_trapezoid_corner_offset,
                                               center_hole_radius       = chassis_head_center_hole_radius) {
-  wiring_w = hole_size[0];
   wiring_h = hole_size[1];
 
   // Compute top and bottom Y ranges for hole placements
@@ -375,7 +373,7 @@ module n20_bracket_left(show_motor=false, show_wheel=false) {
   }
 }
 
-module n20_bracket_screws(show_motor=false, show_wheel=false) {
+module n20_bracket_screws() {
   pan_len = n20_motor_screws_panel_len;
   x = -chassis_width * 0.5 - n20_motor_chassis_x_distance + n20_can_height / 2;
   y = -chassis_len * 0.5 + pan_len / 2 + n20_motor_chassis_y_distance;
@@ -405,7 +403,6 @@ module chassis(motor_type=motor_type,
                show_rear_panel=false,
                show_front_panel=false,
                show_ackermann_triangle=false,
-               show_rpi=false,
                chassis_color="white") {
   union() {
     color(chassis_color) {

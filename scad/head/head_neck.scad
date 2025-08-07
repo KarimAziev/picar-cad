@@ -78,10 +78,6 @@ module head_neck(show_tilt_servo=false,
   full_pan_h = head_neck_full_pan_panel_h();
   full_tilt_h = head_neck_full_tilt_panel_h();
   full_w = head_neck_full_w();
-  rad = min(min(head_neck_pan_servo_slot_width,
-                head_neck_tilt_servo_slot_width,
-                head_neck_pan_servo_slot_height,
-                head_neck_tilt_servo_slot_height) * 0.2, 3);
   pan_rad = min(min(full_w, full_pan_h) * 0.2, 3);
   tilt_rad = min(min(full_w, full_tilt_h) * 0.2, 3);
 
@@ -140,8 +136,6 @@ module head_neck(show_tilt_servo=false,
         tilt_servo(center=true, alpha=show_tilt_servo ? 1 : 0) {
           if (show_head) {
             head_centers = side_panel_servo_center();
-            y_head = (head_side_panel_curve_end + head_side_panel_notch_y)
-              / 2;
 
             translate([-head_centers[0],
                        -head_centers[1] / 2,

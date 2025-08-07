@@ -130,6 +130,7 @@ module chassis_assembly(center=false,
           }
         }
       }
+
       chassis(motor_type=motor_type,
               show_motor=show_motor,
               show_motor_brackets=show_motor_brackets,
@@ -137,7 +138,6 @@ module chassis_assembly(center=false,
               show_rear_panel=show_rear_panel,
               show_front_panel=show_front_panel,
               show_ackermann_triangle=show_ackermann_triangle,
-              show_rpi=show_rpi,
               chassis_color=chassis_color);
     }
   }

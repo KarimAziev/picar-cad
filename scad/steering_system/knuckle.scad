@@ -34,7 +34,6 @@ use <bearing_connector.scad>
 module knuckle_mount(show_wheel=false,
                      show_bearing=false,
                      show_shaft=false,
-                     show_text=false,
                      knuckle_color=blue_grey_carbon,
                      knuckle_color_alpha=0.6,
                      knuckle_shaft_color=matte_black) {
@@ -54,8 +53,7 @@ module knuckle_mount(show_wheel=false,
 
     knuckle_bearing_bracket_connector(border_w=border_w,
                                       knuckle_color=knuckle_color,
-                                      show_bearing=show_bearing,
-                                      show_text=show_text);
+                                      show_bearing=show_bearing);
   }
 }
 
@@ -91,14 +89,12 @@ module knuckle_bent_shaft_connector(knuckle_color=blue_grey_carbon,
                                     knuckle_shaft_color=matte_black,
                                     show_shaft=false,
                                     show_wheel=false,
-                                    border_w=border_w,
-                                    fn=100) {
+                                    border_w=border_w) {
 
   notch_width = calc_notch_width(max(knuckle_dia, knuckle_shaft_connector_dia),
                                  min(knuckle_dia, knuckle_shaft_connector_dia));
 
   offst = knuckle_shaft_connector_dia / 2;
-  screw_holes_z = knuckle_shaft_screws_dia / 2 + knuckle_shaft_screws_offset;
   y_offst = -(notch_width + knuckle_shaft_connector_extra_len +
               border_w + offst);
 
@@ -142,13 +138,9 @@ module knuckle_bent_shaft_connector(knuckle_color=blue_grey_carbon,
 
 module knuckle_bearing_bracket_connector(border_w=border_w,
                                          knuckle_color=blue_grey_carbon,
-                                         show_text=false,
                                          show_bearing=false) {
-  notch_width = calc_notch_width(knuckle_dia, steering_bracket_bearing_outer_d);
-  offst = steering_bracket_bearing_outer_d / 2;
 
   rotate([0, 0, steering_alpha_deg]) {
-
     translate([0, 0, knuckle_height - knuckle_bracket_connector_height]) {
       knuckle_connector(parent_dia=knuckle_dia,
                         outer_d=steering_bracket_bearing_outer_d,

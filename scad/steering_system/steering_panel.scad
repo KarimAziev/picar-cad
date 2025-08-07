@@ -209,7 +209,8 @@ module steering_panel(size=[steering_servo_hat_w,
                       z_r=undef,
                       center=true,
                       show_servo=false,
-                      show_pinion=true) {
+                      show_pinion=true,
+                      pinion_color=blue_grey_carbon) {
 
   x = size[0];
   y = size[1];
@@ -285,7 +286,7 @@ module steering_panel(size=[steering_servo_hat_w,
               steering_servo(center=true) {
                 rotate([0, 0, $t == 0 ? 12.0 : 7 + pinion_angle(t=$t)]) {
                   translate([0, 0, 2]) {
-                    color(blue_grey_carbon, alpha=1) {
+                    color(pinion_color, alpha=1) {
                       steering_pinion();
                     }
                   }

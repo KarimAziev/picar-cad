@@ -7,7 +7,7 @@
  */
 include <../parameters.scad>
 include <../colors.scad>
-include <../util.scad>
+use <../util.scad>
 use <battery.scad>
 
 function ups_hat_polygon_cutout_points(max_len, max_height) =
@@ -145,8 +145,6 @@ module ups_hat_wall_cutout(max_len=battery_ups_holder_size[0] - 4,
                            offset_rad=1,
                            points) {
 
-  end_x = max_len / 2;
-  end_y = max_height;
   pts = is_undef(points)
     ? ups_hat_polygon_cutout_points(max_len=max_len, max_height=max_height)
     : points;

@@ -16,7 +16,7 @@
 include <../parameters.scad>
 include <../colors.scad>
 use <../util.scad>
-include <../placeholders/motor.scad>
+use <../placeholders/motor.scad>
 
 module standard_motor_bracket_screws_holes_2d(d=m2_hole_dia) {
   for (y = standard_motor_bracket_screws_size) {

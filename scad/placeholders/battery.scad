@@ -15,8 +15,8 @@ module battery(d=battery_dia,
                top_border_h=1,
                fn=25) {
 
-  base_len = battery_height -
-    ((top_border_h * 2) - battery_positive_pole_height);
+  base_len = h -
+    ((top_border_h * 2) - positive_pole_h);
   union() {
     color("springgreen") {
       translate([0, 0, 1]) {
@@ -28,7 +28,7 @@ module battery(d=battery_dia,
     }
 
     color("white", alpha=1) {
-      translate([0, 0, battery_height - top_border_h]) {
+      translate([0, 0, h - top_border_h]) {
         linear_extrude(height=1, center=false) {
           circle(r=d / 2, $fn=fn);
         }
@@ -36,7 +36,7 @@ module battery(d=battery_dia,
       linear_extrude(height=top_border_h, center=false) {
         circle(r=d / 2, $fn=fn);
       }
-      translate([0, 0, battery_height]) {
+      translate([0, 0, h]) {
         linear_extrude(height=positive_pole_h, center=false) {
           circle(r=positive_pole_dia / 2, $fn=fn);
         }

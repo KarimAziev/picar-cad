@@ -47,7 +47,6 @@ module n20_motor_screw_holes() {
   screws_rad = n20_motor_screws_dia / 2;
   w = n20_motor_screws_panel_len;
   for (i = [0:1]) {
-    offst = w / 2 - n20_motor_screws_dia / 2;
     translate([i == 0
                ? -n20_motor_screws_panel_offset
                : n20_motor_screws_panel_offset,

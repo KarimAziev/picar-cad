@@ -109,7 +109,6 @@ module wheel_blades(d=wheel_dia - wheel_rim_h,
                     spokes=wheel_rear_spokes_count,
                     spoke_w=wheel_rear_wheel_spoke_w) {
   outradius = d / 2;
-  half_of_rad = outradius / 2;
 
   difference() {
     union() {
@@ -141,7 +140,6 @@ module spoke(w=10,
              h=15,
              thickness=1,
              top_coef=2.5,
-             wheel_thickness=wheel_thickness,
              fn=360) {
   spoke_top = w / top_coef;
   half_of_h = h / 2;
@@ -149,7 +147,6 @@ module spoke(w=10,
   double_h = h * 2;
   double_w = w * 2;
   inner_w = w / 4;
-  d = h * 2;
   translate([-half_of_w, -half_of_h, 0]) {
     union() {
       linear_extrude(height=thickness) {

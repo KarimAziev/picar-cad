@@ -9,21 +9,6 @@ include <../parameters.scad>
 include <../colors.scad>
 use <../util.scad>
 
-servo_size          = [23, 11.6, 20];
-servo_screw_offset  = steering_servo_screws_offset;
-servo_hat_w         = 33;
-servo_hat_h         = servo_size[1];
-servo_hat_thickness = 1.6;
-screws_hat_z_offset = 4;
-servo_gearbox_h     = 6;
-servo_gearbox_rad   = servo_size[1] * 0.5;
-servo_gearbox_x     = servo_size[1] - servo_gearbox_rad;
-servo_gearbox_z     = -servo_size[2] * 0.5;
-servo_gear_h        = 2;
-servo_gear_d        = 3;
-
-servo_gear_lower_h  = 0.5;
-
 function servo_gear_total_height(gear_size) =
   sum([for (i = [0 : len(gear_size) - 1]) gear_size[i][0]]);
 
@@ -40,8 +25,8 @@ function servo_gear_center_x(length, d1) = length - d1;
 
 module servo_screws_hat(size,
                         x_offset,
-                        d=steering_servo_screw_dia,
-                        thickness=servo_hat_thickness,
+                        d,
+                        thickness,
                         center=true) {
   w = size[0];
   h = size[1];

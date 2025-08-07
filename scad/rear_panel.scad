@@ -17,8 +17,8 @@ function rear_panel_screw_panel_width() =
 module rear_panel_screw_holes() {
   yw = rear_panel_screw_panel_width();
   rad = rear_panel_screw_hole_dia / 2;
-
   y = yw / 2 - rad - rear_panel_screw_offset;
+
   union() {
     for (x=rear_panel_screw_holes_x_offsets) {
       translate([x, y, 0]) {
@@ -31,7 +31,6 @@ module rear_panel_screw_holes() {
 module rear_panel() {
   w = rear_panel_size[0];
   h = rear_panel_size[1];
-  half_of_w = w / 2;
   hole_rad = rear_panel_switch_slot_dia / 2;
   screws_panel_w = rear_panel_screw_panel_width();
   l_bracket(size=[w, h, screws_panel_w],

@@ -27,7 +27,6 @@ module front_wheel(w=wheel_w,
                    screw_boss_h=wheel_screw_boss_h,
                    screw_boss_w=wheel_screw_boss_w,
                    show_bearing=false,
-                   ball_bearing_color=metalic_grey,
                    wheel_color=jet_black,
                    hub_lower_color=matte_black) {
 
@@ -51,8 +50,8 @@ module front_wheel(w=wheel_w,
                           h=hub_h,
                           inner_rim_h=hub_inner_rim_h,
                           inner_rim_w=hub_inner_rim_w,
-                          screws_dia=wheel_hub_screws,
-                          screws_n=wheel_screws_n,
+                          screws_dia=screws_dia,
+                          screws_n=screws_n,
                           screw_boss_h=screw_boss_h,
                           screw_boss_w=screw_boss_w);
         }

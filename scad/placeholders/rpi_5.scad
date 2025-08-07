@@ -17,7 +17,7 @@ module rpi_rectangle_3d(size, r_factor=0.05, fn=40, center=false) {
 
 module io_controller(size=rpi_io_size) {
   color(matte_black, alpha=1) {
-    rpi_rectangle_3d(rpi_io_size);
+    rpi_rectangle_3d(size);
   }
 }
 
@@ -70,7 +70,6 @@ module usb(size=rpi_usb_size) {
   hole_z = size[2] * hole_z_factor;
   x_offst = ((1 - hole_x_factor) * size[0]) / 2;
   y_offst = ((1 - hole_y_factor) * size[1]) + 1;
-  z_offst = size[2] - hole_z - 1;
 
   union() {
     difference() {
@@ -221,7 +220,9 @@ module rtc_battery_connector(size=rpi_rtc_connector_size) {
         square([size[0], size[1]], center=false);
       }
 
-      translate([hole_w / 2, (size[1] - hole_h) / 2, size[2] - size[2] / 2 + 1]) {
+      translate([hole_w / 2,
+                 (size[1] - hole_h) / 2,
+                 size[2] - size[2] / 2 + 1]) {
         linear_extrude(height=size[2] * 0.5, center=false) {
           square([hole_w, hole_h],
                  center=false);
@@ -242,7 +243,6 @@ module uart_connector(size=rpi_uart_connector_size) {
 module pci_connector(size=rpi_pci_size) {
   union() {
     extra_x = 2;
-    hat_h = 2;
     cube(size, center=false);
     translate([-extra_x / 2, 0, size[2]]) {
       color(jet_black, alpha=1) {
@@ -375,8 +375,8 @@ module rpi_5(show_standoffs=false,
       }
     }
     if (show_standoffs) {
-      rpi_standoffs(standoff_height=10,
-                    standoff_lower_height=4);
+      rpi_standoffs(standoff_height=standoff_height,
+                    standoff_lower_height=standoff_lower_height);
     }
 
     translate([0, 0, rpi_thickness / 2]) {

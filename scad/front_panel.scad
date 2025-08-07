@@ -132,13 +132,12 @@ module front_panel_back_mount(w=front_panel_width,
                               bottom_cutout_size = [15, 5],
                               side_screws_dia=m3_hole_dia,
                               screws_square_size=[25, 10],
-
                               screws_square_dia=m3_hole_dia,
                               thickness=front_panel_rear_panel_thickness) {
   linear_extrude(thickness) {
     difference() {
       rounded_rect(size=[w, h], r=h * 0.18, center=true);
-      two_x_screws_2d(screws_x_offset, m3_hole_dia);
+      two_x_screws_2d(screws_x_offset, side_screws_dia);
       translate([0, -h * 0.5 + bottom_cutout_size[1] * 0.5]) {
         square(size = [bottom_cutout_size[0], bottom_cutout_size[1]],
                center=true);
