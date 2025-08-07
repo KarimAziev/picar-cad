@@ -283,11 +283,11 @@ module chassis_2d() {
 
     mirror_copy([1, 0, 0]) {
       n20_bracket_screws();
-      standard_standard_motor_bracket_screws_size();
+      standard_motor_bracket_screws_size();
     }
 
     mirror_copy([1, 0, 0]) {
-      standard_standard_motor_bracket_screws_size(-standard_motor_bracket_thickness * 2);
+      standard_motor_bracket_screws_size(-standard_motor_bracket_thickness * 2);
     }
 
     pan_servo_cutout_2d();
@@ -330,13 +330,13 @@ module chassis_2d() {
   }
 }
 
-module standard_standard_motor_bracket_screws_size(extra_x=0, extra_y=0) {
+module standard_motor_bracket_screws_size(extra_x=0, extra_y=0) {
   translate([motor_bracket_x_pos() + extra_x,
              motor_bracket_y_pos() + extra_y,
              0]) {
     for (x = standard_motor_bracket_screws_size) {
       translate([x, 0, 0]) {
-        circle(r = m2_hole_dia / 2, $fn = 360);
+        circle(r = standard_motor_bracket_chassis_screw_hole / 2, $fn = 360);
       }
     }
   }
@@ -348,10 +348,10 @@ module chassis_base_3d() {
   }
 }
 
-module rear_motor_mount_wall(show_motor=false, show_wheel=false) {
+module standard_motor_bracket_wall(show_motor=false, show_wheel=false) {
   translate([motor_bracket_x_pos(),
              motor_bracket_y_pos(),
-             standard_motor_bracket_thickness]) {
+             chassis_thickness]) {
     rotate([0, 0, 90]) {
       standard_motor_bracket(show_motor=show_motor, show_wheel=show_wheel);
     }
@@ -422,7 +422,7 @@ module chassis(motor_type=motor_type,
 
     if ((show_motor || show_motor_brackets) && motor_type == "standard") {
       mirror_copy([1, 0, 0]) {
-        rear_motor_mount_wall(show_motor=show_motor, show_wheel=show_wheels);
+        standard_motor_bracket_wall(show_motor=show_motor, show_wheel=show_wheels);
       }
     }
 

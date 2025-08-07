@@ -58,10 +58,15 @@ module chassis_assembly(center=false,
                         show_motor_brackets=false,
                         chassis_color="white") {
   global_x_offset = chassis_width / 2 + (front_wheel_offset() * 2);
-  global_z_offset = chassis_thickness +
-    n20_motor_screws_panel_x_offset()
-    + n20_motor_screws_panel_thickness()
-    + wheel_dia  / 2 + wheel_tire_thickness + (wheel_tire_fillet_gap * 2);
+  motor_z_offset = motor_type == "n20"
+    ? n20_motor_screws_panel_x_offset() + n20_motor_screws_panel_thickness()
+    : standard_motor_bracket_height / 2;
+  global_z_offset = chassis_thickness
+    + wheel_dia  / 2
+    + wheel_tire_thickness
+    + (wheel_tire_fillet_gap * 2)
+    + motor_z_offset;
+
   translate([center ? 0 : global_x_offset,
              0,
              global_z_offset]) {

@@ -18,8 +18,8 @@ include <../colors.scad>
 use <../util.scad>
 use <../placeholders/motor.scad>
 
-module standard_motor_bracket_screws_holes_2d(d=m2_hole_dia) {
-  for (y = standard_motor_bracket_screws_size) {
+module standard_motor_bracket_screws_holes_2d(d) {
+  for (y=standard_motor_bracket_screws_size) {
     translate([0, y, 0]) {
       circle(r = d / 2, $fn = 360);
     }
@@ -30,6 +30,8 @@ module standard_motor_bracket(size=[standard_motor_bracket_width,
                                     standard_motor_bracket_height,
                                     standard_motor_bracket_height],
                               thickness=standard_motor_bracket_thickness,
+                              chassis_screw_d=standard_motor_bracket_chassis_screw_hole,
+                              motor_screw_d=standard_motor_bracket_motor_screw_hole,
                               y_r=standard_motor_bracket_width / 2,
                               z_r=standard_motor_bracket_width / 2,
                               show_motor=false,
@@ -46,7 +48,7 @@ module standard_motor_bracket(size=[standard_motor_bracket_width,
       linear_extrude(height=thickness, center=false) {
         difference() {
           rounded_rect_two([x, y], center=true, r=ur);
-          standard_motor_bracket_screws_holes_2d(m2_hole_dia);
+          standard_motor_bracket_screws_holes_2d(chassis_screw_d);
         }
       }
     }
@@ -56,13 +58,14 @@ module standard_motor_bracket(size=[standard_motor_bracket_width,
           linear_extrude(height=thickness, center=false) {
             difference() {
               rounded_rect_two([x, z], center=true, r=lr);
-              standard_motor_bracket_screws_holes_2d(m3_hole_dia);
+              standard_motor_bracket_screws_holes_2d(motor_screw_d);
             }
           }
         }
         if (show_motor || show_wheel) {
-          translate([gearbox_body_main_len / 2 - motor_body_neck_len / 2, 0,
-                     -gearbox_side_height / 2]) {
+          translate([standard_motor_gearbox_body_main_len / 2
+                     - standard_motor_body_neck_len / 2, 0,
+                     -standard_motor_gearbox_side_height / 2]) {
             rotate([180, 180, 0]) {
               motor(show_wheel=show_wheel);
             }
@@ -73,8 +76,4 @@ module standard_motor_bracket(size=[standard_motor_bracket_width,
   }
 }
 
-rotate([0, 0, 90]) {
-  translate([10, 14, 0]) {
-    standard_motor_bracket(show_motor=false);
-  }
-}
+standard_motor_bracket(show_motor=false);

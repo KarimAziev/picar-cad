@@ -649,6 +649,17 @@ tilt_servo_color                            = jet_black;
  * Units: mm
  */
 tilt_servo_cutted_len                       = 3;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Motor type
+// ─────────────────────────────────────────────────────────────────────────────
+// Type of the DC motor to use. Either "n20" or "standard". "n20" refers to
+// motors like the GA12-N20 with a 3mm shaft, whereas "standard" refers to
+// popular, inexpensive, unnamed yellow motors with a 5mm shaft. This setting
+// affects the shape and type of the motor bracket, the diameter of the rear
+// wheel shafts, and the vertical length of the steering knuckle shafts
+motor_type                                  = "n20";
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Steering Knuckle
 // ─────────────────────────────────────────────────────────────────────────────
@@ -693,7 +704,7 @@ knuckle_shaft_screws_distance               = 2;
 
 // The length of the vertical part of the (curved) axle shaft that connects the
 // steering knuckle to the wheel hub
-knuckle_shaft_vertical_len                  = 20 + knuckle_height;
+knuckle_shaft_vertical_len                  = knuckle_height + (motor_type == "n20" ? 21.5 : 26.5);
 
 // The additional length of the connector for the shaft in the knuckle and the
 // corresponding curved axle shaft
@@ -724,16 +735,6 @@ knuckle_pin_stopper_height                  = 1;
 // The height (thickness) of the knuckle connector with the 685-Z bearing that
 // is connected to the bracket
 knuckle_bracket_connector_height            = 7;
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Motor
-// ─────────────────────────────────────────────────────────────────────────────
-// Type of the DC motor to use. Either "n20" or "standard". "n20" refers to
-// motors like the GA12-N20 with a 3mm shaft, whereas "standard" refers to
-// popular, inexpensive, unnamed yellow motors with a 5mm shaft. This setting
-// affects the shape and type of the motor bracket and the diameter of the rear
-// wheel shafts.
-motor_type                                  = "n20";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // N20 motor dimensions
@@ -862,10 +863,35 @@ rpi_standoff_height                         = 10;
 // Standard (see motor_type) motor brackets dimension
 // ─────────────────────────────────────────────────────────────────────────────
 standard_motor_bracket_screws_size          = [-7.5, 10.5];
+standard_motor_bracket_chassis_screw_hole   = m2_hole_dia;
+standard_motor_bracket_motor_screw_hole     = m3_hole_dia;
 standard_motor_bracket_y_offset             = 25;
 standard_motor_bracket_width                = 10;
 standard_motor_bracket_thickness            = 3;
 standard_motor_bracket_height               = 29;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Standard (see motor_type) motor dimensions
+// ─────────────────────────────────────────────────────────────────────────────
+standard_motor_shaft_color                  = light_grey;
+
+standard_motor_can_color                    = "silver";
+standard_motor_endcap_color                 = black_1;
+
+standard_motor_gearbox_body_main_len        = 37;
+standard_motor_gearbox_height               = 22.6;
+standard_motor_gearbox_color                = yellow_1;
+standard_motor_gearbox_side_height          = 19.5;
+standard_motor_body_neck_len                = 11.4;
+standard_motor_can_len                      = 9.6;
+standard_motor_endcap_len                   = 8.5;
+standard_motor_shaft_len                    = 35;
+standard_motor_shaft_rad                    = 2.8;
+standard_motor_shaft_offset                 = 12;
+
+standard_gearbox_neck_rad                   = standard_motor_gearbox_height / 2;
+standard_motor_can_rad                      = standard_gearbox_neck_rad  * 0.9;
+standard_endcap_rad                         = standard_gearbox_neck_rad  * 0.86;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Steering servo

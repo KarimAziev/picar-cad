@@ -10,40 +10,24 @@ include <../colors.scad>
 use <../util.scad>
 use <../wheels/rear_wheel.scad>
 
-motor_shaft_color     = light_grey;
-gearbox_color         = yellow_1;
-motor_can_color       = "silver";
-endcap_color          = black_1;
-
-gearbox_body_main_len = 37;
-gearbox_height        = 22.6;
-gearbox_side_height   = 19.5;
-motor_body_neck_len   = 11.4;
-motor_can_len         = 9.6;
-endcap_len            = 8.5;
-motor_shaft_len       = 35;
-motor_shaft_rad       = 2.8;
-motor_shaft_offset    = 12;
-
-gearbox_neck_rad      = gearbox_height / 2;
-motor_can_rad         = gearbox_neck_rad  * 0.9;
-endcap_rad            = gearbox_neck_rad  * 0.86;
-
-module motor_can(h=motor_can_len, r=motor_can_rad, cutted_w=4) {
-  translate([0, 0, -motor_body_neck_len * 0.5]) {
+module motor_can(h=standard_motor_can_len,
+                 r=standard_motor_can_rad,
+                 cutted_w=4) {
+  translate([0, 0, -standard_motor_body_neck_len * 0.5]) {
     union() {
       union() {
-        full_len = h + motor_body_neck_len;
-        color(motor_can_color) {
+        full_len = h + standard_motor_body_neck_len;
+        color(standard_motor_can_color) {
           cylinder_cutted(h=full_len, r=r, cutted_w=cutted_w);
         }
 
         translate([0, 0, full_len * 0.5]) {
-          color(motor_can_color) {
-            cylinder(h = endcap_len, r = 1.6, center = false);
+          color(standard_motor_can_color) {
+            cylinder(h = standard_motor_endcap_len, r = 1.6, center = false);
           }
-          color(endcap_color) {
-            cylinder_cutted(h=endcap_len, r=endcap_rad, cutted_w=cutted_w);
+          color(standard_motor_endcap_color) {
+            cylinder_cutted(h=standard_motor_endcap_len,
+                            r=standard_endcap_rad, cutted_w=cutted_w);
             head_h = 6;
             translate([0, 0, head_h * 0.5]) {
               cylinder_cutted(h=head_h, r=5, cutted_w=2);
@@ -56,10 +40,11 @@ module motor_can(h=motor_can_len, r=motor_can_rad, cutted_w=4) {
 }
 
 module motor_gearbox() {
-  color(gearbox_color) {
-    linear_extrude(height = gearbox_side_height, center=true) {
+  color(standard_motor_gearbox_color) {
+    linear_extrude(height = standard_motor_gearbox_side_height, center=true) {
       difference() {
-        rounded_rect_two([gearbox_height, gearbox_body_main_len],
+        rounded_rect_two([standard_motor_gearbox_height,
+                          standard_motor_gearbox_body_main_len],
                          r=3,
                          center=true);
         offst_a = 7.8;
@@ -67,8 +52,9 @@ module motor_gearbox() {
         offst_c = 3.0;
         for (x = [[-offst_a, offst_b, -offst_c],
                   [offst_a, -offst_b, -offst_c]]) {
-          translate([x[0], -gearbox_body_main_len * 0.5 + 6, 0]) {
-            circle(r = m3_hole_dia / 2, $fn=60);
+          translate([x[0], -standard_motor_gearbox_body_main_len * 0.5
+                     + 6, 0]) {
+            circle(r = standard_motor_bracket_motor_screw_hole / 2, $fn=60);
             translate([x[1], x[2], 0]) {
               circle(r = m25_hole_dia / 2, $fn=60);
             }
@@ -86,48 +72,53 @@ module motor(show_wheel=false) {
         motor_gearbox();
       }
 
-      translate([gearbox_body_main_len * 0.5 + motor_body_neck_len * 0.5,
+      translate([standard_motor_gearbox_body_main_len * 0.5
+                 + standard_motor_body_neck_len * 0.5,
                  0,
                  0]) {
         rotate([0, 90, 0]) {
           union() {
-            color(gearbox_color) {
+            color(standard_motor_gearbox_color) {
               difference() {
-                cylinder_cutted(h=motor_body_neck_len,
-                                r=gearbox_neck_rad,
+                cylinder_cutted(h=standard_motor_body_neck_len,
+                                r=standard_gearbox_neck_rad,
                                 cutted_w=5);
-                cube([gearbox_side_height, 5, 2], center=true);
+                cube([standard_motor_gearbox_side_height, 5, 2], center=true);
               }
             }
 
-            translate([0, 0, motor_can_len]) {
+            translate([0, 0, standard_motor_can_len]) {
               motor_can();
             }
           }
         }
       }
 
-      translate([-gearbox_body_main_len * 0.5 + motor_shaft_offset, 0, 0]) {
+      translate([-standard_motor_gearbox_body_main_len * 0.5 +
+                 standard_motor_shaft_offset, 0, 0]) {
         rotate([0, 0, 90]) {
-          color(motor_shaft_color) {
+          color(standard_motor_shaft_color) {
             difference() {
               rotate([0, 0, 360 * $t]) {
-                cylinder_cutted(h=motor_shaft_len,
-                                r=motor_shaft_rad,
+                cylinder_cutted(h=standard_motor_shaft_len,
+                                r=standard_motor_shaft_rad,
                                 cutted_w=2);
               }
 
-              cylinder(h = motor_shaft_len + 1, r = 0.7, center = true, $fn=60);
+              cylinder(h=standard_motor_shaft_len+1,
+                       r=0.7,
+                       center=true,
+                       $fn=60);
             }
           }
         }
         translate([10, 0, 10]) {
-          color(gearbox_color) {
+          color(standard_motor_gearbox_color) {
             cylinder(h=2, r=2, $fn=50, center=true);
           }
         }
 
-        translate([0, 0, gearbox_height / 2 + wheel_w]) {
+        translate([0, 0, standard_motor_gearbox_height / 2 + wheel_w]) {
           if (show_wheel) {
             rotate([0, 180, 0]) {
               rear_wheel_animated();
@@ -140,9 +131,9 @@ module motor(show_wheel=false) {
       y = 5;
       z = 3;
 
-      translate([-gearbox_body_main_len * 0.5 - x / 2, 0, 0]) {
+      translate([-standard_motor_gearbox_body_main_len * 0.5 - x / 2, 0, 0]) {
         difference() {
-          color(gearbox_color) {
+          color(standard_motor_gearbox_color) {
             cube([x, y, z], center=true);
           }
 
