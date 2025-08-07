@@ -64,9 +64,7 @@ union() {
     wheel();
   }
   color(jet_black, alpha=0.7) {
-    translate([0, 0, 0]) {
-      tire();
-    }
+    tire();
 
     translate([65, 0, 3]) {
       tire();

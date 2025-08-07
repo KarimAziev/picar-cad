@@ -70,17 +70,3 @@ module steering_pinion() {
 }
 
 steering_pinion();
-
-// translate([0, 0, 0]) {
-//   rotate([0, 0, 7]) {
-//     #pinion();
-//   }
-// }
-
-// #linear_extrude(height=3, center=false) {
-//   // circle(steering_pinion_d / 2);
-
-//   translate([0, steering_pinion_d / 2, 0]) {
-//     square([steering_pinion_tooth_pitch(), steering_pinion_tooth_height()], center=true);
-//   }
-// }
