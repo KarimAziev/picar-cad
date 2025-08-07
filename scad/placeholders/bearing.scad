@@ -1,3 +1,19 @@
+/**
+ * Module: Bearing (Placeholder / Visual Mock-up)
+ *
+ * This module provides a non-functional, non-printable visual representation of a ball bearing
+ * (e.g. flanged 685-Z bearing) for use in exploded views, assemblies, and animations. It is
+ * intended purely as a decorative placeholder to visually indicate bearing placement within
+ * mechanical systems such as rack-and-pinion steering setups.
+ *
+ * NOTE: This model is not dimensionally accurate for mechanical simulation and is NOT
+ * meant for 3D printing or physical prototyping.
+ *
+ *
+ * Author: Karim Aziiev <karim.aziiev@gmail.com>
+ * License: GPL-3.0-or-later
+ */
+
 include <../parameters.scad>
 include <../colors.scad>
 use <../util.scad>

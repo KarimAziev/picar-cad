@@ -1,6 +1,23 @@
 /**
  * Module: Bearing Shaft
- * This file contains modules for creating shafts that are inserted into the bearings.
+ *
+ * This module defines shaft-like components intended to fit into rotary bearings (such as
+ * 685-Z flanged ball bearings). These shafts serve as the rotating or mounting interface
+ * within the bracket-based steering system, interfacing between moving parts.
+ *
+ *
+ * - bearing_shaft():
+ *     Generates a vertically extruded cylinder with an optional stopper lip and chamfered tip.
+ *     Chamfer taper ensures smoother insertion into bearings and improved 3D-print quality.
+ *
+ * - bearing_shaft_connector():
+ *     Combines a base disc (lower_d) with an upper shaft for insertion into a bearing. Used
+ *     widely in steering knuckles or rack mount components.
+ *
+ * - bearing_shaft_probes():
+ *     Utility probe plates containing a set of shafts incrementally varying in diameters, for
+ *     tolerance testing and calibration when fitting printed parts to actual bearings.
+ *
  *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later

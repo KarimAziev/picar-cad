@@ -1,22 +1,21 @@
 /**
- * Module: Ring Connector Module
- * This file contains modules for creating detachable connectors in the form of vertical cylinders that slide onto each other.
+ * Module: Bearing Connector
  *
- * The module created by `bearing_upper_connector` fits over the module created by `lower_ring_connector`.
+ * This module defines parts that connect flanged ball bearings to steering
+ * linkage components, such as knuckles and brackets. It supplies printable
+ * upper and lower connector geometries as part of the mechanical interface for
+ * smooth steering articulation.
  *
- * Parameters:
  *
- * - d            : Diameter of the main cylinder.
- * - h            : Total height of the cylinder.
- * - connector_h : Height of the connector. This value must not exceed the total
- *   height (h). In the case of bearing_upper_connector, it represents the depth of
- *   the cut-out at the bottom of the cylinder, in the case of
- *   lower_ring_connector, it is the height of the cylinder that fits into the
- *   cut-out of the bearing_upper_connector. For a matching pair of
- *   bearing_upper_connector and lower_ring_connector modules, this parameter needs
- *   to be identical.
- * - center_dia   : An optional parameter for creating a through-hole along the
- *   entire cylinder.
+ * - bearing_upper_connector(): Generates a flat circular ring (flanged-style)
+ *     that serves as the top bearing connector to the knuckle component.
+ *     Modeled as an outer ring and extruded vertically.
+ *
+ * - bearing_lower_connector(): Utilizes a shaft connector interface (from
+ *     bearing_shaft.scad) to place the lower part of the bearing (pin and
+ *     support base) into the bracket.
+ *
+ *
  *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
@@ -53,7 +52,7 @@ module bearing_lower_connector(lower_d=steering_bracket_bearing_outer_d,
                           stopper_h=stopper_h);
 }
 
-module bearing_print_plate(step_offset = 5) {
+module bearing_print_plate(step_offset=5) {
   translate([steering_bracket_bearing_outer_d / 2 + step_offset, 0, 0]) {
     bearing_upper_connector();
   }
@@ -78,13 +77,4 @@ module bearing_connector_assembly_view(animation_z_offset=5) {
 
 union() {
   bearing_print_plate(step_offset=2);
-
-  // bearing_connector_assembly_view();
-
-  // translate([-20, 0, 0]) {
-  //   bearing_upper_connector();
-  // }
-  // bearing_lower_connector();
-
-  // bearing_connector_assembly_view(animation_z_offset = 5);
 }

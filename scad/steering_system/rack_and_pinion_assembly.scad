@@ -1,6 +1,15 @@
 /**
  * Module: Rack And Pinion Assembly
- > *
+ *
+ * This file defines the complete structural and visual assembly of the steering system,
+ * including key interactive mechanical components such as the steering rack, pinion gear,
+ * bracket connectors, knuckles, and optional Ackermann geometry support.
+ *
+ * INTENDED USAGE:
+ * - Visual simulation of mechanical alignment and animation.
+ * - Printable (with selective module use) or for demonstration and analysis.
+ * - Supports inspection of Ackermann steering characteristics.
+ *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */

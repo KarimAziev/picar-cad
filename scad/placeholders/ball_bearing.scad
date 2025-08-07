@@ -1,3 +1,18 @@
+/**
+ * Module: Ball Bearing (Placeholder / Visual Approximation)
+ *
+ * This module constructs a visually accurate, non-functional representation of a ball bearing
+ * using parametric geometry. It simulates the internal raceways, carrier ring, and spherical
+ * ball bearings, suitable for use in assemblies requiring realistic visual feedback during
+ * animation or mechanical layout planning.
+ *
+ * USAGE NOTES:
+ * - This placeholder is not suitable for mechanical simulation or precise load calculations.
+ * - Primarily used for visualization and exploded / inspection views of assemblies.
+ *
+ * Author: Karim Aziiev <karim.aziiev@gmail.com>
+ * License: GPL-3.0-or-later
+ */
 // Dimensions for inner features
 ball_bearing_inner_rad = 4;
 bearing_section_height = 7;
