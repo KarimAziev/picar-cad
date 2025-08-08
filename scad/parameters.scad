@@ -1175,3 +1175,7 @@ wheel_tire_width                            = wheel_w - wheel_rim_w;
 
 // The polygon facet count used with circle-based operations
 wheel_tire_fn                               = 360;
+
+wheel_tire_num_grooves                      = 34;
+wheel_tire_groove_thickness                 = 0.4;
+wheel_tire_groove_depth                     = 3.4;
