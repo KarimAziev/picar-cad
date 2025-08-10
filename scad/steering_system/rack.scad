@@ -33,8 +33,8 @@ module steering_rack(length=steering_rack_teethed_length,
                      clearance=steering_pinion_clearance,
                      backlash=steering_pinion_backlash,
                      show_brackets=false,
-                     bracket_color=blue_grey_carbon,
-                     rack_color=blue_grey_carbon) {
+                     bracket_color=cobalt_blue_metalic,
+                     rack_color=cobalt_blue_metalic) {
 
   circular_pitch = calc_circular_pitch(r_pitch, teeth_count);
   base_circle_rad = r_pitch * cos(pressure_angle);
@@ -103,7 +103,8 @@ module steering_rack(length=steering_rack_teethed_length,
       mirror_copy([1, 0, 0]) {
         translate(offst) {
           if (show_brackets) {
-            rack_connector_assembly(bracket_color=bracket_color, rotation_dir=-1);
+            rack_connector_assembly(bracket_color=bracket_color,
+                                    rotation_dir=-1);
           } else {
             color(rack_color) {
               rack_connector();
@@ -134,23 +135,15 @@ module steering_rack(length=steering_rack_teethed_length,
   }
 }
 
-module rack_mount(show_brackets=false, rack_color=blue_grey_carbon) {
+module rack_mount(show_brackets=false, rack_color=cobalt_blue_metalic) {
   translate([rack_offset($t), 0, 0]) {
     steering_rack(show_brackets = show_brackets,
                   rack_color = rack_color);
   }
 }
 
-module rack_assembly(show_brackets=true, rack_color=blue_grey_carbon) {
+module rack_assembly(show_brackets=true, rack_color=cobalt_blue_metalic) {
   rack_mount(show_brackets=show_brackets, rack_color=rack_color);
 }
 
 rack_mount(show_brackets=false);
-
-// translate([0, 0, steering_pinion_d / 2 +
-//            steering_rack_base_height +
-//            steering_pinion_tooth_height()]) {
-//   rotate([90, 41.7, 0]) {
-//     steering_pinion();
-//   }
-// }
