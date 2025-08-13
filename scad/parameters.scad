@@ -81,7 +81,6 @@ battery_holder_batteries_count              = 2;
 camera_w                                    = 25;
 camera_h                                    = 24;
 camera_thickness                            = 1.05;
-camera_lens_cube_thickness                  = 7.4;
 camera_lens_items                           = [[8.05, 8.05, 1.0, matte_black, "cube"],
                                                [11.05, 11.05, 1.5, matte_black, "cube"],
                                                [11.05, 11.05, 3.4, metalic_silver_2, "cube"],
