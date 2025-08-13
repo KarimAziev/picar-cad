@@ -58,6 +58,7 @@ module ultrasonic_screws_2d(size=[42.5, 17.5], d=m1_hole_dia) {
     }
   }
 }
+
 module front_panel_connector_screws() {
   half_of_len = front_panel_connector_len / 2;
   half_of_w = front_panel_connector_width / 2;
