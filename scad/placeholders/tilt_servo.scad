@@ -43,7 +43,6 @@ module tilt_servo(center=false, servo_color=tilt_servo_color, alpha=1) {
         gearbox_box_color=servo_color,
         alpha=alpha,
         servo_text=tilt_servo_text,
-        text_depth=0.5,
         text_size=tilt_servo_text_size,
         tolerance=0.3,
         cutted_len=tilt_servo_cutted_len,

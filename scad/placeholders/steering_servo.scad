@@ -43,7 +43,6 @@ module steering_servo(center=false, servo_color=steering_servo_color, alpha=1) {
         alpha=alpha,
         gearbox_box_color=servo_color,
         servo_text=steering_servo_text,
-        text_depth=0.5,
         text_size=steering_servo_text_size,
         tolerance=0.3,
         cutted_len=steering_servo_cutted_len,

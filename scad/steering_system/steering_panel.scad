@@ -206,17 +206,12 @@ module steering_panel(size=[steering_servo_hat_w,
                       front_w=steering_panel_rail_len,
                       panel_color,
                       show_rack=false,
-                      z_r=undef,
                       center=true,
                       show_servo=false,
                       show_pinion=true,
                       pinion_color=blue_grey_carbon) {
 
-  x = size[0];
   y = size[1];
-
-  y_r = is_undef(z_r) ? 0 : z_r;
-  z_r = y / 2;
 
   union() {
     union() {
@@ -229,7 +224,6 @@ module steering_panel(size=[steering_servo_hat_w,
           translate([0,
                      -steering_vertical_panel_thickness / 2,
                      -steering_rack_support_thickness / 2]) {
-            width = steering_servo_extra_width + steering_servo_slot_height;
             rotate([0, 0, 180]) {
               linear_extrude(height=steering_rack_support_thickness) {
                 rounded_rect_two([steering_servo_slot_width,
@@ -262,14 +256,9 @@ module steering_panel(size=[steering_servo_hat_w,
     }
 
     if (show_servo) {
-      slot_w = steering_servo_slot_width;
       slot_h = steering_servo_slot_height;
-      screws_dia = steering_servo_screw_dia;
-      screws_offset=steering_servo_screws_offset;
       extra_h=steering_rack_support_thickness + steering_servo_extra_h;
       extra_w=steering_servo_extra_width;
-      screws_offst_x = screw_x_offst(slot_w, screws_dia, screws_offset);
-      w = extra_w + screws_dia * 2 + slot_w;
       h = slot_h + extra_w;
       full_h = h + extra_h;
 
@@ -344,6 +333,6 @@ module steering_vertical_servo_mount(size=[steering_servo_slot_width,
   }
 }
 
-steering_panel(show_servo=true,
+steering_panel(show_servo=false,
                show_rack=false,
                show_pinion=true);

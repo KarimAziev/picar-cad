@@ -51,7 +51,6 @@ module servo_body(size,
                   servo_text,
                   text_size,
                   font="Liberation Sans:style=Bold Italic",
-                  text_depth,
                   tolerance) {
   length = size[0];
   w = size[1];
@@ -65,7 +64,7 @@ module servo_body(size,
                      [0, cutted_len],
                      [0, h],
                      [length, h],
-                     [length,0]]);
+                     [length, 0]]);
           }
         }
       }
@@ -168,8 +167,6 @@ module servo_gearbox(h,
         }
       }
 
-      max_dia = sum([for (i = [0 : len(gear_size) - 1]) gear_size[i][1]]);
-
       translate([0, 0, h]) {
         for (i = [0 : len(gear_size) - 1]) {
           prev_heights = [for (i = [0 : i - 1]) gear_size[i][0]];
@@ -203,7 +200,6 @@ module servo(size,
              alpha=1,
              servo_text=["EMAX", "ES08MA II"],
              font,
-             text_depth=0.5,
              text_size=3,
              tolerance=0.3,
              cutted_len=3,
@@ -219,7 +215,6 @@ module servo(size,
              center=false) {
   length = size[0];
   w = size[1];
-  h = size[2];
 
   gearbox_r1 = is_undef(gearbox_r1) ? gearbox_d1 / 2 : gearbox_r1;
   gearbox_r2 = is_undef(gearbox_r2) ? is_undef(gearbox_d2)
@@ -227,7 +222,6 @@ module servo(size,
     : gearbox_d2 / 2
     : gearbox_r2;
   gearbox_x_offset = is_undef(gearbox_x_offset) ? 0 : gearbox_x_offset;
-  full_h = servo_full_height(h, gearbox_h, gearbox_gear_size);
 
   translate([center ? 0 : length / 2, center ? 0 : w / 2, 0]) {
     union() {
@@ -243,7 +237,6 @@ module servo(size,
                  screws_hat_z_offset=screws_hat_z_offset,
                  servo_text=servo_text,
                  text_size=text_size,
-                 text_depth=text_depth,
                  font=font,
                  tolerance=tolerance);
       translate([-size[0] / 2 + gearbox_r1, 0, size[2]]) {

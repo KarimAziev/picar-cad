@@ -46,7 +46,6 @@ module pan_servo(center=false, servo_color=pan_servo_color, alpha=1) {
         servo_color=servo_color,
         gearbox_box_color=pan_servo_color,
         servo_text=pan_servo_text,
-        text_depth=0.5,
         text_size=pan_servo_text_size,
         tolerance=0.3,
         cutted_len=pan_servo_cutted_len,
