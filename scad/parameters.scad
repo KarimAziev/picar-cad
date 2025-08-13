@@ -874,8 +874,7 @@ knuckle_shaft_vertical_len                  = knuckle_height + (motor_type == "n
 
 // The additional length of the connector for the shaft in the knuckle and the
 // corresponding curved axle shaft
-knuckle_shaft_connector_extra_len           = 0;
-
+knuckle_shaft_connector_extra_len           = 2;
 // The length of the lower horizontal part of the (curved) axle shaft that is
 // inserted into the wheel hub
 knuckle_shaft_lower_horiz_len               = 27;
@@ -1118,7 +1117,7 @@ steering_panel_rail_height                  = 8;
 
 // The thickness of the two rails in the center of the steering panel that holds
 // the rack
-steering_panel_rail_thickness               = 1;
+steering_panel_rail_thickness               = 1.5;
 
 // The length of the panel that holds the rack and the pins for the steering
 // knuckles at each side
@@ -1213,7 +1212,7 @@ steering_bracket_bearing_outer_d            = 10.0;
 steering_bracket_bearing_d                  = 8.0;
 
 // The inside diameter (plus tolerance) of the flanged 693 2Z bearing (3x8x4)
-steering_bracket_bearing_shaft_d            = 3.1;
+steering_bracket_bearing_shaft_d            = 3.05;
 
 // The height of the bearing placeholder in the bracket assembly
 steering_bracket_bearing_height             = 4;
