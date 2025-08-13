@@ -177,14 +177,14 @@ module debug_polygon(points, paths=undef, convexity=undef, debug=true,
           dx = b[0] - a[0];
           dy = b[1] - a[1];
           angle = atan2(dy, dx);
-          mid = [(a[0]+b[0]) / 2, (a[1] + b[1]) / 2];
+          mid = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
 
           color("green") {
             translate([mid[0], mid[1], 0.1]) {
               rotate([0, 0, angle]) {
                 linear_extrude(height = 0.5) {
                   polygon(points=[[0, 0],
-                                  [arrow_size,arrow_size / 2],
+                                  [arrow_size, arrow_size / 2],
                                   [arrow_size, -arrow_size / 2]]);
                 }
               }
@@ -229,10 +229,10 @@ module two_x_screws_3d(x=0, d=2.4, center=true, h=10) {
     }
   }
 }
-module two_x_screws_2d(x=0, d=2.4) {
+module two_x_screws_2d(x=0, d=2.4, fn=360) {
   mirror_copy([1, 0, 0]) {
     translate([x, 0, 0]) {
-      circle(r = d / 2, $fn=360);
+      circle(r = d / 2, $fn=fn);
     }
   }
 }
@@ -260,6 +260,107 @@ module trapezoid_rounded(b=20, t=10, h=15, r=undef, center=false) {
     }
   }
 }
+
+// Creates an trapezoid with rounded bottom corners
+module trapezoid_rounded_bottom(b=20,
+                                t=10,
+                                h=15,
+                                r=undef,
+                                rad_factor=0.1,
+                                center=false,
+                                $fn=20) {
+  rad = (is_undef(r) ? min(b, t, h) * rad_factor : r);
+  m = (b - t) / 2;
+  n = $fn;
+
+  left_fillet = [for (i = [0 : n])
+      let (theta = 180 + i * (90 / n))
+        [rad + rad * cos(theta), rad + rad * sin(theta)]];
+
+  right_fillet = [for (i = [1 : n])
+      let (theta = -90 + i * (90 / n))
+        [(b - rad) + rad * cos(theta), rad + rad * sin(theta)]];
+
+  pts = concat(left_fillet,
+               [[b - rad, 0]],
+               right_fillet,
+               [[b, rad], [b - m, h]],
+               [[m, h]],
+               [[0, rad]]);
+
+  polygon(points = center ? [for (p = pts) [p[0] - b/2, p[1] - h/2]] : pts);
+}
+
+module trapezoid_rounded_top(b=20,
+                             t=10,
+                             h=15,
+                             r=undef,
+                             rad_factor=0.1,
+                             center=false,
+                             $fn=20) {
+  translate([0, center ? 0 : h, 0]) {
+    scale([1, -1]) {
+      trapezoid_rounded_bottom(b=b,
+                               t=t,
+                               h=h,
+                               r=r,
+                               rad_factor=rad_factor,
+                               center=center,
+                               $fn=$fn);
+    }
+  }
+}
+
+// module trapezoid_rounded_top(b=20,
+//                              t=10,
+//                              h=15,
+//                              r=undef,
+//                              rad_factor=0.1,
+//                              center=false,
+//                              $fn=24) {
+
+//   raw_rad = (is_undef(r) ? min(b, t, h) * rad_factor : r);
+//   m = (b - t) / 2;
+//   L = sqrt(m*m + h*h);
+
+//   rad = min(raw_rad, h, t/2, L);
+
+//   unit_in = [h / L, -m / L];
+
+//   cx_left = m + rad * (L - m) / h;
+//   cy = h - rad;
+//   center_left = [cx_left, cy];
+//   center_right = [b - cx_left, cy];
+
+//   p_left = [center_left[0] - unit_in[0] * rad,
+//             center_left[1] - unit_in[1] * rad];
+//   p_right = [b - p_left[0], p_left[1]];
+
+//   top_left = [center_left[0], h];
+
+//   th_p_right = atan2(p_right[1] - center_right[1], p_right[0] - center_right[0]);
+//   th_p_left  = atan2(p_left[1]  - center_left[1],  p_left[0]  - center_left[0]);
+
+//   n = $fn;
+
+//   right_arc = [for (i = [1 : n])
+//       let (theta = th_p_right + i * ((90 - th_p_right) / n))
+//         [center_right[0] + rad * cos(theta),
+//          center_right[1] + rad * sin(theta)]];
+
+//   left_arc = [for (i = [1 : n])
+//       let (theta = 90 + i * ((th_p_left - 90) / n))
+//         [center_left[0] + rad * cos(theta),
+//          center_left[1] + rad * sin(theta)]];
+
+//   pts = concat([[0, 0], [b, 0], p_right],
+//                right_arc,
+//                [top_left],
+//                left_arc,
+//                [p_left]);
+
+//   polygon(points = center ? [for (p = pts) [p[0] - b/2, p[1] - h/2]] : pts);
+// }
 
 module rounded_rect_two(size, r=undef, center=false, segments=10) {
   w = size[0];
@@ -445,11 +546,11 @@ module offset_vertices_2d(r, fn) {
 function poly_width_at_y(pts, y_target) =
   let (intersections = [for (i = [0 : len(pts)-1])
            if (((pts[i][1] - y_target)
-                * (pts[(i+1) % len(pts)][1] - y_target) <= 0)
-               && (pts[(i+1) % len(pts)][1] - pts[i][1] != 0))
+                * (pts[(i + 1) % len(pts)][1] - y_target) <= 0)
+               && (pts[(i + 1) % len(pts)][1] - pts[i][1] != 0))
              pts[i][0] + ((y_target - pts[i][1])
-                          / (pts[(i+1) % len(pts)][1] - pts[i][1]))
-               * (pts[(i+1) % len(pts)][0] - pts[i][0])])
+                          / (pts[(i + 1) % len(pts)][1] - pts[i][1]))
+               * (pts[(i + 1) % len(pts)][0] - pts[i][0])])
   (max(intersections) - min(intersections));
 
 function reverse(list) = [for (i = [len(list)-1:-1:0]) list[i]];

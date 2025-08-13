@@ -72,6 +72,8 @@ function head_neck_full_tilt_panel_h() =
 module head_neck(show_tilt_servo=false,
                  show_head=false,
                  show_pan_servo=false,
+                 show_ir_case=false,
+                 show_ir_led=true,
                  bracket_color=cobalt_blue_metalic,
                  head_color="white") {
   pan_servo_h = pan_servo_size[2];
@@ -141,9 +143,9 @@ module head_neck(show_tilt_servo=false,
                        -head_centers[1] / 2,
                        -head_plate_width / 2]) {
               rotate([0, 90, 0]) {
-                color(head_color) {
-                  head_mount();
-                }
+                head_mount(head_color=head_color,
+                           show_ir_case=show_ir_case,
+                           show_ir_led=show_ir_led);
               }
             }
           }

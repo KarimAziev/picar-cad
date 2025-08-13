@@ -270,15 +270,15 @@ head_side_panel_height                      = head_plate_height;
 head_side_panel_width                       = head_plate_width * 1.2;
 
 // Don't try to find a lot of sense in the calculations of the side panel polygon, this is an aesthetic choice.
-head_side_panel_top                         = -head_side_panel_height * (4/15);
-head_side_panel_curve_start                 = head_side_panel_width * (1/2.1);
-head_side_panel_notch_y                     = -head_side_panel_height * (7/14.2);
-head_side_panel_bottom                      = head_side_panel_height * (1/4.9);
-head_side_panel_curve_end                   = head_side_panel_height * (3/4.0);
+head_side_panel_top                         = -head_side_panel_height * (4 / 15);
+head_side_panel_curve_start                 = head_side_panel_width * (1 / 2.1);
+head_side_panel_notch_y                     = -head_side_panel_height * (7 / 14.2);
+head_side_panel_bottom                      = head_side_panel_height * (1 / 4.9);
+head_side_panel_curve_end                   = head_side_panel_height * (3 / 4.0);
 
 head_side_panel_extra_slot_width            = head_side_panel_width * 0.8;
 head_side_panel_extra_slot_height           = 2;
-head_side_panel_extra_slot_ypos             = [-9, +0.2];
+head_side_panel_extra_slot_ypos             = [-9, 0.2];
 
 head_upper_plate_width                      = head_plate_width * 0.9;
 head_upper_plate_height                     = 30;
@@ -298,7 +298,7 @@ head_lower_connector_height                 = 2;
 
 head_extra_holes_offset                     = 4;
 
-head_hole_row_offsets                       = [head_extra_holes_offset * 2];
+head_hole_row_offsets                       = [head_extra_holes_offset * 3];
 
 head_extra_slots_dia                        = 3;
 
@@ -362,6 +362,172 @@ head_neck_pan_servo_slot_thickness          = 2.5;
  * Units: mm
  */
 head_neck_pan_servo_extra_w                 = 4;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// IR LED Case parameters
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Outer diameter used for the case cutout for the LED (case-side value).
+// Note: this is the hole size intended for the LED in the case (may include any planned clearance).
+ir_case_led_dia                             = 19.1;
+
+// Overall vertical size of the case part (Y dimension in your layouts).
+ir_case_height                              = 28;
+
+// Overall horizontal size of the case part (X dimension).
+ir_case_width                               = 29;
+
+// Base plate thickness of the case (main wall thickness).
+ir_case_thickness                           = 2;
+
+// Additional boss thickness around the LED pocket on top of ir_case_thickness.
+// Used to raise the LED boss above the base plate.
+ir_case_led_boss_thickness                  = 1;
+
+// Light detector (small photodiode/receiver) diameter.
+ir_light_detector_dia                       = 6.4;
+
+// Vertical distance from the top edge where the LED + detector holes are positioned.
+ir_case_holes_distance_from_top             = 2;
+
+// Y offset of the light detector relative to the LED center (negative moves it up).
+// Positive = move detector down, Negative = move detector up (depends on coordinate system).
+ir_light_offset_from_led_y                  = -1.4;
+
+// X offset of the light detector relative to the LED center (positive -> to the right).
+ir_light_offset_from_led_x                  = 0.1;
+
+// Which side(s) the (optional) light detector hole is created on.
+// Allowed values: "left" | "right" | "both"
+ir_light_detector_position                  = "right"; // left | right | both
+
+// Which side(s) the L-bracket is added on the case.
+// Allowed values: "left" | "right" | "both"
+ir_case_bracket_position                    = "left";  // left | right | both
+
+// Small carriage height above the stacked case thicknesses (clearance for rail carriage).
+ir_case_carriage_h                          = 1;
+
+// Length of the carriage feature (along rail direction).
+ir_case_carriage_len                        = 4;
+
+// Wall thickness of the carriage walls.
+ir_case_carriage_wall_thickness             = 2;
+
+// Fillet/rounding radius used for the carriage / rail corners.
+// Typical small value (0..1).
+ir_case_carriage_offset_rad                 = 0.8;
+
+// Rail (slot) inner width (inside the carriage).
+ir_case_rail_w                              = 5;
+
+// Rail (slot) inner height (thickness of the rail profile).
+ir_case_rail_h                              = 1.5;
+
+// Height of the rail protruding above the carriage
+ir_case_rail_protrusion_h                   = 1.0;
+
+// Angle of the rail protruding above the carriage
+ir_case_rail_protrusion_angle               = 3;
+
+// Angle of the rail protruding above the carriage
+ir_case_rail_protrusion_offset_rad          = 0.2;
+
+// Rail incline angle (degrees) used for trapezoid/angled rail profile.
+ir_case_rail_angle                          = 10;
+
+// Rail corner rounding radius.
+ir_case_rail_offset_rad                     = 0.0;
+
+// Diameter for the holes in the rail meant for M2 screws.
+// Value is taken from common m2_hole_dia parameter (see parameters.scad).
+ir_case_rail_hole_dia                       = m2_hole_dia;
+
+// Additional clearance for the rail (gap to allow slider movement).
+ir_case_rail_clearance                      = 0.3;
+
+// L-bracket width (horizontal flange) that attaches to the case.
+ir_case_l_bracket_w                         = 8;
+
+// L-bracket height (vertical flange).
+ir_case_l_bracket_h                         = 20;
+
+// L-bracket leg length (depth of bracket from case wall).
+ir_case_l_bracket_len                       = 5;
+
+// Screw hole diameter used across the case / bracket (M2 holes).
+ir_case_screw_dia                           = m2_hole_dia;
+
+// X offsets for additional pan holes along the screw row (relative offsets).
+// Array of offsets in mm; used to create multiple holes along the screw line.
+ir_case_screw_pan_holes_x_offsets           = [0, 5];
+
+// Actual LED physical diameter (measured component). Note: very close to ir_case_led_dia.
+// Keep consistent: ir_led_dia is the real LED, ir_case_led_dia is the case cutout dimension.
+ir_led_dia                                  = 19.0;
+
+// PCB board length (long dimension of the LED board).
+ir_led_board_len                            = 27.94;
+
+// PCB board width (short dimension of the LED board).
+ir_led_board_w                              = 19.82;
+
+// Depth of the PCB cutout/relief in the board model (used when modeling board shape).
+ir_led_board_cutout_depth                   = 3.4;
+
+// Height of the LED cylinder part (component height).
+ir_led_height                               = 15.05;
+
+// PCB thickness (board thickness).
+ir_led_thickness                            = 0.95;
+
+// Height of the separate light detector cylinder (component height).
+ir_led_light_detector_h                     = 8.26;
+
+// Light detector smaller diameter (tapered detector model - one end radius).
+ir_led_light_detector_dia_1                 = 5.3;
+
+// Light detector larger diameter (tapered detector model - other end radius).
+ir_led_light_detector_dia_2                 = 5.9;
+
+// Screw diameter used on the LED board mounting (M2).
+ir_led_screws_dia                           = m2_hole_dia;
+
+// Y offset of the LED center relative to the board origin in the board model.
+ir_led_y_offset                             = 2;
+
+// Offset of the detector from the LED along the board normal direction (signed).
+ir_led_light_detector_offset_from_led       = -2;
+
+// Lateral offset of the detector relative to the LED on the board (X axis).
+ir_led_light_detector_offset_x              = 1;
+
+// Coordinates used to position the case relative to the head side panel.
+// These precomputed values sum stacked thicknesses so the case clears the side panel.
+// ir_case_head_side_panel_x_2 is further from the panel than x_1.
+ir_case_head_side_panel_x_2                 = + ir_case_thickness
+  + ir_case_led_boss_thickness
+  + ir_led_thickness
+  + ir_led_light_detector_h / 2;
+ir_case_head_side_panel_x_1                 = + ir_led_light_detector_h / 2
+  + ir_led_height;
+
+// Y coordinate for the first column of screw positions (centered on the LED height).
+ir_case_head_side_panel_y_1                 = -ir_led_height / 2;
+
+// Y coordinate for the second column of screw positions (bottom of the case).
+ir_case_head_side_panel_y_2                 = -ir_case_height / 2;
+
+// Array of four [x,y] positions used to lay out the four screw mounting holes
+// that attach the case to the head side panel. Each element is [x, y].
+ir_case_head_screws_side_panel_positions    = [[ir_case_head_side_panel_x_1,
+                                                ir_case_head_side_panel_y_1],
+                                               [ir_case_head_side_panel_x_2,
+                                                ir_case_head_side_panel_y_1],
+                                               [ir_case_head_side_panel_x_2,
+                                                ir_case_head_side_panel_y_2],
+                                               [ir_case_head_side_panel_x_1,
+                                                ir_case_head_side_panel_y_2]];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PAN SERVO CONFIGURATION (Dimensions & Visual Representation)

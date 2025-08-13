@@ -9,13 +9,18 @@
  *
  * The head mount design assumes it will be attached via the side panel's
  * mounting hole on the servo assembly.
+
+ * This file also supports mounting the IR LED case used with the modified
+ * Waveshare Infrared LED Light Board.
  *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */
 
 include <../parameters.scad>
+include <../colors.scad>
 use <../util.scad>
+use <../ir_case.scad>
 
 tilt_angle = atan2((-head_side_panel_curve_end)
                    - (-head_side_panel_bottom),
@@ -211,15 +216,22 @@ module side_panel_servo_slots(offst_from_center_hole=2.0,
 
 module side_panel_2d() {
   difference() {
-    polygon(points = [[0, -head_side_panel_top],
-                      [head_side_panel_curve_start, -head_side_panel_notch_y],
-                      [head_side_panel_width, -head_side_panel_notch_y],
-                      [head_side_panel_width, -head_side_panel_bottom],
-                      [head_side_panel_curve_start, -head_side_panel_curve_end],
-                      [0, -head_side_panel_curve_end]]);
+    translate([0, head_side_panel_curve_end, 0]) {
+      difference() {
+        polygon(points = [[0, -head_side_panel_top],
+                          [head_side_panel_curve_start, -
+                           head_side_panel_notch_y],
+                          [head_side_panel_width, -head_side_panel_notch_y],
+                          [head_side_panel_width, -head_side_panel_bottom],
+                          [head_side_panel_curve_start,
+                           -head_side_panel_curve_end],
+                          [0, -head_side_panel_curve_end]]);
+        side_panel_servo_slots();
+        side_panel_extra_slots_2d();
+      }
+    }
 
-    side_panel_servo_slots();
-    side_panel_extra_slots_2d();
+    head_panel_ir_case_screw_holes();
   }
 }
 
@@ -231,7 +243,7 @@ module side_panel_3d() {
 
 module side_panel(is_left=true) {
   offsets = [head_plate_width / 2,
-             head_plate_height / 4];
+             -head_plate_height / 2];
 
   if (is_left) {
     translate([-offsets[0], offsets[1], 0]) {
@@ -249,20 +261,91 @@ module side_panel(is_left=true) {
     }
   }
 }
+module head_panel_ir_case_screw_holes() {
+  for (spec = ir_case_head_screws_side_panel_positions) {
+    translate([spec[0] + ir_case_screw_dia / 2
+               + head_plate_thickness,
+               spec[1] +
+               head_side_panel_height, 0]) {
+      circle(r=ir_case_screw_dia / 2, $fn=360);
+      for (x=ir_case_screw_pan_holes_x_offsets) {
+        translate([x, 0, 0]) {
+          circle(r=ir_case_screw_dia / 2, $fn=360);
+        }
+      }
+    }
+  }
+}
+module head_ir_case(ir_case_color=jet_black,
+                    ir_rail_color=cobalt_blue_metalic,
+                    show_ir_led=true,
+                    show_ir_case_rail=true,) {
+  spec = ir_case_head_screws_side_panel_positions[0];
+  screw_rad = ir_case_screw_dia / 2;
+  ir_case_x = head_plate_width / 2
+    + head_plate_thickness
+    + ir_case_l_bracket_len;
+  ir_case_y = (head_side_panel_curve_end / 2)
+    - ir_case_slider_y_pos() + spec[1] + screw_rad;
+  ir_case_z = (-ir_case_l_bracket_h - ir_case_full_thickness() / 2)
+    + ir_case_l_bracket_h / 2 + screw_rad + head_plate_thickness
+    + spec[0];
+  translate([ir_case_x,
+             ir_case_y,
+             ir_case_z]) {
+    ir_case_assembly(show_rail=show_ir_case_rail,
+                     case_color=ir_case_color,
+                     rail_color=ir_rail_color,
+                     show_ir_led=show_ir_led);
+  }
+}
+module head_mount(head_color="white",
+                  ir_case_color=jet_black,
+                  ir_rail_color=matte_black,
+                  show_ir_case=false,
+                  show_ir_led=true,
+                  show_ir_case_rail=true) {
+  color(head_color, alpha=1) {
+    rotate([0, 180, 0]) {
+      union() {
+        head_front_plate();
+        connector_plate_up();
+        connector_plate_down();
+        head_upper_plate();
+        side_panel(true);
+        side_panel(false);
+      }
+    }
+  }
 
-module head_mount() {
-  rotate([0, 180, 0]) {
-    union() {
-      head_front_plate();
-      connector_plate_up();
-      connector_plate_down();
-      head_upper_plate();
-      side_panel(true);
-      side_panel(false);
+  if (show_ir_case) {
+    if (is_ir_case_bracket_enabled("both")) {
+      mirror_copy([1, 0, 0]) {
+        head_ir_case(ir_rail_color=ir_rail_color,
+                     ir_case_color=ir_case_color,
+                     show_ir_led=show_ir_led,
+                     show_ir_case_rail=show_ir_case_rail);
+      }
+    } else if (is_ir_case_bracket_enabled("left")) {
+      head_ir_case(ir_rail_color=ir_rail_color,
+                   ir_case_color=ir_case_color,
+                   show_ir_led=show_ir_led,
+                   show_ir_case_rail=show_ir_case_rail);
+    } else if (is_ir_case_bracket_enabled("right")) {
+      ir_case_x = -head_plate_width / 2 - ir_case_width
+        - head_plate_thickness - ir_case_l_bracket_len;
+      translate([ir_case_x - head_plate_width / 2
+                 - head_plate_thickness
+                 - ir_case_l_bracket_len,
+                 0,
+                 0]) {
+        head_ir_case(ir_rail_color=ir_rail_color,
+                     ir_case_color=ir_case_color,
+                     show_ir_led=show_ir_led,
+                     show_ir_case_rail=show_ir_case_rail);
+      }
     }
   }
 }
 
-color("white") {
-  head_mount();
-}
+head_mount(show_ir_case=true);

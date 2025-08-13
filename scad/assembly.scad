@@ -38,6 +38,8 @@ show_head                       = true;
 show_pan_servo                  = true;
 show_tilt_servo                 = true;
 show_ackermann_triangle         = false;
+show_ir_case                    = true;
+show_ir_led                     = true;
 head_color                      = "white";
 chassis_color                   = "white";
 batteries_holder_assembly_y_idx = len(baterry_holes_y_positions) / 2 + 1;
@@ -141,6 +143,7 @@ module chassis_assembly(center=false,
               show_motor_brackets=show_motor_brackets,
               show_wheels=show_wheels,
               show_rear_panel=show_rear_panel,
+
               show_front_panel=show_front_panel,
               show_ackermann_triangle=show_ackermann_triangle,
               chassis_color=chassis_color);
@@ -165,6 +168,8 @@ module assembly_view(center=chassis_assembly_center,
                      show_tilt_servo=show_tilt_servo,
                      show_pan_servo=show_pan_servo,
                      show_motor_brackets=show_motor_brackets,
+                     show_ir_led=show_ir_led,
+                     show_ir_case=show_ir_case,
                      chassis_color=chassis_color) {
 
   union() {
@@ -201,6 +206,8 @@ module assembly_view(center=chassis_assembly_center,
           rotate([0, 0, -90]) {
             head_neck(show_pan_servo=show_pan_servo,
                       show_tilt_servo=show_tilt_servo,
+                      show_ir_case=show_ir_case,
+                      show_ir_led=show_ir_led,
                       show_head=show_head,
                       head_color=head_color);
           }
