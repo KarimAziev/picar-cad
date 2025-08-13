@@ -59,28 +59,27 @@ module ultrasonic_screws_2d(size=[42.5, 17.5], d=m1_hole_dia) {
   }
 }
 
-module front_panel_connector_screws() {
+module front_panel_connector_screws(reverse_y = false) {
   half_of_len = front_panel_connector_len / 2;
   half_of_w = front_panel_connector_width / 2;
   screw_rad = front_panel_connector_screw_dia / 2;
 
   for (pair = front_panel_connector_screw_offsets) {
-    distance_x = pair[0];
-    distance_y = pair[1];
-    x = distance_x > 0
-      ? (half_of_w - screw_rad - distance_x)
-      : distance_x < 0
-      ? (-half_of_w + screw_rad - distance_x)
-      : 0;
-
-    y = distance_y > 0
-      ? (half_of_len - screw_rad - distance_y)
-      : distance_y < 0
-      ? (-half_of_len + screw_rad - distance_y)
-      : 0;
-
-    translate([x, y, 0]) {
-      circle(r=screw_rad, $fn=360);
+    let (distance_x = pair[0],
+         distance_y = pair[1],
+         x =distance_x > 0
+         ? (half_of_w - screw_rad - distance_x)
+         : distance_x < 0
+         ? (-half_of_w + screw_rad - distance_x)
+         : 0,
+         y = distance_y > 0
+         ? (half_of_len - screw_rad - distance_y)
+         : distance_y < 0
+         ? (half_of_len - screw_rad + distance_y)
+         : 0) {
+      translate([x, reverse_y ? -y : y, 0]) {
+        circle(r=screw_rad, $fn=360);
+      }
     }
   }
 }

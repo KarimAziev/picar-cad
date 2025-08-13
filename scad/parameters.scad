@@ -76,13 +76,38 @@ battery_holder_thickness                    = 1.82;
 battery_holder_batteries_count              = 2;
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Camera's placeholder dimensions
+// ─────────────────────────────────────────────────────────────────────────────
+camera_w                                    = 25;
+camera_h                                    = 24;
+camera_thickness                            = 1.05;
+camera_lens_cube_thickness                  = 7.4;
+camera_lens_items                           = [[8.05, 8.05, 1.0, matte_black, "cube"],
+                                               [11.05, 11.05, 1.5, matte_black, "cube"],
+                                               [11.05, 11.05, 3.4, metalic_silver_2, "cube"],
+                                               [7.15, 0, 3.03, matte_black,
+                                                "circle", 30],
+                                               [3.03, 0, 0.1, cobalt_blue_metalic,
+                                                "circle", 15]];
+
+camera_lens_connectors                      = [[6.0, 3.2, 1.5, matte_black, "cube"],
+                                               [6.0, 0.5, 1.5, "darkgoldenrod", "cube"],
+                                               [8.0, 4.0, 1.5, onyx, "cube", -1]];
+
+camera_lens_distance_from_top               = 9;
+camera_screw_hole_dia                       = 2.0;
+camera_offset_rad                           = 1.0;
+camera_holes_size                           = [21, 12.5];
+camera_holes_distance_from_top              = 1;
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Chassis dimensions
 // ─────────────────────────────────────────────────────────────────────────────
 
 chassis_width                               = 120;  // width of the chassis
 chassis_len                                 = 254;  // length of the chassis
 chassis_thickness                           = 4.0;    // chassis thickness
-chassis_offset_rad                          = 1; // The amount by which to offset the chassis
+chassis_offset_rad                          = 3; // The amount by which to offset the chassis
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Chassis Center Wiring Cutouts (near the Raspberry Pi/UPS HAT area)
@@ -91,10 +116,11 @@ chassis_offset_rad                          = 1; // The amount by which to offse
 chassis_center_cutout_dia                   = 8.5;             // Diameter of each round cutout circle
 chassis_center_cutout_spacing               = 4;               // Vertical spacing between cutouts
 chassis_center_cutout_fn                    = 10;              // Circle detail level
-chassis_center_trapezoid_1                  = [1/2.2, 1/3.2, 8]; // [bottom_frac_w, top_frac_w, height]
-chassis_center_trapezoid_2                  = [0.35, 0.29, 6.4]; // [bottom_frac_w, top_frac_w, height]
-chassis_center_cutout_repeat_offsets        = [0, 11];         // How often to repeat stacked trapezoids
-chassis_center_dotted_y_offsets             = [-10/235, 0, -20/235];  // Relative Y-positions for dotted cutoff line
+
+chassis_center_trapezoid_1                  = [1 / 8.5, 1 / 8.5, 7]; // [bottom_frac_w, top_frac_w, height]
+chassis_center_trapezoid_2                  = [0.2, 0.2, 5.4]; // [bottom_frac_w, top_frac_w, height]
+chassis_center_cutout_repeat_offsets        = [0];         // How often to repeat stacked trapezoids
+chassis_center_dotted_y_offsets             = [-10 / 235, 0, -20 / 235];  // Relative Y-positions for dotted cutoff line
 
 // Extra vertical margin applied to avoid overlaps between wiring holes and other components
 chassis_center_wiring_cutout_y_margin       = 8;
@@ -108,12 +134,8 @@ chassis_head_wiring_hole_spacing            = 6;           // Vertical spacing b
 chassis_head_profile_height                 = 4;           // Height of each rectangular hole
 chassis_head_side_taper_height              = 9;           // Height of trapezoidal tapered cutouts
 chassis_head_cutout_relative_width          = 0.4;         // Relative width of center cutout (fraction of width)
-chassis_head_taper_ratio                    = 0.06;        // How much taper is applied to the trapezoids
-chassis_head_side_cutout_margin             = 2;           // Lateral distance from chassis edge to trapezoids
 chassis_head_final_spacing                  = 3;           // Space between dual-stacked cutouts
-chassis_head_corner_radius                  = 0.5;         // Corner roundness for trapezoid edges
 chassis_head_min_cutout_w                   = 20;          // Minimal allowed width for center cutout
-chassis_head_trapezoid_corner_offset        = 1.5;         // Avoids sharp tips on side tapers
 chassis_head_center_hole_radius             = 0.2;         // Rounded corner radius for center hole
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -135,31 +157,36 @@ chassis_shape_rear_cutout_y_offset          = 5;  // Vertical offset for the rea
 
 chassis_rear_join_x                         = (-chassis_shape_base_width - chassis_shape_rear_panel_base_w) / 2;
 
-chassis_shape_points                        = [[chassis_shape_init_pos_x,
-                                                chassis_shape_init_pos_y],
-                                               [-chassis_shape_rear_panel_base_w,
-                                                chassis_shape_init_pos_y],
-                                               [chassis_rear_join_x + chassis_shape_rear_cutout_x_offset,
-                                                chassis_shape_init_pos_y + chassis_base_rear_cutout_depth],
-                                               [chassis_rear_join_x,
-                                                chassis_shape_init_pos_y
-                                                + chassis_shape_rear_cutout_y_offset],
-                                               [-chassis_shape_base_width
-                                                + chassis_shape_rear_cutout_x_offset,
-                                                chassis_shape_init_pos_y],
-                                               [-chassis_shape_base_width,
-                                                chassis_shape_init_pos_y
-                                                + chassis_shape_rear_cutout_y_offset],
-                                               [-chassis_shape_base_width,
-                                                chassis_shape_init_pos_y + chassis_shape_target],
-                                               [-chassis_shape_base_width + 2,
-                                                (chassis_shape_init_pos_y + chassis_len / 2)
-                                                + 0.02 * chassis_len],
-                                               [-chassis_shape_base_width * 0.6,
+chassis_trapezoid_hole_width                = 4.5;
+chassis_trapezoid_hole_len                  = 9.5;
+
+chassis_trapezoid_shape_pts                 = [[-chassis_shape_base_width * 0.6,
                                                 chassis_shape_init_pos_y + chassis_len / 1.68],
                                                [-chassis_shape_base_width * 0.24,
                                                 chassis_len / 2],
                                                [0, chassis_len / 2]];
+
+chassis_shape_points                        = concat([[chassis_shape_init_pos_x,
+                                                       chassis_shape_init_pos_y],
+                                                      [-chassis_shape_rear_panel_base_w,
+                                                       chassis_shape_init_pos_y],
+                                                      [chassis_rear_join_x + chassis_shape_rear_cutout_x_offset,
+                                                       chassis_shape_init_pos_y + chassis_base_rear_cutout_depth],
+                                                      [chassis_rear_join_x,
+                                                       chassis_shape_init_pos_y
+                                                       + chassis_shape_rear_cutout_y_offset],
+                                                      [-chassis_shape_base_width
+                                                       + chassis_shape_rear_cutout_x_offset,
+                                                       chassis_shape_init_pos_y],
+                                                      [-chassis_shape_base_width,
+                                                       chassis_shape_init_pos_y
+                                                       + chassis_shape_rear_cutout_y_offset],
+                                                      [-chassis_shape_base_width,
+                                                       chassis_shape_init_pos_y + chassis_shape_target],
+                                                      [-chassis_shape_base_width + 2,
+                                                       (chassis_shape_init_pos_y + chassis_len / 2)
+                                                       + 0.02 * chassis_len]],
+                                                     chassis_trapezoid_shape_pts);
 
 // diameter of the pan servo mounting hole at the front of the chassis
 chassis_pan_servo_slot_dia                  = 6.5;
@@ -169,7 +196,7 @@ chassis_pan_servo_slot_dia                  = 6.5;
 // gear hole interfacing with the chassis) that is part of the robot’s head
 // (which also carries the cameras). Its placement is determined by adding this
 // offset to steering_panel_y_pos_from_center.
-chassis_pan_servo_y_distance_from_steering  = 47;
+chassis_pan_servo_y_distance_from_steering  = 45;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Front panel dimensions
@@ -184,7 +211,7 @@ front_panel_rear_panel_thickness            = 1.5;
 front_panel_connector_screw_dia             = m25_hole_dia;
 front_panel_connector_len                   = 15;
 front_panel_connector_width                 = chassis_width / 4;
-front_panel_connector_screw_offsets         = [[4, 3], [0, 3], [-4, 3]];
+front_panel_connector_screw_offsets         = [[4, 3], [-4, 3]];
 
 // diameter of each mounting hole ("eye") for the ultrasonic sensors
 front_panel_ultrasonic_sensor_dia           = 17;
@@ -362,6 +389,8 @@ head_neck_pan_servo_slot_thickness          = 2.5;
  * Units: mm
  */
 head_neck_pan_servo_extra_w                 = 4;
+
+head_neck_pan_servo_assembly_reversed       = false;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // IR LED Case parameters
@@ -1152,6 +1181,8 @@ steering_panel_hinge_screw_distance         = 2;
 // ─────────────────────────────────────────────────────────────────────────────
 // Rack and Pinion
 // ─────────────────────────────────────────────────────────────────────────────
+
+steering_system_reversed                    = true;
 
 // Length of the toothed section of the steering rack (excluding side connectors)
 steering_rack_teethed_length                = 59.0;

@@ -66,8 +66,6 @@ module bearing_shaft_connector(lower_d,
                                chamfer_h,
                                stopper_h) {
 
-  upper_rad = lower_d / 2;
-
   union() {
     linear_extrude(height=lower_h, center=false) {
       circle(r=lower_d / 2, $fn=360);

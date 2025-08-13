@@ -38,11 +38,14 @@ show_head                       = true;
 show_pan_servo                  = true;
 show_tilt_servo                 = true;
 show_ackermann_triangle         = false;
+show_camera                     = true;
 show_ir_case                    = true;
 show_ir_led                     = true;
 head_color                      = "white";
 chassis_color                   = "white";
 batteries_holder_assembly_y_idx = len(baterry_holes_y_positions) / 2 + 1;
+
+$t = 0.01;
 
 module chassis_assembly(center=false,
                         show_rpi=true,
@@ -170,6 +173,7 @@ module assembly_view(center=chassis_assembly_center,
                      show_motor_brackets=show_motor_brackets,
                      show_ir_led=show_ir_led,
                      show_ir_case=show_ir_case,
+                     show_camera=show_camera,
                      chassis_color=chassis_color) {
 
   union() {
@@ -194,9 +198,14 @@ module assembly_view(center=chassis_assembly_center,
 
         head_full_w = head_neck_full_w();
         slot_w = (head_full_w - pan_servo_size[0]) / 2;
+
+        extra_head_y = head_neck_pan_servo_assembly_reversed
+          ? -pan_servo_gearbox_d1 - pan_servo_gearbox_d2
+          : -pan_servo_gearbox_d1 / 2;
+
         head_y = steering_panel_y_pos_from_center
           + chassis_pan_servo_y_distance_from_steering
-          + head_full_w - slot_w - pan_servo_gearbox_d1 / 2;
+          + head_full_w - slot_w + extra_head_y;
 
         head_z = chassis_thickness + pan_servo_gear_height();
 
@@ -207,6 +216,7 @@ module assembly_view(center=chassis_assembly_center,
             head_neck(show_pan_servo=show_pan_servo,
                       show_tilt_servo=show_tilt_servo,
                       show_ir_case=show_ir_case,
+                      show_camera=show_camera,
                       show_ir_led=show_ir_led,
                       show_head=show_head,
                       head_color=head_color);

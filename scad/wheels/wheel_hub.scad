@@ -43,8 +43,6 @@ module wheel_hub_lower(d=wheel_hub_d,
                        screw_boss_w=wheel_screw_boss_w,
                        center_screws=true,
                        tolerance=0.4) {
-  full_h = wheel_hub_full_height(h, inner_rim_h);
-  w = wheel_hub_width(d, outer_d);
   union() {
     difference() {
       wheel_hub_part(d=d,

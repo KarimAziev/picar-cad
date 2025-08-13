@@ -193,7 +193,9 @@ module steering_rack_support(show_rack=false) {
 
     if (show_rack) {
       translate([0, 0, steering_rack_support_thickness / 2]) {
-        rack_mount(show_brackets=true);
+        rotate([0, 0, steering_system_reversed ? 180 : 0]) {
+          rack_mount(show_brackets=true);
+        }
       }
     }
   }
@@ -334,5 +336,5 @@ module steering_vertical_servo_mount(size=[steering_servo_slot_width,
 }
 
 steering_panel(show_servo=false,
-               show_rack=false,
+               show_rack=true,
                show_pinion=true);

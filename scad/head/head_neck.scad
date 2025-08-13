@@ -71,6 +71,7 @@ function head_neck_full_tilt_panel_h() =
 
 module head_neck(show_tilt_servo=false,
                  show_head=false,
+                 show_camera=true,
                  show_pan_servo=false,
                  show_ir_case=false,
                  show_ir_led=true,
@@ -106,15 +107,19 @@ module head_neck(show_tilt_servo=false,
                         head_neck_pan_servo_slot_height],
                   screws_dia=head_neck_pan_servo_screw_dia,
                   screws_offset=head_neck_pan_servo_screws_offset);
-    translate([pan_servo_size[0] / 2,
-               -pan_servo_size[1] / 2 ,
-               pan_servo_h
-               + head_neck_pan_servo_slot_thickness / 2
-               - pan_screws_hat_z_offset
-               + pan_servo_hat_thickness / 2]) {
-      if (show_pan_servo) {
-        rotate([0, 180, 0]) {
-          pan_servo();
+    reverse_rotation = head_neck_pan_servo_assembly_reversed ? 180 : 0;
+    rotate([reverse_rotation,
+            reverse_rotation, 0]) {
+      translate([pan_servo_size[0] / 2,
+                 -pan_servo_size[1] / 2 ,
+                 pan_servo_h
+                 + head_neck_pan_servo_slot_thickness / 2
+                 - pan_screws_hat_z_offset
+                 + pan_servo_hat_thickness / 2]) {
+        if (show_pan_servo) {
+          rotate([0, 180, 0]) {
+            pan_servo();
+          }
         }
       }
     }
@@ -145,6 +150,7 @@ module head_neck(show_tilt_servo=false,
               rotate([0, 90, 0]) {
                 head_mount(head_color=head_color,
                            show_ir_case=show_ir_case,
+                           show_camera=show_camera,
                            show_ir_led=show_ir_led);
               }
             }
@@ -155,6 +161,6 @@ module head_neck(show_tilt_servo=false,
   }
 }
 
-head_neck(show_tilt_servo=false,
-          show_head=false,
-          show_pan_servo=false);
+head_neck(show_tilt_servo=true,
+          show_head=true,
+          show_pan_servo=true);

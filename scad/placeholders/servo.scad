@@ -137,6 +137,8 @@ module servo_gearbox(h,
                      alpha=1,
                      gear_size=[[0.5, 1, dark_gold_2],
                                 [2, 2, dark_gold_2]],
+                     max_angle=90,
+                     min_angle=-90,
                      center=true) {
   r1 = is_undef(r1) ? d1 / 2 : r1;
   r2 = is_undef(r2) ? is_undef(d2) ? r1 * 0.4 : d2 / 2 : r2;
@@ -183,7 +185,9 @@ module servo_gearbox(h,
             }
           }
         }
-        children();
+        rotate([0, 0, $t * ($t > 0.5 ? min_angle : max_angle)]) {
+          children();
+        }
       }
     }
   }
@@ -212,6 +216,8 @@ module servo(size,
              gearbox_mode="hull", // hull or union
              gearbox_box_color=jet_black,
              gearbox_gear_size=[],
+             max_angle=45,
+             min_angle=-90,
              center=false) {
   length = size[0];
   w = size[1];
@@ -249,6 +255,8 @@ module servo(size,
                       box_color=gearbox_box_color,
                       gear_size=gearbox_gear_size,
                       mode=gearbox_mode,
+                      max_angle=max_angle,
+                      min_angle=min_angle,
                       alpha=alpha) {
           children();
         }

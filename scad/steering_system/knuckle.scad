@@ -34,13 +34,13 @@ use <bearing_connector.scad>
 module knuckle_mount(show_wheel=false,
                      show_bearing=false,
                      show_shaft=false,
-                     knuckle_color=blue_grey_carbon,
+                     knuckle_color=cobalt_blue_metalic,
                      knuckle_color_alpha=0.6,
                      knuckle_shaft_color=matte_black) {
   border_w = (knuckle_dia - knuckle_bearing_outer_dia) / 2;
 
   union() {
-    knuckle_bent_shaft_connector(knuckle_color=blue_grey_carbon,
+    knuckle_bent_shaft_connector(knuckle_color=cobalt_blue_metalic,
                                  knuckle_shaft_color=knuckle_shaft_color,
                                  show_wheel=show_wheel,
                                  show_shaft=show_shaft,
@@ -59,7 +59,7 @@ module knuckle_mount(show_wheel=false,
 
 module knuckle_main_connector(border_w,
                               show_bearing=false,
-                              knuckle_color=blue_grey_carbon,
+                              knuckle_color=cobalt_blue_metalic,
                               knuckle_color_alpha=0.6) {
   union() {
     color(knuckle_color, alpha=knuckle_color_alpha) {
@@ -85,7 +85,7 @@ module knuckle_main_connector(border_w,
   }
 }
 
-module knuckle_bent_shaft_connector(knuckle_color=blue_grey_carbon,
+module knuckle_bent_shaft_connector(knuckle_color=cobalt_blue_metalic,
                                     knuckle_shaft_color=matte_black,
                                     show_shaft=false,
                                     show_wheel=false,
@@ -111,12 +111,10 @@ module knuckle_bent_shaft_connector(knuckle_color=blue_grey_carbon,
                           children_mode="difference") {
           h = knuckle_shaft_connector_dia + 1;
           translate([offst, 0, knuckle_height - knuckle_shaft_screws_offset]) {
-            knuckle_screws_slots(d=knuckle_shaft_screws_dia,
-                                 h=h);
+            knuckle_screws_slots(d=knuckle_shaft_screws_dia, h=h);
             translate([0, 0, -knuckle_shaft_screws_dia
                        - knuckle_shaft_screws_distance]) {
-              knuckle_screws_slots(d=knuckle_shaft_screws_dia,
-                                   h=h);
+              knuckle_screws_slots(d=knuckle_shaft_screws_dia, h=h);
             }
           }
         }
@@ -127,9 +125,11 @@ module knuckle_bent_shaft_connector(knuckle_color=blue_grey_carbon,
       translate([0,
                  y_offst,
                  knuckle_height]) {
-        rotate([0, 0, 180]) {
-          knuckle_shaft(show_wheel=show_wheel,
-                        knuckle_shaft_color=knuckle_shaft_color);
+        mirror([1, 0, 0]) {
+          rotate([0, 0, 0]) {
+            knuckle_shaft(show_wheel=show_wheel,
+                          knuckle_shaft_color=knuckle_shaft_color);
+          }
         }
       };
     }
@@ -137,7 +137,7 @@ module knuckle_bent_shaft_connector(knuckle_color=blue_grey_carbon,
 }
 
 module knuckle_bearing_bracket_connector(border_w=border_w,
-                                         knuckle_color=blue_grey_carbon,
+                                         knuckle_color=cobalt_blue_metalic,
                                          show_bearing=false) {
 
   rotate([0, 0, steering_alpha_deg]) {
@@ -192,6 +192,6 @@ module knuckle_print_plate(show_bearing=false,
 
 union() {
   knuckle_print_plate(show_bearing=false,
-                      show_shaft=false,
+                      show_shaft=true,
                       show_wheel=false);
 }

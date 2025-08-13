@@ -39,6 +39,7 @@ module battery_holder(batteries_count=battery_holder_batteries_count,
                                          full_len=full_len,
                                          thickness=thickness,
                                          screw_hole_dia=screw_hole_dia,
+                                         show_battery=show_battery,
                                          contact_inc_step=contact_inc_step);
         }
       }
@@ -49,7 +50,6 @@ module battery_holder(batteries_count=battery_holder_batteries_count,
 module battery_holder_single(full_width,
                              full_len,
                              thickness=battery_holder_thickness,
-                             show_battery=false,
                              screw_hole_dia=3.5,
                              contact_inc_step=1) {
 

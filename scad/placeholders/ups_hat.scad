@@ -25,7 +25,6 @@ function ups_hat_polygon_cutout_points(max_len, max_height) =
 module ups_hat(size=battery_ups_size,
                holder_size=battery_ups_holder_size,
                holder_thickness=battery_ups_holder_thickness,
-               standoff_lower_height=4,
                screw_dia=m3_hole_dia,
                standoff_h=5,
                max_cutout_len,
@@ -50,7 +49,6 @@ module ups_hat(size=battery_ups_size,
   points = ups_hat_polygon_cutout_points(max_len=max_cutout_len,
                                          max_height=max_cutout_height);
 
-  pts = [for (pair = points) if (pair[0] != 0) pair[0]];
   lowest_height = min([for (pair = points) if (pair[0] != 0) pair[0]]);
 
   translate([0, 0, standoff_h]) {

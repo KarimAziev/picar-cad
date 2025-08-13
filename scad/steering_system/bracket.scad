@@ -41,7 +41,7 @@ module bracket(a_len=steering_bracket_rack_side_w_length,
                bearing_flanged_w=steering_breacket_bearing_flanged_width,
                bearing_shaft_d = round(steering_bracket_bearing_shaft_d),
                bearing_h=steering_bracket_bearing_height,
-               bracket_color=blue_grey_carbon,
+               bracket_color=cobalt_blue_metalic,
                show_text=false) {
 
   a_full_len = a_len + w;

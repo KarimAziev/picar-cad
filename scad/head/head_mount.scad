@@ -21,6 +21,7 @@ include <../parameters.scad>
 include <../colors.scad>
 use <../util.scad>
 use <../ir_case.scad>
+use <../placeholders/camera.scad>
 
 tilt_angle = atan2((-head_side_panel_curve_end)
                    - (-head_side_panel_bottom),
@@ -30,32 +31,31 @@ tilt_angle = atan2((-head_side_panel_curve_end)
 function side_panel_servo_center() =
   [head_side_panel_width / 2.0, -head_side_panel_height / 2.0];
 
-module head_front_plate() {
-  translate([0, head_plate_height / 2, 0]) {
-    rotate([0, 0, 180]) {
-      translate([0, 0, -head_plate_thickness]) {
-        linear_extrude(height = head_plate_thickness, center=false) {
-          difference() {
-            translate([0, head_plate_height / 2, 0]) {
-              square([head_plate_width, head_plate_height], center=true);
-            }
+module head_front_plate(show_camera=false, head_color="white") {
+  translate([0, 0, -head_plate_thickness]) {
+    color(head_color, alpha=1) {
+      linear_extrude(height = head_plate_thickness, center=false) {
+        difference() {
+          translate([0, head_plate_height / 2, 0]) {
+            square([head_plate_width, head_plate_height], center=true);
+          }
 
-            translate([0, len(head_cameras) > 1 ? 0 :
-                       head_cameras_y_distance / 2, 0]) {
-              for (i = [0 : len(head_cameras)-1]) {
-                let (spec               = head_cameras[i],
-                     hole_size          = spec[0],
-                     screw_hole_y       = spec[1],
-                     screw_hole_size    = spec[2],
-                     prev_heights       = [for (j = [0 : i-1])
-                         head_cameras[j][0][1]],
-                     prev_y_holes       = [for (j = [0 : i])
-                         head_cameras[j][2]],
-                     prev_height        = i == 0 ? 0 : sum(prev_heights),
-                     y                  = prev_height,
-                     final_y            = y + (i * head_cameras_y_distance))
-
-                  translate([-hole_size[0] / 2, final_y, 0]) {
+          translate([0, len(head_cameras) > 1
+                     ? 0
+                     : head_cameras_y_distance / 2, 0]) {
+            for (i = [0 : len(head_cameras)-1]) {
+              let (spec               = head_cameras[i],
+                   hole_size          = spec[0],
+                   screw_hole_y       = spec[1],
+                   screw_hole_size    = spec[2],
+                   prev_heights       = [for (j = [0 : i-1])
+                       head_cameras[j][0][1]],
+                   prev_y_holes       = [for (j = [0 : i])
+                       head_cameras[j][2]],
+                   prev_height        = i == 0 ? 0 : sum(prev_heights),
+                   y                  = prev_height,
+                   final_y            = y + (i * head_cameras_y_distance)) {
+                translate([-hole_size[0] / 2, final_y, 0]) {
                   square(hole_size, center = false);
 
                   translate([hole_size[0] / 2, screw_hole_size[1] / 2
@@ -65,6 +65,41 @@ module head_front_plate() {
                                          hole_dia=head_camera_screw_dia,
                                          fn_val=160);
                   }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  translate([0, 0, -head_plate_thickness
+             - camera_thickness]) {
+    if (show_camera && len(head_cameras) > 0) {
+      translate([0, len(head_cameras) > 1
+                 ? 0
+                 : head_cameras_y_distance / 2, 0]) {
+        for (i = [0 : len(head_cameras) - 1]) {
+          let (spec               = head_cameras[i],
+               hole_size          = spec[0],
+               screw_hole_y       = spec[1],
+               screw_hole_size    = spec[2],
+               prev_heights       = [for (j = [0 : i-1])
+                   head_cameras[j][0][1]],
+               prev_y_holes       = [for (j = [0 : i])
+                   head_cameras[j][2]],
+               prev_height        = i == 0 ? 0 : sum(prev_heights),
+               y                  = prev_height,
+               final_y            = y + (i * head_cameras_y_distance)) {
+            translate([-hole_size[0] / 2, final_y, 0]) {
+              translate([hole_size[0] / 2, screw_hole_size[1] / 2
+                         + head_camera_screw_dia / 2
+                         + screw_hole_y + camera_h/2 -
+                         camera_holes_size[1]/2
+                         - camera_screw_hole_dia / 2 -
+                         camera_holes_distance_from_top, 0]) {
+                rotate([0, 0, 180]) {
+                  camera_module();
                 }
               }
             }
@@ -304,11 +339,17 @@ module head_mount(head_color="white",
                   ir_rail_color=matte_black,
                   show_ir_case=false,
                   show_ir_led=true,
+                  show_camera=false,
                   show_ir_case_rail=true) {
-  color(head_color, alpha=1) {
-    rotate([0, 180, 0]) {
-      union() {
-        head_front_plate();
+  rotate([0, 180, 0]) {
+    union() {
+      translate([0, head_plate_height / 2, 0]) {
+        rotate([0, 0, 180]) {
+          head_front_plate(show_camera=show_camera,
+                           head_color=head_color);
+        }
+      }
+      color(head_color, alpha=1) {
         connector_plate_up();
         connector_plate_down();
         head_upper_plate();
@@ -348,4 +389,4 @@ module head_mount(head_color="white",
   }
 }
 
-head_mount(show_ir_case=true);
+head_mount(show_ir_case=true, show_camera=true);

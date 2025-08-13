@@ -8,6 +8,9 @@
 include <parameters.scad>
 use <util.scad>
 
+pan_servo_top_ribbon_cuttout_len = 18;
+pan_servo_top_ribbon_cuttout_h   = 2;
+
 module pan_servo_screws_2d(servo_screw_d=1.5,
                            screws_distance=0.5) {
   step = servo_screw_d + screws_distance;
@@ -35,9 +38,28 @@ module pan_servo_screws_2d(servo_screw_d=1.5,
 }
 
 module pan_servo_cutout_2d() {
-  translate([0, steering_panel_y_pos_from_center +
-             chassis_pan_servo_y_distance_from_steering, 0]) {
+  y_offst = steering_panel_y_pos_from_center +
+    chassis_pan_servo_y_distance_from_steering;
+
+  available_h = chassis_len / 2 -
+    (y_offst + front_panel_chassis_y_offset + chassis_pan_servo_slot_dia / 2
+     + pan_servo_top_ribbon_cuttout_h);
+
+  available_len = poly_width_at_y(chassis_shape_points,
+                                  y_offst +
+                                  pan_servo_top_ribbon_cuttout_h) * 2;
+
+  translate([0, y_offst, 0]) {
     pan_servo_screws_2d();
+  }
+
+  if (available_len > pan_servo_top_ribbon_cuttout_len
+      && available_h > 1) {
+    translate([0, (chassis_len / 2) - front_panel_chassis_y_offset, 0]) {
+      rounded_rect([pan_servo_top_ribbon_cuttout_len,
+                    pan_servo_top_ribbon_cuttout_h],
+                   center=true);
+    }
   }
 }
 

@@ -36,6 +36,85 @@ use <placeholders/motor.scad>
 use <steering_system/knuckle_shaft.scad>
 use <wheels/rear_wheel.scad>
 
+chassis_trapezoid_hole_y_distance = 7.5;
+chassis_trapezoid_hole_x_distance = 2;
+
+chassis_trapezoid_hole_pts        = scale_trapezoid_pts(concat(chassis_trapezoid_shape_pts,
+                                                               [[0, chassis_trapezoid_shape_pts[0][1]]]),
+                                                        chassis_trapezoid_hole_width,
+                                                        chassis_trapezoid_hole_len);
+
+function front_panel_chassis_compute_y_pos() =
+  chassis_len * 0.5
+  // front_panel_connector_len / 2
+  + chassis_offset_rad
+  // + front_panel_thickness
+  + front_panel_chassis_y_offset
+  ;
+
+function scale_trapezoid_pts(pts, w_top, L) =
+  let (x_bottom = pts[0][0],
+       y_bottom = pts[0][1],
+       x_top    = pts[1][0],
+       y_top    = pts[1][1],
+       m        = (x_top - x_bottom) / (y_top - y_bottom),
+       w_bottom = w_top + m * L) [[-w_bottom, 0],
+                                  [-w_top,    L],
+                                  [0,         L],
+                                  [0,         0]];
+
+module side_trapezoids_holes() {
+  step = chassis_trapezoid_hole_y_distance + chassis_trapezoid_hole_len;
+
+  trap_len = chassis_trapezoid_shape_pts[2][1] -
+    chassis_trapezoid_shape_pts[0][1];
+
+  max_w = max([for (p = chassis_trapezoid_hole_pts) abs(p[0])]);
+  half_of_chassis = chassis_len / 2;
+
+  allowed_len = trap_len -
+    ((chassis_len * 0.5 + chassis_offset_rad
+      + front_panel_chassis_y_offset
+      - chassis_trapezoid_hole_len)
+     - (chassis_trapezoid_shape_pts[2][1]
+        - chassis_trapezoid_shape_pts[0][1]));
+  amount = round(allowed_len / step);
+  end_of_steering = steering_panel_y_pos_from_center
+    + (steering_rack_width / 2);
+  start_of_steering = steering_panel_y_pos_from_center - steering_rack_width
+    - steering_panel_hinge_length - steering_panel_hinge_rad;
+
+  if (amount > 0) {
+    for (i = [0 : amount - 1]) {
+      let (s = i * step + half_of_chassis - trap_len,
+           y = s,
+           w = poly_width_at_y(chassis_shape_points, y) * 2,
+           x = -(w / 2) + max_w / 2 + chassis_trapezoid_hole_x_distance,
+           black_list = (-steering_rack_support_width / 2
+                         -steering_panel_hinge_length / 2
+                         + steering_panel_hinge_rad)
+           + steering_panel_y_pos_from_center -
+           (steering_panel_hinge_length + steering_panel_hinge_rad) / 2
+           + steering_panel_hinge_screw_distance
+           + steering_panel_hinge_screw_dia / 2,
+           enabled = (y < start_of_steering) || y > end_of_steering) {
+
+        if (enabled) {
+          mirror_copy([1, 0, 0]) {
+            translate([x, y, 0]) {
+              translate([max_w / 2, 0, 0]) {
+                offset_vertices_2d(r=0.4) {
+                  polygon(points=chassis_trapezoid_hole_pts);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 function raspberry_pi_y_positions() =
   let (chassis_len_half = chassis_len / 2,
        basic_y = (rpi_screws_size[1]) / 2 + rpi_5_screws_offset(),
@@ -141,11 +220,11 @@ module chassis_center_wiring_cutouts(dia=chassis_center_cutout_dia,
 
     for (z = [0 : len(repeat_offsets) - 1]) {
       translate([0, (chassis_center_wiring_cutout_y_margin
-                     + spacing) + z *
-                 repeat_offsets[1], 0]) {
-        trapezoid_rounded(b = chassis_width * trapezoid_2[0],
-                          t = chassis_width * trapezoid_2[1],
-                          h = trapezoid_2[2],
+                     + spacing) +
+                 repeat_offsets[z], 0]) {
+        trapezoid_rounded(b=chassis_width * trapezoid_2[0],
+                          t=chassis_width * trapezoid_2[1],
+                          h=trapezoid_2[2],
                           center = true);
       }
     }
@@ -167,12 +246,8 @@ module chassis_head_wiring_pass_through_holes(hole_size                = chassis
                                               profile_height           = chassis_head_profile_height,
                                               side_taper_height        = chassis_head_side_taper_height,
                                               cutout_relative_width    = chassis_head_cutout_relative_width,
-                                              taper_ratio              = chassis_head_taper_ratio,
-                                              side_cutout_margin       = chassis_head_side_cutout_margin,
                                               final_cutout_spacing     = chassis_head_final_spacing,
-                                              corner_radius            = chassis_head_corner_radius,
                                               min_center_cutout_width  = chassis_head_min_cutout_w,
-                                              trapezoid_corner_offset  = chassis_head_trapezoid_corner_offset,
                                               center_hole_radius       = chassis_head_center_hole_radius) {
   wiring_h = hole_size[1];
 
@@ -191,16 +266,12 @@ module chassis_head_wiring_pass_through_holes(hole_size                = chassis
   base_y = cutout_spacing_y_start;
   last_y = base_y + step_y;
 
-  base_width =
-    poly_width_at_y(chassis_shape_points, last_y) * 2;
   top_width  =
     poly_width_at_y(chassis_shape_points, last_y + side_taper_height) * 2;
 
   center_cutout_width = max(top_width *
                             cutout_relative_width,
                             min_center_cutout_width);
-  base_taper = base_width * taper_ratio;
-  top_taper  = top_width * taper_ratio;
 
   if (hole_count > 0) {
     for (i = [0 : hole_count - 1]) {
@@ -209,16 +280,6 @@ module chassis_head_wiring_pass_through_holes(hole_size                = chassis
 
         is_last_hole = i == hole_count - 1;
         if (is_last_hole) {
-
-          // Left trapezoidal cutout
-          translate([base_width/2 - base_taper - side_cutout_margin,
-                     -side_taper_height / 2, 0])
-            offset_vertices_2d(r=corner_radius)
-            polygon([[-base_taper, 0],
-                     [0 - base_taper, side_taper_height],
-                     [top_taper - trapezoid_corner_offset, side_taper_height],
-                     [base_taper, 0]]);
-
           // Center stacked twin rectangle cutouts
           translate([0, -profile_height / 2, 0]) {
             rounded_rect([center_cutout_width, profile_height],
@@ -229,17 +290,6 @@ module chassis_head_wiring_pass_through_holes(hole_size                = chassis
                            center=true,
                            r=center_hole_radius);
           }
-
-          // Right trapezoidal cutout
-          translate([-base_width/2 + base_taper +
-                     side_cutout_margin,
-                     -side_taper_height / 2, 0])
-            offset_vertices_2d(r=corner_radius)
-            polygon([[-base_taper, 0],
-                     [-top_taper + trapezoid_corner_offset,
-                      side_taper_height],
-                     [base_taper, side_taper_height],
-                     [base_taper, 0]]);
         } else {
           // Regular center rectangular cutout
           rounded_rect([center_cutout_width, profile_height],
@@ -275,6 +325,7 @@ module chassis_2d() {
     chassis_center_wiring_cutouts();
     battery_holders_screws_2d();
     chassis_head_wiring_pass_through_holes();
+    side_trapezoids_holes();
     translate([0, steering_panel_y_pos_from_center, 0]) {
       four_corner_holes_2d(steering_panel_center_screws_offsets,
                            hole_dia=steering_panel_center_screw_dia,
@@ -317,15 +368,12 @@ module chassis_2d() {
     }
 
     translate([0,
-               chassis_len * 0.5 - front_panel_connector_len / 2
-               + chassis_offset_rad
-               + front_panel_thickness
-               + front_panel_chassis_y_offset,
+               chassis_len / 2
+               - front_panel_chassis_y_offset
+               + front_panel_connector_screw_dia / 2
+               + (front_panel_connector_len / 2),
                0]) {
-
-      rotate([0, 0, 180]) {
-        front_panel_connector_screws();
-      }
+      front_panel_connector_screws(reverse_y=true);
     }
   }
 }
@@ -422,7 +470,8 @@ module chassis(motor_type=motor_type,
 
     if ((show_motor || show_motor_brackets) && motor_type == "standard") {
       mirror_copy([1, 0, 0]) {
-        standard_motor_bracket_wall(show_motor=show_motor, show_wheel=show_wheels);
+        standard_motor_bracket_wall(show_motor=show_motor,
+                                    show_wheel=show_wheels);
       }
     }
 
@@ -432,15 +481,15 @@ module chassis(motor_type=motor_type,
       }
     }
     if (show_front_panel) {
+      front_pan_y = chassis_len * 0.5
+        + chassis_offset_rad
+        + front_panel_connector_len
+        - front_panel_chassis_y_offset
+        - front_panel_thickness;
       color(chassis_color) {
         translate([0,
-                   chassis_len * 0.5
-                   + chassis_offset_rad
-                   + front_panel_thickness
-                   + front_panel_chassis_y_offset,
-                   front_panel_height * 0.5
-                   + chassis_thickness
-                   + front_panel_thickness]) {
+                   front_pan_y,
+                   front_panel_height * 0.5]) {
           front_panel();
         }
       }
@@ -457,4 +506,4 @@ module chassis(motor_type=motor_type,
   }
 }
 
-chassis();
+chassis(show_front_panel=true);

@@ -27,8 +27,6 @@ module tire_arc(outer_r) {
 }
 
 module groove_triangle() {
-  inner_r = wheel_dia / 2;
-  outer_r = inner_r + wheel_tire_thickness + wheel_rim_h;
   groove_w = wheel_tire_width + wheel_tire_fillet_gap;
   cut_len = groove_w - wheel_tire_groove_thickness;
   base_points = reverse([[0, 0],
