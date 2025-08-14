@@ -28,6 +28,8 @@ show_motor_brackets             = true;
 show_wheels                     = true;
 show_rear_panel                 = true;
 show_front_panel                = true;
+show_front_rear_panel           = true;
+show_ultrasonic                 = true;
 show_ups_hat                    = true;
 show_steering                   = true;
 show_bearing                    = true;
@@ -61,6 +63,8 @@ module chassis_assembly(center=false,
                         show_brackets=true,
                         show_battery_holders=false,
                         show_motor_brackets=false,
+                        show_front_rear_panel=show_front_rear_panel,
+                        show_ultrasonic=show_ultrasonic,
                         chassis_color="white") {
   global_x_offset = chassis_width / 2 + (front_wheel_offset() * 2);
   motor_z_offset = motor_type == "n20"
@@ -84,7 +88,8 @@ module chassis_assembly(center=false,
                  steering_rack_support_thickness / 2]) {
         steering_system_assembly(show_wheels=show_wheels,
                                  show_bearing=show_bearing,
-                                 show_brackets=show_brackets);
+                                 show_brackets=show_brackets,
+                                 panel_color=chassis_color);
       }
     }
 
@@ -146,7 +151,8 @@ module chassis_assembly(center=false,
               show_motor_brackets=show_motor_brackets,
               show_wheels=show_wheels,
               show_rear_panel=show_rear_panel,
-
+              show_front_rear_panel=show_front_rear_panel,
+              show_ultrasonic=show_ultrasonic,
               show_front_panel=show_front_panel,
               show_ackermann_triangle=show_ackermann_triangle,
               chassis_color=chassis_color);
@@ -174,7 +180,9 @@ module assembly_view(center=chassis_assembly_center,
                      show_ir_led=show_ir_led,
                      show_ir_case=show_ir_case,
                      show_camera=show_camera,
-                     chassis_color=chassis_color) {
+                     chassis_color=chassis_color,
+                     show_front_rear_panel=show_front_rear_panel,
+                     show_ultrasonic=show_ultrasonic) {
 
   union() {
     chassis_assembly(motor_type=motor_type,
@@ -185,6 +193,8 @@ module assembly_view(center=chassis_assembly_center,
                      show_ups_hat=show_ups_hat,
                      show_rear_panel=show_rear_panel,
                      show_front_panel=show_front_panel,
+                     show_front_rear_panel=show_front_rear_panel,
+                     show_ultrasonic=show_ultrasonic,
                      show_ackermann_triangle=show_ackermann_triangle,
                      show_rpi=show_rpi,
                      show_steering=show_steering,
@@ -233,6 +243,8 @@ assembly_view(center=chassis_assembly_center,
               show_wheels=show_wheels,
               show_rear_panel=show_rear_panel,
               show_front_panel=show_front_panel,
+              show_front_rear_panel=show_front_rear_panel,
+              show_ultrasonic=show_ultrasonic,
               show_ackermann_triangle=show_ackermann_triangle,
               show_ups_hat=show_ups_hat,
               show_steering=show_steering,

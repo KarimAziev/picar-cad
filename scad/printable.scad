@@ -19,6 +19,7 @@
 include <parameters.scad>
 include <colors.scad>
 use <chassis.scad>
+use <ir_case.scad>
 use <front_panel.scad>
 use <rear_panel.scad>
 use <head/head_mount.scad>
@@ -47,6 +48,8 @@ show_rear_panel     = true;
 show_front_wheels   = true;
 show_rear_wheels    = true;
 show_tires          = true;
+show_ir_case        = true;
+show_ir_case_rail   = true;
 
 module printable() {
   if (show_chasssis) {
@@ -111,6 +114,14 @@ module printable() {
       color("white", alpha=1) {
         front_panel_printable();
       }
+    }
+
+    translate([0, front_panel_height / 2
+               + ir_case_height / 2,
+
+               0]) {
+      ir_case_printable(show_case=show_ir_case,
+                        show_rail=show_ir_case_rail);
     }
 
     translate([0, -front_panel_height / 2

@@ -213,10 +213,10 @@ front_panel_connector_width                 = chassis_width / 4;
 front_panel_connector_screw_offsets         = [[4, 3], [-4, 3]];
 
 // diameter of each mounting hole ("eye") for the ultrasonic sensors
-front_panel_ultrasonic_sensor_dia           = 17;
+front_panel_ultrasonic_sensor_dia           = 16.5;
 
 // distance between the two ultrasonic sensor mounting holes
-front_panel_ultrasonic_sensors_offset       = 9;
+front_panel_ultrasonic_sensors_offset       = 11.0;
 
 // horizontal offset between the ultrasonic sensor mounting holes
 front_panel_screws_x_offset                 = 27;
@@ -1319,9 +1319,9 @@ ultrasonic_pin_protrusion_h                 = 2;
 
 ultrasonic_pin_thickness                    = 0.5;
 
-ultrasonic_oscillator_h                     = 4.45;
+ultrasonic_oscillator_h                     = 3.5;
 ultrasonic_oscillator_w                     = 9.86;
-ultrasonic_oscillator_thickness             = 3.25;
+ultrasonic_oscillator_thickness             = 3.33;
 ultrasonic_oscillator_y_offset              = 0.8;
 
 ultrasonic_screw_dia                        = 1.5;
@@ -1330,7 +1330,7 @@ ultrasonic_screw_size                       = [41.0, 16.70];
 ultrasonic_smd_len                          = 8;
 ultrasonic_smd_thickness                    = 1.65;
 ultrasonic_smd_h                            = 4;
-ultrasonic_smd_x_offst                      = 0.5;
+ultrasonic_smd_x_offst                      = 1.0;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Parameters for wheels, common for front and rear

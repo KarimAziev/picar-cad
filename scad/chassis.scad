@@ -44,14 +44,6 @@ chassis_trapezoid_hole_pts        = scale_trapezoid_pts(concat(chassis_trapezoid
                                                         chassis_trapezoid_hole_width,
                                                         chassis_trapezoid_hole_len);
 
-function front_panel_chassis_compute_y_pos() =
-  chassis_len * 0.5
-  // front_panel_connector_len / 2
-  + chassis_offset_rad
-  // + front_panel_thickness
-  + front_panel_chassis_y_offset
-  ;
-
 function scale_trapezoid_pts(pts, w_top, L) =
   let (x_bottom = pts[0][0],
        y_bottom = pts[0][1],
@@ -450,6 +442,8 @@ module chassis(motor_type=motor_type,
                show_wheels=false,
                show_rear_panel=false,
                show_front_panel=false,
+               show_front_rear_panel=false,
+               show_ultrasonic=false,
                show_ackermann_triangle=false,
                chassis_color="white") {
   union() {
@@ -486,11 +480,13 @@ module chassis(motor_type=motor_type,
         + front_panel_connector_len
         - front_panel_chassis_y_offset
         - front_panel_thickness;
-      color(chassis_color) {
-        translate([0,
-                   front_pan_y,
-                   front_panel_height * 0.5]) {
-          front_panel();
+      translate([0,
+                 front_pan_y,
+                 front_panel_height * 0.5]) {
+        rotate([90, 0, 0]) {
+          front_panel_assembly(panel_color=chassis_color,
+                               show_ultrasonic=show_ultrasonic,
+                               show_front_rear_panel=show_front_rear_panel);
         }
       }
     }
@@ -506,4 +502,12 @@ module chassis(motor_type=motor_type,
   }
 }
 
-chassis(show_front_panel=true);
+chassis(motor_type=motor_type,
+        show_motor=false,
+        show_motor_brackets=false,
+        show_wheels=false,
+        show_rear_panel=false,
+        show_front_panel=false,
+        show_front_rear_panel=false,
+        show_ultrasonic=false,
+        show_ackermann_triangle=false);
