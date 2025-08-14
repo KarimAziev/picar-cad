@@ -1290,6 +1290,49 @@ steering_knuckle_bracket_connector_len      = (steering_bracket_rack_side_h_leng
   - (steering_bracket_bearing_outer_d + steering_bracket_bearing_border_w) / 2;
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Ultrasonic placeholder
+// ─────────────────────────────────────────────────────────────────────────────
+
+ultrasonic_w                                = 45.42;
+ultrasonic_h                                = 20.5;
+ultrasonic_thickness                        = 1.25;
+ultrasonic_offset_rad                       = 0.5;
+
+ultrasonic_text_size                        = 1.5;
+
+ultrasonic_transducer_dia                   = 15.88;
+ultrasonic_transducer_inner_dia             = 12.75;
+ultrasonic_transducer_h                     = 12.25;
+
+// distance from the side of the panel
+ultrasonic_transducer_x_offset              = 1;
+
+ultrasonic_pins_jack_w                      = 11.20;
+ultrasonic_pins_jack_h                      = 2.50;
+ultrasonic_pins_jack_thickness              = 2.0;
+ultrasonic_pins_jack_y_offset               = 1;
+
+ultrasonic_pins_count                       = 4;
+ultrasonic_pin_len_a                        = 7.84;
+ultrasonic_pin_len_b                        = 5.84;
+ultrasonic_pin_protrusion_h                 = 2;
+
+ultrasonic_pin_thickness                    = 0.5;
+
+ultrasonic_oscillator_h                     = 4.45;
+ultrasonic_oscillator_w                     = 9.86;
+ultrasonic_oscillator_thickness             = 3.25;
+ultrasonic_oscillator_y_offset              = 0.8;
+
+ultrasonic_screw_dia                        = 1.5;
+ultrasonic_screw_size                       = [41.0, 16.70];
+
+ultrasonic_smd_len                          = 8;
+ultrasonic_smd_thickness                    = 1.65;
+ultrasonic_smd_h                            = 4;
+ultrasonic_smd_x_offst                      = 0.5;
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Parameters for wheels, common for front and rear
 // ─────────────────────────────────────────────────────────────────────────────
 wheel_dia                                   = 42;

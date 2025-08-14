@@ -26,3 +26,5 @@ dark_gold_2           = "#b8860b";
 green_1               = "#6CC04A";
 
 ir_1                  = "#f7d7ff"; // infrared
+
+medium_blue_1         = "#1E73B8";
