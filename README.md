@@ -2,8 +2,7 @@
 
 This repository contains the 3D model source files for a four-wheeled robot chassis and steering system, written entirely in [OpenSCAD](https://openscad.org/). The design supports 3D printing and does not rely on external libraries.
 
-![Demo](./demo/picar-cad-assembly.gif)
-
+![Demo](./demo/picar-cad-demo.png)
 ![Photo](./demo/picar-cad-real-photo.jpg)
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
@@ -21,6 +20,8 @@ This repository contains the 3D model source files for a four-wheeled robot chas
 >     - [Power Supply](#power-supply)
 >     - [Motors](#motors)
 >     - [Camera Module](#camera-module)
+>     - [Ultrasonic](#ultrasonic)
+>     - [IR LED](#ir-led)
 
 <!-- markdown-toc end -->
 
@@ -40,11 +41,11 @@ The project is organized into several reusable modules under the scad/ directory
 
 - `parameters.scad`: Central configuration file containing physical dimensions (units are in millimeters).
 - `printable.scad`: Contains all printable parts in one place. Different colors indicate the recommended filament type: white for PLA, dark blue for PETG CF or PLA CF (PLA is also acceptable), and black for TPU (used only for tires).
-  ![Printable plate](./demo/printable.png)
+  ![Demo](./demo/picar-cad-printable-plate.png)
 - `assembly.scad`: Fully assembled view of the robot.
+  ![Demo](./demo/picar-cad-assembly-view.gif)
 - `steering_system/`: Rack-and-pinion steering system based on Ackermann geometry.
 - `head/`: Mounting system for dual Raspberry Pi cameras.
-  ![Demo Head](./demo/picar-cad-head-demo.gif)
 - `motor_brackets/`: Brackets for both standard (yellow) and N20-style motors.
 - `wheels/`: Components for rear and front wheels, including hubs and tires.
 - `placeholders/`: Placeholder geometry for components such as the Raspberry Pi, servos, DC motors, battery holders, and HATs.
@@ -93,3 +94,15 @@ Rear wheel shaft size depends on the motor type. Use the variable `motor_type` i
 ### Camera Module
 
 The design supports one or two camera modules. The default dimensions are compatible with the Raspberry Pi Camera Module 3.
+
+### Ultrasonic
+
+The model supports Ultrasonic HC-SR04.
+
+### IR LED
+
+The design also supports case for [IR Waveshare Infrared LED Light Board Module](https://www.waveshare.com/infrared-led-board.html).
+
+The original LED board is incompatible with the Raspberry Camera Module 3, and the quality of Waveshare’s original camera is unsatisfactory.
+
+Nevertheless, this LED board can be used with Camera Module 3 and other Raspberry Pi cameras. To do so, solder two wires (GND and V+) to the screw holes on the LED board (the screw holes serve both for mechanical attachment and for power). Then connect the positive wire to 3.3V and the ground wire to GND. It is also safer to use an LED driver instead of directly connecting to the Raspberry Pi.
