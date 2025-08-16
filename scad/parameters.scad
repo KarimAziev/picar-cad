@@ -208,22 +208,38 @@ chassis_pan_servo_y_distance_from_steering  = 45;
 // ─────────────────────────────────────────────────────────────────────────────
 front_panel_chassis_y_offset                = 5;
 front_panel_width                           = 66;   // panel width
-front_panel_height                          = 28;   // panel height
-front_panel_thickness                       = 2;   // panel thickness
+front_panel_height                          = 22.5;   // panel height
+front_panel_thickness                       = 2.5;   // panel thickness
 front_panel_rear_panel_thickness            = 1.5;
 front_panel_connector_screw_dia             = m25_hole_dia;
 front_panel_connector_len                   = 15;
 front_panel_connector_width                 = chassis_width / 4;
 front_panel_connector_screw_offsets         = [[4, 3], [-4, 3]];
+front_panel_screw_dia                       = m25_hole_dia;
 
 // diameter of each mounting hole ("eye") for the ultrasonic sensors
 front_panel_ultrasonic_sensor_dia           = 16.5;
 
 // distance between the two ultrasonic sensor mounting holes
-front_panel_ultrasonic_sensors_offset       = 11.0;
+front_panel_ultrasonic_sensors_offset       = 10.0;
 
 // horizontal offset between the ultrasonic sensor mounting holes
 front_panel_screws_x_offset                 = 27;
+
+front_panel_connector_offset_rad            = 3;
+front_panel_ultrasonic_y_offset             = 0;
+front_panel_screws_y_offst                  = 0;
+front_panel_offset_rad                      = front_panel_height * 0.18;
+
+front_panel_connector_rect_cutout_size      = [20, 3];
+
+// the diameter of the holes for four solder blobs on the back rear mount
+front_panel_solder_blob_dia                 = 4.0;
+
+// the height of the deepening slot for ultrasonic
+front_panel_ultrasonic_cutout_depth         = 0.8;
+
+front_panel_rear_panel_ring_width           = 2;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Head
@@ -1311,7 +1327,7 @@ ultrasonic_transducer_inner_dia             = 12.75;
 ultrasonic_transducer_h                     = 12.25;
 
 // distance from the side of the panel
-ultrasonic_transducer_x_offset              = 1;
+ultrasonic_transducer_x_offset              = 1.5;
 
 ultrasonic_pins_jack_w                      = 11.20;
 ultrasonic_pins_jack_h                      = 2.50;
@@ -1329,14 +1345,20 @@ ultrasonic_oscillator_h                     = 3.5;
 ultrasonic_oscillator_w                     = 9.86;
 ultrasonic_oscillator_thickness             = 3.33;
 ultrasonic_oscillator_y_offset              = 0.8;
+ultrasonic_oscillator_solder_x              = 2;
 
-ultrasonic_screw_dia                        = 1.5;
-ultrasonic_screw_size                       = [41.0, 16.70];
+ultrasonic_screw_dia                        = 2.0;
+ultrasonic_screw_size                       = [42.0, 17.50];
 
 ultrasonic_smd_len                          = 8;
-ultrasonic_smd_thickness                    = 1.65;
-ultrasonic_smd_h                            = 4;
+ultrasonic_smd_h                            = 1.65;
+ultrasonic_smd_led_thickness                = 0.4;
+ultrasonic_smd_led_count                    = 7;
+ultrasonic_smd_w                            = 7.55;
+ultrasonic_smd_chip_w                       = 4.0;
 ultrasonic_smd_x_offst                      = 1.0;
+ultrasonic_solder_blob_d                    = 2.07;
+ultrasonic_solder_blobs_positions           = [26, 10];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Parameters for wheels, common for front and rear

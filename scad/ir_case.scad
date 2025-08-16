@@ -315,9 +315,7 @@ module ir_case_printable(show_rail=true,
     if (show_rail) {
       rotate([180, 0, 0]) {
         translate([0,
-                   -ir_case_rail_y_pos()
-                   + ir_case_rail_w
-                   - spacing,
+                   spacing,
                    -ir_case_full_thickness()
                    - ir_case_carriage_h
                    - ir_case_rail_protrusion_h
@@ -331,6 +329,6 @@ module ir_case_printable(show_rail=true,
   }
 }
 
-ir_case_printable(show_case=false, show_rail=true);
+ir_case_printable(show_case=true, show_rail=true);
 
 // ir_case_assembly(case_color=cobalt_blue_metalic, show_ir_led=false);
