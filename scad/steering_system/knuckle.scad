@@ -125,8 +125,8 @@ module knuckle_bent_shaft_connector(knuckle_color=cobalt_blue_metalic,
       translate([0,
                  y_offst,
                  knuckle_height]) {
-        mirror([1, 0, 0]) {
-          rotate([0, 0, 0]) {
+        mirror([assembly_knuckle_shaft_reversed ? 1 : 0, 0, 0]) {
+          rotate([0, 0, assembly_knuckle_shaft_reversed ? 0 : 180]) {
             knuckle_shaft(show_wheel=show_wheel,
                           knuckle_shaft_color=knuckle_shaft_color);
           }

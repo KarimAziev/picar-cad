@@ -86,13 +86,13 @@ module steering_system_assembly(rack_color=blue_grey_carbon,
                    show_pinion=show_pinion,
                    panel_color=panel_color,
                    pinion_color=pinion_color);
-    knuckle_rotation_angle = steering_system_reversed ? 0 : 180;
+    knuckle_rotation_angle = assembly_steering_system_reversed ? 0 : 180;
     if (show_distance) {
       steering_system_distance_between_rack_and_knuckle();
     }
 
     translate([0, 0, steering_rack_support_thickness / 2]) {
-      rotate([0, 0, steering_system_reversed ? 180 : 0]) {
+      rotate([0, 0, assembly_steering_system_reversed ? 180 : 0]) {
         rack_mount(show_brackets=show_brackets, rack_color=rack_color);
       }
     }

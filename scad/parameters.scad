@@ -9,6 +9,10 @@
 
 include <colors.scad>
 use <util.scad>
+
+assembly_steering_system_reversed           = true;
+assembly_knuckle_shaft_reversed             = true;
+
 m1_hole_dia                                 = 1.2; // M1 screw hole diameter
 m2_hole_dia                                 = 2.4; // M2 screw hole diameter
 m25_hole_dia                                = 2.6; // M2.5 screw hole diameter
@@ -46,8 +50,8 @@ battery_screws_y_offset_step                = 10;
 // Dimensions for the screw hole pattern (width, height)
 battery_holder_screw_holes_size             = [20, 10]; // [width, height] of the screw pattern
 
-// Diameter of the screw holes (uses global m2_hole_dia)
-battery_holder_screw_hole_dia               = m2_hole_dia;
+// Diameter of the screw holes
+battery_holder_screw_hole_dia               = m25_hole_dia;
 
 // Number of fragments for rendering circle (defines resolution)
 battery_screws_fn_val                       = 360;
@@ -903,6 +907,10 @@ knuckle_shaft_vertical_len                  = knuckle_height + (motor_type == "n
 // The additional length of the connector for the shaft in the knuckle and the
 // corresponding curved axle shaft
 knuckle_shaft_connector_extra_len           = 2;
+
+// The additional length of the for the shaft itself
+knuckle_shaft_extra_len                     = assembly_knuckle_shaft_reversed && assembly_steering_system_reversed ? 20 : 0;
+
 // The length of the lower horizontal part of the (curved) axle shaft that is
 // inserted into the wheel hub
 knuckle_shaft_lower_horiz_len               = 27;
@@ -1180,8 +1188,6 @@ steering_panel_hinge_screw_distance         = 2;
 // ─────────────────────────────────────────────────────────────────────────────
 // Rack and Pinion
 // ─────────────────────────────────────────────────────────────────────────────
-
-steering_system_reversed                    = true;
 
 // Length of the toothed section of the steering rack (excluding side connectors)
 steering_rack_teethed_length                = 59.0;

@@ -111,10 +111,10 @@ module row_of_circles(total_width,
   }
 }
 
-module rounded_rect(size, r=undef, center=false, fn) {
+module rounded_rect(size, r=undef, center=false, fn, r_factor=0.3) {
   w = size[0];
   h = size[1];
-  rad = is_undef(r) ? (min(h, w)) * 0.3 : r;
+  rad = is_undef(r) ? (min(h, w)) * r_factor : r;
   if (rad == 0) {
     square(size, center=center);
   } else {
@@ -267,10 +267,10 @@ module trapezoid_rounded_bottom(b=20,
                                 t=10,
                                 h=15,
                                 r=undef,
-                                rad_factor=0.1,
+                                r_factor=0.1,
                                 center=false,
                                 $fn=20) {
-  rad = (is_undef(r) ? min(b, t, h) * rad_factor : r);
+  rad = (is_undef(r) ? min(b, t, h) * r_factor : r);
   m = (b - t) / 2;
   n = $fn;
 
@@ -296,7 +296,7 @@ module trapezoid_rounded_top(b=20,
                              t=10,
                              h=15,
                              r=undef,
-                             rad_factor=0.1,
+                             r_factor=0.1,
                              center=false,
                              $fn=20) {
   translate([0, center ? 0 : h, 0]) {
@@ -305,7 +305,7 @@ module trapezoid_rounded_top(b=20,
                                t=t,
                                h=h,
                                r=r,
-                               rad_factor=rad_factor,
+                               r_factor=r_factor,
                                center=center,
                                $fn=$fn);
     }
@@ -316,11 +316,11 @@ module trapezoid_rounded_top(b=20,
 //                              t=10,
 //                              h=15,
 //                              r=undef,
-//                              rad_factor=0.1,
+//                              r_factor=0.1,
 //                              center=false,
 //                              $fn=24) {
 
-//   raw_rad = (is_undef(r) ? min(b, t, h) * rad_factor : r);
+//   raw_rad = (is_undef(r) ? min(b, t, h) * r_factor : r);
 //   m = (b - t) / 2;
 //   L = sqrt(m*m + h*h);
 

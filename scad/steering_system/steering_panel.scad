@@ -193,7 +193,7 @@ module steering_rack_support(show_rack=false) {
 
     if (show_rack) {
       translate([0, 0, steering_rack_support_thickness / 2]) {
-        rotate([0, 0, steering_system_reversed ? 180 : 0]) {
+        rotate([0, 0, assembly_steering_system_reversed ? 180 : 0]) {
           rack_mount(show_brackets=true);
         }
       }

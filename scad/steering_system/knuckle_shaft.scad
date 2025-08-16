@@ -80,6 +80,7 @@ module knuckle_bent(angle, r, fn=360, bent_color=matte_black) {
 module knuckle_bent_shaft(show_wheel=false,
                           knuckle_shaft_color=matte_black) {
   d = knuckle_shaft_dia;
+  knuckle_rad = knuckle_dia / 2;
   r = d / 2;
   union() {
     translate([0,
@@ -96,14 +97,18 @@ module knuckle_bent_shaft(show_wheel=false,
         translate([0, 0, -r]) {
           rotate([-90, 0, 0]) {
             color(knuckle_shaft_color) {
-              cylinder(h=knuckle_shaft_connector_extra_len + knuckle_dia / 2,
+              cylinder(h=knuckle_shaft_connector_extra_len
+                       + knuckle_rad
+                       + knuckle_shaft_extra_len,
                        r=r,
                        center=false,
                        $fn=360);
             }
           }
           translate([-r,
-                     knuckle_shaft_connector_extra_len + knuckle_dia / 2,
+                     knuckle_shaft_connector_extra_len
+                     + knuckle_rad +
+                     knuckle_shaft_extra_len,
                      0]) {
             knuckle_bent(angle=90, r=r, bent_color=matte_black);
 
