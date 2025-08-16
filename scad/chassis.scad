@@ -496,8 +496,10 @@ module chassis(motor_type=motor_type,
           }
         }
         translate([0, 0, chassis_thickness / 2]) {
-          color(chassis_color, alpha=1) {
-            chassis_base_3d();
+          scale([1, 1, 0.5]) {
+            color(chassis_color, alpha=1) {
+              chassis_base_3d();
+            }
           }
         }
       } else {
