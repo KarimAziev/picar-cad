@@ -8,6 +8,7 @@
  */
 
 include <parameters.scad>
+
 include <colors.scad>
 use <placeholders/ups_hat.scad>
 use <placeholders/pan_servo.scad>
@@ -43,9 +44,11 @@ show_ackermann_triangle         = false;
 show_camera                     = true;
 show_ir_case                    = true;
 show_ir_led                     = true;
-head_color                      = "white";
 chassis_color                   = "white";
+head_color                      = chassis_color;
 batteries_holder_assembly_y_idx = len(baterry_holes_y_positions) / 2 + 1;
+
+chassis_color_bottom            = "#353935";
 
 $t = 0.01;
 
@@ -145,7 +148,6 @@ module chassis_assembly(center=false,
           }
         }
       }
-
       chassis(motor_type=motor_type,
               show_motor=show_motor,
               show_motor_brackets=show_motor_brackets,
@@ -155,7 +157,9 @@ module chassis_assembly(center=false,
               show_ultrasonic=show_ultrasonic,
               show_front_panel=show_front_panel,
               show_ackermann_triangle=show_ackermann_triangle,
-              chassis_color=chassis_color);
+              chassis_color=chassis_color,
+              chassis_color_bottom=chassis_color_bottom,
+              rotate_chassis=true);
     }
   }
 }

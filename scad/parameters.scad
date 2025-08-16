@@ -169,6 +169,14 @@ chassis_trapezoid_shape_pts                 = [[-chassis_shape_base_width * 0.6,
                                                 chassis_len / 2],
                                                [0, chassis_len / 2]];
 
+// vertical distance between trapezoids
+chassis_trapezoid_hole_y_distance           = 7.5;
+
+// distance from the side of the chassis
+chassis_trapezoid_hole_x_distance           = 2;
+
+chassis_trapezoid_border_height             = 1;
+
 chassis_shape_points                        = concat([[chassis_shape_init_pos_x,
                                                        chassis_shape_init_pos_y],
                                                       [-chassis_shape_rear_panel_base_w,
@@ -193,6 +201,8 @@ chassis_shape_points                        = concat([[chassis_shape_init_pos_x,
 
 // diameter of the pan servo mounting hole at the front of the chassis
 chassis_pan_servo_slot_dia                  = 6.5;
+
+chassis_pan_servo_slot_depth                = 2.0;
 
 // Vertical offset, measured from the steering panel's position, for the pan
 // servo cut-out. The pan servo is mounted on a bottom horizontal panel (with a
@@ -419,7 +429,7 @@ head_neck_pan_servo_assembly_reversed       = false;
 // Note: this is the hole size intended for the LED in the case (may include any planned clearance).
 ir_case_led_dia                             = 19.1;
 
-// Overall vertical size of the case part (Y dimension in your layouts).
+// Overall vertical size of the case part
 ir_case_height                              = 28;
 
 // Overall horizontal size of the case part (X dimension).

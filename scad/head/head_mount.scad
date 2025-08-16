@@ -389,4 +389,4 @@ module head_mount(head_color="white",
   }
 }
 
-head_mount(show_ir_case=true, show_camera=true);
+head_mount(show_ir_case=false, show_camera=false);

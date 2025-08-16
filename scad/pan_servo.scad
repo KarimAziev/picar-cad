@@ -37,6 +37,24 @@ module pan_servo_screws_2d(servo_screw_d=1.5,
   }
 }
 
+module pan_servo_slot() {
+  y_offst = steering_panel_y_pos_from_center +
+    chassis_pan_servo_y_distance_from_steering;
+  d = chassis_pan_servo_slot_dia + 2;
+
+  available_len = poly_width_at_y(chassis_shape_points,
+                                  y_offst - d / 2) * 2;
+
+  translate([0, y_offst,
+             chassis_thickness - chassis_pan_servo_slot_depth + 0.1]) {
+    linear_extrude(height=chassis_pan_servo_slot_depth, center=false,
+                   convexity=2) {
+      rounded_rect([available_len, d], center=true);
+      rounded_rect([d, available_len], center=true);
+    }
+  }
+}
+
 module pan_servo_cutout_2d() {
   y_offst = steering_panel_y_pos_from_center +
     chassis_pan_servo_y_distance_from_steering;

@@ -36,13 +36,10 @@ use <placeholders/motor.scad>
 use <steering_system/knuckle_shaft.scad>
 use <wheels/rear_wheel.scad>
 
-chassis_trapezoid_hole_y_distance = 7.5;
-chassis_trapezoid_hole_x_distance = 2;
-
-chassis_trapezoid_hole_pts        = scale_trapezoid_pts(concat(chassis_trapezoid_shape_pts,
-                                                               [[0, chassis_trapezoid_shape_pts[0][1]]]),
-                                                        chassis_trapezoid_hole_width,
-                                                        chassis_trapezoid_hole_len);
+chassis_trapezoid_hole_pts = scale_trapezoid_pts(concat(chassis_trapezoid_shape_pts,
+                                                        [[0, chassis_trapezoid_shape_pts[0][1]]]),
+                                                 chassis_trapezoid_hole_width,
+                                                 chassis_trapezoid_hole_len);
 
 function scale_trapezoid_pts(pts, w_top, L) =
   let (x_bottom = pts[0][0],
@@ -55,7 +52,7 @@ function scale_trapezoid_pts(pts, w_top, L) =
                                   [0,         L],
                                   [0,         0]];
 
-module side_trapezoids_holes() {
+module side_trapezoids_children() {
   step = chassis_trapezoid_hole_y_distance + chassis_trapezoid_hole_len;
 
   trap_len = chassis_trapezoid_shape_pts[2][1] -
@@ -95,12 +92,34 @@ module side_trapezoids_holes() {
           mirror_copy([1, 0, 0]) {
             translate([x, y, 0]) {
               translate([max_w / 2, 0, 0]) {
-                offset_vertices_2d(r=0.4) {
-                  polygon(points=chassis_trapezoid_hole_pts);
-                }
+                children();
               }
             }
           }
+        }
+      }
+    }
+  }
+}
+
+module side_trapezoids_holes() {
+  side_trapezoids_children() {
+    offset_vertices_2d(r=0.4) {
+      polygon(points=chassis_trapezoid_hole_pts);
+    }
+  }
+}
+
+module side_trapezoids_borders() {
+  side_trapezoids_children() {
+    linear_extrude(height=chassis_thickness
+                   + chassis_trapezoid_border_height, center=false) {
+      offset_vertices_2d(r=0.4) {
+        difference() {
+          offset(delta=1) {
+            polygon(points = chassis_trapezoid_hole_pts);
+          }
+          polygon(points = chassis_trapezoid_hole_pts);
         }
       }
     }
@@ -186,7 +205,7 @@ module chassis_center_wiring_cutouts(dia=chassis_center_cutout_dia,
     curr_y = y + dia;
 
     translate([0, corrected_y, 0]) {
-      circle(r=dia / 2);
+      circle(r=dia / 2, $fn = circle_fn);
       // Place 5 total circles only when within safe margin
       if (curr_y < battery_screws_y_start &&
           (curr_y < end || y - dia > end)) {
@@ -383,8 +402,16 @@ module standard_motor_bracket_screws_size(extra_x=0, extra_y=0) {
 }
 
 module chassis_base_3d() {
-  linear_extrude(chassis_thickness, center=false) {
-    chassis_2d();
+  union() {
+    difference() {
+      linear_extrude(chassis_thickness,
+                     center=false,
+                     convexity=2) {
+        chassis_2d();
+      }
+      pan_servo_slot();
+    }
+    side_trapezoids_borders();
   }
 }
 
@@ -436,6 +463,18 @@ module chassis_base_2d() {
   }
 }
 
+module chassis_maybe_rotate(rotation) {
+  if (rotation) {
+    translate([0, 0, chassis_thickness]) {
+      rotate([0, 180, 0]) {
+        children();
+      }
+    }
+  } else {
+    children();
+  }
+}
+
 module chassis(motor_type=motor_type,
                show_motor=false,
                show_motor_brackets=false,
@@ -445,10 +484,31 @@ module chassis(motor_type=motor_type,
                show_front_rear_panel=false,
                show_ultrasonic=false,
                show_ackermann_triangle=false,
-               chassis_color="white") {
+               chassis_color="white",
+               chassis_color_bottom,
+               rotate_chassis) {
   union() {
+    chassis_maybe_rotate(rotate_chassis) {
+      if (chassis_color_bottom) {
+        color(chassis_color_bottom, alpha=1) {
+          scale([1, 1, 0.5]) {
+            chassis_base_3d();
+          }
+        }
+        translate([0, 0, chassis_thickness / 2]) {
+          color(chassis_color, alpha=1) {
+            chassis_base_3d();
+          }
+        }
+      } else {
+        color(chassis_color, alpha=1) {
+          chassis_base_3d();
+        }
+      }
+    }
+
     color(chassis_color) {
-      chassis_base_3d();
+
       if (show_rear_panel) {
         translate([0,
                    -chassis_len / 2,
