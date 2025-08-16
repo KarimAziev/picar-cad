@@ -118,7 +118,7 @@ chassis_offset_rad                          = 3; // The amount by which to offse
 
 chassis_center_cutout_dia                   = 8.5;             // Diameter of each round cutout circle
 chassis_center_cutout_spacing               = 4;               // Vertical spacing between cutouts
-chassis_center_cutout_fn                    = 10;              // Circle detail level
+chassis_center_cutout_fn                    = 20;              // Circle detail level
 
 chassis_center_trapezoid_1                  = [1 / 8.5, 1 / 8.5, 7]; // [bottom_frac_w, top_frac_w, height]
 chassis_center_trapezoid_2                  = [0.2, 0.2, 5.4]; // [bottom_frac_w, top_frac_w, height]
