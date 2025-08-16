@@ -35,6 +35,7 @@ use <steering_system/rack.scad>
 use <wheels/tire.scad>
 use <wheels/rear_wheel.scad>
 use <wheels/front_wheel.scad>
+use <util.scad>
 
 show_chasssis       = true;
 show_front_panel    = true;
@@ -52,6 +53,7 @@ show_ir_case        = true;
 show_ir_case_rail   = true;
 
 module printable() {
+
   if (show_chasssis) {
     chassis();
   }
@@ -107,21 +109,22 @@ module printable() {
     }
   }
 
-  translate([-chassis_width / 2 - front_panel_width / 2 - 5,
-             chassis_len * 0.5 - front_panel_height * 0.5,
+  translate([-ir_case_width / 2, chassis_len / 2
+             + ir_case_height, 0]) {
+    ir_case_printable(show_case=show_ir_case,
+                      spacing=-2,
+                      show_rail=show_ir_case_rail);
+  }
+
+  translate([-chassis_width / 2
+             - front_panel_width / 2 - 5,
+             chassis_len * 0.5
+             - front_panel_height * 0.5,
              0]) {
     if (show_front_panel) {
       color("white", alpha=1) {
         front_panel_printable();
       }
-    }
-
-    translate([0, front_panel_height / 2
-               + ir_case_height / 2,
-
-               0]) {
-      ir_case_printable(show_case=show_ir_case,
-                        show_rail=show_ir_case_rail);
     }
 
     translate([0, -front_panel_height / 2
