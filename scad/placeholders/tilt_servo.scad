@@ -51,6 +51,7 @@ module tilt_servo(center=false, servo_color=tilt_servo_color, alpha=1) {
         gearbox_d2=tilt_servo_gearbox_d2,
         gearbox_x_offset=tilt_servo_gearbox_x_offset,
         gearbox_mode=tilt_servo_gearbox_mode,
+        servo_horn_rotation=($t * ($t > 0.5 ? -90 : 45)) + 45,
         gearbox_gear_size=tilt_servo_gearbox_size) {
     children();
   }

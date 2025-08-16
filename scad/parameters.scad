@@ -1121,6 +1121,22 @@ standard_motor_can_rad                      = standard_gearbox_neck_rad  * 0.9;
 standard_endcap_rad                         = standard_gearbox_neck_rad  * 0.86;
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Servo horn
+// ─────────────────────────────────────────────────────────────────────────────
+servo_horn_thickness                        = 1.5;
+servo_horn_w_1                              = 5.25;
+servo_horn_w_2                              = 4.03;
+servo_horn_outer_dia                        = 5.90;
+servo_horn_inner_dia                        = 3.87;
+servo_horn_hole_dia                         = 1.87;
+servo_horn_h                                = 4.54;
+servo_horn_arm_z_offset                     = 2.5;
+servo_horn_len                              = 24;
+servo_horn_screw_d                          = 0.8;
+servo_horn_screws_distance                  = 2.84;
+servo_horn_holes_n                          = 2;
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Steering servo
 // ─────────────────────────────────────────────────────────────────────────────
 // Dimensions for the slot that accommodates the steering servo motor.

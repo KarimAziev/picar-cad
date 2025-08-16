@@ -54,6 +54,7 @@ module pan_servo(center=false, servo_color=pan_servo_color, alpha=1) {
         gearbox_d2=pan_servo_gearbox_d2,
         gearbox_x_offset=pan_servo_gearbox_x_offset,
         gearbox_mode=pan_servo_gearbox_mode,
+        servo_horn_rotation=0,
         gearbox_gear_size=pan_servo_gearbox_size) {
     children();
   }

@@ -8,6 +8,7 @@
 include <../parameters.scad>
 include <../colors.scad>
 use <../util.scad>
+use <servo_horn.scad>
 
 function servo_gear_total_height(gear_size) =
   sum([for (i = [0 : len(gear_size) - 1]) gear_size[i][0]]);
@@ -139,10 +140,13 @@ module servo_gearbox(h,
                                 [2, 2, dark_gold_2]],
                      max_angle=90,
                      min_angle=-90,
+                     servo_horn_rotation=0,
                      center=true) {
   r1 = is_undef(r1) ? d1 / 2 : r1;
   r2 = is_undef(r2) ? is_undef(d2) ? r1 * 0.4 : d2 / 2 : r2;
   x_offset = is_undef(x_offset) ? 0 : x_offset;
+
+  total_gear_h = sum([for (i = [0 : len(gear_size) - 1]) gear_size[i][0]]);
 
   translate([center ? 0 : r1 + r2, 0, 0]) {
     union() {
@@ -185,6 +189,12 @@ module servo_gearbox(h,
             }
           }
         }
+        translate([0, 0, total_gear_h
+                   - servo_horn_arm_z_offset + 0.5]) {
+          rotate([0, 0, servo_horn_rotation]) {
+            servo_horn();
+          }
+        }
         rotate([0, 0, $t * ($t > 0.5 ? min_angle : max_angle)]) {
           children();
         }
@@ -218,6 +228,7 @@ module servo(size,
              gearbox_gear_size=[],
              max_angle=45,
              min_angle=-90,
+             servo_horn_rotation=45,
              center=false) {
   length = size[0];
   w = size[1];
@@ -257,6 +268,7 @@ module servo(size,
                       mode=gearbox_mode,
                       max_angle=max_angle,
                       min_angle=min_angle,
+                      servo_horn_rotation=servo_horn_rotation,
                       alpha=alpha) {
           children();
         }

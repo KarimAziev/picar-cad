@@ -301,8 +301,8 @@ module trapezoid_rounded_top(b=20,
                              $fn=20) {
   translate([0, center ? 0 : h, 0]) {
     scale([1, -1]) {
-      trapezoid_rounded_bottom(b=b,
-                               t=t,
+      trapezoid_rounded_bottom(b=t,
+                               t=b,
                                h=h,
                                r=r,
                                r_factor=r_factor,

@@ -221,7 +221,8 @@ module assembly_view(center=chassis_assembly_center,
           + chassis_pan_servo_y_distance_from_steering
           + head_full_w - slot_w + extra_head_y;
 
-        head_z = chassis_thickness + pan_servo_gear_height();
+        head_z = chassis_thickness + pan_servo_gear_height() + servo_horn_h
+          - chassis_pan_servo_slot_depth;
 
         translate([head_x,
                    head_y,
