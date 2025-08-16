@@ -1,6 +1,6 @@
 /**
  * Placeholder model for the Waveshare Infrared LED Light Board
- (https://www.waveshare.com/infrared-led-board.htm or
+ (https://www.waveshare.com/infrared-led-board.html or
  https://www.waveshare.com/infrared-led-board-b.html)
  *
  * - Visual mockup of the Waveshare Infrared LED Light Board used for
