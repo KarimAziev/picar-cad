@@ -49,13 +49,11 @@ module j_leads_centered(pitch=2.54,
   for (i=[0:count-1]) {
     let (x = (i - (count - 1) / 2) * pitch) {
       translate([x, 0, 0]) {
-        rotate([0, 0, 0]) {
-          j_lead(upper_len=upper_len,
-                 lower_len=lower_len,
-                 thickness=thickness,
-                 base_h=base_h,
-                 center=true);
-        };
+        j_lead(upper_len=upper_len,
+               lower_len=lower_len,
+               thickness=thickness,
+               base_h=base_h,
+               center=true);
       }
     }
   }
