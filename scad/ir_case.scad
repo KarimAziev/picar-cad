@@ -101,13 +101,11 @@ module ir_case_rail() {
         }
       }
     }
-    translate([0, 0, 0]) {
-      linear_extrude(height=full_thickness
-                     + slider_holes_extra_h,
-                     center=false,
-                     convexity=2) {
-        ir_case_slider_holes_2d();
-      }
+    linear_extrude(height=full_thickness
+                   + slider_holes_extra_h,
+                   center=false,
+                   convexity=2) {
+      ir_case_slider_holes_2d();
     }
   }
 }
