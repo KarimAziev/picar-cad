@@ -90,10 +90,8 @@ module side_trapezoids_children() {
 
         if (enabled) {
           mirror_copy([1, 0, 0]) {
-            translate([x, y, 0]) {
-              translate([max_w / 2, 0, 0]) {
-                children();
-              }
+            translate([x + max_w / 2, y, 0]) {
+              children();
             }
           }
         }
