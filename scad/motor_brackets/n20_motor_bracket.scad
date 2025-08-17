@@ -137,4 +137,4 @@ module n20_motor_assembly(show_motor=true, show_wheel=false) {
   }
 }
 
-n20_motor_assembly(show_motor=true, show_wheel=false);
+n20_motor_assembly(show_motor=false, show_wheel=false);
