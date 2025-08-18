@@ -31,6 +31,8 @@
  * @param show_pan_servo    Boolean - Whether to render the pan servo model in 3D.
  * @param bracket_color     Color value - Color used for rendering the neck bracket.
  * @param head_color        Color value - Color used for rendering the robot head.
+ * @param show_ir_case      Boolean - Whether to render the case for IR LED
+ * @param show_ir_led       Boolean - Whether to render the IR LED if show_ir_case is also enabled.
  *
  *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
