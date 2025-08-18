@@ -95,8 +95,8 @@ module front_panel_connector() {
       translate([0, -front_panel_connector_len / 2 +
                  front_panel_connector_rect_cutout_size[1] / 2
                  + rear_panel_z
-                 + front_panel_thickness
-                 , 0]) {
+                 + front_panel_thickness,
+                 0]) {
         square(front_panel_connector_rect_cutout_size, center=true);
       }
       front_panel_connector_screws();
