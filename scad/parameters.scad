@@ -34,6 +34,8 @@ battery_ups_offset                          = 2;
 // This forms a square with a screw hole centered on each corner.
 battery_ups_module_screws_size              = [86, 46];
 
+battery_ups_screw_hole_dia                  = m3_hole_dia;
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Battery holders under the case
 // ─────────────────────────────────────────────────────────────────────────────

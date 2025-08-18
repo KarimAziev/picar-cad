@@ -151,7 +151,7 @@ module raspberry_pi5_screws_2d(vertical=false) {
 module ups_hat_screws_2d() {
   four_corner_holes_2d(size=battery_ups_module_screws_size,
                        center=true,
-                       hole_dia=m3_hole_dia);
+                       hole_dia=battery_ups_screw_hole_dia);
 }
 
 module battery_holders_screws_2d(x_offst=battery_screws_x_offset) {

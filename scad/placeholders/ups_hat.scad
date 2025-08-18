@@ -25,7 +25,7 @@ function ups_hat_polygon_cutout_points(max_len, max_height) =
 module ups_hat(size=battery_ups_size,
                holder_size=battery_ups_holder_size,
                holder_thickness=battery_ups_holder_thickness,
-               screw_dia=m3_hole_dia,
+               screw_dia=battery_ups_screw_hole_dia,
                standoff_h=5,
                max_cutout_len,
                max_cutout_height) {
@@ -64,7 +64,7 @@ module ups_hat(size=battery_ups_size,
                        0]) {
               four_corner_holes_2d(size=battery_ups_module_screws_size,
                                    center=false,
-                                   hole_dia=m3_hole_dia,
+                                   hole_dia=screw_dia,
                                    fn_val=10);
             }
           }
