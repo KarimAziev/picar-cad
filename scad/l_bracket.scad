@@ -50,12 +50,15 @@
 
 use <util.scad>
 
+function non_empty(items) = items && len(items) > 0;
+
 module l_bracket(size,
                  thickness=1,
                  vertical_thickness,
                  children_modes=[],
                  bracket_color,
                  center=true,
+                 convexity,
                  y_r=undef,
                  z_r=undef) {
   x = size[0];
@@ -68,17 +71,20 @@ module l_bracket(size,
     ? thickness
     : vertical_thickness;
 
-  function children_for(mode, target) = [for (i = [0:len(children_modes)
-                                                   - 1])
-      if (children_modes[i][0] == mode && children_modes[i][1] == target) i];
+  function children_for(mode, target) =
+    [for (i = [0:len(children_modes) - 1])
+        if (children_modes[i][0] == mode
+            && children_modes[i][1] == target) i];
 
   horizontal_children_union_outer = children_for("union", "horizontal");
   horizontal_children_union_inner = children_for("union_inner", "horizontal");
   horizontal_children_difference = children_for("difference", "horizontal");
+  horizontal_children_outer_difference = children_for("difference_outer", "horizontal");
 
   vertical_children_union_outer = children_for("union", "vertical");
   vertical_children_union_inner = children_for("union_inner", "vertical");
   vertical_children_difference = children_for("difference", "vertical");
+  vertical_children_outer_difference = children_for("difference_outer", "vertical");
 
   translate([center ? 0 : x / 2, center
              ? 0
@@ -86,33 +92,44 @@ module l_bracket(size,
              center ? 0 : thickness / 2]) {
     union() {
       // Horizontal plate (extruded in the XY plane)
-      union() {
-        color(bracket_color, alpha=1) {
-          linear_extrude(height=thickness, center=true) {
-            difference() {
-              union() {
-                rounded_rect_two([x, y], center=true, r=ur);
+      difference() {
+        union() {
+          color(bracket_color, alpha=1) {
+            linear_extrude(height=thickness,
+                           center=true,
+                           convexity=convexity) {
+              difference() {
+                union() {
+                  rounded_rect_two([x, y], center=true, r=ur);
 
-                if (len(horizontal_children_union_inner) > 0) {
-                  for (i = horizontal_children_union_inner) {
+                  if (non_empty(horizontal_children_union_inner)) {
+                    for (i = horizontal_children_union_inner) {
+                      if ($children > i) {
+                        children(i);
+                      }
+                    }
+                  }
+                }
+                if (non_empty(horizontal_children_difference)) {
+                  for (i = horizontal_children_difference) {
                     if ($children > i) {
                       children(i);
                     }
                   }
                 }
               }
-              if (len(horizontal_children_difference) > 0) {
-                for (i = horizontal_children_difference) {
-                  if ($children > i) {
-                    children(i);
-                  }
-                }
+            }
+          }
+          if (non_empty(horizontal_children_union_outer)) {
+            for (i = horizontal_children_union_outer) {
+              if ($children > i) {
+                children(i);
               }
             }
           }
         }
-        if (len(horizontal_children_union_outer) > 0) {
-          for (i = horizontal_children_union_outer) {
+        if (non_empty(horizontal_children_outer_difference)) {
+          for (i = horizontal_children_outer_difference) {
             if ($children > i) {
               children(i);
             }
@@ -125,32 +142,44 @@ module l_bracket(size,
                  -y / 2,
                  z / 2 - thickness / 2]) {
         rotate([90, 0, 0]) {
-          union() {
-            color(bracket_color, alpha=1) {
-              linear_extrude(height=vertical_thickness, center=true) {
-                difference() {
-                  union() {
-                    rounded_rect_two([x, z], center=true, r=lr);
-                    if (len(vertical_children_union_inner) > 0) {
-                      for (i = vertical_children_union_inner) {
+          difference() {
+            union() {
+              color(bracket_color, alpha=1) {
+                linear_extrude(height=vertical_thickness,
+                               center=true,
+                               convexity=convexity) {
+                  difference() {
+                    union() {
+                      rounded_rect_two([x, z], center=true, r=lr);
+                      if (non_empty(vertical_children_union_inner)) {
+                        for (i = vertical_children_union_inner) {
+                          if ($children > i) {
+                            children(i);
+                          }
+                        }
+                      }
+                    }
+
+                    if (non_empty(vertical_children_difference)) {
+                      for (i = vertical_children_difference) {
                         if ($children > i) {
                           children(i);
                         }
                       }
                     }
                   }
-                  if (len(vertical_children_difference) > 0) {
-                    for (i = vertical_children_difference) {
-                      if ($children > i) {
-                        children(i);
-                      }
-                    }
+                }
+              }
+              if (non_empty(vertical_children_union_outer)) {
+                for (i = vertical_children_union_outer) {
+                  if ($children > i) {
+                    children(i);
                   }
                 }
               }
             }
-            if (len(vertical_children_union_outer) > 0) {
-              for (i = vertical_children_union_outer) {
+            if (non_empty(vertical_children_outer_difference)) {
+              for (i = vertical_children_outer_difference) {
                 if ($children > i) {
                   children(i);
                 }
