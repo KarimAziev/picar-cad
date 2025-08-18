@@ -114,11 +114,11 @@ The design also supports case for [IR Waveshare Infrared LED Light Board Module]
 
 The original LED board is incompatible with the Raspberry Camera Module 3, and the quality of Waveshare’s original camera is unsatisfactory.
 
-Nevertheless, this LED board can be used with Camera Module 3 and other Raspberry Pi cameras. To do so, solder two wires (GND and V+) to the screw holes on the LED board (the screw holes serve both for mechanical attachment and for power). Then connect the positive wire to 3.3V and the ground wire to GND. It is also safer to use an LED driver instead of directly connecting to the Raspberry Pi.
+Nevertheless, this LED board can be used with Camera Module 3 and other Raspberry Pi cameras. To do so, solder two wires (**GND** and **V+**) to the screw holes on the LED board (the screw holes serve both for mechanical attachment and for power). Then connect the positive wire to **3.3V** and the ground wire to **GND**.
 
 ### Screws and Nuts
 
-Since the default chassis thickness is 4 mm (changeable via the variable `chassis_thickness`), use screws at least 8 mm long for fastenings that go through the chassis, depending on the nuts. I suggest using lock nuts for these screws, but plain nuts are also acceptable.
+Since the default chassis thickness is **4 mm** (changeable via the variable `chassis_thickness`), use screws at least **8 mm** long for fastenings that go through the chassis, depending on the nuts. I suggest using lock nuts for these screws, but plain nuts are also acceptable.
 
 The tables below are grouped by component. I haven't combined them into a single table with total quantities because totals depend on which components you use - for example, you may or may not include the UPS Module S3.
 
@@ -129,7 +129,7 @@ Each table includes a "Variable" column that refers to a configurable variable i
 | Size | Length (mm) | Amount | Nuts | Variable                         |
 | ---- | ----------- | ------ | ---- | -------------------------------- |
 | M2.5 | 8           | 4      | 2    | `steering_panel_hinge_screw_dia` |
-| M2   | 6 or 8      | 1      | 1    | `steering_servo_screw_dia`       |
+| M2   | 8           | 1      | 1    | `steering_servo_screw_dia`       |
 | M2   | 4           | 1      | 0    | `steering_servo_screw_dia`       |
 
 #### Steering pinion
