@@ -57,6 +57,8 @@ use <rack_connector.scad>
 use <rack.scad>
 use <bearing_shaft.scad>
 
+steering_hinge_screw_rad = steering_panel_hinge_screw_dia / 2;
+
 module knuckle_lower_connector() {
   bearing_shaft_connector(lower_d=knuckle_dia,
                           lower_h=knuckle_pin_lower_height,
@@ -92,10 +94,10 @@ module steering_panel_hinge_2d() {
                  fn=100);
     translate([0,
                -y / 2
-               + steering_panel_hinge_screw_dia / 2
+               + steering_hinge_screw_rad
                + steering_panel_hinge_screw_distance,
                0]) {
-      circle(r=steering_panel_hinge_screw_dia / 2, $fn=360);
+      circle(r=steering_hinge_screw_rad, $fn=360);
     }
   }
 }
@@ -113,9 +115,9 @@ module steering_panel_hinges_screws_holes() {
                 + steering_panel_hinge_rad)
                + steering_panel_y_pos_from_center - y / 2
                + steering_panel_hinge_screw_distance
-               + steering_panel_hinge_screw_dia / 2,
+               + steering_hinge_screw_rad,
                0]) {
-      circle(r=steering_panel_hinge_screw_dia / 2, $fn=360);
+      circle(r=steering_hinge_screw_rad, $fn=360);
     }
   }
 }
@@ -130,7 +132,7 @@ module steering_chassis_bar_2d(x_offsets) {
            ? knuckle_connectors_x_offsets()
            : x_offsets) {
       translate([x, 0, steering_rack_support_thickness / 2]) {
-        circle(r=steering_panel_hinge_screw_dia / 2, $fn=360);
+        circle(r=steering_hinge_screw_rad, $fn=360);
       }
     }
   }
@@ -153,8 +155,8 @@ module steering_rack_support(show_rack=false) {
           for (x = knuckle_x_poses) {
             translate([x, 0, 0]) {
               difference() {
-                circle(r = knuckle_rad, $fn=360);
-                circle(r = steering_panel_hinge_screw_dia / 2, $fn=360);
+                circle(r=knuckle_rad, $fn=360);
+                circle(r=steering_hinge_screw_rad, $fn=360);
               }
             }
           }
@@ -335,6 +337,7 @@ module steering_vertical_servo_mount(size=[steering_servo_slot_width,
   }
 }
 
-steering_panel(show_servo=false,
-               show_rack=true,
+steering_panel(panel_color="white",
+               show_servo=false,
+               show_rack=false,
                show_pinion=true);
