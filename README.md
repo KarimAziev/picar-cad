@@ -46,7 +46,7 @@ The robot model is designed around the following core elements:
 
 - **Ackermann Steering**: Front wheels are steered via a pinion and rack assembly driven by a standard servo.
 - **Rear-Wheel Drive**: Two individual motors drive the rear wheels. Both standard yellow DC motors and N20-type motors are supported.
-- **Modular Head Mount**: The head mount is designed to accommodate two Raspberry Pi Camera Module 2 sensors (e.g., day/night configuration).
+- **Modular Head Mount**: The head mount is designed to accommodate two Raspberry Pi Camera Module 2 or more sensors (e.g., day/night configuration).
 - **Extendable Power Tiers**: Side and center slots allow for independent modules for power management: servo driver HAT, motor driver HAT, UPS for Raspberry Pi 5, etc.
 - **Raspberry Pi**: The chassis includes placements and screw holes for the Raspberry Pi 5 and multiple 18650 battery holders.
 
@@ -71,9 +71,9 @@ All of this details are just recommendations, you can use any other details, jus
 
 ### Bearings
 
-- Two 685 (5x11x5) bearings, inserted into the steering knuckles. To use different sizes, modify the variable `knuckle_bearing_outer_dia` and other relevant variables.
-- Two 693 (3x8x4) bearings, inserted into the bearing connectors. Both flanged and standard versions are supported.
-- Two 608 (8x22x7) bearings, inserted into the front wheels.
+- Two 685 (_5x11x5_) bearings, inserted into the steering knuckles. To use different sizes, modify the variable `knuckle_bearing_outer_dia` and other relevant variables.
+- Two 693 (_3x8x4_) bearings, inserted into the bearing connectors. Both flanged and standard versions are supported.
+- Two 608 (_8x22x7_) bearings, inserted into the front wheels.
 
 ### Servos
 
@@ -95,8 +95,8 @@ You can use battery holders, a [UPS module S3](https://www.waveshare.com/ups-mod
 
 Two rear motors are supported-either standard or N20-type:
 
-- The “N20” type refers to motors like the GA12-N20 with a 3 mm shaft.
-- The “standard” type refers to widely available yellow gear motors with a 5 mm shaft.
+- The "N20" type refers to motors like the **GA12-N20** with a 3 mm shaft.
+- The "standard" type refers to widely available yellow gear motors with a 5 mm shaft.
 
 Rear wheel shaft size depends on the motor type. Use the variable `motor_type` in `parameters.scad` to set the proper shaft diameter.
 
@@ -142,7 +142,8 @@ Your servo pack should already include screws, a servo arm, and self-tapping scr
 | ---- | ----------- | ------ | ---- | -------------------------- |
 | M2   | 4           | 1      | 0    | `steering_servo_screw_dia` |
 
-Note: `steering_servo_screw_dia` is used only in assembly views, but there are useful variables that define the diameter of the hole at the center of the pinion where you insert the servo's gearbox - `steering_pinion_center_hole_dia`. Its default size is 6.5 mm.
+> [!TIP]
+> The variable `steering_servo_screw_dia` is used only in assembly views, but there are useful variables that define the diameter of the hole at the center of the pinion where you insert the servo's gearbox - `steering_pinion_center_hole_dia`. Its default size is **6.5** mm.
 
 ##### Self-tapping screws for servo arm
 
