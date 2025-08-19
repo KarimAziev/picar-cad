@@ -192,6 +192,6 @@ module knuckle_print_plate(show_bearing=false,
 
 union() {
   knuckle_print_plate(show_bearing=false,
-                      show_shaft=true,
+                      show_shaft=false,
                       show_wheel=false);
 }
