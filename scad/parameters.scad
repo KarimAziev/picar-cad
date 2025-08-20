@@ -10,8 +10,8 @@
 include <colors.scad>
 use <util.scad>
 
-assembly_steering_system_reversed           = true;
-assembly_knuckle_shaft_reversed             = true;
+assembly_use_front_steering                 = true;
+assembly_shaft_use_front_steering           = assembly_use_front_steering;
 
 m1_hole_dia                                 = 1.2; // M1 screw hole diameter
 m2_hole_dia                                 = 2.4; // M2 screw hole diameter
@@ -34,7 +34,7 @@ battery_ups_offset                          = 2;
 // This forms a square with a screw hole centered on each corner.
 battery_ups_module_screws_size              = [86, 46];
 
-battery_ups_screw_hole_dia                  = m3_hole_dia;
+battery_ups_screw_dia                       = m3_hole_dia;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Battery holders under the case
@@ -53,7 +53,7 @@ battery_screws_y_offset_step                = 10;
 battery_holder_screw_holes_size             = [20, 10]; // [width, height] of the screw pattern
 
 // Diameter of the screw holes
-battery_holder_screw_hole_dia               = m25_hole_dia;
+battery_holder_screw_dia                    = m25_hole_dia;
 
 // Number of fragments for rendering circle (defines resolution)
 battery_screws_fn_val                       = 360;
@@ -63,9 +63,9 @@ battery_screws_x_offset                     = 24;
 
 // Y offsets for positioning screws relative to the center
 baterry_holes_y_positions                   = [for (i =
-                                                      [battery_screws_y_start
-                                                       : battery_screws_y_offset_step
-                                                       : battery_screws_y_offset_end]) i];
+                                                      [battery_screws_y_start:
+                                                       battery_screws_y_offset_step:
+                                                       battery_screws_y_offset_end]) i];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 16850 battery dimensions
@@ -160,7 +160,9 @@ chassis_shape_rear_panel_base_w             = 26.0;
 chassis_shape_rear_cutout_x_offset          = 6;  // Horizontal offset for the rear cutout
 chassis_shape_rear_cutout_y_offset          = 5;  // Vertical offset for the rear cutout
 
-chassis_rear_join_x                         = (-chassis_shape_base_width - chassis_shape_rear_panel_base_w) / 2;
+chassis_rear_join_x                         = (-chassis_shape_base_width
+                                               - chassis_shape_rear_panel_base_w)
+                                              / 2;
 
 chassis_trapezoid_hole_width                = 4.5;
 chassis_trapezoid_hole_len                  = 9.5;
@@ -212,6 +214,9 @@ chassis_pan_servo_slot_depth                = 2.0;
 // (which also carries the cameras). Its placement is determined by adding this
 // offset to steering_panel_y_pos_from_center.
 chassis_pan_servo_y_distance_from_steering  = 45;
+
+chassis_pan_servo_top_ribbon_cuttout_len    = 18;
+chassis_pan_servo_top_ribbon_cuttout_h      = 2;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Front panel dimensions
@@ -295,35 +300,36 @@ head_cameras                                = [[head_camera_module_3_size,
 // If more than one camera is present, a fixed spacing of 2 mm is used.
 // If only one camera is mounted, use half of its height for centering.
 head_cameras_y_distance                     = len(head_cameras) > 1
-  ? 2
-  : (head_cameras[0][0][1] / 2);
+                                              ? 2
+                                              : (head_cameras[0][0][1] / 2);
 
-// Width of the front face plate (in mm) where the camera modules are mounted.
+// Width of the front face plate where the camera modules are mounted.
 head_plate_width                            = 38;
 
-// Height of the front face plate (in mm), automatically calculated based on
+// Height of the front face plate, automatically calculated based on
 // the total height of all camera lens holes plus their vertical spacing.
 // Ensures a minimum height of 40 mm.
 head_plate_height                           = max(40,
-                                                  sum([for (j = [0 : len(head_cameras)-1])
+                                                  sum([for (j = [0:len(head_cameras)-1])
                                                           head_cameras[j][0][1]])
-                                                  + head_cameras_y_distance * len(head_cameras) - 1);
+                                                  + head_cameras_y_distance *
+                                                  len(head_cameras) - 1);
 
-// Thickness (depth) of all the main head plates (in mm), including front,
+// Thickness (depth) of all the main head plates, including front,
 // top, connector, and side plates.
 head_plate_thickness                        = 2;
 
-// Diameter (in mm) of the central hole in the side panel for mounting the servo motor.
+// Diameter of the central hole in the side panel for mounting the servo motor.
 head_servo_mount_dia                        = 6.5;
 
-// Diameter (in mm) of the screws used to mount the servo motor.
+// Diameter of the screws used to mount the servo motor.
 // The screws are placed radially around the main servo mounting hole.
 head_servo_screw_dia                        = 1.5;
 
-// Height (in mm) of the side panel of the head, matching the height of the front plate.
+// Height of the side panel of the head, matching the height of the front plate.
 head_side_panel_height                      = head_plate_height;
 
-// Width (in mm) of the side panel, based on a scaling factor relative to front plate width
+// Width of the side panel, based on a scaling factor relative to front plate width
 // to ensure appropriate coverage for the mounting surface.
 head_side_panel_width                       = head_plate_width * 1.2;
 
@@ -500,8 +506,7 @@ ir_case_rail_angle                          = 10;
 ir_case_rail_offset_rad                     = 0.0;
 
 // Diameter for the holes in the rail meant for M2 screws.
-// Value is taken from common m2_hole_dia parameter (see parameters.scad).
-ir_case_rail_hole_dia                       = m2_hole_dia;
+ir_case_rail_screw_dia                      = m2_hole_dia;
 
 // Additional clearance for the rail (gap to allow slider movement).
 ir_case_rail_clearance                      = 0.3;
@@ -551,7 +556,7 @@ ir_led_light_detector_dia_1                 = 5.3;
 ir_led_light_detector_dia_2                 = 5.9;
 
 // Screw diameter used on the LED board mounting (M2).
-ir_led_screws_dia                           = m2_hole_dia;
+ir_led_screw_dia                            = m2_hole_dia;
 
 // Y offset of the LED center relative to the board origin in the board model.
 ir_led_y_offset                             = 2;
@@ -566,11 +571,11 @@ ir_led_light_detector_offset_x              = 1;
 // These precomputed values sum stacked thicknesses so the case clears the side panel.
 // ir_case_head_side_panel_x_2 is further from the panel than x_1.
 ir_case_head_side_panel_x_2                 = + ir_case_thickness
-  + ir_case_led_boss_thickness
-  + ir_led_thickness
-  + ir_led_light_detector_h / 2;
+                                              + ir_case_led_boss_thickness
+                                              + ir_led_thickness
+                                              + ir_led_light_detector_h / 2;
 ir_case_head_side_panel_x_1                 = + ir_led_light_detector_h / 2
-  + ir_led_height;
+                                              + ir_led_height;
 
 // Y coordinate for the first column of screw positions (centered on the LED height).
 ir_case_head_side_panel_y_1                 = -ir_led_height / 2;
@@ -884,7 +889,7 @@ tilt_servo_cutted_len                       = 3;
 // popular, inexpensive, unnamed yellow motors with a 5mm shaft. This setting
 // affects the shape and type of the motor bracket, the diameter of the rear
 // wheel shafts, and the vertical length of the steering knuckle shafts
-motor_type                                  = "n20";
+motor_type                                  = "n20"; // [n20, standard]
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Steering Knuckle
@@ -922,22 +927,31 @@ knuckle_shaft_connector_dia                 = knuckle_shaft_dia * 1.4;
 
 // The diameter of the fastening screws on the knuckle connector for the wheel
 // shaft.
-knuckle_shaft_screws_dia                    = m25_hole_dia;
+knuckle_shaft_screw_dia                     = m25_hole_dia;
 
 // The distance from the top of the shaft to the screw holes
 knuckle_shaft_screws_offset                 = 1;
+
+// distance between screw holes on the shaft
 knuckle_shaft_screws_distance               = 2;
 
 // The length of the vertical part of the (curved) axle shaft that connects the
 // steering knuckle to the wheel hub
-knuckle_shaft_vertical_len                  = knuckle_height + (motor_type == "n20" ? 21.5 : 26.5);
+knuckle_shaft_vertical_len                  = knuckle_height +
+                                              (motor_type == "n20"
+                                               ? 21.5
+                                               : 26.5);
 
 // The additional length of the connector for the shaft in the knuckle and the
 // corresponding curved axle shaft
 knuckle_shaft_connector_extra_len           = 2;
 
 // The additional length of the for the shaft itself
-knuckle_shaft_extra_len                     = assembly_knuckle_shaft_reversed && assembly_steering_system_reversed ? 20 : 0;
+knuckle_shaft_extra_len                     = assembly_shaft_use_front_steering
+                                              &&
+                                              assembly_use_front_steering
+                                              ? 5
+                                              : 0;
 
 // The length of the lower horizontal part of the (curved) axle shaft that is
 // inserted into the wheel hub
@@ -989,13 +1003,18 @@ n20_motor_bracket_tolerance                 = 0.2;
 n20_motor_bracket_thickness                 = 3;
 n20_motor_screws_panel_offset               = 11.3;
 n20_motor_screws_panel_length               = 4;
-n20_motor_screws_dia                        = m25_hole_dia;
+n20_motor_screw_dia                         = m25_hole_dia;
 
 n20_motor_chassis_y_distance                = 15;
 n20_motor_chassis_x_distance                = -9;
 
-n20_motor_screws_panel_len                  = n20_can_dia + n20_motor_bracket_thickness * 2 +
-  n20_motor_screws_dia * 2 + n20_motor_screws_panel_length * 2;
+n20_motor_screws_panel_len                  = n20_can_dia
+                                              + n20_motor_bracket_thickness
+                                              * 2
+                                              + n20_motor_screw_dia
+                                              * 2
+                                              + n20_motor_screws_panel_length
+                                              * 2;
 // ─────────────────────────────────────────────────────────────────────────────
 // Rear panel: A vertical rear plate with dimensions including two mounting
 // holes for switch buttons.
@@ -1013,7 +1032,8 @@ rear_panel_screw_offset                     = 3;
 // Raspberry Pi dimensions (defaults are for Raspberry PI 5)
 // ─────────────────────────────────────────────────────────────────────────────
 // Y offset for the Raspberry Pi 5 related slots and holes is measured from the end of the chassis.
-rpi_chassis_y_position                      = battery_ups_module_screws_size[0] + 15;
+rpi_chassis_y_position                      = battery_ups_module_screws_size[0]
+                                              + 15;
 
 // The X and Y dimensions of the screw positions for the Raspberry Pi 5 slot.
 // This forms a square with a screw hole centered on each corner.
@@ -1221,12 +1241,14 @@ steering_rack_support_thickness             = 5;
 steering_vertical_panel_thickness           = 3;
 
 // Position of the steering panel relative to the chassis center. This panel
-// houses the rack and pinion assembly implementing Ackerman steering geometry
+// houses the rack and pinion assembly implementing Ackermann steering geometry
 // for the wheels.
 steering_panel_y_pos_from_center            = 65;
 steering_panel_hinge_length                 = 10;
 steering_panel_hinge_screw_dia              = m25_hole_dia;
-steering_panel_hinge_rad                    = min(steering_rack_support_width, steering_panel_hinge_length) * 0.5;
+steering_panel_hinge_rad                    = min(steering_rack_support_width,
+                                                  steering_panel_hinge_length)
+                                              / 2;
 steering_panel_hinge_screw_distance         = 2;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1307,37 +1329,13 @@ steering_breacket_bearing_flanged_width     = 0.5;
 steering_bracket_rack_side_h_length         = 11.30;
 
 // The length of the L-bracket part that is connected to the knuckle connector
-steering_bracket_rack_side_w_length         = 11.4;
+steering_bracket_rack_side_w_length         = 10.1;
 
 // The width of the L-bracket connector
 steering_bracket_linkage_width              = 5;
 
 // The thickness of the L-bracket connector
 steering_bracket_linkage_thickness          = 4;
-
-// Ackerman geometry
-
-// Knuckle center along X
-steering_x_left_knuckle                     = -steering_panel_length / 2 + knuckle_dia / 2;
-
-// Calculation of the Y-coordinate for the convergence point of the tie rod extensions (at the rear axle)
-steering_ackermann_y_intersection           = -chassis_len * 0.5 + n20_motor_screws_panel_len / 2
-  + n20_motor_chassis_y_distance - steering_panel_y_pos_from_center;
-
-steering_bracket_bearing_border_w           = (steering_bracket_bearing_outer_d - steering_bracket_bearing_d) / 2;
-
-// The angle of the shaft that connects the knuckle with the bracket
-steering_angle_deg                          = round(atan(abs(steering_x_left_knuckle / steering_ackermann_y_intersection)));
-
-steering_alpha_deg                          = steering_angle_deg + 90;
-
-// Rack connector center along X
-steering_rack_connector_x_pos               = -steering_rack_teethed_length / 2 - steering_bracket_bearing_outer_d / 2 + steering_bracket_bearing_border_w;
-
-steering_distance_between_knuckle_and_rack  = abs(steering_x_left_knuckle) - abs(steering_rack_connector_x_pos);
-
-steering_knuckle_bracket_connector_len      = (steering_bracket_rack_side_h_length  / sin(180 - steering_alpha_deg))
-  - (steering_bracket_bearing_outer_d + steering_bracket_bearing_border_w) / 2;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Ultrasonic placeholder
@@ -1407,7 +1405,7 @@ wheel_hub_d                                 = 22;
 wheel_hub_h                                 = 7.2;
 wheel_hub_inner_rim_h                       = 1.4;
 wheel_hub_inner_rim_w                       = 1.2;
-wheel_hub_screws                            = m25_hole_dia;
+wheel_hub_screw_dia                         = m25_hole_dia;
 wheel_screws_n                              = 6;
 wheel_screw_boss_w                          = 1;
 wheel_screw_boss_h                          = 2;
@@ -1473,3 +1471,60 @@ wheel_tire_fn                               = 360;
 wheel_tire_num_grooves                      = 34;
 wheel_tire_groove_thickness                 = 0.4;
 wheel_tire_groove_depth                     = 3.4;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Ackermann geometry
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Knuckle center along X
+steering_x_left_knuckle                     = -steering_panel_length / 2
+                                              + knuckle_dia / 2;
+
+// center of the left wheel
+wheel_center_offset                         = wheel_w / 2
+                                              +
+                                              (wheel_rear_shaft_protrusion_height
+                                               - (knuckle_shaft_dia / 2));
+
+// distance between centers of the front wheels
+wheels_track_width                          = (abs(steering_x_left_knuckle)
+                                               + wheel_center_offset) * 2;
+
+// wheelbase, calculated from the center of the rear axle
+
+wheelbase_effective                         = abs(-chassis_len / 2
+                                                  + n20_motor_screws_panel_len / 2
+                                                  + n20_motor_chassis_y_distance
+                                                  - steering_panel_y_pos_from_center);
+
+steering_bracket_bearing_border_w           = (steering_bracket_bearing_outer_d
+                                               - steering_bracket_bearing_d)
+                                              / 2;
+
+// The geometric angle for Ackermann's arm
+steering_angle_deg                          = atan((wheels_track_width / 2)
+                                                   / wheelbase_effective);
+
+// Rotation angle
+steering_alpha_deg                          = steering_angle_deg + 90;
+
+// Rack connector center along X
+steering_rack_connector_x_pos               = -steering_rack_teethed_length
+                                              / 2
+                                              - steering_bracket_bearing_outer_d
+                                              / 2
+                                              + steering_bracket_bearing_border_w;
+
+steering_distance_between_knuckle_and_rack  = abs(steering_x_left_knuckle)
+                                              - abs(steering_rack_connector_x_pos);
+
+steering_knuckle_bracket_connector_len      = ((steering_bracket_rack_side_h_length /
+                                                sin(180 - steering_alpha_deg))
+                                               -
+                                               (steering_bracket_bearing_outer_d
+                                                + steering_bracket_bearing_border_w)
+                                               / 2);
+
+// Local Variables:
+// c-label-minimum-indentation: 46
+// End:

@@ -63,7 +63,7 @@ module knuckle_main_connector(border_w,
                               knuckle_color_alpha=0.6) {
   union() {
     color(knuckle_color, alpha=knuckle_color_alpha) {
-      linear_extrude(height=knuckle_height, center=false) {
+      linear_extrude(height=knuckle_height, center=false, convexity=2) {
         ring_2d_outer(r=knuckle_bearing_outer_dia / 2,
                       w=border_w, fn=360);
       }
@@ -108,13 +108,14 @@ module knuckle_bent_shaft_connector(knuckle_color=cobalt_blue_metalic,
                           length=knuckle_shaft_connector_extra_len,
                           border_w=border_w,
                           connector_color=knuckle_color,
-                          children_mode="difference") {
+                          children_mode="difference",
+                          fn=360) {
           h = knuckle_shaft_connector_dia + 1;
           translate([offst, 0, knuckle_height - knuckle_shaft_screws_offset]) {
-            knuckle_screws_slots(d=knuckle_shaft_screws_dia, h=h);
-            translate([0, 0, -knuckle_shaft_screws_dia
+            knuckle_screws_slots(d=knuckle_shaft_screw_dia, h=h);
+            translate([0, 0, -knuckle_shaft_screw_dia
                        - knuckle_shaft_screws_distance]) {
-              knuckle_screws_slots(d=knuckle_shaft_screws_dia, h=h);
+              knuckle_screws_slots(d=knuckle_shaft_screw_dia, h=h);
             }
           }
         }
@@ -125,8 +126,8 @@ module knuckle_bent_shaft_connector(knuckle_color=cobalt_blue_metalic,
       translate([0,
                  y_offst,
                  knuckle_height]) {
-        mirror([assembly_knuckle_shaft_reversed ? 1 : 0, 0, 0]) {
-          rotate([0, 0, assembly_knuckle_shaft_reversed ? 0 : 180]) {
+        mirror([assembly_shaft_use_front_steering ? 1 : 0, 0, 0]) {
+          rotate([0, 0, assembly_shaft_use_front_steering ? 0 : 180]) {
             knuckle_shaft(show_wheel=show_wheel,
                           knuckle_shaft_color=knuckle_shaft_color);
           }
@@ -148,7 +149,8 @@ module knuckle_bearing_bracket_connector(border_w=border_w,
                         h=knuckle_bracket_connector_height,
                         length=steering_knuckle_bracket_connector_len,
                         border_w=border_w,
-                        connector_color=knuckle_color) {
+                        connector_color=knuckle_color,
+                        fn=360) {
         if (show_bearing) {
           translate([steering_bracket_bearing_outer_d / 2, 0,
                      -steering_bracket_bearing_flanged_height]) {

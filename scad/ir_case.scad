@@ -61,12 +61,12 @@ module ir_case_slider_holes_2d() {
   y_pos = ir_case_slider_y_pos();
   translate([ir_case_carriage_len / 2,
              y_pos, 0]) {
-    circle(r=ir_case_rail_hole_dia / 2, $fn=360);
+    circle(r=ir_case_rail_screw_dia / 2, $fn=360);
   }
   translate([ir_case_width
              - ir_case_carriage_len / 2,
              y_pos, 0]) {
-    circle(r=ir_case_rail_hole_dia / 2, $fn=360);
+    circle(r=ir_case_rail_screw_dia / 2, $fn=360);
   }
 }
 
@@ -301,8 +301,8 @@ module ir_case_assembly(show_rail=true,
 module ir_case_printable(show_rail=true,
                          show_case=true,
                          spacing=2,
-                         case_color=jet_black,
-                         rail_color=metalic_blue_1) {
+                         case_color=blue_grey_carbon,
+                         rail_color=blue_grey_carbon) {
   union() {
     if (show_case) {
       color(case_color, alpha=1) {
@@ -328,5 +328,3 @@ module ir_case_printable(show_rail=true,
 }
 
 ir_case_printable(show_case=true, show_rail=true);
-
-// ir_case_assembly(case_color=cobalt_blue_metalic, show_ir_led=false);

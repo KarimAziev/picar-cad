@@ -55,12 +55,12 @@ module knuckle_shaft(show_wheel=false,
                0,
                -knuckle_shaft_screws_offset]) {
       rotate([0, 0, 90]) {
-        knuckle_screws_slots(d=knuckle_shaft_screws_dia);
+        knuckle_screws_slots(d=knuckle_shaft_screw_dia);
         translate([0,
                    0,
-                   - knuckle_shaft_screws_dia
+                   - knuckle_shaft_screw_dia
                    - knuckle_shaft_screws_distance]) {
-          knuckle_screws_slots(d=knuckle_shaft_screws_dia);
+          knuckle_screws_slots(d=knuckle_shaft_screw_dia);
         }
       }
     }
@@ -137,7 +137,7 @@ module knuckle_bent_shaft(show_wheel=false,
   }
 }
 
-module knuckle_screws_slots(d=knuckle_shaft_screws_dia,
+module knuckle_screws_slots(d=knuckle_shaft_screw_dia,
                             h=knuckle_shaft_dia + 1,
                             fn=360) {
   translate([0, 0, -d / 2]) {

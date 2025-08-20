@@ -45,10 +45,10 @@
  */
 
 include <../parameters.scad>
+include <../colors.scad>
 use <../util.scad>
 use <../placeholders/servo.scad>
 use <../placeholders/steering_servo.scad>
-include <../colors.scad>
 use <rack_util.scad>
 use <steering_pinion.scad>
 use <bracket.scad>
@@ -195,7 +195,7 @@ module steering_rack_support(show_rack=false) {
 
     if (show_rack) {
       translate([0, 0, steering_rack_support_thickness / 2]) {
-        rotate([0, 0, assembly_steering_system_reversed ? 180 : 0]) {
+        rotate([0, 0, assembly_use_front_steering ? 180 : 0]) {
           rack_mount(show_brackets=true);
         }
       }

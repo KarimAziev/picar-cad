@@ -70,7 +70,7 @@ module ir_led() {
 module ir_led_board() {
   ear_dia = (ir_led_board_w - ir_led_board_cutout_depth) / 2 - 0.2;
   ear_rad = ear_dia / 2;
-  screw_rad = ir_led_screws_dia / 2;
+  screw_rad = ir_led_screw_dia / 2;
   union() {
     color(matte_black, alpha=1) {
       linear_extrude(height=ir_led_thickness, center=false) {

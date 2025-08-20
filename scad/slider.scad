@@ -167,16 +167,16 @@ module slider_rail(l,
 //                 center_z=true,
 //                 center_x=true,
 //                 center_y=true);
-slider_dovetail_rail(l=30,
-                     base_h=ir_case_rail_protrusion_h * 2,
-                     base_w=3,
-                     center=true,
-                     base_angle=ir_case_rail_protrusion_angle * 2,
-                     h=ir_case_rail_h * 2,
-                     w=ir_case_rail_w * 2,
-                     angle=ir_case_rail_angle * 2,
-                     r=ir_case_rail_offset_rad * 2,
-                     base_r=ir_case_rail_protrusion_offset_rad * 2);
+// slider_dovetail_rail(l=30,
+//                      base_h=ir_case_rail_protrusion_h * 2,
+//                      base_w=3,
+//                      center=true,
+//                      base_angle=ir_case_rail_protrusion_angle * 2,
+//                      h=ir_case_rail_h * 2,
+//                      w=ir_case_rail_w * 2,
+//                      angle=ir_case_rail_angle * 2,
+//                      r=ir_case_rail_offset_rad * 2,
+//                      base_r=ir_case_rail_protrusion_offset_rad * 2);
 // slider_trapezoid(w=5, h=6, angle=10, r=0.5);
 // #dovetail_rib(w=5,
 //               h=6,
@@ -186,4 +186,4 @@ slider_dovetail_rail(l=30,
 
 // slider_trapezoid(w=5, h=6, angle=10, r=0.5);
 
-// dovetail_rib(l=20, w_base=12, w_top=6, h=10, r=1, center=false);
+// dovetail_rib(w=12, h=10, angle=10, r=1, center=false);

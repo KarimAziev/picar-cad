@@ -9,17 +9,21 @@
  */
 
 include <../parameters.scad>
+use <../util.scad>
 
-module ackermann_geometry_triangle() {
-  triangle_points = [[0, 0],                // center of the rack
-                     [steering_x_left_knuckle, 0],    // center of the steering knuckle
-                     [0, steering_ackermann_y_intersection]     // tie rod convergence point
+module ackermann_geometry_triangle(triangle_color="yellowgreen", alpha=0.2) {
+  half_of_track_width = wheels_track_width / 2;
+
+  triangle_points = [[0, 0],                       // center of the rack
+                     [-half_of_track_width, 0],    // center of the wheels
+                     [0, -wheelbase_effective]     // tie rod convergence point
                      ];
 
-  linear_extrude(height=0.5, center=false) {
-    polygon(points = triangle_points);
-    mirror([1, 0, 0]) {
-      polygon(points = triangle_points);
+  color(triangle_color, alpha=alpha) {
+    linear_extrude(height=0.5, center=false) {
+      mirror_copy([1, 0, 0]) {
+        polygon(points=triangle_points);
+      }
     }
   }
 }

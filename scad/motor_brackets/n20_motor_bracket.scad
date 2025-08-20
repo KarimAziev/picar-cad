@@ -44,7 +44,7 @@ function n20_motor_screws_panel_x_offset() =
   - n20_can_cutout_w / 2 + (n20_motor_bracket_thickness / 2);
 
 module n20_motor_screw_holes() {
-  screws_rad = n20_motor_screws_dia / 2;
+  screws_rad = n20_motor_screw_dia / 2;
   for (i = [0:1]) {
     translate([i == 0
                ? -n20_motor_screws_panel_offset

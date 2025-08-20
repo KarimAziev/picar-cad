@@ -29,14 +29,15 @@ module knuckle_connector(parent_dia,
   notch_width = calc_notch_width(max(parent_dia, outer_d),
                                  min(parent_dia, outer_d));
 
+  full_len = notch_width + length + border_w;
+
   union() {
     color(connector_color) {
       linear_extrude(height=h, center=false) {
         difference() {
           translate([0, -offst, 0]) {
             difference() {
-              square([notch_width + border_w + length, outer_d], center=false);
-
+              square([full_len, outer_d], center=false);
               translate([0, offst, 0]) {
                 circle(d=parent_dia, $fn=fn);
               }
@@ -46,7 +47,7 @@ module knuckle_connector(parent_dia,
       }
     }
 
-    translate([notch_width + length + border_w, 0, 0]) {
+    translate([full_len - 0.01, 0, 0]) {
       if ($children == 0) {
         knuckle_connector_outer(h=h,
                                 outer_d=outer_d,

@@ -12,6 +12,7 @@ This repository contains the 3D model source files for a four-wheeled robot chas
 > - [About](#about)
 >   - [Overview](#overview)
 >   - [Structure](#structure)
+>   - [Ackermann Geometry](#ackermann-geometry)
 >   - [External Details](#external-details)
 >     - [Bearings](#bearings)
 >     - [Servos](#servos)
@@ -26,6 +27,7 @@ This repository contains the 3D model source files for a four-wheeled robot chas
 >       - [Steering pinion](#steering-pinion)
 >         - [For Servo gear](#for-servo-gear)
 >         - [Self-tapping screws for servo arm](#self-tapping-screws-for-servo-arm)
+>       - [Steering Knuckle](#steering-knuckle)
 >       - [Raspberry Pi](#raspberry-pi-1)
 >       - [Battery holder](#battery-holder)
 >       - [UPS module S3](#ups-module-s3)
@@ -37,6 +39,7 @@ This repository contains the 3D model source files for a four-wheeled robot chas
 >       - [Head neck](#head-neck)
 >       - [IR Case for the Infrared LED Light Board](#ir-case-for-the-infrared-led-light-board)
 >       - [Ultrasonic case for HC-SR04](#ultrasonic-case-for-hc-sr04)
+>       - [Wheel hubs](#wheel-hubs)
 
 <!-- markdown-toc end -->
 
@@ -55,7 +58,7 @@ The robot model is designed around the following core elements:
 The project is organized into several reusable modules under the scad/ directory:
 
 - `parameters.scad`: Central configuration file containing physical dimensions (units are in millimeters).
-- `printable.scad`: Contains all printable parts in one place. Different colors indicate the recommended filament type: white for PLA, dark blue for PETG CF or PLA CF (PLA is also acceptable), and black for TPU (used only for tires).
+- `printable.scad`: Contains all printable parts in one place. Different colors indicate the recommended filament type: white for PLA or PETG, dark blue for PETG CF, PETG or PLA CF (PLA is also acceptable), and black for TPU (used only for tires).
   ![Demo](./demo/picar-cad-printable-plate.png)
 - `assembly.scad`: Fully assembled view of the robot.
   ![Demo](./demo/picar-cad-assembly-view.gif)
@@ -65,9 +68,27 @@ The project is organized into several reusable modules under the scad/ directory
 - `wheels/`: Components for rear and front wheels, including hubs and tires.
 - `placeholders/`: Placeholder geometry for components such as the Raspberry Pi, servos, DC motors, battery holders, and HATs.
 
+## Ackermann Geometry
+
+The steering system implements Ackermann geometry, meaning that during a turn the inner wheel rotates through a larger angle than the outer wheel.
+
+> [!NOTE]
+> The design uses a front-steer layout-the steering arms point outward rather than inward. This is the mirror image of the textbook rear-steer configuration. The geometry is functionally equivalent and produces the correct Ackermann steering.
+
+You can also use anti-Ackermann by flipping the rack and its linkage in the opposite direction.
+
+You can switch between Ackermann and anti-Ackermann in assembly view by toggling the variable `assembly_use_front_steering` in `parameters.scad`.
+
+**Ackermann assembly**:
+
+![Demo](./demo/ackermann-assembly.png)
+
+**Anti-Ackermann assembly**:
+![Demo](./demo/anti-ackermann-assembly.png)
+
 ## External Details
 
-All of this details are just recommendations, you can use any other details, just don't forget to specify corresponding dimensions in `parameters.scad`.
+All these details are just recommendations, you can use any other details, just don't forget to specify corresponding dimensions in `parameters.scad`.
 
 ### Bearings
 
@@ -77,7 +98,7 @@ All of this details are just recommendations, you can use any other details, jus
 
 ### Servos
 
-This project supports three EMAX ES08MA II servos by default. If using different models, update the following variables in `parameters.scad`:
+This project supports three **EMAX ES08MA II** servos by default. If using different models, update the following variables in `parameters.scad`:
 
 - `steering_servo_slot_width` and `steering_servo_slot_height` for the steering servo
 - `head_neck_pan_servo_slot_width` and `head_neck_pan_servo_slot_height` for the pan servo
@@ -153,6 +174,12 @@ Self-tapping screws should also be included in your pack. The diameter may diffe
 | ---- | ----------- | --------- | ---- | --------------------------- |
 | M1.5 | 4           | 2 or more | 0    | `steering_pinion_screw_dia` |
 
+#### Steering Knuckle
+
+| Size | Length (mm) | Amount            | Nuts | Variable                  |
+| ---- | ----------- | ----------------- | ---- | ------------------------- |
+| M2.5 | 10          | 4 (2 per knuckle) | 0    | `knuckle_shaft_screw_dia` |
+
 #### Raspberry Pi
 
 The exact screw length depends on the standoffs you use. Since the default chassis thickness is 4 mm, you should use screws that are at least 6 mm long.
@@ -165,25 +192,25 @@ The exact screw length depends on the standoffs you use. Since the default chass
 
 You can attach one or two battery holders to the bottom of the chassis.
 
-| Size | Length (mm) | Amount | Nuts | Variable                        |
-| ---- | ----------- | ------ | ---- | ------------------------------- |
-| M2.5 | 8 or higher | 2      | 1    | `battery_holder_screw_hole_dia` |
+| Size | Length (mm) | Amount | Nuts | Variable                   |
+| ---- | ----------- | ------ | ---- | -------------------------- |
+| M2.5 | 8 or higher | 2      | 1    | `battery_holder_screw_dia` |
 
 #### UPS module S3
 
 You should use either 4 or 8 M3 standoffs. If you use 8 standoffs, the nuts listed below are not needed.
 
-| Size | Length (mm) | Amount | Nuts | Variable                     |
-| ---- | ----------- | ------ | ---- | ---------------------------- |
-| M3   | 8 or higher | 4      | 4    | `battery_ups_screw_hole_dia` |
+| Size | Length (mm) | Amount | Nuts | Variable                |
+| ---- | ----------- | ------ | ---- | ----------------------- |
+| M3   | 8 or higher | 4      | 4    | `battery_ups_screw_dia` |
 
 #### Motor brackets
 
 ##### For two N20 motors
 
-| Size | Length (mm) | Amount | Nuts | Variable               |
-| ---- | ----------- | ------ | ---- | ---------------------- |
-| M2.5 | 8 or higher | 4      | 4    | `n20_motor_screws_dia` |
+| Size | Length (mm) | Amount | Nuts | Variable              |
+| ---- | ----------- | ------ | ---- | --------------------- |
+| M2.5 | 8 or higher | 4      | 4    | `n20_motor_screw_dia` |
 
 ##### For two standard (yellow) motors
 
@@ -213,12 +240,12 @@ The corresponding hole for the pan servo on the chassis is controlled by `chassi
 
 #### IR Case for the Infrared LED Light Board
 
-| Size | Length (mm) | Amount | Nuts | Variable                |
-| ---- | ----------- | ------ | ---- | ----------------------- |
-| M2   | 6 or higher | 2      | 2    | `ir_case_screw_dia`     |
-| M2   | 6 or higher | 2      | 2    | `ir_case_rail_hole_dia` |
+| Size | Length (mm) | Amount | Nuts | Variable                 |
+| ---- | ----------- | ------ | ---- | ------------------------ |
+| M2   | 6 or higher | 2      | 2    | `ir_case_screw_dia`      |
+| M2   | 6 or higher | 2      | 2    | `ir_case_rail_screw_dia` |
 
-Variable `ir_case_screw_dia` defines the diameter of the screw holes that attach the case to the head; `ir_case_rail_hole_dia` defines the diameter of the rail holes that secure the IR LED to the case itself.
+Variable `ir_case_screw_dia` defines the diameter of the screw holes that attach the case to the head; `ir_case_rail_screw_dia` defines the diameter of the rail holes that secure the IR LED to the case itself.
 
 #### Ultrasonic case for HC-SR04
 
@@ -228,3 +255,11 @@ Variable `ir_case_screw_dia` defines the diameter of the screw holes that attach
 | M2.5 | 10 or higher | 2      | 2    | `front_panel_screw_dia`           |
 
 `front_panel_connector_screw_dia` defines the diameter of the screw hole on the bracket that connects to the chassis, and `front_panel_screw_dia` defines the diameter of the screw hole on the front panel that secures the ultrasonic sensor, which is placed between the front panel and the bracket.
+
+#### Wheel hubs
+
+Each wheel hub requires 6 M2.5 (or M3 for a very tight fit) screws and nuts.
+
+| Size                     | Length (mm)  | Amount               | Nuts | Variable              |
+| ------------------------ | ------------ | -------------------- | ---- | --------------------- |
+| M2.5 or M3 for tight fit | 12 or higher | 12 (6 per wheel hub) | 12   | `wheel_hub_screw_dia` |
