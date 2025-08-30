@@ -504,3 +504,25 @@ function poly_width_at_y(pts, y_target) =
   (max(intersections) - min(intersections));
 
 function reverse(list) = [for (i = [len(list)-1:-1:0]) list[i]];
+
+function non_empty(items) = items && len(items) > 0;
+
+/*
+  - size: full width/height of the square (centered at origin)
+  - chamfer: how much to cut from each corner along each axis (must be <= size/2)
+  Produces an 8-vertex chamfered square (a common octagon shape).
+*/
+module chamfered_square(size, chamfer) {
+  chamfer = is_undef(chamfer) ? size / 4 : chamfer;
+  h = size / 2;
+  c = chamfer > h ? h : chamfer;
+  pts = [[h - c,  h],
+         [h,      h - c],
+         [h,     -h + c],
+         [h - c, -h],
+         [-h + c, -h],
+         [-h,     -h + c],
+         [-h,      h - c],
+         [-h + c,  h]];
+  polygon(points = pts);
+}

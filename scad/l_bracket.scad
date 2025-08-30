@@ -50,8 +50,6 @@
 
 use <util.scad>
 
-function non_empty(items) = items && len(items) > 0;
-
 module l_bracket(size,
                  thickness=1,
                  vertical_thickness,
