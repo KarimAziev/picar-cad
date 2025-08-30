@@ -79,7 +79,7 @@ module chassis_assembly(center=false,
                         show_front_rear_panel=show_front_rear_panel,
                         show_ultrasonic=show_ultrasonic,
                         chassis_color="white") {
-  global_x_offset = chassis_width / 2 + (front_wheel_offset() * 2);
+  global_x_offset = chassis_width / 2 + (wheel_center_offset * 2);
   global_z_offset = calc_chassis_z_offset();
 
   translate([center ? 0 : global_x_offset,

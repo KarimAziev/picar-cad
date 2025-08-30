@@ -64,6 +64,7 @@ module bracket(a_len=steering_bracket_rack_side_w_length,
             }
 
             translate([-a_full_len / 2 - connector_d / 2, 0, -thickness / 2]) {
+              // steering_bracket_bearing_bearing_pin_base_h
               bearing_lower_connector();
             }
           }
@@ -148,4 +149,5 @@ module steering_brackets_printable() {
   }
 }
 
-steering_brackets_printable();
+// steering_brackets_printable();
+bracket();

@@ -108,7 +108,7 @@ module knuckle_bent_shaft_connector(knuckle_color=cobalt_blue_metalic,
                           length=knuckle_shaft_connector_extra_len,
                           border_w=border_w,
                           connector_color=knuckle_color,
-                          children_mode="difference",
+                          children_modes=["difference"],
                           fn=360) {
           h = knuckle_shaft_connector_dia + 1;
           translate([offst, 0, knuckle_height - knuckle_shaft_screws_offset]) {
@@ -137,7 +137,9 @@ module knuckle_bent_shaft_connector(knuckle_color=cobalt_blue_metalic,
   }
 }
 
-module knuckle_bearing_bracket_connector(border_w=border_w,
+module knuckle_bearing_bracket_connector(border_w=
+                                         (knuckle_dia
+                                          - knuckle_bearing_outer_dia) / 2,
                                          knuckle_color=cobalt_blue_metalic,
                                          show_bearing=false) {
 

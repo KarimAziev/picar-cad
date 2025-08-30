@@ -40,9 +40,6 @@ include <../colors.scad>
 use <../util.scad>
 use <../wheels/front_wheel.scad>
 
-function front_wheel_offset() = wheel_w / 2 +
-  (wheel_rear_shaft_protrusion_height - (knuckle_shaft_dia / 2));
-
 module knuckle_shaft(show_wheel=false,
                      knuckle_shaft_color=matte_black) {
   difference() {
@@ -122,9 +119,7 @@ module knuckle_bent_shaft(show_wheel=false,
                 }
 
                 if (show_wheel) {
-                  wheel_offst = front_wheel_offset();
-
-                  translate([0, 0, wheel_offst]) {
+                  translate([0, 0, wheel_center_offset]) {
                     front_wheel_animated();
                   }
                 }

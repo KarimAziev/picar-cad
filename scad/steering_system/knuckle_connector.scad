@@ -22,7 +22,7 @@ module knuckle_connector(parent_dia,
                          border_w,
                          fn=100,
                          connector_color=blue_grey_carbon,
-                         children_mode="union") {
+                         children_modes=[]) {
 
   offst = outer_d / 2;
 
@@ -30,6 +30,15 @@ module knuckle_connector(parent_dia,
                                  min(parent_dia, outer_d));
 
   full_len = notch_width + length + border_w;
+
+  function children_for(mode) =
+    [for (i = [0:len(children_modes) - 1])
+        if (children_modes[i] == mode) i];
+
+  union_children = children_for("union");
+  difference_children = children_for("difference");
+  union_inner_children = children_for("union_inner");
+  difference_outer_children = children_for("difference_outer");
 
   union() {
     color(connector_color) {
@@ -54,23 +63,47 @@ module knuckle_connector(parent_dia,
                                 inner_d=inner_d,
                                 x_offst=offst,
                                 connector_color=connector_color);
-      } else if (children_mode == "difference") {
-        difference() {
-          knuckle_connector_outer(h=h,
-                                  outer_d=outer_d,
-                                  inner_d=inner_d,
-                                  x_offst=offst,
-                                  connector_color=connector_color);
-          children();
-        }
       } else {
-        union() {
-          knuckle_connector_outer(h=h,
-                                  outer_d=outer_d,
-                                  inner_d=inner_d,
-                                  x_offst=offst,
-                                  connector_color=connector_color);
-          children();
+        difference() {
+          union() {
+            difference() {
+              union() {
+                knuckle_connector_outer(h=h,
+                                        outer_d=outer_d,
+                                        inner_d=inner_d,
+                                        x_offst=offst,
+                                        connector_color=connector_color);
+                if (non_empty(union_inner_children)) {
+                  for (i = union_inner_children) {
+                    if ($children > i) {
+                      children(i);
+                    }
+                  }
+                }
+              }
+              if (non_empty(difference_children)) {
+                for (i = difference_children) {
+                  if ($children > i) {
+                    children(i);
+                  }
+                }
+              }
+            }
+            if (non_empty(union_children)) {
+              for (i = union_children) {
+                if ($children > i) {
+                  children(i);
+                }
+              }
+            }
+          }
+          if (non_empty(difference_outer_children)) {
+            for (i = difference_outer_children) {
+              if ($children > i) {
+                children(i);
+              }
+            }
+          }
         }
       }
     }

@@ -75,27 +75,28 @@ module steering_system_assembly(rack_color=blue_grey_carbon,
                                 pinion_color=matte_black,
                                 panel_color="white",
                                 show_ackermann_triangle=false,
-                                show_wheels=true,
+                                show_wheels=false,
                                 show_bearing=true,
                                 show_brackets=true,
+                                show_rack=true,
                                 show_distance=false,
+                                show_kingpin_posts=true,
                                 show_pinion=true,
                                 show_servo=true) {
+
   union() {
     steering_panel(show_servo=show_servo,
                    show_pinion=show_pinion,
                    panel_color=panel_color,
-                   pinion_color=pinion_color);
+                   pinion_color=pinion_color,
+                   show_rack=show_rack,
+                   show_kingpin_posts=show_kingpin_posts,
+                   show_brackets=show_brackets,
+                   rack_color=rack_color);
     knuckle_rotation_angle = assembly_use_front_steering ? 0 : 180;
 
     if (show_distance) {
       steering_system_distance_between_rack_and_knuckle();
-    }
-
-    translate([0, 0, steering_rack_support_thickness / 2]) {
-      rotate([0, 0, assembly_use_front_steering ? 180 : 0]) {
-        rack_mount(show_brackets=show_brackets, rack_color=rack_color);
-      }
     }
 
     rotate([0, 0, knuckle_rotation_angle]) {
@@ -124,4 +125,4 @@ module steering_system_assembly(rack_color=blue_grey_carbon,
   }
 }
 
-steering_system_assembly(show_wheels=true);
+steering_system_assembly(show_wheels=false, show_kingpin_posts=false);

@@ -277,10 +277,10 @@ module servo(size,
   }
 }
 
-module servo_slot_2d(size=[steering_servo_slot_width,
-                           steering_servo_slot_height],
-                     screws_dia=steering_servo_screw_dia,
-                     screws_offset=steering_servo_screws_offset,
+module servo_slot_2d(size=[head_neck_tilt_servo_slot_width,
+                           head_neck_tilt_servo_slot_height],
+                     screws_dia=head_neck_tilt_servo_screw_dia,
+                     screws_offset=head_neck_tilt_servo_screws_offset,
                      center=true) {
 
   translate([center ? 0 : size[0] / 2, center ? 0 : size[1] / 2, 0]) {

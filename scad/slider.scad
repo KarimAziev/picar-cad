@@ -12,6 +12,8 @@ use  <util.scad>
 function slider_calc_trapezoid_top_width(width, height, angle) =
   max(0, width - 2 * height * tan(angle));
 
+function slider_carriege_full_width(w, wall) = w + (wall * 2);
+
 module slider_carriage(l=30,
                        base_h=10,
                        h,
@@ -24,7 +26,7 @@ module slider_carriage(l=30,
                        center_x=false,
                        center_y=false,
                        center_z=false) {
-  rect_w = w + (wall * 2);
+  rect_w = slider_carriege_full_width(w, wall);
   full_h = h + base_h;
 
   translate([center_x ? -rect_w / 2 : 0,
@@ -130,7 +132,7 @@ module dovetail_rib(w,
                                           height=half_of_h,
                                           angle=angle);
 
-  translate([center ? -w_top / 2 : (w - w_top) / 2,
+  translate([center ? -w / 2 : 0,
              center ? 0 : half_of_h,
              0]) {
     mirror_copy([0, 1, 0]) {
@@ -155,35 +157,62 @@ module slider_rail(l,
   }
 }
 
-// slider_carriage(l=10,
-//                 h=6,
-//                 w=5,
-//                 base_h=2,
-//                 angle=10,
-//                 use_dovetail_rib=true,
-//                 wall=2,
-//                 r=0,
-//                 trapezoid_rad=1.5,
-//                 center_z=true,
-//                 center_x=true,
-//                 center_y=true);
-// slider_dovetail_rail(l=30,
-//                      base_h=ir_case_rail_protrusion_h * 2,
-//                      base_w=3,
+module slider_show_case(length=10,
+                        h=5,
+                        w=5,
+                        base_h=5,
+                        wall=2,
+                        angle=2,
+                        r=0,
+                        trapezoid_rad=0,
+                        spacing=4) {
+
+  carriege_w = slider_carriege_full_width(w, wall);
+  for (i = [0:1]) {
+    let (use_dovetail_rib = i == 0,
+         txt = use_dovetail_rib ? "Dovetail Carriege" : "Carriege",
+         x_offset = (carriege_w + spacing) * i) {
+      translate([x_offset, 0, 0]) {
+        text(txt, size=1);
+        slider_carriage(l=length,
+                        h=h,
+                        w=w,
+                        base_h=base_h,
+                        angle=angle,
+                        use_dovetail_rib=use_dovetail_rib,
+                        wall=wall,
+                        r=r,
+                        trapezoid_rad=trapezoid_rad,
+                        center_z=false,
+                        center_x=false,
+                        center_y=false);
+      }
+    }
+  }
+}
+
+// slider_dovetail_rail(l=steering_panel_rail_len,
+//                      base_h=steering_panel_rail_height / 2,
+//                      base_w=steering_panel_rail_thickness,
 //                      center=true,
-//                      base_angle=ir_case_rail_protrusion_angle * 2,
-//                      h=ir_case_rail_h * 2,
-//                      w=ir_case_rail_w * 2,
-//                      angle=ir_case_rail_angle * 2,
-//                      r=ir_case_rail_offset_rad * 2,
-//                      base_r=ir_case_rail_protrusion_offset_rad * 2);
+//                      base_angle=10,
+//                      h=steering_panel_rail_height / 2,
+//                      w=steering_panel_rail_thickness,
+//                      angle=10,
+//                      r=0,
+//                      base_r=0);
 // slider_trapezoid(w=5, h=6, angle=10, r=0.5);
-// #dovetail_rib(w=5,
-//               h=6,
-//               angle=10,
-//               r=0.5,
-//               center=true);
+
+// dovetail_rib(w=5,
+//              h=6,
+//              angle=5,
+//              r=0,
+//              center=true);
 
 // slider_trapezoid(w=5, h=6, angle=10, r=0.5);
+
+// slider_rail(w=5, l=10, h=5, r=0, angle=10);
 
 // dovetail_rib(w=12, h=10, angle=10, r=1, center=false);
+
+slider_show_case();

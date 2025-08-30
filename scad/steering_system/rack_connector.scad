@@ -38,37 +38,11 @@ function rack_connector_stopper_w() =
 
 module rack_connector() {
   stopper_w = rack_connector_stopper_w();
-
-  extra_h = 1;
   half_of_rw = steering_rack_width / 2;
-  stopper_h = steering_rack_pin_base_height
-    + steering_bracket_bearing_stopper_height
-    + steering_bracket_linkage_thickness
-    + extra_h;
-
-  stopper_len = steering_bracket_rack_side_h_length
-    + steering_bracket_bearing_outer_d / 2
-    + half_of_rw;
 
   union() {
     bearing_lower_connector(lower_h=steering_rack_pin_base_height);
     translate([steering_bracket_linkage_width / 2 + 0.2, half_of_rw, 0]) {
-      points = [[-steering_rack_pin_base_height, 0],
-                [-steering_rack_pin_base_height,
-                 -stopper_len * 0.75],
-                [-stopper_h, -stopper_len * 0.8],
-                [-stopper_h, -stopper_len],
-                [0, -stopper_len],
-                [0, 0]];
-
-      rotate([0, 90, 0]) {
-
-        linear_extrude(height=stopper_w) {
-          fillet(r=0.5) {
-            polygon(points = points);
-          }
-        }
-      }
       linear_extrude(height=steering_rack_pin_base_height, center=false) {
         translate([0, -steering_rack_width, 0]) {
           square([stopper_w * 2, steering_rack_width]);
@@ -90,7 +64,8 @@ module rack_connector_assembly(bracket_color=blue_grey_carbon,
 
   rotate([0, 0, rotation_dir * angle]) {
     translate([-steering_bracket_rack_side_w_length / 2,
-               -steering_bracket_rack_side_h_length - steering_bracket_bearing_outer_d / 2,
+               -steering_bracket_rack_side_h_length
+               - steering_bracket_bearing_outer_d / 2,
                steering_rack_pin_base_height]) {
       bracket(show_bearing=true, bracket_color=bracket_color);
     }

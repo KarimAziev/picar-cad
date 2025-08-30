@@ -923,7 +923,7 @@ knuckle_bearing_outer_dia                   = 11.0;
 
 // The inside diameter (plus tolerance) of the 685-Z bearing (5x11x5).
 // They are placed on the each side of the steering panel
-knuckle_bearing_inner_dia                   = 5.16;
+knuckle_bearing_inner_dia                   = 5.20;
 
 // The height of the 685-Z bearing placeholder used in the knuckle assembly
 knuckle_bearing_height                      = 5;
@@ -993,7 +993,11 @@ knuckle_pin_stopper_height                  = 1;
 
 // The height (thickness) of the knuckle connector with the 685-Z bearing that
 // is connected to the bracket
-knuckle_bracket_connector_height            = 7;
+knuckle_bracket_connector_height            = 6;
+
+knuckle_ball_cutted_len                     = 1;
+
+knuckle_ball_joint_screw_dia                = m2_hole_dia;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // N20 motor dimensions
@@ -1185,8 +1189,8 @@ servo_horn_holes_n                          = 2;
 // as needed.
 steering_servo_extra_width                  = 4;
 steering_servo_extra_h                      = 0;
-steering_servo_slot_width                   = 23.6;
-steering_servo_slot_height                  = 12;
+steering_servo_slot_width                   = 12;
+steering_servo_slot_height                  = 23.6;
 steering_servo_size                         = [23.48, 11.7, 20.3];
 
 // offset between the servo slot and the fastening screws
@@ -1222,18 +1226,6 @@ steering_servo_cutted_len                   = 3;
 
 steering_panel_center_screws_offsets        = [5.5, 12.0];
 steering_panel_center_screw_dia             = m2_hole_dia;
-
-// The length of the two rails in the center of the steering panel that holds
-// the rack
-steering_panel_rail_len                     = 10;
-
-// The height of the two rails in the center of the steering panel that holds
-// the rack
-steering_panel_rail_height                  = 8;
-
-// The thickness of the two rails in the center of the steering panel that holds
-// the rack
-steering_panel_rail_thickness               = 1.5;
 
 // The length of the panel that holds the rack and the pins for the steering
 // knuckles at each side
@@ -1272,13 +1264,15 @@ steering_panel_hinge_screw_distance         = 2;
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Length of the toothed section of the steering rack (excluding side connectors)
-steering_rack_teethed_length                = 59.0;
+steering_rack_teethed_length                = 53.0;
 
 // The width of the steering rack
 steering_rack_width                         = 6;
 
+steering_rack_z_distance_from_panel         = 1;
+
 // The height of the steering rack, excluding the height of the teeth
-steering_rack_base_height                   = 9.0;
+steering_rack_base_height                   = 7.4;
 
 // The height of the cylindrical pedestals on each side of the rack onto which
 // the bearing shaft that connects with the bracket’s bearing is placed
@@ -1315,11 +1309,11 @@ steering_bracket_bearing_stopper_height     = 1;
 
 // The height of the shaft on the L-bracket connector that is inserted into the
 // 685-Z bearing on the knuckle
-steering_bracket_bearing_pin_height         = 6;
+steering_bracket_bearing_pin_height         = 5;
 
 // The height of the cylindrical pedestal on which the bearing shaft is placed
 // on the bracket
-steering_bracket_bearing_bearing_pin_base_h = 4;
+steering_bracket_bearing_bearing_pin_base_h = 5;
 
 // The outside diameter of the flanged bearing 693 ZZ / 2Z (3x8x4) that is
 // inserted into the bearing connector
@@ -1345,13 +1339,53 @@ steering_breacket_bearing_flanged_width     = 0.5;
 steering_bracket_rack_side_h_length         = 11.30;
 
 // The length of the L-bracket part that is connected to the knuckle connector
-steering_bracket_rack_side_w_length         = 10.1;
+// steering_bracket_rack_side_w_length         = 10.1;
+steering_bracket_rack_side_w_length         = 12.5;
 
 // The width of the L-bracket connector
 steering_bracket_linkage_width              = 5;
 
 // The thickness of the L-bracket connector
-steering_bracket_linkage_thickness          = 4;
+steering_bracket_linkage_thickness          = steering_bracket_bearing_bearing_pin_base_h;
+
+// The length of the rail in the center of the steering panel that holds the rack
+steering_panel_rail_len                     = steering_panel_length
+                                              - knuckle_dia * 2;
+
+steering_panel_rail_rad                     = 0.5;
+
+// The height of the rails at the center of the steering panel that holds the rack
+steering_panel_rail_height                  = min(4,
+                                                  steering_rack_base_height - 1);
+
+// The tolerance to add to the hole for the rail
+steering_rack_rail_tolerance                = 0.65; // 0.57
+
+// The thickness of the rail in the center of the steering panel that holds the rack
+steering_panel_rail_thickness               = 2.8;
+
+// The angle of the rail's dovetail rib in the center of the steering panel that holds the rack
+steering_panel_rail_angle                   = 30;
+
+steering_rail_edge_land                     = 0.45;
+
+steering_rail_relief_depth                  = 0.12; // 0.12…0.15
+
+steering_rack_anti_tilt_key_thickness       = 0.8;
+steering_rack_anti_tilt_rack_x_offset       = -0.3;
+steering_rack_anti_tilt_key_height          = steering_rack_z_distance_from_panel + 0.1;
+
+steering_kingpin_post_screw_dia             = m25_hole_dia;
+steering_kingpin_post_border_w              = 2;
+
+steering_servo_screw_distance_from_top      = 1;
+steering_servo_mount_width                  = 23.5;
+steering_servo_mount_height                 = 39.5;
+steering_servo_mount_length                 = 5.5;
+steering_servo_mount_connector_length       = 2.5;
+steering_servo_mount_connector_thickness    = steering_rack_support_thickness  * 0.65;
+steering_servo_mount_connector_screw_dia    = m3_hole_dia;
+steering_servo_mount_connector_screw_x      = 3;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Ultrasonic placeholder
@@ -1497,14 +1531,14 @@ steering_x_left_knuckle                     = -steering_panel_length / 2
                                               + knuckle_dia / 2;
 
 // center of the left wheel
-wheel_center_offset                         = wheel_w / 2
-                                              +
+wheel_center_offset                         = wheel_w / 2 +
                                               (wheel_rear_shaft_protrusion_height
                                                - (knuckle_shaft_dia / 2));
 
 // distance between centers of the front wheels
-wheels_track_width                          = (abs(steering_x_left_knuckle)
-                                               + wheel_center_offset) * 2;
+wheels_track_width                          = steering_panel_length
+                                              + (wheel_center_offset * 2)
+                                              - knuckle_shaft_dia / 2;
 
 // wheelbase, calculated from the center of the rear axle
 
@@ -1520,6 +1554,10 @@ steering_bracket_bearing_border_w           = (steering_bracket_bearing_outer_d
 // The geometric angle for Ackermann's arm
 steering_angle_deg                          = atan((wheels_track_width / 2)
                                                    / wheelbase_effective);
+echo("wheels_track_width",
+     wheels_track_width, "wheel_center_offset",
+     wheel_center_offset,
+     "steering_angle_deg", steering_angle_deg);
 
 // Rotation angle
 steering_alpha_deg                          = steering_angle_deg + 90;
@@ -1539,7 +1577,7 @@ steering_knuckle_bracket_connector_len      = ((steering_bracket_rack_side_h_len
                                                -
                                                (steering_bracket_bearing_outer_d
                                                 + steering_bracket_bearing_border_w)
-                                               / 2);
+                                               / 2) + 0.4;
 
 // Local Variables:
 // c-label-minimum-indentation: 46

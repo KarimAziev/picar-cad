@@ -15,11 +15,35 @@ use <bracket.scad>
 use <../util.scad>
 use <steering_pinion.scad>
 use <../gear.scad>
+use <../slider.scad>
+use <steering_rail.scad>
 
 module shifted_tooth(points, height) {
   translate([0, -min(points[0]), 0]) {
-    linear_extrude(height = height, center = false) {
+    linear_extrude(height=height, center=false) {
       polygon(points);
+    }
+  }
+}
+
+module steering_rack_base(length=steering_rack_teethed_length,
+                          width=steering_rack_width,
+                          base_height=steering_rack_base_height,
+                          rail_h=steering_panel_rail_height,
+                          angle=steering_panel_rail_angle,
+                          thickness=steering_panel_rail_thickness) {
+  wall = (width - thickness) / 2;
+  base_h = base_height - rail_h;
+  translate([0, 0, base_height]) {
+    rotate([-90, 0, 90]) {
+      slider_carriage(l=length,
+                      w=thickness,
+                      base_h=base_h,
+                      h=rail_h,
+                      wall=wall,
+                      angle=angle,
+                      center_x=true,
+                      center_z=true);
     }
   }
 }
@@ -44,6 +68,7 @@ module steering_rack(length=steering_rack_teethed_length,
     - (circular_pitch / 2 - backlash / 2) / (2 * r_pitch) / PI * 180;
 
   total_teeth = round(length / circular_pitch);
+
   tooth_points = concat([polar_to_cartesian(root_rad, -180 / total_teeth)],
                         [for (f = [0:5])
                             involute_point_at_fraction(f / 5, root_rad,
@@ -102,8 +127,10 @@ module steering_rack(length=steering_rack_teethed_length,
 
       mirror_copy([1, 0, 0]) {
         translate(offst) {
+
           if (show_brackets) {
-            rack_connector_assembly(bracket_color=bracket_color,
+            rack_connector_assembly(rack_color=rack_color,
+                                    bracket_color=bracket_color,
                                     rotation_dir=-1);
           } else {
             color(rack_color) {
@@ -113,22 +140,21 @@ module steering_rack(length=steering_rack_teethed_length,
         }
       }
     }
-    mirror_copy([1, 0, 0]) {
+
+    translate([0, 0, -steering_rack_z_distance_from_panel]) {
+      steering_rail_relief_cutter();
+    }
+
+    // A small hole at the center of the rack to visually indicate proper placement.
+    mirror_copy([0, 1, 0]) {
       hole_depth = 0.8;
       hole_w = 0.5;
       hole_h = min(base_height * 0.8, 3);
-      translate([steering_panel_rail_len / 2,
-                 steering_rack_width / 2 - hole_depth / 2,
-                 min(1, base_height)]) {
+      translate([0,
+                 -steering_rack_width / 2 + hole_depth / 2 - 0.1,
+                 0]) {
         linear_extrude(height=hole_h, center=false) {
-          square([hole_w, hole_depth], center=false);
-        }
-      }
-      translate([steering_panel_rail_len / 2,
-                 -steering_rack_width / 2 - hole_depth / 2,
-                 min(1, base_height)]) {
-        linear_extrude(height=hole_h, center=false) {
-          square([hole_w, hole_depth], center=false);
+          square([hole_w, hole_depth], center=true);
         }
       }
     }
