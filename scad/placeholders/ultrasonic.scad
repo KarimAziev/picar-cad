@@ -104,7 +104,7 @@ module ultrasonic_transducer() {
 
   union() {
     difference() {
-      color(metalic_silver_1, alpha=1) {
+      color(metalic_silver_5, alpha=1) {
         cylinder(h=ultrasonic_transducer_h,
                  r=transducer_rad,
                  center=true,

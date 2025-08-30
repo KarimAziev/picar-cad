@@ -89,8 +89,8 @@ camera_h                                    = 24;
 camera_thickness                            = 1.05;
 camera_lens_items                           = [[8.05, 8.05, 1.0, matte_black, "cube"],
                                                [11.05, 11.05, 1.5, matte_black, "cube"],
-                                               [11.05, 11.05, 2.9, "#e5e0d5", "cube"],
-                                               [11.05, 11.05, 0.5, "#dbd6cb", "octagon"],
+                                               [11.05, 11.05, 2.9, metalic_silver_7, "cube"],
+                                               [11.05, 11.05, 0.5, metalic_silver_8, "octagon"],
                                                [7.15, 0, 3.03, matte_black,
                                                 "circle", 30],
                                                [3.03, 0, 0.1, cobalt_blue_metalic,
@@ -306,11 +306,11 @@ head_camera_screw_y_offset_from_camera_hole = 2.0;
 head_cameras                                = [[head_camera_module_3_size,
                                                 1,
                                                 head_camera_module_3_screw_holes_size,
-                                                "#1da760"],
+                                                green_2],
                                                [head_camera_module_3_size,
                                                 head_camera_screw_y_offset_from_camera_hole,
                                                 head_camera_module_3_screw_holes_size,
-                                                "#2a353b"]];
+                                                noir_1]];
 
 // Vertical distance between camera modules (center-to-center spacing).
 // If more than one camera is present, a fixed spacing of 2 mm is used.

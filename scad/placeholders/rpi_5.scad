@@ -39,7 +39,7 @@ module ethernet(size=rpi_ethernet_jack_size) {
   z_offst = size[2] - hole_z - 1;
   union() {
     difference() {
-      color(metalic_silver_1) {
+      color(metalic_yellow_silver_2) {
         linear_extrude(height=size[2], center=false) {
           rounded_rect(size=size, r=min(size[1], size[2]) * 0.1, center=false);
         }
@@ -73,7 +73,7 @@ module usb(size=rpi_usb_size) {
 
   union() {
     difference() {
-      color(metalic_silver_1) {
+      color(metalic_yellow_silver_2) {
         linear_extrude(height=size[2], center=false) {
           rounded_rect(size=size, r=1.5, center=false);
         }
@@ -139,7 +139,7 @@ module bcm_processor_base(size=rpi_processor_size) {
 
 module bcm_processor(size=rpi_processor_size) {
 
-  color(metalic_yellow_silver, alpha=1) {
+  color(metalic_yellow_silver_2, alpha=1) {
     if (rpi_model_detailed) {
       offset_3d(r=0.8, size=rpi_processor_size[1]) {
         union() {
@@ -390,7 +390,7 @@ module rpi_5(show_standoffs=false,
       }
     }
     translate([0, 0, rpi_thickness]) {
-      color(yellow_1, alpha=1) {
+      color(yellow_3, alpha=1) {
         linear_extrude(height=0.1, center=false) {
           for (x_ind = [0, 1])
             for (y_ind = [0, 1]) {
@@ -398,7 +398,9 @@ module rpi_5(show_standoffs=false,
               y_pos = y_ind * rpi_screws_size[1];
               translate([x_pos + m25_hole_dia + hole_offst,
                          y_pos + m25_hole_dia + hole_offst]) {
-                ring_2d(r=m25_hole_dia / 2, w = 1, outer=true, fn=100);
+                ring_2d(r=m25_hole_dia / 2, w=1,
+                        outer=true,
+                        fn=40);
               }
             }
         }
