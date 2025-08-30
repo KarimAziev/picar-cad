@@ -89,7 +89,8 @@ camera_h                                    = 24;
 camera_thickness                            = 1.05;
 camera_lens_items                           = [[8.05, 8.05, 1.0, matte_black, "cube"],
                                                [11.05, 11.05, 1.5, matte_black, "cube"],
-                                               [11.05, 11.05, 3.4, metalic_silver_2, "cube"],
+                                               [11.05, 11.05, 2.9, "#e5e0d5", "cube"],
+                                               [11.05, 11.05, 0.5, "#dbd6cb", "octagon"],
                                                [7.15, 0, 3.03, matte_black,
                                                 "circle", 30],
                                                [3.03, 0, 0.1, cobalt_blue_metalic,
@@ -101,9 +102,20 @@ camera_lens_connectors                      = [[6.0, 3.2, 1.5, matte_black, "cub
 
 camera_lens_distance_from_top               = 9;
 camera_screw_hole_dia                       = 2.0;
-camera_offset_rad                           = 1.0;
+camera_offset_rad                           = 2.0;
 camera_holes_size                           = [21, 12.5];
 camera_holes_distance_from_top              = 1;
+
+camera_module_ffc_zif_len                   = 21;
+camera_module_ffc_zif_inner_len             = 19.7;
+camera_module_ffc_zif_thickness             = 2.2;
+camera_module_ffc_inner_thickness           = 1.8;
+camera_module_ffc_zif_base_h                = 1.2;
+camera_module_ffc_zif_h                     = 3.2;
+camera_module_socket_base_h                 = 3.3;
+camera_module_socket_upper_h                = 1.4;
+camera_module_socket_thickness              = 2.7;
+camera_module_socket_y_offset               = 1;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Chassis dimensions
@@ -286,21 +298,25 @@ head_camera_screw_y_offset_from_camera_hole = 2.0;
 // Each item is an array of:
 // [ [lens_hole_width, lens_hole_height],
 //   vertical_offset_for_screw_holes_relative_to_camera_hole,
-//   [screw_hole_region_width, screw_hole_region_height] ]
+//   [screw_hole_region_width, screw_hole_region_height],
+//   optional_color_for_assembly_view
+//  ]
 //
 // To configure a single camera, remove one of the internal elements.
 head_cameras                                = [[head_camera_module_3_size,
-                                                head_camera_screw_y_offset_from_camera_hole,
-                                                head_camera_module_3_screw_holes_size],
+                                                1,
+                                                head_camera_module_3_screw_holes_size,
+                                                "#1da760"],
                                                [head_camera_module_3_size,
                                                 head_camera_screw_y_offset_from_camera_hole,
-                                                head_camera_module_3_screw_holes_size]];
+                                                head_camera_module_3_screw_holes_size,
+                                                "#2a353b"]];
 
 // Vertical distance between camera modules (center-to-center spacing).
 // If more than one camera is present, a fixed spacing of 2 mm is used.
 // If only one camera is mounted, use half of its height for centering.
 head_cameras_y_distance                     = len(head_cameras) > 1
-                                              ? 2
+                                              ? 2.0
                                               : (head_cameras[0][0][1] / 2);
 
 // Width of the front face plate where the camera modules are mounted.

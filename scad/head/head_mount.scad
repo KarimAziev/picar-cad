@@ -23,88 +23,102 @@ use <../util.scad>
 use <../ir_case.scad>
 use <../placeholders/camera.scad>
 
-tilt_angle = atan2((-head_side_panel_curve_end)
-                   - (-head_side_panel_bottom),
-                   head_side_panel_curve_start
-                   - head_side_panel_width);
+tilt_angle        = atan2((-head_side_panel_curve_end)
+                          - (-head_side_panel_bottom),
+                          head_side_panel_curve_start
+                          - head_side_panel_width);
+
+side_panel_points = [[0, -head_side_panel_top],
+                     [head_side_panel_curve_start, -
+                      head_side_panel_notch_y],
+                     [head_side_panel_width, -head_side_panel_notch_y],
+                     [head_side_panel_width, -head_side_panel_bottom],
+                     [head_side_panel_curve_start,
+                      -head_side_panel_curve_end],
+                     [0, -head_side_panel_curve_end]];
 
 function side_panel_servo_center() =
   [head_side_panel_width / 2.0, -head_side_panel_height / 2.0];
 
+function camera_final_y(i) =
+  (i == 0 ? 0 : sum([for (j = [0 : i - 1]) head_cameras[j][0][1]]))
+  + i * head_cameras_y_distance;
+
+module head_front_camera(spec,
+                         i,
+                         do_cut=true,
+                         do_place_camera=false) {
+  hole_size       = spec[0];
+  screw_hole_y    = spec[1];
+  screw_hole_size = spec[2];
+  final_y         = camera_final_y(i);
+
+  translate([-hole_size[0] / 2, final_y, 0]) {
+    if (do_cut) {
+      square(hole_size, center=false);
+
+      translate([hole_size[0] / 2,
+                 screw_hole_size[1] / 2 + head_camera_screw_dia / 2
+                 + screw_hole_y,
+                 0]) {
+        four_corner_holes_2d(size = screw_hole_size, center = true,
+                             hole_dia = head_camera_screw_dia, fn_val = 360);
+      }
+    }
+
+    if (do_place_camera) {
+      board_color = is_undef(spec[3]) ? green_2 : spec[3];
+      translate([hole_size[0] / 2,
+                 screw_hole_size[1] / 2 + head_camera_screw_dia / 2
+                 + screw_hole_y
+                 + camera_h / 2
+                 - camera_holes_size[1] / 2
+                 - camera_screw_hole_dia / 2
+                 - camera_holes_distance_from_top,
+                 0]) {
+        rotate([0, 0, 180]) {
+          camera_module(board_color=board_color);
+        }
+      }
+    }
+  }
+}
+
 module head_front_plate(show_camera=false, head_color="white") {
+  cameras_len = len(head_cameras);
+  single_camera_y_shift = cameras_len > 1
+    ? 0
+    : head_cameras_y_distance / 2;
+
+  // plate cutouts
   translate([0, 0, -head_plate_thickness]) {
-    color(head_color, alpha=1) {
-      linear_extrude(height = head_plate_thickness, center=false) {
+    color(head_color, alpha = 1) {
+      linear_extrude(height = head_plate_thickness, center = false) {
         difference() {
-          translate([0, head_plate_height / 2, 0]) {
-            square([head_plate_width, head_plate_height], center=true);
-          }
+          translate([0, head_plate_height / 2, 0])
+            square([head_plate_width, head_plate_height], center = true);
 
-          translate([0, len(head_cameras) > 1
-                     ? 0
-                     : head_cameras_y_distance / 2, 0]) {
-            for (i = [0 : len(head_cameras)-1]) {
-              let (spec               = head_cameras[i],
-                   hole_size          = spec[0],
-                   screw_hole_y       = spec[1],
-                   screw_hole_size    = spec[2],
-                   prev_heights       = [for (j = [0 : i-1])
-                       head_cameras[j][0][1]],
-                   prev_y_holes       = [for (j = [0 : i])
-                       head_cameras[j][2]],
-                   prev_height        = i == 0 ? 0 : sum(prev_heights),
-                   y                  = prev_height,
-                   final_y            = y + (i * head_cameras_y_distance)) {
-                translate([-hole_size[0] / 2, final_y, 0]) {
-                  square(hole_size, center = false);
-
-                  translate([hole_size[0] / 2, screw_hole_size[1] / 2
-                             + head_camera_screw_dia / 2
-                             + screw_hole_y, 0]) {
-                    four_corner_holes_2d(size=screw_hole_size, center = true,
-                                         hole_dia=head_camera_screw_dia,
-                                         fn_val=160);
-                  }
-                }
-              }
-            }
+          translate([0, single_camera_y_shift, 0]) {
+            for (i = [0 : cameras_len - 1])
+              head_front_camera(spec=head_cameras[i],
+                                i=i,
+                                do_cut=true,
+                                do_place_camera=false,);
           }
         }
       }
     }
   }
-  translate([0, 0, -head_plate_thickness
-             - camera_thickness]) {
-    if (show_camera && len(head_cameras) > 0) {
-      translate([0, len(head_cameras) > 1
-                 ? 0
-                 : head_cameras_y_distance / 2, 0]) {
-        for (i = [0 : len(head_cameras) - 1]) {
-          let (spec               = head_cameras[i],
-               hole_size          = spec[0],
-               screw_hole_y       = spec[1],
-               screw_hole_size    = spec[2],
-               prev_heights       = [for (j = [0 : i-1])
-                   head_cameras[j][0][1]],
-               prev_y_holes       = [for (j = [0 : i])
-                   head_cameras[j][2]],
-               prev_height        = i == 0 ? 0 : sum(prev_heights),
-               y                  = prev_height,
-               final_y            = y + (i * head_cameras_y_distance)) {
-            translate([-hole_size[0] / 2, final_y, 0]) {
-              translate([hole_size[0] / 2, screw_hole_size[1] / 2
-                         + head_camera_screw_dia / 2
-                         + screw_hole_y + camera_h/2 -
-                         camera_holes_size[1]/2
-                         - camera_screw_hole_dia / 2 -
-                         camera_holes_distance_from_top, 0]) {
-                rotate([0, 0, 180]) {
-                  camera_module();
-                }
-              }
-            }
-          }
-        }
+
+  // optional camera modules below the plate
+  translate([0, 0, -head_plate_thickness - camera_thickness]) {
+    if (show_camera && cameras_len > 0) {
+      translate([0, single_camera_y_shift, 0]) {
+        for (i = [0 : cameras_len - 1])
+          head_front_camera(spec=head_cameras[i],
+                            i=i,
+                            do_cut=false,
+                            do_place_camera=true);
       }
     }
   }
@@ -253,14 +267,7 @@ module side_panel_2d() {
   difference() {
     translate([0, head_side_panel_curve_end, 0]) {
       difference() {
-        polygon(points = [[0, -head_side_panel_top],
-                          [head_side_panel_curve_start, -
-                           head_side_panel_notch_y],
-                          [head_side_panel_width, -head_side_panel_notch_y],
-                          [head_side_panel_width, -head_side_panel_bottom],
-                          [head_side_panel_curve_start,
-                           -head_side_panel_curve_end],
-                          [0, -head_side_panel_curve_end]]);
+        polygon(points=side_panel_points);
         side_panel_servo_slots();
         side_panel_extra_slots_2d();
       }
@@ -271,7 +278,7 @@ module side_panel_2d() {
 }
 
 module side_panel_3d() {
-  linear_extrude(height = head_plate_thickness) {
+  linear_extrude(height=head_plate_thickness) {
     side_panel_2d();
   }
 }
@@ -389,4 +396,5 @@ module head_mount(head_color="white",
   }
 }
 
-head_mount(show_ir_case=false, show_camera=false);
+head_mount(show_ir_case=false,
+           show_camera=false);
