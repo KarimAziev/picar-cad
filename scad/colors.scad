@@ -10,11 +10,13 @@ metalic_silver_1      = "#C0C0C0";
 metalic_silver_2      = "#999B9B";
 metalic_silver_3      = "#7D8488";
 metalic_silver_4      = "#5F6367";
+metalic_silver_5      = "#dfdfdf";
 cobalt_blue_metalic   = "#39699E";
 metalic_grey          = "#808080";
 metalic_yellow_silver = "#D4D4C8";
 
 yellow_1              = "#ffde1a";
+yellow_2              = "#cdc069";
 metalic_yellow_1      = "#FDCC0D";
 metalic_gold_2        = "#C8A145";
 
@@ -24,7 +26,10 @@ dark_gold_1           = "#B59410";
 dark_gold_2           = "#b8860b";
 
 green_1               = "#6CC04A";
+green_2               = "#1da760";
 
 ir_1                  = "#f7d7ff"; // infrared
 
-medium_blue_1         = "#1E73B8";
+medium_blue_1         = "#0a4d8d";
+
+brown_1               = "#977354";
