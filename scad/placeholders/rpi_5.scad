@@ -362,7 +362,7 @@ module rpi_5(show_standoffs=false,
              standoff_lower_height=4) {
   hole_offst = 0.4;
   union() {
-    color("green", alpha=1) {
+    color(green_3, alpha=1) {
       linear_extrude(height=rpi_thickness, center=false) {
         difference() {
           rounded_rect([rpi_width, rpi_len], r=rpi_offset_rad);
