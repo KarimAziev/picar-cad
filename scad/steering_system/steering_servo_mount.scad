@@ -121,7 +121,7 @@ module steering_servo_mount(show_servo=false,
               rotate([0, 0, $t == 0 ? 12.0 : 7 + pinion_angle(t=$t)]) {
                 translate([0, 0, 2]) {
                   color(pinion_color, alpha=1) {
-                    steering_pinion(alpha=0.5);
+                    steering_pinion();
                   }
                 }
               }
