@@ -5,7 +5,7 @@
  * for a robot’s head using two servo motors (a pan servo and a tilt servo).
  *
  * The bracket is compatible with the robot head designed for dual Raspberry Pi Camera
- * Module 2 units and allows integration of the robot head via the tilt servo mount.
+ * Module 3 units and allows integration of the robot head via the tilt servo mount.
  *
  * Conceptually, this bracket combines:
  * - A pan servo on the horizontal base that rotates the entire structure horizontally.
