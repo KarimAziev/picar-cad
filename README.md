@@ -3,7 +3,7 @@
 This repository contains the 3D model source files for a four-wheeled robot chassis and steering system, written entirely in [OpenSCAD](https://openscad.org/). The design supports 3D printing and does not rely on external libraries.
 
 ![Demo](./demo/picar-cad-demo-view.png)
-![Photo](./demo/picar-cad-real-photo.jpg)
+![Photo](./demo/picar-cad-live.jpg)
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 
@@ -11,6 +11,7 @@ This repository contains the 3D model source files for a four-wheeled robot chas
 
 > - [About](#about)
 >   - [Overview](#overview)
+>   - [Ackermann Geometry](#ackermann-geometry)
 >   - [Structure](#structure)
 >   - [External Details](#external-details)
 >     - [Bearings](#bearings)
@@ -46,11 +47,22 @@ This repository contains the 3D model source files for a four-wheeled robot chas
 
 The robot model is designed around the following core elements:
 
-- **Ackermann Steering**: Front wheels are steered via a pinion and rack assembly driven by a standard servo.
+- **Ackermann Steering**: This design implements Ackermann steering and computes the steering radii from the robot parameters (not just by making the inner wheel turn more). The model calculates the trapezoid geometry automatically so you usually don’t need to tweak Ackermann-specific variables by hand.
 - **Rear-Wheel Drive**: Two individual motors drive the rear wheels. Both standard yellow DC motors and N20-type motors are supported.
 - **Modular Head Mount**: The head mount is designed to accommodate two Raspberry Pi Camera Module 3 or more sensors (e.g., day/night configuration).
 - **Extendable Power Tiers**: Side and center slots allow for independent modules for power management: servo driver HAT, motor driver HAT, UPS for Raspberry Pi 5, etc.
 - **Raspberry Pi**: The chassis includes placements and screw holes for the Raspberry Pi 5 and multiple 18650 battery holders.
+
+## Ackermann Geometry
+
+![Ackermann steering view](./demo/picar-cad-ackermann.jpg)
+
+Ackermann steering is implemented with a rack-and-pinion mechanism that drives a single L-link (`rack_link`) mounted to one knuckle. That knuckle rotates when the rack moves, the opposite knuckle follows through a tie rod. The knuckles and tie rod form the Ackermann trapezoid, so the inside wheel turns more than the outside wheel.
+
+> [!NOTE]
+> Install the `rack_link` on only one side and on only one of the knuckles - it doesn't matter which. Movement of the rack will cause that "leading" knuckle to rotate. The leading knuckle is then connected to the second, "driven" knuckle via a tie rod.
+
+Most parameters live in `scad/parameters.scad`, but the actual Ackermann geometry (angles and the required tie-rod top width) is calculated automatically from core robot dimensions such as chassis length, steering panel placement and knuckle geometry. Because of that, you will rarely need to edit Ackermann-specific variables manually - especially `steering_angle_deg`, which is derived from the layout.
 
 ## Structure
 
