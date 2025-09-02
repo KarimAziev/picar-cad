@@ -52,7 +52,7 @@ module ultrasonic() {
 
     translate([0, 0, ultrasonic_thickness]) {
       linear_extrude(height=0.1, center=false) {
-        color(metalic_silver_1, alpha=1) {
+        color(metallic_silver_1, alpha=1) {
           for (spec = texts) {
             let (txt = spec[0],
                  txt_x = spec[1]) {
@@ -104,7 +104,7 @@ module ultrasonic_transducer() {
 
   union() {
     difference() {
-      color(metalic_silver_5, alpha=1) {
+      color(metallic_silver_5, alpha=1) {
         cylinder(h=ultrasonic_transducer_h,
                  r=transducer_rad,
                  center=true,
@@ -147,7 +147,7 @@ module ultrasonic_oscillator() {
   solder_blob_h = ultrasonic_thickness + 0.5;
   solder_blob_rad = ultrasonic_solder_blob_d / 2;
   half_of_w = ultrasonic_oscillator_w / 2;
-  color(metalic_silver_1, alpha=1) {
+  color(metallic_silver_1, alpha=1) {
     union() {
       linear_extrude(height=ultrasonic_oscillator_thickness,
                      center=false) {
@@ -189,7 +189,7 @@ module ultrasonic_smd_chip() {
 
 module ultrasonic_solder_blob(h=ultrasonic_smd_h,
                               $fn=30,
-                              solder_color=metalic_silver_2) {
+                              solder_color=metallic_silver_2) {
   rad = ultrasonic_solder_blob_d / 2;
   color(solder_color, alpha=1) {
     cylinder(h=h,
@@ -204,7 +204,7 @@ module ultrasonic_solder_blobs(size=ultrasonic_solder_blobs_positions,
                                center=true,
                                h=ultrasonic_smd_h,
                                $fn=30,
-                               solder_color=metalic_silver_2) {
+                               solder_color=metallic_silver_2) {
   for (x_ind = [0, 1])
     for (y_ind = [0, 1]) {
       x_pos = (center ? -size[0] / 2 : 0) + x_ind * size[0];
@@ -291,7 +291,7 @@ module ultrasonic_pins() {
     if (ultrasonic_pins_count > 0) {
       spacing = ultrasonic_pins_jack_w / ultrasonic_pins_count;
 
-      color(metalic_silver_1, alpha=1) {
+      color(metallic_silver_1, alpha=1) {
         translate([0,
                    0,
                    ultrasonic_pin_protrusion_h

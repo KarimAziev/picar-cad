@@ -89,11 +89,11 @@ camera_h                                      = 24;
 camera_thickness                              = 1.05;
 camera_lens_items                             = [[8.05, 8.05, 1.0, matte_black, "cube"],
                                                  [11.05, 11.05, 1.5, matte_black, "cube"],
-                                                 [11.05, 11.05, 2.9, metalic_silver_7, "cube"],
-                                                 [11.05, 11.05, 0.5, metalic_silver_8, "octagon"],
+                                                 [11.05, 11.05, 2.9, metallic_silver_7, "cube"],
+                                                 [11.05, 11.05, 0.5, metallic_silver_8, "octagon"],
                                                  [7.15, 0, 3.03, matte_black,
                                                   "circle", 30],
-                                                 [3.03, 0, 0.1, cobalt_blue_metalic,
+                                                 [3.03, 0, 0.1, cobalt_blue_metallic,
                                                   "circle", 15]];
 
 camera_lens_connectors                        = [[6.0, 3.2, 1.5, matte_black, "cube"],

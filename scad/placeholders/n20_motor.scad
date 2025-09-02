@@ -85,7 +85,7 @@ module n20_motor() {
         n20_motor_reductor();
       }
       translate([0, 0, -n20_reductor_height]) {
-        color(metalic_silver_3) {
+        color(metallic_silver_3) {
           n20_motor_shaft();
         }
       }

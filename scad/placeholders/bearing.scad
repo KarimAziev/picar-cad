@@ -23,16 +23,16 @@ bearing_section_height = 7;
 outer_ring_w           = 2;
 shaft_ring_w           = 2;
 outer_bearing_d        = 22;
-rings                  = [[2, metalic_yellow_silver],
+rings                  = [[2, metallic_yellow_silver],
                           [1, onyx]];
 
 module bearing(rings = [[0]],
                d = outer_bearing_d,
                outer_ring_w = outer_ring_w,
-               outer_col = metalic_grey,
+               outer_col = metallic_grey,
                shaft_d = bearing_shaft_d,
                shaft_ring_w = shaft_ring_w,
-               shaft_ring_col = metalic_silver_2,
+               shaft_ring_col = metallic_silver_2,
                h = bearing_section_height,
                flanged_h=0,
                flanged_w=0,

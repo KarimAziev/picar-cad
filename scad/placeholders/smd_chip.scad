@@ -46,7 +46,7 @@ module smd_chip(length,
                 smd_color=black_1,
                 j_lead_n,
                 j_lead_thickness=0.5,
-                j_lead_color=metalic_yellow_silver,
+                j_lead_color=metallic_yellow_silver,
                 center=true) {
 
   color(smd_color, alpha=1) {

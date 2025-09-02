@@ -319,7 +319,7 @@ module head_panel_ir_case_screw_holes() {
   }
 }
 module head_ir_case(ir_case_color=jet_black,
-                    ir_rail_color=cobalt_blue_metalic,
+                    ir_rail_color=cobalt_blue_metallic,
                     show_ir_led=true,
                     show_ir_case_rail=true,) {
   spec = ir_case_head_screws_side_panel_positions[0];

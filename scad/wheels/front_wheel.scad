@@ -58,7 +58,7 @@ module front_wheel(w=wheel_w,
       }
       if (show_bearing) {
         translate([0, 0, -(w / 2 - full_h / 2 + rim_w) - 7]) {
-          bearing(rings=[[2, metalic_yellow_silver],
+          bearing(rings=[[2, metallic_yellow_silver],
                          [1, onyx]]);
         }
       }

@@ -23,7 +23,7 @@ module pins_centered(pitch=2.54,
                      pin_w,
                      pin_b,
                      pin_a,
-                     pin_color=metalic_silver_2) {
+                     pin_color=metallic_silver_2) {
   for (i=[0:count-1]) {
     let (x = (i - (count - 1) / 2) * pitch) {
       translate([x, 0, -pin_b / 2]) {

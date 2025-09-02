@@ -115,8 +115,8 @@ module rack_link(a_len=steering_rack_link_rack_side_w_length,
                         shaft_d=bearing_shaft_d,
                         shaft_ring_w=1,
                         outer_ring_w=0.5,
-                        outer_col=metalic_silver_3,
-                        rings=[[1, metalic_yellow_silver]]);
+                        outer_col=metallic_silver_3,
+                        rings=[[1, metallic_yellow_silver]]);
               }
             }
           }

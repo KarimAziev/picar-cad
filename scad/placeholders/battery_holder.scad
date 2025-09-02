@@ -143,7 +143,7 @@ module battery_holder_top_wall(width=battery_dia + battery_holder_thickness * 2,
       }
 
       translate([0, 0, -contact_inc_step / 2]) {
-        color(metalic_gold_2, alpha=1) {
+        color(metallic_gold_2, alpha=1) {
           linear_extrude(height=thickness + contact_inc_step,
                          center=false) {
             translate([width / 2, height / 2, 0]) {

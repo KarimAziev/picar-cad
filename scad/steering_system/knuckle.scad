@@ -81,8 +81,8 @@ module knuckle_kingpin_connector(border_w,
                 shaft_d=round(knuckle_bearing_inner_dia),
                 shaft_ring_w=1,
                 outer_ring_w=0.5,
-                outer_col=metalic_silver_3,
-                rings=[[1, metalic_yellow_silver],
+                outer_col=metallic_silver_3,
+                rings=[[1, metallic_yellow_silver],
                        [0.5, onyx]]);
       }
     }

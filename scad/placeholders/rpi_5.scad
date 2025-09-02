@@ -22,7 +22,7 @@ module io_controller(size=rpi_io_size) {
 }
 
 module wifi_bt(size=rpi_wifi_bt_size) {
-  color(metalic_silver_1, alpha=1) {
+  color(metallic_silver_1, alpha=1) {
     rpi_rectangle_3d(size);
   }
 }
@@ -39,7 +39,7 @@ module ethernet(size=rpi_ethernet_jack_size) {
   z_offst = size[2] - hole_z - 1;
   union() {
     difference() {
-      color(metalic_yellow_silver) {
+      color(metallic_yellow_silver) {
         linear_extrude(height=size[2], center=false) {
           rounded_rect(size=size, r=min(size[1], size[2]) * 0.1, center=false);
         }
@@ -73,7 +73,7 @@ module usb(size=rpi_usb_size) {
 
   union() {
     difference() {
-      color(metalic_yellow_silver) {
+      color(metallic_yellow_silver) {
         linear_extrude(height=size[2], center=false) {
           rounded_rect(size=size, r=1.5, center=false);
         }
@@ -139,7 +139,7 @@ module bcm_processor_base(size=rpi_processor_size) {
 
 module bcm_processor(size=rpi_processor_size) {
 
-  color(metalic_yellow_silver_2, alpha=1) {
+  color(metallic_yellow_silver_2, alpha=1) {
     if (rpi_model_detailed) {
       offset_3d(r=0.8, size=rpi_processor_size[1]) {
         union() {
@@ -165,7 +165,7 @@ module pin_headers(cols=20,
           color(matte_black) {
             cube([header_width, header_width, header_height]);
           }
-          color(metalic_yellow_1) {
+          color(metallic_yellow_1) {
             translate([(header_width - p) / 2,
                        (header_width - p) / 2,
                        -rpi_thickness / 2 - 0.5]) {
@@ -243,7 +243,7 @@ module uart_connector(size=rpi_uart_connector_size) {
 module pci_connector(size=rpi_pci_size) {
   extra_x = 2;
   union() {
-    color(metalic_yellow_silver_2, alpha=1) {
+    color(metallic_yellow_silver_2, alpha=1) {
       cube(size, center=false);
     }
     translate([-extra_x / 2, 0, size[2]]) {
@@ -293,7 +293,7 @@ module rpi_usb_hdmi_connectors() {
     translate([uart_x_offst,
                rpi_usb_c_jack_size[1] / 2 +
                rpi_rtc_connector_size[1] / 2, 0]) {
-      color(metalic_yellow_silver_2, alpha=1) {
+      color(metallic_yellow_silver_2, alpha=1) {
         rtc_battery_connector();
       }
     }
@@ -319,7 +319,7 @@ module rpi_usb_hdmi_connectors() {
         translate([uart_x_offst + 1,
                    rpi_micro_hdmi_jack_size[1]
                    - rpi_uart_connector_size[1] / 2, 0]) {
-          color(metalic_yellow_silver_2, alpha=1) {
+          color(metallic_yellow_silver_2, alpha=1) {
             uart_connector();
           }
         }
