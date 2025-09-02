@@ -195,13 +195,15 @@ module spoke(w=10,
   }
 }
 
-module rear_wheel_animated(show_tire=true) {
+module rear_wheel_animated(show_tire=true,
+                           wheel_color="white",
+                           tire_color=black_1) {
   rotate([0, 0, -360 * $t]) {
-    color(jet_black) {
+    color(wheel_color) {
       rear_wheel();
     }
     if (show_tire) {
-      color(black_1) {
+      color(tire_color) {
         tire();
       }
     }

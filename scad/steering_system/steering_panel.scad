@@ -212,7 +212,7 @@ module steering_rack_support(show_rack=false,
     if (show_rack) {
       translate([0, 0, steering_rack_support_thickness / 2
                  + steering_rack_z_distance_from_panel]) {
-        rotate([0, 0, assembly_use_front_steering ? 180 : 0]) {
+        rotate([0, 0, 180]) {
           rack_mount(show_brackets=show_brackets,
                      rack_color=is_undef(rack_color) ?
                      panel_color

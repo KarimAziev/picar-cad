@@ -554,7 +554,7 @@ module chassis(motor_type=motor_type,
     if (show_ackermann_triangle) {
       translate([0,
                  steering_panel_y_pos_from_center,
-                 -chassis_thickness]) {
+                 -chassis_thickness - 30]) {
         ackermann_geometry_triangle();
       }
     }

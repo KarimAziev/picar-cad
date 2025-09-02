@@ -11,12 +11,11 @@
 include <../parameters.scad>
 use <../util.scad>
 
-module ackermann_geometry_triangle(triangle_color="yellowgreen", alpha=0.2) {
-  half_of_track_width = wheels_track_width / 2;
+module ackermann_geometry_triangle(triangle_color="red", alpha=0.2) {
 
   triangle_points = [[0, 0],                       // center of the rack
-                     [-half_of_track_width, 0],    // center of the wheels
-                     [0, -wheelbase_effective]     // tie rod convergence point
+                     [steering_x_left_knuckle, 0],    // center of the kingpin posts
+                     [0, -steering_wheelbase_effective]     // tie rod convergence point
                      ];
 
   color(triangle_color, alpha=alpha) {

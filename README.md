@@ -2,7 +2,7 @@
 
 This repository contains the 3D model source files for a four-wheeled robot chassis and steering system, written entirely in [OpenSCAD](https://openscad.org/). The design supports 3D printing and does not rely on external libraries.
 
-![Demo](./demo/picar-cad-demo.png)
+![Demo](./demo/picar-cad-demo-view.png)
 ![Photo](./demo/picar-cad-real-photo.jpg)
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
@@ -12,7 +12,6 @@ This repository contains the 3D model source files for a four-wheeled robot chas
 > - [About](#about)
 >   - [Overview](#overview)
 >   - [Structure](#structure)
->   - [Ackermann Geometry](#ackermann-geometry)
 >   - [External Details](#external-details)
 >     - [Bearings](#bearings)
 >     - [Servos](#servos)
@@ -49,7 +48,7 @@ The robot model is designed around the following core elements:
 
 - **Ackermann Steering**: Front wheels are steered via a pinion and rack assembly driven by a standard servo.
 - **Rear-Wheel Drive**: Two individual motors drive the rear wheels. Both standard yellow DC motors and N20-type motors are supported.
-- **Modular Head Mount**: The head mount is designed to accommodate two Raspberry Pi Camera Module 2 or more sensors (e.g., day/night configuration).
+- **Modular Head Mount**: The head mount is designed to accommodate two Raspberry Pi Camera Module 3 or more sensors (e.g., day/night configuration).
 - **Extendable Power Tiers**: Side and center slots allow for independent modules for power management: servo driver HAT, motor driver HAT, UPS for Raspberry Pi 5, etc.
 - **Raspberry Pi**: The chassis includes placements and screw holes for the Raspberry Pi 5 and multiple 18650 battery holders.
 
@@ -58,33 +57,15 @@ The robot model is designed around the following core elements:
 The project is organized into several reusable modules under the scad/ directory:
 
 - `parameters.scad`: Central configuration file containing physical dimensions (units are in millimeters).
-- `printable.scad`: Contains all printable parts in one place. Different colors indicate the recommended filament type: white for PLA or PETG, dark blue for PETG CF, PETG or PLA CF (PLA is also acceptable), and black for TPU (used only for tires).
-  ![Demo](./demo/picar-cad-printable-plate.png)
+- `printable.scad`: Contains all printable parts in one place. You can print all the parts except the tires using either PETG (recommended) or PLA. For the tires, use TPU (e.g., TPU 95A).
+  ![Printable view](./demo/picar-cad-printable.png)
 - `assembly.scad`: Fully assembled view of the robot.
-  ![Demo](./demo/picar-cad-assembly-view.gif)
+  ![Overview](./demo/picar-cad-overview.gif)
 - `steering_system/`: Rack-and-pinion steering system based on Ackermann geometry.
 - `head/`: Mounting system for dual Raspberry Pi cameras.
 - `motor_brackets/`: Brackets for both standard (yellow) and N20-style motors.
 - `wheels/`: Components for rear and front wheels, including hubs and tires.
 - `placeholders/`: Placeholder geometry for components such as the Raspberry Pi, servos, DC motors, battery holders, and HATs.
-
-## Ackermann Geometry
-
-The steering system implements Ackermann geometry, meaning that during a turn the inner wheel rotates through a larger angle than the outer wheel.
-
-> [!NOTE]
-> The design uses a front-steer layout-the steering arms point outward rather than inward. This is the mirror image of the textbook rear-steer configuration. The geometry is functionally equivalent and produces the correct Ackermann steering.
-
-You can also use anti-Ackermann by flipping the rack and its linkage in the opposite direction.
-
-You can switch between Ackermann and anti-Ackermann in assembly view by toggling the variable `assembly_use_front_steering` in `parameters.scad`.
-
-**Ackermann assembly**:
-
-![Demo](./demo/ackermann-assembly.png)
-
-**Anti-Ackermann assembly**:
-![Demo](./demo/anti-ackermann-assembly.png)
 
 ## External Details
 
@@ -92,9 +73,9 @@ All these details are just recommendations, you can use any other details, just 
 
 ### Bearings
 
-- Two 685 (_5x11x5_) bearings, inserted into the steering knuckles. To use different sizes, modify the variable `knuckle_bearing_outer_dia` and other relevant variables.
-- Two 693 (_3x8x4_) bearings, inserted into the bearing connectors. Both flanged and standard versions are supported.
-- Two 608 (_8x22x7_) bearings, inserted into the front wheels.
+- Four 685 (5x11x5) bearings: two are inserted into the steering knuckles and mounted on kingpin posts. To use different sizes, modify the variables `knuckle_bearing_outer_dia`, `knuckle_bearing_inner_dia`, and other relevant variables. The other two are inserted into the tie rod; the corresponding variables are `tie_rod_bearing_outer_dia`, `tie_rod_bearing_inner_dia`, and others.
+- Two 693 (3x8x4) bearings are inserted into the rack link and into the knuckle arm that connects to the rack link. Both flanged and standard versions are supported.
+- Two 608 (8x22x7) bearings are inserted into the front wheels.
 
 ### Servos
 
@@ -147,11 +128,12 @@ Each table includes a "Variable" column that refers to a configurable variable i
 
 #### Steering panel
 
-| Size | Length (mm) | Amount | Nuts | Variable                         |
-| ---- | ----------- | ------ | ---- | -------------------------------- |
-| M2.5 | 8           | 4      | 2    | `steering_panel_hinge_screw_dia` |
-| M2   | 8           | 1      | 1    | `steering_servo_screw_dia`       |
-| M2   | 4           | 1      | 0    | `steering_servo_screw_dia`       |
+| Size                     | Length (mm) | Amount | Nuts | Variable                                   |
+| ------------------------ | ----------- | ------ | ---- | ------------------------------------------ |
+| M2.5                     | 8           | 4      | 2    | `steering_panel_hinge_screw_dia`           |
+| M2                       | 8           | 2      | 2    | `steering_servo_screw_dia`                 |
+| M3                       | 20          | 2      | 2    | `steering_servo_mount_connector_screw_dia` |
+| M2 or M2.5 for tight fit | 10          | 4      | 4    | `steering_kingpin_post_screw_dia`          |
 
 #### Steering pinion
 
@@ -176,9 +158,10 @@ Self-tapping screws should also be included in your pack. The diameter may diffe
 
 #### Steering Knuckle
 
-| Size | Length (mm) | Amount            | Nuts | Variable                  |
-| ---- | ----------- | ----------------- | ---- | ------------------------- |
-| M2.5 | 10          | 4 (2 per knuckle) | 0    | `knuckle_shaft_screw_dia` |
+| Size                     | Length (mm) | Amount            | Nuts | Variable                  |
+| ------------------------ | ----------- | ----------------- | ---- | ------------------------- |
+| M2.5                     | 10          | 4 (2 per knuckle) | 0    | `knuckle_shaft_screw_dia` |
+| M2 or M2.5 for tight fit | 10          | 4 (2 per knuckle) | 0    | `tie_rod_shaft_screw_dia` |
 
 #### Raspberry Pi
 

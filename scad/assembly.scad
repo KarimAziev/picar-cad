@@ -40,17 +40,15 @@ show_rpi                        = true;
 show_head                       = true;
 show_pan_servo                  = true;
 show_tilt_servo                 = true;
-show_ackermann_triangle         = false;
 show_camera                     = true;
 show_ir_case                    = true;
 show_ir_led                     = true;
 chassis_color                   = "white";
 head_color                      = chassis_color;
 batteries_holder_assembly_y_idx = len(baterry_holes_y_positions) / 2 + 1;
+show_ackermann_triangle         = false;
 
 chassis_color_bottom            = "#353935";
-
-$t = 0.01;
 
 function calc_chassis_z_offset() =
   let (motor_z_offset = motor_type == "n20"

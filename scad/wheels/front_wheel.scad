@@ -27,8 +27,8 @@ module front_wheel(w=wheel_w,
                    screw_boss_h=wheel_screw_boss_h,
                    screw_boss_w=wheel_screw_boss_w,
                    show_bearing=false,
-                   wheel_color=jet_black,
-                   hub_lower_color=matte_black) {
+                   wheel_color="white",
+                   hub_lower_color="white") {
 
   inner_d = wheel_inner_d(d, rim_h);
   full_h = wheel_hub_full_height(hub_h, hub_inner_rim_h);

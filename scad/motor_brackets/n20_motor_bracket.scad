@@ -84,7 +84,7 @@ module n20_motor_screws_panel() {
   }
 }
 
-module n20_standard_motor_bracket() {
+module n20_motor_bracket() {
   full_dia = n20_motor_width();
 
   union() {
@@ -118,7 +118,7 @@ module n20_standard_motor_bracket() {
 module n20_motor_assembly(show_motor=true, show_wheel=false) {
   union() {
     color(matte_black) {
-      n20_standard_motor_bracket();
+      n20_motor_bracket();
     }
     if (show_motor) {
       translate([0, 0, -n20_shaft_height - n20_reductor_height]) {

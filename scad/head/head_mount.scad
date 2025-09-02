@@ -1,8 +1,8 @@
 /**
- * Module: Robot head for two Raspberry Pi Camera Module 2 units.
+ * Module: Robot head for two Raspberry Pi Camera Module 3 units.
 
  * This module defines the robot head component designed to support two
- * Raspberry Pi Camera Module 2 units.
+ * Raspberry Pi Camera Module 3 units.
  *
  * It features a main mounting plate, connector plates, a upper plate, and side
  * panels.
@@ -92,7 +92,7 @@ module head_front_plate(show_camera=false, head_color="white") {
 
   // plate cutouts
   translate([0, 0, -head_plate_thickness]) {
-    color(head_color, alpha = 1) {
+    color(head_color, alpha=1) {
       linear_extrude(height = head_plate_thickness, center = false) {
         difference() {
           translate([0, head_plate_height / 2, 0])
@@ -343,7 +343,7 @@ module head_ir_case(ir_case_color=jet_black,
 }
 module head_mount(head_color="white",
                   ir_case_color=jet_black,
-                  ir_rail_color=matte_black,
+                  ir_rail_color=jet_black,
                   show_ir_case=false,
                   show_ir_led=true,
                   show_camera=false,

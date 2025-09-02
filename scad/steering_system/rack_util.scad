@@ -1,8 +1,8 @@
 include <../parameters.scad>
 
 rack_offset_default_min_dist = steering_rack_teethed_length / 2
-  - steering_bracket_bearing_outer_d
-  - steering_bracket_linkage_thickness * 2;
+  - steering_rack_link_bearing_outer_d
+  - steering_rack_link_linkage_thickness * 2;
 
 function rack_offset(t, min_dist=rack_offset_default_min_dist) =
   (t < 0.25) ?

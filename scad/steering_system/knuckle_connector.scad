@@ -25,11 +25,10 @@ module knuckle_connector(parent_dia,
                          children_modes=[]) {
 
   offst = outer_d / 2;
-
-  notch_width = calc_notch_width(max(parent_dia, outer_d),
-                                 min(parent_dia, outer_d));
-
-  full_len = notch_width + length + border_w;
+  full_len = calc_knuckle_connector_full_len(length,
+                                             parent_dia=parent_dia,
+                                             outer_d=outer_d,
+                                             border_w=border_w);
 
   function children_for(mode) =
     [for (i = [0:len(children_modes) - 1])

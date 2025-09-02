@@ -1,6 +1,20 @@
 /**
  * Module: Detachable kingpin post.
  *
+ * This file defines a detachable kingpin post. You should print two posts and
+ * attach one to each side of the steering panel.
+ *
+ * The kingpin post consists of three stacked cylinders:
+ *
+ * 1. The lower mounting flange/cylinder, which is inserted into the side panel
+ * and contains two screw holes (diameter controlled by
+ * `steering_kingpin_post_screw_dia`).
+ *
+ * 2. The middle cylindrical boss, which matches the knuckle diameter.
+ *
+ * 3. The upper shaft for the knuckle bearing, which includes a
+ * chamfered/tapered tip to seat the bearing.
+ *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */

@@ -41,7 +41,7 @@ use <../util.scad>
 use <../wheels/front_wheel.scad>
 
 module knuckle_shaft(show_wheel=false,
-                     knuckle_shaft_color=matte_black) {
+                     knuckle_shaft_color="white") {
   difference() {
     translate([0, 0, knuckle_shaft_dia / 2]) {
       knuckle_bent_shaft(show_wheel=show_wheel,
@@ -89,7 +89,7 @@ module knuckle_bent_shaft(show_wheel=false,
 
       translate([0, r, 0]) {
         rotate([-0, 90, 0]) {
-          knuckle_bent(angle=-90, r=r, bent_color=matte_black);
+          knuckle_bent(angle=-90, r=r, bent_color=knuckle_shaft_color);
         }
         translate([0, 0, -r]) {
           rotate([-90, 0, 0]) {
@@ -107,7 +107,7 @@ module knuckle_bent_shaft(show_wheel=false,
                      + knuckle_rad +
                      knuckle_shaft_extra_len,
                      0]) {
-            knuckle_bent(angle=90, r=r, bent_color=matte_black);
+            knuckle_bent(angle=90, r=r, bent_color=knuckle_shaft_color);
 
             translate([0, r, 0]) {
               rotate([0, -90, 0]) {
@@ -144,10 +144,11 @@ module knuckle_screws_slots(d=knuckle_shaft_screw_dia,
 
 module knuckle_shaft_print_plate() {
   offst = knuckle_dia;
-  translate([offst / 2 + knuckle_shaft_lower_horiz_len, 0, 0]) {
+  z = knuckle_shaft_vertical_len + knuckle_shaft_dia;
+  translate([offst / 2 + knuckle_shaft_lower_horiz_len, 0, z]) {
     knuckle_shaft();
   }
-  translate([-offst / 2 - knuckle_shaft_lower_horiz_len, 0, 0]) {
+  translate([-offst / 2 - knuckle_shaft_lower_horiz_len, 0, z]) {
     mirror([1, 0, 0]) {
       knuckle_shaft();
     }

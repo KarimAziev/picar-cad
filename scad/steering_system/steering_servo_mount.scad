@@ -1,6 +1,12 @@
 /**
  * Module: Steering Servo Mount
  *
+ * This file defines a detachable vertical panel with a servo slot.
+ *
+ * This panel attaches to the steering panel with two screws. By default, M3
+ * screws are used, but this can be changed via the
+ * `steering_servo_mount_connector_screw_dia` variable.
+ *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */

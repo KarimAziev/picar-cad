@@ -526,3 +526,20 @@ module chamfered_square(size, chamfer) {
          [-h + c,  h]];
   polygon(points = pts);
 }
+// calculates width of the top (narrower) side of an isosceles trapezoid
+// bottom_width : width of the bottom base
+// side_length  : length of each equal leg (>= 0)
+// angle_deg     : angle measured from vertical
+function calc_isosceles_trapezoid_top_width(bottom_width, side_length, angle_deg) =
+  let (a = angle_deg * PI / 180,
+       s = abs(side_length),
+       top = bottom_width - 2 * s * sin(a))
+  max(0, top);
+
+function calc_knuckle_connector_full_len(length,
+                                         parent_dia,
+                                         outer_d,
+                                         border_w) =
+  let (notch_width = calc_notch_width(max(parent_dia, outer_d),
+                                      min(parent_dia, outer_d)))
+  notch_width + length + border_w;

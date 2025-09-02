@@ -3,12 +3,7 @@
  *
  * This file defines the complete structural and visual assembly of the steering system,
  * including key interactive mechanical components such as the steering rack, pinion gear,
- * bracket connectors, knuckles, and optional Ackermann geometry support.
- *
- * INTENDED USAGE:
- * - Visual simulation of mechanical alignment and animation.
- * - Printable (with selective module use) or for demonstration and analysis.
- * - Supports inspection of Ackermann steering characteristics.
+ * rack links, knuckles, kingpins, tie rods etc.
  *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
@@ -21,16 +16,18 @@ use <../placeholders/servo.scad>
 use <../placeholders/steering_servo.scad>
 use <ackermann_geometry_triangle.scad>
 use <steering_pinion.scad>
-use <bracket.scad>
+use <rack_link.scad>
 use <steering_panel.scad>
 use <knuckle.scad>
 use <rack_connector.scad>
 use <rack.scad>
 use <rack_util.scad>
+use <tie_rod.scad>
 
 module knuckle_assembly(show_wheel=true,
                         show_bearing=true,
                         show_shaft=true,
+                        show_tie_rod=false,
                         rotation_dir=1) {
   x_offst = steering_panel_length / 2 - knuckle_dia / 2;
 
@@ -43,6 +40,7 @@ module knuckle_assembly(show_wheel=true,
     rotate([0, 0, rotation_dir * angle]) {
       knuckle_mount(show_wheel=show_wheel,
                     show_bearing=show_bearing,
+                    show_tie_rod=show_tie_rod,
                     show_shaft=show_shaft);
     }
   }
@@ -50,18 +48,18 @@ module knuckle_assembly(show_wheel=true,
 
 module steering_system_distance_between_rack_and_knuckle(w=5) {
   translate([steering_rack_connector_x_pos -
-             steering_distance_between_knuckle_and_rack, 0,
+             steering_distance_between_kingpin_and_rack, 0,
              knuckle_height + knuckle_pin_lower_height]) {
     color("chartreuse", alpha=0.6) {
       linear_extrude(height=1, center=false) {
-        square([steering_distance_between_knuckle_and_rack, w], center=false);
+        square([steering_distance_between_kingpin_and_rack, w], center=false);
       }
     }
 
-    translate([steering_distance_between_knuckle_and_rack / 2, w * 0.1, 0]) {
+    translate([steering_distance_between_kingpin_and_rack / 2, w * 0.1, 0]) {
       color("darkblue") {
         linear_extrude(height=1, center=false) {
-          text(str("B: ", steering_distance_between_knuckle_and_rack, "mm"),
+          text(str(steering_distance_between_kingpin_and_rack, "mm"),
                size=w * 0.7, halign="center",
                valign="bottom",
                font = "Liberation Sans:style=Bold Italic");
@@ -71,17 +69,19 @@ module steering_system_distance_between_rack_and_knuckle(w=5) {
   }
 }
 
-module steering_system_assembly(rack_color=blue_grey_carbon,
+module steering_system_assembly(rack_color="white",
                                 pinion_color=matte_black,
                                 panel_color="white",
                                 show_ackermann_triangle=false,
                                 show_wheels=false,
                                 show_bearing=true,
+                                show_servo_mount_panel=true,
                                 show_brackets=true,
                                 show_rack=true,
                                 show_distance=false,
                                 show_kingpin_posts=true,
                                 show_pinion=true,
+                                show_tie_rod=true,
                                 show_servo=true) {
 
   union() {
@@ -90,9 +90,11 @@ module steering_system_assembly(rack_color=blue_grey_carbon,
                    panel_color=panel_color,
                    pinion_color=pinion_color,
                    show_rack=show_rack,
+                   show_servo_mount_panel=show_servo_mount_panel,
                    show_kingpin_posts=show_kingpin_posts,
                    show_brackets=show_brackets,
                    rack_color=rack_color);
+
     knuckle_rotation_angle = assembly_use_front_steering ? 0 : 180;
 
     if (show_distance) {
@@ -102,7 +104,8 @@ module steering_system_assembly(rack_color=blue_grey_carbon,
     rotate([0, 0, knuckle_rotation_angle]) {
       knuckle_assembly(show_wheel=show_wheels,
                        show_bearing=show_bearing,
-                       rotation_dir=3.6);
+                       rotation_dir=3.6,
+                       show_tie_rod=show_tie_rod);
     }
     rotate([0, 0, knuckle_rotation_angle]) {
       mirror([1, 0, 0]) {
@@ -125,4 +128,4 @@ module steering_system_assembly(rack_color=blue_grey_carbon,
   }
 }
 
-steering_system_assembly(show_wheels=false, show_kingpin_posts=false);
+steering_system_assembly(show_wheels=false, show_kingpin_posts=true);

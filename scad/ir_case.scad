@@ -273,8 +273,8 @@ module ir_case() {
 
 module ir_case_assembly(show_rail=true,
                         show_ir_led=true,
-                        case_color=jet_black,
-                        rail_color=metalic_blue_1) {
+                        case_color="white",
+                        rail_color="white") {
   union() {
     color(case_color, alpha=1) {
       ir_case();
@@ -301,8 +301,8 @@ module ir_case_assembly(show_rail=true,
 module ir_case_printable(show_rail=true,
                          show_case=true,
                          spacing=2,
-                         case_color=blue_grey_carbon,
-                         rail_color=blue_grey_carbon) {
+                         case_color="white",
+                         rail_color="white") {
   union() {
     if (show_case) {
       color(case_color, alpha=1) {

@@ -1,7 +1,7 @@
 /**
  * This file contains modules to generate a rack for a steering system. The rack
  * is designed with a toothed profile to mesh with a pinion and integrates the
- * appropriate mounting connectors both sides.
+ * appropriate.
  *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
@@ -9,13 +9,13 @@
 
 include <../parameters.scad>
 include <../colors.scad>
-use <rack_connector.scad>
-use <rack_util.scad>
-use <bracket.scad>
 use <../util.scad>
-use <steering_pinion.scad>
 use <../gear.scad>
 use <../slider.scad>
+use <rack_connector.scad>
+use <rack_util.scad>
+use <rack_link.scad>
+use <steering_pinion.scad>
 use <steering_rail.scad>
 
 module shifted_tooth(points, height) {
@@ -57,8 +57,8 @@ module steering_rack(length=steering_rack_teethed_length,
                      clearance=steering_pinion_clearance,
                      backlash=steering_pinion_backlash,
                      show_brackets=false,
-                     bracket_color=cobalt_blue_metalic,
-                     rack_color=cobalt_blue_metalic) {
+                     bracket_color="white",
+                     rack_color="white") {
 
   circular_pitch = calc_circular_pitch(r_pitch, teeth_count);
   base_circle_rad = r_pitch * cos(pressure_angle);
@@ -85,7 +85,7 @@ module steering_rack(length=steering_rack_teethed_length,
   shifted_points = [for (pt = tooth_points) [pt[0], pt[1] - root_rad]];
 
   ys = abs(min([for (pt = shifted_points) pt[1]]));
-  offst = [-length / 2 - steering_bracket_bearing_outer_d / 2 - 0.4,
+  offst = [-length / 2 - steering_rack_link_bearing_outer_d / 2 - 0.4,
            0,
            0];
 
@@ -114,10 +114,10 @@ module steering_rack(length=steering_rack_teethed_length,
             translate([0, 0, base_height / 2]) {
               extra_w = 2;
               linear_extrude(height=base_height, center=false) {
-                translate([-length / 2 - steering_bracket_bearing_outer_d,
+                translate([-length / 2 - steering_rack_link_bearing_outer_d,
                            -width / 2 - extra_w / 2,
                            0]) {
-                  square([steering_bracket_bearing_outer_d, width + extra_w]);
+                  square([steering_rack_link_bearing_outer_d, width + extra_w]);
                 }
               }
             }
@@ -127,16 +127,17 @@ module steering_rack(length=steering_rack_teethed_length,
 
       mirror_copy([1, 0, 0]) {
         translate(offst) {
-
-          if (show_brackets) {
-            rack_connector_assembly(rack_color=rack_color,
-                                    bracket_color=bracket_color,
-                                    rotation_dir=-1);
-          } else {
-            color(rack_color) {
-              rack_connector();
-            }
+          color(rack_color) {
+            rack_connector();
           }
+        }
+      }
+      translate(offst) {
+
+        if (show_brackets) {
+          rack_connector_assembly(rack_color=rack_color,
+                                  bracket_color=bracket_color,
+                                  rotation_dir=-1);
         }
       }
     }
@@ -161,15 +162,11 @@ module steering_rack(length=steering_rack_teethed_length,
   }
 }
 
-module rack_mount(show_brackets=false, rack_color=cobalt_blue_metalic) {
+module rack_mount(show_brackets=false, rack_color="white") {
   translate([rack_offset($t), 0, 0]) {
-    steering_rack(show_brackets = show_brackets,
-                  rack_color = rack_color);
+    steering_rack(show_brackets=show_brackets,
+                  rack_color=rack_color);
   }
-}
-
-module rack_assembly(show_brackets=true, rack_color=cobalt_blue_metalic) {
-  rack_mount(show_brackets=show_brackets, rack_color=rack_color);
 }
 
 rack_mount(show_brackets=false);
