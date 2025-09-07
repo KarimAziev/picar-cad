@@ -92,12 +92,15 @@ module front_panel_connector() {
                                front_panel_connector_len],
                        center=true,
                        r=front_panel_connector_offset_rad);
-      translate([0, -front_panel_connector_len / 2 +
-                 front_panel_connector_rect_cutout_size[1] / 2
-                 + rear_panel_z
-                 + front_panel_thickness,
-                 0]) {
-        square(front_panel_connector_rect_cutout_size, center=true);
+      if (front_panel_connector_rect_cutout_size[0] > 0
+          && front_panel_connector_rect_cutout_size[1] > 0) {
+        translate([0, -front_panel_connector_len / 2 +
+                   front_panel_connector_rect_cutout_size[1] / 2
+                   + rear_panel_z
+                   + front_panel_thickness,
+                   0]) {
+          square(front_panel_connector_rect_cutout_size, center=true);
+        }
       }
       front_panel_connector_screws();
     }

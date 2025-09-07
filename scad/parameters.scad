@@ -34,6 +34,7 @@ battery_ups_offset                            = 2;
 // This forms a square with a screw hole centered on each corner.
 battery_ups_module_screws_size                = [86, 46];
 
+// the diameter for fastening screws
 battery_ups_screw_dia                         = m3_hole_dia;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -250,7 +251,7 @@ front_panel_screw_dia                         = m25_hole_dia;
 front_panel_ultrasonic_sensor_dia             = 16.5;
 
 // distance between the two ultrasonic sensor mounting holes
-front_panel_ultrasonic_sensors_offset         = 10.0;
+front_panel_ultrasonic_sensors_offset         = 10.10;
 
 // horizontal offset between the ultrasonic sensor mounting holes
 front_panel_screws_x_offset                   = 27;
@@ -260,10 +261,14 @@ front_panel_ultrasonic_y_offset               = 0;
 front_panel_screws_y_offst                    = 0;
 front_panel_offset_rad                        = front_panel_height * 0.18;
 
-front_panel_connector_rect_cutout_size        = [20, 3];
-
 // the diameter of the holes for four solder blobs on the back rear mount
 front_panel_solder_blob_dia                   = 4.0;
+
+// An additional cutout at the front-panel connector. Specify a two-value array
+// [x, y] for a rectangular cutout of dimensions x by y; it may be used as a
+// pass-through hole for an FFC cable. It is disabled by default because it
+// makes the front panel more fragile.
+front_panel_connector_rect_cutout_size        = [0, 0];
 
 // the height of the deepening slot for ultrasonic
 front_panel_ultrasonic_cutout_depth           = 0.8;
