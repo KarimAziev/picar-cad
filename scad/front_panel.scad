@@ -285,5 +285,6 @@ module front_panel_assembly(panel_color="white",
 }
 
 color("white") {
-  front_panel_printable(show_front_panel=true, show_rear_panel=false);
+  front_panel_printable(show_front_panel=true,
+                        show_rear_panel=true);
 }
