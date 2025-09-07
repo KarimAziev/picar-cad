@@ -230,12 +230,18 @@ module front_panel_back_mount(h=front_panel_height,
   }
 }
 
-module front_panel_printable(spacing=2) {
-  rotate([-90, 0, 0]) {
-    front_panel();
+module front_panel_printable(spacing=2,
+                             show_front_panel=true,
+                             show_rear_panel=true) {
+  if (show_front_panel) {
+    rotate([-90, 0, 0]) {
+      front_panel();
+    }
   }
-  translate([0, front_panel_height + spacing, 0]) {
-    front_panel_back_mount();
+  if (show_rear_panel) {
+    translate([0, show_front_panel ? front_panel_height + spacing : 0 , 0]) {
+      front_panel_back_mount();
+    }
   }
 }
 
@@ -279,9 +285,5 @@ module front_panel_assembly(panel_color="white",
 }
 
 color("white") {
-  front_panel_printable();
+  front_panel_printable(show_front_panel=true, show_rear_panel=false);
 }
-
-// front_panel_assembly(show_ultrasonic=true,
-//                      show_front_rear_panel=true,
-//                      show_front_panel=true);
