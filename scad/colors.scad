@@ -41,3 +41,5 @@ noir_1                   = "#2a353b";
 medium_blue_1            = "#0a4d8d";
 
 brown_1                  = "#977354";
+
+red_1                    = "#df1d29";

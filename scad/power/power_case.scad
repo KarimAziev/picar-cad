@@ -1,0 +1,288 @@
+/**
+ * Module: Power Case
+ *
+ * Author: Karim Aziiev <karim.aziiev@gmail.com>
+ * License: GPL-3.0-or-later
+ */
+
+include <../parameters.scad>
+include <../colors.scad>
+use <../util.scad>;
+use <../placeholders/lipo_pack.scad>;
+use <../slider.scad>;
+
+module power_case_rail(h=power_case_rail_height,
+                       w=power_case_side_wall_thickness,
+                       l=power_case_length,
+                       angle=power_case_rail_angle,
+                       r=power_case_rail_rad) {
+
+  difference() {
+    translate([0, 0, h / 2]) {
+      rotate([90, 0, 0]) {
+        linear_extrude(height=l,
+                       center=true) {
+          dovetail_rib(w=w,
+                       h=h,
+                       angle=angle,
+                       r=r,
+                       center=true);
+        }
+      }
+    }
+    mirror_copy([0, 1, 0]) {
+      translate([0,
+                 l / 2 -
+                 power_case_groove_edge_distance,
+                 h / 2 + 0.1]) {
+        cube([power_case_groove_w,
+              power_case_groove_thickness,
+              h + 0.1],
+             center=true);
+        translate([0,
+                   -power_case_groove_thickness / 2
+                   - power_case_rail_screw_dia / 2
+                   - power_case_rail_screw_groove_distance
+                   , 0]) {
+          rotate([0, 90, 0]) {
+            cylinder(h=w + 1, r=power_case_rail_screw_dia / 2,
+                     center=true,
+                     $fn=360);
+          }
+        }
+      }
+    }
+  }
+}
+
+module power_case_rail_relief_cutter(h=power_case_rail_height,
+                                     w=steering_panel_rail_thickness
+                                     + steering_rack_rail_tolerance,
+                                     l=power_case_length,
+                                     angle=power_case_rail_angle,
+                                     r=power_case_rail_rad,
+                                     edge_land=steering_rail_edge_land,
+                                     relief_depth=steering_rail_relief_depth) {
+  d_parallel = relief_depth / cos(angle);
+  translate([0, 0, h / 2]) {
+    rotate([90, 0, 90]) {
+      linear_extrude(height=l,
+                     center=true,
+                     convexity=2) {
+        intersection() {
+          offset(r=d_parallel) {
+            dovetail_rib(w=w, h=h, angle=angle, r=r, center=true);
+          }
+
+          offset(r=-edge_land) {
+            offset(r = edge_land) {
+              dovetail_rib(w=w, h=h, angle=angle, r=r, center=true);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+module power_case(case_color=metallic_silver_5, alpha=1) {
+  inner_x_cutout = power_case_width - power_case_side_wall_thickness * 2;
+  inner_y_cutout = power_case_length - power_case_front_wall_thickness * 2;
+  inner_lipo_x_cutout = lipo_pack_width + 0.8;
+
+  color(case_color, alpha=alpha) {
+    difference() {
+      union() {
+        difference() {
+          // Outer case
+          union() {
+            rounded_cube([power_case_width,
+                          power_case_length,
+                          power_case_height],
+                         center=true,
+                         r=power_case_round_rad);
+            translate([0,
+                       0,
+                       power_case_round_rad / 2 +
+                       power_case_height
+                       - power_case_round_rad]) {
+              cube([power_case_width,
+                    power_case_length,
+                    power_case_round_rad],
+                   center=true);
+            }
+          }
+
+          translate([0,
+                     0,
+                     power_case_bottom_thickness]) {
+            // Cutout for the 4 corner mounting screw positions
+            rounded_cube([inner_x_cutout,
+                          power_case_bottom_screws_poses[1]
+                          + (power_case_bottom_cbore_dia * 2),
+                          power_case_height],
+                         center=true);
+
+            // Cutout for LiPo pack
+            translate([0, 0, power_case_height / 2]) {
+              cube([inner_lipo_x_cutout,
+                    inner_y_cutout,
+                    power_case_height],
+                   center=true);
+            }
+          }
+
+          // Holes for 4 corner mounting screws
+          translate([0, 0, -0.1]) {
+            four_corner_children(size=power_case_bottom_screws_poses,
+                                 center=true) {
+              counterbore(d=power_case_bottom_screw_dia,
+                          h=power_case_bottom_thickness
+                          + 0.2,
+                          upper_h=1.0,
+                          upper_d=power_case_bottom_cbore_dia,
+                          center=false,
+                          sink=false);
+            }
+          }
+
+          // Front and rear panels cutout
+          translate([0,
+                     0,
+                     power_case_front_back_wall_h]) {
+            rounded_cube([inner_x_cutout,
+                          power_case_length + 1,
+                          lipo_pack_height + 1],
+                         center=true);
+          }
+
+          // Front and rear panels vent
+          power_case_vent(panel_height=power_case_front_back_wall_h,
+                          bottom_thickness=power_case_bottom_thickness,
+                          padding_x=power_case_front_slot_padding_x,
+                          padding_z=power_case_front_slot_padding_z,
+                          slot_h=power_case_front_slot_h,
+                          slot_w=power_case_front_slot_w,
+                          slot_depth=power_case_front_wall_thickness,
+                          gap_x=power_case_front_slot_gap,
+                          gap_z=power_case_front_slot_gap_z,
+                          y_axle=false,
+                          x_offset=-power_case_length / 2,
+                          total_width=inner_x_cutout);
+
+          // Side panels vent
+          power_case_vent(panel_height=power_case_height,
+                          bottom_thickness=power_case_bottom_thickness,
+                          padding_x=power_case_side_slot_padding_x,
+                          padding_z=power_case_side_slot_padding_z,
+                          slot_h=power_case_side_slot_h,
+                          slot_w=power_case_side_slot_w,
+                          slot_depth=(power_case_width - inner_lipo_x_cutout)
+                          / 2,
+                          gap_x=power_case_side_slot_gap,
+                          gap_z=power_case_side_slot_gap_z,
+                          y_axle=true,
+                          x_offset=inner_lipo_x_cutout / 2,
+                          total_width=inner_y_cutout);
+        }
+        mirror_copy([1, 0, 0]) {
+          translate([power_case_width / 2
+                     - power_case_side_wall_thickness / 2,
+                     0,
+                     power_case_height]) {
+            power_case_rail(w=power_case_side_wall_thickness,
+                            l=power_case_length);
+          }
+        }
+      }
+
+      mirror_copy([0, 1, 0]) {
+        mirror_copy([1, 0, 0]) {
+          translate([power_case_width / 2
+                     - power_case_side_wall_thickness / 2,
+                     power_case_length / 2
+                     - power_case_rabet_thickness
+                     + power_case_rabet_w,
+                     power_case_height - power_case_rabet_h]) {
+            translate([0, 0, power_case_rabet_h / 2]) {
+              cube([power_case_rabet_w,
+                    power_case_rabet_thickness,
+                    power_case_rabet_h],
+                   center=true);
+              translate([0, -power_case_rabet_thickness / 2
+                         + power_case_rabet_w / 2,
+                         -power_case_rail_height / 2]) {
+                cube([power_case_rabet_w,
+                      power_case_rabet_w,
+                      power_case_rail_height],
+                     center=true);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+module power_case_vent(panel_height,
+                       bottom_thickness,
+                       padding_x,
+                       padding_z,
+                       slot_h,
+                       slot_w,
+                       slot_depth,
+                       gap_x,
+                       gap_z,
+                       y_axle,
+                       x_offset,
+                       total_width) {
+  available_h = panel_height
+    - bottom_thickness
+    - padding_z;
+
+  slot_z_step = gap_z + slot_h;
+  slot_y_rows = floor(available_h / slot_z_step);
+  for (i = [0 : slot_y_rows - 1]) {
+    let (s = i * slot_z_step) {
+      translate([0, 0, s]) {
+        mirror_copy([y_axle ? 1 : 0, y_axle ? 0 : 1, 0]) {
+          translate([y_axle ? x_offset - 0.1 : 0,
+                     y_axle ? 0 : x_offset - 0.1,
+                     bottom_thickness
+                     + padding_z]) {
+            rotate([0, 0, y_axle ? -90 : 0]) {
+              row_of_cubes(total_width -
+                           (padding_x * 2),
+                           center=true,
+                           spacing=gap_x,
+                           y_center=false,
+                           starts=[0, 0],
+                           size=[slot_w,
+                                 slot_depth + 0.2,
+                                 slot_h]);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+module power_case_assembly(alpha=1,
+                           show_lipo_pack=true,
+                           case_color=metallic_silver_5) {
+  // Placeholder for LiPo pack
+  if (show_lipo_pack) {
+    translate([0, 0, power_case_bottom_thickness + 0.1]) {
+      lipo_pack();
+    }
+  }
+
+  // Power case
+  power_case(case_color=case_color, alpha=alpha);
+}
+
+power_case_assembly(show_lipo_pack=false,
+                    alpha=1,
+                    case_color=blue_grey_carbon);

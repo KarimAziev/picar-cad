@@ -111,6 +111,40 @@ module row_of_circles(total_width,
   }
 }
 
+module row_of_cubes(total_width,
+                    size=[2.4, 2.4, 10],
+                    spacing=3.6,
+                    starts=[0, 0],
+                    center=false,
+                    y_center=false,
+                    z_center=false,
+                    direction=1) {
+  step = spacing + size[0];
+  amount = floor(total_width / step);
+
+  if (amount > 0) {
+    half_of_w = total_width / 2;
+
+    x_offst = center ? -half_of_w : 0;
+
+    translate([x_offst,
+               y_center ? 0 : size[1] / 2,
+               0]) {
+      for (i = [1 : amount]) {
+        let (s = i * step,
+             x = starts[0] + s,
+             y = starts[1]) {
+          translate([direction > 0 ? x : -x, direction > 0 ? y : -y]) {
+            translate([0, 0, z_center ? 0 : size[2] / 2]) {
+              cube(size, center=true);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 module rounded_rect(size, r=undef, center=false, fn, r_factor=0.3) {
   w = size[0];
   h = size[1];
@@ -136,9 +170,24 @@ module rounded_rect(size, r=undef, center=false, fn, r_factor=0.3) {
   }
 }
 
-module rounded_cube(size, r=undef, center=true, z_center=false, fn) {
-  linear_extrude(height = size[2], center=z_center) {
-    rounded_rect(size, r=r, center=center, fn=fn);
+module rounded_cube(size,
+                    r=undef,
+                    center=true,
+                    z_center=false,
+                    fn=36,
+                    r_factor=0.02) {
+  rad = is_undef(r) ? (min(size[0], size[1], size[2])) * r_factor : r;
+
+  x = size[0] - rad * 2;
+  y = size[1] - rad * 2;
+  z = size[2] - rad * 2;
+  translate([(center ? 0 : x / 2),
+             (center ? 0 : y / 2),
+             (z_center ? 0 : z / 2)
+             + rad]) {
+    offset_3d(r=rad, fn=fn) {
+      cube([x, y, z], center=true);
+    }
   }
 }
 
@@ -193,6 +242,18 @@ module debug_polygon(points, paths=undef, convexity=undef, debug=true,
         }
     }
   }
+}
+
+module four_corner_children(size=[10, 10],
+                            center=true) {
+  for (x_ind = [0, 1])
+    for (y_ind = [0, 1]) {
+      x_pos = (center ? -size[0] / 2 : 0) + x_ind * size[0];
+      y_pos = (center ? -size[1] / 2 : 0) + y_ind * size[1];
+      translate([x_pos, y_pos]) {
+        children();
+      }
+    }
 }
 
 module four_corner_holes_2d(size=[10, 10],
@@ -526,11 +587,14 @@ module chamfered_square(size, chamfer) {
          [-h + c,  h]];
   polygon(points = pts);
 }
+
 // calculates width of the top (narrower) side of an isosceles trapezoid
 // bottom_width : width of the bottom base
 // side_length  : length of each equal leg (>= 0)
 // angle_deg     : angle measured from vertical
-function calc_isosceles_trapezoid_top_width(bottom_width, side_length, angle_deg) =
+function calc_isosceles_trapezoid_top_width(bottom_width,
+                                            side_length,
+                                            angle_deg) =
   let (a = angle_deg * PI / 180,
        s = abs(side_length),
        top = bottom_width - 2 * s * sin(a))
@@ -543,3 +607,49 @@ function calc_knuckle_connector_full_len(length,
   let (notch_width = calc_notch_width(max(parent_dia, outer_d),
                                       min(parent_dia, outer_d)))
   notch_width + length + border_w;
+
+module vent_slots_panel(w, h, z, slot_w, slot_gap, slot_h, rows) {
+  cols = max(0, floor((w - slot_gap)/(slot_w + slot_gap)));
+  row_pitch = (rows>1) ? ((h-slot_h)/(rows-1)) : 0;
+  for (r=[0:rows-1]) {
+    y0 = h/2 - slot_h/2 - r*row_pitch;
+    for (c=[0:cols-1]) {
+      x = -w/2 + slot_gap + slot_w/2 + c*(slot_w + slot_gap);
+      translate([x, y0, 0]) {
+        cube([slot_w, slot_h, z], center=true);
+      }
+    }
+  }
+}
+
+module counterbore(h,
+                   d,
+                   upper_d,
+                   upper_h,
+                   center=false,
+                   sink=false,
+                   fn=60) {
+  upper_h = is_undef(upper_h) ? h * 0.3 : upper_h;
+  upper_rad = (is_undef(upper_d) ? d * 2.8 : upper_d) / 2;
+
+  translate([0, 0, center ? -h / 2 : 0]) {
+    cylinder(h=h, r=d / 2, center=false, $fn=fn);
+    translate([0, 0, h - upper_h]) {
+      if (sink) {
+        cylinder(h=upper_h, r1=d / 2, r2=upper_rad, center=false, $fn=fn);
+      } else {
+        cylinder(h=upper_h, r=upper_rad, center=false, $fn=fn);
+      }
+    }
+  }
+}
+
+module countersink(h, d, upper_d, upper_h, center=false, fn=60) {
+  counterbore(h=h,
+              d=d,
+              upper_d=upper_d,
+              center=center,
+              upper_h=upper_h,
+              fn=fn,
+              sink=true);
+}

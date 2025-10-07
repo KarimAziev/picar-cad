@@ -30,7 +30,7 @@ battery_ups_holder_thickness                  = 1.86;
 // Y offset for the UPS HAT slot, measured from the end of the chassis
 battery_ups_offset                            = 2;
 
-// The X and Y dimensions of the screw positions for the UPS HAT slot.
+// The Y and X dimensions of the screw positions for the UPS HAT slot.
 // This forms a square with a screw hole centered on each corner.
 battery_ups_module_screws_size                = [86, 46];
 
@@ -616,6 +616,13 @@ ir_case_head_screws_side_panel_positions      = [[ir_case_head_side_panel_x_1,
                                                   ir_case_head_side_panel_y_2]];
 
 // ─────────────────────────────────────────────────────────────────────────────
+// LiPo Battery Pack dimensions (4S2P configuration)
+// ─────────────────────────────────────────────────────────────────────────────
+lipo_pack_length                              = 138.4; // Length of the battery pack
+lipo_pack_width                               = 47;   // Width of the battery pack
+lipo_pack_height                              = 48.4;  // Height of the battery pack
+
+// ─────────────────────────────────────────────────────────────────────────────
 // PAN SERVO CONFIGURATION (Dimensions & Visual Representation)
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -1137,6 +1144,132 @@ rpi_on_off_button_dia                         = 1.5;
 rpi_standoff_height                           = 10;
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Power module case dimensions
+// ─────────────────────────────────────────────────────────────────────────────
+
+// External width of the power module case (X dimension).
+// This is the full outside width including side walls and rails.
+power_case_width                              = 57;
+
+// External length of the power module case (Y dimension).
+// This is the full outside length of the battery case including front/back walls.
+power_case_length                             = 146;
+
+// External height of the base case body (Z dimension) measured to the top face
+// of the main case (does not include the dovetail rails mounted above).
+power_case_height                             = 55;
+
+power_case_round_rad                          = 1; // Corner radius for rounded exterior geometry.
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Side wall ventilation slot parameters
+// ─────────────────────────────────────────────────────────────────────────────
+
+// depth of each slot (extent into the model in Z when slots are created).
+power_case_side_slot_h                        = 10;
+// Vent/slot parameters (for the case top/side ventilation slots).
+// slot width (slot_w) is the narrow dimension of each rectangular vent slot.
+power_case_side_slot_w                        = 2.8;
+
+// distance between adjacent slot centers (slot gap) measured in the same axis as slot width spacing.
+power_case_side_slot_gap                      = 5.6;
+
+power_case_side_slot_padding_z                = 7.0;
+power_case_side_slot_padding_x                = 30.0;
+
+power_case_side_slot_gap_z                    = 4.6;
+
+// Height of the front and back (end) walls of the case (Z dimension).
+// These end walls are shorter than the side walls to allow the battery XT90/ balance
+// leads and connector to exit from the top. Used to position slot cutouts and the
+// top pocket height relative to the inner battery compartment.
+power_case_front_back_wall_h                  = 34;
+
+// Thickness of the front and back (end) walls
+power_case_front_wall_thickness               = (power_case_length - (lipo_pack_length + 0.4)) / 2;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Slots in front and rear panels of the Power case
+// ─────────────────────────────────────────────────────────────────────────────
+
+// depth of each slot (extent into the model in Z when slots are created).
+power_case_front_slot_h                       = 10;
+
+// Vent/slot parameters (for the case side ventilation slots).
+// slot width (slot_w) is the narrow dimension of each rectangular vent slot.
+power_case_front_slot_w                       = 2.8;
+
+// distance between adjacent slot centers (slot gap) measured in the same axis as slot width spacing.
+power_case_front_slot_gap                     = 3.6;
+
+power_case_front_slot_padding_z               = 4.0;
+power_case_front_slot_padding_x               = 7.0;
+
+power_case_front_slot_gap_z                   = 3.9;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Power module case bottom wall and mounting screws
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Thickness of the bottom wall (floor) of the case.
+// This affects internal clearance and screw/counterbore depths.
+power_case_bottom_thickness                   = 2.0;
+
+// Screw/cutout sizes for mounting the power module to the chassis.
+// The screw hole diameter for through holes in the bottom/back wall.
+power_case_bottom_screw_dia                   = battery_ups_screw_dia;
+
+// Counterbore diameter for the screw head recess on the bottom/back wall.
+// This is the larger diameter of the counterbore so the screw head can sit flush.
+power_case_bottom_cbore_dia                   = 5.3;
+
+// The X and Y spacing for the 4 corner mounting screw positions.
+// Provided as [X_spacing, Y_spacing]. These define the square/rectangle on which
+// the four mounting holes are placed; used by four_corner_children/four_corner_holes.
+power_case_bottom_screws_poses                = [battery_ups_module_screws_size[1],
+                                                 battery_ups_module_screws_size[0]];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Power module case dovetail rail parameters
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Dovetail rail geometry parameters (for mounting a secondary module on top).
+// Angle (deg) of the dovetail sides relative to vertical (controls trapezoid slope).
+power_case_rail_angle                         = 20;
+
+// Fillet radius applied to dovetail profile (0 = sharp corners).
+power_case_rail_rad                           = 0.0;
+
+// Vertical thickness of the rail profile (height of the dovetail section).
+power_case_rail_height                        = 4;
+
+// Diameter of screw holes that run through the rail for mounting hardware.
+power_case_rail_screw_dia                     = m25_hole_dia;
+
+// Distance from the centerline of the rail to the screw groove (used to place clearance slots).
+power_case_rail_screw_groove_distance         = 6.5;
+
+// Internal side wall thickness computed from overall width and the screw pattern.
+// This determines the width of the side wall between the central battery pocket and outer shell.
+// Changing the screw pose values will change this computed thickness.
+power_case_side_wall_thickness                = (power_case_width -
+                                                 (power_case_bottom_screws_poses[0]
+                                                  + power_case_bottom_screw_dia * 2)) / 2;
+
+// Groove dimensions along the rail used to accept the mating slider/plate.
+power_case_groove_w                           = power_case_side_wall_thickness - 0.8;
+
+power_case_groove_thickness                   = 1.5; // Thickness (depth) of the groove feature.
+
+power_case_groove_edge_distance               = 2; // Distance from the rail edge to the start of the groove cut.
+
+// Rabbet (rabet) / lip geometry used for mating the lid or aligning another part.
+// rabet_h is the height (Z) of the lip, rabet_w is its width (X), and rabet_thickness is the board/thickness it sits on.
+power_case_rabet_h                            = 1;
+power_case_rabet_w                            = 1.4;
+power_case_rabet_thickness                    = 2.8;
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Standard (see motor_type) motor brackets dimension
 // ─────────────────────────────────────────────────────────────────────────────
 standard_motor_bracket_screws_size            = [-7.5, 10.5];
@@ -1356,7 +1489,7 @@ steering_panel_rail_height                    = min(4,
                                                     steering_rack_base_height - 1);
 
 // The tolerance to add to the hole for the rail
-steering_rack_rail_tolerance                  = 0.65;
+steering_rack_rail_tolerance                  = 0.7;
 
 // The thickness of the rail in the center of the steering panel that holds the rack
 steering_panel_rail_thickness                 = 2.8;
