@@ -653,3 +653,48 @@ module countersink(h, d, upper_d, upper_h, center=false, fn=60) {
               fn=fn,
               sink=true);
 }
+
+function map_idx(items, idx, def_val) = [for (i = [0 : len(items) - 1])
+    is_undef(items[i][idx])
+      ? def_val
+      : items[i][idx]];
+
+module box(size=[60, 90, 35],
+           front_thickness=3,
+           side_thickness=3,
+           bottom_thickness=3,
+           round_rad=2,
+           top_round=false) {
+  width = size[0];
+  length = size[1];
+  height = size[2];
+  inner_x = width - side_thickness * 2;
+  inner_y = length - front_thickness * 2;
+  inner_z = height - bottom_thickness;
+
+  difference() {
+    union() {
+      rounded_cube([width,
+                    length,
+                    height],
+                   center=true,
+                   r=round_rad);
+      if (!top_round) {
+        translate([0,
+                   0,
+                   round_rad / 2 + height - round_rad]) {
+          cube([width,
+                length,
+                round_rad],
+               center=true);
+        }
+      }
+    }
+    translate([0, 0, bottom_thickness]) {
+      rounded_cube([inner_x,
+                    inner_y,
+                    inner_z + 0.1],
+                   center=true);
+    }
+  }
+}

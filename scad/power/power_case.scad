@@ -10,80 +10,8 @@ include <../colors.scad>
 use <../util.scad>;
 use <../placeholders/lipo_pack.scad>;
 use <../slider.scad>;
-
-module power_case_rail(h=power_case_rail_height,
-                       w=power_case_side_wall_thickness,
-                       l=power_case_length,
-                       angle=power_case_rail_angle,
-                       r=power_case_rail_rad) {
-
-  difference() {
-    translate([0, 0, h / 2]) {
-      rotate([90, 0, 0]) {
-        linear_extrude(height=l,
-                       center=true) {
-          dovetail_rib(w=w,
-                       h=h,
-                       angle=angle,
-                       r=r,
-                       center=true);
-        }
-      }
-    }
-    mirror_copy([0, 1, 0]) {
-      translate([0,
-                 l / 2 -
-                 power_case_groove_edge_distance,
-                 h / 2 + 0.1]) {
-        cube([power_case_groove_w,
-              power_case_groove_thickness,
-              h + 0.1],
-             center=true);
-        translate([0,
-                   -power_case_groove_thickness / 2
-                   - power_case_rail_screw_dia / 2
-                   - power_case_rail_screw_groove_distance
-                   , 0]) {
-          rotate([0, 90, 0]) {
-            cylinder(h=w + 1, r=power_case_rail_screw_dia / 2,
-                     center=true,
-                     $fn=360);
-          }
-        }
-      }
-    }
-  }
-}
-
-module power_case_rail_relief_cutter(h=power_case_rail_height,
-                                     w=steering_panel_rail_thickness
-                                     + steering_rack_rail_tolerance,
-                                     l=power_case_length,
-                                     angle=power_case_rail_angle,
-                                     r=power_case_rail_rad,
-                                     edge_land=steering_rail_edge_land,
-                                     relief_depth=steering_rail_relief_depth) {
-  d_parallel = relief_depth / cos(angle);
-  translate([0, 0, h / 2]) {
-    rotate([90, 0, 90]) {
-      linear_extrude(height=l,
-                     center=true,
-                     convexity=2) {
-        intersection() {
-          offset(r=d_parallel) {
-            dovetail_rib(w=w, h=h, angle=angle, r=r, center=true);
-          }
-
-          offset(r=-edge_land) {
-            offset(r = edge_land) {
-              dovetail_rib(w=w, h=h, angle=angle, r=r, center=true);
-            }
-          }
-        }
-      }
-    }
-  }
-}
+use <power_lid.scad>;
+use <power_case_rail.scad>
 
 module power_case(case_color=metallic_silver_5, alpha=1) {
   inner_x_cutout = power_case_width - power_case_side_wall_thickness * 2;
@@ -237,6 +165,7 @@ module power_case_vent(panel_height,
                        y_axle,
                        x_offset,
                        total_width) {
+
   available_h = panel_height
     - bottom_thickness
     - padding_z;
@@ -271,6 +200,7 @@ module power_case_vent(panel_height,
 
 module power_case_assembly(alpha=1,
                            show_lipo_pack=true,
+                           show_lid=true,
                            case_color=metallic_silver_5) {
   // Placeholder for LiPo pack
   if (show_lipo_pack) {
@@ -279,10 +209,18 @@ module power_case_assembly(alpha=1,
     }
   }
 
+  if (show_lid) {
+    translate([0, 0, power_case_height + power_lid_height + 0]) {
+      rotate([180, 0, 0]) {
+        power_lid(lid_color=case_color);
+      }
+    }
+  }
+
   // Power case
   power_case(case_color=case_color, alpha=alpha);
 }
 
-power_case_assembly(show_lipo_pack=false,
+power_case_assembly(show_lipo_pack=true,
                     alpha=1,
                     case_color=blue_grey_carbon);

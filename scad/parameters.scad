@@ -1269,6 +1269,74 @@ power_case_rabet_h                            = 1;
 power_case_rabet_w                            = 1.4;
 power_case_rabet_thickness                    = 2.8;
 
+// The tolerance to add to the hole for the rail
+power_case_rail_tolerance                     = 0.4;
+
+power_case_rail_relief_depth                  = 0.12; // 0.12…0.15
+
+power_lid_height                              = 25.5;
+power_lid_width                               = power_case_width
+                                              + power_case_side_wall_thickness
+                                              + power_case_rail_tolerance / 2;
+power_lid_len                                 = 50;
+power_lid_thickness                           = 2;
+power_lid_holes_size                          = [35.6, 15.2];
+
+// [...[x, y, diameter, y_gap, x_offset, y_offset]]
+// [[15.2, 35.6, m2_hole_dia, 10, -14.8, 12.5]],
+power_lid_rect_screw_holes                    = [[[15.2, 35.55, m2_hole_dia, 10, -14.9, 12.55]],
+                                                 [[18.2, 43.6, m2_hole_dia, 10, -14.8, 8.5]],
+                                                 [[10.0, 10.0, m2_hole_dia, 7, 17, 60],
+                                                  [10.0, 10.0, m2_hole_dia, 7, 17, 55],
+                                                  [10.0, 10.0, m2_hole_dia, 7, 17, 60],
+                                                  [10.0, 10.0, m2_hole_dia, 7, 17, 60],
+                                                  [10.0, 10.0, m2_hole_dia, 7, 17, 60]],
+                                                 [[10.0, 10.0, m2_hole_dia, 7, -17, 60],
+                                                  [10.0, 10.0, m2_hole_dia, 7, -17, 55],
+                                                  [10.0, 10.0, m2_hole_dia, 7, -17, 60],
+                                                  [10.0, 10.0, m2_hole_dia, 7, -17, 60],
+                                                  [10.0, 10.0, m2_hole_dia, 7, -17, 60]]];
+
+// [...[diameter, y_gap, x_offset, y_offset]]
+power_lid_single_holes_specs                  = [[[8, 15.2, -0, 20],
+                                                  [8, 15.2, -0, 20],
+                                                  [8, 15.2, -0, 20],
+                                                  [8, 15.2, -0, 20]],
+                                                 [[8, 15.2, 10, 30]],
+                                                 [[9, 15.2, -15, 12]],
+                                                 [[9, 15.2, -15, 48]],
+                                                 [[8, 15.2, 20, 4]],
+                                                 [[8, 15.2, -20, 2]],];
+
+// [...[x, y, radius, y_gap, x_offset, y_offset]]
+power_lid_cube_holes                          = [[[13.10, 26.4, 2.5, 0, 0, 100]]];
+
+power_lid_screw_dia                           = m2_hole_dia;
+power_lid_screw_cbore_dia                     = 4;
+power_lid_screw_x_distance                    = 3;
+power_lid_screw_y_distance                    = 20;
+power_lid_tumbler_size                        = [38.6, 18.2];
+power_lid_tumbler_dia                         = 13;
+power_lid_tumbler_cbore_dia                   = 18;
+power_lid_tumbler_wiring_holes_dia            = 10;
+power_lid_tumbler_distance_from_bottom        = 2;
+power_lid_extra_side_thickness                = 2;
+power_lid_tumbler_wall_thickness              = 3;
+power_lid_extra_screw_holes_gap               = 8;
+
+toggle_switch_size                            = [29.4, 15.5, 18];
+toggle_switch_metallic_head_h                 = 2;
+toggle_switch_nut_dia                         = 11.8;
+toggle_switch_nut_h                           = 11.2;
+toggle_switch_nut_upper_h                     = 8;
+toggle_switch_nut_out_h                       = toggle_switch_nut_h - toggle_switch_nut_upper_h;
+toggle_switch_out_d                           = 17.5;
+toggle_switch_lever_dia_1                     = 4.6;
+toggle_switch_lever_dia_2                     = 5.7;
+toggle_switch_lever_h                         = 16.4;
+
+toggle_switch_terminal_size                   = [1.2, 6.0, 9.7];
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Standard (see motor_type) motor brackets dimension
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1282,6 +1350,7 @@ standard_motor_bracket_height                 = 29;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Standard (see motor_type) motor dimensions
+
 // ─────────────────────────────────────────────────────────────────────────────
 standard_motor_shaft_color                    = light_grey;
 
