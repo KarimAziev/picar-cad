@@ -698,3 +698,13 @@ module box(size=[60, 90, 35],
     }
   }
 }
+
+module cube_3d(size, center=true) {
+  if (center) {
+    translate([0, 0, size[2] / 2]) {
+      cube(size, center=center);
+    }
+  } else {
+    cube(size, center=center);
+  }
+}

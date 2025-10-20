@@ -12,11 +12,6 @@ use <../util.scad>;
 lipo_power_wiring_size    = [9.6, 8, 16.5];
 lipo_wiring_balancer_size = [8.75, 8, 11.3];
 
-function map_text_sizes(texts, def_size=10) = [for (i = [0 : len(texts) - 1])
-    is_undef(texts[i][1])
-      ? def_size
-      : texts[i][1]];
-
 module lipo_wiring_slot(size=lipo_power_wiring_size) {
   translate([size[0] / 2, size[1] / 2, size[2] / 2]) {
     difference() {
@@ -34,7 +29,7 @@ module lipo_text_rows(texts = [["TURNIGY",
                                 "Liberation Sans:style=Bold Italic"]],
                       margin=2) {
   rows = reverse(texts);
-  text_sizes = map_text_sizes(rows);
+  text_sizes = map_idx(rows, idx=1, def_val=10);
   for (i = [0 : len(rows) - 1]) {
     let (spec = rows[i],
          txt = spec[0],
@@ -174,46 +169,49 @@ module lipo_pack(center=true,
           }
         }
         color(red_1, alpha=1) {
-          colored_len = lipo_pack_length * 0.3;
-          color_h = lipo_pack_height * 0.15;
-          translate([-0.01,
-                     lipo_pack_length
-                     - colored_len
-                     - lipo_pack_length * 0.05,
-                     lipo_pack_height
-                     - color_h
-                     - lipo_pack_height * 0.3]) {
-            cube([lipo_pack_width + 0.02,
-                  colored_len,
-                  color_h],
-                 center=false);
+          let (colored_len = lipo_pack_length * 0.3,
+               color_h = lipo_pack_height * 0.15) {
+            translate([-0.01,
+                       lipo_pack_length
+                       - colored_len
+                       - lipo_pack_length * 0.05,
+                       lipo_pack_height
+                       - color_h
+                       - lipo_pack_height * 0.3]) {
+              cube([lipo_pack_width + 0.02,
+                    colored_len,
+                    color_h],
+                   center=false);
+            }
           }
         }
 
         color(red_1, alpha=1) {
-          colored_len = lipo_pack_length * 0.15;
-          color_h = lipo_pack_height * 0.15;
-          translate([-0.01,
-                     lipo_pack_length * 0.15,
-                     lipo_pack_height
-                     - color_h
-                     - lipo_pack_height * 0.3]) {
-            cube([lipo_pack_width + 0.02,
-                  colored_len,
-                  color_h],
-                 center=false);
+          let (colored_len = lipo_pack_length * 0.15,
+               color_h = lipo_pack_height * 0.15) {
+            translate([-0.01,
+                       lipo_pack_length * 0.15,
+                       lipo_pack_height
+                       - color_h
+                       - lipo_pack_height * 0.3]) {
+              cube([lipo_pack_width + 0.02,
+                    colored_len,
+                    color_h],
+                   center=false);
+            }
           }
         }
       }
 
       if (!is_undef(top_center_spec)) {
-        sizes = map_text_sizes(top_center_spec);
-        total_h = sum(sizes);
-        translate([lipo_pack_width / 2 - total_h / 2,
-                   lipo_pack_length,
-                   lipo_pack_height]) {
-          rotate([0, 0, -90]) {
-            lipo_text_rows(top_center_spec);
+        let (sizes=map_idx(top_center_spec, idx=1, def_val=10),
+             total_h=sum(sizes)) {
+          translate([lipo_pack_width / 2 - total_h / 2,
+                     lipo_pack_length,
+                     lipo_pack_height]) {
+            rotate([0, 0, -90]) {
+              lipo_text_rows(top_center_spec);
+            }
           }
         }
       }

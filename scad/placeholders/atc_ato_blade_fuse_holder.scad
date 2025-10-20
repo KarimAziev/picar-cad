@@ -9,23 +9,6 @@ include <../parameters.scad>
 include <../colors.scad>
 use <../util.scad>;
 
-atc_ato_blade_fuse_holder_top_cover_h            = 35.3;
-atc_ato_blade_fuse_holder_top_cover_w            = 27.10;
-atc_ato_blade_fuse_holder_top_cover_thickness    = 13.9;
-atc_ato_blade_fuse_holder_top_rad                = 5;
-
-atc_ato_blade_fuse_holder_top_joint_h            = 7.8;
-atc_ato_blade_fuse_holder_top_joint_thickness    = 1.5;
-
-atc_ato_blade_mounting_wall_h                    = 17.45;
-atc_ato_blade_mounting_wall_w                    = 25.0;
-atc_ato_blade_mounting_wall_thickness            = 3.30;
-
-atc_ato_blade_fuse_holder_bottom_cover_h         = 12.22;
-atc_ato_blade_fuse_holder_bottom_cover_w         = 24;
-atc_ato_blade_fuse_holder_bottom_cover_thickness = 14.56;
-atc_ato_blade_fuse_holder_bottom_rad             = 5;
-
 module atc_ato_blade_fuse_holder_top_cover() {
   color(matte_black, alpha=1) {
     union() {
