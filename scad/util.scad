@@ -71,6 +71,10 @@ function sum(list, count=undef) =
   let (l = is_undef(count) ? len(list) : count)
   l < 2 ? list[0] : (list[l-1] + sum(list, l-1));
 
+function drop(a, n) = n >= len(a) ? [] : [for (i = [n : len(a)-1]) a[i]];
+
+function slice(a, start, end) = start > end ? [] : [for (i = [start : end]) a[i]];
+
 /**
  *
  * Draws a horizontal row of circles spanning a given total width.
@@ -636,9 +640,13 @@ module counterbore(h,
     cylinder(h=h, r=d / 2, center=false, $fn=fn);
     translate([0, 0, h - upper_h]) {
       if (sink) {
-        cylinder(h=upper_h, r1=d / 2, r2=upper_rad, center=false, $fn=fn);
+        cylinder(h=upper_h, r1=d / 2, r2=upper_rad, center=false, $fn=fn,
+                 $fa = 12,
+                 $fs = 20,);
       } else {
-        cylinder(h=upper_h, r=upper_rad, center=false, $fn=fn);
+        cylinder(h=upper_h, r=upper_rad, center=false, $fn=fn,
+                 $fa = 12,
+                 $fs = 20,);
       }
     }
   }

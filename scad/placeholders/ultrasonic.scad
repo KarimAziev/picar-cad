@@ -307,4 +307,3 @@ module ultrasonic_pins() {
     }
   }
 }
-ultrasonic();

@@ -1,5 +1,5 @@
 /**
- * Module: Atc Ato Blade Fuse Holder
+ * Module: ATC ATO Blade Fuse Holder
  *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
@@ -9,10 +9,26 @@ include <../parameters.scad>
 include <../colors.scad>
 use <../util.scad>;
 
+function atc_ato_blade_full_h() =
+  atc_ato_blade_fuse_holder_bottom_cover_h
+  + atc_ato_blade_fuse_holder_top_cover_h;
+
+function atc_ato_blade_full_thickness() =
+  max(atc_ato_blade_fuse_holder_top_cover_thickness,
+      atc_ato_blade_fuse_holder_bottom_cover_thickness)
+  + atc_ato_blade_fuse_holder_top_joint_thickness
+  + atc_ato_blade_mounting_wall_thickness;
+
+function atc_ato_blade_full_w() =
+  max(atc_ato_blade_fuse_holder_bottom_cover_w,
+      atc_ato_blade_fuse_holder_top_cover_w)
+  + atc_ato_blade_mounting_wall_w;
+
 module atc_ato_blade_fuse_holder_top_cover() {
   color(matte_black, alpha=1) {
     union() {
-      linear_extrude(height=atc_ato_blade_fuse_holder_top_cover_h, center=false) {
+      linear_extrude(height=atc_ato_blade_fuse_holder_top_cover_h,
+                     center=false) {
         rounded_rect(size=[atc_ato_blade_fuse_holder_top_cover_w,
                            atc_ato_blade_fuse_holder_top_cover_thickness],
                      center=true,
@@ -41,7 +57,8 @@ module atc_ato_blade_fuse_holder_top_cover() {
       mirror_copy([1, 0, 0]) {
         translate([atc_ato_blade_fuse_holder_top_cover_w / 2
                    - atc_ato_blade_mounting_wall_thickness / 2
-                   - atc_ato_blade_fuse_holder_top_rad, -atc_ato_blade_fuse_holder_top_cover_thickness / 2
+                   - atc_ato_blade_fuse_holder_top_rad,
+                   -atc_ato_blade_fuse_holder_top_cover_thickness / 2
                    - atc_ato_blade_mounting_wall_thickness / 2 + 0.5, 0]) {
           rounded_cube([atc_ato_blade_fuse_holder_top_cover_w * 0.1,
                         atc_ato_blade_mounting_wall_thickness,
@@ -65,7 +82,6 @@ module atc_ato_blade_fuse_holder_top_holder_wall_joint(center=true) {
     linear_extrude(height=atc_ato_blade_fuse_holder_top_joint_thickness,
                    center=center) {
 
-      // polygon(center ? [for (p = pts) [p[0] + max_x / 2, p[1]]] : pts);
       polygon(pts);
     }
   }
@@ -73,7 +89,8 @@ module atc_ato_blade_fuse_holder_top_holder_wall_joint(center=true) {
 
 module atc_ato_blade_fuse_holder_bottom_cover() {
   color(matte_black, alpha=1) {
-    linear_extrude(height=atc_ato_blade_fuse_holder_bottom_cover_h, center=false) {
+    linear_extrude(height=atc_ato_blade_fuse_holder_bottom_cover_h,
+                   center=false) {
       rounded_rect(size=[atc_ato_blade_fuse_holder_bottom_cover_w,
                          atc_ato_blade_fuse_holder_bottom_cover_thickness],
                    center=true,
@@ -91,16 +108,4 @@ module atc_ato_blade_fuse_holder() {
   }
 }
 
-function atc_ato_blade_full_h() = atc_ato_blade_fuse_holder_bottom_cover_h + atc_ato_blade_fuse_holder_top_cover_h;
-function atc_ato_blade_full_thickness() = max(atc_ato_blade_fuse_holder_top_cover_thickness,
-                                              atc_ato_blade_fuse_holder_bottom_cover_thickness)
-  + atc_ato_blade_fuse_holder_top_joint_thickness + atc_ato_blade_mounting_wall_thickness;
-function atc_ato_blade_full_w() =
-  max(atc_ato_blade_fuse_holder_bottom_cover_w, atc_ato_blade_fuse_holder_top_cover_w)
-  + atc_ato_blade_mounting_wall_w;
-
 atc_ato_blade_fuse_holder();
-
-// translate([atc_ato_blade_mounting_wall_w - atc_ato_blade_fuse_holder_top_cover_w / 2, 0, atc_ato_blade_full_h() / 2]) {
-//   #cube([atc_ato_blade_full_w(), atc_ato_blade_full_thickness(), atc_ato_blade_full_h()], center=true);
-// }

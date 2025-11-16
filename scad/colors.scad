@@ -2,6 +2,7 @@ blue_grey_carbon         = "#293542";
 black_1                  = "#191919";
 onyx                     = "#353935";
 matte_black              = "#28282B";
+matte_black_2            = "#1A1818";
 jet_black                = "#343434";
 midnight_blue            = "#191970";
 licorice                 = "#1B1212";
@@ -45,3 +46,4 @@ brown_2                  = "#bb9477";
 brown_3                  = "#7a4d48";
 
 red_1                    = "#df1d29";
+red_2                    = "#D63A20";

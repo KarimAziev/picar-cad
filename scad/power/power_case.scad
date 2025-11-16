@@ -212,6 +212,7 @@ module power_case_assembly(alpha=1,
   if (show_lid) {
     translate([0, 0, power_case_height + power_lid_height + 0]) {
       rotate([180, 0, 0]) {
+
         power_lid(lid_color=case_color);
       }
     }
