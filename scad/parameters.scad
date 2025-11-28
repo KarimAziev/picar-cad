@@ -44,33 +44,59 @@ atm_fuse_holder_body_w                           = 11.60;
 atm_fuse_holder_body_bottom_l                    = 20.42;
 atm_fuse_holder_body_top_l                       = 25.5;
 atm_fuse_holder_body_h                           = 11.90;
-atm_fuse_holder_body_rib_w                       = 9.9;
-
-atm_fuse_holder_body_wiring_d                    = 3.8;
-
-atm_fuse_holder_body_rib_thickness               = 1.415;
-atm_fuse_holder_body_rib_h                       = 5.00;
-atm_fuse_holder_body_rib_l                       = 9.8;
-atm_fuse_holder_body_rib_n                       = 3;
-atm_fuse_holder_body_rib_distance                = 2;
 
 atm_fuse_holder_lid_w                            = 10.50;
 atm_fuse_holder_lid_top_l                        = 20.93;
 atm_fuse_holder_lid_bottom_l                     = 25.66;
 atm_fuse_holder_lid_h                            = 19.50;
 
-atm_fuse_holder_lid_rib_thickness                = 1.415;
-atm_fuse_holder_lid_rib_h                        = 6.06;
+atm_fuse_holder_body_wiring_d                    = 3.8;
+
+atm_fuse_holder_body_rib_l                       = 9.8;
+atm_fuse_holder_body_rib_h                       = 5.00;
+atm_fuse_holder_body_rib_n                       = 3;
+atm_fuse_holder_body_rib_distance                = 2;
+atm_fuse_holder_body_rib_thickness               = 1.415;
 
 atm_fuse_holder_lid_rib_l                        = 9.8;
-// numer of the ribs
+atm_fuse_holder_lid_rib_h                        = 6.06;
 atm_fuse_holder_lid_rib_n                        = 3;
 atm_fuse_holder_lid_rib_distance                 = 2;
+atm_fuse_holder_lid_rib_thickness                = 1.415;
 
 atm_fuse_holder_mounting_hole_l                  = 21.8;
 atm_fuse_holder_mounting_hole_h                  = 6.7;
 atm_fuse_holder_mounting_hole_depth              = 5.2;
 atm_fuse_holder_mounting_hole_r                  = 2.8;
+
+atm_fuse_holder_2_body_w                         = 12.20;
+atm_fuse_holder_2_body_bottom_l                  = 28.50;
+atm_fuse_holder_2_body_top_l                     = 28.9;
+atm_fuse_holder_2_body_h                         = 15.070;
+
+atm_fuse_holder_2_lid_w                          = 11.60;
+atm_fuse_holder_2_lid_top_l                      = 23.07;
+atm_fuse_holder_2_lid_bottom_l                   = 24.60;
+atm_fuse_holder_2_lid_h                          = 21.64;
+
+atm_fuse_holder_2_body_rib_thickness             = 1.415;
+atm_fuse_holder_2_body_rib_h                     = 10.00;
+atm_fuse_holder_2_body_rib_l                     = 19.03;
+atm_fuse_holder_2_body_rib_n                     = 5;
+atm_fuse_holder_2_body_rib_distance              = 3;
+
+atm_fuse_holder_2_lid_rib_thickness              = 1.415;
+atm_fuse_holder_2_lid_rib_h                      = 14.30;
+
+atm_fuse_holder_2_lid_rib_l                      = 13.3;
+// numer of the ribs
+atm_fuse_holder_2_lid_rib_n                      = 7;
+atm_fuse_holder_2_lid_rib_distance               = 6.22;
+
+atm_fuse_holder_2_mounting_hole_l                = 21.8;
+atm_fuse_holder_2_mounting_hole_h                = 6.7;
+atm_fuse_holder_2_mounting_hole_depth            = 5.2;
+atm_fuse_holder_2_mounting_hole_r                = 2.8;
 
 m1_hole_dia                                      = 1.2; // M1 screw hole diameter
 m2_hole_dia                                      = 2.4; // M2 screw hole diameter
@@ -1220,15 +1246,9 @@ voltmeter_standoff_thread_h                      = 5;
 
 voltmeter_pin_h                                  = 3.44;
 voltmeter_pins_len                               = 10.65;
-voltmeter_pins_x_distance                        = 2;
-voltmeter_pins_y_distance                        = 1;
 
 voltmeter_pin_thickness                          = 0.63;
 voltmeter_pins_count                             = 5;
-voltmeter_text_position                          = [5, -10, 0];
-voltmeter_text_size                              = 8.5;
-voltmeter_text                                   = "8.8.8";
-voltmeter_text_spacing                           = 0.7;
 
 voltemeter_text_spec                             = ["8.8.8.",
                                                     6.15,
@@ -1241,7 +1261,6 @@ voltmeter_display_indicators_len                 = 3;
 voltmeter_wiring_distance                        = 3;
 voltmeter_wiring_gap                             = 1;
 voltmeter_wiring_d                               = 1.5;
-voltmeter_wiring_len                             = 100;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Power module case dimensions
@@ -1387,22 +1406,8 @@ power_lid_height                                 = 24.5;
 power_lid_width                                  = power_case_width
                                               + power_case_side_wall_thickness
                                               + power_case_rail_tolerance / 2;
-power_lid_len                                    = 50;
-power_lid_thickness                              = 2;
 
-power_lid_voltmeter_position_1                   = [-5, 20, 0, -180, true];
-power_lid_voltmeter_position_2                   = [-25, -12, 3, 90, true];
-power_lid_voltmeter_position_3                   = [-34, 107, 0, -180, true];
-power_lid_voltmeter_position_4                   = [power_lid_voltmeter_position_3[0] + 20,
-                                                    power_lid_voltmeter_position_3[1],
-                                                    power_lid_voltmeter_position_3[2],
-                                                    power_lid_voltmeter_position_3[3],
-                                                    false];
-power_lid_voltmeter_position_5                   = [power_lid_voltmeter_position_3[0],
-                                                    power_lid_voltmeter_position_3[1] - 35,
-                                                    power_lid_voltmeter_position_3[2],
-                                                    power_lid_voltmeter_position_3[3],
-                                                    true];
+power_lid_thickness                              = 2;
 
 power_voltmeter_specs                            = [[[voltmeter_screw_size,
                                                       voltmeter_screw_dia,
@@ -1574,44 +1579,153 @@ power_lid_rect_screw_holes                       = [[[15.2, 35.55, m2_hole_dia, 
 // [...[diameter, y_gap, x_offset, y_offset]]
 power_lid_single_holes_specs                     = [[[8, 15.2, -0, 25],],];
 
-power_lid_side_wall_circle_holes                 = [[[8, 15.2, -2, 5],]];
+power_lid_side_wall_1_circle_holes               = [[[8, 15.2, -2, 5],]];
+power_lid_side_wall_2_circle_holes               = [[[8, 15.2, -2, 5],]];
 
-// [...[x, y, radius, y_gap, x_offset, y_offset, [counterbore_x, counterbore_y, counterbore_z]]]
-power_lid_cube_holes                             = [[[atm_fuse_holder_mounting_hole_h,
-                                                      atm_fuse_holder_mounting_hole_l,
-                                                      atm_fuse_holder_mounting_hole_r,
-                                                      10,
-                                                      17,
-                                                      100,
+// [...[[x, y, radius], [y_gap, x_offset, y_offset], [counterbore_x, counterbore_y, counterbore_z]]]
+power_lid_cube_holes                             = [[[[atm_fuse_holder_mounting_hole_h,
+                                                       atm_fuse_holder_mounting_hole_l,
+                                                       atm_fuse_holder_mounting_hole_r,],
+                                                      [10,
+                                                       17,
+                                                       100],
                                                       [atm_fuse_holder_mounting_hole_h * 1.7,
                                                        atm_fuse_holder_lid_bottom_l + 7,
-                                                       power_lid_thickness * 0.5,
-                                                       true]],],
-                                                    [[9.5, 30.4, 2.0, 0, -12.0, -10],
-                                                     [9.5, 8.4, 2.0, 26, -12.0, 18]]];
+                                                       power_lid_thickness * 0.,]],],
+                                                    [[[9.5, 30.4, 2.0], [0, -12.0, -10]],
+                                                     [[9.5, 8.4, 2.0], [26, -12.0, 18]]]];
 
-power_lid_side_wall_fuse_holes                   = [[[atm_fuse_holder_mounting_hole_h,
-                                                      atm_fuse_holder_mounting_hole_l,
-                                                      atm_fuse_holder_mounting_hole_r + 1,
-                                                      40,
-                                                      -5,
-                                                      20,
-                                                      [atm_fuse_holder_mounting_hole_h * 1.7,
-                                                       atm_fuse_holder_lid_bottom_l + 7,
+// [[slot_h, slot_l, slot_r, hole_depth, slot_tolerance_r?],
+//  [y_gap, x, y, z?],
+//  [counterbore_x, counterbore_y, counterbore_thickness],
+//  [fuse_placeholder_body_top_l,
+//   fuse_placeholder_body_bottom_l,
+//   fuse_placeholder_body_w,
+//   fuse_placeholder_body_h,
+//   matte_black_2],
+//  [fuse_placeholder_lid_top_l,
+//   fuse_placeholder_lid_bottom_l,
+//   fuse_placeholder_lid_w,
+//   fuse_placeholder_lid_h,
+//   fuse_placeholder_lid_color]]
+power_lid_side_wall_1_atm_fuse_specs             = [[[[atm_fuse_holder_2_mounting_hole_h,
+                                                       atm_fuse_holder_2_mounting_hole_l,
+                                                       atm_fuse_holder_2_mounting_hole_r,
+                                                       0,
+                                                       atm_fuse_holder_2_mounting_hole_depth],
+                                                      [20,
+                                                       0,
+                                                       0,
+                                                       0],
+                                                      [atm_fuse_holder_2_mounting_hole_h * 1.7,
+                                                       atm_fuse_holder_2_lid_bottom_l + 7,
+                                                       (power_case_side_wall_thickness
+                                                        + power_lid_extra_side_thickness
+                                                        + power_case_rail_tolerance) * 0.66,
+                                                       true],
+                                                      [atm_fuse_holder_2_body_top_l,
+                                                       atm_fuse_holder_2_body_bottom_l,
+                                                       atm_fuse_holder_2_body_w,
+                                                       atm_fuse_holder_2_body_h,
+                                                       matte_black_2,
+                                                       true],
+                                                      [atm_fuse_holder_2_lid_top_l,
+                                                       atm_fuse_holder_2_lid_bottom_l,
+                                                       atm_fuse_holder_2_lid_w,
+                                                       atm_fuse_holder_2_lid_h,
+                                                       matte_black_2,
+                                                       false],
+                                                      [atm_fuse_holder_2_body_rib_l,
+                                                       atm_fuse_holder_2_body_rib_h,
+                                                       atm_fuse_holder_2_body_rib_n,
+                                                       atm_fuse_holder_2_body_rib_distance,
+                                                       atm_fuse_holder_2_body_rib_thickness],
+                                                      [atm_fuse_holder_2_lid_rib_l,
+                                                       atm_fuse_holder_2_lid_rib_h,
+                                                       atm_fuse_holder_2_lid_rib_n,
+                                                       atm_fuse_holder_2_lid_rib_distance,
+                                                       atm_fuse_holder_2_lid_rib_thickness],
+                                                      [atm_fuse_holder_body_wiring_d, [[15, 0, 0],
+                                                                                       [0, 0, 0]]]],
+                                                     [[atm_fuse_holder_mounting_hole_h,
+                                                       atm_fuse_holder_mounting_hole_l,
+                                                       atm_fuse_holder_mounting_hole_r,
+                                                       0,
+                                                       atm_fuse_holder_mounting_hole_depth],
+                                                      [20,
+                                                       0,
+                                                       0,
+                                                       0],
+                                                      [atm_fuse_holder_mounting_hole_h * 2,
+                                                       atm_fuse_holder_lid_bottom_l + 10,
                                                        (power_case_side_wall_thickness
                                                         +  power_lid_extra_side_thickness
-                                                        + power_case_rail_tolerance) * 0.66]],
-                                                     [atm_fuse_holder_mounting_hole_h,
-                                                      atm_fuse_holder_mounting_hole_l,
-                                                      atm_fuse_holder_mounting_hole_r + 1,
-                                                      10,
-                                                      -5,
-                                                      0,
-                                                      [atm_fuse_holder_mounting_hole_h * 1.7,
-                                                       atm_fuse_holder_lid_bottom_l + 7,
+                                                        + power_case_rail_tolerance) * 0.66,
+                                                       true],
+                                                      [atm_fuse_holder_body_top_l,
+                                                       atm_fuse_holder_body_bottom_l,
+                                                       atm_fuse_holder_body_w,
+                                                       atm_fuse_holder_body_h,
+                                                       matte_black_2,
+                                                       true],
+                                                      [atm_fuse_holder_lid_top_l,
+                                                       atm_fuse_holder_lid_bottom_l,
+                                                       atm_fuse_holder_lid_w,
+                                                       atm_fuse_holder_lid_h,
+                                                       matte_black_2,
+                                                       false],
+                                                      [atm_fuse_holder_body_rib_l,
+                                                       atm_fuse_holder_body_rib_h,
+                                                       atm_fuse_holder_body_rib_n,
+                                                       atm_fuse_holder_body_rib_distance,
+                                                       atm_fuse_holder_body_rib_thickness],
+                                                      [atm_fuse_holder_lid_rib_l,
+                                                       atm_fuse_holder_lid_rib_h,
+                                                       atm_fuse_holder_lid_rib_n,
+                                                       atm_fuse_holder_lid_rib_distance,
+                                                       atm_fuse_holder_lid_rib_thickness],
+                                                      [atm_fuse_holder_body_wiring_d, [[15, 0, 0],
+                                                                                       [0, 0, 0]]]]]];
+
+power_lid_side_wall_2_atm_fuse_specs             = [[[[atm_fuse_holder_2_mounting_hole_h,
+                                                       atm_fuse_holder_2_mounting_hole_l,
+                                                       atm_fuse_holder_2_mounting_hole_r,
+                                                       1,
+                                                       atm_fuse_holder_2_mounting_hole_depth,],
+                                                      [0,
+                                                       0,
+                                                       80,
+                                                       0],
+                                                      [atm_fuse_holder_2_mounting_hole_h * 1.7,
+                                                       atm_fuse_holder_2_lid_bottom_l + 7,
                                                        (power_case_side_wall_thickness
                                                         +  power_lid_extra_side_thickness
-                                                        + power_case_rail_tolerance) * 0.66]],]];
+                                                        + power_case_rail_tolerance) * 0.66,
+                                                       true],
+                                                      [atm_fuse_holder_2_body_top_l,
+                                                       atm_fuse_holder_2_body_bottom_l,
+                                                       atm_fuse_holder_2_body_w,
+                                                       atm_fuse_holder_2_body_h,
+                                                       matte_black_2,
+                                                       true],
+                                                      [atm_fuse_holder_2_lid_top_l,
+                                                       atm_fuse_holder_2_lid_bottom_l,
+                                                       atm_fuse_holder_2_lid_w,
+                                                       atm_fuse_holder_2_lid_h,
+                                                       matte_black_2,
+                                                       false],
+                                                      [atm_fuse_holder_2_body_rib_l,
+                                                       atm_fuse_holder_2_body_rib_h,
+                                                       atm_fuse_holder_2_body_rib_n,
+                                                       atm_fuse_holder_2_body_rib_distance,
+                                                       atm_fuse_holder_2_body_rib_thickness],
+                                                      [atm_fuse_holder_2_lid_rib_l,
+                                                       atm_fuse_holder_2_lid_rib_h,
+                                                       atm_fuse_holder_2_lid_rib_n,
+                                                       atm_fuse_holder_2_lid_rib_distance,
+                                                       atm_fuse_holder_2_lid_rib_thickness],
+                                                      [atm_fuse_holder_body_wiring_d, [[15, 0, 0],
+                                                                                       [0, 0, 0]]]],]];
 
 power_lid_toggle_switch_size                     = [38.6, 18.2];
 power_lid_toggle_switch_dia                      = 13;

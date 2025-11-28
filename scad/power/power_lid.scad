@@ -36,175 +36,6 @@ side_screw_start      = power_case_length / 2 -
   - power_case_rail_screw_dia / 2
   - power_case_rail_screw_groove_distance;
 
-function fuse_center_y(specs, i) =
-  let (y_sizes = map_idx(specs, 1, 0),
-       y_spaces = map_idx(specs, 3, 0),
-       prev_y_size = i > 0 ? sum(y_sizes, i) : 0,
-       prev_y_space = i > 0 ? sum(y_spaces, i) : 0,
-       spec = specs[i],
-       y_offset = is_undef(spec[5]) ? 0 : spec[5])
-  prev_y_size + prev_y_space + y_offset + spec[1] / 2;
-
-module power_lid_bottom_four_corner_holes(specs) {
-  y_sizes = map_idx(specs, 1, 0);
-  dia_sizes = map_idx(specs, 2, 0);
-  y_spaces = map_idx(specs, 3, 0);
-
-  for (i = [0 : len(specs) - 1]) {
-    let (spec=specs[i],
-         prev_spec=i > 0 ? specs[i - 1] : undef,
-         dia=spec[2],
-         prev_y_size= i > 0 ? sum(y_sizes, i) : 0,
-         prev_y_space=i > 0 ? sum(y_spaces, i) : 0,
-         prev_dias=i > 0 ? sum(dia_sizes, i) : 0,
-         y = prev_y_size + prev_y_space + prev_dias,
-         x = is_undef(spec[4]) ? 0 : spec[4],
-         y_offset = is_undef(spec[5]) ? 0 : spec[5]) {
-
-      translate([x - spec[0] / 2, y + y_offset, 0]) {
-        four_corner_children(size=[spec[0], spec[1]],
-                             center=false) {
-          counterbore(d=dia,
-                      h=power_lid_thickness
-                      + 0.2,
-                      upper_h=power_lid_thickness / 2,
-                      upper_d=dia * 1.5,
-                      center=false,
-                      sink=false);
-        }
-      }
-    }
-  }
-}
-
-module power_lid_rect_holes(specs, thickness) {
-  y_sizes = map_idx(specs, 1, 0);
-  y_spaces = map_idx(specs, 3, 0);
-
-  for (i = [0 : len(specs) - 1]) {
-    let (spec=specs[i],
-         prev_spec=i > 0 ? specs[i - 1] : undef,
-         prev_y_size= i > 0 ? sum(y_sizes, i) : 0,
-         prev_y_space=i > 0 ? sum(y_spaces, i) : 0,
-         y = prev_y_size + prev_y_space,
-         x = is_undef(spec[4]) ? 0 : spec[4],
-         y_offset = is_undef(spec[5]) ? 0 : spec[5],
-         extra_thickness = 1) {
-
-      if (!is_undef(spec[6]) && !is_undef(spec[6][0])) {
-        let (counterbore_spec=spec[6],
-             w=is_undef(counterbore_spec[0])
-             ? spec[0] * 1.4
-             : counterbore_spec[0],
-             l=is_undef(counterbore_spec[1])
-             ? spec[1] * 1.4
-             : counterbore_spec[1],
-             z=is_undef(counterbore_spec[2])
-             ? max(1, thickness / 2.2)
-             : counterbore_spec[2],
-             ztr = is_undef(counterbore_spec[3]) ? thickness - z - 0.1 : 0) {
-
-          translate([x - w / 2 ,
-                     y + y_offset - (l / 2 - spec[1] / 2),
-                     ztr]) {
-            linear_extrude(height=z + 0.2, center=false,
-                           convexity=2) {
-              rounded_rect(size=[w,
-                                 l],
-                           r=spec[2]);
-            }
-          }
-        }
-      }
-      translate([x - spec[0] / 2, y + y_offset, -extra_thickness / 2]) {
-        linear_extrude(height=thickness + extra_thickness,
-                       center=false,
-                       convexity=2) {
-          rounded_rect(size=[spec[0], spec[1]], r=spec[2]);
-        }
-      }
-    }
-  }
-}
-
-module power_lid_side_rect_holes(specs, thickness) {
-  y_sizes = map_idx(specs, 1, 0);
-  y_spaces = map_idx(specs, 3, 0);
-
-  for (i = [0 : len(specs) - 1]) {
-    let (spec=specs[i],
-         prev_spec=i > 0 ? specs[i - 1] : undef,
-         prev_y_size= i > 0 ? sum(y_sizes, i) : 0,
-         prev_y_space=i > 0 ? sum(y_spaces, i) : 0,
-         y_center = fuse_center_y(specs, i),
-         y = prev_y_size + prev_y_space,
-         x = is_undef(spec[4]) ? 0 : spec[4],
-         y_offset = is_undef(spec[5]) ? 0 : spec[5],
-         extra_thickness = 1) {
-
-      if (!is_undef(spec[6]) && !is_undef(spec[6][0])) {
-        let (counterbore_spec=spec[6],
-             w=is_undef(counterbore_spec[0])
-             ? spec[0] * 1.4
-             : counterbore_spec[0],
-             l=is_undef(counterbore_spec[1])
-             ? spec[1] * 1.4
-             : counterbore_spec[1],
-             z=is_undef(counterbore_spec[2])
-             ? max(1, thickness / 2.2)
-             : counterbore_spec[2],
-             ztr = is_undef(counterbore_spec[3]) ? thickness - z - 0.1 : 0) {
-
-          translate([x - w / 2 ,
-                     y_center - (l / 2 - spec[1] / 2),
-                     ztr]) {
-            linear_extrude(height=z + 0.2, center=false,
-                           convexity=2) {
-              rounded_rect(size=[w,
-                                 l],
-                           r=spec[2]);
-            }
-          }
-        }
-      }
-      translate([x - spec[0] / 2, y_center, -extra_thickness / 2]) {
-        linear_extrude(height=thickness + extra_thickness,
-                       center=false,
-                       convexity=2) {
-          rounded_rect(size=[spec[0], spec[1]], r=spec[2]);
-        }
-      }
-    }
-  }
-}
-
-module power_lid_counterbore_single_slots(specs, thickness, cfactor=1.5) {
-  dia_sizes = map_idx(specs, 0, 0);
-  y_spaces = map_idx(specs, 1, 0);
-
-  for (i = [0 : len(specs) - 1]) {
-    let (spec=specs[i],
-         prev_spec=i > 0 ? specs[i - 1] : undef,
-         dia=spec[0],
-         prev_y_space=i > 0 ? sum(y_spaces, i) : 0,
-         prev_dias=i > 0 ? sum(dia_sizes, i) : 0,
-         y = prev_y_space + prev_dias,
-         x = is_undef(spec[2]) ? 0 : spec[2],
-         y_offset = is_undef(spec[3]) ? 0 : spec[3]) {
-
-      translate([x, y + y_offset, -0.1]) {
-        counterbore(d=dia,
-                    h=thickness
-                    + 1,
-                    upper_h=thickness / 2,
-                    upper_d=dia * cfactor,
-                    center=false,
-                    sink=false);
-      }
-    }
-  }
-}
-
 module power_lid_voltmeters_screw_holes() {
   for (volt_spec=power_voltmeter_specs) {
     let (v_spec = volt_spec[0],
@@ -212,13 +43,9 @@ module power_lid_voltmeters_screw_holes() {
          screw_size = v_spec[0],
          screw_dia = v_spec[1],
          board_size = v_spec[2],
-         display_spec = v_spec[3],
-         pins_spec = v_spec[4],
-         wiring_spec = v_spec[5],
          standoff_spec=v_spec[6],
          board_w=board_size[0],
          board_len=board_size[1],
-         board_h=board_size[2],
          standoff_body_d = standoff_spec[0]) {
       translate([positions[0], positions[1], 0]) {
         translate([half_of_inner_x - board_w / 2,
@@ -301,8 +128,8 @@ module power_lid_voltmeters_placeholders(echo_wiring_len=true) {
                         display_indicators_len=display_indicators_len,
                         display_top_h=display_top_h,
                         pin_h=pin_h,
-                        pins_len=voltmeter_pins_len,
-                        pin_thickness=voltmeter_pin_thickness,
+                        pins_len=pins_len,
+                        pin_thickness=pin_thickness,
                         pins_count=pins_count,
                         wiring_d=wiring_d,
                         wiring=wiring,
@@ -317,83 +144,107 @@ module power_lid_voltmeters_placeholders(echo_wiring_len=true) {
   }
 }
 
-module power_lid_side_wall_circular_slots(cfactor=1.5) {
-  for (specs=power_lid_side_wall_circle_holes) {
+module power_lid_side_wall_circular_slots(specs=power_lid_side_wall_1_circle_holes,
+                                          cfactor=1.5) {
+  for (specs=specs) {
     let (heights = map_idx(specs, 0, 0),
          max_h = max(heights) * cfactor) {
       translate([0, 0, max_h / 2]) {
         rotate([0, 90, 0]) {
-          power_lid_counterbore_single_slots(specs=specs,
-                                             cfactor=cfactor,
-                                             thickness=side_wall_w);
+          counterbore_single_slots_by_specs(specs=specs,
+                                            cfactor=cfactor,
+                                            thickness=side_wall_w);
         }
       }
     }
   }
 }
 
-module power_lid_side_wall_slots() {
+module power_lid_single_side_wall_slots(circular_specs=power_lid_side_wall_1_circle_holes,
+                                        atm_fuse_specs=power_lid_side_wall_1_atm_fuse_specs,
+                                        slot_mode=true) {
   union() {
-    mirror_copy([1, 0, 0]) {
-      translate([half_of_inner_x,
-                 power_lid_toggle_switch_size[0] - half_of_inner_y,
-                 power_lid_thickness]) {
-        // power_lid_side_wall_circular_slots();
-        power_lid_side_wall_atm_fuse_slots();
+    translate([half_of_inner_x,
+               power_lid_toggle_switch_size[0] - half_of_inner_y,
+               power_lid_thickness]) {
+
+      if (slot_mode) {
+        power_lid_side_wall_circular_slots(specs=circular_specs);
       }
+
+      power_lid_atm_fuse_placeholders(specs=atm_fuse_specs,
+                                      slot_mode=slot_mode);
     }
   }
 }
 
-module power_lid_side_wall_atm_fuse_slots() {
-  for (specs=power_lid_side_wall_fuse_holes) {
-    let (heights = map_idx(specs, 0, 0),
-         max_h = max(heights)) {
-      translate([0, 0, max_h / 2]) {
-        rotate([0, 90, 0]) {
-          power_lid_side_rect_holes(specs=specs,
-                                    thickness=side_wall_w);
-        }
-      }
+module power_lid_side_wall_slots(slot_mode=true) {
+  union() {
+    power_lid_single_side_wall_slots(circular_specs=power_lid_side_wall_1_circle_holes,
+                                     atm_fuse_specs=power_lid_side_wall_1_atm_fuse_specs,
+                                     slot_mode=slot_mode);
+    mirror([1, 0, 0]) {
+      power_lid_single_side_wall_slots(circular_specs=power_lid_side_wall_2_circle_holes,
+                                       atm_fuse_specs=power_lid_side_wall_2_atm_fuse_specs,
+                                       slot_mode=slot_mode);
     }
   }
 }
 
-module power_lid_atm_fuse_placeholders(show_lid=true) {
-  for (specs=power_lid_side_wall_fuse_holes) {
-    let (heights = map_idx(specs, 0, 0),
-         max_h = max(heights),
+module power_lid_atm_fuse_placeholders(specs=power_lid_side_wall_1_atm_fuse_specs,
+                                       thickness=side_wall_w,
+                                       slot_mode=true) {
 
-         total_l = atm_fuse_holder_body_top_l * len(specs),
-         max_l = max(map_idx(specs, 1, 0)),
-         y_sizes =  map_idx(specs, 1, 0),
-         y_spaces = map_idx(specs, 3, 0),) {
-      translate([power_lid_width / 2
-                 - atm_fuse_holder_body_h
-                 - side_wall_w,
-                 power_lid_thickness + max_h / 2
-                 - atm_fuse_holder_body_h / 2]) {
-        for (i = [0 : len(specs) - 1]) {
-          let (spec=specs[i],
-               l=atm_fuse_holder_body_top_l,
-               z=atm_fuse_holder_body_w,
-               y_center=fuse_center_y(specs, i),
-               prev_spec=i > 0 ? specs[i - 1] : undef,
-               prev_y_size= i > 0 ? sum(y_sizes, i) : 0,
-               prev_y_space=i > 0 ? sum(y_spaces, i) : 0,
-               y = prev_y_size + prev_y_space,
-               x = is_undef(spec[4]) ? 0 : spec[4],
+  for (specs=specs) {
+    let (sizes = map_idx(specs, 0, [0, 0]),
+         cbore_sizes = map_idx(specs, 2, [0, 0]),
+         heights = map_idx(sizes, 0, 0),
+         cbore_heigts = map_idx(cbore_sizes, 0, 0),
+         max_h = max(concat(cbore_heigts, heights)),) {
 
-               y_offset = is_undef(spec[5]) ? 0 : spec[5]) {
+      translate([-0.1, 0, max_h / 2 + power_lid_thickness]) {
+        if (slot_mode) {
+          rounded_rect_slots(specs=specs,
+                             thickness=thickness + 0.2,
+                             rotation=[0, 90, 0],
+                             center=true);
+        } else {
+          rounded_rect_slots(specs=specs,
+                             thickness=thickness + 0.2,
+                             center=true,
+                             rotation=[0, 0, -90]) {
 
-            translate([0,
-                       y_center,
-                       -x]) {
-              rotate([0, 0, -90]) {
-                translate([atm_fuse_holder_body_bottom_l / 2,
-                           atm_fuse_holder_body_h / 2,
-                           0]) {
-                  atm_fuse_holder(show_lid=show_lid, center=false);
+            let (spec = $spec,
+                 mounting_hole_raw_spec = spec[0],
+                 cbore_spec = spec[2],
+                 reversed = cbore_spec[3],
+                 body_spec = spec[3],
+                 body_h = body_spec[3],
+                 cbore_thickness=cbore_spec[2],
+                 half_of_body_h = body_h / 2,
+                 wire_spec=spec[7],
+                 wire_d=wire_spec[0],
+                 wire_points=wire_spec[1],
+                 y_offset =  reversed ? half_of_body_h +
+                 cbore_thickness
+                 : -half_of_body_h + cbore_thickness) {
+
+              translate([0, y_offset, -body_spec[2] / 2]) {
+                rotate([0, 0, reversed ? 180 : 0]) {
+                  atm_fuse_holder(show_lid=spec[4][5],
+                                  show_body=body_spec[5],
+                                  center=true,
+                                  mounting_hole_spec=[mounting_hole_raw_spec[0],
+                                                      mounting_hole_raw_spec[1],
+                                                      mounting_hole_raw_spec[2],
+                                                      mounting_hole_raw_spec[4],
+                                                      mounting_hole_raw_spec[3]],
+                                  body_spec=body_spec,
+                                  lid_spec=spec[4],
+                                  body_rib_spec=spec[5],
+                                  wiring_d=wire_d,
+                                  wire_points=wire_points,
+                                  lid_rib_spec=spec[6]);
                 }
               }
             }
@@ -461,16 +312,17 @@ module power_lid(show_switch_button=true,
 
           translate([0, -half_of_inner_y, 0]) {
             for (specs=power_lid_single_holes_specs) {
-              power_lid_counterbore_single_slots(specs=specs,
-                                                 thickness=power_lid_thickness);
+              counterbore_single_slots_by_specs(specs=specs,
+                                                thickness=power_lid_thickness);
             }
 
             for (specs=power_lid_rect_screw_holes) {
-              power_lid_bottom_four_corner_holes(specs=specs);
+              four_corner_hole_rows(specs=specs,
+                                    thickness=power_lid_thickness);
             }
             for (specs=power_lid_cube_holes) {
-              power_lid_rect_holes(specs=specs,
-                                   thickness=power_lid_thickness);
+              rounded_rect_slots(specs=specs,
+                                 thickness=power_lid_thickness);
             }
           }
 
@@ -538,7 +390,7 @@ module power_lid(show_switch_button=true,
         }
       }
       if (show_atm_side_fuse_holders) {
-        power_lid_atm_fuse_placeholders(show_lid=false);
+        power_lid_side_wall_slots(slot_mode=false);
       }
     }
 
@@ -588,24 +440,8 @@ module power_lid(show_switch_button=true,
   }
 }
 
-// power_lid_side_wall_atm_fuse_slots();
-// power_lid_atm_fuse_placeholders();
-
-power_lid(show_dc_regulator=false,
-          show_switch_button=false,
-          show_voltmeter=false,
-          show_ato_fuse=false,
+power_lid(show_dc_regulator=true,
+          show_switch_button=true,
+          show_voltmeter=true,
+          show_ato_fuse=true,
           show_atm_side_fuse_holders=true);
-
-// power_lid_atm_fuse_placeholders(show_lid=false);
-#power_lid_side_wall_slots();
-
-rotate([0, 0, -90]) {
-  translate([0,
-             0,
-             0]) {
-    atm_fuse_holder(show_lid=false,
-                    show_body=true,
-                    center=true);
-  }
-}
