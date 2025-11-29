@@ -80,8 +80,10 @@ function calc_notch_width(dia, w) =
 */
 
 function sum(list, count=undef) =
-  let (l = is_undef(count) ? len(list) : count)
-  l < 2 ? list[0] : (list[l-1] + sum(list, l-1));
+  let (length = is_undef(count) ? len(list) : count)
+  length < 2
+  ? list[0]
+  : (list[length - 1] + sum(list, length - 1));
 
 function drop(a, n) = n >= len(a) ? [] : [for (i = [n : len(a)-1]) a[i]];
 
