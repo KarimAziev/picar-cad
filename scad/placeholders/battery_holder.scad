@@ -9,6 +9,7 @@ include <../parameters.scad>
 include <../colors.scad>
 include <../util.scad>
 use <battery.scad>
+use <atm_fuse_holder.scad>
 
 battery_holder_color = matte_black;
 
@@ -21,7 +22,37 @@ module battery_holder(batteries_count=battery_holder_batteries_count,
                       thickness=battery_holder_thickness,
                       screw_hole_dia=3.5,
                       contact_inc_step=1,
-                      show_battery=true) {
+                      show_battery=true,
+                      show_atm_fuse=true,
+                      atm_fuse_spec=[[atm_fuse_holder_2_mounting_hole_h,
+                                      atm_fuse_holder_2_mounting_hole_l,
+                                      atm_fuse_holder_2_mounting_hole_r,
+                                      atm_fuse_holder_2_mounting_hole_depth],
+                                     [atm_fuse_holder_2_body_top_l,
+                                      atm_fuse_holder_2_body_bottom_l,
+                                      atm_fuse_holder_2_body_w,
+                                      atm_fuse_holder_2_body_h,
+                                      matte_black_2,
+                                      true],
+                                     [atm_fuse_holder_2_lid_top_l,
+                                      atm_fuse_holder_2_lid_bottom_l,
+                                      atm_fuse_holder_2_lid_w,
+                                      atm_fuse_holder_2_lid_h,
+                                      matte_black_2,
+                                      true],
+                                     [atm_fuse_holder_2_body_rib_l,
+                                      atm_fuse_holder_2_body_rib_h,
+                                      atm_fuse_holder_2_body_rib_n,
+                                      atm_fuse_holder_2_body_rib_distance,
+                                      atm_fuse_holder_2_body_rib_thickness],
+                                     [atm_fuse_holder_2_lid_rib_l,
+                                      atm_fuse_holder_2_lid_rib_h,
+                                      atm_fuse_holder_2_lid_rib_n,
+                                      atm_fuse_holder_2_lid_rib_distance,
+                                      atm_fuse_holder_2_lid_rib_thickness],
+                                     [atm_fuse_holder_body_wiring_d,
+                                      [[15, 0, 0],
+                                       [0, 0, 0]]]]) {
 
   if (batteries_count > 0) {
     full_width = is_undef(full_width)
@@ -41,6 +72,32 @@ module battery_holder(batteries_count=battery_holder_batteries_count,
                                          screw_hole_dia=screw_hole_dia,
                                          show_battery=show_battery,
                                          contact_inc_step=contact_inc_step);
+        }
+      }
+    }
+    if (show_atm_fuse) {
+      let (mounting_hole_raw_spec = atm_fuse_spec[0],
+           body_spec = atm_fuse_spec[1],
+           lid_spec=atm_fuse_spec[2],
+           body_rib_spec=atm_fuse_spec[3],
+           lid_rib_spec=atm_fuse_spec[4],
+           wire_spec=atm_fuse_spec[5],
+           wire_d=wire_spec[0],
+           wire_points=wire_spec[1],) {
+
+        translate([-body_spec[3], 40, 0]) {
+          rotate([0, 0, 90]) {
+            atm_fuse_holder(show_lid=lid_spec[5],
+                            show_body=body_spec[5],
+                            center=false,
+                            mounting_hole_spec=mounting_hole_raw_spec,
+                            body_spec=body_spec,
+                            lid_spec=lid_spec,
+                            body_rib_spec=body_rib_spec,
+                            wiring_d=wire_d,
+                            wire_points=wire_points,
+                            lid_rib_spec=lid_rib_spec);
+          }
         }
       }
     }
