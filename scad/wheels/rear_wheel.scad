@@ -6,9 +6,13 @@
  */
 include <../parameters.scad>
 include <../colors.scad>
-use <../util.scad>
+
 use <wheel.scad>
 use <tire.scad>
+use <../lib/functions.scad>
+use <../lib/shapes2d.scad>
+use <../lib/shapes3d.scad>
+use <../lib/trapezoids.scad>
 
 rear_wheel_hub_rad = wheel_rear_shaft_outer_dia / 2;
 

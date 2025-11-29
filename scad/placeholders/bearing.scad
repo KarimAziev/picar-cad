@@ -16,7 +16,8 @@
 
 include <../parameters.scad>
 include <../colors.scad>
-use <../util.scad>
+
+use <../lib/shapes2d.scad>
 
 bearing_shaft_d        = 8;
 bearing_section_height = 7;

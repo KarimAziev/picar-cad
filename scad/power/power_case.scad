@@ -7,11 +7,15 @@
 
 include <../parameters.scad>
 include <../colors.scad>
-use <../util.scad>;
+;
 use <../placeholders/lipo_pack.scad>;
 use <../slider.scad>;
 use <power_lid.scad>;
 use <power_case_rail.scad>
+use <../lib/shapes3d.scad>
+use <../lib/holes.scad>
+use <../lib/placement.scad>
+use <../lib/transforms.scad>
 
 module power_case(case_color=metallic_silver_5, alpha=1) {
   inner_x_cutout = power_case_width - power_case_side_wall_thickness * 2;

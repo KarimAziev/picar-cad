@@ -25,11 +25,14 @@
 include <../parameters.scad>
 include <../colors.scad>
 use <../placeholders/bearing.scad>
-use <../util.scad>
+
 use <knuckle_shaft.scad>
 use <knuckle_connector.scad>
 use <bearing_connector.scad>
 use <tie_rod_shaft.scad>
+
+use <../lib/functions.scad>
+use <../lib/shapes2d.scad>
 
 module knuckle_mount(show_wheel=false,
                      show_bearing=false,

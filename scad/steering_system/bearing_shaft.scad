@@ -23,7 +23,7 @@
  * License: GPL-3.0-or-later
  */
 
-use <../util.scad>
+use <../lib/functions.scad>
 
 module bearing_shaft(d,
                      h,

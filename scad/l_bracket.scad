@@ -48,7 +48,8 @@
  * License: GPL-3.0-or-later
  */
 
-use <util.scad>
+use <lib/functions.scad>
+use <lib/shapes2d.scad>
 
 module l_bracket(size,
                  thickness=1,

@@ -12,7 +12,8 @@
  * License: GPL-3.0-or-later
  */
 include <../parameters.scad>
-use <../util.scad>
+
+use <../lib/shapes2d.scad>
 
 function wheel_hub_full_height(h, inner_rim_h) = h + inner_rim_h * 2;
 function wheel_hub_width(d, outer_d) = (outer_d - d) / 2;

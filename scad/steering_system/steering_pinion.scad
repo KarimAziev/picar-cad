@@ -6,9 +6,10 @@
  */
 
 include <../parameters.scad>
-use <../util.scad>
+
 use <rack_util.scad>
 use <../gear.scad>
+use <../lib/placement.scad>
 
 function steering_pinion_tooth_pitch() =
   calc_circular_pitch(r_pitch=steering_pinion_d / 2,

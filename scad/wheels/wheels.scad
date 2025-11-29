@@ -5,7 +5,7 @@
  * License: GPL-3.0-or-later
  */
 include <../parameters.scad>
-use <../util.scad>
+
 use <wheel.scad>
 use <front_wheel.scad>
 use <rear_wheel.scad>

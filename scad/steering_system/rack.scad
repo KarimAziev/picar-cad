@@ -9,7 +9,7 @@
 
 include <../parameters.scad>
 include <../colors.scad>
-use <../util.scad>
+
 use <../gear.scad>
 use <../slider.scad>
 use <rack_connector.scad>
@@ -17,6 +17,7 @@ use <rack_util.scad>
 use <rack_link.scad>
 use <steering_pinion.scad>
 use <steering_rail.scad>
+use <../lib/transforms.scad>
 
 module shifted_tooth(points, height) {
   translate([0, -min(points[0]), 0]) {

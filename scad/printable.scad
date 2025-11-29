@@ -18,7 +18,7 @@
 
 include <parameters.scad>
 include <colors.scad>
-use <util.scad>
+
 use <chassis.scad>
 use <ir_case.scad>
 use <front_panel.scad>

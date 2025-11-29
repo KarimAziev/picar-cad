@@ -7,8 +7,11 @@
  */
 include <../parameters.scad>
 include <../colors.scad>
-use <../util.scad>
+
 use <battery.scad>
+use <../lib/shapes2d.scad>
+use <../lib/holes.scad>
+use <../lib/transforms.scad>
 
 function ups_hat_polygon_cutout_points(max_len, max_height) =
   let (end_x = max_len / 2,

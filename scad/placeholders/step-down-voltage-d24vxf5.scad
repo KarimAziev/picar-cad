@@ -6,8 +6,12 @@
  */
 include <../parameters.scad>
 include <../colors.scad>
-use <../util.scad>
+
 use <smd_chip.scad>
+use <../lib/shapes2d.scad>
+use <../lib/shapes3d.scad>
+use <../lib/holes.scad>
+use <../lib/transforms.scad>
 
 // [x, y, z, round_radius]
 step_down_voltage_power_inductor_size        = [7.15, 7.4, 3.7, 0.8];

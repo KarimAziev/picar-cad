@@ -15,9 +15,12 @@
 
 include <../parameters.scad>
 include <../colors.scad>
-use <../util.scad>
+
 use <../placeholders/bearing.scad>
 use <knuckle.scad>
+use <../lib/shapes2d.scad>
+use <../lib/trapezoids.scad>
+use <../lib/transforms.scad>
 
 module tie_rod(tie_rod_color="white", show_bearing=false) {
   color(tie_rod_color, alpha=1) {

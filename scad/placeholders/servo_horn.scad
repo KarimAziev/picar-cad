@@ -6,7 +6,10 @@
  */
 include <../parameters.scad>
 include <../colors.scad>
-use <../util.scad>
+
+use <../lib/shapes2d.scad>
+use <../lib/trapezoids.scad>
+use <../lib/transforms.scad>
 
 module servo_horn_single() {
   servo_horn_arm_len = (servo_horn_len / 2);

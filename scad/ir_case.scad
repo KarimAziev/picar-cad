@@ -27,10 +27,11 @@
 
 include <parameters.scad>
 include <colors.scad>
-use <util.scad>
+
 use <l_bracket.scad>
 use <slider.scad>
 use <placeholders/ir_led.scad>
+use <lib/transforms.scad>
 
 function is_ir_case_light_detector_enabled(name) =
   ir_light_detector_position == "both"

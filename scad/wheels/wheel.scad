@@ -6,8 +6,9 @@
  */
 include <../parameters.scad>
 include <../colors.scad>
-use <../util.scad>
+
 use <tire.scad>
+use <../lib/shapes2d.scad>
 
 function wheel_inner_d(d, rim_h) =  d - rim_h;
 

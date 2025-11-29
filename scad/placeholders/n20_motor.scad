@@ -7,8 +7,9 @@
 
 include <../parameters.scad>
 include <../colors.scad>
-use <../util.scad>
+
 use <../wheels/rear_wheel.scad>
+use <../lib/shapes3d.scad>
 
 module n20_motor_reductor() {
   cylinder(h=n20_reductor_height, r=n20_reductor_dia / 2, center=false);

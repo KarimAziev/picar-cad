@@ -11,7 +11,7 @@
 
 include <../parameters.scad>
 include <../colors.scad>
-use <../util.scad>
+
 use <../placeholders/servo.scad>
 use <../placeholders/steering_servo.scad>
 use <ackermann_geometry_triangle.scad>

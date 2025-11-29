@@ -7,8 +7,11 @@
 
 include <../parameters.scad>
 include <../colors.scad>
-use <../util.scad>
+
 use <servo_horn.scad>
+use <../lib/functions.scad>
+use <../lib/shapes2d.scad>
+use <../lib/holes.scad>
 
 function servo_gear_total_height(gear_size) =
   sum([for (i = [0 : len(gear_size) - 1]) gear_size[i][0]]);

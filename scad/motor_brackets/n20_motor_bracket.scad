@@ -27,10 +27,13 @@
 
 include <../parameters.scad>
 include <../colors.scad>
-use <../util.scad>
+
 use <../l_bracket.scad>
 use <../wheels/rear_wheel.scad>
 use <../placeholders/n20_motor.scad>
+use <../lib/functions.scad>
+use <../lib/shapes2d.scad>
+use <../lib/shapes3d.scad>
 
 function n20_motor_width() = n20_can_dia + n20_motor_bracket_thickness * 2;
 

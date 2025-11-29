@@ -7,8 +7,10 @@
 
 include <../parameters.scad>
 include <../colors.scad>
-use <../util.scad>
+
 use <../wheels/rear_wheel.scad>
+use <../lib/shapes2d.scad>
+use <../lib/shapes3d.scad>
 
 module motor_can(h=standard_motor_can_len,
                  r=standard_motor_can_rad,
@@ -105,7 +107,7 @@ module motor(show_wheel=false) {
                                 cutted_w=2);
               }
 
-              cylinder(h=standard_motor_shaft_len+1,
+              cylinder(h=standard_motor_shaft_len + 1,
                        r=0.7,
                        center=true,
                        $fn=60);

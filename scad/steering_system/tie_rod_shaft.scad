@@ -21,6 +21,8 @@ include <../parameters.scad>
 use <knuckle_shaft.scad>
 use <bearing_shaft.scad>
 use <tie_rod.scad>
+use <../lib/trapezoids.scad>
+use <../lib/transforms.scad>
 
 function tie_rod_shaft_full_len() =
   tie_rod_shaft_bearing_pin_height

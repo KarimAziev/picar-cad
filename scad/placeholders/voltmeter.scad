@@ -7,11 +7,13 @@
 
 include <../parameters.scad>
 include <../colors.scad>
-use <../util.scad>;
+;
 use <./pins.scad>
 use <./rpi_5.scad>
 use <../wire.scad>
 use <standoff.scad>
+use <../lib/shapes3d.scad>
+use <../lib/transforms.scad>
 
 module voltmeter_display(display_w=voltmeter_display_w,
                          display_len=voltmeter_display_len,

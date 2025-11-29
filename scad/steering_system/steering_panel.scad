@@ -49,7 +49,7 @@
 
 include <../parameters.scad>
 include <../colors.scad>
-use <../util.scad>
+
 use <../placeholders/steering_servo.scad>
 use <steering_kingpin_post.scad>
 use <rack_util.scad>
@@ -60,6 +60,9 @@ use <rack.scad>
 use <knuckle_connector.scad>
 use <../l_bracket.scad>
 use <steering_servo_mount.scad>
+use <../lib/functions.scad>
+use <../lib/shapes2d.scad>
+use <../lib/transforms.scad>
 
 steering_hinge_screw_rad = steering_panel_hinge_screw_dia / 2;
 

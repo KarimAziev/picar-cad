@@ -16,7 +16,10 @@
  */
 
 include <../parameters.scad>
-use <../util.scad>
+
+use <../lib/functions.scad>
+use <../lib/shapes2d.scad>
+use <../lib/transforms.scad>
 
 module tire_arc(outer_r) {
   linear_extrude(height=wheel_tire_groove_thickness, center=true, convexity=2)

@@ -7,10 +7,13 @@
 
 include <../parameters.scad>
 include <../colors.scad>
-use <../util.scad>
+
 use <../l_bracket.scad>
 use <pins.scad>
 use <smd_chip.scad>
+use <../lib/shapes2d.scad>
+use <../lib/holes.scad>
+use <../lib/transforms.scad>
 
 module ultrasonic() {
   half_of_board_w = ultrasonic_w / 2;

@@ -22,7 +22,8 @@
 
 include <../parameters.scad>
 include <../colors.scad>
-use <../util.scad>
+
+use <../lib/shapes2d.scad>
 
 module ir_led_light_detector() {
   rad_1 = ir_led_light_detector_dia_1 / 2;

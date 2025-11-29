@@ -7,7 +7,11 @@
 
 include <../parameters.scad>
 include <../colors.scad>
-use <../util.scad>;
+
+use <../lib/shapes3d.scad>
+use <../lib/transforms.scad>
+
+;
 
 module toggle_switch() {
   union() {

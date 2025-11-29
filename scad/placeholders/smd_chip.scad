@@ -11,9 +11,11 @@
 
 include <../parameters.scad>
 include <../colors.scad>
-use <../util.scad>
+
 use <../l_bracket.scad>
 use <pins.scad>
+use <../lib/shapes2d.scad>
+use <../lib/transforms.scad>
 
 module smd_chip_2d(length,
                    w,

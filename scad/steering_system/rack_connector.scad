@@ -16,7 +16,7 @@
 
 include <../parameters.scad>
 include <../colors.scad>
-use <../util.scad>
+
 use <rack_util.scad>
 use <rack_connector.scad>
 use <rack_link.scad>

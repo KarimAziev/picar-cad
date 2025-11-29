@@ -13,11 +13,13 @@
 
 include <../parameters.scad>
 include <../colors.scad>
-use <../util.scad>
+
 use <../l_bracket.scad>
 use <../placeholders/steering_servo.scad>
 use <steering_pinion.scad>
 use <rack_util.scad>
+use <../lib/functions.scad>
+use <../lib/transforms.scad>
 
 module steering_servo_mount_connector(clearance=0.0) {
   thickness = steering_servo_mount_connector_thickness + clearance;

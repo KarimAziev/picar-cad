@@ -6,7 +6,7 @@
  */
 include <../parameters.scad>
 include <../colors.scad>
-use <../util.scad>
+
 use <../placeholders/bearing.scad>
 use <wheel.scad>
 use <wheel_hub.scad>

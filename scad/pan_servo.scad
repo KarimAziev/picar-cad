@@ -6,7 +6,9 @@
  */
 
 include <parameters.scad>
-use <util.scad>
+
+use <lib/functions.scad>
+use <lib/shapes2d.scad>
 
 module pan_servo_screws_2d(servo_screw_d=1.5,
                            screws_distance=0.5) {

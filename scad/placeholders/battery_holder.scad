@@ -7,9 +7,11 @@
  */
 include <../parameters.scad>
 include <../colors.scad>
-include <../util.scad>
+
 use <battery.scad>
 use <atm_fuse_holder.scad>
+use <../lib/functions.scad>
+use <../lib/transforms.scad>
 
 battery_holder_color = matte_black;
 

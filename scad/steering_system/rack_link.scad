@@ -18,11 +18,13 @@
 
 include <../parameters.scad>
 include <../colors.scad>
-use <../util.scad>
+
 use <../placeholders/bearing.scad>
 use <rack_connector.scad>
 use <bearing_shaft.scad>
 use <bearing_connector.scad>
+use <../lib/functions.scad>
+use <../lib/shapes2d.scad>
 
 module rack_link(a_len=steering_rack_link_rack_side_w_length,
                  b_len=steering_rack_link_rack_side_h_length,

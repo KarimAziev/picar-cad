@@ -37,7 +37,7 @@
 
 include <../parameters.scad>
 include <../colors.scad>
-use <../util.scad>
+
 use <../wheels/front_wheel.scad>
 
 module knuckle_shaft(show_wheel=false,

@@ -7,7 +7,7 @@
 
 include <../parameters.scad>
 include <../colors.scad>
-use <../util.scad>
+
 use <servo.scad>
 
 function tilt_servo_full_height() =

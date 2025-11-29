@@ -19,9 +19,13 @@
 
 include <../parameters.scad>
 include <../colors.scad>
-use <../util.scad>
+
 use <../ir_case.scad>
 use <../placeholders/camera.scad>
+use <../lib/functions.scad>
+use <../lib/shapes2d.scad>
+use <../lib/holes.scad>
+use <../lib/transforms.scad>
 
 tilt_angle        = atan2((-head_side_panel_curve_end)
                           - (-head_side_panel_bottom),

@@ -7,7 +7,7 @@
 
 include <../parameters.scad>
 include <../colors.scad>
-use <../util.scad>
+
 use <power_case_rail.scad>
 use <../placeholders/lipo_pack.scad>
 use <../slider.scad>
@@ -17,6 +17,11 @@ use <../placeholders/step-down-voltage-d24vxf5.scad>
 use <../placeholders/voltmeter.scad>
 use <../wire.scad>
 use <../placeholders/atm_fuse_holder.scad>
+use <../lib/functions.scad>
+use <../lib/shapes3d.scad>
+use <../lib/holes.scad>
+use <../lib/placement.scad>
+use <../lib/transforms.scad>
 
 side_wall_w           = power_case_side_wall_thickness
   + power_case_rail_tolerance

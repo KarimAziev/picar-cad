@@ -6,7 +6,10 @@
  */
 include <../parameters.scad>
 include <../colors.scad>
-use <../util.scad>
+
+use <../lib/shapes2d.scad>
+use <../lib/holes.scad>
+use <../lib/transforms.scad>
 
 module rpi_rectangle_3d(size, r_factor=0.05, fn=40, center=false) {
   linear_extrude(height=size[2], center=center) {

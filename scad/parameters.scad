@@ -8,7 +8,12 @@
  */
 
 include <colors.scad>
-use <util.scad>
+
+use <lib/functions.scad>
+use <steering_system/knuckle_util.scad>
+use <lib/holes.scad>
+use <lib/trapezoids.scad>
+use <lib/transforms.scad>
 
 assembly_use_front_steering                      = false;
 assembly_shaft_use_front_steering                = true;

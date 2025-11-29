@@ -7,7 +7,7 @@
  */
 
 include <parameters.scad>
-use <util.scad>
+
 use <l_bracket.scad>
 
 function rear_panel_screw_panel_width() =

@@ -5,7 +5,8 @@
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */
-use <util.scad>
+
+use <lib/functions.scad>
 
 function total_wire_length(points) =
   len(points) < 2 ? 0 :

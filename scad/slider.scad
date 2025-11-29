@@ -7,7 +7,10 @@
 
 include  <parameters.scad>
 include  <colors.scad>
-use  <util.scad>
+
+use <lib/shapes2d.scad>
+use <lib/trapezoids.scad>
+use <lib/transforms.scad>
 
 function slider_calc_trapezoid_top_width(width, height, angle) =
   max(0, width - 2 * height * tan(angle));

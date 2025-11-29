@@ -7,8 +7,12 @@
 
 include <../parameters.scad>
 include <../colors.scad>
-use <../util.scad>
+
 use <../wire.scad>
+use <../lib/shapes2d.scad>
+use <../lib/shapes3d.scad>
+use <../lib/trapezoids.scad>
+use <../lib/transforms.scad>
 
 side_wall_w = power_case_side_wall_thickness
   + power_case_rail_tolerance

@@ -7,7 +7,12 @@
 
 include <../parameters.scad>
 include <../colors.scad>
-use <../util.scad>;
+
+use <../lib/shapes2d.scad>
+use <../lib/shapes3d.scad>
+use <../lib/transforms.scad>
+
+;
 
 function atc_ato_blade_full_h() =
   atc_ato_blade_fuse_holder_bottom_cover_h

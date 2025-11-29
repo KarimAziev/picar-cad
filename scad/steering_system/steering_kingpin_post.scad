@@ -21,8 +21,9 @@
 
 include <../parameters.scad>
 include <../colors.scad>
-use <../util.scad>
+
 use <bearing_shaft.scad>
+use <../lib/transforms.scad>
 
 steering_hinge_screw_rad = steering_panel_hinge_screw_dia / 2;
 

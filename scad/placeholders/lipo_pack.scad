@@ -7,7 +7,10 @@
 
 include <../parameters.scad>
 include <../colors.scad>
-use <../util.scad>;
+
+use <../lib/functions.scad>
+
+;
 
 lipo_power_wiring_size    = [9.6, 8, 16.5];
 lipo_wiring_balancer_size = [8.75, 8, 11.3];

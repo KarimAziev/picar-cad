@@ -22,9 +22,10 @@
  */
 
 include <../parameters.scad>
-use <../util.scad>
+
 use <bearing_shaft.scad>
 use <../wheels/wheel_hub.scad>
+use <../lib/shapes2d.scad>
 
 module bearing_upper_connector(connector_color,
                                h=knuckle_rack_link_arm_height) {

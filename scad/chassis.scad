@@ -20,7 +20,7 @@
  */
 include <parameters.scad>
 include <colors.scad>
-use <util.scad>
+
 use <front_panel.scad>
 use <rear_panel.scad>
 use <pan_servo.scad>
@@ -35,6 +35,11 @@ use <steering_system/rack_and_pinion_assembly.scad>
 use <placeholders/motor.scad>
 use <steering_system/knuckle_shaft.scad>
 use <wheels/rear_wheel.scad>
+use <lib/functions.scad>
+use <lib/shapes2d.scad>
+use <lib/holes.scad>
+use <lib/trapezoids.scad>
+use <lib/transforms.scad>
 
 chassis_trapezoid_hole_pts = scale_trapezoid_pts(concat(chassis_trapezoid_shape_pts,
                                                         [[0, chassis_trapezoid_shape_pts[0][1]]]),
