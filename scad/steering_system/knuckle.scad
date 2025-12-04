@@ -24,13 +24,12 @@
 
 include <../parameters.scad>
 include <../colors.scad>
-use <../placeholders/bearing.scad>
 
 use <knuckle_shaft.scad>
 use <knuckle_connector.scad>
 use <bearing_connector.scad>
 use <tie_rod_shaft.scad>
-
+use <../placeholders/bearing.scad>
 use <../lib/functions.scad>
 use <../lib/shapes2d.scad>
 

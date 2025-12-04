@@ -7,13 +7,11 @@
 
 include <../parameters.scad>
 include <../colors.scad>
-;
+
 use <../placeholders/lipo_pack.scad>;
 use <../slider.scad>;
 use <power_lid.scad>
 use <../lib/transforms.scad>
-
-;
 
 module power_case_rail(h=power_case_rail_height,
                        w=power_case_side_wall_thickness,

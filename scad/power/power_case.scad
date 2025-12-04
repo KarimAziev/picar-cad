@@ -7,10 +7,9 @@
 
 include <../parameters.scad>
 include <../colors.scad>
-;
-use <../placeholders/lipo_pack.scad>;
-use <../slider.scad>;
-use <power_lid.scad>;
+use <../placeholders/lipo_pack.scad>
+use <../slider.scad>
+use <power_lid.scad>
 use <power_case_rail.scad>
 use <../lib/shapes3d.scad>
 use <../lib/holes.scad>

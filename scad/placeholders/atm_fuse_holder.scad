@@ -92,7 +92,7 @@ module atm_fuse_holder_body(body_w=atm_fuse_holder_body_w,
          thread_h = mounting_hole_h * 0.9,
          thread_l = mounting_hole_l * 0.9) {
       difference() {
-        #color(rib_colr, alpha=1) {
+        color(rib_colr, alpha=1) {
           union() {
             for (i = [0 : n - 1]) {
               translate([0,

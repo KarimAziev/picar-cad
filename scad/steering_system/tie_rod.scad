@@ -16,8 +16,8 @@
 include <../parameters.scad>
 include <../colors.scad>
 
-use <../placeholders/bearing.scad>
 use <knuckle.scad>
+use <../placeholders/bearing.scad>
 use <../lib/shapes2d.scad>
 use <../lib/trapezoids.scad>
 use <../lib/transforms.scad>

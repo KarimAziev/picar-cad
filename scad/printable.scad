@@ -226,14 +226,14 @@ module printable(spacing=5) {
   }
 
   translate([0, -half_of_chassis_len - max(rear_panel_size[1]
-                                           + rear_panel_thickness
+                                           + rear_panel_mount_thickness
                                            * 2, wheel_dia) / 2 - 10, 0]) {
-    front_wheels_x = -rear_panel_size[0] / 2 - rear_panel_thickness
+    front_wheels_x = -rear_panel_size[0] / 2 - rear_panel_mount_thickness
       - wheel_dia / 2 - spacing;
     wheel_hub_x = show_front_wheels
       ? front_wheels_x - wheel_dia - spacing - wheel_dia
       : -rear_panel_size[0] / 2
-      - rear_panel_thickness
+      - rear_panel_mount_thickness
       - wheel_hub_outer_d / 2
       - spacing;
 
@@ -272,7 +272,7 @@ module printable(spacing=5) {
 
       if (show_rear_wheels) {
         color("white") {
-          translate([rear_panel_size[0] / 2 + rear_panel_thickness
+          translate([rear_panel_size[0] / 2 + rear_panel_mount_thickness
                      + wheel_dia / 2 + spacing,
                      0,
                      0]) {
@@ -293,7 +293,7 @@ module printable(spacing=5) {
 
         color(matte_black) {
           translate([0, -max(rear_panel_size[1]
-                             + rear_panel_thickness
+                             + rear_panel_mount_thickness
                              * 2, wheel_dia) / 2 - outer_tire_r - spacing, 0]) {
             tire();
             translate([-outer_tire_r * 2 - spacing, 0, 0]) {

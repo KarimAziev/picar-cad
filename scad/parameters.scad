@@ -11,9 +11,6 @@ include <colors.scad>
 
 use <lib/functions.scad>
 use <steering_system/knuckle_util.scad>
-use <lib/holes.scad>
-use <lib/trapezoids.scad>
-use <lib/transforms.scad>
 
 assembly_use_front_steering                      = false;
 assembly_shaft_use_front_steering                = true;
@@ -1144,13 +1141,18 @@ n20_motor_screws_panel_len                       = n20_can_dia
 // Rear panel: A vertical rear plate with dimensions including two mounting
 // holes for switch buttons.
 // ─────────────────────────────────────────────────────────────────────────────
-rear_panel_size                                  = [52, 25, 10];
+rear_panel_size                                  = [52, 25, 8];
 rear_panel_switch_slot_dia                       = 13;
+rear_panel_switch_slot_cbore_dia                 = 18;
 
 rear_panel_holes_x_offsets                       = [-16, 16];
 rear_panel_screw_holes_x_offsets                 = [-16, 0, 16];
 rear_panel_screw_hole_dia                        = m25_hole_dia;
-rear_panel_thickness                             = 2;
+rear_panel_screw_cbore_hole_dia                  = 4.40;
+rear_panel_screw_cbore_h                         = 1.40;
+rear_panel_mount_thickness                       = 2.5;
+rear_panel_thickness                             = 3;
+
 rear_panel_screw_offset                          = 3;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1572,33 +1574,39 @@ power_lid_rect_screw_holes                       = [[[15.2, 35.55, m2_hole_dia, 
                                                       ina_260_screw_dia, 22, -0, 70],
                                                      [ina_260_screw_size[0], ina_260_screw_size[1],
                                                       ina_260_screw_dia, 30, -0, 70]],
-                                                    [[10.0, 10.0, m2_hole_dia, 7, 17, 60],
-                                                     [10.0, 10.0, m2_hole_dia, 7, 17, 59],
-                                                     [10.0, 10.0, m2_hole_dia, 7, 17, 44],
-                                                     [10.0, 10.0, m2_hole_dia, 7, 17, 7]],
                                                     [[10.0, 10.0, m2_hole_dia, 7, -17, 60],
                                                      [10.0, 10.0, m2_hole_dia, 7, -17, 59],
                                                      [10.0, 10.0, m2_hole_dia, 7, -17, 44],
-                                                     [10.0, 10.0, m2_hole_dia, 7, -17, 7]]];
+                                                     [10.0, 10.0, m2_hole_dia, 7, -17, 7]]
+                                                    ,];
 
 // [...[diameter, y_gap, x_offset, y_offset]]
-power_lid_single_holes_specs                     = [[[8, 15.2, -0, 25],],];
+power_lid_single_holes_specs                     = [[[8, 15.2, -0, 25],]];
 
-power_lid_side_wall_1_circle_holes               = [[[8, 15.2, -2, 5],]];
-power_lid_side_wall_2_circle_holes               = [[[8, 15.2, -2, 5],]];
+power_lid_side_wall_1_circle_holes               = [[[8, 15.2, -2, 5], [8, 15.2, -2, 5]]];
+power_lid_side_wall_2_circle_holes               = [[[8, 22.2, -2, 5], [8, 15.2, -2, 5]]];
 
 // [...[[x, y, radius], [y_gap, x_offset, y_offset], [counterbore_x, counterbore_y, counterbore_z]]]
-power_lid_cube_holes                             = [[[[atm_fuse_holder_mounting_hole_h,
-                                                       atm_fuse_holder_mounting_hole_l,
-                                                       atm_fuse_holder_mounting_hole_r,],
-                                                      [10,
-                                                       17,
-                                                       100],
-                                                      [atm_fuse_holder_mounting_hole_h * 1.7,
-                                                       atm_fuse_holder_lid_bottom_l + 7,
-                                                       power_lid_thickness * 0.,]],],
+xt_90_size                                       = [10.30, 22.20];
+xt_90_position                                   = [3, 1];
+
+xt_90_screw_size                                 = [0, 32.20];
+xt_90_screw_dia                                  = m3_hole_dia;
+power_lid_cube_holes                             = [[[[atm_fuse_holder_2_mounting_hole_h,
+                                                       atm_fuse_holder_2_mounting_hole_l,
+                                                       atm_fuse_holder_2_mounting_hole_r + 1],
+                                                      [0,
+                                                       15,
+                                                       70],]],
+                                                    [[[atm_fuse_holder_2_mounting_hole_h,
+                                                       atm_fuse_holder_2_mounting_hole_l,
+                                                       atm_fuse_holder_2_mounting_hole_r + 1],
+                                                      [0,
+                                                       -2,
+                                                       74],]],
                                                     [[[9.5, 30.4, 2.0], [0, -12.0, -10]],
-                                                     [[9.5, 8.4, 2.0], [26, -12.0, 18]]]];
+                                                     [[9.5, 8.4, 2.0], [26, -12.0, 18]],
+                                                     [[6, 20, 1.0], [26, -20.0, 8]]],];
 
 // [[slot_h, slot_l, slot_r, hole_depth, slot_tolerance_r?],
 //  [y_gap, x, y, z?],
@@ -1657,11 +1665,11 @@ power_lid_side_wall_2_atm_fuse_specs             = [[[[atm_fuse_holder_2_mountin
                                                        atm_fuse_holder_2_mounting_hole_l,
                                                        atm_fuse_holder_2_mounting_hole_r,
                                                        1,
-                                                       atm_fuse_holder_2_mounting_hole_depth,],
+                                                       atm_fuse_holder_2_mounting_hole_depth],
                                                       [0,
                                                        0,
-                                                       75,
-                                                       0],
+                                                       85,
+                                                       3],
                                                       [atm_fuse_holder_2_mounting_hole_h * 1.7,
                                                        atm_fuse_holder_2_lid_bottom_l + 7,
                                                        (power_case_side_wall_thickness
@@ -1679,7 +1687,7 @@ power_lid_side_wall_2_atm_fuse_specs             = [[[[atm_fuse_holder_2_mountin
                                                        atm_fuse_holder_2_lid_w,
                                                        atm_fuse_holder_2_lid_h,
                                                        matte_black_2,
-                                                       false],
+                                                       true],
                                                       [atm_fuse_holder_2_body_rib_l,
                                                        atm_fuse_holder_2_body_rib_h,
                                                        atm_fuse_holder_2_body_rib_n,

@@ -518,7 +518,7 @@ module chassis(motor_type=motor_type,
         translate([0,
                    -chassis_len / 2,
                    rear_panel_size[1] / 2
-                   + rear_panel_thickness
+                   + rear_panel_mount_thickness
                    + chassis_thickness]) {
           rotate([90, 0, 180]) {
             rear_panel();

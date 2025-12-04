@@ -15,13 +15,14 @@ use <../placeholders/toggle_switch.scad>
 use <../placeholders/atc_ato_blade_fuse_holder.scad>;
 use <../placeholders/step-down-voltage-d24vxf5.scad>
 use <../placeholders/voltmeter.scad>
-use <../wire.scad>
 use <../placeholders/atm_fuse_holder.scad>
+use <../wire.scad>
 use <../lib/functions.scad>
 use <../lib/shapes3d.scad>
 use <../lib/holes.scad>
 use <../lib/placement.scad>
 use <../lib/transforms.scad>
+use <../lib/shapes2d.scad>
 
 side_wall_w           = power_case_side_wall_thickness
   + power_case_rail_tolerance
@@ -199,7 +200,6 @@ module power_lid_side_wall_slots(slot_mode=true) {
 module power_lid_atm_fuse_placeholders(specs=power_lid_side_wall_1_atm_fuse_specs,
                                        thickness=side_wall_w,
                                        slot_mode=true) {
-
   for (specs=specs) {
     let (sizes = map_idx(specs, 0, [0, 0]),
          cbore_sizes = map_idx(specs, 2, [0, 0]),
@@ -298,6 +298,17 @@ module power_lid_side_screw_holes() {
   }
 }
 
+module power_lid_xt_90_slot() {
+  union() {
+    rotate([0, 0, 180]) {
+      rounded_rect_two(xt_90_size, center=true);
+    }
+    four_corner_holes_2d(xt_90_screw_size,
+                         center=true,
+                         hole_dia=xt_90_screw_dia);
+  }
+}
+
 module power_lid(show_switch_button=true,
                  show_dc_regulator=true,
                  lid_color=blue_grey_carbon,
@@ -327,7 +338,19 @@ module power_lid(show_switch_button=true,
             }
             for (specs=power_lid_cube_holes) {
               rounded_rect_slots(specs=specs,
-                                 thickness=power_lid_thickness);
+                                 thickness=power_lid_thickness + 0.1);
+            }
+          }
+          translate([half_of_inner_x
+                     - max(xt_90_size[0], xt_90_screw_size[0]) / 2
+                     - xt_90_position[0],
+                     half_of_inner_y
+                     - max(xt_90_size[1], xt_90_screw_size[1]) / 2
+                     + xt_90_screw_dia / 2
+                     - xt_90_position[1]
+                     , 0]) {
+            linear_extrude(height=power_lid_thickness + 1, center=false) {
+              power_lid_xt_90_slot();
             }
           }
 
@@ -445,8 +468,8 @@ module power_lid(show_switch_button=true,
   }
 }
 
-power_lid(show_dc_regulator=true,
-          show_switch_button=true,
-          show_voltmeter=true,
-          show_ato_fuse=true,
-          show_atm_side_fuse_holders=true);
+power_lid(show_dc_regulator=false,
+          show_switch_button=false,
+          show_voltmeter=false,
+          show_ato_fuse=false,
+          show_atm_side_fuse_holders=false);

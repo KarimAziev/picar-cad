@@ -4,20 +4,33 @@
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */
+
 /**
    ─────────────────────────────────────────────────────────────────────────────
    number_sequence
    ─────────────────────────────────────────────────────────────────────────────
+
    Returns an array of numbers starting at `from` and incremented by `step`.
 
    The `from` value is always included, and `to` is included if the sequence
-   lands on it exactly, otherwise, the last number is the largest value that
+   lands on it exactly; otherwise, the last number is the largest value that
    does not exceed `to`.
 
-   Example:
+   **Parameters:**
+
+   `from`: start value (number)
+   `to`: end value (number)
+   `step`: increment (number)
+
+   **Returns:**
+   A list of numbers.
+
+   **Example:**
+
+   ```scad
    number_sequence(from=2, to=7, step=2) // -> [2, 4, 6]
+   ```
 */
-use <trapezoids.scad>
 
 function number_sequence(from, to, step) = [for (i = [from : step : to]) i];
 
@@ -25,15 +38,23 @@ function number_sequence(from, to, step) = [for (i = [from : step : to]) i];
    ─────────────────────────────────────────────────────────────────────────────
    truncate
    ─────────────────────────────────────────────────────────────────────────────
+
    Truncate a number to a specified number of decimal places.
 
-   Parameters:
-   val:  The input number to truncate.
-   dec:  The number of decimal places to retain (default is 1).
+   **Parameters:**
 
-   Example:
+   `val`: The input number to truncate.
+   `dec`: The number of decimal places to retain (default is 1).
+
+   **Returns:**
+   The truncated number.
+
+   **Examples:**
+
+   ```scad
    truncate(3.14159, 2)  // returns 3.14
    truncate(-2.718, 1)   // returns -2.7
+   ```
 */
 function truncate(val, dec=1) =
   (val >= 0) ? floor(val * pow(10, dec)) / pow(10, dec)
@@ -43,6 +64,7 @@ function truncate(val, dec=1) =
    ─────────────────────────────────────────────────────────────────────────────
    calc_notch_width
    ─────────────────────────────────────────────────────────────────────────────
+
    Computes the depth (or reduction in width) at the notch on a circle.
 
    This function calculates the notch width by determining the chord’s offset
@@ -50,38 +72,45 @@ function truncate(val, dec=1) =
    center to the chord (computed using the Pythagorean theorem) from the full
    diameter.
 
-   Parameters:
-   dia - The diameter of the circle.
-   w   - The chord length corresponding to the notch width at the circle’s
-   center.
+   **Parameters:**
 
-   Returns: The calculated notch width, which is the reduction in the diameter
-   due to the notch.
+   `dia`: The diameter of the circle.
+   `w`: The chord length corresponding to the notch width at the circle’s center.
 
-   Example:
+   **Returns:**
+   The calculated notch width (reduction in diameter due to the notch).
+
+   **Example:**
+
+   ```scad
    calc_notch_width(3.2, 10) // -> 1.33975
+   ```
 */
-
 function calc_notch_width(dia, w) =
   dia - 2 * sqrt(((dia / 2) * (dia / 2)) - ((w / 2) * (w / 2)));
 
 /**
    ─────────────────────────────────────────────────────────────────────────────
    sum
-   -─────────────────────────────────────────────────────────────────────────────
+   ─────────────────────────────────────────────────────────────────────────────
+
    Recursively sum elements of a numeric list.
 
-   Parameters:
-   list: the list of numeric values
-   count: optional number of first elements to sum. If omitted, the whole list
+   **Parameters:**
+
+   `list`: the list of numeric values.
+   `count`: optional number of first elements to sum. If omitted, the whole list
    is summed.
 
-   Returns:
+   **Returns:**
    The sum of the requested elements.
 
-   Example:
+   **Examples:**
+
+   ```scad
    sum([1, 5, 10]); // 16
    sum([1, 5, 10], 2); // 6
+   ```
 */
 function sum(list, count=undef) =
   let (length = is_undef(count) ? len(list) : count)
@@ -93,42 +122,58 @@ function sum(list, count=undef) =
    ─────────────────────────────────────────────────────────────────────────────
    drop
    ─────────────────────────────────────────────────────────────────────────────
+
    Drop the first n elements from a list and return the remainder.
 
-   Parameters:
-   a:  The input list.
-   n:  The number of elements to drop from the start (0-based count).
+   **Parameters:**
 
-   Behavior:
-   If n is greater than or equal to len(a), an empty list is returned.
+   `a`: The input list.
+   `n`: The number of elements to drop from the start (0-based count).
 
-   Examples:
+   **Returns:**
+   A list containing the elements of `a` after the first `n` elements.
+
+   **Behavior:**
+   If `n` is greater than or equal to `len(a)`, an empty list is returned.
+
+   **Examples:**
+
+   ```scad
    drop([1, 2, 3, 4], 2)    // returns [3, 4]
    drop([1, 2], 0)         // returns [1, 2]
    drop([1, 2], 5)         // returns []
    drop([], 0)             // returns []
+   ```
 */
 function drop(a, n) = n >= len(a) ? [] : [for (i = [n : len(a)-1]) a[i]];
 /**
    ─────────────────────────────────────────────────────────────────────────────
    slice
    ─────────────────────────────────────────────────────────────────────────────
+
    Return a sublist of elements between start and end indices (inclusive).
 
-   Parameters:
-   a:      The input list.
-   start:  The starting index (inclusive).
-   end:    The ending index (inclusive).
+   **Parameters:**
 
-   Behavior:
-   If start > end, an empty list is returned. Indices are inclusive and
+   `a`: The input list.
+   `start`: The starting index (inclusive).
+   `end`: The ending index (inclusive).
+
+   **Returns:**
+   A list containing elements a[start] through a[end], inclusive.
+
+   **Behavior:**
+   If `start > end`, an empty list is returned. Indices are inclusive and
    expected to be valid indices within the list.
 
-   Examples:
+   **Examples:**
+
+   ```scad
    slice([10, 20, 30, 40], 1, 2)  // returns [20, 30]
    slice([10, 20, 30], 0, 0)      // returns [10]
    slice([1, 2, 3], 2, 1)         // returns []
    slice([], 0, 0)                // returns []
+   ```
 */
 function slice(a, start, end) = start > end
   ? []
@@ -138,15 +183,23 @@ function slice(a, start, end) = start > end
    ─────────────────────────────────────────────────────────────────────────────
    reverse
    ─────────────────────────────────────────────────────────────────────────────
+
    Return a new list with the elements in reverse order.
 
-   Parameters:
-   list:  The input list to reverse.
+   **Parameters:**
 
-   Examples:
+   `list`: The input list to reverse.
+
+   **Returns:**
+   A list with elements of `list` in reverse order.
+
+   **Examples:**
+
+   ```scad
    reverse([1, 2, 3])   // returns [3, 2, 1]
    reverse([42])        // returns [42]
    reverse([])          // returns []
+   ```
 */
 function reverse(list) = [for (i = [len(list)-1:-1:0]) list[i]];
 
@@ -154,19 +207,23 @@ function reverse(list) = [for (i = [len(list)-1:-1:0]) list[i]];
    ─────────────────────────────────────────────────────────────────────────────
    non_empty
    ─────────────────────────────────────────────────────────────────────────────
+
    Test whether a list exists and contains at least one element.
 
-   Parameters:
-   items:  The list (or value) to test.
+   **Parameters:**
 
-   Behavior:
-   Returns true only if items is a truthy value and its length is greater than 0.
-   For lists, this effectively tests that the list is not empty.
+   `items`: The list (or value) to test.
 
-   Examples:
+   **Returns:**
+   `true` only if `items` is a truthy value and its length is greater than 0.
+
+   **Examples:**
+
+   ```scad
    non_empty([1, 2])   // returns true
    non_empty([])       // returns false
    non_empty([0])      // returns true   // list has one element (even if element is falsy)
+   ```
 */
 function non_empty(items) = items && len(items) > 0;
 
@@ -174,19 +231,24 @@ function non_empty(items) = items && len(items) > 0;
    ─────────────────────────────────────────────────────────────────────────────
    map_idx
    ─────────────────────────────────────────────────────────────────────────────
+
    Extracts a column (index) from a list of records, providing a default value
    for missing entries.
 
-   Parameters:
-   items: list of lists (records)
-   idx: integer index to extract from each item
-   def_val: value to use when items[i][idx] is undefined
+   **Parameters:**
 
-   Returns:
-   A list where each element is items[i][idx] when defined, otherwise def_val.
+   `items`: list of lists (records)
+   `idx`: integer index to extract from each item
+   `def_val`: value to use when `items[i][idx]` is undefined
 
-   Example:
-   map_idx([[10, 30, 50]], [[15, 35, 25]], 1) // -> , [30, 35]
+   **Returns:**
+   A list where each element is `items[i][idx]` when defined, otherwise `def_val`.
+
+   **Example:**
+
+   ```scad
+   map_idx([[10, 30, 50]], [[15, 35, 25]], 1) // ->  [30, 35]
+   ```
 */
 function map_idx(items, idx, def_val) = [for (i = [0 : len(items) - 1])
     is_undef(items[i][idx])
@@ -197,29 +259,34 @@ function map_idx(items, idx, def_val) = [for (i = [0 : len(items) - 1])
    ─────────────────────────────────────────────────────────────────────────────
    poly_width_at_y
    ─────────────────────────────────────────────────────────────────────────────
+
    Compute the horizontal width of a polygon at a given y (distance between
    the leftmost and rightmost intersections of the polygon with the horizontal
    line y = y_target).
 
-   Parameters:
-   pts:      A list of 2D points defining the polygon, each point as [x, y].
-   The polygon is treated as closed (the last point connects to the first).
-   y_target: The y coordinate of the horizontal scan line.
+   **Parameters:**
 
-   Behavior and notes:
+   `pts`: A list of 2D points defining the polygon, each point as `[x, y]`. The polygon is treated as closed (the last point connects to the first).
+   `y_target`: The y coordinate of the horizontal scan line.
+
+   **Returns:**
+   The horizontal width at `y_target` (max(intersections) - min(intersections)).
+
+   **Behavior and notes:**
    - The function computes x coordinates where each polygon edge (non-horizontal)
-   intersects the horizontal line y = y_target and returns max(intersections) -
-   min(intersections).
+   intersects the horizontal line `y = y_target` and returns `max(intersections) - min(intersections)`.
    - Horizontal edges (edges with identical y values) are skipped to avoid
-   division by zero; vertices that lie exactly on y_target can produce
+   division by zero; vertices that lie exactly on `y_target` can produce
    intersections through adjacent non-horizontal edges.
    - For a simple polygon the horizontal line typically produces an even number
    of intersections; if only one intersection occurs the function returns 0
-   (max == min). If there are no intersections the result is undefined (will
-   error since max/min are called on an empty list). The caller should ensure
-   the line intersects the polygon (or guard against empty intersections).
+   (`max == min`). If there are no intersections the result is undefined
+   (an error occurs since `max/min` are called on an empty list). The caller
+   should ensure the line intersects the polygon (or guard against empty intersections).
 
-   Examples:
+   **Examples:**
+
+   ```scad
    poly_width_at_y([[0, 0], [10, 0], [10, 5], [0, 5]], 2)
    // returns 10    (rectangle width at y=2)
 
@@ -232,7 +299,8 @@ function map_idx(items, idx, def_val) = [for (i = [0 : len(items) - 1])
 
    poly_width_at_y([[0, 0],[5, 10],[10, 0]], 20);
    // undefined      (no intersections; caller should check / avoid this case)
-   */
+   ```
+*/
 function poly_width_at_y(pts, y_target) =
   let (intersections = [for (i = [0 : len(pts)-1])
            if (((pts[i][1] - y_target)
@@ -247,23 +315,31 @@ function poly_width_at_y(pts, y_target) =
    ─────────────────────────────────────────────────────────────────────────────
    notched_circle_square_center_x
    ─────────────────────────────────────────────────────────────────────────────
+
    Compute the x-coordinate of the center of a square "notch" measured from
    the circle center when the square of width `cutout_w` is aligned so that
    its inner corner lies on the circle's circumference.
 
-   Parameters:
-   r:         Radius of the circle (must be >= 0).
-   cutout_w:  Width of the square cutout (must satisfy cutout_w <= 2 * r).
+   **Parameters:**
 
-   Behavior:
-   Uses L = sqrt(r^2 - (cutout_w/2)^2) and returns L + cutout_w/2.
-   The expression requires cutout_w <= 2*r (otherwise sqrt of a negative
-   value occurs). The returned value is in the same units as r and cutout_w.
+   `r`: Radius of the circle (must be >= 0).
+   `cutout_w`: Width of the square cutout (must satisfy `cutout_w <= 2 * r`).
 
-   Examples:
+   **Returns:**
+   The x-coordinate (in same units as `r` and `cutout_w`).
+
+   **Behavior:**
+   Uses `L = sqrt(r^2 - (cutout_w/2)^2)` and returns `L + cutout_w/2`.
+   The expression requires `cutout_w <= 2*r` (otherwise `sqrt` of a negative
+   value occurs).
+
+   **Examples:**
+
+   ```scad
    notched_circle_square_center_x(10, 6)   // returns ~12.539387
    notched_circle_square_center_x(5, 10)   // returns 5
    notched_circle_square_center_x(5, 11)   // invalid: cutout_w > 2*r -> sqrt of negative
+   ```
 */
 function notched_circle_square_center_x(r, cutout_w) =
   let (L = sqrt(r * r - (cutout_w / 2) * (cutout_w / 2)))
@@ -273,21 +349,29 @@ function notched_circle_square_center_x(r, cutout_w) =
    ─────────────────────────────────────────────────────────────────────────────
    cutout_depth
    ─────────────────────────────────────────────────────────────────────────────
+
    Compute the depth (radial intrusion) of a square cutout into a circle.
 
-   Parameters:
-   r:         Radius of the circle (must be >= 0).
-   cutout_w:  Width of the square cutout (must satisfy cutout_w <= 2 * r).
+   **Parameters:**
 
-   Behavior:
-   Returns r - sqrt(r^2 - (cutout_w/2)^2). For cutout_w = 0 the depth is 0;
-   for cutout_w = 2*r the depth equals r. If cutout_w > 2*r a negative
+   `r`: Radius of the circle (must be >= 0).
+   `cutout_w`: Width of the square cutout (must satisfy `cutout_w <= 2 * r`).
+
+   **Returns:**
+   The radial depth of the cutout.
+
+   **Behavior:**
+   Returns `r - sqrt(r^2 - (cutout_w/2)^2)`. For `cutout_w = 0` the depth is 0;
+   for `cutout_w = 2*r` the depth equals `r`. If `cutout_w > 2*r` a negative
    value under the square root occurs (invalid).
 
-   Examples:
+   **Examples:**
+
+   ```scad
    cutout_depth(10, 6)   // returns 0.460608
    cutout_depth(5, 10)   // returns 5
    cutout_depth(5, 11)   // nan: cutout_w > 2*r -> sqrt of negative
+   ```
 */
 function cutout_depth(r, cutout_w) =
   r - sqrt(r * r - (cutout_w / 2) * (cutout_w / 2));
@@ -296,24 +380,30 @@ function cutout_depth(r, cutout_w) =
    ─────────────────────────────────────────────────────────────────────────────
    calc_isosceles_trapezoid_top_width
    ─────────────────────────────────────────────────────────────────────────────
+
    Calculate the top (narrower) base width of an isosceles trapezoid.
 
-   Parameters:
-   bottom_width:  Width of the bottom base.
-   side_length:   Length of each equal side (leg). A negative value is
-   accepted but treated as its absolute value.
-   angle_deg:     Angle in degrees measured from vertical for each leg.
-   (0° = leg vertical, 90° = leg horizontal).
+   **Parameters:**
 
-   Behavior:
-   Horizontal inset on each side = side_length * sin(angle_deg).
-   Top width = bottom_width - 2 * side_length * sin(angle_deg).
+   `bottom_width`: Width of the bottom base.
+   `side_length`: Length of each equal side (leg). A negative value is accepted but treated as its absolute value.
+   `angle_deg`: Angle in degrees measured from vertical for each leg. (0° = leg vertical, 90° = leg horizontal).
+
+   **Returns:**
+   The top base width (clamped to a minimum of 0).
+
+   **Behavior:**
+   Horizontal inset on each side = `side_length * sin(angle_deg)`.
+   `top = bottom_width - 2 * side_length * sin(angle_deg)`.
    The function clamps the result to a minimum of 0.
 
-   Examples:
+   **Examples:**
+
+   ```scad
    calc_isosceles_trapezoid_top_width(20, 5, 30)   // returns 19.9086
    calc_isosceles_trapezoid_top_width(10, 10, 90)  // returns 9.45176
    calc_isosceles_trapezoid_top_width(12, -3, 45)  // returns 11.9178
+   ```
 */
 function calc_isosceles_trapezoid_top_width(bottom_width,
                                             side_length,
@@ -327,12 +417,23 @@ function calc_isosceles_trapezoid_top_width(bottom_width,
    ─────────────────────────────────────────────────────────────────────────────
    screw_x_offst
    ─────────────────────────────────────────────────────────────────────────────
+
    Calculates the translation positions for screws.
 
-   Parameters:
-   slot_w:    The width of the centered parent slot.
-   screw_dia: The diameter of the screw.
-   distance:  The desired distance between the centered parent slot and the screw.
+   **Parameters:**
+
+   `slot_w`: The width of the centered parent slot.
+   `screw_dia`: The diameter of the screw.
+   `distance`: The desired distance between the centered parent slot and the screw.
+
+   **Returns:**
+   The x offset for placing the screw relative to slot center.
+
+   **Example:**
+
+   ```scad
+   screw_x_offst(10, 3.5, 2) // -> 8.75
+   ```
 */
 function screw_x_offst(slot_w, screw_dia, distance) =
   (slot_w * 0.5 + screw_dia * 0.5) + distance;
