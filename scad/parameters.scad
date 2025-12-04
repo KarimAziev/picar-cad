@@ -1359,7 +1359,8 @@ power_case_bottom_cbore_dia                      = 5.3;
 // The X and Y spacing for the 4 corner mounting screw positions.
 // Provided as [X_spacing, Y_spacing]. These define the square/rectangle on which
 // the four mounting holes are placed; used by four_corner_children/four_corner_holes.
-power_case_bottom_screws_poses                   = [battery_ups_module_screws_size[1],
+
+power_case_bottom_screw_size                     = [battery_ups_module_screws_size[1],
                                                     battery_ups_module_screws_size[0]];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1386,7 +1387,7 @@ power_case_rail_screw_groove_distance            = 6.5;
 // This determines the width of the side wall between the central battery pocket and outer shell.
 // Changing the screw pose values will change this computed thickness.
 power_case_side_wall_thickness                   = (power_case_width -
-                                                    (power_case_bottom_screws_poses[0]
+                                                    (power_case_bottom_screw_size[0]
                                                      + power_case_bottom_screw_dia * 2)) / 2;
 
 power_lid_extra_side_thickness                   = 2;
@@ -1417,35 +1418,6 @@ power_lid_width                                  = power_case_width
 power_lid_thickness                              = 2;
 
 power_voltmeter_specs                            = [[[voltmeter_screw_size,
-                                                      voltmeter_screw_dia,
-                                                      [voltmeter_board_w,
-                                                       voltmeter_board_len,
-                                                       voltmeter_board_h,],
-                                                      [voltmeter_display_w,
-                                                       voltmeter_display_len,
-                                                       voltmeter_display_h,
-                                                       1,
-                                                       voltmeter_display_indicators_len],
-                                                      [voltmeter_pins_count,
-                                                       voltmeter_pin_h,
-                                                       voltmeter_pin_thickness,
-                                                       voltmeter_pins_len],
-                                                      [voltmeter_wiring_d,
-                                                       [[-5, -5, -2],
-                                                        [-15, -10, -1],
-                                                        [10, -15, -2],
-                                                        [20, 0, 0]],
-                                                       voltmeter_wiring_gap,
-                                                       voltmeter_wiring_distance],
-                                                      [voltmeter_standoff_body_d],
-                                                      ["4.00",
-                                                       6.15,
-                                                       "DSEG14 Classic:style=Italic",
-                                                       1.2,
-                                                       red_1,
-                                                       [0, 0.6]]],
-                                                     [-5, 20, 0, -180, false]],
-                                                    [[voltmeter_screw_size,
                                                       voltmeter_screw_dia,
                                                       [voltmeter_board_w,
                                                        voltmeter_board_len,
@@ -1499,7 +1471,7 @@ power_voltmeter_specs                            = [[[voltmeter_screw_size,
                                                        1.2,
                                                        red_1,
                                                        [0, 0.6]]],
-                                                     [-34,
+                                                     [-38,
                                                       107,
                                                       0,
                                                       0,
@@ -1530,58 +1502,29 @@ power_voltmeter_specs                            = [[[voltmeter_screw_size,
                                                        1.2,
                                                        red_1,
                                                        [0, 0.6]]],
-                                                     [-34,
+                                                     [-38,
                                                       70,
                                                       0,
                                                       0,
-                                                      true]],
-                                                    [[voltmeter_screw_size,
-                                                      voltmeter_screw_dia,
-                                                      [voltmeter_board_w,
-                                                       voltmeter_board_len,
-                                                       voltmeter_board_h,],
-                                                      [voltmeter_display_w,
-                                                       voltmeter_display_len,
-                                                       voltmeter_display_h,
-                                                       1,
-                                                       voltmeter_display_indicators_len],
-                                                      [voltmeter_pins_count,
-                                                       voltmeter_pin_h,
-                                                       voltmeter_pin_thickness,
-                                                       voltmeter_pins_len],
-                                                      [voltmeter_wiring_d,
-                                                       [[0, -15, -2],
-                                                        [-42, 15, -1],
-                                                        [-43, 20, -27]],
-                                                       voltmeter_wiring_gap,
-                                                       voltmeter_wiring_distance],
-                                                      [voltmeter_standoff_body_d],
-                                                      ["7.42", 6.15,
-                                                       "DSEG14 Classic:style=Italic",
-                                                       1.2,
-                                                       red_1,
-                                                       [0, 0.6]]],
-                                                     [-14,
-                                                      107,
-                                                      0,
-                                                      0,
-                                                      true]]];
+                                                      true]],];
 
-// [...[x, y, radius, y_gap, x_offset, y_offset, [counterbore_x, counterbore_y, counterbore_z]]]
+breadboard_screw_size_1                          = [16.0, 76.0];
+// [16.0, 76.0];
+breadboard_screw_dia_1                           = m2_hole_dia;
+
+breadboard_screw_size_2                          = [26.10, 65.74];
+breadboard_screw_dia_2                           = m2_hole_dia;
+
 // [[15.2, 35.6, m2_hole_dia, 10, -14.8, 12.5]],
-power_lid_rect_screw_holes                       = [[[15.2, 35.55, m2_hole_dia, 10, -11.9, 14.55]],
-                                                    [[ina_260_screw_size[0], ina_260_screw_size[1],
-                                                      ina_260_screw_dia, 22, -0, 70],
-                                                     [ina_260_screw_size[0], ina_260_screw_size[1],
-                                                      ina_260_screw_dia, 30, -0, 70]],
-                                                    [[10.0, 10.0, m2_hole_dia, 7, -17, 60],
-                                                     [10.0, 10.0, m2_hole_dia, 7, -17, 59],
-                                                     [10.0, 10.0, m2_hole_dia, 7, -17, 44],
-                                                     [10.0, 10.0, m2_hole_dia, 7, -17, 7]]
-                                                    ,];
 
+power_lid_rect_screw_holes                       = [[[15.2, 35.55, m2_hole_dia, 10, -11.9, 14.55]],
+                                                    [[breadboard_screw_size_1[0], breadboard_screw_size_1[1],
+                                                      breadboard_screw_dia_1, 0, 15, 18]],
+                                                    [[ina_260_screw_size[0], ina_260_screw_size[1],
+                                                      ina_260_screw_dia, 10, 23, 38],]];
+// [...[x, y, radius, y_gap, x_offset, y_offset, [counterbore_x, counterbore_y, counterbore_z]]]
 // [...[diameter, y_gap, x_offset, y_offset]]
-power_lid_single_holes_specs                     = [[[8, 15.2, -0, 25],]];
+power_lid_single_holes_specs                     = [[[8, 15.2, -0, 25]]];
 
 power_lid_side_wall_1_circle_holes               = [[[8, 15.2, -2, 5], [8, 15.2, -2, 5]]];
 power_lid_side_wall_2_circle_holes               = [[[8, 22.2, -2, 5], [8, 15.2, -2, 5]]];
@@ -1592,21 +1535,21 @@ xt_90_position                                   = [3, 1];
 
 xt_90_screw_size                                 = [0, 32.20];
 xt_90_screw_dia                                  = m3_hole_dia;
-power_lid_cube_holes                             = [[[[atm_fuse_holder_2_mounting_hole_h,
-                                                       atm_fuse_holder_2_mounting_hole_l,
+power_lid_cube_holes                             = [[[[atm_fuse_holder_2_mounting_hole_h + 2,
+                                                       atm_fuse_holder_2_mounting_hole_l + 0.8,
                                                        atm_fuse_holder_2_mounting_hole_r + 1],
                                                       [0,
-                                                       15,
+                                                       12.5,
                                                        70],]],
-                                                    [[[atm_fuse_holder_2_mounting_hole_h,
-                                                       atm_fuse_holder_2_mounting_hole_l,
+                                                    [[[atm_fuse_holder_2_mounting_hole_h + 2,
+                                                       atm_fuse_holder_2_mounting_hole_l + 0.8,
                                                        atm_fuse_holder_2_mounting_hole_r + 1],
                                                       [0,
-                                                       -2,
-                                                       74],]],
-                                                    [[[9.5, 30.4, 2.0], [0, -12.0, -10]],
-                                                     [[9.5, 8.4, 2.0], [26, -12.0, 18]],
-                                                     [[6, 20, 1.0], [26, -20.0, 8]]],];
+                                                       -3.5,
+                                                       70],]],
+                                                    [[[9.5, 30.4, 2.0], [0, -16.7, -10]],
+                                                     [[9.5, 8.4, 2.0], [26, -16.7, 18]],
+                                                     [[6, 20, 1.0], [26, -19.0, 9]],]];
 
 // [[slot_h, slot_l, slot_r, hole_depth, slot_tolerance_r?],
 //  [y_gap, x, y, z?],
@@ -1621,8 +1564,8 @@ power_lid_cube_holes                             = [[[[atm_fuse_holder_2_mountin
 //   fuse_placeholder_lid_w,
 //   fuse_placeholder_lid_h,
 //   fuse_placeholder_lid_color]]
-power_lid_side_wall_1_atm_fuse_specs             = [[[[atm_fuse_holder_2_mounting_hole_h,
-                                                       atm_fuse_holder_2_mounting_hole_l,
+power_lid_side_wall_1_atm_fuse_specs             = [[[[atm_fuse_holder_2_mounting_hole_h + 2.2,
+                                                       atm_fuse_holder_2_mounting_hole_l + 0.6,
                                                        atm_fuse_holder_2_mounting_hole_r,
                                                        1,
                                                        atm_fuse_holder_2_mounting_hole_depth],
@@ -1661,8 +1604,8 @@ power_lid_side_wall_1_atm_fuse_specs             = [[[[atm_fuse_holder_2_mountin
                                                       [atm_fuse_holder_body_wiring_d, [[15, 0, 0],
                                                                                        [0, 0, 0]]]],]];
 
-power_lid_side_wall_2_atm_fuse_specs             = [[[[atm_fuse_holder_2_mounting_hole_h,
-                                                       atm_fuse_holder_2_mounting_hole_l,
+power_lid_side_wall_2_atm_fuse_specs             = [[[[atm_fuse_holder_2_mounting_hole_h + 2.2,
+                                                       atm_fuse_holder_2_mounting_hole_l + 0.6,
                                                        atm_fuse_holder_2_mounting_hole_r,
                                                        1,
                                                        atm_fuse_holder_2_mounting_hole_depth],

@@ -59,11 +59,12 @@ module power_lid_voltmeters_screw_holes() {
                    max(board_len, screw_size[1]) / 2, 0]) {
           rotate([0, 0, is_undef(positions[3]) ? 0 : positions[3]]) {
             four_corner_children(size=screw_size) {
-              translate([0, 0, -0.5]) {
+              translate([0, 0, -0.05]) {
                 rotate([0, 0, 180]) {
                   counterbore(d=screw_dia,
-                              h=power_lid_thickness + 1,
-                              upper_d=standoff_body_d + 0.5);
+                              h=power_lid_thickness + 0.1,
+                              upper_h=power_lid_thickness / 2,
+                              upper_d=standoff_body_d + 1.8);
                 }
               }
             }
@@ -288,13 +289,13 @@ module power_lid_side_screw_holes() {
         power_case_lid_screw_holes_pair();
       }
     }
-    mirror_copy([1, 0, 0]) {
-      translate([half_of_inner_x
-                 + half_of_side_wall_w, 0,
-                 + power_case_rail_screw_dia]) {
-        power_case_lid_screw_holes_pair();
-      }
-    }
+    // mirror_copy([1, 0, 0]) {
+    //   translate([half_of_inner_x
+    //              + half_of_side_wall_w, 0,
+    //              + power_case_rail_screw_dia]) {
+    //     power_case_lid_screw_holes_pair();
+    //   }
+    // }
   }
 }
 
@@ -419,17 +420,6 @@ module power_lid(show_switch_button=true,
       }
       if (show_atm_side_fuse_holders) {
         power_lid_side_wall_slots(slot_mode=false);
-      }
-    }
-
-    mirror_copy([1, 0, 0]) {
-      translate([power_lid_width / 2
-                 - half_of_side_wall_w,
-                 0,
-                 0]) {
-        rotate([0, 0, 90]) {
-          power_case_rail_relief_cutter();
-        }
       }
     }
 

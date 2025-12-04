@@ -49,7 +49,7 @@ module power_case(case_color=metallic_silver_5, alpha=1) {
                      power_case_bottom_thickness]) {
             // Cutout for the 4 corner mounting screw positions
             rounded_cube([inner_x_cutout,
-                          power_case_bottom_screws_poses[1]
+                          power_case_bottom_screw_size[1]
                           + (power_case_bottom_cbore_dia * 2),
                           power_case_height],
                          center=true);
@@ -65,7 +65,7 @@ module power_case(case_color=metallic_silver_5, alpha=1) {
 
           // Holes for 4 corner mounting screws
           translate([0, 0, -0.1]) {
-            four_corner_children(size=power_case_bottom_screws_poses,
+            four_corner_children(size=power_case_bottom_screw_size,
                                  center=true) {
               counterbore(d=power_case_bottom_screw_dia,
                           h=power_case_bottom_thickness
