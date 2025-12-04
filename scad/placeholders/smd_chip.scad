@@ -49,14 +49,15 @@ module smd_chip(length,
                 j_lead_n,
                 j_lead_thickness=0.5,
                 j_lead_color=metallic_yellow_silver,
+                lower_lead_fraction=0.7,
                 center=true) {
 
   let (thickness = j_lead_thickness,
        amount = j_lead_n,
 
        available_w = (total_w - w) / 2 - (thickness * 2),
-       upper_len = available_w * 0.3,
-       lower_len = available_w * 0.7,
+       upper_len = available_w * (1 - lower_lead_fraction),
+       lower_len = available_w * lower_lead_fraction,
        base_h = h * 0.9,
        full_len = j_lead_full_len(lower_len=lower_len,
                                   upper_len=upper_len,
@@ -105,4 +106,4 @@ smd_chip(length=ultrasonic_smd_len,
          j_lead_thickness=ultrasonic_smd_led_thickness,
          total_w=9,
          h=ultrasonic_smd_h,
-         center=false);
+         center=true);
