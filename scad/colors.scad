@@ -40,6 +40,7 @@ ir_1                     = "#f7d7ff"; // infrared
 noir_1                   = "#2a353b";
 
 medium_blue_1            = "#0a4d8d";
+medium_blue_2            = "#004CB1";
 
 brown_1                  = "#977354";
 brown_2                  = "#bb9477";
