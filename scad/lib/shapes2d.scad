@@ -289,7 +289,6 @@ module star_2d(n=5, r_outer=20, r_inner=10) {
 */
 
 module ellipse(rx=10, ry=5, $fn=100, center=true) {
-
   if (center) {
     scale([rx, ry]) circle(r=1, $fn=$fn);
   }
@@ -302,9 +301,33 @@ module ellipse(rx=10, ry=5, $fn=100, center=true) {
   }
 }
 
-module capsule(y=20, d=10, center=true, $fn=64) {
+/*
+  Create a 2D "capsule" shape (a rectangle with semicircular ends).
+
+  The overall end-to-end length along Y is `y + d`.
+
+  **Parameters:**
+  - `y`: distance between the centers of the two end circles (center-to-center separation).
+  - `d`: diameter of the end circles. The circle radius `r` is computed as `d / 2`.
+  - `center`: if `true` (default), the capsule is centered.
+  - `$fn`: passed through to circle(...) to control circle resolution (number of fragments).
+
+  **Notes:**
+  - If `y == 0`, the hull of two coincident circles produces a single circle of diameter `d`.
+
+  **Examples:**
+  - centered capsule, overall height = y + d
+  ```scad
+  capsule(y=20, d=10, center=true);        // centered at origin
+  ```
+  - not centered:
+  ```scad
+  capsule(y=30, d=10, center=false, $fn=48);
+  ```
+*/
+module capsule(y, d, center=true, $fn=64) {
   r = d / 2;
-  origin_shift = center ? [0, -y / 2] : [-r, r];
+  origin_shift = center ? [0, -y / 2] : [r, r];
   translate(origin_shift) {
     hull() {
       circle(r=r, $fn=$fn);

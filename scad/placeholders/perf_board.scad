@@ -76,18 +76,19 @@ module perf_board(size=[20, 80, 1.6],
       if (bus_pad_cols > 0) {
         color(bus_pad_color, alpha=1) {
           mirror_copy([0, 1, 0]) {
-            translate([0, 0, -0.05]) {
-              linear_extrude(height=z + 0.1, center=false) {
-                let (step = bus_pad_spacing + bus_pad_rx,
-                     total_x = bus_pad_cols * bus_pad_rx + (bus_pad_cols - 1)
-                     * bus_pad_spacing) {
-                  translate([-total_x / 2, y / 2 -
-                             (bus_pad_ry + bus_pad_rx) / 2, 0]) {
-                    for (i = [0 : bus_pad_cols - 1]) {
-                      let (bx = i * step + bus_pad_rx / 2) {
-                        translate([bx, -bus_pad_offset, 0]) {
-                          capsule(y=bus_pad_ry, d=bus_pad_rx);
-                        }
+            let (step = bus_pad_spacing + bus_pad_rx,
+                 total_x = bus_pad_cols * bus_pad_rx + (bus_pad_cols - 1)
+                 * bus_pad_spacing) {
+              translate([-total_x / 2, y / 2 -
+                         (bus_pad_ry + bus_pad_rx) / 2,
+                         -0.05]) {
+                linear_extrude(height=z + 0.1, center=false) {
+                  for (i = [0 : bus_pad_cols - 1]) {
+                    let (bx = i * step + bus_pad_rx / 2) {
+                      translate([bx, -bus_pad_offset, 0]) {
+                        capsule(y=bus_pad_ry,
+                                d=bus_pad_rx,
+                                center=true);
                       }
                     }
                   }
@@ -107,4 +108,21 @@ module perf_board(size=[20, 80, 1.6],
   }
 }
 
-perf_board();
+perf_board(size=[20, 80, 1.6],
+           corner_r=1,
+           pad_dia=1.9,
+           d=1,
+           spacing=0.54,
+           screw_d=2.0,
+           screw_size=power_lid_breadboard_screw_size,
+           rows=28,
+           cols=6,
+           $fn=100,
+           bus_pad_rx=1.9,
+           bus_pad_ry=1.0,
+           bus_pad_cols=4,
+           bus_pad_offset = 0.8,
+           bus_pad_spacing=0.8,
+           perf_color="green",
+           pin_color="silver",
+           bus_pad_color="silver");
