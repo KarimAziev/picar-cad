@@ -1508,18 +1508,16 @@ power_voltmeter_specs                            = [[[voltmeter_screw_size,
                                                       0,
                                                       true]],];
 
-breadboard_screw_size_1                          = [16.0, 76.0];
+power_lid_breadboard_screw_size                  = [16.0, 76.0];
 // [16.0, 76.0];
-breadboard_screw_dia_1                           = m2_hole_dia;
-
-breadboard_screw_size_2                          = [26.10, 65.74];
-breadboard_screw_dia_2                           = m2_hole_dia;
+power_lid_breadboard_screw_dia                   = m2_hole_dia;
 
 // [[15.2, 35.6, m2_hole_dia, 10, -14.8, 12.5]],
 
 power_lid_rect_screw_holes                       = [[[15.2, 35.55, m2_hole_dia, 10, -11.9, 14.55]],
-                                                    [[breadboard_screw_size_1[0], breadboard_screw_size_1[1],
-                                                      breadboard_screw_dia_1, 0, 15, 18]],
+                                                    [[power_lid_breadboard_screw_size[0],
+                                                      power_lid_breadboard_screw_size[1],
+                                                      power_lid_breadboard_screw_dia, 0, 15, 18]],
                                                     [[ina_260_screw_size[0], ina_260_screw_size[1],
                                                       ina_260_screw_dia, 10, 23, 38],]];
 // [...[x, y, radius, y_gap, x_offset, y_offset, [counterbore_x, counterbore_y, counterbore_z]]]

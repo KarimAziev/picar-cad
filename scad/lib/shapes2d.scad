@@ -259,3 +259,56 @@ module star_2d(n=5, r_outer=20, r_inner=10) {
         [r * cos(angle), r * sin(angle)]];
   polygon(points = pts);
 }
+
+/*
+
+  Draw a 2D ellipse by scaling a unit circle. Reusable module for creating
+  ellipses with controllable radii, resolution and centering behavior.
+
+  **Parameters:**
+  - `rx`: horizontal radius (half-width). Default 10.
+  - `ry`: vertical radius (half-height). Default 5.
+  - `$fn`:   polygon resolution for the circle (higher -> smoother). Default 100.
+  - `center`: If true, ellipse is centered at the origin.
+  If false, the bounding box is placed from (0,0) to (2*rx, 2*ry).
+
+  **Notes:**
+  To specify full width/height instead of radii, call ellipse(width/2, height/2, ...).
+
+  **Examples:**
+  Centered ellipse with rx=20, ry=10:
+
+  ```scad
+  ellipse(20, 10, $fn=200, center=true);
+  ```
+
+  Ellipse placed in the first quadrant with bounding box 0..40 by 0..20:
+  ```scad
+  ellipse(20, 10, $fn=100, center=false);
+  ```
+*/
+
+module ellipse(rx=10, ry=5, $fn=100, center=true) {
+
+  if (center) {
+    scale([rx, ry]) circle(r=1, $fn=$fn);
+  }
+  else {
+    translate([rx, ry]) {
+      scale([rx, ry]) {
+        circle(r=1, $fn=$fn);
+      }
+    }
+  }
+}
+
+module capsule(y=20, d=10, center=true, $fn=64) {
+  r = d / 2;
+  origin_shift = center ? [0, -y / 2] : [-r, r];
+  translate(origin_shift) {
+    hull() {
+      circle(r=r, $fn=$fn);
+      translate([0, y]) circle(r=r, $fn=$fn);
+    }
+  }
+}
