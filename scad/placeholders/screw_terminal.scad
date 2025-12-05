@@ -28,12 +28,13 @@ module screw_terminal(base_w = undef,            // overall base width (optional
                       contacts_n = 2,            // number of contact boxes
                       contact_w = 3.5,           // contact box width (X)
                       contact_h = 4.47,          // contact box height (Z)
-                      pitch = 3.92,              // center-to-center spacing (X)
+                      pitch = 4.5,              // center-to-center spacing (X)
                       colr = medium_blue_2,
                       pin_thickness = 0.4,       // lower thin pin cross/width
                       pin_h = 3.9,               // lower thin pin height
-                      wall_thickness = 0.6,
-                      center=true) {    // wall offset from base top
+                      wall_thickness = 0.6,  // wall offset from base top
+                      center=true,
+                      isosceles_trapezoid=false) {
 
   effective_base_w = screw_terminal_width(base_w,
                                           pitch=pitch,
@@ -52,8 +53,10 @@ module screw_terminal(base_w = undef,            // overall base width (optional
             union() {
               cube_3d(size = [effective_base_w, thickness, base_h]);
 
-              translate([0, -thickness / 4, 0]) {
-                cube_3d(size = [effective_base_w, thickness / 2, base_h + top_h]);
+              if (!isosceles_trapezoid) {
+                translate([0, -thickness / 4, 0]) {
+                  cube_3d(size = [effective_base_w, thickness / 2, base_h + top_h]);
+                }
               }
 
               translate([-effective_base_w / 2, 0, top_h / 2 + base_h]) {
