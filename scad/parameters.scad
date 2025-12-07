@@ -268,10 +268,10 @@ chassis_trapezoid_hole_width                     = 4.5;
 chassis_trapezoid_hole_len                       = 9.5;
 
 chassis_trapezoid_shape_pts                      = [[-chassis_shape_base_width * 0.6,
-                                                     chassis_shape_init_pos_y + chassis_len / 1.68],
+                                                     24],
                                                     [-chassis_shape_base_width * 0.24,
-                                                     chassis_len / 2],
-                                                    [0, chassis_len / 2]];
+                                                     127],
+                                                    [0, 127]];
 
 // vertical distance between trapezoids
 chassis_trapezoid_hole_y_distance                = 7.5;
@@ -299,8 +299,7 @@ chassis_shape_points                             = concat([[chassis_shape_init_p
                                                            [-chassis_shape_base_width,
                                                             chassis_shape_init_pos_y + chassis_shape_target],
                                                            [-chassis_shape_base_width + 2,
-                                                            (chassis_shape_init_pos_y + chassis_len / 2)
-                                                            + 0.02 * chassis_len]],
+                                                            + 5.10]],
                                                           chassis_trapezoid_shape_pts);
 
 // diameter of the pan servo mounting hole at the front of the chassis
