@@ -139,7 +139,7 @@ module vent_slots_panel(w, h, z, slot_w, slot_gap, slot_h, rows) {
  *   children() placed inside the hole.
  *
  * Example:
- *   rect_holes(
+ *   rounded_rect_slots(
  *     specs=[
  *       [[9.5, 30.4, 2.0], [0, -12.0, -10], [20, 38]],  // first hole + counterbore
  *       [[9.5, 8.4, 2.0], [26, -2.0, 0]]                // second hole
@@ -178,6 +178,7 @@ module rounded_rect_slots(specs,
            recess_spec = recess_specs[i]) {
 
         $spec = spec;
+        $i = i;
 
         translate([x_offset, y + y_offset, z_offset]) {
           if (!$children) {

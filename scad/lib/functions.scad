@@ -437,3 +437,110 @@ function calc_isosceles_trapezoid_top_width(bottom_width,
 */
 function screw_x_offst(slot_w, screw_dia, distance) =
   (slot_w * 0.5 + screw_dia * 0.5) + distance;
+
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   sort_by_idx
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Sorts a list of scalars or a list of lists by the element at a given index.
+   Uses a simple recursive selection-sort style algorithm that preserves list
+   elements (if elements are lists they are returned as whole items).
+
+   **Parameters:**
+
+   `elems`: A list of scalars or a list of lists to be sorted.
+   `asc`:   Boolean, true for ascending order (default true), false for descending.
+   `idx`:   When elements are lists, the index inside each element to use as the
+   sort key. If elements are scalars or idx is out of range, the element
+   itself is used as the key (default 0).
+
+   **Returns:**
+   A new list containing the elements of `elems` sorted according to the key.
+
+   **Examples:**
+
+   ```scad
+   sort_by_idx([1,3,2], true);                     // -> [1, 2, 3]
+   sort_by_idx([[1,5],[3,10],[2,4]], true, idx=0); // -> [[1,5], [2,4], [3,10]]
+   sort_by_idx([[1,5],[3,10],[2,4]], false, idx=1);// -> [[3,10], [1,5], [2,4]]
+   ```
+*/
+function sort_by_idx(elems, asc=true, idx=0) =
+  len(elems) <= 1 ? elems :
+  let (best_i = find_best_index(elems, idx, asc),
+       best   = elems[best_i],
+       rest   = [for (i=[0:len(elems)-1]) if (i != best_i) elems[i]])
+  concat([best], sort_by_idx(rest, asc, idx));
+
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   find_best_index
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Finds the index of the "best" element in a list according to a key and sort
+   direction. Used internally by sort_by_idx. Performs a linear scan to locate
+   either the minimum (asc=true) or maximum (asc=false) element by key.
+
+   **Parameters:**
+
+   `elems`:  A list of scalars or a list of lists to search.
+   `idx`:    When elements are lists, the index inside each element to use as the
+   comparison key. If elements are scalars or idx is out of range,
+   the element itself is used as the key.
+   `asc`:    Boolean, true to select the minimum key (ascending), false to
+   select the maximum key (descending).
+   `i`:      Internal recursion parameter: current index being examined
+   (do not set unless you know what you're doing; default 0).
+   `best_i`: Internal recursion parameter: index of current best candidate
+   (do not set unless you know what you're doing; default 0).
+
+   **Returns:**
+   The index (integer) of the best element in `elems` according to the key and
+   direction. If `elems` is empty behavior is not defined (caller should ensure
+   non-empty list).
+
+   **Examples:**
+
+   ```scad
+   find_best_index([1,3,2], 0, true);                     // -> 0  (index of min 1)
+   find_best_index([1,3,2], 0, false);                    // -> 1  (index of max 3)
+   find_best_index([[1,5],[3,10],[2,4]], 0, true);        // -> 0  (index of [1,5])
+   find_best_index([[1,5],[3,10],[2,4]], 0, false);       // -> 1  (index of [3,10])
+   ```
+*/
+function find_best_index(elems, idx, asc, i=0, best_i=0) =
+  i >= len(elems) ? best_i :
+  let (k  = key(elems[i], idx),
+       bk = key(elems[best_i], idx),
+       better = asc ? (k < bk) : (k > bk))
+  better ? find_best_index(elems, idx, asc, i + 1, i)
+  : find_best_index(elems, idx, asc, i + 1, best_i);
+
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   key
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Extracts the comparison key from an item. If the item is a list and the
+   requested index is within range, returns item[idx]. Otherwise returns the
+   item itself (useful for mixing scalars and lists as sortable elements).
+
+   **Parameters:**
+
+   `item`: The element to extract the key from (scalar or list).
+   `idx`:  Index to use when `item` is a list.
+
+   **Returns:**
+   The selected key value (either item[idx] or item).
+
+   **Examples:**
+
+   ```scad
+   key([3,10], 1); // -> 10
+   key([3,10], 2); // -> [3,10] (idx out of range, returns the whole item)
+   key(5, 0);      // -> 5
+   ```
+*/
+function key(item, idx) =
+  is_list(item) && (idx >= 0) && (idx < len(item)) ? item[idx] : item;

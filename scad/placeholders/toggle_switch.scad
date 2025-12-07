@@ -11,8 +11,6 @@ include <../colors.scad>
 use <../lib/shapes3d.scad>
 use <../lib/transforms.scad>
 
-;
-
 module toggle_switch() {
   union() {
     translate([0, 0, toggle_switch_terminal_size[2]]) {

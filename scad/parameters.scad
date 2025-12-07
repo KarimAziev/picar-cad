@@ -1291,8 +1291,9 @@ power_case_round_rad                             = 1; // Corner radius for round
 // INA 260
 // ─────────────────────────────────────────────────────────────────────────────
 
-ina_260_screw_size                               = [0, 17.78];
-ina_260_screw_dia                                = m25_hole_dia;
+ina260_screw_size                                = [17.78, 0];
+ina260_screw_dia                                 = m25_hole_dia;
+ina260_size                                      = [22.9, 23.1, 1.65];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Side wall ventilation slot parameters
@@ -1518,8 +1519,8 @@ power_lid_rect_screw_holes                       = [[[15.2, 35.55, m2_hole_dia, 
                                                     [[power_lid_breadboard_screw_size[0],
                                                       power_lid_breadboard_screw_size[1],
                                                       power_lid_breadboard_screw_dia, 0, 15, 18]],
-                                                    [[ina_260_screw_size[0], ina_260_screw_size[1],
-                                                      ina_260_screw_dia, 10, 23, 38],]];
+                                                    [[ina260_screw_size[0], ina260_screw_size[1],
+                                                      ina260_screw_dia, 10, 23, 38],]];
 // [...[x, y, radius, y_gap, x_offset, y_offset, [counterbore_x, counterbore_y, counterbore_z]]]
 // [...[diameter, y_gap, x_offset, y_offset]]
 power_lid_single_holes_specs                     = [[[8, 15.2, -0, 25]]];

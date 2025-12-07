@@ -10,6 +10,7 @@ include <../colors.scad>
 use <../lib/shapes2d.scad>
 use <../lib/holes.scad>
 use <../lib/transforms.scad>
+use <pin_headers.scad>
 
 module rpi_rectangle_3d(size, r_factor=0.05, fn=40, center=false) {
   linear_extrude(height=size[2], center=center) {
@@ -151,32 +152,6 @@ module bcm_processor(size=rpi_processor_size) {
       }
     } else {
       bcm_processor_base(size=size);
-    }
-  }
-}
-
-module pin_headers(cols=20,
-                   rows=2,
-                   header_width=rpi_pin_header_width,
-                   header_height=rpi_pin_header_height,
-                   pin_height=rpi_pin_height,
-                   p=0.65) {
-  for (y = [0 : (cols -1)]) {
-    for (x = [0 : (rows  - 1)]) {
-      translate([header_width * x, header_width * y, 0]) {
-        union() {
-          color(matte_black) {
-            cube([header_width, header_width, header_height]);
-          }
-          color(metallic_yellow_1) {
-            translate([(header_width - p) / 2,
-                       (header_width - p) / 2,
-                       -rpi_thickness / 2 - 0.5]) {
-              cube([p, p, pin_height]);
-            }
-          }
-        }
-      }
     }
   }
 }
@@ -390,7 +365,13 @@ module rpi_5(show_standoffs=false,
 
     translate([0, 0, rpi_thickness / 2]) {
       translate([0, m25_hole_dia * 2 + hole_offst * 2, 0]) {
-        pin_headers();
+        pin_headers(cols=20,
+                    rows=2,
+                    header_width=rpi_pin_header_width,
+                    header_height=rpi_pin_header_height,
+                    pin_height=rpi_pin_height,
+                    z_offset=rpi_thickness / 2 + 0.5,
+                    p=0.65);
         translate([rpi_pin_header_width * 2 + 1,
                    0,
                    rpi_thickness / 2]) {
