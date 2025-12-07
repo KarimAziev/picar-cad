@@ -483,6 +483,7 @@ module chassis(motor_type=motor_type,
                show_motor_brackets=false,
                show_wheels=false,
                show_rear_panel=false,
+               show_rear_panel_buttons=false,
                show_front_panel=false,
                show_front_rear_panel=false,
                show_ultrasonic=false,
@@ -511,18 +512,15 @@ module chassis(motor_type=motor_type,
         }
       }
     }
-
-    color(chassis_color) {
-
-      if (show_rear_panel) {
-        translate([0,
-                   -chassis_len / 2,
-                   rear_panel_size[1] / 2
-                   + rear_panel_mount_thickness
-                   + chassis_thickness]) {
-          rotate([90, 0, 180]) {
-            rear_panel();
-          }
+    if (show_rear_panel) {
+      translate([0,
+                 -chassis_len / 2,
+                 rear_panel_size[1] / 2
+                 + rear_panel_mount_thickness
+                 + chassis_thickness]) {
+        rotate([90, 0, 180]) {
+          rear_panel(show_switch_button=show_rear_panel_buttons,
+                     colr=chassis_color);
         }
       }
     }
@@ -540,7 +538,7 @@ module chassis(motor_type=motor_type,
       }
     }
     if (show_front_panel) {
-      front_pan_y = chassis_len * 0.5
+      front_pan_y = chassis_shape_points[len(chassis_shape_points) - 1][1]
         + chassis_offset_rad
         + front_panel_connector_len
         - front_panel_chassis_y_offset
