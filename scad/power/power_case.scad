@@ -15,6 +15,7 @@ use <../lib/shapes3d.scad>
 use <../lib/holes.scad>
 use <../lib/placement.scad>
 use <../lib/transforms.scad>
+use <../placeholders/standoff.scad>
 
 module power_case(case_color=metallic_silver_5, alpha=1) {
   inner_x_cutout = power_case_width - power_case_side_wall_thickness * 2;
@@ -202,10 +203,13 @@ module power_case_vent(panel_height,
 }
 
 module power_case_assembly(alpha=1,
+                           standoff_h=3,
+                           standoff_thread_h=6,
                            show_lipo_pack=true,
                            show_lid=true,
                            case_color=metallic_silver_5) {
   // Placeholder for LiPo pack
+
   if (show_lipo_pack) {
     translate([0, 0, power_case_bottom_thickness + 0.1]) {
       lipo_pack();
@@ -221,10 +225,20 @@ module power_case_assembly(alpha=1,
     }
   }
 
-  // Power case
-  power_case(case_color=case_color, alpha=alpha);
+  union() {
+    // Power case
+    power_case(case_color=case_color, alpha=alpha);
+    four_corner_children(size=power_case_bottom_screw_size,
+                         center=true) {
+      translate([0, 0, standoff_h - standoff_thread_h]) {
+        standoff(body_h=standoff_h, thread_at_top=true,
+                 thread_h=standoff_thread_h);
+      }
+    }
+  }
 }
 
-power_case_assembly(show_lipo_pack=true,
+power_case_assembly(show_lipo_pack=false,
                     alpha=1,
+                    show_lid=false,
                     case_color=blue_grey_carbon);
