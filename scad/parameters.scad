@@ -1158,8 +1158,8 @@ rear_panel_screw_offset                          = 3;
 // Raspberry Pi dimensions (defaults are for Raspberry PI 5)
 // ─────────────────────────────────────────────────────────────────────────────
 // Y offset for the Raspberry Pi 5 related slots and holes is measured from the end of the chassis.
-rpi_chassis_y_position                           = battery_ups_module_screws_size[0]
-                                              + 15;
+rpi_chassis_y_position                           = 81.9;
+rpi_chassis_x_position                           = 31.5;
 
 // The X and Y dimensions of the screw positions for the Raspberry Pi 5 slot.
 // This forms a square with a screw hole centered on each corner.
@@ -1167,6 +1167,10 @@ rpi_screws_size                                  = [50, 58];
 
 // The diameter of the screw holes for the Raspberry Pi 5 slot.
 rpi_screw_hole_dia                               = m2_hole_dia;
+
+rpi_screws_offset                                = m25_hole_dia + 0.4;
+rpi_pin_headers_cols                             = 20;
+rpi_pin_headers_rows                             = 2;
 
 rpi_len                                          = 85;
 rpi_width                                        = 56;
@@ -1233,6 +1237,140 @@ rpi_on_off_button_dia                            = 1.5;
 
 //The height of the standoffs for Raspberry Pi
 rpi_standoff_height                              = 10;
+rpi_csi_position_x                               = rpi_screws_size[0] - rpi_csi_size[0] / 2 - 2;
+rpi_csi_position_y                               = rpi_screws_size[1] - m25_hole_dia - 1;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AI HAT+
+// ─────────────────────────────────────────────────────────────────────────────
+
+ai_hat_size                                      = [56.7, 65, 1.5];
+ai_hat_corner_rad                                = 2.4;
+ai_hat_screw_dia                                 = m25_hole_dia;
+ai_hat_mounting_hole_pad_spec                    = [[m25_hole_dia + 2.5, yellow_3]];
+ai_hat_csi_slot_size                             = [rpi_csi_size[0] + 4, ai_hat_size[1]
+                                                    - rpi_csi_position_y];
+
+ai_hat_processor_size                            = [17, 17, 1];
+ai_hat_csi_cutout_corner_r                       = 1.5;
+ai_hat_front_cutout_size                         = [20, 5];
+ai_hat_header_height                             = 10.16;
+ai_hat_pin_height                                = 10.57;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Servo Driver HAT
+// ─────────────────────────────────────────────────────────────────────────────
+
+servo_driver_hat_size                            = [30.26, 65.25, 1.65];
+servo_driver_corner_rad                          = 2;
+servo_driver_hat_screws_size                     = [25, 58];
+
+servo_driver_hat_screw_dia                       = m25_hole_dia;
+servo_driver_hat_mounting_hole_pad_spec          = [[m25_hole_dia + 2.5, "white"]];
+
+servo_driver_hat_header_height                   = 9;
+servo_driver_hat_pin_height                      = 9.5;
+servo_driver_hat_screw_terminal_thickness        = 5.8;
+servo_driver_hat_screw_terminal_base_h           = 6.8;              // base height (Z)
+servo_driver_hat_screw_terminal_top_l            = 4.50;              // top trapezoid top side length
+servo_driver_hat_screw_terminal_top_h            = 3.2;               // top trapezoid height
+servo_driver_hat_screw_terminal_contacts_n       = 2;            // number of contact boxes
+servo_driver_hat_screw_terminal_contact_w        = 3.5;           // contact box width (X)
+servo_driver_hat_screw_terminal_contact_h        = 4.47;          // contact box height (Z)
+servo_driver_hat_screw_terminal_pitch            = 5.0;              // center-to-center spacing (X)
+
+servo_driver_hat_side_pins_headers_count         = 4;
+servo_driver_hat_side_pins_headers_margin        = 2;
+servo_driver_hat_side_header_height              = 1.5;
+servo_driver_hat_side_pin_cols                   = 4;
+servo_driver_hat_side_pin_rows                   = 2;
+servo_driver_hat_side_pin_height                 = 15.7;
+
+motor_driver_hat_size                            = [56.7, 65, 1.9];
+motor_driver_hat_corner_rad                      = 2.4;
+motor_driver_hat_screw_dia                       = m25_hole_dia;
+motor_driver_hat_mounting_hole_pad_spec          = [[m25_hole_dia + 2.5, "white"]];
+
+motor_driver_hat_header_height                   = 13.15;
+motor_driver_hat_pin_height                      = 8.5;
+
+motor_driver_hat_screw_terminal_distance         = 2.5;
+motor_driver_hat_screw_terminal_thickness        = 5.8;
+motor_driver_hat_screw_terminal_base_h           = 6.8;              // base height (Z)
+motor_driver_hat_screw_terminal_top_l            = 4.50;              // top trapezoid top side length
+motor_driver_hat_screw_terminal_top_h            = 3.2;               // top trapezoid height
+motor_driver_hat_screw_terminal_contacts_n       = 6;            // number of contact boxes
+motor_driver_hat_screw_terminal_contact_w        = 3.5;           // contact box width (X)
+motor_driver_hat_screw_terminal_contact_h        = 4.47;          // contact box height (Z)
+motor_driver_hat_screw_terminal_pitch            = 5.0;              // center-to-center spacing (X)
+
+motor_driver_hat_chip_len                        = 15;
+motor_driver_hat_chip_w                          = 10;
+
+motor_driver_hat_chip_j_lead_n                   = 11;
+motor_driver_hat_chip_j_lead_thickness           = 0.4;
+motor_driver_hat_chip_total_w                    = 17;
+motor_driver_hat_chip_h                          = 1.65;
+motor_driver_hat_chip_distance_between           = 4;
+motor_driver_hat_chip_y_distance                 = 18;
+
+motor_driver_hat_voltage_chip_len                = 15;
+motor_driver_hat_voltage_chip_w                  = 7;
+
+motor_driver_hat_voltage_chip_j_lead_n           = 11;
+motor_driver_hat_voltage_chip_j_lead_thickness   = 0.4;
+motor_driver_hat_voltage_chip_total_w            = 17;
+motor_driver_hat_voltage_chip_h                  = 1.65;
+motor_driver_hat_voltage_chip_x_distance         = 4;
+motor_driver_hat_voltage_chip_y_distance         = 4;
+
+motor_driver_hat_upper_header_height             = 9;
+motor_driver_hat_upper_pin_height                = 5;
+
+motor_driver_hat_capacitor_d                     = 10;
+motor_driver_hat_capacitor_h                     = 2.58;
+
+motor_driver_hat_capacitor_cyl_h                 = 7.5;
+motor_driver_hat_capacitor_x_offset=0;
+motor_driver_hat_capacitor_y_offset=3;
+
+motor_driver_hat_extra_capacitors                = [[5.5, 2.58, 5.5, 0, 5],
+                                                    [5.5, 2.58, 5.5, -10, 5],
+                                                    [5.5, 2.58, 5.5, 24, 10]];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GPIO Expansion Board
+// ─────────────────────────────────────────────────────────────────────────────
+gpio_expansion_screws_size_2                     = [38, 58];
+gpio_expansion_size                              = [55.0, 65.25, 1.65];
+
+gpio_expansion_screw_dia                         = m25_hole_dia;
+gpio_expansion_corner_rad                        = 2;
+gpio_expansion_mounting_hole_pad_spec            = [[m25_hole_dia + 2.5, dark_gold_1]];
+
+gpio_expansion_header_height                     = 8;
+gpio_expansion_pin_height                        = 3.5;
+
+gpio_expansion_header_up_height                  = 2;
+gpio_expansion_pin_up_height                     = 7;
+
+gpio_expansion_inner_header_cols                 = 8;
+gpio_expansion_inner_header_rows                 = 2;
+gpio_expansion_inner_header_gap                  = 8;
+
+gpio_expansion_inner_header_pin_height           = 6;
+gpio_expansion_inner_headers_count               = 3;
+
+gpio_expansion_screw_terminal_thickness          = 12.0;
+gpio_expansion_screw_terminal_base_h             = 7.4;
+gpio_expansion_screw_terminal_top_l              = 6.50;
+
+gpio_expansion_screw_terminal_top_h              = 6.2;
+gpio_expansion_screw_terminal_contacts_n         = 8;
+gpio_expansion_screw_terminal_contact_w          = 2.0;
+gpio_expansion_screw_terminal_contact_h          = 0;
+gpio_expansion_screw_terminal_pitch              = 3.2;
+gpio_expansion_screw_terminal_x_offset           = 2.0;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Voltmeter placeholder
@@ -1285,6 +1423,15 @@ power_case_length                                = 146;
 power_case_height                                = 55;
 
 power_case_round_rad                             = 1; // Corner radius for rounded exterior geometry.
+
+// The X and Y spacing for the 4 corner mounting screw positions.
+// Provided as [X_spacing, Y_spacing]. These define the square/rectangle on which
+// the four mounting holes are placed; used by four_corner_children/four_corner_holes.
+
+power_case_bottom_screw_size                     = [30, 120];
+
+power_case_chassis_x_offset                      = -10;
+power_case_chassis_y_offset                      = 4;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // INA 260
@@ -1350,18 +1497,11 @@ power_case_bottom_thickness                      = 2.0;
 
 // Screw/cutout sizes for mounting the power module to the chassis.
 // The screw hole diameter for through holes in the bottom/back wall.
-power_case_bottom_screw_dia                      = battery_ups_screw_dia;
+power_case_bottom_screw_dia                      = m3_hole_dia;
 
 // Counterbore diameter for the screw head recess on the bottom/back wall.
 // This is the larger diameter of the counterbore so the screw head can sit flush.
 power_case_bottom_cbore_dia                      = 5.3;
-
-// The X and Y spacing for the 4 corner mounting screw positions.
-// Provided as [X_spacing, Y_spacing]. These define the square/rectangle on which
-// the four mounting holes are placed; used by four_corner_children/four_corner_holes.
-
-power_case_bottom_screw_size                     = [battery_ups_module_screws_size[1],
-                                                    battery_ups_module_screws_size[0]];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Power module case dovetail rail parameters
@@ -1386,9 +1526,7 @@ power_case_rail_screw_groove_distance            = 6.5;
 // Internal side wall thickness computed from overall width and the screw pattern.
 // This determines the width of the side wall between the central battery pocket and outer shell.
 // Changing the screw pose values will change this computed thickness.
-power_case_side_wall_thickness                   = (power_case_width -
-                                                    (power_case_bottom_screw_size[0]
-                                                     + power_case_bottom_screw_dia * 2)) / 2;
+power_case_side_wall_thickness                   = 2.3;
 
 power_lid_extra_side_thickness                   = 2;
 

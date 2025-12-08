@@ -203,7 +203,7 @@ module power_case_vent(panel_height,
 }
 
 module power_case_assembly(alpha=1,
-                           standoff_h=3,
+                           standoff_h=10,
                            standoff_thread_h=6,
                            show_lipo_pack=true,
                            show_lid=true,
@@ -230,7 +230,7 @@ module power_case_assembly(alpha=1,
     power_case(case_color=case_color, alpha=alpha);
     four_corner_children(size=power_case_bottom_screw_size,
                          center=true) {
-      translate([0, 0, standoff_h - standoff_thread_h]) {
+      translate([0, 0, -(standoff_h + standoff_thread_h) + standoff_thread_h]) {
         standoff(body_h=standoff_h, thread_at_top=true,
                  thread_h=standoff_thread_h);
       }

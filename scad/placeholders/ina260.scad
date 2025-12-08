@@ -9,6 +9,7 @@ use <../lib/functions.scad>
 use <pin_headers.scad>
 use <screw_terminal.scad>
 use <../lib/placement.scad>
+use <pad_hole.scad>
 
 // [...[diameter, color]]
 ina260_mounting_hole_pad_spec             = [[3.4, yellow_3],
@@ -145,31 +146,6 @@ ina260_i2c_addr_text_spec                 = [0.9, "Liberation Sans:style=Bold", 
 ina260_show_pins                          = true;
 ina260_show_terminal                      = true;
 
-module ina260_pad_hole(screw_d=ina260_screw_dia,
-                       thickness=ina260_size[2],
-                       specs=ina260_mounting_hole_pad_spec) {
-  sorted_specs = sort_by_idx(elems=specs, idx=0, asc=true);
-  union() {
-    for (i = [0 : len(sorted_specs) - 1]) {
-      let (spec = specs[i],
-           prev_spec_dia=i > 0 ? specs[i - 1][0] : screw_d,
-           dia = spec[0],
-           colr = spec[1],
-           w = (dia - prev_spec_dia) / 2) {
-        color(colr, alpha=1) {
-          translate([0, 0, -0.05]) {
-            linear_extrude(height=thickness + 0.1,
-                           center=false,
-                           convexity=2) {
-              ring_2d(w=w, r=dia / 2, fn=30);
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
 module ina260(size=ina260_size,
               screw_size=ina260_screw_size,
               screw_d=ina260_screw_dia,
@@ -262,9 +238,9 @@ module ina260(size=ina260_size,
         }
         translate([0, mounting_hole_y_offset, 0]) {
           four_corner_children(size=screw_size, center=true) {
-            ina260_pad_hole(screw_d=screw_d,
-                            thickness=thickness,
-                            specs=pad_hole_spec);
+            pad_hole(screw_d=screw_d,
+                     thickness=thickness,
+                     specs=pad_hole_spec);
           }
         }
 
@@ -450,9 +426,9 @@ module ina260(size=ina260_size,
                    bx = i * step + pin_d / 2) {
 
                 translate([bx, pin_d + pin_y_offset, 0]) {
-                  ina260_pad_hole(screw_d=pin_hole_d,
-                                  thickness=thickness,
-                                  specs=pin_hole_pad_spec);
+                  pad_hole(screw_d=pin_hole_d,
+                           thickness=thickness,
+                           specs=pin_hole_pad_spec);
                   color(colr, alpha=1) {
                     translate([-tm.size[0] / 2,
                                pos == "top"

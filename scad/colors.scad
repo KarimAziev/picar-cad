@@ -34,6 +34,7 @@ dark_gold_2              = "#b8860b";
 green_1                  = "#6CC04A";
 green_2                  = "#1da760";
 green_3                  = "#037739";
+green_4                  = "#00B174";
 
 ir_1                     = "#f7d7ff"; // infrared
 

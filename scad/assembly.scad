@@ -22,16 +22,19 @@ use <placeholders/rpi_5.scad>
 use <wheels/rear_wheel.scad>
 use <placeholders/battery_holder.scad>
 use <motor_brackets/n20_motor_bracket.scad>
+use <power/power_case.scad>
 
 chassis_assembly_center         = true;
 show_motor                      = true;
 show_motor_brackets             = true;
 show_wheels                     = true;
 show_rear_panel                 = true;
+show_rear_panel_buttons         = true;
 show_front_panel                = true;
 show_front_rear_panel           = true;
 show_ultrasonic                 = true;
-show_ups_hat                    = true;
+show_ups_hat                    = false;
+show_power_case                 = true;
 show_steering                   = true;
 show_bearing                    = true;
 show_brackets                   = true;
@@ -75,12 +78,15 @@ module chassis_assembly(center=false,
                         show_battery_holders=false,
                         show_motor_brackets=false,
                         show_front_rear_panel=show_front_rear_panel,
+                        show_rear_panel_buttons=show_rear_panel_buttons,
                         show_ultrasonic=show_ultrasonic,
                         chassis_color="white") {
   global_x_offset = chassis_width / 2 + (wheel_center_offset * 2);
   global_z_offset = calc_chassis_z_offset();
 
-  translate([center ? 0 : global_x_offset,
+  translate([center
+             ? 0
+             : global_x_offset,
              0,
              global_z_offset]) {
 
@@ -88,6 +94,7 @@ module chassis_assembly(center=false,
 
     if (show_steering) {
       translate([0,
+
                  steering_panel_y_pos_from_center,
                  steering_rack_support_thickness / 2]) {
         steering_system_assembly(show_wheels=show_wheels,
@@ -99,15 +106,30 @@ module chassis_assembly(center=false,
 
     if (show_rpi) {
       standow_lower_h = chassis_thickness + 1;
-      y = (rpi_screws_size[1]) / 2 + rpi_5_screws_offset();
+      y = (rpi_screws_size[1]) / 2 + rpi_screws_offset;
       end = -chassis_len / 2 + rpi_chassis_y_position - y;
 
       z = chassis_thickness + rpi_standoff_height - standow_lower_h;
-      translate([-rpi_width / 2,
+      translate([-rpi_width / 2 - rpi_chassis_x_position,
                  end,
                  z]) {
-        rpi_5(show_standoffs=true, standoff_height=rpi_standoff_height,
+
+        rpi_5(show_standoffs=true,
+              standoff_height=rpi_standoff_height,
               standoff_lower_height=standow_lower_h);
+      }
+    }
+
+    if (show_power_case) {
+      translate([chassis_width / 2
+                 - power_case_width / 2
+                 - power_case_chassis_x_offset,
+                 -chassis_len / 2
+                 + power_case_length / 2
+                 - power_case_chassis_y_offset,
+                 0]) {
+
+        power_case_assembly(case_color=matte_black);
       }
     }
     if (show_ups_hat) {
@@ -149,11 +171,13 @@ module chassis_assembly(center=false,
           }
         }
       }
+
       chassis(motor_type=motor_type,
               show_motor=show_motor,
               show_motor_brackets=show_motor_brackets,
               show_wheels=show_wheels,
               show_rear_panel=show_rear_panel,
+              show_rear_panel_buttons=show_rear_panel_buttons,
               show_front_rear_panel=show_front_rear_panel,
               show_ultrasonic=show_ultrasonic,
               show_front_panel=show_front_panel,
@@ -170,6 +194,7 @@ module assembly_view(center=chassis_assembly_center,
                      show_motor=show_motor,
                      show_wheels=show_wheels,
                      show_rear_panel=show_rear_panel,
+                     show_rear_panel_buttons=show_rear_panel_buttons,
                      show_front_panel=show_front_panel,
                      show_ackermann_triangle=show_ackermann_triangle,
                      show_ups_hat=show_ups_hat,
@@ -190,6 +215,7 @@ module assembly_view(center=chassis_assembly_center,
                      show_ultrasonic=show_ultrasonic) {
 
   union() {
+
     chassis_assembly(motor_type=motor_type,
                      show_motor=show_motor,
                      show_wheels=show_wheels,
@@ -197,6 +223,7 @@ module assembly_view(center=chassis_assembly_center,
                      show_motor_brackets=show_motor_brackets,
                      show_ups_hat=show_ups_hat,
                      show_rear_panel=show_rear_panel,
+                     show_rear_panel_buttons=show_rear_panel_buttons,
                      show_front_panel=show_front_panel,
                      show_front_rear_panel=show_front_rear_panel,
                      show_ultrasonic=show_ultrasonic,
@@ -206,6 +233,7 @@ module assembly_view(center=chassis_assembly_center,
                      show_bearing=show_bearing,
                      show_brackets=show_brackets,
                      show_battery_holders=show_battery_holders,
+
                      center=center) {
       if (show_head) {
         head_x = -head_neck_full_pan_panel_h() / 2
@@ -257,5 +285,6 @@ assembly_view(center=chassis_assembly_center,
               show_bearing=show_bearing,
               show_brackets=show_bearing,
               show_battery_holders=show_battery_holders,
+              show_rear_panel_buttons=show_rear_panel_buttons,
               show_rpi=show_rpi,
               show_head=show_head);

@@ -131,7 +131,7 @@ module side_trapezoids_borders() {
 
 function raspberry_pi_y_positions() =
   let (chassis_len_half = chassis_len / 2,
-       basic_y = (rpi_screws_size[1]) / 2 + rpi_5_screws_offset(),
+       basic_y = (rpi_screws_size[1]) / 2 + rpi_screws_offset,
        end = -chassis_len / 2 + rpi_chassis_y_position - basic_y,
        start = end + rpi_len)
   [start, end];
@@ -186,12 +186,14 @@ module chassis_center_wiring_cutouts(dia=chassis_center_cutout_dia,
                                      trapezoid_2=chassis_center_trapezoid_2,
                                      repeat_offsets=chassis_center_cutout_repeat_offsets,
                                      dotted_line_offsets=chassis_center_dotted_y_offsets) {
-  positions = raspberry_pi_y_positions();
+  positions = [27, -58];
+  echo("positions", positions);
+  rpi_chassis_y_position = 101;
   half_of_chassis = chassis_len / 2;
   start = positions[0];
   end = positions[1];
 
-  screw_offset = -rpi_5_screws_offset();
+  screw_offset = -rpi_screws_offset;
 
   // Horizontal rows of circles (in line with RPi screw zone)
   vertical_positions = number_sequence(from = -battery_ups_offset / 2
@@ -346,6 +348,18 @@ module chassis_2d() {
                            center=true);
     }
 
+    translate([chassis_width / 2
+               - power_case_width / 2
+               - power_case_chassis_x_offset,
+               -chassis_len / 2
+               + power_case_length / 2
+               - power_case_chassis_y_offset, 0]) {
+
+      four_corner_holes_2d(power_case_bottom_screw_size,
+                           hole_dia=power_case_bottom_screw_dia,
+                           center=true);
+    }
+
     mirror_copy([1, 0, 0]) {
       n20_bracket_screws();
       standard_motor_bracket_screws_size();
@@ -357,7 +371,9 @@ module chassis_2d() {
 
     pan_servo_cutout_2d();
 
-    translate([0, -chassis_len_half + rpi_chassis_y_position, 0]) {
+    translate([-rpi_chassis_x_position,
+               -chassis_len_half
+               + rpi_chassis_y_position, 0]) {
       raspberry_pi5_screws_2d();
     }
 
@@ -565,8 +581,8 @@ module chassis(motor_type=motor_type,
 }
 
 chassis(motor_type=motor_type,
-        show_motor=false,
-        show_motor_brackets=false,
+        show_motor=true,
+        show_motor_brackets=true,
         show_wheels=false,
         show_rear_panel=false,
         show_front_panel=false,

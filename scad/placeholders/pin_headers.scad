@@ -57,6 +57,20 @@ module pin_headers(cols,
   }
 }
 
+module rpi_pin_headers(center=false,
+                       z_offset=rpi_thickness / 2 + 0.5,
+                       pin_height=rpi_pin_height,
+                       header_height=rpi_pin_header_height) {
+  pin_headers(cols=rpi_pin_headers_cols,
+              rows=rpi_pin_headers_rows,
+              header_width=rpi_pin_header_width,
+              header_height=header_height,
+              pin_height=pin_height,
+              z_offset=z_offset,
+              p=0.65,
+              center=center);
+}
+
 rotate([0, 0, 0]) {
   pin_headers(cols=20,
               rows=1,
