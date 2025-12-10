@@ -187,7 +187,7 @@ module chassis_center_wiring_cutouts(dia=chassis_center_cutout_dia,
                                      repeat_offsets=chassis_center_cutout_repeat_offsets,
                                      dotted_line_offsets=chassis_center_dotted_y_offsets) {
   positions = [27, -58];
-  echo("positions", positions);
+
   rpi_chassis_y_position = 101;
   half_of_chassis = chassis_len / 2;
   start = positions[0];

@@ -5,7 +5,8 @@ module pin_header_item(base_size,
                        pin_colr=metallic_yellow_1,
                        base_colr=matte_black,
                        pin_size,
-                       z_offset=0) {
+                       z_offset=0,
+                       l_len,) {
   header_x = base_size[0];
   header_y = base_size[1];
 
@@ -23,17 +24,27 @@ module pin_header_item(base_size,
                  (header_y - pin_y) / 2,
                  -z_offset]) {
         cube([pin_x, pin_y, pin_height]);
+
+        if (!is_undef(l_len)) {
+          translate([-l_len + pin_x, 0, pin_height]) {
+            cube([l_len, pin_x, pin_y]);
+          }
+        }
       }
     }
+    children();
   }
 }
 
 module pin_headers(cols,
                    rows,
+                   pin_colr=metallic_yellow_1,
+                   base_colr=matte_black,
                    header_width,
                    header_height,
                    header_y_width,
                    pin_height,
+                   l_len,
                    p,
                    z_offset=0,
                    center=false) {
@@ -49,7 +60,14 @@ module pin_headers(cols,
           union() {
             pin_header_item(base_size=[header_width, header_y_width, header_height],
                             pin_size=[p, p, pin_height],
-                            z_offset=z_offset);
+                            z_offset=z_offset,
+                            pin_colr=pin_colr,
+                            l_len=l_len,
+                            base_colr=base_colr) {
+              $y = y;
+              $x = x;
+              children();
+            }
           }
         }
       }

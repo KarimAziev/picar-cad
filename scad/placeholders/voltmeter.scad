@@ -190,7 +190,8 @@ module voltmeter_board(show_standoffs=true,
                        r1=wiring_r * 0.3,
                        r2=wiring_r * 1.2,
                        $fn=10);
-              translate([0, -wiring_d -
+              translate([0,
+                         -wiring_d -
                          wiring_gap, 0]) {
                 cylinder(h=wiring_pin_h,
                          r1=wiring_r * 0.3,
@@ -300,5 +301,8 @@ module voltmeter(show_standoffs=true,
 }
 
 rotate([0, 0, 0]) {
-  voltmeter();
+  voltmeter(wiring=[[0, -5, -2],
+                    [-22, -15, -1],
+                    [-22, 10, -60],
+                    [-70, 10, -60]]);
 }

@@ -121,9 +121,6 @@ ina260_screw_terminal_pin_h               = 3.9;               // lower thin pin
 ina260_screw_terminal_wall_thickness      = 0.6;  // wall offset from base top
 ina260_screw_terminal_isosceles_trapezoid = true;
 
-ina_i2c_addrs                             = [[["A0", 1.30, "white"], [[3, 2], "gold"]],
-                                             [["A1", 1.30, "white"], [[3, 2], "gold"]]];
-
 ina260_pin_height                         = 11.45;
 ina260_pin_thickness                      = 0.40;
 ina260_pin_header_height                  = 2.45;

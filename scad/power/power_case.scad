@@ -240,5 +240,5 @@ module power_case_assembly(alpha=1,
 
 power_case_assembly(show_lipo_pack=false,
                     alpha=1,
-                    show_lid=false,
+                    show_lid=true,
                     case_color=blue_grey_carbon);

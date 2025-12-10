@@ -56,11 +56,11 @@ module wire_path(points, d=2, put_joints=true, $fn_sph=32, print_wire_len=false)
     }
 }
 
-wire_path(points=[[50, 0, -150],
-                  [50, 50,-50],
-                  [0, 50, -50],
-                  [0, 0, -50],
-                  [0, 0, 0]],
+wire_path(points=concat([[0, 0, 0]],
+                        [[0, -5, -2],
+                         [-22, -15, -1],
+                         [-22, 10, -60],
+                         [-70, 10, -60]]),
           d=1.5,
           print_wire_len=true,
           put_joints=true);

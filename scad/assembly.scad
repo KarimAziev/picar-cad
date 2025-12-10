@@ -127,7 +127,7 @@ module chassis_assembly(center=false,
                  -chassis_len / 2
                  + power_case_length / 2
                  - power_case_chassis_y_offset,
-                 0]) {
+                 chassis_thickness]) {
 
         power_case_assembly(case_color=matte_black);
       }

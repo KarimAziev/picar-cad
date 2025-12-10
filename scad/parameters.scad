@@ -1252,6 +1252,7 @@ ai_hat_csi_slot_size                             = [rpi_csi_size[0] + 4, ai_hat_
                                                     - rpi_csi_position_y];
 
 ai_hat_processor_size                            = [17, 17, 1];
+ai_hat_processor_text                            = "HAILO";
 ai_hat_csi_cutout_corner_r                       = 1.5;
 ai_hat_front_cutout_size                         = [20, 5];
 ai_hat_header_height                             = 10.16;
@@ -1283,8 +1284,41 @@ servo_driver_hat_side_pins_headers_count         = 4;
 servo_driver_hat_side_pins_headers_margin        = 2;
 servo_driver_hat_side_header_height              = 1.5;
 servo_driver_hat_side_pin_cols                   = 4;
-servo_driver_hat_side_pin_rows                   = 2;
+servo_driver_hat_side_pin_rows                   = 3;
 servo_driver_hat_side_pin_height                 = 15.7;
+
+servo_driver_hat_chip_len                        = 9;
+servo_driver_hat_chip_w                          = 5;
+servo_driver_hat_chip_total_w                    = 8;
+servo_driver_hat_chip_j_lead_n                   = 14;
+servo_driver_hat_chip_j_lead_thickness           = 0.4;
+servo_driver_hat_chip_h                          = 1.65;
+servo_driver_hat_chip_y_distance                 = 18;
+servo_driver_hat_chip_x_distance                 = 18;
+
+servo_driver_hat_chip_i2c_x_distance             = 5;
+servo_driver_hat_chip_i2c_y_distance             = 15;
+
+servo_driver_hat_i2c_addr_size                   = [3.0, 1.3, 0.4];
+servo_driver_hat_i2c_addr_gap                    = 0.3;
+servo_driver_hat_i2c_addr_text_size              = 0.6;
+servo_driver_hat_i2c_addr_text_gap               = 0.6;
+
+servo_driver_hat_i2c_addr_text_label             = "I2C Addresses";
+servo_driver_hat_i2c_addr_text_label_size        = 0.9;
+
+servo_driver_hat_chip_2_len                      = 5;
+servo_driver_hat_chip_2_w                        = 4;
+servo_driver_hat_chip_2_total_w                  = 8;
+servo_driver_hat_chip_2_j_lead_n                 = 4;
+servo_driver_hat_chip_2_j_lead_thickness         = 0.4;
+servo_driver_hat_chip_2_h                        = 1.65;
+servo_driver_hat_chip_2_y_distance               = 10;
+servo_driver_hat_chip_2_x_distance               = 46;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Motor Driver HAT
+// ─────────────────────────────────────────────────────────────────────────────
 
 motor_driver_hat_size                            = [56.7, 65, 1.9];
 motor_driver_hat_corner_rad                      = 2.4;
@@ -1600,7 +1634,9 @@ power_voltmeter_specs                            = [[[voltmeter_screw_size,
                                                       [voltmeter_wiring_d,
                                                        [[0, -5, -2],
                                                         [-22, 15, -1],
-                                                        [-22, 15, -60]],
+                                                        [-22, 15, -20],
+                                                        [-65, 15, -20],
+                                                        [-60, 25, -25]],
                                                        voltmeter_wiring_gap,
                                                        voltmeter_wiring_distance],
                                                       [voltmeter_standoff_body_d],
@@ -1629,9 +1665,11 @@ power_voltmeter_specs                            = [[[voltmeter_screw_size,
                                                        voltmeter_pin_thickness,
                                                        voltmeter_pins_len],
                                                       [voltmeter_wiring_d,
-                                                       [[0, -5, -2],
-                                                        [-22, -15, -1],
-                                                        [-22, -15, -60]],
+                                                       [[0, 5, -2],
+                                                        [-22, 10, -1],
+                                                        [-32, 10, -49],
+                                                        [-70, -20, -49],
+                                                        [-70, 0, -45]],
                                                        voltmeter_wiring_gap,
                                                        voltmeter_wiring_distance],
                                                       [voltmeter_standoff_body_d],

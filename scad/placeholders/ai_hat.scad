@@ -83,7 +83,13 @@ module ai_hat(center=true, show_pins=true, show_standoff=true) {
       }
 
       translate([0, 0, h]) {
-        bcm_processor(size=ai_hat_processor_size, center=true);
+        rotate([0, 0, 180]) {
+          bcm_processor(size=ai_hat_processor_size,
+                        center=true,
+                        scale_both_sides=true,
+                        txt=ai_hat_processor_text,
+                        txt_color=metallic_silver_1);
+        }
       }
       four_corner_children(rpi_screws_size) {
         pad_hole(specs=ai_hat_mounting_hole_pad_spec,

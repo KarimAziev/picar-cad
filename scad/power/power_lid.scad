@@ -104,6 +104,7 @@ module power_lid_voltmeters_placeholders(echo_wiring_len=true) {
          wiring=wiring_spec[1],
          wiring_gap=wiring_spec[2],
          wiring_distance=wiring_spec[3],) {
+
       translate([positions[0], positions[1], -pin_h
                  - positions[2]]) {
         translate([half_of_inner_x - board_w / 2,
