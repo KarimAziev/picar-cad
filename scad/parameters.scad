@@ -1431,7 +1431,7 @@ voltmeter_pins_count                             = 5;
 voltemeter_text_spec                             = ["8.8.8.",
                                                     6.15,
                                                     "DSEG14 Classic:style=Italic",
-                                                    1.2,
+                                                    1.0,
                                                     metallic_silver_1,
                                                     [0, 0.6]];
 

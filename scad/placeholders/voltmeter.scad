@@ -41,20 +41,21 @@ module voltmeter_display(display_w=voltmeter_display_w,
                spacing=text_spec[3],
                colr=text_spec[4],
                tm=textmetrics(text=txt,
+                              spacing=spacing,
                               size=text_spec[1],
                               font=font),
                trans_spec=is_undef(text_spec[5]) ? [0, 0] : text_spec[5],
-               text_len = tm.size[0],
                text_w = tm.size[1]) {
             translate(trans_spec) {
               translate([text_w / 2,
-                         - display_len / 2,
+                         -display_len / 2,
                          0]) {
                 color(colr, alpha=1) {
                   rotate([0, 0, 180]) {
                     rotate([0, 0, -90]) {
                       linear_extrude(height=0.01, center=false) {
                         text(txt,
+                             spacing=spacing,
                              size=size,
                              font=font);
                       }
