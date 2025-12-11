@@ -2347,9 +2347,15 @@ steering_angle_deg                               = atan(abs(steering_x_left_knuc
 steering_alpha_deg                               = steering_angle_deg + 90;
 
 // Length of the tie rod
-tie_rod_len                                      = calc_isosceles_trapezoid_top_width(steering_panel_length - knuckle_dia,
+// Distance between the bearing centers on the tie rod (Ackermann top width)
+tie_rod_bearing_center_distance                  = calc_isosceles_trapezoid_top_width(steering_panel_length - knuckle_dia,
                                                                                       steering_arm_full_len,
                                                                                       steering_angle_deg);
+
+// Overall tie rod length including bearing landings and offsets
+tie_rod_len                                      = tie_rod_bearing_center_distance
+                                              + tie_rod_bearing_outer_dia
+                                              + tie_rod_bearing_x_offset * 2;
 // Local Variables:
 // c-label-minimum-indentation: 46
 // End:

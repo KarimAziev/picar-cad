@@ -395,22 +395,22 @@ function cutout_depth(r, cutout_w) =
    **Behavior:**
    Horizontal inset on each side = `side_length * sin(angle_deg)`.
    `top = bottom_width - 2 * side_length * sin(angle_deg)`.
-   The function clamps the result to a minimum of 0.
+   The function clamps the result to a minimum of 0. OpenSCAD’s trigonometric
+   functions operate on degrees, so `angle_deg` is passed directly to `sin()`.
 
    **Examples:**
 
    ```scad
-   calc_isosceles_trapezoid_top_width(20, 5, 30)   // returns 19.9086
-   calc_isosceles_trapezoid_top_width(10, 10, 90)  // returns 9.45176
-   calc_isosceles_trapezoid_top_width(12, -3, 45)  // returns 11.9178
+   calc_isosceles_trapezoid_top_width(20, 5, 30)   // returns 15
+   calc_isosceles_trapezoid_top_width(10, 10, 90)  // returns 0
+   calc_isosceles_trapezoid_top_width(12, -3, 45)  // returns 7.75736
    ```
 */
 function calc_isosceles_trapezoid_top_width(bottom_width,
                                             side_length,
                                             angle_deg) =
-  let (a = angle_deg * PI / 180,
-       s = abs(side_length),
-       top = bottom_width - 2 * s * sin(a))
+  let (s = abs(side_length),
+       top = bottom_width - 2 * s * sin(angle_deg))
   max(0, top);
 
 /**
