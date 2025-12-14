@@ -150,10 +150,16 @@ battery_screws_fn_val                            = 360;
 battery_screws_x_offset                          = 24;
 
 // Y offsets for positioning screws relative to the center
-baterry_holes_y_positions                        = [for (i =
+
+battery_holes_y_positions                        = [for (i =
                                                            [battery_screws_y_start:
                                                             battery_screws_y_offset_step:
                                                             battery_screws_y_offset_end]) i];
+
+smd_battery_holder_screws_x_offset               = 28;
+
+// Y offsets for positioning screws relative to the center
+smd_battery_holes_y_positions                    = [-38];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 16850 battery dimensions
@@ -168,6 +174,32 @@ battery_positive_pole_dia                        = 5.63;
 // ─────────────────────────────────────────────────────────────────────────────
 battery_holder_thickness                         = 1.82;
 battery_holder_batteries_count                   = 2;
+
+smd_battery_holder_length                        = 77.32;
+smd_battery_holder_height                        = 14.92;
+smd_battery_holder_bottom_thickness              = 1.2;
+smd_battery_holder_front_rear_thickness          = 3.6;
+smd_battery_holder_inner_thickness               = 0.9;
+smd_battery_holder_side_thickness                = 1.8;
+
+smd_battery_holder_screw_dia                     = m3_hole_dia;
+smd_battery_holder_screw_recess_size             = [9, 5, 2];
+smd_battery_holder_screws_size                   = [0, 55.4];
+smd_battery_holder_batteries_count               = 2;
+smd_battery_holder_inner_cutout_size             = [9.0, 66.6];
+smd_battery_holder_inner_side_h                  = 10;
+smd_battery_holder_full_w                        = (battery_dia + smd_battery_holder_inner_thickness * 2) * smd_battery_holder_batteries_count;
+
+smd_battery_holder_chassis_specs                 = [[[[smd_battery_holder_screws_size[0],
+                                                       smd_battery_holder_screws_size[1],],
+                                                      smd_battery_holder_screw_dia,
+                                                      [0, smd_battery_holder_screws_x_offset, -38],
+                                                      []]],
+                                                    [[[smd_battery_holder_screws_size[0],
+                                                       smd_battery_holder_screws_size[1],],
+                                                      smd_battery_holder_screw_dia,
+                                                      [0, -smd_battery_holder_screws_x_offset, -38],
+                                                      []]]];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Camera's placeholder dimensions
@@ -213,6 +245,8 @@ chassis_width                                    = 120;  // width of the chassis
 chassis_len                                      = 254;  // length of the chassis
 chassis_thickness                                = 4.0;    // chassis thickness
 chassis_offset_rad                               = 3; // The amount by which to offset the chassis
+
+chassis_counterbore_h                            = 2.2; // The amount by which to offset the chassis
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Chassis Center Wiring Cutouts (near the Raspberry Pi/UPS HAT area)
@@ -264,8 +298,8 @@ chassis_rear_join_x                              = (-chassis_shape_base_width
                                                     - chassis_shape_rear_panel_base_w)
                                               / 2;
 
-chassis_trapezoid_hole_width                     = 4.5;
-chassis_trapezoid_hole_len                       = 9.5;
+chassis_trapezoid_hole_width                     = 5.5;
+chassis_trapezoid_hole_len                       = 10.5;
 
 chassis_trapezoid_shape_pts                      = [[-chassis_shape_base_width * 0.6,
                                                      24],
@@ -299,7 +333,7 @@ chassis_shape_points                             = concat([[chassis_shape_init_p
                                                            [-chassis_shape_base_width,
                                                             chassis_shape_init_pos_y + chassis_shape_target],
                                                            [-chassis_shape_base_width + 2,
-                                                            + 5.10]],
+                                                            5.10]],
                                                           chassis_trapezoid_shape_pts);
 
 // diameter of the pan servo mounting hole at the front of the chassis
@@ -317,6 +351,24 @@ chassis_pan_servo_y_distance_from_steering       = 45;
 chassis_pan_servo_top_ribbon_cuttout_len         = 18;
 chassis_pan_servo_top_ribbon_cuttout_h           = 2;
 
+chassis_single_holes_specs                       = [[[6, 25.2, -35, 22, [0, 0, 0.2]],],
+                                                    [[6, 25.2, 35, 22, [0, 0, 0.2]],]];
+
+chassis_rect_holes_specs                         = [[[[32, 10, 1.0], [0, 8, 146]]],
+                                                    [[[10, 15, 4.0], [0, 0, 30]],
+                                                     [[5, 15, 4.0], [10, 0, 50]],
+                                                     [[5, 15, 4.0], [10, 0, 50]],
+                                                     [[10, 15, 4.0], [10, 0, 60]]],
+                                                    [[[8, 15, 1.0], [0, 5, 30]],
+                                                     [[10, 24, 4.0], [0, -18, 14]],
+                                                     [[10, 19, 1.0], [0, -30, 10]]],
+                                                    [[[10, 15, 1.0], [0, -5, 30]],
+                                                     [[10, 24, 4.0], [0, 18, 14]],
+                                                     [[10, 19, 1.0], [0, 30, 10]]],
+                                                    [[[8, 15, 1.0], [0, -5, 30]],],
+                                                    [[[14, 14, 4.0], [10, 32, 24]],],
+                                                    [[[14, 14, 4.0], [10, -32, 24]]]];
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Front panel dimensions
 // ─────────────────────────────────────────────────────────────────────────────
@@ -326,10 +378,19 @@ front_panel_chassis_y_offset                     = 5;
 front_panel_width                                = 66;   // panel width
 front_panel_height                               = 22.5;   // panel height
 front_panel_thickness                            = 2.5;   // panel thickness
+// A slight tilt of the panel with the ultrasonic sensor to prevent the sensor's
+// "eyes" from dipping down into the floor.
+front_panel_rotation_angle                       = 5;
 front_panel_rear_panel_thickness                 = 1.5;
 front_panel_connector_screw_dia                  = m25_hole_dia;
+
+front_panel_connector_screw_bore_dia             = front_panel_connector_screw_dia * 2.5;
+front_panel_connector_screw_bore_h               = min(1.5,
+                                                       front_panel_thickness * 0.7);
 front_panel_connector_len                        = 15;
-front_panel_connector_width                      = chassis_width / 4;
+front_panel_connector_width                      = min(front_panel_width - 5,
+                                                       chassis_width / 4);
+
 front_panel_connector_screw_offsets              = [[4, 3], [-4, 3]];
 front_panel_screw_dia                            = m25_hole_dia;
 
@@ -1126,7 +1187,7 @@ n20_motor_screws_panel_offset                    = 11.3;
 n20_motor_screws_panel_length                    = 4;
 n20_motor_screw_dia                              = m25_hole_dia;
 
-n20_motor_chassis_y_distance                     = 15;
+n20_motor_chassis_y_distance                     = 8;
 n20_motor_chassis_x_distance                     = -9;
 
 n20_motor_screws_panel_len                       = n20_can_dia
@@ -1143,12 +1204,13 @@ n20_motor_screws_panel_len                       = n20_can_dia
 rear_panel_size                                  = [52, 25, 8];
 rear_panel_switch_slot_dia                       = 13;
 rear_panel_switch_slot_cbore_dia                 = 18;
+rear_panel_switch_slot_cbore_h                   = 2;
 
 rear_panel_holes_x_offsets                       = [-16, 16];
 rear_panel_screw_holes_x_offsets                 = [-16, 0, 16];
 rear_panel_screw_hole_dia                        = m25_hole_dia;
-rear_panel_screw_cbore_hole_dia                  = 4.40;
-rear_panel_screw_cbore_h                         = 1.40;
+rear_panel_screw_cbore_hole_dia                  = 5.0;
+rear_panel_screw_cbore_h                         = 2.0;
 rear_panel_mount_thickness                       = 2.5;
 rear_panel_thickness                             = 3;
 
@@ -1167,6 +1229,7 @@ rpi_screws_size                                  = [50, 58];
 
 // The diameter of the screw holes for the Raspberry Pi 5 slot.
 rpi_screw_hole_dia                               = m2_hole_dia;
+rpi_screw_cbore_dia                              = 3.9;
 
 rpi_screws_offset                                = m25_hole_dia + 0.4;
 rpi_pin_headers_cols                             = 20;
@@ -1440,6 +1503,65 @@ voltmeter_wiring_distance                        = 3;
 voltmeter_wiring_gap                             = 1;
 voltmeter_wiring_d                               = 1.5;
 
+voltmeter_chassis_specs                          = [[[voltmeter_screw_size,
+                                                      voltmeter_screw_dia,
+                                                      [voltmeter_board_w,
+                                                       voltmeter_board_len,
+                                                       voltmeter_board_h,],
+                                                      [voltmeter_display_w,
+                                                       voltmeter_display_len,
+                                                       voltmeter_display_h,
+                                                       1,
+                                                       voltmeter_display_indicators_len],
+                                                      [voltmeter_pins_count,
+                                                       voltmeter_pin_h,
+                                                       voltmeter_pin_thickness,
+                                                       voltmeter_pins_len],
+                                                      [voltmeter_wiring_d,
+                                                       [[-5, -5, -2],
+                                                        [-15, -10, -1],
+                                                        [10, -15, -2],
+                                                        [20, 0, 0]],
+                                                       voltmeter_wiring_gap,
+                                                       voltmeter_wiring_distance],
+                                                      [voltmeter_standoff_body_d],
+                                                      ["7.4", 6.15,
+                                                       "DSEG14 Classic:style=Italic",
+                                                       1.2,
+                                                       red_1,
+                                                       [0, 0]],
+                                                      [7, 2.0, 0.1]],
+                                                     [-10, -5, 0, -90, true],],
+                                                    [[voltmeter_screw_size,
+                                                      voltmeter_screw_dia,
+                                                      [voltmeter_board_w,
+                                                       voltmeter_board_len,
+                                                       voltmeter_board_h,],
+                                                      [voltmeter_display_w,
+                                                       voltmeter_display_len,
+                                                       voltmeter_display_h,
+                                                       1,
+                                                       voltmeter_display_indicators_len],
+                                                      [voltmeter_pins_count,
+                                                       voltmeter_pin_h,
+                                                       voltmeter_pin_thickness,
+                                                       voltmeter_pins_len],
+                                                      [voltmeter_wiring_d,
+                                                       [[-5, -5, -2],
+                                                        [-15, -10, -1],
+                                                        [10, -15, -2],
+                                                        [20, 0, 0]],
+                                                       voltmeter_wiring_gap,
+                                                       voltmeter_wiring_distance],
+                                                      [voltmeter_standoff_body_d],
+                                                      ["7.8", 6.15,
+                                                       "DSEG14 Classic:style=Italic",
+                                                       1.2,
+                                                       red_1,
+                                                       [0, 0]],
+                                                      [7, 2.0, 0.1]],
+                                                     [-10, 21.5, 0, -90, true],]];
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Power module case dimensions
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1457,15 +1579,6 @@ power_case_length                                = 146;
 power_case_height                                = 55;
 
 power_case_round_rad                             = 1; // Corner radius for rounded exterior geometry.
-
-// The X and Y spacing for the 4 corner mounting screw positions.
-// Provided as [X_spacing, Y_spacing]. These define the square/rectangle on which
-// the four mounting holes are placed; used by four_corner_children/four_corner_holes.
-
-power_case_bottom_screw_size                     = [30, 120];
-
-power_case_chassis_x_offset                      = -10;
-power_case_chassis_y_offset                      = 4;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // INA 260
@@ -1529,13 +1642,26 @@ power_case_front_slot_gap_z                      = 3.9;
 // This affects internal clearance and screw/counterbore depths.
 power_case_bottom_thickness                      = 2.0;
 
+// The X and Y spacing for the 4 corner mounting screw positions.
+// Provided as [X_spacing, Y_spacing]. These define the square/rectangle on which
+// the four mounting holes are placed; used by four_corner_children/four_corner_holes.
+
+power_case_bottom_screw_size                     = [40, 88];
 // Screw/cutout sizes for mounting the power module to the chassis.
 // The screw hole diameter for through holes in the bottom/back wall.
 power_case_bottom_screw_dia                      = m3_hole_dia;
 
 // Counterbore diameter for the screw head recess on the bottom/back wall.
 // This is the larger diameter of the counterbore so the screw head can sit flush.
-power_case_bottom_cbore_dia                      = 5.3;
+power_case_bottom_cbore_dia                      = 6.0;
+
+power_case_bottom_cbore_h                        = 1.0;
+
+power_case_chassis_x_offset                      = -0;
+power_case_chassis_y_offset                      = 4;
+
+power_case_screw_size_offset_x                   = -2;
+power_case_screw_size_offset_y                   = 18;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Power module case dovetail rail parameters
@@ -1688,27 +1814,66 @@ power_lid_breadboard_screw_size                  = [16.0, 76.0];
 // [16.0, 76.0];
 power_lid_breadboard_screw_dia                   = m2_hole_dia;
 
-// [[15.2, 35.6, m2_hole_dia, 10, -14.8, 12.5]],
-
-power_lid_rect_screw_holes                       = [[[15.2, 35.55, m2_hole_dia, 10, -11.9, 14.55]],
-                                                    [[power_lid_breadboard_screw_size[0],
-                                                      power_lid_breadboard_screw_size[1],
-                                                      power_lid_breadboard_screw_dia, 0, 15, 18]],
-                                                    [[ina260_screw_size[0], ina260_screw_size[1],
-                                                      ina260_screw_dia, 10, 23, 38],]];
-// [...[x, y, radius, y_gap, x_offset, y_offset, [counterbore_x, counterbore_y, counterbore_z]]]
-// [...[diameter, y_gap, x_offset, y_offset]]
+// [[[x, y], diameter, [gap_for_next_item, x_offset, y_offset], [bore_dia, bore_h, auto_scale_step, reverse]?, [debug?, text] ]],
+power_lid_rect_screw_holes                       = [[[[15.2, 35.55],
+                                                      m2_hole_dia,
+                                                      [10, -11.9, 14.55],
+                                                      [],
+                                                      [false,
+                                                       "DC",
+                                                       1.5,
+                                                       "red",
+                                                       [0, 0, 90],
+                                                       [-2, 0, 0],
+                                                       undef,
+                                                       undef,
+                                                       "center",
+                                                       "baseline"],]],
+                                                    [[[power_lid_breadboard_screw_size[0],
+                                                       power_lid_breadboard_screw_size[1]],
+                                                      power_lid_breadboard_screw_dia,
+                                                      [0, 15, 18],
+                                                      [],
+                                                      [false,
+                                                       "Breadboard",
+                                                       1.5,
+                                                       "red",
+                                                       [0, 0, 90],
+                                                       [-2, 0, 0],
+                                                       undef,
+                                                       undef,
+                                                       "center",
+                                                       "baseline"]]],
+                                                    [[[ina260_screw_size[0],
+                                                       ina260_screw_size[1]],
+                                                      ina260_screw_dia,
+                                                      [10,
+                                                       17,
+                                                       38],
+                                                      [],
+                                                      [false,
+                                                       "INA260",
+                                                       2,
+                                                       "red",
+                                                       [0, 0, 90],
+                                                       [-2, 0, 0],
+                                                       undef,
+                                                       undef,
+                                                       "center",
+                                                       "baseline"]]]];
+// [...[x, y, radius, y_gap, x_offset, y_offset, [counterbore_x, counterbore_y, counterbore_z], higlight?]]
 power_lid_single_holes_specs                     = [[[8, 15.2, -0, 25]]];
 
 power_lid_side_wall_1_circle_holes               = [[[8, 15.2, -2, 5], [8, 15.2, -2, 5]]];
 power_lid_side_wall_2_circle_holes               = [[[8, 22.2, -2, 5], [8, 15.2, -2, 5]]];
 
-// [...[[x, y, radius], [y_gap, x_offset, y_offset], [counterbore_x, counterbore_y, counterbore_z]]]
 xt_90_size                                       = [10.30, 22.20];
 xt_90_position                                   = [3, 1];
 
 xt_90_screw_size                                 = [0, 32.20];
 xt_90_screw_dia                                  = m3_hole_dia;
+
+// [...[[x, y, radius], [y_gap, x_offset, y_offset], [counterbore_x, counterbore_y, counterbore_z], higlight?]]
 power_lid_cube_holes                             = [[[[atm_fuse_holder_2_mounting_hole_h + 2,
                                                        atm_fuse_holder_2_mounting_hole_l + 0.8,
                                                        atm_fuse_holder_2_mounting_hole_r + 1],
@@ -1846,7 +2011,7 @@ toggle_switch_terminal_size                      = [1.2, 6.0, 9.7];
 // ─────────────────────────────────────────────────────────────────────────────
 // Standard (see motor_type) motor brackets dimension
 // ─────────────────────────────────────────────────────────────────────────────
-standard_motor_bracket_screws_size               = [-7.5, 10.5];
+standard_motor_bracket_screws_size               = [-0, 0];
 standard_motor_bracket_chassis_screw_hole        = m2_hole_dia;
 standard_motor_bracket_motor_screw_hole          = m3_hole_dia;
 standard_motor_bracket_y_offset                  = 25;

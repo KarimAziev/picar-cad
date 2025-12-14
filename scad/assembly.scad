@@ -1,3 +1,4 @@
+
 /**
  * Module: Assembly view.
  *
@@ -23,6 +24,8 @@ use <wheels/rear_wheel.scad>
 use <placeholders/battery_holder.scad>
 use <motor_brackets/n20_motor_bracket.scad>
 use <power/power_case.scad>
+use <placeholders/smd_battery_holder.scad>
+use <lib/holes.scad>
 
 chassis_assembly_center         = true;
 show_motor                      = true;
@@ -35,10 +38,14 @@ show_front_rear_panel           = true;
 show_ultrasonic                 = true;
 show_ups_hat                    = false;
 show_power_case                 = true;
+show_lipo_pack                  = true;
+show_power_case_lid             = true;
 show_steering                   = true;
 show_bearing                    = true;
 show_brackets                   = true;
-show_battery_holders            = true;
+show_battery_holders            = false;
+show_smd_battery_holders        = true;
+show_batteries                  = true;
 show_rpi                        = true;
 show_head                       = true;
 show_pan_servo                  = true;
@@ -48,7 +55,9 @@ show_ir_case                    = true;
 show_ir_led                     = true;
 chassis_color                   = "white";
 head_color                      = chassis_color;
-batteries_holder_assembly_y_idx = len(baterry_holes_y_positions) / 2 + 1;
+show_voltmeters                 = true;
+batteries_holder_assembly_y_idx = len(battery_holes_y_positions) / 2 + 1;
+
 show_ackermann_triangle         = false;
 
 chassis_color_bottom            = "#353935";
@@ -129,7 +138,9 @@ module chassis_assembly(center=false,
                  - power_case_chassis_y_offset,
                  chassis_thickness]) {
 
-        power_case_assembly(case_color=matte_black);
+        power_case_assembly(case_color=matte_black,
+                            show_lipo_pack=show_lipo_pack,
+                            show_lid=show_power_case_lid);
       }
     }
     if (show_ups_hat) {
@@ -141,12 +152,13 @@ module chassis_assembly(center=false,
     }
 
     rotate([0, 180, 0]) {
-      if (show_battery_holders && len(baterry_holes_y_positions) > 0) {
+
+      if (show_battery_holders && len(battery_holes_y_positions) > 0) {
         batteries_holder_assembly_y_idx = batteries_holder_assembly_y_idx;
-        battery_holder_y_pos = is_undef(baterry_holes_y_positions
+        battery_holder_y_pos = is_undef(battery_holes_y_positions
                                         [batteries_holder_assembly_y_idx])
-          ? baterry_holes_y_positions[batteries_holder_assembly_y_idx - 1]
-          : baterry_holes_y_positions[batteries_holder_assembly_y_idx];
+          ? battery_holes_y_positions[batteries_holder_assembly_y_idx - 1]
+          : battery_holes_y_positions[batteries_holder_assembly_y_idx];
         full_holder_len = battery_holder_full_len(battery_holder_thickness)
           * battery_holder_batteries_count;
         full_holder_width = battery_holder_full_width(battery_holder_thickness)
@@ -166,7 +178,30 @@ module chassis_assembly(center=false,
                        - battery_screws_x_offset,
                        battery_holder_y_pos - half_of_holder_len,
                        0]) {
-              battery_holder();
+              battery_holder(show_battery=show_batteries);
+            }
+          }
+        }
+      }
+
+      if (show_smd_battery_holders) {
+        translate([0, 0, chassis_thickness]) {
+          for (specs = smd_battery_holder_chassis_specs) {
+            four_corner_hole_rows(specs,
+                                  thickness=chassis_thickness * 2,
+                                  default_bore_dia_factor=1,
+                                  default_bore_h_factor=0.2,
+                                  sink=true,
+                                  center=true);
+          }
+          for (specs = smd_battery_holder_chassis_specs) {
+            four_corner_hole_rows(specs,
+                                  thickness=chassis_thickness,
+                                  default_bore_dia_factor=1,
+                                  default_bore_h_factor=0,
+                                  sink=true,
+                                  center=true) {
+              smd_battery_holder(show_battery=show_batteries);
             }
           }
         }
@@ -184,6 +219,7 @@ module chassis_assembly(center=false,
               show_ackermann_triangle=show_ackermann_triangle,
               chassis_color=chassis_color,
               chassis_color_bottom=chassis_color_bottom,
+              show_voltmeters=show_voltmeters,
               rotate_chassis=true);
     }
   }

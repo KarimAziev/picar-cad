@@ -219,3 +219,40 @@ module rounded_rect_slots(specs,
     }
   }
 }
+
+module cube_path(specs) {
+  sizes = map_idx(specs, 0, [0, 0, 0, 0]);
+  y_sizes = map_idx(sizes, 1, 0);
+
+  offsets = map_idx(specs, 1, [0, 0, 0]);
+  y_gaps = map_idx(offsets, 0, 0);
+  x_offsets = map_idx(offsets, 1, 0);
+  y_offsets = map_idx(offsets, 2, 0);
+  z_offsets = map_idx(offsets, 3, 0);
+
+  for (i = [0 : len(specs) - 1]) {
+    let (spec=specs[i],
+         prev_y_size= i > 0 ? sum(y_sizes, i) : 0,
+         prev_y_space=i > 0 ? sum(y_gaps, i) : 0,
+         y = prev_y_size + prev_y_space) {
+
+      let (x_offset = x_offsets[i],
+           y_offset = y_offsets[i],
+           z_offset = z_offsets[i]) {
+
+        $spec = spec;
+        $i = i;
+
+        translate([x_offset, y + y_offset, z_offset]) {
+          if (!$children) {
+            translate([-sizes[i][0] / 2, 0, 0]) {
+              cube(size=sizes[i]);
+            }
+          } else {
+            children();
+          }
+        }
+      }
+    }
+  }
+}

@@ -15,7 +15,7 @@ use <../lib/shapes2d.scad>
 use <../lib/holes.scad>
 use <../lib/transforms.scad>
 
-module ultrasonic() {
+module ultrasonic(center=true) {
   half_of_board_w = ultrasonic_w / 2;
   half_of_board_h = ultrasonic_h / 2;
 
@@ -29,69 +29,72 @@ module ultrasonic() {
   texts = [["T", -text_x],
            ["R", text_x]];
 
-  union() {
-    color(medium_blue_1, alpha=1) {
-      linear_extrude(height=ultrasonic_thickness, center=false) {
-        difference() {
-          rounded_rect(size=[ultrasonic_w, ultrasonic_h],
-                       center=true,
-                       r=ultrasonic_offset_rad);
-          four_corner_holes_2d(size=ultrasonic_screw_size,
-                               hole_dia=ultrasonic_screw_dia,
-                               center=true);
+  translate([center ? 0 : half_of_board_w, center ? 0 : half_of_board_h, 0]) {
+
+    union() {
+      color(medium_blue_1, alpha=1) {
+        linear_extrude(height=ultrasonic_thickness, center=false) {
+          difference() {
+            rounded_rect(size=[ultrasonic_w, ultrasonic_h],
+                         center=true,
+                         r=ultrasonic_offset_rad);
+            four_corner_holes_2d(size=ultrasonic_screw_size,
+                                 hole_dia=ultrasonic_screw_dia,
+                                 center=true);
+          }
         }
       }
-    }
-    mirror_copy([1, 0, 0]) {
-      translate([half_of_board_w
-                 - transducer_rad
-                 - ultrasonic_transducer_x_offset,
-                 0,
-                 ultrasonic_transducer_h / 2
-                 + ultrasonic_thickness]) {
-        ultrasonic_transducer();
+      mirror_copy([1, 0, 0]) {
+        translate([half_of_board_w
+                   - transducer_rad
+                   - ultrasonic_transducer_x_offset,
+                   0,
+                   ultrasonic_transducer_h / 2
+                   + ultrasonic_thickness]) {
+          ultrasonic_transducer();
+        }
       }
-    }
 
-    translate([0, 0, ultrasonic_thickness]) {
-      linear_extrude(height=0.1, center=false) {
-        color(metallic_silver_1, alpha=1) {
-          for (spec = texts) {
-            let (txt = spec[0],
-                 txt_x = spec[1]) {
-              translate([txt_x,
-                         text_y,
-                         ultrasonic_thickness]) {
-                text(txt,
-                     size=ultrasonic_text_size,
-                     halign=txt_x > 0 ? "center" : "right",
-                     valign="center");
+      translate([0, 0, ultrasonic_thickness]) {
+        linear_extrude(height=0.1, center=false) {
+          color(metallic_silver_1, alpha=1) {
+            for (spec = texts) {
+              let (txt = spec[0],
+                   txt_x = spec[1]) {
+                translate([txt_x,
+                           text_y,
+                           ultrasonic_thickness]) {
+                  text(txt,
+                       size=ultrasonic_text_size,
+                       halign=txt_x > 0 ? "center" : "right",
+                       valign="center");
+                }
               }
             }
           }
         }
       }
-    }
 
-    translate([0,
-               half_of_board_h
-               - ultrasonic_oscillator_h / 2
-               - ultrasonic_oscillator_y_offset,
-               ultrasonic_thickness]) {
-      ultrasonic_oscillator();
-    }
+      translate([0,
+                 half_of_board_h
+                 - ultrasonic_oscillator_h / 2
+                 - ultrasonic_oscillator_y_offset,
+                 ultrasonic_thickness]) {
+        ultrasonic_oscillator();
+      }
 
-    translate([0,
-               -half_of_board_h
-               + ultrasonic_pins_jack_h / 2
-               + ultrasonic_pins_jack_y_offset,
-               - ultrasonic_pins_jack_thickness]) {
-      ultrasonic_pins();
-    }
+      translate([0,
+                 -half_of_board_h
+                 + ultrasonic_pins_jack_h / 2
+                 + ultrasonic_pins_jack_y_offset,
+                 - ultrasonic_pins_jack_thickness]) {
+        ultrasonic_pins();
+      }
 
-    ultrasonic_smd_chips();
-    translate([0, 0, -ultrasonic_smd_h]) {
-      ultrasonic_solder_blobs();
+      ultrasonic_smd_chips();
+      translate([0, 0, -ultrasonic_smd_h]) {
+        ultrasonic_solder_blobs();
+      }
     }
   }
 }

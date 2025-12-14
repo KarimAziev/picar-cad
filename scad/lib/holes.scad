@@ -11,31 +11,69 @@
 use <shapes3d.scad>
 use <transforms.scad>
 use <functions.scad>
+use <debug.scad>
+use <text.scad>
 
 module counterbore(h,
                    d,
-                   upper_d,
-                   upper_h,
+                   bore_d,
+                   bore_h,
                    center=false,
                    sink=false,
-                   fn=60) {
-  upper_h = is_undef(upper_h) ? h * 0.3 : upper_h;
-  upper_rad = (is_undef(upper_d) ? d * 2.8 : upper_d) / 2;
+                   fn=60,
+                   autoscale_step = 0.0,
+                   reverse=false) {
+  bore_h = is_undef(bore_h) ? h * 0.3 : bore_h;
+  bore_r = (is_undef(bore_d) ? d * 2.8 : bore_d) / 2;
+  auto_scale = !is_undef(autoscale_step) && autoscale_step != 0;
+  cbore_h = auto_scale ? bore_h + autoscale_step : bore_h;
 
-  translate([0, 0, center ? -h / 2 : 0]) {
-    cylinder(h=h, r=d / 2, center=false, $fn=fn);
-    translate([0, 0, h - upper_h]) {
-      if (sink) {
-        cylinder(h=upper_h, r1=d / 2, r2=upper_rad, center=false, $fn=fn,
-                 $fa = 12,
-                 $fs = 20,);
-      } else {
-        cylinder(h=upper_h, r=upper_rad, center=false, $fn=fn,
-                 $fa = 12,
-                 $fs = 20,);
-      }
+  module main_hole() {
+    cylinder(h=auto_scale
+             ? h + (autoscale_step * 2)
+             : h,
+             r=d / 2,
+             center=false,
+             $fn=fn);
+  }
+
+  module cbore_hole() {
+    if (sink) {
+      r1 = !reverse ? d / 2 : bore_r;
+      r2 = !reverse ? bore_r : d / 2;
+      cylinder(h=cbore_h,
+               r1=r1,
+               r2=r2,
+               center=false,
+               $fn=fn);
+    } else {
+      cylinder(h=cbore_h,
+               r=bore_r,
+               center=false,
+               $fn=fn);
     }
   }
+
+  translate([0,
+             0,
+             !center
+             ? 0
+             : -h / 2]) {
+    if (!auto_scale) {
+      main_hole();
+    } else {
+      translate([0, 0, -autoscale_step]) {
+        main_hole();
+      }
+    }
+
+    translate([0, 0, !reverse ? h - bore_h
+               : auto_scale
+               ? -autoscale_step
+               : 0]) {
+      cbore_hole();
+    }
+  };
 }
 
 /**
@@ -44,12 +82,12 @@ module counterbore(h,
  * region (conical frustum).
  */
 
-module countersink(h, d, upper_d, upper_h, center=false, fn=60) {
+module countersink(h, d, bore_d, bore_h, center=false, fn=60) {
   counterbore(h=h,
               d=d,
-              upper_d=upper_d,
+              bore_d=bore_d,
               center=center,
-              upper_h=upper_h,
+              bore_h=bore_h,
               fn=fn,
               sink=true);
 }
@@ -125,7 +163,8 @@ module two_x_screws_2d(x=0, d=2.4, fn=360) {
  *   (-0.1) before the counterbore() call (preserving original behavior).
  */
 
-module counterbore_single_slots_by_specs(specs, thickness, cfactor=1.5) {
+module counterbore_single_slots_by_specs(specs, thickness, cfactor=1.5, default_autoscale_step,
+                                         sink=false) {
   dia_sizes = map_idx(specs, 0, 0);
   y_spaces = map_idx(specs, 1, 0);
 
@@ -136,16 +175,22 @@ module counterbore_single_slots_by_specs(specs, thickness, cfactor=1.5) {
          prev_dias=i > 0 ? sum(dia_sizes, i) : 0,
          y = prev_y_space + prev_dias,
          x = is_undef(spec[2]) ? 0 : spec[2],
-         y_offset = is_undef(spec[3]) ? 0 : spec[3]) {
+         y_offset = is_undef(spec[3]) ? 0 : spec[3],
+         bore_spec = is_undef(spec[4]) ? [] : spec[4],
+         bore_d = is_undef(bore_spec[0]) ? dia * cfactor : bore_spec[0],
+         bore_h = is_undef(bore_spec[1]) ? thickness / 2 : bore_spec[1],
+         autoscale_step = with_default(bore_spec[2]),
+         bore_reverse = bore_spec[3]) {
 
       translate([x, y + y_offset, -0.1]) {
         counterbore(d=dia,
-                    h=thickness
-                    + 1,
-                    upper_h=thickness / 2,
-                    upper_d=dia * cfactor,
+                    h=thickness + (is_undef(autoscale_step) ? 0.2 : 0),
+                    bore_h=bore_h,
+                    reverse=bore_reverse,
+                    autoscale_step=autoscale_step,
+                    bore_d=bore_d,
                     center=false,
-                    sink=false);
+                    sink=sink);
       }
     }
   }
@@ -169,8 +214,8 @@ module counterbore_single_slots_by_specs(specs, thickness, cfactor=1.5) {
  *   - y_gap           : extra gap after this row before placing the next row
  *   - x_offset (opt)  : local X translation for this row (default 0)
  *   - y_offset (opt)  : local Y translation for this row (default 0)
- *   - counterbore_spec(optional): if you want a counterbore at each corner,
- *       supply a nested counterbore spec (format used by your counterbore module).
+ *   - counterbore_spec(optional): custom counter bore spec: [bore_dia, bore_h]
+ *
  *
  * Parameters:
  *   specs: array of per-row specs (see format above)
@@ -183,33 +228,94 @@ module counterbore_single_slots_by_specs(specs, thickness, cfactor=1.5) {
  * - Each row is translated by the optional x_offset and y_offset before
  *   generating the four corner holes.
  * - Each corner hole is created by calling counterbore() inside four_corner_children.
- */
 
-module four_corner_hole_rows(specs, thickness) {
-  y_sizes = map_idx(specs, 1, 0);
-  dia_sizes = map_idx(specs, 2, 0);
-  y_spaces = map_idx(specs, 3, 0);
+ **Example**:
+ ```scad
+ four_corner_hole_rows([[15.2, 35.55, 5, 0, 0, 0]], thickness=1, center=true);
+ ```
+*/
+
+module four_corner_hole_rows(specs,
+                             thickness,
+                             default_text_height,
+                             default_font,
+                             default_size = 4,
+                             default_spacing = 1,
+                             default_halign = "center",
+                             default_valign = "baseline",
+                             default_color,
+                             default_bore_dia_factor= 1.5,
+                             default_bore_h_factor= 0.5,
+                             sink=false,
+                             center=false,
+                             children_by_idx = false) {
+  sizes = map_idx(specs, 0, []);
+  dia_sizes = map_idx(specs, 1, []);
+
+  x_sizes = map_idx(sizes, 0, []);
+  y_sizes = map_idx(sizes, 1, []);
+  offsets = map_idx(specs, 2, []);
+  y_gaps_after = map_idx(offsets, 0, [0]);
+  x_offsets = map_idx(offsets, 1, []);
+  y_offsets = map_idx(offsets, 2, []);
+
+  bore_sizes = map_idx(specs, 3, []);
+  debug_specs = map_idx(specs, 4, []);
 
   for (i = [0 : len(specs) - 1]) {
     let (spec=specs[i],
-         dia=spec[2],
+         dia=spec[1],
          prev_y_size= i > 0 ? sum(y_sizes, i) : 0,
-         prev_y_space=i > 0 ? sum(y_spaces, i) : 0,
+         prev_y_space=i > 0 ? sum(y_gaps_after, i) : 0,
          prev_dias=i > 0 ? sum(dia_sizes, i) : 0,
          y = prev_y_size + prev_y_space + prev_dias,
-         x = is_undef(spec[4]) ? 0 : spec[4],
-         y_offset = is_undef(spec[5]) ? 0 : spec[5]) {
+         x = is_undef(x_offsets[i]) ? 0 : x_offsets[i],
+         y_offset = is_undef(y_offsets[i]) ? 0 : y_offsets[i],
+         bore_spec = is_undef(bore_sizes[i]) ? [] : bore_sizes[i],
+         bore_d = is_undef(bore_spec[0]) ? dia * default_bore_dia_factor : bore_spec[0],
+         bore_h = is_undef(bore_spec[1]) ? thickness * default_bore_h_factor : bore_spec[1],
+         autoscale_step = with_default(bore_spec[2], 0.1),
+         bore_reverse = bore_spec[3],
+         debug_spec = with_default(debug_specs[i], [false])) {
 
-      translate([x - spec[0] / 2, y + y_offset, 0]) {
-        four_corner_children(size=[spec[0], spec[1]],
-                             center=false) {
-          counterbore(d=dia,
-                      h=thickness
-                      + 0.2,
-                      upper_h=thickness / 2,
-                      upper_d=dia * 1.5,
-                      center=false,
-                      sink=false);
+      translate([x - (center ? 0 : x_sizes[i] / 2), y + y_offset, 0]) {
+        $spec = spec;
+        $i = i;
+        if ($children > 0) {
+          if (children_by_idx) {
+            children($i);
+          } else{
+            children();
+          }
+        } else {
+          four_corner_children(size=[x_sizes[i],
+                                     y_sizes[i]],
+                               center=center) {
+            debug_highlight(debug=debug_spec[0]) {
+              counterbore(d=dia,
+                          h=thickness,
+                          bore_h=bore_h,
+                          reverse=bore_reverse,
+                          autoscale_step=autoscale_step,
+                          bore_d=bore_d,
+                          center=false,
+                          sink=sink);
+              if (is_list(debug_spec) && debug_spec[0]) {
+                text_from_spec(is_bool(debug_spec[0])
+                               ? slice(debug_spec,
+                                       1,
+                                       len(debug_spec) - 1)
+                               : debug_spec,
+                               default_font=default_font,
+                               default_size=default_size,
+                               default_spacing=default_spacing,
+                               default_halign=default_halign,
+                               default_valign=default_valign,
+                               default_color=default_color,
+                               default_height=thickness);
+              }
+            }
+          }
         }
       }
     }

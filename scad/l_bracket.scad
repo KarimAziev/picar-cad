@@ -58,6 +58,7 @@ module l_bracket(size,
                  bracket_color,
                  center=true,
                  convexity,
+                 rotation=90,
                  y_r=undef,
                  z_r=undef) {
   x = size[0];
@@ -140,7 +141,7 @@ module l_bracket(size,
       translate([0,
                  -y / 2,
                  z / 2 - thickness / 2]) {
-        rotate([90, 0, 0]) {
+        rotate([rotation, 0, 0]) {
           difference() {
             union() {
               color(bracket_color, alpha=1) {

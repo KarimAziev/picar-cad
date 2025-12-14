@@ -42,13 +42,15 @@ module voltmeter_display(display_w=voltmeter_display_w,
                colr=text_spec[4],
                tm=textmetrics(text=txt,
                               spacing=spacing,
+                              halign="center",
                               size=text_spec[1],
                               font=font),
                trans_spec=is_undef(text_spec[5]) ? [0, 0] : text_spec[5],
-               text_w = tm.size[1]) {
+               text_len = tm.size[0],
+               text_h = tm.size[1]) {
             translate(trans_spec) {
-              translate([text_w / 2,
-                         -display_len / 2,
+              translate([text_h / 2,
+                         0,
                          0]) {
                 color(colr, alpha=1) {
                   rotate([0, 0, 180]) {
@@ -56,6 +58,7 @@ module voltmeter_display(display_w=voltmeter_display_w,
                       linear_extrude(height=0.01, center=false) {
                         text(txt,
                              spacing=spacing,
+                             halign="center",
                              size=size,
                              font=font);
                       }

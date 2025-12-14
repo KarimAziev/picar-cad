@@ -57,3 +57,132 @@ module debug_polygon(points, paths=undef, convexity=undef, debug=true,
     }
   }
 }
+
+module debug_highlight(debug=false) {
+  if (debug) {
+    #children();
+  } else {
+    children();
+  }
+}
+
+module bounding_box(excess=0, planar=false) {
+  module _xProjection() {
+    if (planar) {
+      projection()
+        rotate([90, 0, 0]) {
+        linear_extrude(1, center=true) {
+          hull() {
+            children();
+          }
+        }
+      }
+    } else {
+      xs = excess<.1? 1: excess;
+      linear_extrude(xs, center=true)
+        projection() {
+        rotate([90, 0, 0]) {
+          linear_extrude(xs, center=true) {
+            projection() {
+              hull() {
+                children();
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // a bounding box with an offset of 1 in all axis
+  module _oversize_bbox() {
+    if (planar) {
+      minkowski() {
+        _xProjection() {
+          children(); // x axis
+        }
+        rotate(-90) {
+          _xProjection() {
+            rotate(90) {
+              children(); // y axis
+            }
+          }
+        }
+      }
+    } else {
+      minkowski() {
+        _xProjection() {
+          children(); // x axis
+        }
+        rotate(-90) {
+          _xProjection() {
+            rotate(90) {
+              children(); // y axis
+            }
+          }
+        }
+        rotate([0,-90, 0]) {
+          _xProjection() {
+            rotate([0, 90, 0]) {
+              children(); // z axis
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // offsets a cube by `excess`
+  module _shrink_cube() {
+    intersection() {
+      translate((1-excess)*[1, 1, 1]) {
+        children();
+      }
+      translate((1-excess)*[-1,-1,-1]) {
+        children();
+      }
+    }
+  }
+
+  if (planar) {
+    offset(excess-1/2) {
+      _oversize_bbox() {
+        children();
+      }
+    }
+  } else {
+    render(convexity=2)
+      if (excess>.1) {
+        _oversize_bbox() {
+          children();
+        }
+      } else {
+        _shrink_cube() {
+          _oversize_bbox() {
+            children();
+          }
+        }
+      }
+  }
+}
+
+// // Example(3D):
+// module shapes() {
+//   translate([10, 8, 4]) cube(5);
+//   translate([3, 0, 12]) cube(2);
+// }
+// #bounding_box() {
+//   shapes();
+// }
+// shapes();
+
+// module shapes_2d() {
+//   translate([10, 8]) square(5);
+//   translate([3, 0]) square(2);
+// }
+
+// translate([-20, 0, 0]) {
+//   #bounding_box(planar=true) {
+//     shapes_2d();
+//   }
+// }

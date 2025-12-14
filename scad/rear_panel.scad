@@ -36,14 +36,15 @@ module rear_panel_screw_holes_3d() {
   rad = rear_panel_screw_hole_dia / 2;
   y = yw / 2 - rad - rear_panel_screw_offset;
 
-  rotate([-90, 0, 0]) {
+  rotate([90, 0, 0]) {
     union() {
       for (x=rear_panel_screw_holes_x_offsets) {
-        translate([x, y, -0.05]) {
+        translate([x, y, -rear_panel_mount_thickness -0.05]) {
           counterbore(h=rear_panel_mount_thickness + 0.1,
                       d=rear_panel_screw_hole_dia,
-                      upper_h=rear_panel_screw_cbore_h,
-                      upper_d=rear_panel_screw_cbore_hole_dia);
+                      bore_h=rear_panel_screw_cbore_h,
+                      bore_d=rear_panel_screw_cbore_hole_dia,
+                      sink=false);
         }
       }
     }
@@ -95,7 +96,9 @@ module rear_panel(show_switch_button=false, colr) {
             rotate([0, 180, 0]) {
               counterbore(d=rear_panel_switch_slot_dia,
                           h=rear_panel_thickness + 0.1,
-                          upper_d=rear_panel_switch_slot_cbore_dia);
+                          bore_h=rear_panel_switch_slot_cbore_h,
+                          bore_d=rear_panel_switch_slot_cbore_dia,
+                          sink=true);
             }
           }
         }
@@ -109,7 +112,8 @@ module rear_panel(show_switch_button=false, colr) {
     }
     if (show_switch_button) {
       for (x=rear_panel_holes_x_offsets) {
-        translate([x, 0, toggle_switch_size[0] + rear_panel_thickness / 2 + 0.05]) {
+        translate([x, 0, toggle_switch_size[0] + rear_panel_thickness / 2
+                   + 0.05]) {
           rotate([180, 0, 0]) {
             toggle_switch();
           }
@@ -119,4 +123,4 @@ module rear_panel(show_switch_button=false, colr) {
   }
 }
 
-rear_panel(show_switch_button=true);
+rear_panel(show_switch_button=false);

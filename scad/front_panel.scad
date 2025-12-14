@@ -19,6 +19,8 @@ use <placeholders/smd_chip.scad>
 use <lib/shapes2d.scad>
 use <lib/holes.scad>
 use <lib/transforms.scad>
+use <lib/functions.scad>
+use <lib/shapes3d.scad>
 
 rear_panel_z = ultrasonic_pin_len_b
   - ultrasonic_thickness
@@ -69,7 +71,8 @@ module ultrasonic_screws_2d(size=ultrasonic_screw_size,
   four_corner_holes_2d(size=size, center=true, hole_dia=d);
 }
 
-module front_panel_connector_screws(reverse_y = false) {
+module front_panel_connector_screws(reverse_y=false,
+                                    use_counterbore=false,) {
   half_len = front_panel_connector_len / 2;
   half_w   = front_panel_connector_width / 2;
   screw_r  = front_panel_connector_screw_dia / 2;
@@ -83,29 +86,137 @@ module front_panel_connector_screws(reverse_y = false) {
   for (off = front_panel_connector_screw_offsets) {
     x = screw_x(off[0]);
     y = screw_y(off[1]);
-    translate([x, reverse_y ? -y : y, 0])
-      circle(r = screw_r, $fn = 360);
+    translate([x, reverse_y ? -y : y, 0]) {
+      if (!use_counterbore) {
+        circle(r = screw_r, $fn = 360);
+      } else {
+        counterbore(d=front_panel_connector_screw_dia,
+                    h=front_panel_thickness,
+                    bore_d=front_panel_connector_screw_bore_dia,
+                    bore_h=front_panel_connector_screw_bore_h,
+                    autoscale_step=0.1,
+                    reverse=true);
+      }
+    }
   }
 }
 
-module front_panel_connector() {
-  linear_extrude(height=front_panel_thickness, center=false) {
-    difference() {
-      rounded_rect_two(size = [front_panel_connector_width,
-                               front_panel_connector_len],
-                       center=true,
-                       r=front_panel_connector_offset_rad);
-      if (front_panel_connector_rect_cutout_size[0] > 0
-          && front_panel_connector_rect_cutout_size[1] > 0) {
-        translate([0, -front_panel_connector_len / 2 +
-                   front_panel_connector_rect_cutout_size[1] / 2
-                   + rear_panel_z
-                   + front_panel_thickness,
-                   0]) {
-          square(front_panel_connector_rect_cutout_size, center=true);
+module front_panel_connector(w=front_panel_connector_width,
+                             h=front_panel_connector_len,
+                             thickness=front_panel_thickness,) {
+  difference() {
+    linear_extrude(height=thickness, center=false) {
+      difference() {
+        rounded_rect_two(size = [w,
+                                 h],
+                         center=true,
+                         r=front_panel_connector_offset_rad);
+        if (front_panel_connector_rect_cutout_size[0] > 0
+            && front_panel_connector_rect_cutout_size[1] > 0) {
+          translate([0, -h / 2 +
+                     front_panel_connector_rect_cutout_size[1] / 2
+                     + rear_panel_z
+                     + thickness,
+                     0]) {
+            square(front_panel_connector_rect_cutout_size, center=true);
+          }
         }
       }
-      front_panel_connector_screws();
+    }
+    front_panel_connector_screws(use_counterbore=true);
+  }
+}
+
+module front_panel_main(w=front_panel_width,
+                        h=front_panel_height,
+                        screws_x_offset=front_panel_screws_x_offset,
+                        thickness=front_panel_thickness,
+                        angle=front_panel_rotation_angle,
+                        show_front_rear_panel=false,
+                        show_ultrasonic=false,
+                        colr="white",
+                        center=true) {
+  ultrasonic_rect_cutout_w = ultrasonic_w + 1;
+  ultrasonic_rect_cutout_h = ultrasonic_h + 1.5;
+  ultrasonic_z = front_panel_thickness
+    + ultrasonic_thickness;
+  translate([center ? 0 : w / 2, center ? 0 : h / 2, 0]) {
+    if (show_ultrasonic) {
+      translate([ultrasonic_w / 2,
+                 -ultrasonic_h / 2,
+                 ultrasonic_z]) {
+        rotate([angle, 0, 0]) {
+          rotate([0, 180, 0]) {
+            ultrasonic(center=false);
+          }
+        }
+      }
+    }
+
+    color(colr) {
+      translate([-w / 2, -h / 2, 0]) {
+        rotate([angle, 0, 0]) {
+          translate([w / 2, h / 2, 0]) {
+            if (show_front_rear_panel) {
+              rotate([0, 0, 0]) {
+                translate([0, 0,
+                           front_panel_thickness
+                           + ultrasonic_thickness
+                           + rear_panel_z]) {
+                  rotate([180, 0, 0]) {
+                    color(colr, alpha=1) {
+                      front_panel_back_mount();
+                    }
+                  }
+                }
+              }
+            }
+
+            difference() {
+              linear_extrude(thickness, convexity=2) {
+                difference() {
+                  rounded_rect(size=[w, h],
+                               r=front_panel_offset_rad,
+                               center=true);
+                  translate([0, front_panel_screws_y_offst, 0]) {
+                    two_x_screws_2d(x=screws_x_offset,
+                                    d=front_panel_screw_dia);
+                  }
+                  translate([0, front_panel_screws_y_offst, 0]) {
+                    ultrasonic_screws_2d();
+                  }
+
+                  ultrasonic_sensor_mounts_2d();
+                  ultrasonic_rect_slots_2d(h=ultrasonic_h);
+                }
+              }
+
+              translate([0, 0,
+                         thickness - front_panel_ultrasonic_cutout_depth + 0.1]) {
+                linear_extrude(height=front_panel_ultrasonic_cutout_depth,
+                               center=false) {
+                  rounded_rect([ultrasonic_rect_cutout_w,
+                                ultrasonic_rect_cutout_h],
+                               r=ultrasonic_offset_rad,
+                               center=true);
+                }
+              }
+
+              translate([0, 0, thickness / 2]) {
+                linear_extrude(height=rear_panel_z, center=false) {
+                  mirror_copy([1, 0, 0]) {
+                    translate([screws_x_offset, front_panel_screws_y_offst, 0]) {
+                      circle(r=front_panel_screw_dia / 2
+                             + front_panel_rear_panel_ring_width + 0.4,
+                             $fn=100);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
@@ -113,56 +224,41 @@ module front_panel_connector() {
 module front_panel(w=front_panel_width,
                    h=front_panel_height,
                    screws_x_offset=front_panel_screws_x_offset,
-                   thickness=front_panel_thickness) {
-  ultrasonic_rect_cutout_w = ultrasonic_w + 1;
-  ultrasonic_rect_cutout_h = ultrasonic_h + 1.5;
+                   thickness=front_panel_thickness,
+                   angle=front_panel_rotation_angle,
+                   colr="white",
+                   connector_len=front_panel_connector_len,
+                   show_ultrasonic=false,
+                   show_front_rear_panel=false) {
+  bbox = rot_x_bbox_align([w, h, thickness], angle=angle);
+  bbox_w = bbox[0];
+  bbox_h = bbox[1];
+  connector_y = h / 2 + thickness - 0.1;
+  connector_z = connector_len / 2;
+  y = bbox_w - connector_y;
+
   rotate([90, 180, 0]) {
-    difference() {
-      linear_extrude(thickness, convexity=2) {
-        difference() {
-          rounded_rect(size=[w, h],
-                       r=front_panel_offset_rad,
-                       center=true);
-          translate([0, front_panel_screws_y_offst, 0]) {
-            two_x_screws_2d(x=screws_x_offset,
-                            d=front_panel_screw_dia);
-          }
-          translate([0, front_panel_screws_y_offst, 0]) {
-            ultrasonic_screws_2d();
-          }
-
-          ultrasonic_sensor_mounts_2d();
-          ultrasonic_rect_slots_2d(h=ultrasonic_h);
-        }
-      }
-
-      translate([0, 0,
-                 thickness - front_panel_ultrasonic_cutout_depth + 0.1]) {
-        linear_extrude(height=front_panel_ultrasonic_cutout_depth,
-                       center=false) {
-          rounded_rect([ultrasonic_rect_cutout_w,
-                        ultrasonic_rect_cutout_h],
-                       r=ultrasonic_offset_rad,
-                       center=true);
-        }
-      }
-
-      translate([0, 0, thickness / 2]) {
-        linear_extrude(height=rear_panel_z, center=false) {
-          mirror_copy([1, 0, 0]) {
-            translate([screws_x_offset, front_panel_screws_y_offst, 0]) {
-              circle(r=front_panel_screw_dia / 2
-                     + front_panel_rear_panel_ring_width + 0.4,
-                     $fn=100);
-            }
-          }
-        }
-      }
+    translate([-w / 2, -y, -bbox_h]) {
+      front_panel_main(w=w,
+                       h=h,
+                       screws_x_offset=screws_x_offset,
+                       thickness=thickness,
+                       show_ultrasonic=show_ultrasonic,
+                       show_front_rear_panel=show_front_rear_panel,
+                       colr=colr,
+                       center=false);
     }
-    translate([0, h / 2 + thickness - 0.1,
-               front_panel_connector_len / 2]) {
+
+    translate([0,
+               connector_y,
+               connector_z]) {
       rotate([90, 0, 0]) {
-        front_panel_connector();
+        color(colr, alpha=1) {
+          front_panel_connector(w=front_panel_connector_width,
+                                h=front_panel_connector_len
+                                + front_panel_thickness,
+                                thickness=front_panel_thickness);
+        }
       }
     }
   }
@@ -235,13 +331,13 @@ module front_panel_back_mount(h=front_panel_height,
 
 module front_panel_printable(spacing=2,
                              show_front_panel=true,
-                             show_rear_panel=true) {
+                             show_front_rear_panel=true) {
   if (show_front_panel) {
-    rotate([-90, 0, 0]) {
+    rotate([-90 + front_panel_rotation_angle, 0, 0]) {
       front_panel();
     }
   }
-  if (show_rear_panel) {
+  if (show_front_rear_panel) {
     translate([0, show_front_panel ? front_panel_height + spacing : 0 , 0]) {
       front_panel_back_mount();
     }
@@ -252,35 +348,19 @@ module front_panel_assembly(panel_color="white",
                             show_front_panel=true,
                             show_ultrasonic=true,
                             show_front_rear_panel=true) {
-  ultrasonic_x = 0;
+  bbox = rot_x_bbox_align([front_panel_width,
+                           front_panel_height,
+                           front_panel_thickness],
+                          angle=front_panel_rotation_angle);
+  bbox_w = bbox[0];
 
-  ultrasonic_y = 0;
-  ultrasonic_z = front_panel_thickness
-    + ultrasonic_thickness;
   if (show_front_panel) {
-    rotate([-90, 0, 0]) {
-      color(panel_color, alpha=1) {
-        front_panel();
-      }
-    }
-  }
-  if (show_ultrasonic) {
-    translate([ultrasonic_x,
-               ultrasonic_y,
-               ultrasonic_z]) {
-      rotate([180, 0, 0]) {
-        ultrasonic();
-      }
-    }
-  }
-  if (show_front_rear_panel) {
-    translate([0, ultrasonic_y,
-               front_panel_thickness
-               + ultrasonic_thickness
-               + rear_panel_z]) {
-      rotate([180, 0, 0]) {
-        color(panel_color, alpha=1) {
-          front_panel_back_mount();
+    translate([0, -bbox_w + chassis_thickness, 0]) {
+      rotate([0, 180, 0]) {
+        rotate([90, 0, 0]) {
+          front_panel(colr=panel_color,
+                      show_ultrasonic=show_ultrasonic,
+                      show_front_rear_panel=show_front_rear_panel);
         }
       }
     }
@@ -289,5 +369,8 @@ module front_panel_assembly(panel_color="white",
 
 color("white") {
   front_panel_printable(show_front_panel=true,
-                        show_rear_panel=true);
+                        show_front_rear_panel=false);
 }
+
+// front_panel_assembly();
+// front_panel_main(show_ultrasonic=true, center=false);

@@ -544,3 +544,120 @@ function find_best_index(elems, idx, asc, i=0, best_i=0) =
 */
 function key(item, idx) =
   is_list(item) && (idx >= 0) && (idx < len(item)) ? item[idx] : item;
+
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   rot_x_bbox_align
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Calculate the bounding box size of a rectangle rotated around the X axis.
+
+   **Parameters:**
+
+   `size`: A 3-element vector [dx, dy, dz] representing the size of the box.
+   `angle`: The rotation angle in radians.
+   `pos`: Optional 2-element vector [y0, z0] representing the position offset
+   in the YZ plane (default is [0, 0]).
+
+   **Returns:**
+   A 6-element vector:
+   [rotated_size_y, rotated_size_z, min_y, min_z, max_y, max_z]
+
+   where rotated_size_y and rotated_size_z are the dimensions of the bounding
+   box after rotation, and min_y, min_z, max_y, max_z are the extents in YZ
+   plane.
+
+   **Example:**
+
+   ```scad
+   bbox = rot_x_bbox_align([w, h, thickness], angle=angle);
+   bbox_w = bbox[0];
+   bbox_h = bbox[1];
+   ```
+*/
+function rot_x_bbox_align(size, angle, pos=[0, 0]) =
+  let (y0 = pos[0],
+       y1 = pos[0] + size[1],
+       z0 = pos[1],
+       z1 = pos[1] + size[2],
+
+       ya = y0*cos(angle) - z0*sin(angle),
+       yb = y1*cos(angle) - z0*sin(angle),
+       yc = y0*cos(angle) - z1*sin(angle),
+       yd = y1*cos(angle) - z1*sin(angle),
+
+       za = y0*sin(angle) + z0*cos(angle),
+       zb = y1*sin(angle) + z0*cos(angle),
+       zc = y0*sin(angle) + z1*cos(angle),
+       zd = y1*sin(angle) + z1*cos(angle),
+
+       min_y = min([ya, yb, yc, yd]),
+       max_y = max([ya, yb, yc, yd]),
+       min_z = min([za, zb, zc, zd]),
+       max_z = max([za, zb, zc, zd]),
+
+       rot_y_size = max_y - min_y,
+       rot_z_size = max_z - min_z,
+       z_shift = -min_z)
+  [rot_y_size, rot_z_size, min_y, min_z, max_y, max_z];
+
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   in_list
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Check if an item is present in a list.
+
+   **Parameters:**
+
+   `item`: The item to search for.
+   `list`: The list to search within.
+   `i`: Internal recursion index (do not set unless you know what you're doing).
+
+   **Returns:**
+   `true` if `item` is found in `list`, otherwise `false`.
+
+   **Examples:**
+
+   ```scad
+   in_list(3, [1, 2, 3]); // returns true
+   in_list(4, [1, 2, 3]); // returns false
+   ```
+*/
+function in_list(item, list, i = 0) =
+  i >= len(list) ? false
+  : (list[i] == item) ? true
+  : in_list(item, list, i + 1);
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   with_default
+   ─────────────────────────────────────────────────────────────────────────────
+   Returns `val` if it is defined and matches the specified type, otherwise,
+   returns `default`.
+   **Parameters:**
+   `val`: The value to check.
+   `default`: The default value to return if `val` is undefined or of the wrong type.
+   `type`: A string specifying the expected type of `val`. Can be:
+   - "any" (default) or undef
+   - "number" or "n"
+   - "string", "str" or "s"
+   - "list", "l", "arr"
+   **Returns:**
+   `val` if it is defined and of the correct type, otherwise `default`.
+
+*/
+function with_default(val, default, type = "any") =
+  (is_undef(type) || type == "any")
+  ? (is_undef(val) ? default : val)
+  : in_list(type, ["str", "string", "s"])
+  ? (is_string(val) ? val : default)
+  : in_list(type, ["l", "arr", "list"])
+  ? (is_list(val) ? val : default)
+  : in_list(type, ["n", "number"])
+  ? (is_num(val) ? val : default)
+  : default;
+
+function slice_by_value(a, val_start, val_end) =
+  let (start_idx = search_index(a, val_start),
+       end_idx = search_index(a, val_end))
+  slice(a, start_idx, end_idx);

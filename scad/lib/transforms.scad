@@ -86,3 +86,25 @@ module four_corner_holes_2d(size=[10, 10],
       }
     }
 }
+
+module maybe_rotate(rotation) {
+  if (is_list(rotation)
+      && (rotation[0] != 0 || rotation[1] != 0 || rotation[2] != 0)) {
+    rotate(rotation) {
+      children();
+    }
+  } else {
+    children();
+  }
+}
+
+module maybe_translate(v) {
+  if (is_list(v)
+      && (v[0] != 0 || v[1] != 0 || v[2] != 0)) {
+    translate(v) {
+      children();
+    }
+  } else {
+    children();
+  }
+}

@@ -18,7 +18,7 @@ use <../lib/transforms.scad>
 use <../placeholders/standoff.scad>
 
 module power_case(case_color=metallic_silver_5, alpha=1) {
-  inner_x_cutout = power_case_width - power_case_side_wall_thickness * 2;
+
   inner_y_cutout = power_case_length - power_case_front_wall_thickness * 2;
   inner_lipo_x_cutout = lipo_pack_width + 0.8;
 
@@ -45,36 +45,37 @@ module power_case(case_color=metallic_silver_5, alpha=1) {
             }
           }
 
-          translate([0,
-                     0,
-                     power_case_bottom_thickness]) {
-            // Cutout for the 4 corner mounting screw positions
-            rounded_cube([inner_x_cutout,
-                          power_case_bottom_screw_size[1]
-                          + (power_case_bottom_cbore_dia * 2),
-                          power_case_height],
-                         center=true);
-
-            // Cutout for LiPo pack
-            translate([0, 0, power_case_height / 2]) {
-              cube([inner_lipo_x_cutout,
-                    inner_y_cutout,
-                    power_case_height],
-                   center=true);
-            }
-          }
-
           // Holes for 4 corner mounting screws
-          translate([0, 0, -0.1]) {
-            four_corner_children(size=power_case_bottom_screw_size,
-                                 center=true) {
-              counterbore(d=power_case_bottom_screw_dia,
-                          h=power_case_bottom_thickness
-                          + 0.2,
-                          upper_h=1.0,
-                          upper_d=power_case_bottom_cbore_dia,
-                          center=false,
-                          sink=false);
+          translate([power_case_screw_size_offset_x, 0, -0.0]) {
+            translate([0,
+                       0,
+                       power_case_bottom_thickness]) {
+              // Cutout for the 4 corner mounting screw positions
+              rounded_cube([inner_lipo_x_cutout,
+                            power_case_bottom_screw_size[1]
+                            + (power_case_bottom_cbore_dia * 2),
+                            power_case_height],
+                           center=true);
+
+              // Cutout for LiPo pack
+              translate([0, 0, power_case_height / 2]) {
+                cube([inner_lipo_x_cutout,
+                      inner_y_cutout,
+                      power_case_height],
+                     center=true);
+              }
+            }
+            translate([0, power_case_screw_size_offset_y, 0]) {
+              four_corner_children(size=power_case_bottom_screw_size,
+                                   center=true) {
+                #counterbore(d=power_case_bottom_screw_dia,
+                             h=power_case_bottom_thickness,
+                             bore_h=power_case_bottom_cbore_h,
+                             bore_d=power_case_bottom_cbore_dia,
+                             center=false,
+                             autoscale_step=0.1,
+                             sink=false);
+              }
             }
           }
 
@@ -82,7 +83,7 @@ module power_case(case_color=metallic_silver_5, alpha=1) {
           translate([0,
                      0,
                      power_case_front_back_wall_h]) {
-            rounded_cube([inner_x_cutout,
+            rounded_cube([inner_lipo_x_cutout,
                           power_case_length + 1,
                           lipo_pack_height + 1],
                          center=true);
@@ -100,7 +101,7 @@ module power_case(case_color=metallic_silver_5, alpha=1) {
                           gap_z=power_case_front_slot_gap_z,
                           y_axle=false,
                           x_offset=-power_case_length / 2,
-                          total_width=inner_x_cutout);
+                          total_width=inner_lipo_x_cutout);
 
           // Side panels vent
           power_case_vent(panel_height=power_case_height,
@@ -228,11 +229,14 @@ module power_case_assembly(alpha=1,
   union() {
     // Power case
     power_case(case_color=case_color, alpha=alpha);
-    four_corner_children(size=power_case_bottom_screw_size,
-                         center=true) {
-      translate([0, 0, -(standoff_h + standoff_thread_h) + standoff_thread_h]) {
-        standoff(body_h=standoff_h, thread_at_top=true,
-                 thread_h=standoff_thread_h);
+    translate([power_case_screw_size_offset_x, power_case_screw_size_offset_y, 0]) {
+
+      four_corner_children(size=power_case_bottom_screw_size,
+                           center=true) {
+        translate([0, 0, -(standoff_h + standoff_thread_h) + standoff_thread_h]) {
+          standoff(body_h=standoff_h, thread_at_top=true,
+                   thread_h=standoff_thread_h);
+        }
       }
     }
   }
@@ -240,5 +244,5 @@ module power_case_assembly(alpha=1,
 
 power_case_assembly(show_lipo_pack=false,
                     alpha=1,
-                    show_lid=true,
+                    show_lid=false,
                     case_color=blue_grey_carbon);
