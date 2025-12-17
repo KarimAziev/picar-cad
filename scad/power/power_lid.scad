@@ -23,6 +23,7 @@ use <../lib/holes.scad>
 use <../lib/placement.scad>
 use <../lib/transforms.scad>
 use <../lib/shapes2d.scad>
+use <../placeholders/bolt.scad>
 
 side_wall_w           = power_case_side_wall_thickness
   + power_case_rail_tolerance
@@ -252,7 +253,9 @@ module power_lid_atm_fuse_placeholders(specs=power_lid_side_wall_1_atm_fuse_spec
                 rotate([0, 0, reversed ? 180 : 0]) {
                   atm_fuse_holder(show_lid=spec[4][5],
                                   show_body=body_spec[5],
-                                  center=true,
+                                  center_x=true,
+                                  center_y=true,
+                                  center_z=false,
                                   mounting_hole_spec=[mounting_hole_raw_spec[0],
                                                       mounting_hole_raw_spec[1],
                                                       mounting_hole_raw_spec[2],
@@ -329,6 +332,7 @@ module power_lid(show_switch_button=true,
                  lid_color=blue_grey_carbon,
                  show_ato_fuse=true,
                  show_voltmeter=true,
+                 show_bolts=false,
                  show_atm_side_fuse_holders=true,
                  echo_wiring_len=true) {
 
@@ -417,6 +421,15 @@ module power_lid(show_switch_button=true,
           power_lid_voltmeters_placeholders(echo_wiring_len=echo_wiring_len);
         }
       }
+      if (show_bolts) {
+        translate([0, -half_of_inner_y, 0]) {
+          for (specs = power_lid_rect_screw_holes) {
+            four_corner_hole_rows(specs=specs,
+                                  screw_mode=true,
+                                  thickness=power_lid_thickness);
+          }
+        }
+      }
 
       if (show_dc_regulator) {
         for (group_i = [0 : len(power_lid_rect_screw_holes) - 1]) {
@@ -501,9 +514,9 @@ module power_lid(show_switch_button=true,
   }
 }
 
-power_lid(show_dc_regulator=true,
+power_lid(show_dc_regulator=false,
           show_switch_button=false,
           show_voltmeter=false,
-
+          show_bolts=false,
           show_ato_fuse=false,
           show_atm_side_fuse_holders=false);

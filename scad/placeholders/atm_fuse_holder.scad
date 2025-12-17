@@ -36,30 +36,33 @@ module stairs_solid(total_size=[100, 50, 40], step_count=5, center=true) {
   }
 }
 
-module atm_fuse_holder_body(body_w=atm_fuse_holder_body_w,
-                            top_l=atm_fuse_holder_body_top_l,
-                            bottom_l=atm_fuse_holder_body_bottom_l,
-                            body_h=atm_fuse_holder_body_h,
-                            body_colr=matte_black_2,
-                            rib_colr=matte_black,
-                            rib_thickness=atm_fuse_holder_body_rib_thickness,
-                            rib_h=atm_fuse_holder_body_rib_h,
-                            rib_l=atm_fuse_holder_body_rib_l,
-                            rib_n=atm_fuse_holder_body_rib_n,
-                            rib_distance=atm_fuse_holder_body_rib_distance,
-                            mounting_hole_l=atm_fuse_holder_mounting_hole_l,
-                            mounting_hole_depth=atm_fuse_holder_mounting_hole_depth,
-                            mounting_hole_h=atm_fuse_holder_mounting_hole_h,
-                            mounting_hole_r=atm_fuse_holder_mounting_hole_r,
-                            wiring_d=atm_fuse_holder_body_wiring_d,
-                            wire_points=[[15, 0, 0],
-                                         [0, 0, 0]]) {
+function atm_fuse_holder_full_thickness(body_thickness, rib_thickness) =
+  body_thickness + rib_thickness * 2;
 
-  wiring_rad_jack = min(body_w, body_h) / 2.5;
+module atm_fuse_holder_2_body(body_thickness=atm_fuse_holder_2_body_thickness,
+                              top_l=atm_fuse_holder_2_body_top_l,
+                              bottom_l=atm_fuse_holder_2_body_bottom_l,
+                              body_h=atm_fuse_holder_2_body_h,
+                              body_colr=matte_black_2,
+                              rib_colr=matte_black,
+                              rib_thickness=atm_fuse_holder_2_body_rib_thickness,
+                              rib_h=atm_fuse_holder_2_body_rib_h,
+                              rib_l=atm_fuse_holder_2_body_rib_l,
+                              rib_n=atm_fuse_holder_2_body_rib_n,
+                              rib_distance=atm_fuse_holder_2_body_rib_distance,
+                              mounting_hole_l=atm_fuse_holder_2_mounting_hole_l,
+                              mounting_hole_depth=atm_fuse_holder_2_mounting_hole_depth,
+                              mounting_hole_h=atm_fuse_holder_2_mounting_hole_h,
+                              mounting_hole_r=atm_fuse_holder_2_mounting_hole_r,
+                              wiring_d=atm_fuse_holder_2_body_wiring_d,
+                              wire_points=[[15, 0, 0],
+                                           [0, 0, 0]]) {
+
+  wiring_rad_jack = min(body_thickness, body_h) / 2.5;
 
   union() {
     color(body_colr, alpha=1) {
-      linear_extrude(height=body_w, center=false, convexity=2) {
+      linear_extrude(height=body_thickness, center=false, convexity=2) {
         trapezoid_rounded_bottom(b=bottom_l, t=top_l, h=body_h, center=true);
       }
     }
@@ -75,7 +78,7 @@ module atm_fuse_holder_body(body_w=atm_fuse_holder_body_w,
         }
         translate([0,
                    0,
-                   body_w]) {
+                   body_thickness]) {
           rotate([0, 0, -90]) {
             stairs_solid(total_size=[rib_h, rib_l, rib_thickness],
                          step_count=rib_n);
@@ -102,7 +105,7 @@ module atm_fuse_holder_body(body_w=atm_fuse_holder_body_w,
                   translate([-thread_l / 2,
                              body_h / 2
                              + thread_depth + thread_depth * 0.5,
-                             body_w / 2 - thread_h / 2]) {
+                             body_thickness / 2 - thread_h / 2]) {
                     rotate([90, 0, 0]) {
                       linear_extrude(height=thread_depth
                                      + thread_depth * 0.5, center=false) {
@@ -117,7 +120,7 @@ module atm_fuse_holder_body(body_w=atm_fuse_holder_body_w,
                   translate([-mounting_hole_l / 2,
                              body_h / 2
                              + thread_depth,
-                             body_w / 2 - mounting_hole_h / 2]) {
+                             body_thickness / 2 - mounting_hole_h / 2]) {
                     rotate([90, 0, 0]) {
                       linear_extrude(height=thread_depth * 0.5, center=false) {
                         rounded_rect([mounting_hole_l,
@@ -152,7 +155,7 @@ module atm_fuse_holder_body(body_w=atm_fuse_holder_body_w,
     }
 
     mirror_copy([1, 0, 0]) {
-      translate([bottom_l / 2, 0, body_w / 2]) {
+      translate([bottom_l / 2, 0, body_thickness / 2]) {
         color(body_colr, alpha=1) {
           sphere(r=wiring_rad_jack);
         }
@@ -167,20 +170,20 @@ module atm_fuse_holder_body(body_w=atm_fuse_holder_body_w,
   }
 }
 
-module atm_fuse_lid(lid_w=atm_fuse_holder_lid_w,
-                    top_l=atm_fuse_holder_lid_top_l,
-                    bottom_l=atm_fuse_holder_lid_bottom_l,
-                    lid_h=atm_fuse_holder_lid_h,
+module atm_fuse_lid(lid_w=atm_fuse_holder_2_lid_thickness,
+                    top_l=atm_fuse_holder_2_lid_top_l,
+                    bottom_l=atm_fuse_holder_2_lid_bottom_l,
+                    lid_h=atm_fuse_holder_2_lid_h,
                     lid_colr=matte_black_2,
                     rib_colr=matte_black,
-                    rib_thickness=atm_fuse_holder_lid_rib_thickness,
-                    rib_h=atm_fuse_holder_lid_rib_h,
-                    rib_l=atm_fuse_holder_lid_rib_l,
-                    rib_n=atm_fuse_holder_lid_rib_n,
-                    rib_distance=atm_fuse_holder_lid_rib_distance,
-                    mounting_hole_l=atm_fuse_holder_mounting_hole_l,
-                    mounting_hole_h=atm_fuse_holder_mounting_hole_h,
-                    mounting_hole_r=atm_fuse_holder_mounting_hole_r) {
+                    rib_thickness=atm_fuse_holder_2_lid_rib_thickness,
+                    rib_h=atm_fuse_holder_2_lid_rib_h,
+                    rib_l=atm_fuse_holder_2_lid_rib_l,
+                    rib_n=atm_fuse_holder_2_lid_rib_n,
+                    rib_distance=atm_fuse_holder_2_lid_rib_distance,
+                    mounting_hole_l=atm_fuse_holder_2_mounting_hole_l,
+                    mounting_hole_h=atm_fuse_holder_2_mounting_hole_h,
+                    mounting_hole_r=atm_fuse_holder_2_mounting_hole_r) {
 
   difference() {
     union() {
@@ -229,44 +232,42 @@ module atm_fuse_lid(lid_w=atm_fuse_holder_lid_w,
 
 module atm_fuse_holder(show_lid=true,
                        show_body=true,
-                       mounting_hole_spec=[atm_fuse_holder_mounting_hole_h,
-                                           atm_fuse_holder_mounting_hole_l,
-                                           atm_fuse_holder_mounting_hole_r,
-                                           atm_fuse_holder_mounting_hole_depth],
-                       body_spec=[atm_fuse_holder_body_top_l,
-                                  atm_fuse_holder_body_bottom_l,
-                                  atm_fuse_holder_body_w,
-                                  atm_fuse_holder_body_h,
+                       mounting_hole_spec=[atm_fuse_holder_2_mounting_hole_h,
+                                           atm_fuse_holder_2_mounting_hole_l,
+                                           atm_fuse_holder_2_mounting_hole_r,
+                                           atm_fuse_holder_2_mounting_hole_depth],
+                       body_spec=[atm_fuse_holder_2_body_top_l,
+                                  atm_fuse_holder_2_body_bottom_l,
+                                  atm_fuse_holder_2_body_thickness,
+                                  atm_fuse_holder_2_body_h,
                                   matte_black_2],
-                       lid_spec=[atm_fuse_holder_lid_top_l,
-                                 atm_fuse_holder_lid_bottom_l,
-                                 atm_fuse_holder_lid_w,
-                                 atm_fuse_holder_lid_h,
+                       lid_spec=[atm_fuse_holder_2_lid_top_l,
+                                 atm_fuse_holder_2_lid_bottom_l,
+                                 atm_fuse_holder_2_lid_thickness,
+                                 atm_fuse_holder_2_lid_h,
                                  matte_black_2],
-                       body_rib_spec=[atm_fuse_holder_body_rib_l,
-                                      atm_fuse_holder_body_rib_h,
-                                      atm_fuse_holder_body_rib_n,
-                                      atm_fuse_holder_body_rib_distance,
-                                      atm_fuse_holder_body_rib_thickness],
-                       lid_rib_spec=[atm_fuse_holder_lid_rib_l,
-                                     atm_fuse_holder_lid_rib_h,
-                                     atm_fuse_holder_lid_rib_n,
-                                     atm_fuse_holder_lid_rib_distance,
-                                     atm_fuse_holder_lid_rib_thickness],
-                       lid_rib_thickness=atm_fuse_holder_lid_rib_thickness,
-                       lid_rib_h=atm_fuse_holder_lid_rib_h,
-                       lid_rib_l=atm_fuse_holder_lid_rib_l,
-                       lid_rib_n=atm_fuse_holder_lid_rib_n,
-                       lid_rib_distance=atm_fuse_holder_lid_rib_distance,
+                       body_rib_spec=[atm_fuse_holder_2_body_rib_l,
+                                      atm_fuse_holder_2_body_rib_h,
+                                      atm_fuse_holder_2_body_rib_n,
+                                      atm_fuse_holder_2_body_rib_distance,
+                                      atm_fuse_holder_2_body_rib_thickness],
+                       lid_rib_spec=[atm_fuse_holder_2_lid_rib_l,
+                                     atm_fuse_holder_2_lid_rib_h,
+                                     atm_fuse_holder_2_lid_rib_n,
+                                     atm_fuse_holder_2_lid_rib_distance,
+                                     atm_fuse_holder_2_lid_rib_thickness],
                        rib_colr=matte_black,
-                       wiring_d=atm_fuse_holder_body_wiring_d,
+                       wiring_d=atm_fuse_holder_2_body_wiring_d,
+                       lid_z_offset=0.8,
                        wire_points=[[15, 0, 0],
                                     [0, 0, 0]],
-                       center=true) {
+                       center_x = true,
+                       center_y = true,
+                       center_z = false) {
 
   body_top_l = body_spec[0];
   body_bottom_l = body_spec[1];
-  body_w = body_spec[2];
+  body_thickness = body_spec[2];
   body_h = body_spec[3];
   body_colr = is_undef(body_spec[4]) ? matte_black_2 : body_spec[4];
 
@@ -280,7 +281,7 @@ module atm_fuse_holder(show_lid=true,
   mounting_hole_l = mounting_hole_spec[1];
   mounting_hole_r = mounting_hole_spec[2];
   mounting_hole_depth = is_undef(mounting_hole_spec[3])
-    ? atm_fuse_holder_mounting_hole_depth
+    ? atm_fuse_holder_2_mounting_hole_depth
     : mounting_hole_spec[3];
 
   body_rib_l=body_rib_spec[0];
@@ -295,11 +296,11 @@ module atm_fuse_holder(show_lid=true,
   lid_rib_distance=lid_rib_spec[3];
   lid_rib_thickness=lid_rib_spec[4];
 
-  translate([center ? 0 : -body_bottom_l / 2,
-             center ? 0 : -body_h / 2,
-             0]) {
+  translate([center_x ? 0 : body_bottom_l / 2,
+             center_y ? 0 : -body_h / 2,
+             center_z ? -body_thickness / 2 : 0]) {
     if (show_lid) {
-      translate([0, body_h / 2 + lid_h / 2 + 0.8, 0]) {
+      translate([0, body_h / 2 + lid_h / 2 + lid_z_offset, 0]) {
         atm_fuse_lid(lid_w=lid_w,
                      top_l=lid_top_l,
                      bottom_l=lid_bottom_l,
@@ -317,25 +318,30 @@ module atm_fuse_holder(show_lid=true,
     }
 
     if (show_body) {
-      atm_fuse_holder_body(body_w=body_w,
-                           top_l=body_top_l,
-                           bottom_l=body_bottom_l,
-                           body_h=body_h,
-                           body_colr=body_colr,
-                           rib_colr=rib_colr,
-                           rib_thickness=body_rib_thickness,
-                           rib_h=body_rib_h,
-                           rib_l=body_rib_l,
-                           rib_n=body_rib_n,
-                           rib_distance=body_rib_distance,
-                           mounting_hole_l=mounting_hole_l,
-                           mounting_hole_depth=mounting_hole_depth,
-                           mounting_hole_h=mounting_hole_h,
-                           mounting_hole_r=mounting_hole_r,
-                           wiring_d=wiring_d,
-                           wire_points=wire_points);
+      atm_fuse_holder_2_body(body_thickness=body_thickness,
+                             top_l=body_top_l,
+                             bottom_l=body_bottom_l,
+                             body_h=body_h,
+                             body_colr=body_colr,
+                             rib_colr=rib_colr,
+                             rib_thickness=body_rib_thickness,
+                             rib_h=body_rib_h,
+                             rib_l=body_rib_l,
+                             rib_n=body_rib_n,
+                             rib_distance=body_rib_distance,
+                             mounting_hole_l=mounting_hole_l,
+                             mounting_hole_depth=mounting_hole_depth,
+                             mounting_hole_h=mounting_hole_h,
+                             mounting_hole_r=mounting_hole_r,
+                             wiring_d=wiring_d,
+                             wire_points=wire_points);
     }
   }
 }
 
-atm_fuse_holder();
+translate([0, 0, 0]) {
+
+  rotate([90, 0, 0]) {
+    atm_fuse_holder(center_x=true, center_y=false, center_z=true, show_lid=false);
+  }
+}

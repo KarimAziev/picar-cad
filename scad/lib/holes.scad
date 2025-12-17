@@ -13,6 +13,7 @@ use <transforms.scad>
 use <functions.scad>
 use <debug.scad>
 use <text.scad>
+use <../placeholders/bolt.scad>
 
 module counterbore(h,
                    d,
@@ -21,7 +22,7 @@ module counterbore(h,
                    center=false,
                    sink=false,
                    fn=60,
-                   autoscale_step = 0.0,
+                   autoscale_step = 0.1,
                    reverse=false) {
   bore_h = is_undef(bore_h) ? h * 0.3 : bore_h;
   bore_r = (is_undef(bore_d) ? d * 2.8 : bore_d) / 2;
@@ -248,7 +249,9 @@ module four_corner_hole_rows(specs,
                              default_bore_h_factor= 0.5,
                              sink=false,
                              center=false,
-                             children_by_idx = false) {
+                             children_by_idx = false,
+                             screw_mode = false,
+                             default_screw_height = false) {
   sizes = map_idx(specs, 0, []);
   dia_sizes = map_idx(specs, 1, []);
 
@@ -261,6 +264,7 @@ module four_corner_hole_rows(specs,
 
   bore_sizes = map_idx(specs, 3, []);
   debug_specs = map_idx(specs, 4, []);
+  screw_mode_specs = map_idx(specs, 5, []);
 
   for (i = [0 : len(specs) - 1]) {
     let (spec=specs[i],
@@ -276,7 +280,12 @@ module four_corner_hole_rows(specs,
          bore_h = is_undef(bore_spec[1]) ? thickness * default_bore_h_factor : bore_spec[1],
          autoscale_step = with_default(bore_spec[2], 0.1),
          bore_reverse = bore_spec[3],
-         debug_spec = with_default(debug_specs[i], [false])) {
+         debug_spec = with_default(debug_specs[i], [false]),
+         screw_spec = with_default(screw_mode_specs[i], []),
+         bolt_type = with_default(screw_spec[0], "pan"),
+         bolt_h = with_default(screw_spec[1], thickness + 2),
+         bolt_head_h = with_default(screw_spec[2], 2),
+         bolt_head_d = with_default(screw_spec[3], dia * 1.5),) {
 
       translate([x - (center ? 0 : x_sizes[i] / 2), y + y_offset, 0]) {
         $spec = spec;
@@ -292,14 +301,27 @@ module four_corner_hole_rows(specs,
                                      y_sizes[i]],
                                center=center) {
             debug_highlight(debug=debug_spec[0]) {
-              counterbore(d=dia,
-                          h=thickness,
-                          bore_h=bore_h,
-                          reverse=bore_reverse,
-                          autoscale_step=autoscale_step,
-                          bore_d=bore_d,
-                          center=false,
-                          sink=sink);
+              if (screw_mode) {
+                translate([0, 0, -bolt_h + (thickness - (bore_h > 0 && bore_d > dia
+                                                         ? bore_h
+                                                         : 0))]) {
+                  bolt(d=dia,
+                       h=bolt_h,
+                       head_h=bolt_head_h,
+                       head_d=head_d,
+                       head_type=bolt_type);
+                }
+              } else {
+                counterbore(d=dia,
+                            h=thickness,
+                            bore_h=bore_h,
+                            reverse=bore_reverse,
+                            autoscale_step=autoscale_step,
+                            bore_d=bore_d,
+                            center=false,
+                            sink=sink);
+              }
+
               if (is_list(debug_spec) && debug_spec[0]) {
                 text_from_spec(is_bool(debug_spec[0])
                                ? slice(debug_spec,

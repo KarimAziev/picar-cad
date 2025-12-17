@@ -42,12 +42,12 @@ atc_ato_blade_fuse_holder_bottom_rad             = 5;
 // Inline ATM fuse holder
 // ─────────────────────────────────────────────────────────────────────────────
 
-atm_fuse_holder_body_w                           = 11.60;
+atm_fuse_holder_body_thickness                   = 11.60;
 atm_fuse_holder_body_bottom_l                    = 20.42;
 atm_fuse_holder_body_top_l                       = 25.5;
 atm_fuse_holder_body_h                           = 11.90;
 
-atm_fuse_holder_lid_w                            = 10.50;
+atm_fuse_holder_lid_thickness                    = 10.50;
 atm_fuse_holder_lid_top_l                        = 20.93;
 atm_fuse_holder_lid_bottom_l                     = 25.66;
 atm_fuse_holder_lid_h                            = 19.50;
@@ -71,12 +71,13 @@ atm_fuse_holder_mounting_hole_h                  = 6.7;
 atm_fuse_holder_mounting_hole_depth              = 5.2;
 atm_fuse_holder_mounting_hole_r                  = 2.8;
 
-atm_fuse_holder_2_body_w                         = 12.20;
+atm_fuse_holder_2_body_wiring_d                  = 3.8;
 atm_fuse_holder_2_body_bottom_l                  = 28.50;
 atm_fuse_holder_2_body_top_l                     = 28.9;
 atm_fuse_holder_2_body_h                         = 15.070;
+atm_fuse_holder_2_body_thickness                 = 12.20;
 
-atm_fuse_holder_2_lid_w                          = 11.60;
+atm_fuse_holder_2_lid_thickness                  = 11.60;
 atm_fuse_holder_2_lid_top_l                      = 23.07;
 atm_fuse_holder_2_lid_bottom_l                   = 24.60;
 atm_fuse_holder_2_lid_h                          = 21.64;
@@ -95,15 +96,69 @@ atm_fuse_holder_2_lid_rib_l                      = 13.3;
 atm_fuse_holder_2_lid_rib_n                      = 7;
 atm_fuse_holder_2_lid_rib_distance               = 6.22;
 
-atm_fuse_holder_2_mounting_hole_l                = 21.8;
-atm_fuse_holder_2_mounting_hole_h                = 6.7;
+atm_fuse_holder_2_mounting_hole_l                = 22.0;
+atm_fuse_holder_2_mounting_hole_h                = 8.0;
 atm_fuse_holder_2_mounting_hole_depth            = 5.2;
-atm_fuse_holder_2_mounting_hole_r                = 2.8;
+atm_fuse_holder_2_mounting_hole_r                = 5.0;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Fusers holder
+// ─────────────────────────────────────────────────────────────────────────────
+fuse_panel_row_gap                               = 2;
+fuse_panel_thickness                             = 3;
+fuse_panel_default_toggle_switch_spec            = [[atm_fuse_holder_2_mounting_hole_h + 2,
+                                                     atm_fuse_holder_2_mounting_hole_l + 1,
+                                                     atm_fuse_holder_2_mounting_hole_r,
+                                                     atm_fuse_holder_2_mounting_hole_depth],
+                                                    [atm_fuse_holder_2_body_top_l,
+                                                     atm_fuse_holder_2_body_bottom_l,
+                                                     atm_fuse_holder_2_body_thickness,
+                                                     atm_fuse_holder_2_body_h,
+                                                     matte_black_2],
+                                                    [atm_fuse_holder_2_body_rib_l,
+                                                     atm_fuse_holder_2_body_rib_h,
+                                                     atm_fuse_holder_2_body_rib_n,
+                                                     atm_fuse_holder_2_body_rib_distance,
+                                                     atm_fuse_holder_2_body_rib_thickness],
+                                                    [atm_fuse_holder_2_lid_top_l,
+                                                     atm_fuse_holder_2_lid_bottom_l,
+                                                     atm_fuse_holder_2_lid_thickness,
+                                                     atm_fuse_holder_2_lid_h,
+                                                     matte_black_2],
+                                                    [atm_fuse_holder_2_lid_rib_l,
+                                                     atm_fuse_holder_2_lid_rib_h,
+                                                     atm_fuse_holder_2_lid_rib_n,
+                                                     atm_fuse_holder_2_lid_rib_distance,
+                                                     atm_fuse_holder_2_lid_rib_thickness]];
+
+fuse_panels_specs                                = [(fuse_panel_default_toggle_switch_spec),
+                                                    fuse_panel_default_toggle_switch_spec,
+                                                    fuse_panel_default_toggle_switch_spec,];
 
 m1_hole_dia                                      = 1.2; // M1 screw hole diameter
 m2_hole_dia                                      = 2.4; // M2 screw hole diameter
 m25_hole_dia                                     = 2.6; // M2.5 screw hole diameter
 m3_hole_dia                                      = 3.2; // M3 screw hole diameter
+
+panel_stack_bolt_dia                             = m3_hole_dia;
+panel_stack_bolt_cbore_dia                       = panel_stack_bolt_dia * 2;
+panel_stack_corner_radius_factor                 = 0.05;
+panel_stack_bolt_padding                         = 2;
+panel_stack_padding_x                            = 2;
+panel_stack_padding_y                            = 1;
+
+chassis_panel_stack_x_offset                     = 0;
+chassis_panel_stack_y_offset                     = 1;
+chassis_panel_stack_orientation                  = "horizontal"; // [horizontal, vertical]
+
+control_panel_row_gap                            = 0.8;
+
+// Each element is a list of: [diameter, body diameter, thread height, [body heights], number of vertices, color]
+standoff_specs                                   = [[3, 5.20, 5, [20, 15, 10, 9, 8, 6, 5], 6],
+                                                    [2.5, 4.20, 4, [20, 15, 10, 9, 8, 6, 5], 6],
+                                                    [2, 3.0, 3.0, [20, 15, 10, 9, 8, 6, 5], 12],
+                                                    [2, 4.50, 5.0, [20, 15, 10, 9, 8, 6, 5], 6,
+                                                     white_off_1]];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Battery holder at the top of the chassis behind Raspberry Pi
@@ -120,6 +175,8 @@ battery_ups_offset                               = 2;
 // The Y and X dimensions of the screw positions for the UPS HAT slot.
 // This forms a square with a screw hole centered on each corner.
 battery_ups_module_screws_size                   = [86, 46];
+
+battery_ups_module_screws_enabled                = false;
 
 // the diameter for fastening screws
 battery_ups_screw_dia                            = m3_hole_dia;
@@ -151,15 +208,9 @@ battery_screws_x_offset                          = 24;
 
 // Y offsets for positioning screws relative to the center
 
-battery_holes_y_positions                        = [for (i =
-                                                           [battery_screws_y_start:
-                                                            battery_screws_y_offset_step:
-                                                            battery_screws_y_offset_end]) i];
+battery_holes_y_positions                        = [];
 
-smd_battery_holder_screws_x_offset               = 28;
-
-// Y offsets for positioning screws relative to the center
-smd_battery_holes_y_positions                    = [-38];
+smd_battery_holder_screws_x_offset               = 32;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 16850 battery dimensions
@@ -184,21 +235,20 @@ smd_battery_holder_side_thickness                = 1.8;
 
 smd_battery_holder_screw_dia                     = m3_hole_dia;
 smd_battery_holder_screw_recess_size             = [9, 5, 2];
-smd_battery_holder_screws_size                   = [0, 55.4];
+smd_battery_holder_screws_size                   = [0, 52.2];
 smd_battery_holder_batteries_count               = 2;
 smd_battery_holder_inner_cutout_size             = [9.0, 66.6];
 smd_battery_holder_inner_side_h                  = 10;
-smd_battery_holder_full_w                        = (battery_dia + smd_battery_holder_inner_thickness * 2) * smd_battery_holder_batteries_count;
 
 smd_battery_holder_chassis_specs                 = [[[[smd_battery_holder_screws_size[0],
                                                        smd_battery_holder_screws_size[1],],
                                                       smd_battery_holder_screw_dia,
-                                                      [0, smd_battery_holder_screws_x_offset, -38],
+                                                      [0, smd_battery_holder_screws_x_offset, -42],
                                                       []]],
                                                     [[[smd_battery_holder_screws_size[0],
                                                        smd_battery_holder_screws_size[1],],
                                                       smd_battery_holder_screw_dia,
-                                                      [0, -smd_battery_holder_screws_x_offset, -38],
+                                                      [0, -smd_battery_holder_screws_x_offset, -42],
                                                       []]]];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -241,8 +291,8 @@ camera_module_socket_y_offset                    = 1;
 // Chassis dimensions
 // ─────────────────────────────────────────────────────────────────────────────
 
-chassis_width                                    = 120;  // width of the chassis
-chassis_len                                      = 254;  // length of the chassis
+chassis_width                                    = 125;  // width of the chassis
+chassis_len                                      = 258;  // length of the chassis
 chassis_thickness                                = 4.0;    // chassis thickness
 chassis_offset_rad                               = 3; // The amount by which to offset the chassis
 
@@ -252,14 +302,14 @@ chassis_counterbore_h                            = 2.2; // The amount by which t
 // Chassis Center Wiring Cutouts (near the Raspberry Pi/UPS HAT area)
 // ─────────────────────────────────────────────────────────────────────────────
 
-chassis_center_cutout_dia                        = 8.5;             // Diameter of each round cutout circle
+chassis_center_cutout_dia                        = 9.5;             // Diameter of each round cutout circle
 chassis_center_cutout_spacing                    = 4;               // Vertical spacing between cutouts
 chassis_center_cutout_fn                         = 20;              // Circle detail level
 
 chassis_center_trapezoid_1                       = [1 / 8.5, 1 / 8.5, 7]; // [bottom_frac_w, top_frac_w, height]
 chassis_center_trapezoid_2                       = [0.2, 0.2, 5.4]; // [bottom_frac_w, top_frac_w, height]
 chassis_center_cutout_repeat_offsets             = [0];         // How often to repeat stacked trapezoids
-chassis_center_dotted_y_offsets                  = [-10 / 235, 0, -20 / 235];  // Relative Y-positions for dotted cutoff line
+chassis_center_dotted_y_offsets                  = [-10 / 205, 30, -20 / 205];  // Relative Y-positions for dotted cutoff line
 
 // Extra vertical margin applied to avoid overlaps between wiring holes and other components
 chassis_center_wiring_cutout_y_margin            = 8;
@@ -308,7 +358,7 @@ chassis_trapezoid_shape_pts                      = [[-chassis_shape_base_width *
                                                     [0, 127]];
 
 // vertical distance between trapezoids
-chassis_trapezoid_hole_y_distance                = 7.5;
+chassis_trapezoid_hole_y_distance                = 6.5;
 
 // distance from the side of the chassis
 chassis_trapezoid_hole_x_distance                = 2;
@@ -351,30 +401,35 @@ chassis_pan_servo_y_distance_from_steering       = 45;
 chassis_pan_servo_top_ribbon_cuttout_len         = 18;
 chassis_pan_servo_top_ribbon_cuttout_h           = 2;
 
-chassis_single_holes_specs                       = [[[6, 25.2, -35, 22, [0, 0, 0.2]],],
-                                                    [[6, 25.2, 35, 22, [0, 0, 0.2]],]];
+chassis_single_holes_specs                       = [];
 
-chassis_rect_holes_specs                         = [[[[32, 10, 1.0], [0, 8, 146]]],
-                                                    [[[10, 15, 4.0], [0, 0, 30]],
-                                                     [[5, 15, 4.0], [10, 0, 50]],
-                                                     [[5, 15, 4.0], [10, 0, 50]],
-                                                     [[10, 15, 4.0], [10, 0, 60]]],
-                                                    [[[8, 15, 1.0], [0, 5, 30]],
-                                                     [[10, 24, 4.0], [0, -18, 14]],
-                                                     [[10, 19, 1.0], [0, -30, 10]]],
-                                                    [[[10, 15, 1.0], [0, -5, 30]],
-                                                     [[10, 24, 4.0], [0, 18, 14]],
-                                                     [[10, 19, 1.0], [0, 30, 10]]],
-                                                    [[[8, 15, 1.0], [0, -5, 30]],],
-                                                    [[[14, 14, 4.0], [10, 32, 24]],],
-                                                    [[[14, 14, 4.0], [10, -32, 24]]]];
+chassis_rect_holes_specs                         = [[[[32, 10, 1.0], [0, -8, 146]]], // camera ribbon hole
+                                                    [[[15, 25, 6.0], [0, 10, 20]],
+                                                     [[5, 20, 4.0], [10, 0, 42]],
+                                                     [[5, 20, 4.0], [10, 0, 42]],
+                                                     [[10, 20, 4.0], [10, 0, 42]]],
+                                                    [[[22, 14, 3.0], [10, -20, 15]],
+                                                     [[22, 14, 3.0], [0, -20, 10]]],
+                   // rectangulars on the both sides
+                                                    [[[10, 15, 4.0], [10,
+                                                                      chassis_width / 2 - 6.5,
+                                                                      69]],
+                                                     [[10, 15, 4.0], [10,
+                                                                      chassis_width / 2 - 6.5,
+                                                                      69]]],
+                                                    [[[10, 15, 4.0], [10,
+                                                                      -chassis_width / 2 + 6.5,
+                                                                      69],],
+                                                     [[10, 15, 4.0], [10,
+                                                                      -chassis_width / 2 + 6.5,
+                                                                      69]]]];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Front panel dimensions
 // ─────────────────────────────────────────────────────────────────────────────
 // This panel is vertical and includes mounting holes for the ultrasonic sensors.
 // ─────────────────────────────────────────────────────────────────────────────
-front_panel_chassis_y_offset                     = 5;
+front_panel_chassis_y_offset                     = 1;
 front_panel_width                                = 66;   // panel width
 front_panel_height                               = 22.5;   // panel height
 front_panel_thickness                            = 2.5;   // panel thickness
@@ -765,6 +820,7 @@ ir_case_head_screws_side_panel_positions         = [[ir_case_head_side_panel_x_1
 // ─────────────────────────────────────────────────────────────────────────────
 // LiPo Battery Pack dimensions (4S2P configuration)
 // ─────────────────────────────────────────────────────────────────────────────
+
 lipo_pack_length                                 = 138.4; // Length of the battery pack
 lipo_pack_width                                  = 47;   // Width of the battery pack
 lipo_pack_height                                 = 48.4;  // Height of the battery pack
@@ -1207,7 +1263,7 @@ rear_panel_switch_slot_cbore_dia                 = 18;
 rear_panel_switch_slot_cbore_h                   = 2;
 
 rear_panel_holes_x_offsets                       = [-16, 16];
-rear_panel_screw_holes_x_offsets                 = [-16, 0, 16];
+rear_panel_screw_holes_x_offsets                 = [-16, 16];
 rear_panel_screw_hole_dia                        = m25_hole_dia;
 rear_panel_screw_cbore_hole_dia                  = 5.0;
 rear_panel_screw_cbore_h                         = 2.0;
@@ -1220,7 +1276,7 @@ rear_panel_screw_offset                          = 3;
 // Raspberry Pi dimensions (defaults are for Raspberry PI 5)
 // ─────────────────────────────────────────────────────────────────────────────
 // Y offset for the Raspberry Pi 5 related slots and holes is measured from the end of the chassis.
-rpi_chassis_y_position                           = 81.9;
+rpi_chassis_y_position                           = 82.9;
 rpi_chassis_x_position                           = 31.5;
 
 // The X and Y dimensions of the screw positions for the Raspberry Pi 5 slot.
@@ -1229,7 +1285,7 @@ rpi_screws_size                                  = [50, 58];
 
 // The diameter of the screw holes for the Raspberry Pi 5 slot.
 rpi_screw_hole_dia                               = m2_hole_dia;
-rpi_screw_cbore_dia                              = 3.9;
+rpi_screw_cbore_dia                              = 4.2;
 
 rpi_screws_offset                                = m25_hole_dia + 0.4;
 rpi_pin_headers_cols                             = 20;
@@ -1356,7 +1412,7 @@ servo_driver_hat_chip_total_w                    = 8;
 servo_driver_hat_chip_j_lead_n                   = 14;
 servo_driver_hat_chip_j_lead_thickness           = 0.4;
 servo_driver_hat_chip_h                          = 1.65;
-servo_driver_hat_chip_y_distance                 = 18;
+
 servo_driver_hat_chip_x_distance                 = 18;
 
 servo_driver_hat_chip_i2c_x_distance             = 5;
@@ -1503,64 +1559,7 @@ voltmeter_wiring_distance                        = 3;
 voltmeter_wiring_gap                             = 1;
 voltmeter_wiring_d                               = 1.5;
 
-voltmeter_chassis_specs                          = [[[voltmeter_screw_size,
-                                                      voltmeter_screw_dia,
-                                                      [voltmeter_board_w,
-                                                       voltmeter_board_len,
-                                                       voltmeter_board_h,],
-                                                      [voltmeter_display_w,
-                                                       voltmeter_display_len,
-                                                       voltmeter_display_h,
-                                                       1,
-                                                       voltmeter_display_indicators_len],
-                                                      [voltmeter_pins_count,
-                                                       voltmeter_pin_h,
-                                                       voltmeter_pin_thickness,
-                                                       voltmeter_pins_len],
-                                                      [voltmeter_wiring_d,
-                                                       [[-5, -5, -2],
-                                                        [-15, -10, -1],
-                                                        [10, -15, -2],
-                                                        [20, 0, 0]],
-                                                       voltmeter_wiring_gap,
-                                                       voltmeter_wiring_distance],
-                                                      [voltmeter_standoff_body_d],
-                                                      ["7.4", 6.15,
-                                                       "DSEG14 Classic:style=Italic",
-                                                       1.2,
-                                                       red_1,
-                                                       [0, 0]],
-                                                      [7, 2.0, 0.1]],
-                                                     [-10, -5, 0, -90, true],],
-                                                    [[voltmeter_screw_size,
-                                                      voltmeter_screw_dia,
-                                                      [voltmeter_board_w,
-                                                       voltmeter_board_len,
-                                                       voltmeter_board_h,],
-                                                      [voltmeter_display_w,
-                                                       voltmeter_display_len,
-                                                       voltmeter_display_h,
-                                                       1,
-                                                       voltmeter_display_indicators_len],
-                                                      [voltmeter_pins_count,
-                                                       voltmeter_pin_h,
-                                                       voltmeter_pin_thickness,
-                                                       voltmeter_pins_len],
-                                                      [voltmeter_wiring_d,
-                                                       [[-5, -5, -2],
-                                                        [-15, -10, -1],
-                                                        [10, -15, -2],
-                                                        [20, 0, 0]],
-                                                       voltmeter_wiring_gap,
-                                                       voltmeter_wiring_distance],
-                                                      [voltmeter_standoff_body_d],
-                                                      ["7.8", 6.15,
-                                                       "DSEG14 Classic:style=Italic",
-                                                       1.2,
-                                                       red_1,
-                                                       [0, 0]],
-                                                      [7, 2.0, 0.1]],
-                                                     [-10, 21.5, 0, -90, true],]];
+voltmeter_chassis_specs                          = [];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Power module case dimensions
@@ -1568,7 +1567,7 @@ voltmeter_chassis_specs                          = [[[voltmeter_screw_size,
 
 // External width of the power module case (X dimension).
 // This is the full outside width including side walls and rails.
-power_case_width                                 = 57;
+power_case_width                                 = 52.4;
 
 // External length of the power module case (Y dimension).
 // This is the full outside length of the battery case including front/back walls.
@@ -1630,7 +1629,7 @@ power_case_front_slot_w                          = 2.8;
 power_case_front_slot_gap                        = 3.6;
 
 power_case_front_slot_padding_z                  = 4.0;
-power_case_front_slot_padding_x                  = 7.0;
+power_case_front_slot_padding_x                  = 5.0;
 
 power_case_front_slot_gap_z                      = 3.9;
 
@@ -1658,9 +1657,9 @@ power_case_bottom_cbore_dia                      = 6.0;
 power_case_bottom_cbore_h                        = 1.0;
 
 power_case_chassis_x_offset                      = -0;
-power_case_chassis_y_offset                      = 4;
+power_case_chassis_y_offset                      = 5;
 
-power_case_screw_size_offset_x                   = -2;
+power_case_screw_size_offset_x                   = 0;
 power_case_screw_size_offset_y                   = 18;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1818,7 +1817,7 @@ power_lid_breadboard_screw_dia                   = m2_hole_dia;
 power_lid_rect_screw_holes                       = [[[[15.2, 35.55],
                                                       m2_hole_dia,
                                                       [10, -11.9, 14.55],
-                                                      [],
+                                                      [6 , 1.0, 0.1, false],
                                                       [false,
                                                        "DC",
                                                        1.5,
@@ -1828,7 +1827,11 @@ power_lid_rect_screw_holes                       = [[[[15.2, 35.55],
                                                        undef,
                                                        undef,
                                                        "center",
-                                                       "baseline"],]],
+                                                       "baseline"],
+                                                      ["pan",
+                                                       4,
+                                                       2,
+                                                       2]]],
                                                     [[[power_lid_breadboard_screw_size[0],
                                                        power_lid_breadboard_screw_size[1]],
                                                       power_lid_breadboard_screw_dia,
@@ -1920,13 +1923,13 @@ power_lid_side_wall_1_atm_fuse_specs             = [[[[atm_fuse_holder_2_mountin
                                                        true],
                                                       [atm_fuse_holder_2_body_top_l,
                                                        atm_fuse_holder_2_body_bottom_l,
-                                                       atm_fuse_holder_2_body_w,
+                                                       atm_fuse_holder_2_body_thickness,
                                                        atm_fuse_holder_2_body_h,
                                                        matte_black_2,
                                                        true],
                                                       [atm_fuse_holder_2_lid_top_l,
                                                        atm_fuse_holder_2_lid_bottom_l,
-                                                       atm_fuse_holder_2_lid_w,
+                                                       atm_fuse_holder_2_lid_thickness,
                                                        atm_fuse_holder_2_lid_h,
                                                        matte_black_2,
                                                        false],
@@ -1960,13 +1963,13 @@ power_lid_side_wall_2_atm_fuse_specs             = [[[[atm_fuse_holder_2_mountin
                                                        true],
                                                       [atm_fuse_holder_2_body_top_l,
                                                        atm_fuse_holder_2_body_bottom_l,
-                                                       atm_fuse_holder_2_body_w,
+                                                       atm_fuse_holder_2_body_thickness,
                                                        atm_fuse_holder_2_body_h,
                                                        matte_black_2,
                                                        true],
                                                       [atm_fuse_holder_2_lid_top_l,
                                                        atm_fuse_holder_2_lid_bottom_l,
-                                                       atm_fuse_holder_2_lid_w,
+                                                       atm_fuse_holder_2_lid_thickness,
                                                        atm_fuse_holder_2_lid_h,
                                                        matte_black_2,
                                                        true],
@@ -1997,16 +2000,42 @@ power_lid_toggle_switch_wall_thickness           = 0;
 
 toggle_switch_size                               = [29.4, 15.5, 18];
 toggle_switch_metallic_head_h                    = 2;
-toggle_switch_nut_dia                            = 11.8;
-toggle_switch_nut_h                              = 11.2;
-toggle_switch_nut_upper_h                        = 8;
-toggle_switch_nut_out_h                          = toggle_switch_nut_h - toggle_switch_nut_upper_h;
-toggle_switch_out_d                              = 17.5;
-toggle_switch_lever_dia_1                        = 4.6;
+toggle_switch_thread_d                           = 11.8;
+toggle_switch_thread_h                           = 11.2;
+toggle_switch_thread_upper_h                     = 8;
+toggle_switch_thread_border_w                    = 2;
+toggle_switch_nut_out_h                          = toggle_switch_thread_h - toggle_switch_thread_upper_h;
+toggle_switch_nut_d                              = 17.5;
+toggle_switch_lever_dia_1                        = 3.6;
 toggle_switch_lever_dia_2                        = 5.7;
-toggle_switch_lever_h                            = 16.4;
+toggle_switch_lever_h                            = 23.0;
+toggle_switch_slot_d_tolerance                   = 1.2;
+toggle_switch_slot_counterbore_tolerance         = 0.5;
 
 toggle_switch_terminal_size                      = [1.2, 6.0, 9.7];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Control panel with toggle switches near Raspberry PI
+// ─────────────────────────────────────────────────────────────────────────────
+control_panel_default_toggle_switch_spec         = [toggle_switch_size,
+                                                    [toggle_switch_thread_d,
+                                                     toggle_switch_thread_h,
+                                                     toggle_switch_thread_border_w,
+                                                     toggle_switch_slot_d_tolerance,],
+                                                    [toggle_switch_nut_d,
+                                                     toggle_switch_nut_out_h,
+                                                     toggle_switch_slot_counterbore_tolerance],
+                                                    toggle_switch_terminal_size,
+                                                    [toggle_switch_lever_dia_1,
+                                                     toggle_switch_lever_dia_2,
+                                                     toggle_switch_lever_h,],
+                                                    [toggle_switch_metallic_head_h]];
+
+control_panel_switch_button_specs                = [control_panel_default_toggle_switch_spec,
+                                                    control_panel_default_toggle_switch_spec,
+                                                    control_panel_default_toggle_switch_spec,];
+
+control_panel_thickness                          = toggle_switch_nut_out_h + 2;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Standard (see motor_type) motor brackets dimension
@@ -2014,7 +2043,7 @@ toggle_switch_terminal_size                      = [1.2, 6.0, 9.7];
 standard_motor_bracket_screws_size               = [-0, 0];
 standard_motor_bracket_chassis_screw_hole        = m2_hole_dia;
 standard_motor_bracket_motor_screw_hole          = m3_hole_dia;
-standard_motor_bracket_y_offset                  = 25;
+standard_motor_bracket_y_offset                  = 0; // distance from the end of the chassis
 standard_motor_bracket_width                     = 10;
 standard_motor_bracket_thickness                 = 3;
 standard_motor_bracket_height                    = 29;

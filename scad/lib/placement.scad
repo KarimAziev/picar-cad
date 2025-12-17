@@ -65,6 +65,56 @@ module row_of_cubes(total_width,
   }
 }
 
+/**
+ * Example
+ * ```scad
+ * columns_children(gap=2, cols=5, w=10) {
+ *   cube(size=[10, 2, 2],
+ *      center=true);
+ * }
+ * ```
+ */
+module columns_children(cols, w, gap, center=false) {
+  cols_params = calc_cols_params(cols=cols, w=w, gap=gap);
+  step = cols_params[0];
+  total_x = cols_params[1];
+  translate([center ? -total_x / 2 : 0, 0, 0]) {
+    for (i = [0 : cols - 1]) {
+      let (bx = i * step + w / 2) {
+        translate([bx, 0, 0]) {
+          $i = i;
+          children();
+        }
+      }
+    }
+  }
+}
+/**
+ * Example
+ * ```scad
+ * rows_children(gap=2, rows=5, w=10) {
+ *   cube(size=[2, 10, 2],
+ *       center=true);
+ * }
+ *
+ * ```
+ */
+module rows_children(rows, w, gap, center=false) {
+  rows_params = calc_cols_params(cols=rows, w=w, gap=gap);
+  step = rows_params[0];
+  total_y = rows_params[1];
+  translate([0, center ? -total_y / 2 : 0, 0]) {
+    for (i = [0 : rows - 1]) {
+      let (by = i * step + w / 2) {
+        translate([0, by, 0]) {
+          $i = i;
+          children();
+        }
+      }
+    }
+  }
+}
+
 module vent_slots_panel(w, h, z, slot_w, slot_gap, slot_h, rows) {
   cols = max(0, floor((w - slot_gap)/(slot_w + slot_gap)));
   row_pitch = (rows>1) ? ((h-slot_h)/(rows-1)) : 0;
@@ -168,7 +218,7 @@ module rounded_rect_slots(specs,
 
   for (i = [0 : len(specs) - 1]) {
     let (spec=specs[i],
-         prev_y_size= i > 0 ? sum(y_sizes, i) : 0,
+         prev_y_size = i > 0 ? sum(y_sizes, i) : 0,
          prev_y_space=i > 0 ? sum(y_gaps, i) : 0,
          y = prev_y_size + prev_y_space) {
 

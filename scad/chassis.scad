@@ -43,11 +43,19 @@ use <lib/transforms.scad>
 use <power/power_lid.scad>
 use <lib/placement.scad>
 use <placeholders/smd_battery_holder.scad>
+use <panel_stack/control_panel.scad>
+use <lib/debug.scad>
+use <panel_stack/fuse_panel.scad>
+use <panel_stack/panel_stack.scad>
+use <lib/shapes3d.scad>
 
 chassis_trapezoid_hole_pts = scale_trapezoid_pts(concat(chassis_trapezoid_shape_pts,
                                                         [[0, chassis_trapezoid_shape_pts[0][1]]]),
                                                  chassis_trapezoid_hole_width,
                                                  chassis_trapezoid_hole_len);
+
+half_of_w                  = chassis_width / 2;
+half_of_l                  = chassis_len / 2;
 
 function scale_trapezoid_pts(pts, w_top, L) =
   let (x_bottom = pts[0][0],
@@ -87,13 +95,6 @@ module side_trapezoids_children() {
            y = s,
            w = poly_width_at_y(chassis_shape_points, y) * 2,
            x = -(w / 2) + max_w / 2 + chassis_trapezoid_hole_x_distance,
-           black_list = (-steering_rack_support_width / 2
-                         -steering_panel_hinge_length / 2
-                         + steering_panel_hinge_rad)
-           + steering_panel_y_pos_from_center -
-           (steering_panel_hinge_length + steering_panel_hinge_rad) / 2
-           + steering_panel_hinge_screw_distance
-           + steering_panel_hinge_screw_dia / 2,
            enabled = (y < start_of_steering) || y > end_of_steering) {
 
         if (enabled) {
@@ -146,16 +147,6 @@ function motor_bracket_y_pos() =
 function motor_bracket_x_pos() =
   (chassis_width * 0.5) - (standard_motor_bracket_height * 0.5);
 
-module raspberry_pi5_screws_2d(vertical=false) {
-  size = vertical
-    ? [rpi_screws_size[1],
-       rpi_screws_size[0]]
-    : rpi_screws_size;
-  four_corner_holes_2d(size=size,
-                       center=true,
-                       hole_dia=rpi_screw_hole_dia);
-}
-
 module ups_hat_screws_2d() {
   four_corner_holes_2d(size=battery_ups_module_screws_size,
                        center=true,
@@ -170,7 +161,10 @@ module standard_battery_holders_screws_2d(x_offst=battery_screws_x_offset) {
                          fn_val= battery_screws_fn_val);
 }
 
-module battery_holders_screws(x_offst, y_positions, d, size,
+module battery_holders_screws(x_offst,
+                              y_positions,
+                              d,
+                              size,
                               fn_val=battery_screws_fn_val) {
   union() {
     for (y = y_positions) {
@@ -188,14 +182,6 @@ module battery_holders_screws(x_offst, y_positions, d, size,
       }
     }
   }
-}
-
-module smd_battery_holders_screws_2d() {
-  battery_holders_screws(x_offst=smd_battery_holder_screws_x_offset,
-                         y_positions=smd_battery_holes_y_positions,
-                         d=smd_battery_holder_screw_dia,
-                         size=smd_battery_holder_screws_size,
-                         fn_val= battery_screws_fn_val);
 }
 
 module chassis_center_wiring_cutouts(dia=chassis_center_cutout_dia,
@@ -357,11 +343,13 @@ module chassis_2d() {
       steering_panel_hinges_screws_holes();
     }
 
-    chassis_center_wiring_cutouts();
+    // chassis_center_wiring_cutouts();
     standard_battery_holders_screws_2d();
 
     chassis_head_wiring_pass_through_holes();
+
     side_trapezoids_holes();
+
     translate([0, steering_panel_y_pos_from_center, 0]) {
       four_corner_holes_2d(steering_panel_center_screws_offsets,
                            hole_dia=steering_panel_center_screw_dia,
@@ -370,25 +358,20 @@ module chassis_2d() {
 
     mirror_copy([1, 0, 0]) {
       n20_bracket_screws();
-      standard_motor_bracket_screws_size();
+
+      // standard_motor_bracket_screws();
     }
 
-    mirror_copy([1, 0, 0]) {
-      standard_motor_bracket_screws_size(-standard_motor_bracket_thickness * 2);
-    }
+    // mirror_copy([1, 0, 0]) {
+    //   standard_motor_bracket_screws(-standard_motor_bracket_thickness * 2);
+    // }
 
     pan_servo_cutout_2d();
 
-    // translate([-rpi_chassis_x_position,
-    //            -chassis_len_half
-    //            + rpi_chassis_y_position, 0]) {
-    //   // raspberry_pi5_screws_2d();
-    // }
-
-    // #raspberry_pi5_screws_2d();
-
-    translate([0, ups_hat_y_pos(), 0]) {
-      ups_hat_screws_2d();
+    if (battery_ups_module_screws_enabled) {
+      translate([0, ups_hat_y_pos(), 0]) {
+        ups_hat_screws_2d();
+      }
     }
 
     translate([0,
@@ -399,24 +382,24 @@ module chassis_2d() {
 
       rear_panel_screw_holes();
 
-      translate([0, rear_panel_screw_offset
-                 + rear_panel_screw_hole_dia, 0]) {
-        rear_panel_screw_holes();
-      }
+      // translate([0, rear_panel_screw_offset
+      //            + rear_panel_screw_hole_dia, 0]) {
+      //   rear_panel_screw_holes();
+      // }
     }
 
     translate([0,
                chassis_len / 2
-               - front_panel_chassis_y_offset
-               + front_panel_connector_screw_dia / 2
-               + (front_panel_connector_len / 2),
+               - front_panel_connector_screw_dia / 2
+               - chassis_offset_rad
+               - front_panel_chassis_y_offset,
                0]) {
-      front_panel_connector_screws(reverse_y=true);
+      front_panel_connector_screws(reverse_y=false);
     }
   }
 }
 
-module standard_motor_bracket_screws_size(extra_x=0, extra_y=0) {
+module standard_motor_bracket_screws(extra_x=0, extra_y=0) {
   translate([motor_bracket_x_pos() + extra_x,
              motor_bracket_y_pos() + extra_y,
              0]) {
@@ -437,8 +420,110 @@ module chassis_base_3d() {
         chassis_2d();
       }
       pan_servo_slot();
+      chassis_with_panel_stack_position() {
+        panel_stack_screw_holes(center=false,
+                                y_axle=chassis_panel_stack_orientation
+                                == "vertical");
+      }
+      for (specs = smd_battery_holder_chassis_specs) {
+        four_corner_hole_rows(specs,
+                              thickness=chassis_thickness,
+                              default_bore_dia_factor=1,
+                              default_bore_h_factor=0.1,
+                              sink=true,
+                              center=true);
+      }
+
+      translate([half_of_w, -half_of_l, 0]) {
+        power_lid_voltmeters_screw_holes(specs=voltmeter_chassis_specs,
+                                         default_cbore_h=chassis_thickness / 2,
+                                         default_cbore_autoscale_step=0.2,
+                                         default_reverse=true,
+                                         default_cbore_d_step=1.8,
+                                         sink=true,
+                                         thickness=chassis_thickness);
+      }
+
+      translate([-rpi_chassis_x_position,
+                 -half_of_l
+                 + rpi_chassis_y_position,
+                 0]) {
+        four_corner_children(rpi_screws_size,
+                             center=true) {
+          counterbore(d=rpi_screw_hole_dia,
+                      h=chassis_thickness,
+                      bore_h=chassis_counterbore_h,
+                      bore_d=rpi_screw_cbore_dia,
+                      autoscale_step=0.1,
+                      sink=false,
+                      reverse=false);
+        }
+      }
+
+      translate([half_of_w
+                 - power_case_width / 2
+                 - power_case_chassis_x_offset,
+                 -half_of_l
+                 + power_case_length / 2
+                 - power_case_chassis_y_offset, 0]) {
+
+        translate([power_case_screw_size_offset_x,
+                   power_case_screw_size_offset_y, 0]) {
+
+          four_corner_children(power_case_bottom_screw_size,
+                               center=true) {
+            counterbore(d=power_case_bottom_screw_dia,
+                        h=chassis_thickness,
+                        bore_h=chassis_counterbore_h,
+                        bore_d=power_case_bottom_cbore_dia,
+                        autoscale_step=0.1,
+                        sink=false,
+                        reverse=false);
+          }
+        }
+      }
+
+      translate([0, -half_of_l, -0.05]) {
+        for (specs=chassis_rect_holes_specs) {
+          rounded_rect_slots(specs=specs,
+                             center=true,
+                             thickness=chassis_thickness + 0.1);
+        }
+        for (specs=chassis_single_holes_specs) {
+          counterbore_single_slots_by_specs(specs=specs,
+                                            default_autoscale_step=0.1,
+                                            thickness=chassis_thickness,);
+        }
+      }
     }
     side_trapezoids_borders();
+    translate([0, -half_of_l, -0.05]) {
+      for (specs=chassis_rect_holes_specs) {
+        rounded_rect_slots(specs=specs,
+                           center=true,
+                           thickness=chassis_thickness + 0.1) {
+          let (spec = $spec,
+               size = spec[0]) {
+
+            translate([0, 0, chassis_thickness]) {
+
+              difference() {
+                scale([1.1, 1.1, 1]) {
+                  linear_extrude(height=chassis_trapezoid_border_height, center=false) {
+                    rounded_rect(size=[size[0] + 1, size[1] + 1], r=size[2], center=true);
+                  }
+                }
+                translate([0, 0, -0.5]) {
+                  linear_extrude(height=chassis_trapezoid_border_height + 1, center=false) {
+                    rounded_rect(size=[size[0], size[1]], r=size[2], center=true);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }
 
@@ -502,6 +587,14 @@ module chassis_maybe_rotate(rotation) {
   }
 }
 
+module chassis_with_panel_stack_position() {
+  translate([-half_of_w + chassis_panel_stack_x_offset,
+             -half_of_l + chassis_panel_stack_y_offset,
+             0]) {
+    children();
+  }
+}
+
 module chassis(motor_type=motor_type,
                show_motor=false,
                show_motor_brackets=false,
@@ -514,164 +607,158 @@ module chassis(motor_type=motor_type,
                show_ackermann_triangle=false,
                show_voltmeters=false,
                chassis_color="white",
+               bottom_color_height = chassis_thickness - chassis_counterbore_h,
                chassis_color_bottom,
-               rotate_chassis) {
+               show_buttons=false,
+               show_fusers=false,
+               show_buttons_panel=true,
+               show_fuse_panel=true) {
+
   union() {
-    difference() {
-      chassis_maybe_rotate(rotate_chassis) {
-        if (chassis_color_bottom) {
-          color(chassis_color_bottom, alpha=1) {
-            scale([1, 1, 0.5]) {
+    if (is_undef(chassis_color_bottom) || chassis_color_bottom == chassis_color) {
+      color(chassis_color, alpha=1) {
+        chassis_base_3d();
+      }
+    } else {
+
+      let (height = bottom_color_height,
+           max_w = max(steering_panel_length,
+                       chassis_width,
+                       max([for (p = chassis_shape_points) abs(p[0]) * 2]))
+           + chassis_offset_rad * 2,
+           max_l = max(chassis_len,
+                       max([for (p = chassis_shape_points) abs(p[1]) * 2]))
+           + chassis_offset_rad * 2) {
+        union() {
+          color(chassis_color) {
+            difference() {
               chassis_base_3d();
-            }
-          }
-          translate([0, 0, chassis_thickness / 2]) {
-            scale([1, 1, 0.5]) {
-              color(chassis_color, alpha=1) {
-                chassis_base_3d();
+              translate([0, 0, -1]) {
+                cube_3d([max_w + 1,
+                         max_l + 1,
+                         height + 1]);
               }
             }
           }
-        } else {
-          color(chassis_color, alpha=1) {
-            chassis_base_3d();
-          }
-        }
-        if (show_front_panel) {
-          front_pan_y = chassis_shape_points[len(chassis_shape_points) - 1][1]
-            + chassis_offset_rad
-            + front_panel_connector_len
-            - front_panel_chassis_y_offset
-            - front_panel_thickness;
-          translate([0,
-                     front_pan_y,
-                     front_panel_height * 0.5]) {
-            rotate([90, 0, 0]) {
-              front_panel_assembly(panel_color=chassis_color,
-                                   show_ultrasonic=show_ultrasonic,
-                                   show_front_rear_panel=show_front_rear_panel);
+          translate([0, 0, -height]) {
+            color(chassis_color_bottom) {
+              difference() {
+                chassis_base_3d();
+                translate([0, 0, height]) {
+                  cube_3d([max_w + 1, max_l + 1, height + 1]);
+                }
+              }
             }
           }
         }
       }
-      for (specs = smd_battery_holder_chassis_specs) {
-        four_corner_hole_rows(specs,
-                              thickness=chassis_thickness,
-                              default_bore_dia_factor=1,
-                              default_bore_h_factor=0.1,
-                              sink=true,
-                              center=true);
-      }
+    }
 
-      translate([chassis_width / 2, -chassis_len / 2, 0]) {
-        power_lid_voltmeters_screw_holes(specs=voltmeter_chassis_specs,
-                                         default_cbore_h=chassis_thickness / 2,
-                                         default_cbore_autoscale_step=0.2,
-                                         default_reverse=true,
-                                         default_cbore_d_step=1.8,
-                                         sink=true,
-                                         thickness=chassis_thickness);
-      }
-      translate([-rpi_chassis_x_position,
-                 -chassis_len / 2
-                 + rpi_chassis_y_position, 0]) {
-        four_corner_children(rpi_screws_size,
-                             center=true) {
-          counterbore(d=rpi_screw_hole_dia,
-                      h=chassis_thickness,
-                      bore_h=chassis_counterbore_h,
-                      bore_d=rpi_screw_cbore_dia,
-                      autoscale_step=0.1,
-                      sink=true,
-                      reverse=true);
+    if (show_front_panel) {
+      front_pan_y = chassis_shape_points[len(chassis_shape_points) - 1][1]
+        + chassis_offset_rad
+        + front_panel_connector_len
+        - front_panel_chassis_y_offset
+        - front_panel_thickness;
+      translate([0,
+                 front_pan_y,
+                 front_panel_height * 0.5]) {
+        rotate([90, 0, 0]) {
+          front_panel_assembly(panel_color=chassis_color,
+                               show_ultrasonic=show_ultrasonic,
+                               show_front_rear_panel=show_front_rear_panel);
         }
       }
+    }
+    if (show_voltmeters) {
+      translate([half_of_w, -half_of_l, 0]) {
+        rotate([0, 90, 0]) {
+          rotate([0, 90, 0]) {
+            power_lid_voltmeters_placeholders(specs=voltmeter_chassis_specs);
+          }
+        }
+      }
+    }
 
-      translate([chassis_width / 2
-                 - power_case_width / 2
-                 - power_case_chassis_x_offset,
-                 -chassis_len / 2
-                 + power_case_length / 2
-                 - power_case_chassis_y_offset, 0]) {
+    if (show_buttons_panel || show_fuse_panel) {
+      translate([0, 0, chassis_thickness / 2]) {
+        chassis_with_panel_stack_position() {
+          panel_stack(center=false,
+                      y_axle=chassis_panel_stack_orientation == "vertical",
+                      show_fusers=show_fusers,
+                      show_buttons=show_buttons);
+        }
+      }
+    }
 
-        translate([power_case_screw_size_offset_x, power_case_screw_size_offset_y, 0]) {
-
-          four_corner_children(power_case_bottom_screw_size,
-                               center=true) {
-            counterbore(d=power_case_bottom_screw_dia,
-                        h=chassis_thickness,
-                        bore_h=chassis_counterbore_h,
-                        bore_d=power_case_bottom_cbore_dia,
-                        autoscale_step=0.1,
-                        sink=true,
-                        reverse=true);
+    rotate([0, 180, 0]) {
+      if (show_rear_panel) {
+        translate([0,
+                   -half_of_l,
+                   rear_panel_size[1] / 2
+                   + rear_panel_mount_thickness
+                   + chassis_thickness]) {
+          rotate([90, 0, 180]) {
+            rear_panel(show_switch_button=show_rear_panel_buttons,
+                       colr=chassis_color);
           }
         }
       }
 
-      translate([0, -chassis_len / 2, -0.05]) {
-        for (specs=chassis_rect_holes_specs) {
-          rounded_rect_slots(specs=specs,
-                             center=true,
-                             thickness=chassis_thickness + 0.1);
-        }
-        for (specs=chassis_single_holes_specs) {
-          counterbore_single_slots_by_specs(specs=specs,
-                                            default_autoscale_step=0.1,
-                                            thickness=chassis_thickness,);
+      if ((show_motor || show_motor_brackets) && motor_type == "standard") {
+        mirror_copy([1, 0, 0]) {
+          standard_motor_bracket_wall(show_motor=show_motor,
+                                      show_wheel=show_wheels);
         }
       }
-    }
-    if (show_rear_panel) {
-      translate([0,
-                 -chassis_len / 2,
-                 rear_panel_size[1] / 2
-                 + rear_panel_mount_thickness
-                 + chassis_thickness]) {
-        rotate([90, 0, 180]) {
-          rear_panel(show_switch_button=show_rear_panel_buttons,
-                     colr=chassis_color);
+
+      if ((show_motor || show_motor_brackets) && motor_type == "n20") {
+        mirror_copy([1, 0, 0]) {
+          n20_bracket_left(show_motor=show_motor, show_wheel=show_wheels);
         }
       }
-    }
 
-    if ((show_motor || show_motor_brackets) && motor_type == "standard") {
-      mirror_copy([1, 0, 0]) {
-        standard_motor_bracket_wall(show_motor=show_motor,
-                                    show_wheel=show_wheels);
-      }
-    }
-
-    if ((show_motor || show_motor_brackets) && motor_type == "n20") {
-      mirror_copy([1, 0, 0]) {
-        n20_bracket_left(show_motor=show_motor, show_wheel=show_wheels);
-      }
-    }
-
-    if (show_voltmeters) {
-      translate([chassis_width / 2, -chassis_len / 2, 0]) {
-        power_lid_voltmeters_placeholders(specs=voltmeter_chassis_specs);
-      }
-    }
-
-    if (show_ackermann_triangle) {
-      translate([0,
-                 steering_panel_y_pos_from_center,
-                 -chassis_thickness - 30]) {
-        ackermann_geometry_triangle();
+      if (show_ackermann_triangle) {
+        translate([0,
+                   steering_panel_y_pos_from_center,
+                   -chassis_thickness - 30]) {
+          ackermann_geometry_triangle();
+        }
       }
     }
   }
 }
 
-chassis(motor_type=motor_type,
-        show_motor=false,
-        show_motor_brackets=false,
-        show_wheels=false,
-        show_rear_panel=false,
-        show_front_panel=false,
-        show_front_rear_panel=false,
-        show_ultrasonic=false,
-        show_ackermann_triangle=false,
-        rotate_chassis=false,
-        show_voltmeters=false);
+module chassis_printable(motor_type=motor_type) {
+  chassis(motor_type=motor_type,
+          show_motor=false,
+          show_motor_brackets=false,
+          show_wheels=false,
+          show_rear_panel=false,
+          show_front_panel=false,
+          show_front_rear_panel=false,
+          show_ultrasonic=false,
+          show_ackermann_triangle=false,
+          show_voltmeters=false,
+          show_buttons_panel=false,
+          show_fuse_panel=false,
+          show_buttons=false,
+          show_fusers=false);
+}
+
+// chassis(motor_type=motor_type,
+//         show_motor=true,
+//         show_motor_brackets=true,
+//         show_wheels=false,
+//         show_rear_panel=false,
+//         show_front_panel=false,
+//         show_front_rear_panel=false,
+//         show_ultrasonic=false,
+//         show_ackermann_triangle=false,
+//         show_voltmeters=false,
+//         show_buttons_panel=false,
+//         show_fuse_panel=false,
+//         show_buttons=false,
+//         show_fusers=false);
+// chassis_printable();
+chassis_base_3d();

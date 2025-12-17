@@ -661,3 +661,42 @@ function slice_by_value(a, val_start, val_end) =
   let (start_idx = search_index(a, val_start),
        end_idx = search_index(a, val_end))
   slice(a, start_idx, end_idx);
+
+function angles_from_width(size, desired_width) =
+  let (Y = size[1],
+       Z = size[2],
+       W = desired_width,
+       a = Z*Z - W*W,
+       b = 2*Y*Z,
+       c = Y*Y - W*W,
+       disc = b*b - 4*a*c,
+       eps = 1e-9,
+// make denominators safe so let-bindings do not cause divide-by-zero
+       denom_safe = 2*(a + (abs(a) < eps ? 1 : 0)),
+       b_safe = b + (abs(b) < eps ? 1 : 0),
+       sd = sqrt(max(disc, 0)),
+       t1 = (-b + sd) / denom_safe,
+       t2 = (-b - sd) / denom_safe,
+       ang1 = atan(t1),
+       ang2 = atan(t2),
+       lin_ang = atan(-c / b_safe))
+  (disc < -eps) ? [] :
+  (abs(a) < eps) ?
+  (abs(b) < eps) ? [] : [lin_ang] :
+  (abs(ang1 - ang2) < 1e-6) ? [ang1] : [ang1, ang2];
+
+// If desired_height provided, filter candidates to those whose rotated height
+// Y*sin(angle) + Z*cos(angle) matches desired_height within tol.
+function angle_matching_width_and_height(size, desired_width, desired_height = undef, tol = 1e-6) =
+  let (cand = angles_from_width(size, desired_width),
+       Y = size[1],
+       Z = size[2])
+  (desired_height == undef) ?
+  cand :
+  [for (a = cand) if (abs(Y * sin(a) + Z * cos(a) - desired_height) <= tol) a];
+
+function calc_cols_params(cols, w, gap) =
+  let (step = gap + w,
+       total_x = cols * w + (cols - 1)
+       * gap)
+  [step, total_x];

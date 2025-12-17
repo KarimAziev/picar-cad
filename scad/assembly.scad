@@ -31,15 +31,15 @@ chassis_assembly_center         = true;
 show_motor                      = true;
 show_motor_brackets             = true;
 show_wheels                     = true;
-show_rear_panel                 = true;
-show_rear_panel_buttons         = true;
+show_rear_panel                 = false;
+show_rear_panel_buttons         = false;
 show_front_panel                = true;
 show_front_rear_panel           = true;
 show_ultrasonic                 = true;
-show_ups_hat                    = false;
+show_ups_hat                    = battery_ups_module_screws_enabled;
 show_power_case                 = true;
-show_lipo_pack                  = true;
-show_power_case_lid             = true;
+show_lipo_pack                  = false;
+show_power_case_lid             = false;
 show_steering                   = true;
 show_bearing                    = true;
 show_brackets                   = true;
@@ -55,11 +55,17 @@ show_ir_case                    = true;
 show_ir_led                     = true;
 chassis_color                   = "white";
 head_color                      = chassis_color;
-show_voltmeters                 = true;
+power_case_color                = white_snow_1;
+show_voltmeters                 = false;
 batteries_holder_assembly_y_idx = len(battery_holes_y_positions) / 2 + 1;
 
-show_ackermann_triangle         = false;
+show_chassis_fusers             = true;
+show_chassis_buttons_panel      = true;
+show_chassis_fuse_panel         = true;
+show_chassis_buttons            = true;
 
+show_ackermann_triangle         = false;
+show_buttons                    = true;
 chassis_color_bottom            = "#353935";
 
 function calc_chassis_z_offset() =
@@ -138,9 +144,9 @@ module chassis_assembly(center=false,
                  - power_case_chassis_y_offset,
                  chassis_thickness]) {
 
-        power_case_assembly(case_color=matte_black,
+        power_case_assembly(case_color=power_case_color,
                             show_lipo_pack=show_lipo_pack,
-                            show_lid=show_power_case_lid);
+                            show_lid=show_power_case_lid,);
       }
     }
     if (show_ups_hat) {
@@ -206,22 +212,25 @@ module chassis_assembly(center=false,
           }
         }
       }
-
-      chassis(motor_type=motor_type,
-              show_motor=show_motor,
-              show_motor_brackets=show_motor_brackets,
-              show_wheels=show_wheels,
-              show_rear_panel=show_rear_panel,
-              show_rear_panel_buttons=show_rear_panel_buttons,
-              show_front_rear_panel=show_front_rear_panel,
-              show_ultrasonic=show_ultrasonic,
-              show_front_panel=show_front_panel,
-              show_ackermann_triangle=show_ackermann_triangle,
-              chassis_color=chassis_color,
-              chassis_color_bottom=chassis_color_bottom,
-              show_voltmeters=show_voltmeters,
-              rotate_chassis=true);
     }
+
+    chassis(motor_type=motor_type,
+            show_motor=show_motor,
+            show_motor_brackets=show_motor_brackets,
+            show_wheels=show_wheels,
+            show_rear_panel=show_rear_panel,
+            show_rear_panel_buttons=show_rear_panel_buttons,
+            show_front_rear_panel=show_front_rear_panel,
+            show_ultrasonic=show_ultrasonic,
+            show_front_panel=show_front_panel,
+            show_ackermann_triangle=show_ackermann_triangle,
+            chassis_color=chassis_color,
+            chassis_color_bottom=chassis_color_bottom,
+            show_voltmeters=show_voltmeters,
+            show_buttons_panel=show_chassis_buttons_panel,
+            show_fuse_panel=show_chassis_fuse_panel,
+            show_buttons=show_chassis_fuse_panel,
+            show_fusers=show_chassis_fusers);
   }
 }
 
@@ -269,7 +278,6 @@ module assembly_view(center=chassis_assembly_center,
                      show_bearing=show_bearing,
                      show_brackets=show_brackets,
                      show_battery_holders=show_battery_holders,
-
                      center=center) {
       if (show_head) {
         head_x = -head_neck_full_pan_panel_h() / 2

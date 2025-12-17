@@ -73,7 +73,7 @@ module pan_servo_cutout_2d() {
 
   if (available_len > chassis_pan_servo_top_ribbon_cuttout_len
       && available_h > 1) {
-    translate([0, (chassis_len / 2) - front_panel_chassis_y_offset, 0]) {
+    translate([0, (chassis_len / 2) - 6, 0]) {
       rounded_rect([chassis_pan_servo_top_ribbon_cuttout_len,
                     chassis_pan_servo_top_ribbon_cuttout_h],
                    center=true);

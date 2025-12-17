@@ -102,6 +102,7 @@ module front_panel_connector_screws(reverse_y=false,
 }
 
 module front_panel_connector(w=front_panel_connector_width,
+
                              h=front_panel_connector_len,
                              thickness=front_panel_thickness,) {
   difference() {
