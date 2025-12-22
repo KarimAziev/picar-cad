@@ -153,31 +153,48 @@ function drop(a, n) = n >= len(a) ? [] : [for (i = [n : len(a)-1]) a[i]];
 
    Return a sublist of elements between start and end indices (inclusive).
 
+   Supports negative indices (from end). Indices are clamped to [0..len(a)].
+
    **Parameters:**
 
    `a`: The input list.
    `start`: The starting index (inclusive).
    `end`: The ending index (inclusive).
 
-   **Returns:**
-   A list containing elements a[start] through a[end], inclusive.
-
-   **Behavior:**
-   If `start > end`, an empty list is returned. Indices are inclusive and
-   expected to be valid indices within the list.
-
    **Examples:**
 
    ```scad
-   slice([10, 20, 30, 40], 1, 2)  // returns [20, 30]
-   slice([10, 20, 30], 0, 0)      // returns [10]
-   slice([1, 2, 3], 2, 1)         // returns []
-   slice([], 0, 0)                // returns []
+   a = [0, 1, 2, 3, 4, 5];
+
+   slice(a, 0, 0) // -> []
+   slice(a, 0, 1) // -> [0]
+   slice(a, 2, 5) // -> [2, 3, 4]
+   slice(a, 2) // -> [2, 3, 4, 5]
+   slice(a) // -> [0, 1, 2, 3, 4, 5]
+   slice(a, -1) // -> [5]
+   slice(a, -3) // -> [3, 4, 5]
+   slice(a, 1, -1) // -> [1, 2, 3, 4]
+   slice(a, -4, -1) // -> [2, 3, 4]
+   slice(a, 99, 100) -> [] // -> []
+   slice(a, -99, 2) clamps start // -> [0, 1]
+   slice(a, 2, -99) end before start // -> []
+   slice(a, 0, 99) clamps end // -> [0, 1, 2, 3, 4, 5]
    ```
 */
-function slice(a, start, end) = start > end
-  ? []
-  : [for (i = [start : end]) a[i]];
+
+function slice(a, start=0, end=undef) =
+  let (n  = len(a),
+       s0 = (start==undef) ? 0 : start,
+       e0 = (end  ==undef) ? n : end,
+       s1 = (s0 < 0) ? n + s0 : s0,
+       e1 = (e0 < 0) ? n + e0 : e0,
+       s  = (s1 < 0) ? 0 : (s1 > n) ? n : s1,
+       e  = (e1 < 0) ? 0 : (e1 > n) ? n : e1)
+  (e <= s) ? [] : [for (i = [s : e-1]) a[i]];
+
+// function slice(a, start, end) = start > end
+//   ? []
+//   : [for (i = [start : end]) a[i]];
 
 /**
    ─────────────────────────────────────────────────────────────────────────────
@@ -657,46 +674,179 @@ function with_default(val, default, type = "any") =
   ? (is_num(val) ? val : default)
   : default;
 
-function slice_by_value(a, val_start, val_end) =
-  let (start_idx = search_index(a, val_start),
-       end_idx = search_index(a, val_end))
-  slice(a, start_idx, end_idx);
+/*
+  ─────────────────────────────────────────────────────────────────────────────
+  calc_cols_params
+  ─────────────────────────────────────────────────────────────────────────────
 
-function angles_from_width(size, desired_width) =
-  let (Y = size[1],
-       Z = size[2],
-       W = desired_width,
-       a = Z*Z - W*W,
-       b = 2*Y*Z,
-       c = Y*Y - W*W,
-       disc = b*b - 4*a*c,
-       eps = 1e-9,
-// make denominators safe so let-bindings do not cause divide-by-zero
-       denom_safe = 2*(a + (abs(a) < eps ? 1 : 0)),
-       b_safe = b + (abs(b) < eps ? 1 : 0),
-       sd = sqrt(max(disc, 0)),
-       t1 = (-b + sd) / denom_safe,
-       t2 = (-b - sd) / denom_safe,
-       ang1 = atan(t1),
-       ang2 = atan(t2),
-       lin_ang = atan(-c / b_safe))
-  (disc < -eps) ? [] :
-  (abs(a) < eps) ?
-  (abs(b) < eps) ? [] : [lin_ang] :
-  (abs(ang1 - ang2) < 1e-6) ? [ang1] : [ang1, ang2];
+  **Example**:
+  ```scad
+  calc_cols_params(cols=4, w=10, gap=2); // -> [12, 46]
 
-// If desired_height provided, filter candidates to those whose rotated height
-// Y*sin(angle) + Z*cos(angle) matches desired_height within tol.
-function angle_matching_width_and_height(size, desired_width, desired_height = undef, tol = 1e-6) =
-  let (cand = angles_from_width(size, desired_width),
-       Y = size[1],
-       Z = size[2])
-  (desired_height == undef) ?
-  cand :
-  [for (a = cand) if (abs(Y * sin(a) + Z * cos(a) - desired_height) <= tol) a];
-
+  ```
+*/
 function calc_cols_params(cols, w, gap) =
   let (step = gap + w,
        total_x = cols * w + (cols - 1)
        * gap)
   [step, total_x];
+
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   constraint
+   ─────────────────────────────────────────────────────────────────────────────
+
+   **Example**:
+   ```scad
+   constraint(10, 12, 12) // ->  12
+   constraint(10, 11, 12) // ->  11
+   constraint(10, 10, 12) // ->  10
+   constraint(13, 10, 12) // ->  12
+   ```
+*/
+function constraint(val, min_val, max_val) =
+  max(min_val, min(max_val, val));
+
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   clamp
+   ─────────────────────────────────────────────────────────────────────────────
+
+   **Example**:
+   ```scad
+   clamp(1, 0, len([1, 2, 3])) // -> 1
+
+   ```
+*/
+function clamp(x, lo, hi) = (x < lo) ? lo : (x > hi) ? hi : x;
+
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   take
+   ─────────────────────────────────────────────────────────────────────────────
+   Take first n (clamped). If n <= 0 => []
+
+   **Example**:
+   ```scad
+   take(["foo", "bar", "baz"], 1); // => ["foo"]
+   take(["foo", "bar", "baz"], 2); // => ["foo", "bar"]
+   take(["foo", "bar", "baz"], 3); // => ["foo", "bar", "baz"]
+   take(["foo", "bar", "baz"], 4); // => ["foo", "bar", "baz"]
+   take(["foo", "bar", "baz"], 0); // => []
+   ```
+
+*/
+function take(l, n=1) =
+  let (nn = with_default(n, 1))
+  (nn <= 0) ? [] : slice(l, 0, nn);
+
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   drop
+   ─────────────────────────────────────────────────────────────────────────────
+   Drop first n. If n <= 0 => original list
+
+   **Example**:
+   ```scad
+   drop(["foo", "bar", "baz"], 1); //=> ["bar", "baz"]
+   drop(["foo", "bar", "baz"], 2); //=> ["baz"]
+   drop(["foo", "bar", "baz"], 3); //=> []
+   drop(["foo", "bar", "baz"], 4); //=> []
+   ```
+
+*/
+function drop(l, n=1) =
+  let (nn = with_default(n, 1))
+  (nn <= 0) ? l : slice(l, nn);
+
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   drop_last
+   ─────────────────────────────────────────────────────────────────────────────
+   Drop last n. If n <= 0 => original list
+
+   **Example**:
+
+   ```scad
+   drop_last(["foo", "bar", "baz"]); //=> ["foo", "bar"]
+   drop_last(["foo", "bar", "baz"], 1); //=> ["foo", "bar"]
+   drop_last(["foo", "bar", "baz"], 2); //=> ["foo"]
+   drop_last(["foo", "bar", "baz"], 3); //=> []
+   drop_last(["foo", "bar", "baz"], 4); //=> []
+   drop_last(["foo", "bar", "baz"], 4 ); //=> []
+   ```
+
+*/
+function drop_last(l, n=1) =
+  let (nn  = clamp(with_default(n, 1), 0, len(l)))
+  (nn <= 0) ? l : slice(l, 0, len(l) - nn);
+
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   take_last
+   ─────────────────────────────────────────────────────────────────────────────
+   Take last n. If n <= 0 => []
+
+   **Example**:
+   ```scad
+   take_last(["foo", "bar", "baz"], 1); // => ["baz"]
+   take_last(["foo", "bar", "baz"], 2); // => ["bar", "baz"]
+   take_last(["foo", "bar", "baz"], 3); // => ["foo", "bar", "baz"]
+   take_last(["foo", "bar", "baz"], 4); // => ["foo", "bar", "baz"]
+   ```
+
+*/
+function take_last(l, n=1) =
+  let (nn  = clamp(with_default(n, 1), 0, len(l)))
+  (nn <= 0) ? [] : slice(l, len(l) - nn, len(l));
+
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   search_idxs
+   ─────────────────────────────────────────────────────────────────────────────
+
+   **Example**:
+   ```scad
+   search_idxs([2, 1, 2, 3], 2); // => [0, 2]
+   ```
+*/
+function search_idxs(l, val) = [for (i = [0:len(l) - 1]) if (l[i] == val) i];
+
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   search_idx
+   ─────────────────────────────────────────────────────────────────────────────
+
+   **Example**:
+   ```scad
+   search_idx([2, 1, 2, 3], 2); // => 0
+   ```
+*/
+function search_idx(l, val) = search_idxs(l, val)[0];
+
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   search_idx
+   ─────────────────────────────────────────────────────────────────────────────
+
+   **Example**:
+   ```scad
+   member([2, 1, 2, 3], 2); // => true
+   member([2, 1, 2, 3], 10); // => false
+   ```
+*/
+function member(x, xs) =
+  true == [for (v = xs) if (v == x) true][0];
+
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   flatten_pairs
+   ─────────────────────────────────────────────────────────────────────────────
+   Turns [[a,b], [c,d]] into [a, b, c, d]
+
+   **Example**:
+   ```scad
+   flatten_pairs([[2, 1], [2, 3]]); // => [2, 1, 2, 3]
+   ```
+*/
+function flatten_pairs(pairs) = [for (p = pairs) each p];

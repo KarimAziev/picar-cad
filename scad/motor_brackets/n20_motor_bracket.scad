@@ -34,6 +34,7 @@ use <../placeholders/n20_motor.scad>
 use <../lib/functions.scad>
 use <../lib/shapes2d.scad>
 use <../lib/shapes3d.scad>
+use <../lib/holes.scad>
 
 function n20_motor_width() = n20_can_dia + n20_motor_bracket_thickness * 2;
 
@@ -46,16 +47,36 @@ function n20_motor_screws_panel_x_offset() =
                                  cutout_w=n20_can_cutout_w)
   - n20_can_cutout_w / 2 + (n20_motor_bracket_thickness / 2);
 
-module n20_motor_screw_holes() {
+module n20_motor_screw_holes_2d() {
   screws_rad = n20_motor_screw_dia / 2;
+  n20_motor_with_screw_holes_positions() {
+    circle(r=screws_rad, $fn=360);
+  }
+}
+
+module n20_motor_with_screw_holes_positions() {
   for (i = [0:1]) {
     translate([i == 0
                ? -n20_motor_screws_panel_offset
                : n20_motor_screws_panel_offset,
                0,
                0]) {
-      circle(r=screws_rad, $fn=360);
+      children();
     }
+  }
+}
+
+module n20_motor_screw_holes_3d(reverse=false,
+                                h,
+                                bore_h) {
+  n20_motor_with_screw_holes_positions() {
+    counterbore(h=h,
+                d=n20_motor_screw_dia,
+                bore_d=n20_motor_screw_bore_dia,
+                bore_h=(is_undef(bore_h) ? h / 2 : bore_h),
+                sink=false,
+                fn=100,
+                reverse=reverse);
   }
 }
 
@@ -69,19 +90,21 @@ module n20_motor_screws_panel() {
 
   translate([x_offst, 0, h]) {
     rotate([90, 0, 90]) {
-      linear_extrude(height=effective_h, center=false) {
-        difference() {
-          union() {
-            rounded_rect(size = [w, h],
-                         r=min(h, w) * 0.5,
-                         center=true,
-                         fn=360);
-            rounded_rect(size = [w, h * 2],
-                         r=min(h, w) * 0.5,
-                         center=true, fn=360);
+      difference() {
+        linear_extrude(height=effective_h, center=false) {
+          difference() {
+            union() {
+              rounded_rect(size = [w, h],
+                           r=min(h, w) * 0.5,
+                           center=true,
+                           fn=360);
+              rounded_rect(size = [w, h * 2],
+                           r=min(h, w) * 0.5,
+                           center=true, fn=360);
+            }
           }
-          n20_motor_screw_holes();
         }
+        n20_motor_screw_holes_3d(h=effective_h);
       }
     }
   }

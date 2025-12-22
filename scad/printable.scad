@@ -19,7 +19,6 @@
 include <parameters.scad>
 include <colors.scad>
 
-use <chassis.scad>
 use <ir_case.scad>
 use <front_panel.scad>
 use <rear_panel.scad>
@@ -41,6 +40,8 @@ use <wheels/tire.scad>
 use <wheels/rear_wheel.scad>
 use <wheels/front_wheel.scad>
 use <wheels/wheel_hub.scad>
+
+use <components/chassis/chassis_printable.scad>
 
 show_chasssis       = true;
 show_front_panel    = true;
@@ -64,14 +65,14 @@ show_tie_rod_shafts = true;
 
 module printable(spacing=5) {
   half_of_chassis_len = chassis_len / 2;
-  half_of_chassis_width = chassis_width / 2;
+  half_of_chassis_width = chassis_body_w / 2;
 
   rack_max_w = max(steering_rack_link_bearing_outer_d,
                    steering_rack_width) / 2;
 
   if (show_chasssis) {
     translate([0, 0, chassis_thickness / 2]) {
-      chassis();
+      chassis_printable();
     }
   }
   translate([half_of_chassis_width

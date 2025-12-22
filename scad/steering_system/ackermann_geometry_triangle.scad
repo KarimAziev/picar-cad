@@ -19,10 +19,12 @@ module ackermann_geometry_triangle(triangle_color="red", alpha=0.2) {
                      [0, -steering_wheelbase_effective]     // tie rod convergence point
                     ];
 
-  color(triangle_color, alpha=alpha) {
-    linear_extrude(height=0.5, center=false) {
-      mirror_copy([1, 0, 0]) {
-        polygon(points=triangle_points);
+  translate([0, 0, 0]) {
+    color(triangle_color, alpha=alpha) {
+      linear_extrude(height=0.5, center=false) {
+        mirror_copy([1, 0, 0]) {
+          polygon(points=triangle_points);
+        }
       }
     }
   }

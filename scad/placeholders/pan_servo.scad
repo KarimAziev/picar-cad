@@ -31,7 +31,9 @@ function pan_servo_gear_height() =
 function pan_servo_gear_x_center() =
   pan_servo_size[0] / 2 - pan_servo_gearbox_d1 / 2;
 
-module pan_servo(center=false, servo_color=pan_servo_color, alpha=1) {
+module pan_servo(center=false, servo_color=pan_servo_color,
+                 show_servo_horn=true,
+                 alpha=1) {
   servo(size=[pan_servo_size[0],
               pan_servo_size[1],
               pan_servo_size[2]],
@@ -55,7 +57,9 @@ module pan_servo(center=false, servo_color=pan_servo_color, alpha=1) {
         gearbox_x_offset=pan_servo_gearbox_x_offset,
         gearbox_mode=pan_servo_gearbox_mode,
         servo_horn_rotation=0,
+        show_servo_horn=show_servo_horn,
         gearbox_gear_size=pan_servo_gearbox_size) {
+
     children();
   }
 }

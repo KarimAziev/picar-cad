@@ -140,6 +140,39 @@ m2_hole_dia                                      = 2.4; // M2 screw hole diamete
 m25_hole_dia                                     = 2.6; // M2.5 screw hole diameter
 m3_hole_dia                                      = 3.2; // M3 screw hole diameter
 
+m2_pan_head_dia                                  = 3.5;
+m25_pan_head_dia                                 = 4.3;
+m3_pan_head_dia                                  = 4.8;
+
+m2_pan_head_h                                    = 1.38;
+m25_pan_head_h                                   = 1.6;
+m3_pan_head_h                                    = 1.5;
+
+m2_round_head_dia                                = 3.5;
+m25_round_head_dia                               = 5.2;
+m3_round_head_dia                                = 5.62;
+m2_round_head_h                                  = 1.38;
+m25_round_head_h                                 = 2.10;
+m3_round_head_h                                  = 2.90;
+
+m2_countersink_head_dia                          = 3.5;
+m25_countersink_head_dia                         = 4.04;
+m3_countersink_head_dia                          = 6.50;
+m2_countersink_head_h                            = 1.38;
+m25_countersink_head_h                           = 1.1;
+m3_countersink_head_h                            = 1.7;
+
+m2_hex_head_dia                                  = 3.5;
+m25_hex_head_dia                                 = 5.2;
+m3_hex_head_dia                                  = 5.62;
+m2_hex_head_h                                    = 1.38;
+m25_hex_head_h                                   = 2.10;
+m3_hex_head_h                                    = 2.90;
+
+bolt_specs                                       = [[3, 5.20, 5, [20, 15, 10, 9, 8, 6, 5], 6],
+                                                    [2.5, 4.20, 4, [20, 15, 10, 9, 8, 6, 5], 6],
+                                                    [2, 3.0, 3.0, [20, 15, 10, 9, 8, 6, 5], 12],];
+
 panel_stack_bolt_dia                             = m3_hole_dia;
 panel_stack_bolt_cbore_dia                       = panel_stack_bolt_dia * 2;
 panel_stack_corner_radius_factor                 = 0.05;
@@ -157,8 +190,9 @@ control_panel_row_gap                            = 0.8;
 standoff_specs                                   = [[3, 5.20, 5, [20, 15, 10, 9, 8, 6, 5], 6],
                                                     [2.5, 4.20, 4, [20, 15, 10, 9, 8, 6, 5], 6],
                                                     [2, 3.0, 3.0, [20, 15, 10, 9, 8, 6, 5], 12],
-                                                    [2, 4.50, 5.0, [20, 15, 10, 9, 8, 6, 5], 6,
-                                                     white_off_1]];
+      // [2, 4.50, 5.0, [20, 15, 10, 9, 8, 6, 5], 6,
+                                    //  white_off_1]
+                                                   ];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Battery holder at the top of the chassis behind Raspberry Pi
@@ -211,6 +245,7 @@ battery_screws_x_offset                          = 24;
 battery_holes_y_positions                        = [];
 
 smd_battery_holder_screws_x_offset               = 32;
+smd_battery_holder_screws_y_offset               = 12;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 16850 battery dimensions
@@ -235,7 +270,7 @@ smd_battery_holder_side_thickness                = 1.8;
 
 smd_battery_holder_screw_dia                     = m3_hole_dia;
 smd_battery_holder_screw_recess_size             = [9, 5, 2];
-smd_battery_holder_screws_size                   = [0, 52.2];
+smd_battery_holder_screws_size                   = [0, 56.5];
 smd_battery_holder_batteries_count               = 2;
 smd_battery_holder_inner_cutout_size             = [9.0, 66.6];
 smd_battery_holder_inner_side_h                  = 10;
@@ -243,12 +278,16 @@ smd_battery_holder_inner_side_h                  = 10;
 smd_battery_holder_chassis_specs                 = [[[[smd_battery_holder_screws_size[0],
                                                        smd_battery_holder_screws_size[1],],
                                                       smd_battery_holder_screw_dia,
-                                                      [0, smd_battery_holder_screws_x_offset, -42],
-                                                      []]],
+                                                      [smd_battery_holder_length / 2,
+                                                       smd_battery_holder_screws_x_offset,
+                                                       smd_battery_holder_screws_y_offset],
+                                                      []],],
                                                     [[[smd_battery_holder_screws_size[0],
                                                        smd_battery_holder_screws_size[1],],
                                                       smd_battery_holder_screw_dia,
-                                                      [0, -smd_battery_holder_screws_x_offset, -42],
+                                                      [smd_battery_holder_length / 2,
+                                                       -smd_battery_holder_screws_x_offset,
+                                                       smd_battery_holder_screws_y_offset],
                                                       []]]];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -287,164 +326,191 @@ camera_module_socket_upper_h                     = 1.4;
 camera_module_socket_thickness                   = 2.7;
 camera_module_socket_y_offset                    = 1;
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Chassis dimensions
-// ─────────────────────────────────────────────────────────────────────────────
+/* [Chassis dimensions] */
+// width of the chassis body
+/* [Chassis dimensions] */
 
-chassis_width                                    = 125;  // width of the chassis
-chassis_len                                      = 258;  // length of the chassis
-chassis_thickness                                = 4.0;    // chassis thickness
-chassis_offset_rad                               = 3; // The amount by which to offset the chassis
+// Length of the upper chassis (holds the head with cameras and steering system)
+chassis_upper_len                                = 105;  // [120.0:300.0]
+
+// Length of the chassis neck (connects the wide base to the narrower upper section)
+chassis_transition_len                           = 25;  // [1.0:100.0]
+
+// Length of the main body (houses motors, batteries, and electronics)
+chassis_body_len                                 = 176; // [120.0:300.0]
+
+// Width of the upper chassis (holds the head with cameras and steering system)
+chassis_upper_w                                  = 27;  // [20.0:200.0]
+
+// Width of the chassis neck (connects the wide base to the narrower upper section)
+chassis_transition_w                             = 68;  // [27.0:250.0]
+
+// Width of the main body (houses motors, batteries, and electronics)
+chassis_body_w                                   = 125; // [100.0:300.0]
+
+// Thickness of the chassis
+chassis_thickness                                = 4.0; // [2.0:10.0]
+
+// Amount by which to offset the chassis
+chassis_offset_rad                               = 3;   // [0.0:5]
+
+/* [Hidden] */
+chassis_len                                      = sum([chassis_upper_len,
+                                                        chassis_transition_len,
+                                                        chassis_body_len]);
+chassis_body_half_w                              = chassis_body_w / 2;
+chassis_transition_half_w                        = chassis_transition_w / 2;
+chassis_upper_half_w                             = chassis_upper_w / 2;
+
+chassis_connector_w                              = chassis_body_w - 10;
+chassis_use_connector                            = false;
+chassis_connector_len                            = 6;
+chassis_connector_height                         = 2.2;
+chassis_connector_w_clearance                    = 0.5;
+chassis_connector_len_clearance                  = 0.4;
+
+chassis_connector_dia                            = m3_hole_dia;
+
+chassis_connector_edge_distance                  = 1.5;
+chassis_connector_screw_positions                = [50, 25, 0];
+
+chassis_lower_cutout_pts                         = [[0, 0],
+                                                    [26, 0],
+                                                    [38.25, 5],
+                                                    [44.25, 5],
+                                                    [chassis_body_half_w - 10, 0],
+                                                    [chassis_body_half_w, 5],
+                                                    [chassis_body_half_w, 6]];
+
+chassis_upper_pts                                = [[0, 0],
+                                                    [chassis_transition_half_w, 0],
+                                                    [chassis_upper_half_w, chassis_upper_len],
+                                                    [0, chassis_upper_len]];
+
+chassis_transition_pts                           = [[0, 0],
+                                                    [chassis_body_half_w, 0],
+                                                    [chassis_transition_half_w, chassis_transition_len],
+                                                    [0, chassis_transition_len]];
 
 chassis_counterbore_h                            = 2.2; // The amount by which to offset the chassis
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Chassis Center Wiring Cutouts (near the Raspberry Pi/UPS HAT area)
-// ─────────────────────────────────────────────────────────────────────────────
-
-chassis_center_cutout_dia                        = 9.5;             // Diameter of each round cutout circle
-chassis_center_cutout_spacing                    = 4;               // Vertical spacing between cutouts
-chassis_center_cutout_fn                         = 20;              // Circle detail level
-
-chassis_center_trapezoid_1                       = [1 / 8.5, 1 / 8.5, 7]; // [bottom_frac_w, top_frac_w, height]
-chassis_center_trapezoid_2                       = [0.2, 0.2, 5.4]; // [bottom_frac_w, top_frac_w, height]
-chassis_center_cutout_repeat_offsets             = [0];         // How often to repeat stacked trapezoids
-chassis_center_dotted_y_offsets                  = [-10 / 205, 30, -20 / 205];  // Relative Y-positions for dotted cutoff line
-
-// Extra vertical margin applied to avoid overlaps between wiring holes and other components
-chassis_center_wiring_cutout_y_margin            = 8;
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Chassis Head Wiring Pass-Through Holes (front section, near pan/tilt servo)
-// ─────────────────────────────────────────────────────────────────────────────
-
-chassis_head_wiring_hole_size                    = [6, 3];      // [width, height] of rectangular wiring holes
-chassis_head_wiring_hole_spacing                 = 6;           // Vertical spacing between holes
-chassis_head_profile_height                      = 4;           // Height of each rectangular hole
-chassis_head_side_taper_height                   = 9;           // Height of trapezoidal tapered cutouts
-chassis_head_cutout_relative_width               = 0.4;         // Relative width of center cutout (fraction of width)
-chassis_head_final_spacing                       = 3;           // Space between dual-stacked cutouts
-chassis_head_min_cutout_w                        = 20;          // Minimal allowed width for center cutout
-chassis_head_center_hole_radius                  = 0.2;         // Rounded corner radius for center hole
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Chassis shape
 // ─────────────────────────────────────────────────────────────────────────────
 
-chassis_base_rear_cutout_depth                   = + 5;
-
-chassis_shape_init_pos_x                         = 0;
-chassis_shape_init_pos_y                         = - chassis_len / 2;
-
 // The half of the width is used because the polygon will be mirrored.
-chassis_shape_base_width                         = chassis_width / 2;
-chassis_shape_target                             = ceil(0.2 * abs(chassis_shape_init_pos_y));
+chassis_shape_base_width                         = chassis_body_w / 2;
+
 chassis_shape_rear_panel_base_w                  = 26.0;
 
-chassis_shape_rear_cutout_x_offset               = 6;  // Horizontal offset for the rear cutout
-chassis_shape_rear_cutout_y_offset               = 5;  // Vertical offset for the rear cutout
-
-chassis_rear_join_x                              = (-chassis_shape_base_width
-                                                    - chassis_shape_rear_panel_base_w)
-                                              / 2;
-
-chassis_trapezoid_hole_width                     = 5.5;
-chassis_trapezoid_hole_len                       = 10.5;
-
-chassis_trapezoid_shape_pts                      = [[-chassis_shape_base_width * 0.6,
-                                                     24],
-                                                    [-chassis_shape_base_width * 0.24,
-                                                     127],
-                                                    [0, 127]];
-
-// vertical distance between trapezoids
-chassis_trapezoid_hole_y_distance                = 6.5;
+chassis_trapezoid_hole_width                     = 7.5;
+chassis_trapezoid_hole_len                       = 11.0;
 
 // distance from the side of the chassis
 chassis_trapezoid_hole_x_distance                = 2;
 
 chassis_trapezoid_border_height                  = 1;
 
-chassis_shape_points                             = concat([[chassis_shape_init_pos_x,
-                                                            chassis_shape_init_pos_y],
-                                                           [-chassis_shape_rear_panel_base_w,
-                                                            chassis_shape_init_pos_y],
-                                                           [chassis_rear_join_x + chassis_shape_rear_cutout_x_offset,
-                                                            chassis_shape_init_pos_y + chassis_base_rear_cutout_depth],
-                                                           [chassis_rear_join_x,
-                                                            chassis_shape_init_pos_y
-                                                            + chassis_shape_rear_cutout_y_offset],
-                                                           [-chassis_shape_base_width
-                                                            + chassis_shape_rear_cutout_x_offset,
-                                                            chassis_shape_init_pos_y],
-                                                           [-chassis_shape_base_width,
-                                                            chassis_shape_init_pos_y
-                                                            + chassis_shape_rear_cutout_y_offset],
-                                                           [-chassis_shape_base_width,
-                                                            chassis_shape_init_pos_y + chassis_shape_target],
-                                                           [-chassis_shape_base_width + 2,
-                                                            5.10]],
-                                                          chassis_trapezoid_shape_pts);
+chassis_side_hole_border_w                       = 1;
+chassis_side_hole_border_h                       = 0.8;
 
 // diameter of the pan servo mounting hole at the front of the chassis
 chassis_pan_servo_slot_dia                       = 6.5;
 
 chassis_pan_servo_slot_depth                     = 2.0;
 
-// Vertical offset, measured from the steering panel's position, for the pan
-// servo cut-out. The pan servo is mounted on a bottom horizontal panel (with a
-// gear hole interfacing with the chassis) that is part of the robot’s head
-// (which also carries the cameras). Its placement is determined by adding this
-// offset to steering_panel_y_pos_from_center.
-chassis_pan_servo_y_distance_from_steering       = 45;
-
-chassis_pan_servo_top_ribbon_cuttout_len         = 18;
+chassis_pan_servo_top_ribbon_cuttout_len         = min(18, chassis_upper_w * 0.8);
 chassis_pan_servo_top_ribbon_cuttout_h           = 2;
+
+upper_chassis_holes_border_w                     = chassis_side_hole_border_w;
+chassis_upper_front_padding_y                    = 2;
 
 chassis_single_holes_specs                       = [];
 
-chassis_rect_holes_specs                         = [[[[32, 10, 1.0], [0, -8, 146]]], // camera ribbon hole
-                                                    [[[15, 25, 6.0], [0, 10, 20]],
-                                                     [[5, 20, 4.0], [10, 0, 42]],
-                                                     [[5, 20, 4.0], [10, 0, 42]],
-                                                     [[10, 20, 4.0], [10, 0, 42]]],
-                                                    [[[22, 14, 3.0], [10, -20, 15]],
-                                                     [[22, 14, 3.0], [0, -20, 10]]],
+chassis_rect_holes_specs                         = [[[[10, 20, 4.0], [10, 0, 40]], // third in th efirst center
+                                                     [[10, 20, 4.0], [10, 0, 38]], // second in the center
+                                                     [[10, 20, 4.0], [10, 0, 35]]], // first center
                    // rectangulars on the both sides
                                                     [[[10, 15, 4.0], [10,
-                                                                      chassis_width / 2 - 6.5,
-                                                                      69]],
+                                                                      chassis_body_w / 2 - 6.5,
+                                                                      40]],
                                                      [[10, 15, 4.0], [10,
-                                                                      chassis_width / 2 - 6.5,
-                                                                      69]]],
+                                                                      chassis_body_w / 2 - 6.5,
+                                                                      40]]],
                                                     [[[10, 15, 4.0], [10,
-                                                                      -chassis_width / 2 + 6.5,
-                                                                      69],],
+                                                                      -chassis_body_w / 2 + 6.5,
+                                                                      40],],
                                                      [[10, 15, 4.0], [10,
-                                                                      -chassis_width / 2 + 6.5,
-                                                                      69]]]];
+                                                                      -chassis_body_w / 2 + 6.5,
+                                                                      40]]]];
+
+chassis_panel_stack_slot_specs                   = [[[[15, 30, 6.0], [0, 35, 0]],], // side hole near fuse stack
+                                                    [[[25, 14, 3.0], [10, -4, 0]], // upper hole under fuse stack
+                                                     [[25, 14, 3.0], [10, -4, 0]],
+                                                     [[35, 14, 3.0], [10, -20, 0]]], // lower hole under fuse stack
+                                                   ];
+
+chassis_head_zone_y_offset                       = 0; // position of the head on Y axle
+
+chassis_top_most_holes_side_y_offset             = -1.5;
+chassis_top_most_holes_side_w                    = 10.0;
+chassis_top_most_holes_side_len                  = 5;
+chassis_top_most_holes_gap                       = 2.5;
+chassis_top_most_holes_margin                    = 1;
+chassis_top_most_holes_rows                      = 2;
+
+chassis_pan_servo_recesess_y_len                 = 14;
+chassis_pan_servo_recesess_x_len                 = 16;
+chassis_pan_servo_recesess_thickness             = 5;
+chassis_pan_servo_mount_screw_d                  = 1.5;
+chassis_pan_servo_mount_screw_distance           = 0.5;
+chassis_pan_servo_rib_slots_rows                 = 3;
+chassis_pan_servo_rib_slots_gap                  = 3;
+chassis_pan_servo_rib_slots_len                  = 20;
+chassis_pan_servo_rib_slots_thickness            = 3;
+chassis_pan_servo_rib_slots_distance_from_recess = 1;
+chassis_pan_servo_side_trapezoid_rows            = 2;
+chassis_pan_servo_side_trapezoid_gap             = 2;
+
+chassis_upper_side_hole_len                      = chassis_transition_len / 3;
+chassis_upper_side_hole_w                        = chassis_trapezoid_hole_width;
+
+chassis_upper_side_hole_rows                     = 2;
+chasssis_upper_side_hole_gap                     = 3;
+chassis_upper_side_hole_margin                   = 2;
+chassis_upper_side_hole_start                    = 14;
+
+chassis_upper_rect_holes_specs                   = [[[[32, 5, 1.0], [0, -8, 7]],  // camera ribbon holes
+                                                     [[32, 5, 1.0], [0, -8, 8]],
+                                                     [[32, 5, 1.0], [0, -8, 9]]]];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Front panel dimensions
 // ─────────────────────────────────────────────────────────────────────────────
 // This panel is vertical and includes mounting holes for the ultrasonic sensors.
 // ─────────────────────────────────────────────────────────────────────────────
-front_panel_chassis_y_offset                     = 1;
+
 front_panel_width                                = 66;   // panel width
 front_panel_height                               = 22.5;   // panel height
 front_panel_thickness                            = 2.5;   // panel thickness
 // A slight tilt of the panel with the ultrasonic sensor to prevent the sensor's
 // "eyes" from dipping down into the floor.
 front_panel_rotation_angle                       = 5;
+
 front_panel_rear_panel_thickness                 = 1.5;
 front_panel_connector_screw_dia                  = m25_hole_dia;
 
 front_panel_connector_screw_bore_dia             = front_panel_connector_screw_dia * 2.5;
 front_panel_connector_screw_bore_h               = min(1.5,
                                                        front_panel_thickness * 0.7);
+
 front_panel_connector_len                        = 15;
-front_panel_connector_width                      = min(front_panel_width - 5,
-                                                       chassis_width / 4);
+
+front_panel_connector_width                      = constraint(chassis_upper_w - 2, 10, 30);
+front_panel_connector_screws_padding_y           = 1;
+
+front_panel_connector_screws_size                = [constraint(10, front_panel_connector_screw_bore_dia * 2 + 3,
+                                                               front_panel_connector_width), 0];
 
 front_panel_connector_screw_offsets              = [[4, 3], [-4, 3]];
 front_panel_screw_dia                            = m25_hole_dia;
@@ -523,8 +589,8 @@ head_cameras                                     = [[head_camera_module_3_size,
 // If more than one camera is present, a fixed spacing of 2 mm is used.
 // If only one camera is mounted, use half of its height for centering.
 head_cameras_y_distance                          = len(head_cameras) > 1
-                                              ? 2.0
-                                              : (head_cameras[0][0][1] / 2);
+                                                ? 2.0
+                                                : (head_cameras[0][0][1] / 2);
 
 // Width of the front face plate where the camera modules are mounted.
 head_plate_width                                 = 38;
@@ -794,11 +860,11 @@ ir_led_light_detector_offset_x                   = 1;
 // These precomputed values sum stacked thicknesses so the case clears the side panel.
 // ir_case_head_side_panel_x_2 is further from the panel than x_1.
 ir_case_head_side_panel_x_2                      = + ir_case_thickness
-                                              + ir_case_led_boss_thickness
-                                              + ir_led_thickness
-                                              + ir_led_light_detector_h / 2;
+                                                + ir_case_led_boss_thickness
+                                                + ir_led_thickness
+                                                + ir_led_light_detector_h / 2;
 ir_case_head_side_panel_x_1                      = + ir_led_light_detector_h / 2
-                                              + ir_led_height;
+                                                + ir_led_height;
 
 // Y coordinate for the first column of screw positions (centered on the LED height).
 ir_case_head_side_panel_y_1                      = -ir_led_height / 2;
@@ -1172,9 +1238,9 @@ knuckle_shaft_screws_distance                    = 2;
 // The length of the vertical part of the (curved) axle shaft that connects the
 // steering knuckle to the wheel hub
 knuckle_shaft_vertical_len                       = knuckle_height +
-                                              (motor_type == "n20"
-                                               ? 21.5
-                                               : 26.5);
+                                                (motor_type == "n20"
+                                                 ? 21.5
+                                                 : 26.5);
 
 // The additional length of the connector for the shaft in the knuckle and the
 // corresponding curved axle shaft
@@ -1184,10 +1250,10 @@ knuckle_shaft_connector_extra_arm_len            = 1;
 
 // The additional length of the for the shaft itself
 knuckle_shaft_extra_len                          = assembly_shaft_use_front_steering
-                                              &&
-                                              assembly_use_front_steering
-                                              ? 5
-                                              : 0;
+                                                &&
+                                                assembly_use_front_steering
+                                                ? 5
+                                                : 0;
 
 // The length of the lower horizontal part of the (curved) axle shaft that is
 // inserted into the wheel hub
@@ -1242,17 +1308,19 @@ n20_motor_bracket_thickness                      = 3;
 n20_motor_screws_panel_offset                    = 11.3;
 n20_motor_screws_panel_length                    = 4;
 n20_motor_screw_dia                              = m25_hole_dia;
+n20_motor_screw_bore_dia                         = n20_motor_screw_dia * 2;
+n20_motor_screw_bore_h                           = chassis_counterbore_h;
 
-n20_motor_chassis_y_distance                     = 8;
+n20_motor_chassis_y_distance                     = 0;
 n20_motor_chassis_x_distance                     = -9;
 
 n20_motor_screws_panel_len                       = n20_can_dia
-                                              + n20_motor_bracket_thickness
-                                              * 2
-                                              + n20_motor_screw_dia
-                                              * 2
-                                              + n20_motor_screws_panel_length
-                                              * 2;
+                                                + n20_motor_bracket_thickness
+                                                * 2
+                                                + n20_motor_screw_dia
+                                                * 2
+                                                + n20_motor_screws_panel_length
+                                                * 2;
 // ─────────────────────────────────────────────────────────────────────────────
 // Rear panel: A vertical rear plate with dimensions including two mounting
 // holes for switch buttons.
@@ -1276,8 +1344,8 @@ rear_panel_screw_offset                          = 3;
 // Raspberry Pi dimensions (defaults are for Raspberry PI 5)
 // ─────────────────────────────────────────────────────────────────────────────
 // Y offset for the Raspberry Pi 5 related slots and holes is measured from the end of the chassis.
-rpi_chassis_y_position                           = 82.9;
-rpi_chassis_x_position                           = 31.5;
+rpi_chassis_y_position                           = 0;
+rpi_chassis_x_position                           = -31.5;
 
 // The X and Y dimensions of the screw positions for the Raspberry Pi 5 slot.
 // This forms a square with a screw hole centered on each corner.
@@ -1285,7 +1353,7 @@ rpi_screws_size                                  = [50, 58];
 
 // The diameter of the screw holes for the Raspberry Pi 5 slot.
 rpi_screw_hole_dia                               = m2_hole_dia;
-rpi_screw_cbore_dia                              = 4.2;
+rpi_screw_cbore_dia                              = m2_round_head_dia + 0.1;
 
 rpi_screws_offset                                = m25_hole_dia + 0.4;
 rpi_pin_headers_cols                             = 20;
@@ -1656,11 +1724,14 @@ power_case_bottom_cbore_dia                      = 6.0;
 
 power_case_bottom_cbore_h                        = 1.0;
 
-power_case_chassis_x_offset                      = -0;
-power_case_chassis_y_offset                      = 5;
+power_case_chassis_x_offset                      = 0;
+power_case_chassis_y_offset                      = 0;
 
 power_case_screw_size_offset_x                   = 0;
 power_case_screw_size_offset_y                   = 18;
+
+power_case_standoff_h                            = 10;
+power_case_standoff_thread_h                     = 5;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Power module case dovetail rail parameters
@@ -1709,8 +1780,8 @@ power_case_rail_relief_depth                     = 0.12; // 0.12…0.15
 
 power_lid_height                                 = 24.5;
 power_lid_width                                  = power_case_width
-                                              + power_case_side_wall_thickness
-                                              + power_case_rail_tolerance / 2;
+                                                + power_case_side_wall_thickness
+                                                + power_case_rail_tolerance / 2;
 
 power_lid_thickness                              = 2;
 
@@ -2138,6 +2209,7 @@ steering_servo_gearbox_size                      = [[0.4, 6.09, matte_black],
                                                     [2.45, 4, dark_gold_2, 10],
                                                     [0.05, 2.6, licorice, 8]];
 steering_servo_gearbox_d1                        = 8;
+
 steering_servo_gearbox_d2                        = 6;
 steering_servo_color                             = jet_black;
 steering_servo_cutted_len                        = 3;
@@ -2145,9 +2217,6 @@ steering_servo_cutted_len                        = 3;
 // ─────────────────────────────────────────────────────────────────────────────
 // Steering panel
 // ─────────────────────────────────────────────────────────────────────────────
-
-steering_panel_center_screws_offsets             = [5.5, 12.0];
-steering_panel_center_screw_dia                  = m2_hole_dia;
 
 // The length of the panel that holds the rack and the pins for the steering
 // knuckles at each side
@@ -2170,13 +2239,19 @@ steering_vertical_panel_thickness                = 3;
 // Position of the steering panel relative to the chassis center. This panel
 // houses the rack and pinion assembly implementing Ackermann steering geometry
 // for the wheels.
-steering_panel_y_pos_from_center                 = 65;
+
+steering_panel_distance_from_top                 = 70; // position from the start of the chassis
 steering_panel_hinge_length                      = 10;
+steering_panel_hinge_w                           = 8;
+steering_panel_hinge_x_offset                    = 1;
+steering_panel_hinge_corner_rad                  = 0.5;
 steering_panel_hinge_screw_dia                   = m25_hole_dia;
-steering_panel_hinge_rad                         = min(steering_rack_support_width,
-                                                       steering_panel_hinge_length)
-                                              / 2;
-steering_panel_hinge_screw_distance              = 2;
+steering_panel_hinge_bore_dia                    = steering_panel_hinge_screw_dia * 2;
+steering_panel_hinge_chassis_bore_dia            = steering_panel_hinge_screw_dia * 2.2;
+steering_panel_hinge_bore_h                      = chassis_counterbore_h;
+
+steering_panel_hinge_screw_distance              = 1;
+steering_panel_hinge_screw_x_distance            = 1;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Rack and Pinion
@@ -2262,7 +2337,7 @@ steering_rack_link_linkage_thickness             = steering_rack_link_bearing_be
 
 // The length of the rail in the center of the steering panel that holds the rack
 steering_panel_rail_len                          = steering_panel_length
-                                              - knuckle_dia * 2;
+                                                - knuckle_dia * 2;
 
 steering_panel_rail_rad                          = 0.5;
 
@@ -2301,7 +2376,7 @@ steering_servo_mount_connector_screw_x           = 3;
 
 // Knuckle center along X. Do not edit, used for Ackermann geometry calculations
 steering_x_left_knuckle                          = -steering_panel_length / 2
-                                              + knuckle_dia / 2;
+                                                + knuckle_dia / 2;
 
 // Diameter and width of the tie rod
 tie_rod_outer_dia                                = 14.0;
@@ -2393,7 +2468,7 @@ ultrasonic_solder_blobs_positions                = [26, 10];
 // Parameters for wheels, common for front and rear
 // ─────────────────────────────────────────────────────────────────────────────
 wheel_dia                                        = 42;
-wheel_w                                          = 18.0;
+wheel_w                                          = 20.0;
 wheel_thickness                                  = 2.0;
 wheel_rim_h                                      = 1.2;
 wheel_rim_w                                      = 1;
@@ -2481,13 +2556,13 @@ wheel_tire_groove_depth                          = 3.4;
 
 // center of the left wheel
 wheel_center_offset                              = wheel_w / 2 +
-                                              (wheel_rear_shaft_protrusion_height
-                                               - (knuckle_shaft_dia / 2));
+                                                (wheel_rear_shaft_protrusion_height
+                                                 - (knuckle_shaft_dia / 2));
 
 // distance between centers of the front wheels
 wheels_track_width                               = steering_panel_length
-                                              + (wheel_center_offset * 2)
-                                              - knuckle_shaft_dia / 2;
+                                                + (wheel_center_offset * 2)
+                                                - knuckle_shaft_dia / 2;
 
 // The full lateral length of the knuckle tie-rod arm.
 // This value is used as the side length of the Ackermann trapezoid when computing
@@ -2496,43 +2571,43 @@ steering_arm_full_len = calc_knuckle_connector_full_len(length=knuckle_tie_rod_s
                                                         parent_dia=knuckle_dia,
                                                         outer_d=tie_rod_shaft_knuckle_arm_dia,
                                                         border_w=knuckle_border_w)
-                                              + knuckle_dia / 2
-                                              - knuckle_border_w
-                                              + ((tie_rod_shaft_knuckle_arm_dia - tie_rod_shaft_dia) / 2) / 2;
+                                                + knuckle_dia / 2
+                                                - knuckle_border_w
+                                                + ((tie_rod_shaft_knuckle_arm_dia - tie_rod_shaft_dia) / 2) / 2;
 
 // Do not edit, used for Ackermann geometry calculations
 steering_rack_link_bearing_border_w              = (steering_rack_link_bearing_outer_d
                                                     - steering_rack_link_bearing_d)
-                                              / 2;
+                                                / 2;
 
 // X-coordinate of the steering-rack bearing connector center
 steering_rack_connector_x_pos                    = -steering_rack_teethed_length
-                                              / 2
-                                              - steering_rack_link_bearing_outer_d
-                                              / 2
-                                              + steering_rack_link_bearing_border_w;
+                                                / 2
+                                                - steering_rack_link_bearing_outer_d
+                                                / 2
+                                                + steering_rack_link_bearing_border_w;
 
 // X-axis distance between the kingpin post and the steering-rack bearing connector center
 steering_distance_between_kingpin_and_rack       = abs(steering_x_left_knuckle)
-                                              - abs(steering_rack_connector_x_pos);
+                                                - abs(steering_rack_connector_x_pos);
 
 // The length of the L-bracket part that is connected to the rack
 steering_rack_link_rack_side_h_length            = knuckle_shaft_connector_extra_len
-                                              + knuckle_shaft_connector_dia
-                                              + knuckle_shaft_connector_extra_arm_len
-                                              + steering_rack_link_bearing_outer_d / 2
-                                              + steering_rack_link_bearing_border_w;
+                                                + knuckle_shaft_connector_dia
+                                                + knuckle_shaft_connector_extra_arm_len
+                                                + steering_rack_link_bearing_outer_d / 2
+                                                + steering_rack_link_bearing_border_w;
 
 // The length of the L-shaped rack link that is connected to the knuckle
 steering_rack_link_rack_side_w_length            = steering_distance_between_kingpin_and_rack
-                                              - steering_rack_link_bearing_d
-                                              - steering_rack_link_bearing_border_w;
+                                                - steering_rack_link_bearing_d
+                                                - steering_rack_link_bearing_border_w;
 
 // wheelbase, calculated from the center of the rear axle
-steering_wheelbase_effective                     = abs(-chassis_len / 2
-                                                       + n20_motor_screws_panel_len / 2
-                                                       + n20_motor_chassis_y_distance
-                                                       - steering_panel_y_pos_from_center);
+steering_wheelbase_effective                     = abs(chassis_len
+                                                       - steering_panel_distance_from_top
+                                                       - n20_motor_screws_panel_len / 2
+                                                       - n20_motor_chassis_y_distance);
 
 // The angle of the tie-rod arms that forms the Ackermann trapezoid
 steering_angle_deg                               = atan(abs(steering_x_left_knuckle / steering_wheelbase_effective));
@@ -2548,8 +2623,8 @@ tie_rod_bearing_center_distance                  = calc_isosceles_trapezoid_top_
 
 // Overall tie rod length including bearing landings and offsets
 tie_rod_len                                      = tie_rod_bearing_center_distance
-                                              + tie_rod_bearing_outer_dia
-                                              + tie_rod_bearing_x_offset * 2;
+                                                + tie_rod_bearing_outer_dia
+                                                + tie_rod_bearing_x_offset * 2;
 // Local Variables:
-// c-label-minimum-indentation: 46
+// c-label-minimum-indentation: 48
 // End:

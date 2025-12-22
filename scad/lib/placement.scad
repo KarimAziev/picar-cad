@@ -99,11 +99,13 @@ module columns_children(cols, w, gap, center=false) {
  *
  * ```
  */
-module rows_children(rows, w, gap, center=false) {
+module rows_children(rows, w, gap,
+                     center=false,
+                     reverse=false) {
   rows_params = calc_cols_params(cols=rows, w=w, gap=gap);
   step = rows_params[0];
   total_y = rows_params[1];
-  translate([0, center ? -total_y / 2 : 0, 0]) {
+  translate([0, center ? -total_y / 2 : reverse ? -total_y : 0, 0]) {
     for (i = [0 : rows - 1]) {
       let (by = i * step + w / 2) {
         translate([0, by, 0]) {

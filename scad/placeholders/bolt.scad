@@ -9,6 +9,8 @@ use <../lib/functions.scad>
 use <../lib/shapes3d.scad>
 use <../lib/transforms.scad>
 
+// m2 - 3.5
+
 function default_pitch(d) =
   (d <= 2) ? 0.4 :
   (d <= 3) ? 0.65 :
@@ -87,11 +89,9 @@ module bolt_head(type = "hex", head_d = 9, head_h = 4, shaft_r = 2.5, $fn = 64) 
     // Base (where it meets shaft) will be at z=0 so it sits flush
     top_r = head_d/2;         // small top
     base_r = max(shaft_r, head_d*0.9); // base radius at the plane z=0 (slightly > shaft)
-    // Create cone pointing up from z=0 to z=head_h
-    // Use cylinder with r1=base_r (at z=0) and r2=top_r (at z=head_h)
     difference() {
       translate([0, 0, 0]) {
-        cylinder(h = head_h, r1 = base_r, r2 = top_r, $fn = $fn);
+        cylinder(h = head_h, r1 = top_r, r2 = base_r, $fn = $fn);
       }
 
       translate([0, 0,-0.01]) {
@@ -236,7 +236,7 @@ module bolt_m_pan_phillips(d = 2.5, h = 10,
 // h: axial h of the bolt shank (threaded + optionally unthreaded portion)
 // thread_len: h of threaded portion (<= h)
 // pitch: thread pitch (if undef, default_pitch(d))
-// head_type: "hex", "cap", "countersunk"
+// head_type: "pan" | "hex" | "round" | "countersunk" | "none"
 // head_d: head across-flats (for hex) or diameter for cap
 // head_h: head thickness
 // Parametric bolt module - corrected
@@ -255,7 +255,7 @@ module bolt(d = 2.5,                   // major diameter (mm)
             thread_starts = 2,       // 1 = single-start, 2 = two-start (parallel helices)
             head_type = "pan",       // "pan" | "hex" | "round" | "countersunk" | "none"
             head_d,        // across-flats for hex or diameter for round/countersunk
-            head_h = 0.7 * d,        // head height
+            head_h,        // head height
             unthreaded = 0,          // h at top (next to head) that's unthreaded
             $fn = 64) {
 
@@ -301,7 +301,7 @@ module bolt(d = 2.5,                   // major diameter (mm)
       translate([0, 0, h]) {
         bolt_head(type = head_type,
                   head_d = head_d,
-                  head_h = head_h,
+                  head_h = with_default(head_h, 0.7 * d),
                   shaft_r = minor_r,
                   $fn=$fn);
       };
@@ -338,9 +338,11 @@ head_h = 1.6;
 head_d = 4.8;
 d = 2.5;
 
-bolt(d = d,
-     h = h,
-     threaded = true,
-     head_type = "pan",
-     head_d = head_d,
-     head_h = head_h);
+rotate([0, 0, 0]) {
+  bolt(d = d,
+       h = h,
+       threaded = true,
+       head_type = "round",
+       head_d = head_d,
+       head_h = head_h);
+}

@@ -206,40 +206,66 @@ module power_case_vent(panel_height,
 }
 
 module power_case_assembly(alpha=1,
-                           standoff_h=10,
-                           standoff_thread_h=6,
+                           standoff_h=power_case_standoff_h,
+                           standoff_thread_h=power_case_standoff_thread_h,
                            show_lipo_pack=true,
                            show_lid=true,
                            show_standoffs=true,
-                           case_color=metallic_silver_5) {
+                           case_color=metallic_silver_5,
+                           slot_mode=false,
+                           bolt_visible_h=chassis_thickness
+                           - chassis_counterbore_h) {
   // Placeholder for LiPo pack
 
-  if (show_lipo_pack) {
-    translate([0, 0, power_case_bottom_thickness + 0.1]) {
-      lipo_pack();
-    }
-  }
+  if (slot_mode) {
+    translate([power_case_screw_size_offset_x,
+               power_case_screw_size_offset_y, 0]) {
 
-  if (show_lid) {
-    translate([0, 0, power_case_height + power_lid_height + 0]) {
-      rotate([180, 0, 0]) {
-
-        power_lid(lid_color=case_color);
+      four_corner_children(power_case_bottom_screw_size,
+                           center=true) {
+        counterbore(d=power_case_bottom_screw_dia,
+                    h=chassis_thickness,
+                    bore_h=chassis_counterbore_h,
+                    bore_d=power_case_bottom_cbore_dia,
+                    autoscale_step=0.1,
+                    sink=false,
+                    reverse=false);
       }
     }
-  }
+  } else {
+    translate([0, 0, show_standoffs ? standoff_h + bolt_visible_h
+               + chassis_counterbore_h : 0]) {
+      if (show_lipo_pack) {
+        translate([0, 0, power_case_bottom_thickness + 0.1]) {
+          lipo_pack();
+        }
+      }
 
-  union() {
-    // Power case
-    power_case(case_color=case_color, alpha=alpha);
-    if (show_standoffs) {
-      translate([power_case_screw_size_offset_x, power_case_screw_size_offset_y, 0]) {
+      if (show_lid) {
+        translate([0, 0, power_case_height + power_lid_height + 0]) {
+          rotate([180, 0, 0]) {
 
-        four_corner_children(size=power_case_bottom_screw_size,
-                             center=true) {
-          translate([0, 0, -(standoff_h + standoff_thread_h) + standoff_thread_h]) {
-            standoff(body_h=standoff_h, thread_at_top=true,
-                     thread_h=standoff_thread_h);
+            power_lid(lid_color=case_color);
+          }
+        }
+      }
+
+      union() {
+        // Power case
+        power_case(case_color=case_color, alpha=alpha);
+        if (show_standoffs) {
+          translate([power_case_screw_size_offset_x, power_case_screw_size_offset_y, 0]) {
+
+            four_corner_children(size=power_case_bottom_screw_size,
+                                 center=true) {
+              translate([0, 0, -(standoff_h + standoff_thread_h) + standoff_thread_h]) {
+                standoff(body_h=standoff_h,
+                         thread_at_top=true,
+                         show_bolt=true,
+                         bolt_visible_h=bolt_visible_h,
+                         thread_h=standoff_thread_h);
+              }
+            }
           }
         }
       }
@@ -250,5 +276,6 @@ module power_case_assembly(alpha=1,
 power_case_assembly(show_lipo_pack=false,
                     alpha=1,
                     show_lid=false,
-                    show_standoffs=false,
+                    show_standoffs=true,
+                    slot_mode=false,
                     case_color=blue_grey_carbon);

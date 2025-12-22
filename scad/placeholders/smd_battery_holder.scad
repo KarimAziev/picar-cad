@@ -78,7 +78,6 @@ module smd_battery_holder(height=smd_battery_holder_height,
                           show_contact=true) {
 
   if (amount > 0) {
-
     single_width = smd_battery_holder_full_width(inner_thickness);
 
     total_w = smd_battery_holder_calc_full_w(inner_thickness, amount);
@@ -414,7 +413,9 @@ module smd_battery_contact(width=smd_battery_holder_contact_width,
           translate([0, half_of_front_thickness, 0]) {
             cube_center_x([width, thickness, total_height]);
             translate([0, thickness, 0]) {
-              cube_center_x([outer_size[0], half_of_front_thickness, thickness]);
+              cube_center_x([outer_size[0],
+                             half_of_front_thickness,
+                             thickness]);
               translate([0, half_of_front_thickness, 0]) {
                 difference() {
                   cube_center_x(contact_mount_bottom_size);

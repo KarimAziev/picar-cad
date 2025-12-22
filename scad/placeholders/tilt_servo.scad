@@ -28,7 +28,8 @@ function tilt_servo_height_before_hat() =
 function tilt_servo_gear_height() =
   servo_gear_total_height(tilt_servo_gearbox_size);
 
-module tilt_servo(center=false, servo_color=tilt_servo_color, alpha=1) {
+module tilt_servo(center=false, servo_color=tilt_servo_color, alpha=1,
+                  rotation_angle) {
   servo(size=[tilt_servo_size[0],
               tilt_servo_size[1],
               tilt_servo_size[2]],
@@ -51,7 +52,10 @@ module tilt_servo(center=false, servo_color=tilt_servo_color, alpha=1) {
         gearbox_d2=tilt_servo_gearbox_d2,
         gearbox_x_offset=tilt_servo_gearbox_x_offset,
         gearbox_mode=tilt_servo_gearbox_mode,
-        servo_horn_rotation=($t * ($t > 0.5 ? -90 : 45)) + 45,
+        servo_horn_rotation=is_undef(rotation_angle) ?
+        (($t * ($t > 0.5 ? -90 : 45)) + 45) :
+        rotation_angle,
+
         gearbox_gear_size=tilt_servo_gearbox_size) {
     children();
   }

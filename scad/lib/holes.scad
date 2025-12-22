@@ -164,7 +164,9 @@ module two_x_screws_2d(x=0, d=2.4, fn=360) {
  *   (-0.1) before the counterbore() call (preserving original behavior).
  */
 
-module counterbore_single_slots_by_specs(specs, thickness, cfactor=1.5, default_autoscale_step,
+module counterbore_single_slots_by_specs(specs,
+                                         thickness,
+                                         cfactor=1.5,
                                          sink=false) {
   dia_sizes = map_idx(specs, 0, 0);
   y_spaces = map_idx(specs, 1, 0);
@@ -238,7 +240,6 @@ module counterbore_single_slots_by_specs(specs, thickness, cfactor=1.5, default_
 
 module four_corner_hole_rows(specs,
                              thickness,
-                             default_text_height,
                              default_font,
                              default_size = 4,
                              default_spacing = 1,
@@ -250,8 +251,7 @@ module four_corner_hole_rows(specs,
                              sink=false,
                              center=false,
                              children_by_idx = false,
-                             screw_mode = false,
-                             default_screw_height = false) {
+                             screw_mode = false) {
   sizes = map_idx(specs, 0, []);
   dia_sizes = map_idx(specs, 1, []);
 

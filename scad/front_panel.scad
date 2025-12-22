@@ -101,10 +101,14 @@ module front_panel_connector_screws(reverse_y=false,
   }
 }
 
-module front_panel_connector(w=front_panel_connector_width,
+function front_panel_screw_y_offset(x, y) =
+  - max(front_panel_connector_screw_bore_dia,
+        front_panel_connector_screw_dia) / 2
+  - front_panel_connector_screws_padding_y;
 
+module front_panel_connector(w=front_panel_connector_width,
                              h=front_panel_connector_len,
-                             thickness=front_panel_thickness,) {
+                             thickness=front_panel_thickness) {
   difference() {
     linear_extrude(height=thickness, center=false) {
       difference() {
@@ -124,7 +128,19 @@ module front_panel_connector(w=front_panel_connector_width,
         }
       }
     }
-    front_panel_connector_screws(use_counterbore=true);
+    translate([0,
+               h / 2
+               + front_panel_screw_y_offset(), 0]) {
+      four_corner_children(front_panel_connector_screws_size, center=true) {
+        counterbore(d=front_panel_connector_screw_dia,
+                    h=front_panel_thickness,
+                    bore_d=front_panel_connector_screw_bore_dia,
+                    bore_h=front_panel_connector_screw_bore_h,
+                    autoscale_step=0.1,
+                    reverse=true);
+      }
+    }
+    // front_panel_connector_screws(use_counterbore=true);
   }
 }
 
@@ -347,18 +363,17 @@ module front_panel_printable(spacing=2,
 
 module front_panel_assembly(panel_color="white",
                             show_front_panel=true,
-                            show_ultrasonic=true,
-                            show_front_rear_panel=true) {
+                            show_ultrasonic=false,
+                            show_front_rear_panel=false) {
   bbox = rot_x_bbox_align([front_panel_width,
                            front_panel_height,
                            front_panel_thickness],
                           angle=front_panel_rotation_angle);
-  bbox_w = bbox[0];
 
   if (show_front_panel) {
-    translate([0, -bbox_w + chassis_thickness, 0]) {
+    translate([0, front_panel_connector_len + front_panel_thickness / 2, -bbox[0] / 2]) {
       rotate([0, 180, 0]) {
-        rotate([90, 0, 0]) {
+        rotate([0, 0, 0]) {
           front_panel(colr=panel_color,
                       show_ultrasonic=show_ultrasonic,
                       show_front_rear_panel=show_front_rear_panel);
@@ -368,10 +383,11 @@ module front_panel_assembly(panel_color="white",
   }
 }
 
-color("white") {
-  front_panel_printable(show_front_panel=true,
-                        show_front_rear_panel=false);
-}
+// color("white") {
+//   front_panel_printable(show_front_panel=true,
+//                         show_front_rear_panel=false);
+// }
 
-// front_panel_assembly();
+front_panel_assembly();
+
 // front_panel_main(show_ultrasonic=true, center=false);

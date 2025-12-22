@@ -82,46 +82,52 @@ module steering_system_assembly(rack_color="white",
                                 show_kingpin_posts=true,
                                 show_pinion=true,
                                 show_tie_rod=true,
-                                show_servo=true) {
+                                show_servo=true,
+                                show_knuckles=true,
+                                center_y=true) {
 
-  union() {
-    steering_panel(show_servo=show_servo,
-                   show_pinion=show_pinion,
-                   panel_color=panel_color,
-                   pinion_color=pinion_color,
-                   show_rack=show_rack,
-                   show_servo_mount_panel=show_servo_mount_panel,
-                   show_kingpin_posts=show_kingpin_posts,
-                   show_brackets=show_brackets,
-                   rack_color=rack_color);
+  translate([0, center_y ? 0 : -steering_rack_support_width / 2,
+             steering_rack_support_thickness / 2]) {
+    union() {
+      steering_panel(show_servo=show_servo,
+                     show_pinion=show_pinion,
+                     panel_color=panel_color,
+                     pinion_color=pinion_color,
+                     show_rack=show_rack,
+                     show_servo_mount_panel=show_servo_mount_panel,
+                     show_kingpin_posts=show_kingpin_posts,
+                     show_brackets=show_brackets,
+                     rack_color=rack_color);
 
-    knuckle_rotation_angle = assembly_use_front_steering ? 0 : 180;
+      knuckle_rotation_angle = assembly_use_front_steering ? 0 : 180;
 
-    if (show_distance) {
-      steering_system_distance_between_rack_and_knuckle();
-    }
-
-    rotate([0, 0, knuckle_rotation_angle]) {
-      knuckle_assembly(show_wheel=show_wheels,
-                       show_bearing=show_bearing,
-                       rotation_dir=3.6,
-                       show_tie_rod=show_tie_rod);
-    }
-    rotate([0, 0, knuckle_rotation_angle]) {
-      mirror([1, 0, 0]) {
-        knuckle_assembly(show_wheel=show_wheels,
-                         show_bearing=show_bearing,
-                         rotation_dir=-3.6);
+      if (show_distance) {
+        steering_system_distance_between_rack_and_knuckle();
       }
-    }
+      if (show_knuckles) {
+        rotate([0, 0, knuckle_rotation_angle]) {
+          knuckle_assembly(show_wheel=show_wheels,
+                           show_bearing=show_bearing,
+                           rotation_dir=3.6,
+                           show_tie_rod=show_tie_rod);
+        }
+        rotate([0, 0, knuckle_rotation_angle]) {
+          mirror([1, 0, 0]) {
+            knuckle_assembly(show_wheel=show_wheels,
+                             show_bearing=show_bearing,
+                             rotation_dir=-3.6);
+          }
+        }
+      }
 
-    if (show_ackermann_triangle) {
-      translate([0, 0, knuckle_height + knuckle_pin_lower_height
-                 + steering_rack_support_thickness / 2
-                 + knuckle_pin_stopper_height
-                 + knuckle_bearing_flanged_height]) {
-        color("yellowgreen", alpha=0.2) {
-          ackermann_geometry_triangle();
+      if (show_ackermann_triangle) {
+        translate([0, 0, knuckle_height + knuckle_pin_lower_height
+                   + steering_rack_support_thickness / 2
+                   + knuckle_pin_stopper_height
+                   + knuckle_bearing_flanged_height]) {
+          color("yellowgreen", alpha=0.2) {
+            ackermann_geometry_triangle();
+          }
         }
       }
     }

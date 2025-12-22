@@ -44,6 +44,20 @@ module standoff(thread_d=3,
                 body_d,
                 colr=yellow_2,
                 thread_at_top=true,
+                show_bolt=false,
+                bolt_visible_h=0,
+                bolt_h,
+                bolt_thread_len,      // h of threaded portion (undef -> h)
+                bolt_pitch = undef,           // thread pitch (undef -> default metric)
+                bolt_threaded = true,         // produce thread ridges
+                bolt_thread_depth = undef,    // radial thread depth (undef -> 0.6*pitch)
+                bolt_thread_segments = 120,   // quality of the linear_extrude twist
+                bolt_thread_starts = 2,       // 1 = single-start, 2 = two-start (parallel helices)
+                bolt_head_type = "pan",       // "pan" | "hex" | "round" | "countersunk" | "none"
+                bolt_head_d,        // across-flats for hex or diameter for round/countersunk
+                bolt_head_h,
+                bolt_unthreaded = 0,          // h at top (next to head) that's unthreaded
+
                 $fn=6) {
   module standoff_body() {
     difference() {
@@ -59,18 +73,54 @@ module standoff(thread_d=3,
       }
     }
   }
+
+  module standoff_bolt(height) {
+    if (show_bolt) {
+      bolt(d=thread_d,
+           h=height,
+           thread_len=bolt_thread_len,
+           pitch=bolt_pitch,
+           threaded=bolt_threaded,
+           thread_depth=bolt_thread_depth,
+           thread_segments=bolt_thread_segments,
+           thread_starts=bolt_thread_starts,
+           head_type=bolt_head_type,
+           head_d=bolt_head_d,
+           head_h=bolt_head_h,
+           unthreaded=bolt_unthreaded);
+    }
+  }
   module standoff_thread() {
     color(colr, alpha=1) {
       bolt(d=thread_d, h=thread_h, head_type="none");
     }
   }
   if (thread_at_top) {
+    if (show_bolt) {
+      let (bolt_visible_h = with_default(bolt_visible_h, 0),
+           bolt_h = with_default(bolt_h, bolt_visible_h + body_h)) {
+        translate([0, 0, bolt_h - bolt_visible_h]) {
+          rotate([0, 180, 0]) {
+            standoff_bolt(height=bolt_h);
+          }
+        }
+      }
+    }
+
     standoff_body();
     translate([0, 0, body_h]) {
       standoff_thread();
     }
   } else {
     standoff_thread();
+    if (show_bolt) {
+      let (bolt_visible_h = with_default(bolt_visible_h, 0),
+           bolt_h = with_default(bolt_h, bolt_visible_h + body_h)) {
+        translate([0, 0, body_h + thread_h - (bolt_h - bolt_visible_h)]) {
+          standoff_bolt(height=bolt_h);
+        }
+      }
+    }
     translate([0, 0, thread_h]) {
       standoff_body();
     }
@@ -94,7 +144,21 @@ module standoffs_stack(d,
                        colr=yellow_2,
                        thread_at_top=true,
                        border_color=metallic_gold_2,
-                       fn=6) {
+                       show_bolt=false,
+                       bolt_visible_h=0,
+                       bolt_h,
+                       bolt_thread_len,      // h of threaded portion (undef -> h)
+                       bolt_pitch = undef,           // thread pitch (undef -> default metric)
+                       bolt_threaded = true,         // produce thread ridges
+                       bolt_thread_depth = undef,    // radial thread depth (undef -> 0.6*pitch)
+                       bolt_thread_segments = 120,   // quality of the linear_extrude twist
+                       bolt_thread_starts = 2,       // 1 = single-start, 2 = two-start (parallel helices)
+                       bolt_head_type = "pan",       // "pan" | "hex" | "round" | "countersunk" | "none"
+                       bolt_head_d,        // across-flats for hex or diameter for round/countersunk
+                       bolt_head_h,
+                       bolt_unthreaded = 0,          // h at top (next to head) that's unthreaded
+
+                       fn=6,) {
   standoffs = calc_standoff_params(min_h=min_h, d=d);
   if (!is_undef(standoffs) && len(standoffs[1]) > 0) {
     spec = standoffs[0];
@@ -116,6 +180,19 @@ module standoffs_stack(d,
                      thread_h=0,
                      thread_at_top=thread_at_top,
                      colr=border_color,
+                     show_bolt=show_bolt,
+                     bolt_visible_h=bolt_visible_h,
+                     bolt_h=bolt_h,
+                     bolt_thread_len=bolt_thread_len,
+                     bolt_pitch=bolt_pitch,
+                     bolt_threaded=bolt_threaded,
+                     bolt_thread_depth=bolt_thread_depth,
+                     bolt_thread_segments=bolt_thread_segments,
+                     bolt_thread_starts=bolt_thread_starts,
+                     bolt_head_type=bolt_head_type,
+                     bolt_head_d=bolt_head_d,
+                     bolt_head_h=bolt_head_h,
+                     bolt_unthreaded=bolt_unthreaded,
                      $fn=fn);
           }
           standoff(body_h=body_h,
@@ -123,7 +200,20 @@ module standoffs_stack(d,
                    thread_d=thread_d,
                    thread_h=thread_h,
                    colr=colr,
+                   show_bolt=show_bolt,
                    thread_at_top=thread_at_top,
+                   bolt_visible_h=bolt_visible_h,
+                   bolt_h=bolt_h,
+                   bolt_thread_len=bolt_thread_len,
+                   bolt_pitch=bolt_pitch,
+                   bolt_threaded=bolt_threaded,
+                   bolt_thread_depth=bolt_thread_depth,
+                   bolt_thread_segments=bolt_thread_segments,
+                   bolt_thread_starts=bolt_thread_starts,
+                   bolt_head_type=bolt_head_type,
+                   bolt_head_d=bolt_head_d,
+                   bolt_head_h=bolt_head_h,
+                   bolt_unthreaded=bolt_unthreaded,
                    $fn=fn);
         }
       }
@@ -203,4 +293,5 @@ module standoff_grid(sizes=[[3, 5.20, 5, [20, 15, 10, 9, 8, 6, 5], 6],
   }
 }
 
-standoff_grid();
+// standoff_grid();
+standoff(show_bolt=true, thread_at_top=true, bolt_visible_h=2, body_h=12);

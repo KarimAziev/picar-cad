@@ -327,14 +327,15 @@ module power_lid_xt_90_slot() {
   }
 }
 
-module power_lid(show_switch_button=true,
+module power_lid(show_switch_button=false,
                  show_dc_regulator=true,
                  lid_color=blue_grey_carbon,
                  show_ato_fuse=true,
                  show_voltmeter=true,
                  show_bolts=false,
                  show_atm_side_fuse_holders=true,
-                 echo_wiring_len=true) {
+                 echo_wiring_len=true,
+                 use_toggle_switch=false) {
 
   function contains_name(x, name) =
     is_list(x)
@@ -492,22 +493,23 @@ module power_lid(show_switch_button=true,
     translate([half_of_inner_x, -half_of_inner_y, 0]) {
       power_lid_voltmeters_screw_holes();
     }
-
-    mirror_copy([1, 0, 0]) {
-      translate([power_lid_width / 2 - tumbler_side_cutout_h,
-                 -power_case_length / 2
-                 + power_lid_toggle_switch_cbore_dia / 2
-                 + power_lid_toggle_switch_wall_thickness
-                 + power_lid_toggle_switch_distance_from_y
-                 + toggle_switch_size[0] / 2,
-                 power_lid_toggle_switch_cbore_dia / 2
-                 + max(power_lid_thickness, power_case_rail_height)
-                 + power_lid_toggle_switch_distance_from_bottom]) {
-        rotate([90, 0, 90]) {
-          counterbore(d=power_lid_toggle_switch_dia,
-                      h=tumbler_side_cutout_h + 0.1,
-                      bore_h=tumbler_side_cutout_h / 2,
-                      bore_d=power_lid_toggle_switch_cbore_dia);
+    if (use_toggle_switch) {
+      mirror_copy([1, 0, 0]) {
+        translate([power_lid_width / 2 - tumbler_side_cutout_h,
+                   -power_case_length / 2
+                   + power_lid_toggle_switch_cbore_dia / 2
+                   + power_lid_toggle_switch_wall_thickness
+                   + power_lid_toggle_switch_distance_from_y
+                   + toggle_switch_size[0] / 2,
+                   power_lid_toggle_switch_cbore_dia / 2
+                   + max(power_lid_thickness, power_case_rail_height)
+                   + power_lid_toggle_switch_distance_from_bottom]) {
+          rotate([90, 0, 90]) {
+            counterbore(d=power_lid_toggle_switch_dia,
+                        h=tumbler_side_cutout_h + 0.1,
+                        bore_h=tumbler_side_cutout_h / 2,
+                        bore_d=power_lid_toggle_switch_cbore_dia);
+          }
         }
       }
     }
@@ -519,4 +521,5 @@ power_lid(show_dc_regulator=false,
           show_voltmeter=false,
           show_bolts=false,
           show_ato_fuse=false,
-          show_atm_side_fuse_holders=false);
+          show_atm_side_fuse_holders=false,
+          use_toggle_switch=false);

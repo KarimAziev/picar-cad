@@ -71,14 +71,17 @@ function head_neck_full_tilt_panel_h() =
   + head_neck_tilt_servo_extra_lower_h
   + head_neck_tilt_servo_extra_top_h;
 
-module head_neck(show_tilt_servo=false,
-                 show_head=false,
-                 show_camera=true,
-                 show_pan_servo=false,
-                 show_ir_case=false,
-                 show_ir_led=true,
-                 bracket_color=matte_black,
-                 head_color="white") {
+module head_neck_base(show_tilt_servo=false,
+                      show_head=false,
+                      show_camera=true,
+                      show_pan_servo=false,
+                      show_ir_case=false,
+                      show_ir_led=true,
+                      show_servo_horn=true,
+                      head_z_rotation=0,
+
+                      bracket_color=matte_black,
+                      head_color="white") {
   pan_servo_h = pan_servo_size[2];
   full_pan_h = head_neck_full_pan_panel_h();
   full_tilt_h = head_neck_full_tilt_panel_h();
@@ -120,7 +123,7 @@ module head_neck(show_tilt_servo=false,
                  + pan_servo_hat_thickness / 2]) {
         if (show_pan_servo) {
           rotate([0, 180, 0]) {
-            pan_servo();
+            pan_servo(show_servo_horn=show_servo_horn);
           }
         }
       }
@@ -142,18 +145,21 @@ module head_neck(show_tilt_servo=false,
                + tilt_servo_hat_thickness / 2]) {
 
       if (show_tilt_servo || show_head) {
+
         tilt_servo(center=true, alpha=show_tilt_servo ? 1 : 0) {
           if (show_head) {
             head_centers = side_panel_servo_center();
 
-            translate([-head_centers[0],
-                       -head_centers[1] / 2,
-                       -head_plate_width / 2]) {
-              rotate([0, 90, 0]) {
-                head_mount(head_color=head_color,
-                           show_ir_case=show_ir_case,
-                           show_camera=show_camera,
-                           show_ir_led=show_ir_led);
+            rotate([0, 0, head_z_rotation]) {
+              translate([-head_centers[0],
+                         -head_centers[1] / 2,
+                         -head_plate_width / 2]) {
+                rotate([0, 90, 0]) {
+                  head_mount(head_color=head_color,
+                             show_ir_case=show_ir_case,
+                             show_camera=show_camera,
+                             show_ir_led=show_ir_led);
+                }
               }
             }
           }
@@ -163,6 +169,67 @@ module head_neck(show_tilt_servo=false,
   }
 }
 
-head_neck(show_tilt_servo=true,
+module head_neck(center_pan_servo_slot=false,
+                 show_tilt_servo=true,
+                 show_head=true,
+                 show_camera=true,
+                 show_pan_servo=true,
+                 show_ir_case=false,
+                 show_ir_led=true,
+                 show_servo_horn=true,
+                 bracket_color=matte_black,
+                 head_z_rotation=-40,
+                 head_color="white") {
+
+  module head_neck_mod() {
+    head_neck_base(show_tilt_servo=show_tilt_servo,
+                   show_head=show_head,
+                   show_camera=show_camera,
+                   show_pan_servo=show_pan_servo,
+                   show_ir_case=show_ir_case,
+                   show_ir_led=show_ir_led,
+                   show_servo_horn=show_servo_horn,
+                   bracket_color=bracket_color,
+                   head_color=head_color,
+                   head_z_rotation=head_z_rotation);
+  }
+
+  if (!center_pan_servo_slot) {
+    head_neck_mod();
+  } else {
+    head_x = -head_neck_full_pan_panel_h() / 2
+      - head_neck_tilt_servo_slot_thickness / 2;
+
+    head_full_w = head_neck_full_w();
+    slot_w = (head_full_w - pan_servo_size[0]) / 2;
+
+    extra_head_y = head_neck_pan_servo_assembly_reversed
+      ? -pan_servo_gearbox_d1 - pan_servo_gearbox_d2
+      : -pan_servo_gearbox_d1 / 2;
+
+    head_y =
+      + head_full_w - slot_w + extra_head_y;
+
+    gear_h = pan_servo_gear_height();
+    h_before_hat = pan_servo_height_before_hat();
+    head_z = pan_servo_gearbox_h + (h_before_hat - head_neck_pan_servo_slot_thickness)
+      + gear_h + (servo_horn_h - servo_horn_arm_z_offset);
+
+    translate([head_x,
+               head_y,
+               head_z]) {
+      rotate([0, 0, -90]) {
+        head_neck_mod();
+      }
+    }
+  }
+}
+
+head_neck(center_pan_servo_slot=true,
+          show_tilt_servo=true,
           show_head=true,
-          show_pan_servo=true);
+          show_camera=true,
+          show_pan_servo=true,
+          show_ir_case=false,
+          show_ir_led=true,
+          bracket_color="white");

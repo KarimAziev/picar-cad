@@ -144,12 +144,13 @@ module servo_gearbox(h,
                      max_angle=90,
                      min_angle=-90,
                      servo_horn_rotation=0,
+                     show_servo_horn=true,
                      center=true) {
   r1 = is_undef(r1) ? d1 / 2 : r1;
   r2 = is_undef(r2) ? is_undef(d2) ? r1 * 0.4 : d2 / 2 : r2;
   x_offset = is_undef(x_offset) ? 0 : x_offset;
 
-  total_gear_h = sum([for (i = [0 : len(gear_size) - 1]) gear_size[i][0]]);
+  total_gear_h = servo_gear_total_height(gear_size);
 
   translate([center ? 0 : r1 + r2, 0, 0]) {
     union() {
@@ -192,12 +193,16 @@ module servo_gearbox(h,
             }
           }
         }
-        translate([0, 0, total_gear_h
-                   - servo_horn_arm_z_offset + 0.5]) {
-          rotate([0, 0, servo_horn_rotation]) {
-            servo_horn();
+        if (show_servo_horn) {
+          translate([0, 0,
+                     total_gear_h
+                     - servo_horn_arm_z_offset]) {
+            rotate([0, 0, servo_horn_rotation]) {
+              servo_horn();
+            }
           }
         }
+
         rotate([0, 0, $t * ($t > 0.5 ? min_angle : max_angle)]) {
           children();
         }
@@ -232,6 +237,7 @@ module servo(size,
              max_angle=45,
              min_angle=-90,
              servo_horn_rotation=45,
+             show_servo_horn=true,
              center=false) {
   length = size[0];
   w = size[1];
@@ -272,6 +278,7 @@ module servo(size,
                       max_angle=max_angle,
                       min_angle=min_angle,
                       servo_horn_rotation=servo_horn_rotation,
+                      show_servo_horn=show_servo_horn,
                       alpha=alpha) {
           children();
         }
