@@ -8,30 +8,19 @@
 include <../../parameters.scad>
 include <../../colors.scad>
 use <../../front_panel.scad>
-use <../../rear_panel.scad>
-use <../../placeholders/rpi_5.scad>
-use <../../placeholders/battery_holder.scad>
 use <../../placeholders/ups_hat.scad>
-use <../../motor_brackets/standard_motor_bracket.scad>
-use <../../motor_brackets/n20_motor_bracket.scad>
 use <../../steering_system/steering_panel.scad>
-use <../../steering_system/ackermann_geometry_triangle.scad>
 use <../../steering_system/rack_and_pinion_assembly.scad>
 use <../../placeholders/motor.scad>
 use <../../steering_system/knuckle_shaft.scad>
-use <../../wheels/rear_wheel.scad>
 use <../../lib/functions.scad>
 use <../../lib/shapes2d.scad>
 use <../../lib/holes.scad>
 use <../../lib/trapezoids.scad>
 use <../../lib/transforms.scad>
-use <../../power/power_lid.scad>
 use <../../lib/placement.scad>
 use <../../placeholders/smd_battery_holder.scad>
-use <../../panel_stack/control_panel.scad>
 use <../../lib/debug.scad>
-use <../../panel_stack/fuse_panel.scad>
-use <../../panel_stack/panel_stack.scad>
 use <../../lib/shapes3d.scad>
 use <../../lib/text.scad>
 use <../../placeholders/bolt.scad>
@@ -41,29 +30,29 @@ use <../../placeholders/pan_servo.scad>
 use <util.scad>
 use <chassis_connector.scad>
 
-upper_side_hole_pts = scale_upper_trapezoid_pts(x=chassis_trapezoid_hole_width,
+upper_side_hole_pts            =  scale_upper_trapezoid_pts(x=chassis_trapezoid_hole_width,
                                                 y=chassis_trapezoid_hole_len);
 
 front_panel_chassis_slot_depth = chassis_thickness / 2;
 front_pan_y                    = chassis_upper_len + front_panel_screw_y_offset();
 effective_front_pan_dia        = max(front_panel_connector_screw_bore_dia,
-                                     front_panel_connector_screw_dia) / 2;
+                                  front_panel_connector_screw_dia) / 2;
 front_pan_end                  = front_pan_y - effective_front_pan_dia;
 top_ribbon_hole_pos            = front_pan_end
-  - chassis_pan_servo_top_ribbon_cuttout_h
-  - chassis_upper_front_padding_y;
+                                  - chassis_pan_servo_top_ribbon_cuttout_h
+                                  - chassis_upper_front_padding_y;
 
 head_pos                       = -upper_chassis_holes_border_w * 2
-  - chassis_pan_servo_recesess_y_len
-  - chassis_pan_servo_recesess_thickness / 2
-  + top_ribbon_hole_pos
-  - upper_chassis_holes_border_w
-  - chassis_head_zone_y_offset;
+                                  - chassis_pan_servo_recesess_y_len
+                                  - chassis_pan_servo_recesess_thickness / 2
+                                  + top_ribbon_hole_pos
+                                  - upper_chassis_holes_border_w
+                                  - chassis_head_zone_y_offset;
 
 hole_h                         = chassis_thickness + 1;
 steering_pan_pos               = chassis_upper_len - steering_panel_distance_from_top;
 
-trapezoid_rows_params = calc_cols_params(gap=chassis_pan_servo_side_trapezoid_gap
+trapezoid_rows_params          = calc_cols_params(gap=chassis_pan_servo_side_trapezoid_gap
                                          + upper_chassis_holes_border_w,
                                          cols=chassis_pan_servo_side_trapezoid_rows,
                                          w=chassis_trapezoid_hole_len,);
@@ -75,11 +64,10 @@ top_most_row_params = calc_cols_params(cols=chassis_top_most_holes_rows,
                                        gap=chassis_top_most_holes_gap);
 
 top_most_rects_start           = top_ribbon_hole_pos - top_most_row_params[1]
-  - chassis_top_most_holes_side_y_offset;
+                                  - chassis_top_most_holes_side_y_offset;
 
-top_rib_hole_pts =
-  scale_upper_trapezoid_pts(x=chassis_pan_servo_top_ribbon_cuttout_len / 2,
-                            y=chassis_pan_servo_top_ribbon_cuttout_h);;
+top_rib_hole_pts               = scale_upper_trapezoid_pts(x=chassis_pan_servo_top_ribbon_cuttout_len / 2,
+                                                           y=chassis_pan_servo_top_ribbon_cuttout_h);
 
 module holes_row_along_slanted_side(trapezoid_pts,
                                     rows,
@@ -530,7 +518,6 @@ module chassis_upper_3d(panel_color="white",
                         show_ir_led=false,
                         show_steering_panel=true,
                         pinion_color=matte_black,
-                        show_ackermann_triangle=false,
                         show_wheels=false,
                         show_bearing=false,
                         show_servo_mount_panel=false,
@@ -583,7 +570,6 @@ module chassis_upper_3d(panel_color="white",
       steering_system_assembly(rack_color=rack_color,
                                pinion_color=pinion_color,
                                panel_color=steering_panel_color,
-                               show_ackermann_triangle=show_ackermann_triangle,
                                show_wheels=show_wheels,
                                show_bearing=show_bearing,
                                show_servo_mount_panel=show_servo_mount_panel,
@@ -658,7 +644,6 @@ module chassis_upper(panel_color="white",
                      show_servo=true,
                      show_knuckles=true,
                      head_z_rotation=0,
-                     show_ackermann_triangle=false,
                      show_distance=false,) {
   union() {
     translate([0, chassis_transition_len, 0]) {
@@ -679,7 +664,6 @@ module chassis_upper(panel_color="white",
                        show_ir_led=show_ir_led,
                        show_steering_panel=show_steering_panel,
                        pinion_color=pinion_color,
-                       show_ackermann_triangle=show_ackermann_triangle,
                        show_wheels=show_wheels,
                        show_bearing=show_bearing,
                        show_servo_mount_panel=show_servo_mount_panel,
@@ -727,7 +711,6 @@ module chassis_upper_printable() {
                   show_servo=false,
                   show_knuckles=false,
                   head_z_rotation=0,
-                  show_ackermann_triangle=false,
                   show_distance=false,);
   }
 }

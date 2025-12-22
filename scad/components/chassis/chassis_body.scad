@@ -8,53 +8,53 @@
 include <../../parameters.scad>
 include <../../colors.scad>
 
-use <chassis_connector.scad>
-use <../../front_panel.scad>
-use <../../rear_panel.scad>
-
-use <../../placeholders/rpi_5.scad>
-use <../../placeholders/battery_holder.scad>
-use <../../placeholders/ups_hat.scad>
-use <../../motor_brackets/standard_motor_bracket.scad>
-use <../../motor_brackets/n20_motor_bracket.scad>
-use <../../steering_system/steering_panel.scad>
-use <../../steering_system/ackermann_geometry_triangle.scad>
-use <../../steering_system/rack_and_pinion_assembly.scad>
-use <../../placeholders/motor.scad>
-use <../../steering_system/knuckle_shaft.scad>
-use <../../wheels/rear_wheel.scad>
 use <../../lib/functions.scad>
 use <../../lib/shapes2d.scad>
 use <../../lib/holes.scad>
 use <../../lib/trapezoids.scad>
-use <../../lib/transforms.scad>
-use <../../power/power_lid.scad>
 use <../../lib/placement.scad>
-use <../../placeholders/smd_battery_holder.scad>
-use <../../panel_stack/control_panel.scad>
+use <../../lib/transforms.scad>
 use <../../lib/debug.scad>
-use <../../panel_stack/fuse_panel.scad>
-use <../../panel_stack/panel_stack.scad>
 use <../../lib/shapes3d.scad>
-use <../../lib/text.scad>
+
+use <../../placeholders/rpi_5.scad>
+use <../../placeholders/battery_holder.scad>
+use <../../placeholders/ups_hat.scad>
+use <../../placeholders/motor.scad>
+use <../../placeholders/smd_battery_holder.scad>
 use <../../placeholders/bolt.scad>
+
+use <../../rear_panel.scad>
+
+use <../../motor_brackets/standard_motor_bracket.scad>
+use <../../motor_brackets/n20_motor_bracket.scad>
+
+use <../../panel_stack/fuse_panel.scad>
+use <../../panel_stack/control_panel.scad>
+use <../../panel_stack/panel_stack.scad>
+
+use <../../wheels/rear_wheel.scad>
+
+use <../../power/power_lid.scad>
+use <../../power/power_case.scad>
+
 use <upper_chassis.scad>
-  use <../../power/power_case.scad>
+use <chassis_connector.scad>
 
 rpi_position_x        = -rpi_screws_size[0] / 2 + rpi_chassis_x_position;
 rpi_position_y        = -rpi_len - rpi_chassis_y_position;
 
 power_case_position_y = -power_case_length / 2 - power_case_chassis_y_offset;
 power_case_position_x = chassis_body_w / 2
-  - power_case_width / 2
-  + power_case_chassis_x_offset;
+                         - power_case_width / 2
+                         + power_case_chassis_x_offset;
 
 max_lower_cutout      = max([for (v = chassis_lower_cutout_pts) v[1]]);
 
 body_pts              = concat(chassis_lower_cutout_pts,
-                               [[chassis_body_half_w, chassis_body_len +
-                                 max_lower_cutout],
-                                [0, chassis_body_len  + max_lower_cutout]],);
+                         [[chassis_body_half_w, chassis_body_len +
+                         max_lower_cutout],
+                         [0, chassis_body_len  + max_lower_cutout]],);
 
 module chassis_body_2d() {
   offset_vertices_2d(r=chassis_offset_rad) {
