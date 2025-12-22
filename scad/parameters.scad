@@ -244,8 +244,8 @@ battery_screws_x_offset                          = 24;
 
 battery_holes_y_positions                        = [];
 
-smd_battery_holder_screws_x_offset               = 32;
-smd_battery_holder_screws_y_offset               = 12;
+smd_battery_holder_screws_x_offset               = 31.5;
+smd_battery_holder_screws_y_offset               = 21;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 16850 battery dimensions
@@ -270,7 +270,7 @@ smd_battery_holder_side_thickness                = 1.8;
 
 smd_battery_holder_screw_dia                     = m3_hole_dia;
 smd_battery_holder_screw_recess_size             = [9, 5, 2];
-smd_battery_holder_screws_size                   = [0, 56.5];
+smd_battery_holder_screws_size                   = [0, 56.0];
 smd_battery_holder_batteries_count               = 2;
 smd_battery_holder_inner_cutout_size             = [9.0, 66.6];
 smd_battery_holder_inner_side_h                  = 10;
@@ -279,16 +279,14 @@ smd_battery_holder_chassis_specs                 = [[[[smd_battery_holder_screws
                                                        smd_battery_holder_screws_size[1],],
                                                       smd_battery_holder_screw_dia,
                                                       [smd_battery_holder_length / 2,
-                                                       smd_battery_holder_screws_x_offset,
-                                                       smd_battery_holder_screws_y_offset],
-                                                      []],],
+                                                       smd_battery_holder_screws_x_offset + 2,
+                                                       smd_battery_holder_screws_y_offset],]],
                                                     [[[smd_battery_holder_screws_size[0],
                                                        smd_battery_holder_screws_size[1],],
                                                       smd_battery_holder_screw_dia,
                                                       [smd_battery_holder_length / 2,
                                                        -smd_battery_holder_screws_x_offset,
-                                                       smd_battery_holder_screws_y_offset],
-                                                      []]]];
+                                                       smd_battery_holder_screws_y_offset],]]];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Camera's placeholder dimensions
@@ -337,7 +335,7 @@ chassis_upper_len                                = 105;  // [120.0:300.0]
 chassis_transition_len                           = 25;  // [1.0:100.0]
 
 // Length of the main body (houses motors, batteries, and electronics)
-chassis_body_len                                 = 176; // [120.0:300.0]
+chassis_body_len                                 = 156; // [120.0:300.0]
 
 // Width of the upper chassis (holds the head with cameras and steering system)
 chassis_upper_w                                  = 27;  // [20.0:200.0]
@@ -411,7 +409,7 @@ chassis_trapezoid_hole_x_distance                = 2;
 
 chassis_trapezoid_border_height                  = 1;
 
-chassis_side_hole_border_w                       = 1;
+chassis_side_hole_border_w                       = 0.8;
 chassis_side_hole_border_h                       = 0.8;
 
 // diameter of the pan servo mounting hole at the front of the chassis
@@ -424,31 +422,6 @@ chassis_pan_servo_top_ribbon_cuttout_h           = 2;
 
 upper_chassis_holes_border_w                     = chassis_side_hole_border_w;
 chassis_upper_front_padding_y                    = 2;
-
-chassis_single_holes_specs                       = [];
-
-chassis_rect_holes_specs                         = [[[[10, 20, 4.0], [10, 0, 40]], // third in th efirst center
-                                                     [[10, 20, 4.0], [10, 0, 38]], // second in the center
-                                                     [[10, 20, 4.0], [10, 0, 35]]], // first center
-                   // rectangulars on the both sides
-                                                    [[[10, 15, 4.0], [10,
-                                                                      chassis_body_w / 2 - 6.5,
-                                                                      40]],
-                                                     [[10, 15, 4.0], [10,
-                                                                      chassis_body_w / 2 - 6.5,
-                                                                      40]]],
-                                                    [[[10, 15, 4.0], [10,
-                                                                      -chassis_body_w / 2 + 6.5,
-                                                                      40],],
-                                                     [[10, 15, 4.0], [10,
-                                                                      -chassis_body_w / 2 + 6.5,
-                                                                      40]]]];
-
-chassis_panel_stack_slot_specs                   = [[[[15, 30, 6.0], [0, 35, 0]],], // side hole near fuse stack
-                                                    [[[25, 14, 3.0], [10, -4, 0]], // upper hole under fuse stack
-                                                     [[25, 14, 3.0], [10, -4, 0]],
-                                                     [[35, 14, 3.0], [10, -20, 0]]], // lower hole under fuse stack
-                                                   ];
 
 chassis_head_zone_y_offset                       = 0; // position of the head on Y axle
 
@@ -1321,6 +1294,45 @@ n20_motor_screws_panel_len                       = n20_can_dia
                                                 * 2
                                                 + n20_motor_screws_panel_length
                                                 * 2;
+
+chassis_single_holes_specs                       = [[[8, 0, -5, 0]],
+                                                    [[8, 0, 5, 0]],
+                                                    [[6, 0,
+                                                      chassis_body_w / 2 - n20_motor_screws_panel_offset
+                                                      - n20_can_height, -40]],
+                                                    [[6, 30.2,
+                                                      chassis_body_w / 2 - n20_motor_screws_panel_offset
+                                                      - n20_can_height, -30]],
+                                                    [[6.0, 30.2,
+                                                      -chassis_body_w / 2 + n20_motor_screws_panel_offset
+                                                      + n20_can_height, -40]],
+                                                    [[6.0, 30.2,
+                                                      -chassis_body_w / 2 + n20_motor_screws_panel_offset
+                                                      + n20_can_height, -30]]];
+
+chassis_rect_holes_specs                         = [[[[10, 20, 4.0], [10, 0, 40]], // third in the center
+                                                     [[10, 20, 4.0], [10, 0, 38]], // second in the center
+                                                     [[10, 20, 4.0], [10, 0, 35]]], // first in the center
+                   // rectangulars on the both sides
+                                                    [[[10, 15, 4.0], [10,
+                                                                      chassis_body_w / 2 - 6.5,
+                                                                      40]],
+                                                     [[10, 15, 4.0], [10,
+                                                                      chassis_body_w / 2 - 6.5,
+                                                                      40]]],
+                                                    [[[10, 15, 4.0], [10,
+                                                                      -chassis_body_w / 2 + 6.5,
+                                                                      40],],
+                                                     [[10, 15, 4.0], [10,
+                                                                      -chassis_body_w / 2 + 6.5,
+                                                                      40]]]];
+
+chassis_panel_stack_slot_specs                   = [[[[15, 30, 6.0], [14, 35, 0]],  // side hole near fuse stack
+                                                     [[32, 15, 3.0], [0, 47.2, 0]]], // hole under left smd battery
+                                                    [[[25, 14, 3.0], [10, -4, 0]], // upper hole under fuse stack
+                                                     [[25, 14, 3.0], [10, -4, 0]], // lower hole under fuse stack
+                                                     [[35, 14, 3.0], [10, -22, 0]]], // hole under right smd battery
+                                                   ];
 // ─────────────────────────────────────────────────────────────────────────────
 // Rear panel: A vertical rear plate with dimensions including two mounting
 // holes for switch buttons.
@@ -1345,7 +1357,7 @@ rear_panel_screw_offset                          = 3;
 // ─────────────────────────────────────────────────────────────────────────────
 // Y offset for the Raspberry Pi 5 related slots and holes is measured from the end of the chassis.
 rpi_chassis_y_position                           = 0;
-rpi_chassis_x_position                           = -31.5;
+rpi_chassis_x_position                           = -32.5;
 
 // The X and Y dimensions of the screw positions for the Raspberry Pi 5 slot.
 // This forms a square with a screw hole centered on each corner.

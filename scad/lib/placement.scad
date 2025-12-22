@@ -131,6 +131,43 @@ module vent_slots_panel(w, h, z, slot_w, slot_gap, slot_h, rows) {
   }
 }
 
+module cube_path(specs) {
+  sizes = map_idx(specs, 0, [0, 0, 0, 0]);
+  y_sizes = map_idx(sizes, 1, 0);
+
+  offsets = map_idx(specs, 1, [0, 0, 0]);
+  y_gaps = map_idx(offsets, 0, 0);
+  x_offsets = map_idx(offsets, 1, 0);
+  y_offsets = map_idx(offsets, 2, 0);
+  z_offsets = map_idx(offsets, 3, 0);
+
+  for (i = [0 : len(specs) - 1]) {
+    let (spec=specs[i],
+         prev_y_size= i > 0 ? sum(y_sizes, i) : 0,
+         prev_y_space=i > 0 ? sum(y_gaps, i) : 0,
+         y = prev_y_size + prev_y_space) {
+
+      let (x_offset = x_offsets[i],
+           y_offset = y_offsets[i],
+           z_offset = z_offsets[i]) {
+
+        $spec = spec;
+        $i = i;
+
+        translate([x_offset, y + y_offset, z_offset]) {
+          if (!$children) {
+            translate([-sizes[i][0] / 2, 0, 0]) {
+              cube(size=sizes[i]);
+            }
+          } else {
+            children();
+          }
+        }
+      }
+    }
+  }
+}
+
 /**
  * Renders a sequence of rounded rectangular holes (or rectangular counter-bores)
  * laid out along the Y axis.
@@ -165,9 +202,9 @@ module vent_slots_panel(w, h, z, slot_w, slot_gap, slot_h, rows) {
  *                   placement of subsequent holes (useful for intended overlaps).
  *         z_offset: local Z translation for this hole (optional).
  *
- *     - recess_spec? (optional): [ recess_x, recess_y, recess_thickness?, reverse? ]
+ *     - recess_spec? (optional): [ recess_x, recess_y, recess_h?, reverse? ]
  *         recess_x, recess_y : size of the rectangular recess (larger than main size)
- *         recess_thickness? : depth/thickness of the recess (optional - a sensible
+ *         recess_h? : depth/thickness of the recess (optional - a sensible
  *                            default is chosen if omitted)
  *         reverse?         : boolean. If true, the recess is positioned at the
  *                            opposite face (i.e. reversed along Z).
@@ -236,26 +273,24 @@ module rounded_rect_slots(specs,
           if (!$children) {
             if (rotation) {
               rotate(rotation) {
-                rounded_rect_recess(size=sizes[i],
-                                    recess_size=recess_spec,
-                                    r=sizes[i][2] + (is_undef(sizes[i][3])
-                                                     ? default_r_tolerance
-                                                     : sizes[i][3]),
-                                    center=center,
-                                    recess_thickness=recess_spec[2],
-                                    recess_reverse=recess_spec[3],
-                                    thickness=thickness);
+                rect_slot(size=sizes[i],
+                          recess_size=recess_spec,
+                          r=sizes[i][2] + with_default(sizes[i][3],
+                                                       default_r_tolerance),
+                          center=center,
+                          recess_h=recess_spec[2],
+                          reverse=recess_spec[3],
+                          h=thickness);
               }
             } else {
-              rounded_rect_recess(size=sizes[i],
-                                  recess_size=recess_spec,
-                                  recess_thickness=recess_spec[2],
-                                  r=sizes[i][2] + (is_undef(sizes[i][3])
-                                                   ? default_r_tolerance
-                                                   : sizes[i][3]),
-                                  center=center,
-                                  recess_reverse=recess_spec[3],
-                                  thickness=thickness);
+              rect_slot(size=sizes[i],
+                        recess_size=recess_spec,
+                        recess_h=recess_spec[2],
+                        r=sizes[i][2] + with_default(sizes[i][3],
+                                                     default_r_tolerance),
+                        center=center,
+                        reverse=recess_spec[3],
+                        h=thickness);
             }
           }
 
@@ -272,39 +307,5 @@ module rounded_rect_slots(specs,
   }
 }
 
-module cube_path(specs) {
-  sizes = map_idx(specs, 0, [0, 0, 0, 0]);
-  y_sizes = map_idx(sizes, 1, 0);
-
-  offsets = map_idx(specs, 1, [0, 0, 0]);
-  y_gaps = map_idx(offsets, 0, 0);
-  x_offsets = map_idx(offsets, 1, 0);
-  y_offsets = map_idx(offsets, 2, 0);
-  z_offsets = map_idx(offsets, 3, 0);
-
-  for (i = [0 : len(specs) - 1]) {
-    let (spec=specs[i],
-         prev_y_size= i > 0 ? sum(y_sizes, i) : 0,
-         prev_y_space=i > 0 ? sum(y_gaps, i) : 0,
-         y = prev_y_size + prev_y_space) {
-
-      let (x_offset = x_offsets[i],
-           y_offset = y_offsets[i],
-           z_offset = z_offsets[i]) {
-
-        $spec = spec;
-        $i = i;
-
-        translate([x_offset, y + y_offset, z_offset]) {
-          if (!$children) {
-            translate([-sizes[i][0] / 2, 0, 0]) {
-              cube(size=sizes[i]);
-            }
-          } else {
-            children();
-          }
-        }
-      }
-    }
-  }
+module slot_cols(specs, thickness) {
 }

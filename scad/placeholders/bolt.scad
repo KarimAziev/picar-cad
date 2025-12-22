@@ -21,6 +21,26 @@ function default_pitch(d) =
   (d <= 10) ? 1.5 :
   (d <= 12) ? 1.75 : 2.0;
 
+// function default_bolt_head_h(d, type) =
+//   (d <= 2) ? 0.4 :
+//   (d <= 3) ? 0.65 :
+//   (d <= 4) ? 0.7 :
+//   (d <= 5) ? 0.8 :
+//   (d <= 6) ? 1.0 :
+//   (d <= 8) ? 1.25 :
+//   (d <= 10) ? 1.5 :
+//   (d <= 12) ? 1.75 : 2.0;
+
+// function default_bolt_head_d(d) =
+//   (d <= 2) ? 0.4 :
+//   (d <= 3) ? 0.65 :
+//   (d <= 4) ? 0.7 :
+//   (d <= 5) ? 0.8 :
+//   (d <= 6) ? 1.0 :
+//   (d <= 8) ? 1.25 :
+//   (d <= 10) ? 1.5 :
+//   (d <= 12) ? 1.75 : 2.0;
+
 // create a triangular helical ridge via linear_extrude(..., twist=...)
 // major: outer thread diameter; depth: radial height of triangular profile
 // start_phase: rotate the profile around Z before twisting (degrees)

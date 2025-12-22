@@ -225,12 +225,12 @@ module power_lid_atm_fuse_placeholders(specs=power_lid_side_wall_1_atm_fuse_spec
       translate([-0.1, 0, max_h / 2 + power_lid_thickness]) {
         if (slot_mode) {
           rounded_rect_slots(specs=specs,
-                             thickness=thickness + 0.2,
+                             thickness=thickness,
                              rotation=[0, 90, 0],
                              center=true);
         } else {
           rounded_rect_slots(specs=specs,
-                             thickness=thickness + 0.2,
+                             thickness=thickness,
                              center=true,
                              rotation=[0, 0, -90]) {
 
@@ -366,8 +366,9 @@ module power_lid(show_switch_button=false,
                                     thickness=power_lid_thickness);
             }
             for (specs=power_lid_cube_holes) {
+
               rounded_rect_slots(specs=specs,
-                                 thickness=power_lid_thickness + 0.1);
+                                 thickness=power_lid_thickness);
             }
           }
           translate([half_of_inner_x

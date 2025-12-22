@@ -15,7 +15,6 @@ module pin_header_item(base_size,
   pin_height = pin_size[2];
 
   union() {
-
     color(base_colr) {
       cube(base_size);
     }

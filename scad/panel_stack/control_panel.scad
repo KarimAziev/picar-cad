@@ -14,6 +14,7 @@ use <../placeholders/standoff.scad>
 use <../lib/placement.scad>
 use <../lib/transforms.scad>
 use <../lib/functions.scad>
+use <../placeholders/bolt.scad>
 
 sizes                   = map_idx(control_panel_switch_button_specs, 0);
 thread_specs            = map_idx(control_panel_switch_button_specs, 1);
@@ -138,6 +139,10 @@ module control_panel(specs=control_panel_switch_button_specs,
                      show_standoff=true,
                      center=true,
                      min_standoff_h=standoff_desired_body_h,
+                     show_bolt=true,
+                     bolt_head_type="hex",
+                     bolt_color=matte_black,
+                     bolt_visible_h=chassis_thickness - standoff_bore_h,
                      panel_color = white_snow_1,
                      size=[full_panel_width, full_panel_len],
                      screws_size=panel_screw_size) {
@@ -186,7 +191,11 @@ module control_panel(specs=control_panel_switch_button_specs,
 
             standoffs_stack(d=panel_stack_bolt_dia,
                             min_h=min_standoff_h,
-                            thread_at_top=true);
+                            thread_at_top=true,
+                            show_bolt=show_bolt,
+                            bolt_color=bolt_color,
+                            bolt_visible_h=bolt_visible_h,
+                            bolt_head_type=bolt_head_type,);
           }
         }
       }

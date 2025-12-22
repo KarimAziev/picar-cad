@@ -14,6 +14,7 @@ use <functions.scad>
 use <debug.scad>
 use <text.scad>
 use <../placeholders/bolt.scad>
+use <shapes2d.scad>
 
 module counterbore(h,
                    d,
@@ -29,7 +30,7 @@ module counterbore(h,
   auto_scale = !is_undef(autoscale_step) && autoscale_step != 0;
   cbore_h = auto_scale ? bore_h + autoscale_step : bore_h;
 
-  module main_hole() {
+  module main_slot() {
     cylinder(h=auto_scale
              ? h + (autoscale_step * 2)
              : h,
@@ -61,10 +62,10 @@ module counterbore(h,
              ? 0
              : -h / 2]) {
     if (!auto_scale) {
-      main_hole();
+      main_slot();
     } else {
       translate([0, 0, -autoscale_step]) {
-        main_hole();
+        main_slot();
       }
     }
 
@@ -75,6 +76,85 @@ module counterbore(h,
       cbore_hole();
     }
   };
+}
+
+module rect_slot(h,
+                 recess_h,
+                 size,
+                 recess_size,
+                 autoscale_step = 0.1,
+                 r,
+                 r_factor=0.3,
+                 fn=40,
+                 reverse=false,
+                 center=false) {
+
+  slot_x = size[0];
+  slot_y = size[1];
+  recess_size = with_default(recess_size, []);
+
+  recess_enabled = (!is_undef(recess_size[0])
+                    || !is_undef(recess_size[1])) &&
+    (with_default(recess_size[0], 0) > slot_x
+     || with_default(recess_size[1], 0) > slot_y);
+
+  auto_scale = !is_undef(autoscale_step) && autoscale_step != 0;
+  recess_x = recess_enabled
+    ? max(with_default(recess_size[0], 0), slot_x)
+    : recess_size[0];
+  recess_y = recess_enabled
+    ? max(with_default(recess_size[1], 0), slot_y)
+    : recess_size[1];
+
+  recess_base_h = with_default(recess_h, max(1, h / 2.2));
+
+  recess_z = !reverse
+    ? h - recess_base_h
+    : auto_scale
+    ? -autoscale_step
+    : 0;
+
+  module main_slot() {
+    linear_extrude(height=auto_scale
+                   ? h + (autoscale_step * 2)
+                   : h,
+                   center=false) {
+      rounded_rect(size=[slot_x, slot_y],
+                   r_factor=r_factor,
+                   fn=fn,
+                   r=r,
+                   center=true);
+    }
+  }
+
+  translate([center ? 0
+             : (recess_enabled ? recess_x / 2 : slot_x / 2),
+             center ? 0 : (recess_enabled ? recess_y / 2 : slot_y / 2),
+             0]) {
+    union() {
+
+      if (!auto_scale) {
+        main_slot();
+      } else {
+        translate([0, 0, -autoscale_step]) {
+          main_slot();
+        }
+      }
+
+      if (recess_enabled) {
+        translate([0, 0, recess_z]) {
+          linear_extrude(height=recess_base_h +
+                         (auto_scale ? autoscale_step : 0), center=false) {
+            rounded_rect(size=[recess_x, recess_y],
+                         r_factor=r_factor,
+                         r=r,
+                         fn=fn,
+                         center=true);
+          }
+        }
+      }
+    }
+  }
 }
 
 /**
@@ -284,8 +364,7 @@ module four_corner_hole_rows(specs,
          screw_spec = with_default(screw_mode_specs[i], []),
          bolt_type = with_default(screw_spec[0], "pan"),
          bolt_h = with_default(screw_spec[1], thickness + 2),
-         bolt_head_h = with_default(screw_spec[2], 2),
-         bolt_head_d = with_default(screw_spec[3], dia * 1.5),) {
+         bolt_head_h = with_default(screw_spec[2], 2)) {
 
       translate([x - (center ? 0 : x_sizes[i] / 2), y + y_offset, 0]) {
         $spec = spec;
@@ -342,4 +421,33 @@ module four_corner_hole_rows(specs,
       }
     }
   }
+}
+
+difference() {
+  translate([0, 0, 1.5]) {
+    cube([20, 30, 3], center=true);
+  }
+  rect_slot(size=[10, 20],
+            recess_size=[12, 25],
+            h=3,
+            reverse=false,
+            autoscale_step=1,
+            center=true);
+}
+
+translate([100, 0, 0]) {
+  #counterbore(h=3,
+               d=3,
+               bore_d=6,
+               bore_h=2,
+               sink=false,
+               fn=100,
+               autoscale_step=1,
+               reverse=false);
+  #rect_slot(size=[10, 20],
+             recess_size=[12, 25],
+             h=3,
+             reverse=false,
+             autoscale_step=1,
+             center=false,);
 }

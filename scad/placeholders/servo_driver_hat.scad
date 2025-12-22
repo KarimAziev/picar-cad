@@ -273,6 +273,7 @@ module servo_driver_hat(show_standoff=true, center=true) {
            step_len  = (servo_driver_hat_side_pin_rows > 1)
            ? (end_len - start_len) / (servo_driver_hat_side_pin_rows - 1)
            : 0) {
+
         translate([half_of_w + servo_driver_hat_side_header_height,
                    -total_y / 2,
                    h + step_z]) {
@@ -283,7 +284,8 @@ module servo_driver_hat(show_standoff=true, center=true) {
                 for (r = [0 : servo_driver_hat_side_pin_rows - 1]) {
                   let (length = (servo_driver_hat_side_pin_rows > 1)
                        ? start_len + r
-                       * step_len : end_len) {
+                       * step_len : end_len,
+                       l_len = (step_z * (r + 1)) + step_z) {
                     translate([0, 0, step_z * r]) {
                       rotate([0, -90, 0]) {
                         pin_headers(cols=servo_driver_hat_side_pin_cols,
@@ -292,17 +294,18 @@ module servo_driver_hat(show_standoff=true, center=true) {
                                     header_width=rpi_pin_header_width,
                                     header_height=servo_driver_hat_side_header_height,
                                     pin_height=length,
-                                    l_len=(step_z * (r + 1)) + step_z,
+                                    l_len=l_len,
                                     z_offset=z_offset,
                                     p=0.65,
                                     center=true) {
-                          let (idx = $y + (i * servo_driver_hat_side_pins_headers_count)) {
+                          let (idx = $y + (i * servo_driver_hat_side_pins_headers_count),
+                               text_h = 0.2) {
                             if (r == 0) {
-                              translate([0, 0, length]) {
+                              translate([-servo_driver_hat_side_header_height + text_h, 0, length]) {
                                 rotate([0, -90, 0]) {
                                   rotate([0, 180, -90]) {
                                     color("white", alpha=1) {
-                                      linear_extrude(height=0.1, center=false) {
+                                      linear_extrude(height=text_h, center=false) {
                                         text(str(idx), size=1);
                                       }
                                     }

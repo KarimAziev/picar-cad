@@ -56,6 +56,7 @@ module standoff(thread_d=3,
                 bolt_head_type = "pan",       // "pan" | "hex" | "round" | "countersunk" | "none"
                 bolt_head_d,        // across-flats for hex or diameter for round/countersunk
                 bolt_head_h,
+                bolt_color,
                 bolt_unthreaded = 0,          // h at top (next to head) that's unthreaded
 
                 $fn=6) {
@@ -76,18 +77,20 @@ module standoff(thread_d=3,
 
   module standoff_bolt(height) {
     if (show_bolt) {
-      bolt(d=thread_d,
-           h=height,
-           thread_len=bolt_thread_len,
-           pitch=bolt_pitch,
-           threaded=bolt_threaded,
-           thread_depth=bolt_thread_depth,
-           thread_segments=bolt_thread_segments,
-           thread_starts=bolt_thread_starts,
-           head_type=bolt_head_type,
-           head_d=bolt_head_d,
-           head_h=bolt_head_h,
-           unthreaded=bolt_unthreaded);
+      color(bolt_color, alpha=1) {
+        bolt(d=thread_d,
+             h=height,
+             thread_len=bolt_thread_len,
+             pitch=bolt_pitch,
+             threaded=bolt_threaded,
+             thread_depth=bolt_thread_depth,
+             thread_segments=bolt_thread_segments,
+             thread_starts=bolt_thread_starts,
+             head_type=bolt_head_type,
+             head_d=bolt_head_d,
+             head_h=bolt_head_h,
+             unthreaded=bolt_unthreaded);
+      }
     }
   }
   module standoff_thread() {
@@ -157,7 +160,7 @@ module standoffs_stack(d,
                        bolt_head_d,        // across-flats for hex or diameter for round/countersunk
                        bolt_head_h,
                        bolt_unthreaded = 0,          // h at top (next to head) that's unthreaded
-
+                       bolt_color,
                        fn=6,) {
   standoffs = calc_standoff_params(min_h=min_h, d=d);
   if (!is_undef(standoffs) && len(standoffs[1]) > 0) {
@@ -175,6 +178,7 @@ module standoffs_stack(d,
         translate([0, 0, z]) {
           if (i > 0) {
             standoff(body_h=0.4,
+                     bolt_color=bolt_color,
                      body_d=body_d + 0.1,
                      thread_d=thread_d,
                      thread_h=0,
@@ -198,6 +202,7 @@ module standoffs_stack(d,
           standoff(body_h=body_h,
                    body_d=body_d,
                    thread_d=thread_d,
+                   bolt_color=bolt_color,
                    thread_h=thread_h,
                    colr=colr,
                    show_bolt=show_bolt,

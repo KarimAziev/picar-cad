@@ -35,6 +35,7 @@ use <../lib/functions.scad>
 use <../lib/shapes2d.scad>
 use <../lib/shapes3d.scad>
 use <../lib/holes.scad>
+use <../placeholders/bolt.scad>
 
 function n20_motor_width() = n20_can_dia + n20_motor_bracket_thickness * 2;
 
@@ -68,13 +69,14 @@ module n20_motor_with_screw_holes_positions() {
 
 module n20_motor_screw_holes_3d(reverse=false,
                                 h,
+                                sink=false,
                                 bore_h) {
   n20_motor_with_screw_holes_positions() {
     counterbore(h=h,
                 d=n20_motor_screw_dia,
                 bore_d=n20_motor_screw_bore_dia,
                 bore_h=(is_undef(bore_h) ? h / 2 : bore_h),
-                sink=false,
+                sink=sink,
                 fn=100,
                 reverse=reverse);
   }
@@ -104,7 +106,9 @@ module n20_motor_screws_panel() {
             }
           }
         }
-        n20_motor_screw_holes_3d(h=effective_h);
+        n20_motor_screw_holes_3d(h=effective_h,
+                                 sink=false,
+                                 reverse=true);
       }
     }
   }
@@ -141,11 +145,39 @@ module n20_motor_bracket() {
   }
 }
 
-module n20_motor_assembly(show_motor=true, show_wheel=false) {
+module n20_motor_assembly(show_motor=true,
+                          show_wheel=false,
+                          show_bolt=true,
+                          bolt_head_type="pan",
+                          bolt_color=metallic_silver_1,
+                          bolt_head_h=m25_pan_head_h,
+                          bolt_h=chassis_thickness + n20_motor_screws_panel_thickness() + 4) {
   union() {
     color(matte_black) {
       n20_motor_bracket();
     }
+    if (show_bolt) {
+
+      h = n20_can_height / 2;
+      x_offst = n20_motor_screws_panel_x_offset();
+
+      color(bolt_color, alpha=1) {
+        translate([x_offst + bolt_h, 0, h]) {
+          rotate([90, 0, 90]) {
+            n20_motor_with_screw_holes_positions() {
+
+              rotate([0, 180, 0]) {
+                bolt(h=bolt_h,
+                     head_type=bolt_head_type,
+                     head_h=bolt_head_h,
+                     d=n20_motor_screw_dia);
+              }
+            }
+          }
+        }
+      }
+    }
+
     if (show_motor) {
       translate([0, 0, -n20_shaft_height - n20_reductor_height]) {
         n20_motor();

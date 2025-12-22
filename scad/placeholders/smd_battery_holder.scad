@@ -15,6 +15,7 @@ use <../lib/transforms.scad>
 use <../lib/trapezoids.scad>
 use <../lib/placement.scad>
 use <../lib/functions.scad>
+use <bolt.scad>
 
 function smd_battery_holder_full_len(bottom_thickness) = battery_height + bottom_thickness * 2;
 function smd_battery_holder_full_width(inner_thickness) = battery_dia + inner_thickness * 2;
@@ -74,10 +75,14 @@ module smd_battery_holder(height=smd_battery_holder_height,
                           inner_hook_y_position=smd_battery_holder_contact_inner_hook_cutout_y_position,
                           outer_hook_cutout_size=smd_battery_holder_contact_outer_hook_cutout_size,
                           outer_bottom_cutout_size=smd_battery_holder_contact_outer_bottom_cutout_size,
-                          show_battery=true,
-                          show_contact=true) {
+
+                          show_battery=false,
+                          show_contact=true,
+                          show_bolt=true,
+                          bolt_visible_h = chassis_thickness + 4) {
 
   if (amount > 0) {
+
     single_width = smd_battery_holder_full_width(inner_thickness);
 
     total_w = smd_battery_holder_calc_full_w(inner_thickness, amount);
@@ -180,6 +185,15 @@ module smd_battery_holder(height=smd_battery_holder_height,
           }
         }
       }
+      if (show_bolt) {
+        let (bolt_h = bottom_thickness + bolt_visible_h) {
+          translate([0, 0, -bolt_h + bottom_thickness]) {
+            four_corner_children(size=screws_size) {
+              bolt(d=screw_dia, h=bolt_h);
+            }
+          }
+        }
+      }
     }
   }
 }
@@ -255,16 +269,16 @@ module smd_battery_holder_single_assembly(full_width,
               cylinder(d=full_dia,
                        h=max(battery_height + battery_positive_pole_height,
                              inner_cutout_size[1],
-                             full_len - front_rear_thickness * 2),
+                             full_len - front_rear_thickness * 2) + 0.01,
                        center=true,
-                       $fn=360);
+                       $fn=10);
             }
           }
         }
       }
       if (show_contact) {
         mirror_copy([0, 1, 0]) {
-          translate([0, full_len / 2 - front_rear_thickness - 0.1, 0]) {
+          translate([0, full_len / 2 - front_rear_thickness + 0.01, 0.01]) {
             smd_battery_contact(width=contact_width,
                                 total_height=height,
                                 thickness=contact_thickness,
@@ -372,7 +386,7 @@ module smd_battery_contact(width=smd_battery_holder_contact_width,
                            contact_mount_bottom_size=[smd_battery_holder_contact_width,
                                                       4.54,
                                                       smd_battery_holder_contact_thickness],
-                           angle = 10) {
+                           angle = 0) {
 
   half_of_front_thickness = front_rear_thickness / 2;
   half_of_inner_cutout_h = inner_cutout_size[2] / 2;
@@ -381,47 +395,42 @@ module smd_battery_contact(width=smd_battery_holder_contact_width,
                            half_of_inner_cutout_h],
                           angle=angle);
 
-  translate([0, 0, 0]) {
-    color(metallic_yellow_1, alpha=1) {
-      union() {
-
-        hull() {
-          translate([0, bbox[2] + thickness, total_height - bbox[5]]) {
-            rotate([-angle, 0, 0]) {
-              translate([0, 0, 0]) {
-                cube_center_x([width, thickness, half_of_inner_cutout_h]);
-              }
-            }
-          }
-          translate([0, 0, total_height - bbox[5] * 2]) {
-            rotate([angle, 0, 0]) {
-              translate([0, 0, 0]) {
-                cube_center_x([width, thickness, half_of_inner_cutout_h]);
-              }
+  color(metallic_yellow_1, alpha=1) {
+    union() {
+      hull() {
+        translate([0, bbox[2] + thickness, total_height - bbox[5]]) {
+          rotate([-angle, 0, 0]) {
+            translate([0, 0, 0]) {
+              cube_center_x([width, thickness, half_of_inner_cutout_h]);
             }
           }
         }
-
-        translate([0, 0, total_height - inner_cutout_size[2]]) {
-          cube_center_x([width, thickness, inner_cutout_size[2]]);
-        }
-
-        translate([0, thickness, 0]) {
-          translate([0, 0, total_height - thickness]) {
-            cube_center_x([width, half_of_front_thickness, thickness]);
+        translate([0, 0, total_height - bbox[5] * 2]) {
+          rotate([angle, 0, 0]) {
+            translate([0, 0, 0]) {
+              cube_center_x([width, thickness, half_of_inner_cutout_h]);
+            }
           }
-          translate([0, half_of_front_thickness, 0]) {
-            cube_center_x([width, thickness, total_height]);
-            translate([0, thickness, 0]) {
-              cube_center_x([outer_size[0],
-                             half_of_front_thickness,
-                             thickness]);
-              translate([0, half_of_front_thickness, 0]) {
-                difference() {
-                  cube_center_x(contact_mount_bottom_size);
-                  translate([0, contact_mount_bottom_size[1] / 2, -0.5]) {
-                    cylinder(r=contact_hole_d / 2, h=thickness + 1);
-                  }
+        }
+      }
+
+      translate([0, 0, total_height - inner_cutout_size[2]]) {
+        cube_center_x([width, thickness, inner_cutout_size[2]]);
+      }
+
+      translate([0, thickness, 0]) {
+        translate([0, 0, total_height - thickness]) {
+          cube_center_x([width, half_of_front_thickness, thickness]);
+        }
+        translate([0, half_of_front_thickness, 0]) {
+          cube_center_x([width, thickness, total_height]);
+          translate([0, thickness, 0]) {
+            cube_center_x([outer_size[0], half_of_front_thickness, thickness]);
+            translate([0, half_of_front_thickness, 0]) {
+              difference() {
+                cube_center_x(contact_mount_bottom_size);
+                translate([0, contact_mount_bottom_size[1] / 2, -0.5]) {
+                  cylinder(r=contact_hole_d / 2, h=thickness + 1);
                 }
               }
             }

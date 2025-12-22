@@ -130,6 +130,10 @@ module fuse_panel(show_fusers=false,
                   panel_color=white_snow_1,
                   size=[full_panel_width, full_panel_len],
                   screws_size=panel_screw_size,
+                  show_bolt=true,
+                  bolt_head_type="hex",
+                  bolt_color=matte_black,
+                  bolt_visible_h=chassis_thickness - standoff_bore_h,
                   corner_factor=panel_stack_corner_radius_factor) {
 
   standoff_full_h = fuse_panel_standoff_height();
@@ -183,6 +187,10 @@ module fuse_panel(show_fusers=false,
                                    center=true,) {
                 standoffs_stack(d=panel_stack_bolt_dia,
                                 min_h=standoff_desired_body_h,
+                                show_bolt=show_bolt,
+                                bolt_color=bolt_color,
+                                bolt_visible_h=bolt_visible_h,
+                                bolt_head_type=bolt_head_type,
                                 thread_at_top=true);
               }
             }
