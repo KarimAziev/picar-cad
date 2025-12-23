@@ -11,6 +11,7 @@ include <../parameters.scad>
 use <bolt.scad>
 use <../lib/placement.scad>
 use <../lib/functions.scad>
+use <../lib/plist.scad>
 
 function list_sum(v, i=0) =
   i >= len(v) ? 0 : v[i] + list_sum(v, i + 1);
@@ -131,15 +132,21 @@ module standoff(thread_d=3,
 }
 
 function calc_standoff_params(d, min_h) =
-  let (sorted_specs = sort_by_idx(standoff_specs, asc=true, idx=0),
-       sorted_specs_dias = map_idx(sorted_specs, 0),
+  let (norm_specs = [for (spec = standoff_specs)
+           [plist_get("thread_d", spec), spec]],
+       sorted_norm = sort_by_idx(norm_specs, asc=true, idx=0),
+       sorted_specs = [for (pair = sorted_norm) pair[1]],
+       sorted_dias = [for (spec = sorted_specs) plist_get("thread_d", spec)],
        found = [for (i = [0 : len(sorted_specs) - 1])
            let (spec = sorted_specs[i],
-                dia = sorted_specs_dias[i],
-                next_dia = sorted_specs_dias[i + 1],)
-             if (d == dia || dia < d && (is_undef(next_dia) || next_dia > d)) spec][0],
-       standoffs = is_undef(found) ? [] : standoff_heights(min_h=min_h,
-                                                           body_heights=found[3]))
+                dia = sorted_dias[i],
+                next_dia = sorted_dias[i + 1])
+             if (d == dia || (dia < d && (is_undef(next_dia) || next_dia > d)))
+               spec][0],
+       standoffs = is_undef(found)
+       ? []
+       : standoff_heights(min_h=min_h,
+                          body_heights=plist_get("body_heights", found, [])))
   [found, standoffs];
 
 module standoffs_stack(d,
@@ -166,11 +173,11 @@ module standoffs_stack(d,
   if (!is_undef(standoffs) && len(standoffs[1]) > 0) {
     spec = standoffs[0];
     heights = standoffs[1];
-    thread_d = spec[0];
-    body_d = spec[1];
-    thread_h = spec[2];
-    fn = with_default(spec[4], fn);
-    colr = with_default(spec[5], colr);
+    thread_d = plist_get("thread_d", spec);
+    body_d = plist_get("body_d", spec);
+    thread_h = plist_get("thread_h", spec);
+    fn = plist_get("fn", spec, fn);
+    colr = plist_get("color", spec, colr);
 
     for (i = [0 : len(heights) - 1]) {
       let (body_h = heights[i],

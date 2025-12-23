@@ -16,17 +16,19 @@ use <../lib/placement.scad>
 use <../lib/transforms.scad>
 use <../placeholders/atm_fuse_holder.scad>
 use <control_panel.scad>
+use <../lib/plist.scad>
 
-sizes                   = map_idx(fuse_panels_specs, 0);
-body_specs              = map_idx(fuse_panels_specs, 1);
-body_rib_specs          = map_idx(fuse_panels_specs, 2);
-lid_specs               = map_idx(fuse_panels_specs, 3);
-lengths                 = map_idx(sizes, 1);
-thicknesses             = map_idx(body_specs, 2);
-rib_thicknesses         = map_idx(body_rib_specs, 4);
-hole_depths             = map_idx(sizes, 3);
-body_heights            = [for (i = [0 : len(sizes) - 1]) body_specs[i][3]];
-lid_heights             = [for (i = [0 : len(sizes) - 1]) lid_specs[i][3]];
+slot_specs              = [for (spec = fuse_panels_specs) plist_get("slot", spec)];
+body_specs              = [for (spec = fuse_panels_specs) plist_get("body", spec)];
+body_rib_specs          = [for (spec = fuse_panels_specs) plist_get("body_ribs", spec)];
+lid_specs               = [for (spec = fuse_panels_specs) plist_get("lid", spec)];
+lid_rib_specs           = [for (spec = fuse_panels_specs) plist_get("lid_ribs", spec)];
+lengths                 = [for (slot_spec = slot_specs) slot_spec[1]];
+thicknesses             = [for (body_spec = body_specs) body_spec[2]];
+rib_thicknesses         = [for (rib_spec = body_rib_specs) rib_spec[4]];
+hole_depths             = [for (slot_spec = slot_specs) slot_spec[3]];
+body_heights            = [for (body_spec = body_specs) body_spec[3]];
+lid_heights             = [for (lid_spec = lid_specs) lid_spec[3]];
 
 max_hole_depth          = max(hole_depths);
 max_body_height         = max(body_heights);
@@ -34,7 +36,8 @@ max_lid_height          = max(lid_heights);
 max_len                 = max(lengths);
 
 y_sizes                 = [for (i = [0 : len(fuse_panels_specs) - 1])
-    max(sizes[i][0], thicknesses[i] + rib_thicknesses[i] * 2)];
+    max(slot_specs[i][0],
+        thicknesses[i] + rib_thicknesses[i] * 2)];
 
 total_len               = sum(y_sizes) + (len(y_sizes) - 1)
   * fuse_panel_row_gap;
@@ -85,11 +88,11 @@ module fuse_panel_slots(slot_mode = true,
              0]) {
     for (i = [0 : len(fuse_panels_specs) - 1]) {
       let (spec = fuse_panels_specs[i],
-           slot_spec = spec[0],
-           body_spec=spec[1],
-           body_rib_spec=spec[2],
-           lid_spec=spec[3],
-           lid_rib_spec=spec[4],
+           slot_spec = plist_get("slot", spec),
+           body_spec = plist_get("body", spec),
+           body_rib_spec = plist_get("body_ribs", spec),
+           lid_spec = plist_get("lid", spec),
+           lid_rib_spec = plist_get("lid_ribs", spec),
            prev_y_size = i > 0 ? sum(y_sizes, i) : 0,
            curr_size = y_sizes[i],
            y = (gap * i) + prev_y_size + curr_size) {

@@ -106,25 +106,30 @@ atm_fuse_holder_2_mounting_hole_r                = 5.0;
 // ─────────────────────────────────────────────────────────────────────────────
 fuse_panel_row_gap                               = 2;
 fuse_panel_thickness                             = 3;
-fuse_panel_default_toggle_switch_spec            = [[atm_fuse_holder_2_mounting_hole_h + 2,
+fuse_panel_default_toggle_switch_spec            = ["slot",
+                                                    [atm_fuse_holder_2_mounting_hole_h + 2,
                                                      atm_fuse_holder_2_mounting_hole_l + 1,
                                                      atm_fuse_holder_2_mounting_hole_r,
                                                      atm_fuse_holder_2_mounting_hole_depth],
+                                                    "body",
                                                     [atm_fuse_holder_2_body_top_l,
                                                      atm_fuse_holder_2_body_bottom_l,
                                                      atm_fuse_holder_2_body_thickness,
                                                      atm_fuse_holder_2_body_h,
                                                      matte_black_2],
+                                                    "body_ribs",
                                                     [atm_fuse_holder_2_body_rib_l,
                                                      atm_fuse_holder_2_body_rib_h,
                                                      atm_fuse_holder_2_body_rib_n,
                                                      atm_fuse_holder_2_body_rib_distance,
                                                      atm_fuse_holder_2_body_rib_thickness],
+                                                    "lid",
                                                     [atm_fuse_holder_2_lid_top_l,
                                                      atm_fuse_holder_2_lid_bottom_l,
                                                      atm_fuse_holder_2_lid_thickness,
                                                      atm_fuse_holder_2_lid_h,
                                                      matte_black_2],
+                                                    "lid_ribs",
                                                     [atm_fuse_holder_2_lid_rib_l,
                                                      atm_fuse_holder_2_lid_rib_h,
                                                      atm_fuse_holder_2_lid_rib_n,
@@ -187,12 +192,21 @@ chassis_panel_stack_orientation                  = "horizontal"; // [horizontal,
 control_panel_row_gap                            = 0.8;
 
 // Each element is a list of: [diameter, body diameter, thread height, [body heights], number of vertices, color]
-standoff_specs                                   = [[3, 5.20, 5, [20, 15, 10, 9, 8, 6, 5], 6],
-                                                    [2.5, 4.20, 4, [20, 15, 10, 9, 8, 6, 5], 6],
-                                                    [2, 3.0, 3.0, [20, 15, 10, 9, 8, 6, 5], 12],
-      // [2, 4.50, 5.0, [20, 15, 10, 9, 8, 6, 5], 6,
-                                    //  white_off_1]
-                                                   ];
+standoff_specs                                   = [["thread_d", 3,
+                                                     "body_d", 5.20,
+                                                     "thread_h", 5,
+                                                     "body_heights", [20, 15, 10, 9, 8, 6, 5],
+                                                     "fn", 6],
+                                                    ["thread_d", 2.5,
+                                                     "body_d", 4.20,
+                                                     "thread_h", 4,
+                                                     "body_heights", [20, 15, 10, 9, 8, 6, 5],
+                                                     "fn", 6],
+                                                    ["thread_d", 2,
+                                                     "body_d", 3.0,
+                                                     "thread_h", 3.0,
+                                                     "body_heights", [20, 15, 10, 9, 8, 6, 5],
+                                                     "fn", 12]];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Battery holder at the top of the chassis behind Raspberry Pi
@@ -2100,23 +2114,29 @@ toggle_switch_terminal_size                      = [1.2, 6.0, 9.7];
 // ─────────────────────────────────────────────────────────────────────────────
 // Control panel with toggle switches near Raspberry PI
 // ─────────────────────────────────────────────────────────────────────────────
-control_panel_default_toggle_switch_spec         = [toggle_switch_size,
+control_panel_default_toggle_switch_spec         = ["size",
+                                                    toggle_switch_size,
+                                                    "thread",
                                                     [toggle_switch_thread_d,
                                                      toggle_switch_thread_h,
                                                      toggle_switch_thread_border_w,
-                                                     toggle_switch_slot_d_tolerance,],
+                                                     toggle_switch_slot_d_tolerance],
+                                                    "nut",
                                                     [toggle_switch_nut_d,
                                                      toggle_switch_nut_out_h,
                                                      toggle_switch_slot_counterbore_tolerance],
+                                                    "terminal",
                                                     toggle_switch_terminal_size,
+                                                    "lever",
                                                     [toggle_switch_lever_dia_1,
                                                      toggle_switch_lever_dia_2,
-                                                     toggle_switch_lever_h,],
+                                                     toggle_switch_lever_h],
+                                                    "head",
                                                     [toggle_switch_metallic_head_h]];
 
 control_panel_switch_button_specs                = [control_panel_default_toggle_switch_spec,
                                                     control_panel_default_toggle_switch_spec,
-                                                    control_panel_default_toggle_switch_spec,];
+                                                    control_panel_default_toggle_switch_spec];
 
 control_panel_thickness                          = toggle_switch_nut_out_h + 2;
 

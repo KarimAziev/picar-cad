@@ -15,15 +15,25 @@ use <../lib/placement.scad>
 use <../lib/transforms.scad>
 use <../lib/functions.scad>
 use <../placeholders/bolt.scad>
+use <../lib/plist.scad>
 
-sizes                   = map_idx(control_panel_switch_button_specs, 0);
-thread_specs            = map_idx(control_panel_switch_button_specs, 1);
-nut_specs               = map_idx(control_panel_switch_button_specs, 2);
-terminal_specs          = map_idx(control_panel_switch_button_specs, 3);
-lengths                 = map_idx(sizes, 0);
-thicknesses             = map_idx(sizes, 1);
-body_heights            = map_idx(sizes, 2);
-terminal_heights        = map_idx(terminal_specs, 2);
+sizes                   = [for (spec = control_panel_switch_button_specs)
+    plist_get("size", spec)];
+thread_specs            = [for (spec = control_panel_switch_button_specs)
+    plist_get("thread", spec)];
+nut_specs               = [for (spec = control_panel_switch_button_specs)
+    plist_get("nut", spec)];
+terminal_specs          = [for (spec = control_panel_switch_button_specs)
+    plist_get("terminal", spec)];
+lever_specs             = [for (spec = control_panel_switch_button_specs)
+    plist_get("lever", spec)];
+head_specs              = [for (spec = control_panel_switch_button_specs)
+    plist_get("head", spec)];
+lengths                 = [for (size = sizes) size[0]];
+thicknesses             = [for (size = sizes) size[1]];
+body_heights            = [for (size = sizes) size[2]];
+terminal_heights        = [for (terminal_spec = terminal_specs)
+    terminal_spec[2]];
 
 slot_dias               = [for (spec=thread_specs) spec[0] +
                                                      with_default(spec[3], 0)];
@@ -79,12 +89,12 @@ module control_panel_slots(specs=control_panel_switch_button_specs,
   translate([0, center ? -total_len / 2 - y_sizes[0] / 2 : 0, 0]) {
     for (i = [0 : len(specs) - 1]) {
       let (spec                               = specs[i],
-           size                               = sizes[i],
-           thread_spec                        = spec[1],
-           nut_spec                           = spec[2],
-           terminal_spec                      = spec[3],
-           lever_spec                         = spec[4],
-           head_spec                          = spec[5],
+           size                               = plist_get("size", spec),
+           thread_spec                        = plist_get("thread", spec),
+           nut_spec                           = plist_get("nut", spec),
+           terminal_spec                      = plist_get("terminal", spec),
+           lever_spec                         = plist_get("lever", spec),
+           head_spec                          = plist_get("head", spec),
            thread_d                           = thread_spec[0],
            thread_h                           = thread_spec[1],
            d_tolerance                        = thread_spec[2],

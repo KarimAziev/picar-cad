@@ -1,5 +1,16 @@
-
 use <functions.scad>
+
+/**
+   Check whether the provided value looks like a property list
+   (an even-length array alternating between string keys and values).
+*/
+function plist_is(value) =
+  is_list(value)
+  && (len(value) == 0 || (len(value) % 2 == 0
+                          && len([for (i = [0:len(value) - 1])
+                                     if (i % 2 == 0
+                                         && !is_string(value[i]))
+                                       1]) == 0));
 
 /**
    ```scad
