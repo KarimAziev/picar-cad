@@ -174,6 +174,20 @@ m2_hex_head_h                                    = 1.38;
 m25_hex_head_h                                   = 2.10;
 m3_hex_head_h                                    = 2.90;
 
+m2_nut_dia                                       = 3.95;
+m2_nut_h                                         = 1.74;
+m25_nut_dia                                      = 4.92;
+m25_nut_h                                        = 1.98;
+m3_nut_dia                                       = 5.5;
+m3_nut_h                                         = 2.34;
+
+m2_lock_nut_dia                                  = 3.95;
+m2_lock_nut_h                                    = 2.96;
+m25_lock_nut_dia                                 = 4.92;
+m25_lock_nut_h                                   = 3.52;
+m3_lock_nut_dia                                  = 5.5;
+m3_lock_nut_h                                    = 4.0;
+
 bolt_specs                                       = [[3, 5.20, 5, [20, 15, 10, 9, 8, 6, 5], 6],
                                                     [2.5, 4.20, 4, [20, 15, 10, 9, 8, 6, 5], 6],
                                                     [2, 3.0, 3.0, [20, 15, 10, 9, 8, 6, 5], 12],];
