@@ -150,8 +150,10 @@ module n20_motor_assembly(show_motor=true,
                           show_bolt=true,
                           bolt_head_type="pan",
                           bolt_color=metallic_silver_1,
-                          bolt_head_h=m25_pan_head_h,
-                          bolt_h=chassis_thickness + n20_motor_screws_panel_thickness() + 4) {
+                          lock_nut=true,
+                          show_nut=true,
+                          bolt_visible_h=m25_lock_nut_h,
+                          bolt_h) {
   union() {
     color(matte_black) {
       n20_motor_bracket();
@@ -161,17 +163,20 @@ module n20_motor_assembly(show_motor=true,
       h = n20_can_height / 2;
       x_offst = n20_motor_screws_panel_x_offset();
 
-      color(bolt_color, alpha=1) {
-        translate([x_offst + bolt_h, 0, h]) {
-          rotate([90, 0, 90]) {
-            n20_motor_with_screw_holes_positions() {
+      bolt_height = round(with_default(bolt_h, chassis_thickness - n20_motor_screw_bore_h
+                                       + n20_motor_screws_panel_thickness() + bolt_visible_h));
+      translate([x_offst + bolt_height, 0, h]) {
+        rotate([90, 0, 90]) {
+          n20_motor_with_screw_holes_positions() {
 
-              rotate([0, 180, 0]) {
-                bolt(h=bolt_h,
-                     head_type=bolt_head_type,
-                     head_h=bolt_head_h,
-                     d=n20_motor_screw_dia);
-              }
+            rotate([0, 180, 0]) {
+              bolt(h=bolt_height,
+                   head_type=bolt_head_type,
+                   nut_head_distance=bolt_height,
+                   lock_nut=lock_nut,
+                   show_nut=show_nut,
+                   bolt_color=bolt_color,
+                   d=n20_motor_screw_dia);
             }
           }
         }

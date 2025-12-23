@@ -850,3 +850,99 @@ function member(x, xs) =
    ```
 */
 function flatten_pairs(pairs) = [for (p = pairs) each p];
+
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   list_sum
+   ─────────────────────────────────────────────────────────────────────────────
+
+   **Example**:
+   ```scad
+   list_sum([]); 0
+   list_sum([1]); ->  1
+   list_sum([1, 2]); // ->  3
+   list_sum([1, 2, 3]); // ->  6
+   list_sum([], 1); // -> 0
+   list_sum([1], 1); // -> 0
+   list_sum([1, 2], 1); // -> 2
+   list_sum([1, 2], 2); // ->  0
+   list_sum([1, 2], 0); // ->  3
+
+   ```
+*/
+function list_sum(v, i=0) =
+  i >= len(v) ? 0 : v[i] + list_sum(v, i + 1);
+
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   best_by_lower_sum
+   ─────────────────────────────────────────────────────────────────────────────
+   Choose the “better” of two lists.
+
+   Rules (in order):
+   - If one list is empty (`[]`), return the other.
+   - Prefer the list with the smaller `list_sum(...)`.
+   - If sums are equal, prefer the lexicographically larger list (`a > b`).
+
+   **Example**:
+   ```scad
+   best_by_lower_sum([], [1,2]);        //=> [1,2]
+   best_by_lower_sum([1,2], []);        //=> [1,2]
+
+   best_by_lower_sum([1,1,1], [3]);     //=> [1,1,1]   (sum 3 == sum 3, tie-break by lex order)
+   best_by_lower_sum([1,2],   [4]);     //=> [1,2]     (3 < 4)
+   best_by_lower_sum([2,2],   [1,3]);   //=> [2,2]     (sum tie: 4 == 4, and [2,2] > [1,3])
+   ```
+*/
+function best_by_lower_sum(a, b) =
+  a == [] ? b :
+  b == [] ? a :
+  list_sum(a) < list_sum(b) ? a :
+  list_sum(a) > list_sum(b) ? b :
+  a > b ? a : b;
+
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   best_list_by_lower_sum
+   ─────────────────────────────────────────────────────────────────────────────
+   Return the “best” list from a list-of-lists `v`, using `best_by_lower_sum()`.
+
+
+   **Example**:
+   ```scad
+   best_list_by_lower_sum([]);                              //=> []
+   best_list_by_lower_sum([[], [1,2], [3]]);                //=> [3]      (sum tie 3==3, [3] > [1,2])
+   best_list_by_lower_sum([[], []]);                        //=> []
+   ```
+*/
+function best_list_by_lower_sum(v, i=0) =
+  i == len(v) ? [] :
+  best_by_lower_sum(v[i], best_list_by_lower_sum(v, i + 1));
+
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   best_height_combo
+   ─────────────────────────────────────────────────────────────────────────────
+   Find the “best” combination of heights whose sum is >= `min_h`, using at most
+   `limit` items, chosen from `heights` (repetition allowed).
+
+   Notes:
+   - Order matters for tie-breaking (because lexicographic comparison is used),
+   even if multiple permutations represent the same multiset.
+   - A result may overshoot `min_h`; overshoot is allowed and minimized.
+
+   **Example**:
+   ```scad
+   best_height_combo(6, [1,3,4], 2);   //=> [3,3]   (sum 6)
+   best_height_combo(6, [4,5],   2);   //=> [4,4]   (sum 8; [5,5] is 10)
+   best_height_combo(6, [4,5],   1);   //=> []      (can't reach 6 with one item)
+   best_height_combo(1, [2,3],   3);   //=> [2]     (sum 2 is minimal >= 1)
+   ```
+*/
+function best_height_combo(min_h, heights, limit) =
+  min_h <= 0 ? [] :
+  limit == 0 ? [] :
+  let (candidates = [for (h = heights)
+           let (r = best_height_combo(min_h - h, heights, limit - 1))
+             r == [] && min_h - h > 0 ? [] : concat([h], r)])
+  best_list_by_lower_sum(candidates);

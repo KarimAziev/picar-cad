@@ -13,31 +13,27 @@ use <../lib/placement.scad>
 use <../lib/functions.scad>
 use <../lib/plist.scad>
 
-function list_sum(v, i=0) =
-  i >= len(v) ? 0 : v[i] + list_sum(v, i + 1);
-
-function better(a, b) =
-  a == [] ? b :
-  b == [] ? a :
-  list_sum(a) < list_sum(b) ? a :
-  list_sum(a) > list_sum(b) ? b :
-  a > b ? a : b;
-
-function solve(min_h, heights, limit) =
-  min_h <= 0 ? [] :
-  limit == 0 ? [] :
-  let (candidates = [for (h = heights)
-           let (r = solve(min_h - h, heights, limit - 1))
-             r == [] && min_h - h > 0 ? [] : concat([h], r)])
-  fold(candidates);
-
-function fold(v, i=0) =
-  i == len(v) ? [] :
-  better(v[i], fold(v, i + 1));
-
 function standoff_heights(min_h,
                           body_heights = [20, 15, 10, 9, 8, 6, 5]) =
-  solve(min_h, body_heights, ceil(min_h / min(body_heights)) + 1);
+  best_height_combo(min_h, body_heights, ceil(min_h / min(body_heights)) + 1);
+
+function calc_standoff_params(d, min_h) =
+  let (norm_specs = [for (spec = standoff_specs)
+           [plist_get("thread_d", spec), spec]],
+       sorted_norm = sort_by_idx(norm_specs, asc=true, idx=0),
+       sorted_specs = [for (pair = sorted_norm) pair[1]],
+       sorted_dias = [for (spec = sorted_specs) plist_get("thread_d", spec)],
+       found = [for (i = [0 : len(sorted_specs) - 1])
+           let (spec = sorted_specs[i],
+                dia = sorted_dias[i],
+                next_dia = sorted_dias[i + 1])
+             if (d == dia || (dia < d && (is_undef(next_dia) || next_dia > d)))
+               spec][0],
+       standoffs = is_undef(found)
+       ? []
+       : standoff_heights(min_h=min_h,
+                          body_heights=plist_get("body_heights", found, [])))
+  [found, standoffs];
 
 module standoff(thread_d=3,
                 thread_h=5,
@@ -58,8 +54,10 @@ module standoff(thread_d=3,
                 bolt_head_d,        // across-flats for hex or diameter for round/countersunk
                 bolt_head_h,
                 bolt_color,
+                nut_color=metallic_silver_3,
                 bolt_unthreaded = 0,          // h at top (next to head) that's unthreaded
-
+                nut_pos,
+                show_nut = false,
                 $fn=6) {
   module standoff_body() {
     difference() {
@@ -78,31 +76,36 @@ module standoff(thread_d=3,
 
   module standoff_bolt(height) {
     if (show_bolt) {
-      color(bolt_color, alpha=1) {
-        bolt(d=thread_d,
-             h=height,
-             thread_len=bolt_thread_len,
-             pitch=bolt_pitch,
-             threaded=bolt_threaded,
-             thread_depth=bolt_thread_depth,
-             thread_segments=bolt_thread_segments,
-             thread_starts=bolt_thread_starts,
-             head_type=bolt_head_type,
-             head_d=bolt_head_d,
-             head_h=bolt_head_h,
-             unthreaded=bolt_unthreaded);
-      }
+      bolt(d=thread_d,
+           h=height,
+           thread_len=bolt_thread_len,
+           pitch=bolt_pitch,
+           threaded=bolt_threaded,
+           bolt_color=bolt_color,
+           thread_depth=bolt_thread_depth,
+           thread_segments=bolt_thread_segments,
+           thread_starts=bolt_thread_starts,
+           head_type=bolt_head_type,
+           head_d=bolt_head_d,
+           head_h=bolt_head_h,
+           unthreaded=bolt_unthreaded);
     }
   }
   module standoff_thread() {
-    color(colr, alpha=1) {
-      bolt(d=thread_d, h=thread_h, head_type="none");
-    }
+    bolt(d=thread_d,
+         h=thread_h,
+         bolt_color=colr,
+         head_type="none",
+         lock_nut=false,
+         nut_color=nut_color,
+         nut_head_distance=with_default(nut_pos,
+                                        thread_h - 1),
+         show_nut=show_nut);
   }
   if (thread_at_top) {
     if (show_bolt) {
       let (bolt_visible_h = with_default(bolt_visible_h, 0),
-           bolt_h = with_default(bolt_h, bolt_visible_h + body_h)) {
+           bolt_h = with_default(bolt_h, round(bolt_visible_h + body_h))) {
         translate([0, 0, bolt_h - bolt_visible_h]) {
           rotate([0, 180, 0]) {
             standoff_bolt(height=bolt_h);
@@ -112,14 +115,17 @@ module standoff(thread_d=3,
     }
 
     standoff_body();
-    translate([0, 0, body_h]) {
-      standoff_thread();
+    translate([0, 0, body_h + thread_h]) {
+      rotate([180, 0, 0]) {
+        standoff_thread();
+      }
     }
   } else {
     standoff_thread();
     if (show_bolt) {
+
       let (bolt_visible_h = with_default(bolt_visible_h, 0),
-           bolt_h = with_default(bolt_h, bolt_visible_h + body_h)) {
+           bolt_h = with_default(bolt_h, round(bolt_visible_h + body_h))) {
         translate([0, 0, body_h + thread_h - (bolt_h - bolt_visible_h)]) {
           standoff_bolt(height=bolt_h);
         }
@@ -130,24 +136,6 @@ module standoff(thread_d=3,
     }
   }
 }
-
-function calc_standoff_params(d, min_h) =
-  let (norm_specs = [for (spec = standoff_specs)
-           [plist_get("thread_d", spec), spec]],
-       sorted_norm = sort_by_idx(norm_specs, asc=true, idx=0),
-       sorted_specs = [for (pair = sorted_norm) pair[1]],
-       sorted_dias = [for (spec = sorted_specs) plist_get("thread_d", spec)],
-       found = [for (i = [0 : len(sorted_specs) - 1])
-           let (spec = sorted_specs[i],
-                dia = sorted_dias[i],
-                next_dia = sorted_dias[i + 1])
-             if (d == dia || (dia < d && (is_undef(next_dia) || next_dia > d)))
-               spec][0],
-       standoffs = is_undef(found)
-       ? []
-       : standoff_heights(min_h=min_h,
-                          body_heights=plist_get("body_heights", found, [])))
-  [found, standoffs];
 
 module standoffs_stack(d,
                        min_h,
@@ -168,8 +156,13 @@ module standoffs_stack(d,
                        bolt_head_h,
                        bolt_unthreaded = 0,          // h at top (next to head) that's unthreaded
                        bolt_color,
+                       nut_color=metallic_silver_3,
+                       nut_pos,
+                       show_nut = false,
                        fn=6,) {
+
   standoffs = calc_standoff_params(min_h=min_h, d=d);
+
   if (!is_undef(standoffs) && len(standoffs[1]) > 0) {
     spec = standoffs[0];
     heights = standoffs[1];
@@ -191,7 +184,7 @@ module standoffs_stack(d,
                      thread_h=0,
                      thread_at_top=thread_at_top,
                      colr=border_color,
-                     show_bolt=show_bolt,
+                     show_bolt=false,
                      bolt_visible_h=bolt_visible_h,
                      bolt_h=bolt_h,
                      bolt_thread_len=bolt_thread_len,
@@ -212,9 +205,12 @@ module standoffs_stack(d,
                    bolt_color=bolt_color,
                    thread_h=thread_h,
                    colr=colr,
-                   show_bolt=show_bolt,
+                   show_bolt=show_bolt && i == 0,
                    thread_at_top=thread_at_top,
                    bolt_visible_h=bolt_visible_h,
+                   bolt_unthreaded=bolt_unthreaded,
+                   nut_pos=nut_pos,
+                   show_nut=show_nut && i == len(heights) - 1,
                    bolt_h=bolt_h,
                    bolt_thread_len=bolt_thread_len,
                    bolt_pitch=bolt_pitch,
@@ -225,7 +221,7 @@ module standoffs_stack(d,
                    bolt_head_type=bolt_head_type,
                    bolt_head_d=bolt_head_d,
                    bolt_head_h=bolt_head_h,
-                   bolt_unthreaded=bolt_unthreaded,
+                   nut_color=nut_color,
                    $fn=fn);
         }
       }
@@ -306,4 +302,15 @@ module standoff_grid(sizes=[[3, 5.20, 5, [20, 15, 10, 9, 8, 6, 5], 6],
 }
 
 // standoff_grid();
-standoff(show_bolt=true, thread_at_top=true, bolt_visible_h=2, body_h=12);
+
+nut_pos = 0;
+standoff(show_bolt=true,
+         thread_at_top=false,
+         bolt_visible_h=2,
+         nut_pos=nut_pos,
+         body_h=12, show_nut=true);
+translate([0, 0, 5 - nut_pos]) {
+
+  #cube([2, 2, nut_pos]);
+}
+// standoffs_stack(d=3, min_h=10);

@@ -278,7 +278,7 @@ module rpi_usb_hdmi_connectors() {
   }
 }
 
-module rpi_standoffs(standoff_height=10,
+module rpi_standoffs(standoff_height=rpi_standoff_height,
                      bolt_visible_h) {
   show_bolt = !is_undef(bolt_visible_h);
 
@@ -296,7 +296,7 @@ module rpi_standoffs(standoff_height=10,
 }
 
 module rpi_5(show_standoffs=false,
-             standoff_height=10,
+             standoff_height=rpi_standoff_height,
              show_ai_hat=true,
              show_motor_driver_hat=true,
              show_servo_driver_hat=true,
@@ -370,7 +370,8 @@ module rpi_5(show_standoffs=false,
               bcm_processor();
             }
 
-            translate([rpi_pin_header_width * 2 + 5, rpi_pin_header_width * 10, 0]) {
+            translate([rpi_pin_header_width * 2 + 5,
+                       rpi_pin_header_width * 10, 0]) {
               ram();
               translate([-1, 0, 0]) {
                 color("white", alpha=1) {
@@ -427,9 +428,9 @@ module rpi_5(show_standoffs=false,
         }
 
         translate([0, 0,
-                   rpi_pin_header_height + (rpi_thickness / 2)
-                   + (show_ai_hat ? ai_hat_header_height
-                      : 0)]) {
+                   rpi_pin_header_height + (rpi_thickness / 2) +
+                   (show_ai_hat
+                    ? ai_hat_header_height : 0)]) {
           if (show_ai_hat) {
             ai_hat(center=false);
           }
@@ -450,16 +451,19 @@ module rpi_5(show_standoffs=false,
                         : 0)]) {
 
               if (show_motor_driver_hat) {
-                motor_driver_hat(center=false, extra_standoff_h=motor_driver_hat_upper_header_height);
+                motor_driver_hat(center=false,
+                                 extra_standoff_h=motor_driver_hat_upper_header_height);
               }
               let (extra_upper_header_height = show_motor_driver_hat
-                   ? motor_driver_hat_upper_header_height + motor_driver_hat_size[2]
+                   ? motor_driver_hat_upper_header_height
+                   + motor_driver_hat_size[2]
                    : 0) {
                 translate([0, 0, (show_gpio_expansion_board
                                   ? gpio_expansion_header_height
                                   : 0) + extra_upper_header_height]) {
                   if (show_gpio_expansion_board) {
                     gpio_expansion_board(center=false,
+                                         show_nut=true,
                                          extra_standoff_h=extra_upper_header_height);
                   }
                 }
@@ -472,5 +476,6 @@ module rpi_5(show_standoffs=false,
   }
 }
 
-rpi_5(show_standoffs=true, show_ai_hat=true,);
-rpi_5(slot_mode=true);
+rpi_5(show_standoffs=true,
+      show_ai_hat=true,
+      bolt_visible_h=chassis_thickness - chassis_counterbore_h);

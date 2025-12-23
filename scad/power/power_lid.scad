@@ -123,10 +123,10 @@ module power_lid_voltmeters_placeholders(specs=power_voltmeter_specs, echo_wirin
                  - positions[2]]) {
         translate([- board_w / 2,
                    max(board_len, screw_size[1]) / 2, 0]) {
-          if (echo_wiring_len) {
+          if (echo_wiring_len && is_num(text_spec[0])) {
             echo(str("total_wire_length for voltmeter ", str(i),
                      " (",
-                     text_spec[0],
+                     ceil(text_spec[0]),
                      "): ",),
                  total_wire_length(concat([[0, 0, 0]],
                                           wiring)));

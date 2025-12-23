@@ -6,8 +6,10 @@
  */
 include <../parameters.scad>
 include <../colors.scad>
+
 use <../lib/shapes2d.scad>
 use <../lib/shapes3d.scad>
+
 use <../placeholders/toggle_switch.scad>
 use <../lib/holes.scad>
 use <../placeholders/standoff.scad>
@@ -69,7 +71,9 @@ panel_screw_size        = [full_panel_width
 standoff_desired_body_h = max_height + chassis_thickness + 1;
 standoff_params = calc_standoff_params(d=panel_stack_bolt_dia,
                                        min_h=standoff_desired_body_h);
-standoff_bore_h         = (is_undef(standoff_params) || is_undef(standoff_params[0])) ? 0 : standoff_params[0][2] / 2;
+
+standoff_bore_h         = (is_undef(standoff_params) || is_undef(standoff_params[0])) ? 0 :
+  plist_get("thread_h", standoff_params[0]) / 2;
 
 function control_panel_size() = [full_panel_width, full_panel_len, control_panel_thickness];
 function control_panel_bolt_size() = panel_screw_size;
@@ -78,7 +82,7 @@ function control_panel_max_height() = max_height;
 function control_panel_standoff_height() =
   let (params = calc_standoff_params(d=panel_stack_bolt_dia,
                                      min_h=standoff_desired_body_h),
-       height = (is_undef(params) || is_undef(params[0])) ? max_height : sum(params[1]))
+       height = (is_undef(params) || is_undef(params[1])) ? max_height : sum(params[1]))
   height;
 
 module control_panel_slots(specs=control_panel_switch_button_specs,
@@ -149,7 +153,8 @@ module control_panel(specs=control_panel_switch_button_specs,
                      show_standoff=true,
                      center=true,
                      min_standoff_h=standoff_desired_body_h,
-                     show_bolt=true,
+                     show_bolt=false,
+                     show_nut=false,
                      bolt_head_type="hex",
                      bolt_color=matte_black,
                      bolt_visible_h=chassis_thickness - standoff_bore_h,
@@ -202,6 +207,7 @@ module control_panel(specs=control_panel_switch_button_specs,
             standoffs_stack(d=panel_stack_bolt_dia,
                             min_h=min_standoff_h,
                             thread_at_top=true,
+                            show_nut=show_nut,
                             show_bolt=show_bolt,
                             bolt_color=bolt_color,
                             bolt_visible_h=bolt_visible_h,

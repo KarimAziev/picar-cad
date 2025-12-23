@@ -79,7 +79,10 @@ module smd_battery_holder(height=smd_battery_holder_height,
                           show_battery=false,
                           show_contact=true,
                           show_bolt=true,
-                          bolt_visible_h = chassis_thickness + 4) {
+                          show_nut=true,
+                          lock_nut=false,
+                          bolt_head_type="round",
+                          bolt_visible_h = 2) {
 
   if (amount > 0) {
 
@@ -186,10 +189,16 @@ module smd_battery_holder(height=smd_battery_holder_height,
         }
       }
       if (show_bolt) {
-        let (bolt_h = bottom_thickness + bolt_visible_h) {
+        let (blt_h = round(bottom_thickness + chassis_thickness + bolt_visible_h),
+             bolt_h = blt_h % 2 == 0 ? blt_h : blt_h + 1) {
           translate([0, 0, -bolt_h + bottom_thickness]) {
             four_corner_children(size=screws_size) {
-              bolt(d=screw_dia, h=bolt_h);
+              bolt(d=screw_dia,
+                   h=bolt_h,
+                   head_type=bolt_head_type,
+                   nut_head_distance=bottom_thickness + chassis_thickness,
+                   show_nut=show_nut,
+                   lock_nut=lock_nut);
             }
           }
         }

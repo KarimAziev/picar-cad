@@ -68,10 +68,8 @@ function fuse_panel_max_hole_depth() = max_hole_depth;
 function fuse_panel_standoff_height() =
   let (params = calc_standoff_params(d=panel_stack_bolt_dia,
                                      min_h=standoff_desired_body_h),
-       height = (is_undef(params)
-                 || is_undef(params[0]))
-       ? max_body_height
-       : sum(params[1]))
+       height = (is_undef(params) || is_undef(params[1])) ?
+       max_body_height : sum(params[1]))
   height;
 
 function fuse_panel_standoff_translate_height(x, y) =
@@ -133,7 +131,8 @@ module fuse_panel(show_fusers=false,
                   panel_color=white_snow_1,
                   size=[full_panel_width, full_panel_len],
                   screws_size=panel_screw_size,
-                  show_bolt=true,
+                  show_bolt=false,
+                  show_nut=false,
                   bolt_head_type="hex",
                   bolt_color=matte_black,
                   bolt_visible_h=chassis_thickness - standoff_bore_h,
@@ -191,7 +190,9 @@ module fuse_panel(show_fusers=false,
                 standoffs_stack(d=panel_stack_bolt_dia,
                                 min_h=standoff_desired_body_h,
                                 show_bolt=show_bolt,
+                                show_nut=show_nut,
                                 bolt_color=bolt_color,
+                                nut_pos=fuse_panel_thickness,
                                 bolt_visible_h=bolt_visible_h,
                                 bolt_head_type=bolt_head_type,
                                 thread_at_top=true);
@@ -210,4 +211,6 @@ module fuse_panel(show_fusers=false,
 fuse_panel(center=false,
            show_fusers=true,
            show_standoff=true,
+           show_nut=true,
+           show_bolt=true,
            show_lid=false);

@@ -4,12 +4,13 @@
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */
+include <../parameters.scad>
 use <../lib/shapes2d.scad>
 use <../lib/functions.scad>
 use <../lib/shapes3d.scad>
 use <../lib/transforms.scad>
-
-// m2 - 3.5
+use <../lib/plist.scad>
+use <nut.scad>
 
 function default_pitch(d) =
   (d <= 2) ? 0.4 :
@@ -21,29 +22,20 @@ function default_pitch(d) =
   (d <= 10) ? 1.5 :
   (d <= 12) ? 1.75 : 2.0;
 
-// function default_bolt_head_h(d, type) =
-//   (d <= 2) ? 0.4 :
-//   (d <= 3) ? 0.65 :
-//   (d <= 4) ? 0.7 :
-//   (d <= 5) ? 0.8 :
-//   (d <= 6) ? 1.0 :
-//   (d <= 8) ? 1.25 :
-//   (d <= 10) ? 1.5 :
-//   (d <= 12) ? 1.75 : 2.0;
+function find_bolt_nut_spec(inner_d, specs=bolt_specs, default) =
+  let (sorted_specs = sort_by_idx(specs, idx=0, asc=true),
+       candidates = [for (i = [0 : len(sorted_specs) - 1])
+           let (spec = sorted_specs[i],
+                next_spec = with_default(sorted_specs[i + 1], []),
+                dia = spec[0],
+                next_dia = next_spec[0])
+             if (inner_d == dia || (dia < inner_d
+                                    && (is_undef(next_dia)
+                                        || next_dia > inner_d)))
+               spec],
+       found = with_default(candidates[0], [], type="list"))
+  with_default(drop(found, 1)[0], []);
 
-// function default_bolt_head_d(d) =
-//   (d <= 2) ? 0.4 :
-//   (d <= 3) ? 0.65 :
-//   (d <= 4) ? 0.7 :
-//   (d <= 5) ? 0.8 :
-//   (d <= 6) ? 1.0 :
-//   (d <= 8) ? 1.25 :
-//   (d <= 10) ? 1.5 :
-//   (d <= 12) ? 1.75 : 2.0;
-
-// create a triangular helical ridge via linear_extrude(..., twist=...)
-// major: outer thread diameter; depth: radial height of triangular profile
-// start_phase: rotate the profile around Z before twisting (degrees)
 module thread_ridge(major = 6,
                     pitch = 1,
                     h = 20,
@@ -80,15 +72,14 @@ module bolt_head(type = "hex", head_d = 9, head_h = 4, shaft_r = 2.5, $fn = 64) 
       linear_extrude(height = head_h) {
         polygon(points);
       }
-      // cut a small counterbore to accept shaft / ensure flush
+
       difference() {
-        // make a small recess on underside to visually seat on shank (optional)
         translate([0, 0,-0.001]) {
-          cylinder(h = head_h + 0.002, r = head_d/2 + 0.01, $fn = 6* $fn); // hull-like shape
+          cylinder(h = head_h + 0.002, r = head_d/2 + 0.01, $fn = 6* $fn);
         }
       }
     }
-    // ensure there's a clearance hole for the shaft so the head is flush: subtract shaft hole
+
     difference() {
       linear_extrude(height = head_h) {
         polygon(points);
@@ -105,9 +96,8 @@ module bolt_head(type = "hex", head_d = 9, head_h = 4, shaft_r = 2.5, $fn = 64) 
       }
     }
   } else if (type == "countersunk") {
-    // countersunk head: truncated cone with central hole for shaft
-    // Base (where it meets shaft) will be at z=0 so it sits flush
-    top_r = head_d/2;         // small top
+
+    top_r = head_d/2;
     base_r = max(shaft_r, head_d*0.9); // base radius at the plane z=0 (slightly > shaft)
     difference() {
       translate([0, 0, 0]) {
@@ -222,8 +212,7 @@ module bolt_m_pan_phillips(d = 2.5, h = 10,
        thread_len_v = (thread_len != undef) ? thread_len : h,
        thread_depth_v = (thread_depth != undef) ? thread_depth : pitch_v * 0.6,
        major_r = d / 2,
-       minor_r = max(0.0001, major_r - thread_depth_v) // радиус сердечника
-      )
+       minor_r = max(0.0001, major_r - thread_depth_v))
     union() {
     if (threaded) {
       cylinder(h = thread_len_v, r = minor_r, $fn = $fn);
@@ -251,22 +240,8 @@ module bolt_m_pan_phillips(d = 2.5, h = 10,
   }
 }
 
-// Primary bolt module
-// d: nominal (major) thread diameter
-// h: axial h of the bolt shank (threaded + optionally unthreaded portion)
-// thread_len: h of threaded portion (<= h)
-// pitch: thread pitch (if undef, default_pitch(d))
-// head_type: "pan" | "hex" | "round" | "countersunk" | "none"
-// head_d: head across-flats (for hex) or diameter for cap
-// head_h: head thickness
-// Parametric bolt module - corrected
-// - no reassignments (uses let/local)
-// - heads sit flush with shaft (all types)
-// - proper helical thread ridge joined to core
-// - optional multi-start thread (1 or 2 starts)
-
-module bolt(d = 2.5,                   // major diameter (mm)
-            h = 8,               // shank h (mm) - head sits on top (z = h)
+module bolt(d = 2.5,                 // major diameter (mm)
+            h = 8,                   // shank h (mm) - head sits on top (z = h)
             thread_len = undef,      // h of threaded portion (undef -> h)
             pitch = undef,           // thread pitch (undef -> default metric)
             threaded = true,         // produce thread ridges
@@ -274,95 +249,126 @@ module bolt(d = 2.5,                   // major diameter (mm)
             thread_segments = 120,   // quality of the linear_extrude twist
             thread_starts = 2,       // 1 = single-start, 2 = two-start (parallel helices)
             head_type = "pan",       // "pan" | "hex" | "round" | "countersunk" | "none"
-            head_d,        // across-flats for hex or diameter for round/countersunk
-            head_h,        // head height
+            head_d,                  // head diameter
+            head_h,                  // head height
             unthreaded = 0,          // h at top (next to head) that's unthreaded
+            show_nut=false,
+            nut_head_distance=1,
+            lock_nut=false,
+            bolt_color,
+            nut_color,
             $fn = 64) {
+
+  nut_type = lock_nut ? "lock_nut" : "nut";
+  bolt_spec = find_bolt_nut_spec(d, specs=bolt_specs, default=[]);
+
+  nut_spec=plist_get(nut_type, bolt_spec, []);
+  nut_color=with_default(nut_color, plist_get("color", nut_spec));
+  nut_h = plist_get("height", nut_spec, 0);
+  standard_nut_h = plist_get("height", plist_get("nut", bolt_spec, []), 0);
+  bolt_color = with_default(bolt_color,
+                            plist_get(head_type,
+                                      plist_get("colors", bolt_spec, []),
+                                      nut_color));
 
   let (pitch_v   = pitch != undef ? pitch : default_pitch(d),
        thread_len_v = thread_len != undef ? max(0, thread_len) : max(0, h - unthreaded),
        thread_depth_v = thread_depth != undef ? thread_depth : pitch_v * 0.6,
-       minor_r = max(0, d/2 - (thread_depth != undef ? thread_depth : pitch_v * 0.6)),
-       head_d = is_undef(head_d) ? d * 1.5 : head_d)
+       minor_r = max(0, d/2 - (thread_depth != undef ? thread_depth : pitch_v * 0.6)))
+
     union() {
-    // Shank core (minor diameter) for the threaded region
-    if (threaded) {
-      translate([0, 0, 0]) {
-        cylinder(h = thread_len_v, r = minor_r, $fn = $fn);
-      }
+    color(bolt_color, alpha=1) {
+      union() {
+        if (threaded) {
+          translate([0, 0, 0]) {
+            cylinder(h = thread_len_v, r = minor_r, $fn = $fn);
+          }
 
-      if (thread_len_v < h) {
-        translate([0, 0, thread_len_v]) {
-          cylinder(h = h - thread_len_v,
-                   r = minor_r, $fn = $fn);
+          if (thread_len_v < h) {
+            translate([0, 0, thread_len_v]) {
+              cylinder(h = h - thread_len_v,
+                       r = minor_r, $fn = $fn);
+            }
+          }
+
+          for (s = [0:thread_starts-1]) {
+
+            phase_deg = 360 * s / thread_starts;
+
+            translate([0, 0,-0.02]) {
+              thread_ridge(major = d,
+                           pitch = pitch_v,
+                           h = thread_len_v + 0.04,
+                           depth = thread_depth_v,
+                           segments = thread_segments,
+                           start_phase = phase_deg);
+            }
+          }
+        } else {
+          cylinder(h = h, r = minor_r, $fn = $fn);
+        }
+
+        if (head_type != "none") {
+          echo("bolt dia", d, "bolt height", h);
+          let (head_spec = plist_get(head_type,
+                                     plist_get("head", bolt_spec, []),
+                                     []),
+               head_d = with_default(head_d,
+                                     plist_get("dia",
+                                               head_spec,
+                                               d * 1.5)),
+               head_h = with_default(head_h,
+                                     plist_get("height",
+                                               head_spec,
+                                               with_default(head_h, 0.7 * d)))) {
+
+            translate([0, 0, h]) {
+              bolt_head(type = head_type,
+                        head_d = head_d,
+                        head_h = head_h,
+                        shaft_r = minor_r,
+                        $fn=$fn);
+            }
+          };
         }
       }
-
-      for (s = [0:thread_starts-1]) {
-        // offset phase for multi-start
-        phase_deg = 360 * s / thread_starts;
-        // slightly overlap downwards and upwards to ensure clean boolean union
-        translate([0, 0,-0.02]) {
-          thread_ridge(major = d,
-                       pitch = pitch_v,
-                       h = thread_len_v + 0.04,
-                       depth = thread_depth_v,
-                       segments = thread_segments,
-                       start_phase = phase_deg);
-        }
-      }
-    } else {
-      // entire smooth shank (no threads)
-      cylinder(h = h, r = minor_r, $fn = $fn);
     }
+    if (show_nut) {
+      effective_h = h - unthreaded - nut_h;
 
-    // Head: place with its base at z = h so it is flush on the shank top
-    if (head_type != "none") {
-      translate([0, 0, h]) {
-        bolt_head(type = head_type,
-                  head_d = head_d,
-                  head_h = with_default(head_h, 0.7 * d),
-                  shaft_r = minor_r,
-                  $fn=$fn);
-      };
+      translate([0, 0, effective_h - min(effective_h + (lock_nut ? nut_h * 0.2 : 0),
+                                         nut_head_distance)]) {
+        if (nut_type == "nut") {
+          nut(d=d,
+              outer_d=plist_get("outer_dia", nut_spec),
+              h=nut_h,
+              nut_color=with_default(nut_color, bolt_color));
+        } else if (nut_type == "lock_nut") {
+          lock_nut(d=d,
+                   h=nut_h,
+                   flanged_h=nut_h - standard_nut_h,
+                   outer_d=plist_get("outer_dia", nut_spec),
+                   nut_color=with_default(nut_color, bolt_color));
+        }
+      }
     }
   }
 }
 
-// Single-start M6 bolt
-// bolt(d=6, h=30, thread_len=30, pitch=1.0, head_type="hex", head_d=10, head_h=4);
-
-// Two-start thread (will show two intertwined helical ridges)
-// bolt(d=6, h=30, thread_len=30, pitch=1.0, thread_starts=2, head_type="round", head_d=10, head_h=4);
-
-// Countersunk M4 bolt
-// bolt(d=4, h=20, thread_len=16, head_type="countersunk", head_d=8, head_h=3);
-
-// bolt(d = 2.5, h = 10, thread_len = 10, pitch = 0.45, threaded = true,
-//      head_type = "pan", head_d = 4.8, head_h = 1.6);
-
-// ----- Пример: M2.5 пан-головка с крестовым пазом -----
-// bolt_m_pan_phillips(d = 2.5,
-//                     h = 10,
-//                     pitch = 0.45,        // стандартный шаг для M2.5 ~0.45 мм
-//                     thread_len = 10,
-//                     head_d = 4.8,        // типичный диаметр пан-головки для M2.5
-//                     head_h = 1.6,        // типичная высота
-//                     ph_arm_w = 0.8,      // ширина "плеча" креста (регулируйте под биту)
-//                     ph_arm_len = 3.0,    // длина плеча (регулирует внешний диаметр паза)
-//                     ph_depth = 1.0       // глубина паза (регулируйте)
-//                    );
-
 h = 10;
 head_h = 1.6;
 head_d = 4.8;
-d = 2.5;
+d = 3.0;
+nut_distance = 4;
 
 rotate([0, 0, 0]) {
   bolt(d = d,
        h = h,
        threaded = true,
-       head_type = "round",
-       head_d = head_d,
-       head_h = head_h);
+       unthreaded=0,
+       show_nut=true,
+       lock_nut=false,
+       nut_head_distance=nut_distance,
+       head_type = "pan",
+       head_d = head_d);
 }

@@ -160,12 +160,12 @@ m2_round_head_h                                  = 1.38;
 m25_round_head_h                                 = 2.10;
 m3_round_head_h                                  = 2.90;
 
-m2_countersink_head_dia                          = 3.5;
-m25_countersink_head_dia                         = 4.04;
-m3_countersink_head_dia                          = 6.50;
-m2_countersink_head_h                            = 1.38;
-m25_countersink_head_h                           = 1.1;
-m3_countersink_head_h                            = 1.7;
+m2_countersunk_head_dia                          = 3.5;
+m25_countersunk_head_dia                         = 4.04;
+m3_countersunk_head_dia                          = 6.50;
+m2_countersunk_head_h                            = 1.38;
+m25_countersunk_head_h                           = 1.1;
+m3_countersunk_head_h                            = 1.7;
 
 m2_hex_head_dia                                  = 3.5;
 m25_hex_head_dia                                 = 5.2;
@@ -188,9 +188,81 @@ m25_lock_nut_h                                   = 3.52;
 m3_lock_nut_dia                                  = 5.5;
 m3_lock_nut_h                                    = 4.0;
 
-bolt_specs                                       = [[3, 5.20, 5, [20, 15, 10, 9, 8, 6, 5], 6],
-                                                    [2.5, 4.20, 4, [20, 15, 10, 9, 8, 6, 5], 6],
-                                                    [2, 3.0, 3.0, [20, 15, 10, 9, 8, 6, 5], 12],];
+bolt_specs                                       = [[1,
+                                                     ["nut", ["outer_dia", m2_nut_dia * 0.8,
+                                                              "height", m2_nut_h * 0.9],
+                                                      "lock_nut", ["outer_dia", m2_lock_nut_dia * 0.8,
+                                                                   "height", m2_lock_nut_h * 0.9,
+                                                                   "color", metallic_silver_2],
+                                                      "colors", ["hex", matte_black,
+                                                                 "pan", metallic_silver_2,
+                                                                 "countersunk", metallic_silver_1,
+                                                                 "round", matte_black],
+                                                      "head", ["pan", ["dia", m2_pan_head_dia * 0.7,
+                                                                       "height", m2_pan_head_h],
+                                                               "hex", ["dia", m2_hex_head_dia  * 0.7,
+                                                                       "height", m2_hex_head_h],
+                                                               "round", ["dia", m2_round_head_dia  * 0.7,
+                                                                         "height", m2_round_head_h],
+                                                               "countersunk", ["dia", m2_countersunk_head_dia  * 0.7,
+                                                                               "height", m2_countersunk_head_h]]]],
+                                                    [3,
+                                                     ["nut", ["outer_dia", m3_nut_dia,
+                                                              "height", m3_nut_h],
+                                                      "lock_nut", ["outer_dia", m3_lock_nut_dia,
+                                                                   "height", m3_lock_nut_h,
+                                                                   "color", metallic_silver_2],
+                                                      "colors", ["hex", matte_black,
+                                                                 "pan", metallic_silver_2,
+                                                                 "countersunk", metallic_silver_1,
+                                                                 "round", matte_black],
+                                                      "head", ["pan", ["dia", m3_pan_head_dia,
+                                                                       "height", m3_pan_head_h],
+                                                               "hex", ["dia", m3_hex_head_dia,
+                                                                       "height", m3_hex_head_h],
+                                                               "round", ["dia", m3_round_head_dia,
+                                                                         "height", m3_round_head_h],
+                                                               "countersunk", ["dia", m3_countersunk_head_dia,
+                                                                               "height", m3_countersunk_head_h]],
+                                                      "heights", [2, 4, 6, 10, 12, 14, 16]]],
+                                                    [2,
+                                                     ["nut", ["outer_dia", m2_nut_dia,
+                                                              "height", m2_nut_h],
+                                                      "lock_nut", ["outer_dia", m2_lock_nut_dia,
+                                                                   "height", m2_lock_nut_h,
+                                                                   "color", metallic_silver_2],
+                                                      "colors", ["hex", matte_black,
+                                                                 "pan", metallic_silver_2,
+                                                                 "countersunk", metallic_silver_1,
+                                                                 "round", matte_black],
+                                                      "head", ["pan", ["dia", m2_pan_head_dia,
+                                                                       "height", m2_pan_head_h],
+                                                               "hex", ["dia", m2_hex_head_dia,
+                                                                       "height", m2_hex_head_h],
+                                                               "round", ["dia", m2_round_head_dia,
+                                                                         "height", m2_round_head_h],
+                                                               "countersunk", ["dia", m2_countersunk_head_dia,
+                                                                               "height", m2_countersunk_head_h]],
+                                                      "heights", [2, 4, 6, 10, 12, 14, 16]]],
+                                                    [2.5,
+                                                     ["nut", ["outer_dia", m25_nut_dia,
+                                                              "height", m25_nut_h],
+                                                      "lock_nut", ["outer_dia", m25_lock_nut_dia,
+                                                                   "height", m25_lock_nut_h,
+                                                                   "color", metallic_silver_2],
+                                                      "colors", ["hex", matte_black,
+                                                                 "pan", metallic_silver_2,
+                                                                 "countersunk", metallic_silver_1,
+                                                                 "round", matte_black],
+                                                      "head", ["pan", ["dia", m25_pan_head_dia,
+                                                                       "height", m25_pan_head_h],
+                                                               "hex", ["dia", m25_hex_head_dia,
+                                                                       "height", m25_hex_head_h],
+                                                               "round", ["dia", m25_round_head_dia,
+                                                                         "height", m25_round_head_h],
+                                                               "countersunk", ["dia", m25_countersunk_head_dia,
+                                                                               "height", m25_countersunk_head_h]],
+                                                      "heights", [2, 4, 6, 10, 12, 14, 16]]]];
 
 panel_stack_bolt_dia                             = m3_hole_dia;
 panel_stack_bolt_cbore_dia                       = panel_stack_bolt_dia * 2;
@@ -1463,7 +1535,7 @@ rpi_on_off_button_size                           = [3.85, 1.8, 2];
 rpi_on_off_button_dia                            = 1.5;
 
 //The height of the standoffs for Raspberry Pi
-rpi_standoff_height                              = 10;
+rpi_standoff_height                              = 6;
 rpi_csi_position_x                               = rpi_screws_size[0] - rpi_csi_size[0] / 2 - 2;
 rpi_csi_position_y                               = rpi_screws_size[1] - m25_hole_dia - 1;
 
@@ -1474,6 +1546,7 @@ rpi_csi_position_y                               = rpi_screws_size[1] - m25_hole
 ai_hat_size                                      = [56.7, 65, 1.5];
 ai_hat_corner_rad                                = 2.4;
 ai_hat_screw_dia                                 = m25_hole_dia;
+
 ai_hat_mounting_hole_pad_spec                    = [[m25_hole_dia + 2.5, yellow_3]];
 ai_hat_csi_slot_size                             = [rpi_csi_size[0] + 4, ai_hat_size[1]
                                                     - rpi_csi_position_y];

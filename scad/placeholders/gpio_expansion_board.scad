@@ -20,6 +20,7 @@ use <../lib/shapes3d.scad>
 
 module gpio_expansion_board(show_standoff=true,
                             center=true,
+                            show_nut=false,
                             extra_standoff_h=0) {
   w = gpio_expansion_size[0];
   l = gpio_expansion_size[1];
@@ -170,6 +171,7 @@ module gpio_expansion_board(show_standoff=true,
         translate([0, 0, -gpio_expansion_header_height - extra_standoff_h]) {
           four_corner_children(rpi_screws_size) {
             standoffs_stack(d=gpio_expansion_screw_dia,
+                            show_nut=show_nut,
                             colr=gpio_expansion_standoff_color,
                             min_h=gpio_expansion_header_height
                             + extra_standoff_h);

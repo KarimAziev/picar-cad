@@ -17,7 +17,8 @@ use <pad_hole.scad>
 use <../lib/placement.scad>
 use <standoff.scad>
 
-module ai_hat(center=true, show_pins=true, show_standoff=true) {
+module ai_hat(center=true, show_pins=true, show_standoff=true,
+              extra_standoff_h=0) {
   w = ai_hat_size[0];
   l = ai_hat_size[1];
   h = ai_hat_size[2];
@@ -75,12 +76,9 @@ module ai_hat(center=true, show_pins=true, show_standoff=true) {
 
       if (show_standoff) {
         translate([0, 0, -ai_hat_header_height]) {
-          standoff_params = calc_standoff_params(d=ai_hat_screw_dia,
-                                                 min_h=ai_hat_header_height);
-          standoff_spec = with_default(standoff_params[0], []);
           four_corner_children(rpi_screws_size) {
-            standoff(body_d=standoff_spec[1], thread_d=ai_hat_screw_dia,
-                     body_h=ai_hat_header_height);
+            standoffs_stack(d=ai_hat_screw_dia,
+                            min_h=ai_hat_header_height + extra_standoff_h);
           }
         }
       }
