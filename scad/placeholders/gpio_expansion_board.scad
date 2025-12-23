@@ -169,8 +169,10 @@ module gpio_expansion_board(show_standoff=true,
       if (show_standoff) {
         translate([0, 0, -gpio_expansion_header_height - extra_standoff_h]) {
           four_corner_children(rpi_screws_size) {
-            standoff(body_d=gpio_expansion_screw_dia, thread_d=gpio_expansion_screw_dia / 2,
-                     body_h=gpio_expansion_header_height + extra_standoff_h);
+            standoffs_stack(d=gpio_expansion_screw_dia,
+                            colr=gpio_expansion_standoff_color,
+                            min_h=gpio_expansion_header_height
+                            + extra_standoff_h);
           }
         }
       }
@@ -178,4 +180,4 @@ module gpio_expansion_board(show_standoff=true,
   }
 }
 
-gpio_expansion_board();
+gpio_expansion_board(show_standoff=true);

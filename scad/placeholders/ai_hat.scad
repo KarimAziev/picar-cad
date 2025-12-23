@@ -75,8 +75,11 @@ module ai_hat(center=true, show_pins=true, show_standoff=true) {
 
       if (show_standoff) {
         translate([0, 0, -ai_hat_header_height]) {
+          standoff_params = calc_standoff_params(d=ai_hat_screw_dia,
+                                                 min_h=ai_hat_header_height);
+          standoff_spec = with_default(standoff_params[0], []);
           four_corner_children(rpi_screws_size) {
-            standoff(body_d=ai_hat_screw_dia, thread_d=ai_hat_screw_dia / 2,
+            standoff(body_d=standoff_spec[1], thread_d=ai_hat_screw_dia,
                      body_h=ai_hat_header_height);
           }
         }

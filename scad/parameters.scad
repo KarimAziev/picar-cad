@@ -1494,6 +1494,7 @@ servo_driver_corner_rad                          = 2;
 servo_driver_hat_screws_size                     = [25, 58];
 
 servo_driver_hat_screw_dia                       = m25_hole_dia;
+servo_driver_hat_standoff_color                  = "white";
 servo_driver_hat_mounting_hole_pad_spec          = [[m25_hole_dia + 2.5, "white"]];
 
 servo_driver_hat_header_height                   = 9;
@@ -1550,6 +1551,7 @@ servo_driver_hat_chip_2_x_distance               = 46;
 motor_driver_hat_size                            = [56.7, 65, 1.9];
 motor_driver_hat_corner_rad                      = 2.4;
 motor_driver_hat_screw_dia                       = m25_hole_dia;
+motor_driver_hat_standoff_color                  = "white";
 motor_driver_hat_mounting_hole_pad_spec          = [[m25_hole_dia + 2.5, "white"]];
 
 motor_driver_hat_header_height                   = 13.15;
@@ -1606,6 +1608,7 @@ gpio_expansion_screws_size_2                     = [38, 58];
 gpio_expansion_size                              = [55.0, 65.25, 1.65];
 
 gpio_expansion_screw_dia                         = m25_hole_dia;
+gpio_expansion_standoff_color                    = "white";
 gpio_expansion_corner_rad                        = 2;
 gpio_expansion_mounting_hole_pad_spec            = [[m25_hole_dia + 2.5, dark_gold_1]];
 

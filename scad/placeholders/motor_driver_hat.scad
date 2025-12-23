@@ -190,8 +190,10 @@ module motor_driver_hat(center=true, show_pins=true,
       if (show_standoff) {
         translate([0, 0, -motor_driver_hat_header_height - extra_standoff_h]) {
           four_corner_children(rpi_screws_size) {
-            standoff(body_d=motor_driver_hat_screw_dia, thread_d=motor_driver_hat_screw_dia / 2,
-                     body_h=motor_driver_hat_header_height + extra_standoff_h);
+            standoffs_stack(d=motor_driver_hat_screw_dia,
+                            colr=motor_driver_hat_standoff_color,
+                            min_h=motor_driver_hat_header_height
+                            + extra_standoff_h);
           }
         }
       }

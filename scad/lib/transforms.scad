@@ -66,7 +66,10 @@ module four_corner_children(size=[10, 10],
     for (y_ind = [0, 1]) {
       x_pos = (center ? -size[0] / 2 : 0) + x_ind * size[0];
       y_pos = (center ? -size[1] / 2 : 0) + y_ind * size[1];
+
       translate([x_pos, y_pos]) {
+        $x_i = x_ind;
+        $y_i = y_ind;
         children();
       }
     }

@@ -327,9 +327,11 @@ module servo_driver_hat(show_standoff=true, center=true) {
       if (show_standoff) {
         translate([0, 0, -servo_driver_hat_header_height]) {
           four_corner_children(servo_driver_hat_screws_size) {
-            standoff(body_d=servo_driver_hat_screw_dia,
-                     thread_d=servo_driver_hat_screw_dia / 2,
-                     body_h=servo_driver_hat_header_height);
+            if ($x_i == 0) {
+              standoffs_stack(d=servo_driver_hat_screw_dia,
+                              colr=servo_driver_hat_standoff_color,
+                              min_h=servo_driver_hat_header_height);
+            }
           }
         }
       }
@@ -337,4 +339,4 @@ module servo_driver_hat(show_standoff=true, center=true) {
   }
 }
 
-servo_driver_hat();
+servo_driver_hat(show_standoff=true);

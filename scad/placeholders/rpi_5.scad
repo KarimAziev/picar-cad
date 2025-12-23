@@ -1,4 +1,5 @@
 /**
+
  * Module: Raspberry Pi 5 model
  *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
@@ -278,15 +279,17 @@ module rpi_usb_hdmi_connectors() {
 }
 
 module rpi_standoffs(standoff_height=10,
-                     standoff_lower_height=4,
                      bolt_visible_h) {
+  show_bolt = !is_undef(bolt_visible_h);
+
   translate([rpi_screws_offset, rpi_screws_offset, -standoff_height]) {
     four_corner_children(size=rpi_screws_size,
                          center=false) {
+
       standoffs_stack(d=m2_hole_dia,
                       min_h=standoff_height,
                       thread_at_top=true,
-                      show_bolt=!is_undef(bolt_visible_h),
+                      show_bolt=show_bolt,
                       bolt_visible_h=bolt_visible_h);
     }
   }
@@ -294,7 +297,6 @@ module rpi_standoffs(standoff_height=10,
 
 module rpi_5(show_standoffs=false,
              standoff_height=10,
-             standoff_lower_height=4,
              show_ai_hat=true,
              show_motor_driver_hat=true,
              show_servo_driver_hat=true,
@@ -333,7 +335,6 @@ module rpi_5(show_standoffs=false,
           }
           if (show_standoffs) {
             rpi_standoffs(standoff_height=standoff_height,
-                          standoff_lower_height=standoff_lower_height,
                           bolt_visible_h=bolt_visible_h);
           }
 
