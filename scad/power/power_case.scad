@@ -65,8 +65,6 @@ module power_case(case_color=metallic_silver_5, alpha=1) {
 
           // Holes for 4 corner mounting screws
           translate([power_case_screw_size_offset_x, 0, -0.0]) {
-            {
-            }
             translate([0, power_case_screw_size_offset_y, 0]) {
               four_corner_children(size=power_case_bottom_screw_size,
                                    center=true) {
