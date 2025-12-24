@@ -95,77 +95,76 @@ module head_neck_base(show_tilt_servo=false,
     - head_neck_tilt_servo_slot_height / 2
     - head_neck_tilt_servo_extra_top_h;
 
-  rotate([0, 0, pan_servo_rotation]) {
-    l_bracket(size=[full_w,
-                    full_pan_h,
-                    full_tilt_h],
-              bracket_color=bracket_color,
-              vertical_thickness=head_neck_tilt_servo_slot_thickness,
-              thickness=head_neck_pan_servo_slot_thickness,
-              children_modes=[["difference", "horizontal"],
-                              ["union", "horizontal"],
-                              ["difference", "vertical"],
-                              ["union", "vertical"]],
-              center=false,
-              y_r=pan_rad,
-              z_r=tilt_rad) {
-      servo_slot_2d(size=[head_neck_pan_servo_slot_width,
-                          head_neck_pan_servo_slot_height],
-                    bolts_dia=head_neck_pan_servo_bolt_dia,
-                    bolts_offset=head_neck_pan_servo_bolts_offset);
-      reverse_rotation = head_neck_pan_servo_assembly_reversed ? 180 : 0;
-      rotate([reverse_rotation,
-              reverse_rotation, 0]) {
-        translate([pan_servo_size[0] / 2,
-                   -pan_servo_size[1] / 2 ,
-                   pan_servo_h
-                   + head_neck_pan_servo_slot_thickness / 2
-                   - pan_bolts_hat_z_offset
-                   + pan_servo_hat_thickness / 2]) {
-          if (show_pan_servo) {
-            rotate([0, 0, -pan_servo_rotation]) {
-              rotate([0, 180, 0]) {
-                pan_servo(show_servo_horn=show_servo_horn);
-              }
+  l_bracket(size=[full_w,
+                  full_pan_h,
+                  full_tilt_h],
+            bracket_color=bracket_color,
+            vertical_thickness=head_neck_tilt_servo_slot_thickness,
+            thickness=head_neck_pan_servo_slot_thickness,
+            children_modes=[["difference", "horizontal"],
+                            ["union", "horizontal"],
+                            ["difference", "vertical"],
+                            ["union", "vertical"]],
+            center=false,
+            y_r=pan_rad,
+            z_r=tilt_rad) {
+    servo_slot_2d(size=[head_neck_pan_servo_slot_width,
+                        head_neck_pan_servo_slot_height],
+                  bolts_dia=head_neck_pan_servo_bolt_dia,
+                  bolts_offset=head_neck_pan_servo_bolts_offset);
+    reverse_rotation = head_neck_pan_servo_assembly_reversed ? 180 : 0;
+    rotate([reverse_rotation,
+            reverse_rotation, 0]) {
+      translate([pan_servo_size[0] / 2,
+                 -pan_servo_size[1] / 2 ,
+                 pan_servo_h
+                 + head_neck_pan_servo_slot_thickness / 2
+                 - pan_bolts_hat_z_offset
+                 + pan_servo_hat_thickness / 2]) {
+        if (show_pan_servo) {
+          rotate([0, 0, 0]) {
+            rotate([0, 180, 0]) {
+              pan_servo(show_servo_horn=show_servo_horn,
+                        servo_horn_rotation=pan_servo_rotation);
             }
           }
         }
       }
+    }
 
-      translate([0, tilt_servo_y, 0]) {
-        servo_slot_2d(size=[head_neck_tilt_servo_slot_width,
-                            head_neck_tilt_servo_slot_height],
-                      bolts_dia=head_neck_tilt_servo_bolt_dia,
-                      bolts_offset=head_neck_tilt_servo_bolts_offset,
-                      center=true);
-      }
+    translate([0, tilt_servo_y, 0]) {
+      servo_slot_2d(size=[head_neck_tilt_servo_slot_width,
+                          head_neck_tilt_servo_slot_height],
+                    bolts_dia=head_neck_tilt_servo_bolt_dia,
+                    bolts_offset=head_neck_tilt_servo_bolts_offset,
+                    center=true);
+    }
 
-      translate([0,
-                 tilt_servo_y,
-                 -tilt_servo_size[2]
-                 - head_neck_tilt_servo_slot_thickness
-                 + tilt_bolts_hat_z_offset
-                 + tilt_servo_hat_thickness / 2]) {
+    translate([0,
+               tilt_servo_y,
+               -tilt_servo_size[2]
+               - head_neck_tilt_servo_slot_thickness
+               + tilt_bolts_hat_z_offset
+               + tilt_servo_hat_thickness / 2]) {
 
-        if (show_tilt_servo || show_head) {
+      if (show_tilt_servo || show_head) {
 
-          tilt_servo(center=true,
-                     show_servo_horn=false,
-                     alpha=show_tilt_servo ? 1 : 0) {
-            if (show_head) {
-              head_centers = side_panel_servo_center();
+        tilt_servo(center=true,
+                   show_servo_horn=false,
+                   alpha=show_tilt_servo ? 1 : 0) {
+          if (show_head) {
+            head_centers = side_panel_servo_center();
 
-              rotate([0, 0, tilt_servo_rotation]) {
-                translate([-head_centers[0],
-                           -head_centers[1] / 2,
-                           -head_plate_width / 2]) {
-                  rotate([0, 90, 0]) {
-                    head_mount(head_color=head_color,
-                               show_ir_case=show_ir_case,
-                               show_servo_horn=show_servo_horn,
-                               show_camera=show_camera,
-                               show_ir_led=show_ir_led);
-                  }
+            rotate([0, 0, tilt_servo_rotation]) {
+              translate([-head_centers[0],
+                         -head_centers[1] / 2,
+                         -head_plate_width / 2]) {
+                rotate([0, 90, 0]) {
+                  head_mount(head_color=head_color,
+                             show_ir_case=show_ir_case,
+                             show_servo_horn=show_servo_horn,
+                             show_camera=show_camera,
+                             show_ir_led=show_ir_led);
                 }
               }
             }
@@ -224,11 +223,13 @@ module head_neck(center_pan_servo_slot=false,
     head_z = pan_servo_gearbox_h + (h_before_hat - head_neck_pan_servo_slot_thickness)
       + gear_h + (servo_horn_ring_height - servo_horn_arm_z_offset);
 
-    translate([head_x,
-               head_y,
-               head_z]) {
-      rotate([0, 0, -90]) {
-        head_neck_mod();
+    rotate([0, 0, pan_servo_rotation]) {
+      translate([head_x,
+                 head_y,
+                 head_z]) {
+        rotate([0, 0, -90]) {
+          head_neck_mod();
+        }
       }
     }
   }
