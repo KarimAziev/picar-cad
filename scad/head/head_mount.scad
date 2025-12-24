@@ -27,6 +27,7 @@ use <../lib/shapes2d.scad>
 use <../lib/holes.scad>
 use <../lib/transforms.scad>
 use <../placeholders/servo_horn.scad>
+use <../placeholders/bolt.scad>
 
 tilt_angle        = atan2((-head_side_panel_curve_end)
                           - (-head_side_panel_bottom),
@@ -251,7 +252,16 @@ module side_panel_servo_horn() {
 
     side_panel_with_servo_horn_center_position() {
       rotate([0, 0, tilt_angle]) {
-        servo_horn(center=true);
+        translate([0, 0, -servo_horn_ring_height
+                   + servo_horn_arm_z_offset]) {
+          servo_horn(center=true);
+        }
+        translate([0, 0, - servo_horn_ring_height]) {
+          bolt(d=servo_horn_center_hole_dia,
+               head_type="pan",
+               bolt_color=matte_black,
+               h=servo_horn_ring_height + head_plate_thickness);
+        }
       }
     }
   }
@@ -300,9 +310,12 @@ module side_panel_2d() {
   }
 }
 
-module side_panel_3d(show_servo_horn=false) {
-  linear_extrude(height=head_plate_thickness) {
-    side_panel_2d();
+module side_panel_3d(show_servo_horn=false,
+                     pan_color="white") {
+  color(pan_color, alpha=1) {
+    linear_extrude(height=head_plate_thickness) {
+      side_panel_2d();
+    }
   }
   if (show_servo_horn) {
     side_panel_servo_horn();
@@ -310,7 +323,8 @@ module side_panel_3d(show_servo_horn=false) {
 }
 
 module side_panel(is_left=true,
-                  show_servo_horn=false) {
+                  show_servo_horn=false,
+                  pan_color="white") {
   offsets = [head_plate_width / 2,
              -head_plate_height / 2];
 
@@ -318,14 +332,14 @@ module side_panel(is_left=true,
     translate([-offsets[0], offsets[1], 0]) {
       mirror([1, 0, 0]) {
         rotate([0, 90, 0]) {
-          side_panel_3d(show_servo_horn=show_servo_horn);
+          side_panel_3d(show_servo_horn=show_servo_horn, pan_color=pan_color);
         }
       }
     }
   } else {
     translate([offsets[0], offsets[1], 0]) {
       rotate([0, 90, 0]) {
-        side_panel_3d(show_servo_horn=show_servo_horn);
+        side_panel_3d(show_servo_horn=show_servo_horn, pan_color=pan_color);
       }
     }
   }
@@ -389,8 +403,10 @@ module head_mount(head_color="white",
         connector_plate_down();
         head_upper_plate();
         side_panel(is_left=true);
-        side_panel(false, show_servo_horn=show_servo_horn);
       }
+      side_panel(is_left=false,
+                 show_servo_horn=show_servo_horn,
+                 pan_color=head_color);
     }
   }
 
