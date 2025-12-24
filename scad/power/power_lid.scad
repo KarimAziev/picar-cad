@@ -38,24 +38,24 @@ half_of_inner_x       = inner_x_cutout / 2;
 half_of_side_wall_w   = side_wall_w / 2;
 
 tumbler_side_cutout_h = side_wall_w + 0.2;
-side_screw_start      = power_case_length / 2 -
+side_bolt_start       = power_case_length / 2 -
   power_case_groove_edge_distance
   -power_case_groove_thickness / 2
-  - power_case_rail_screw_dia / 2
-  - power_case_rail_screw_groove_distance;
+  - power_case_rail_bolt_dia / 2
+  - power_case_rail_bolt_groove_distance;
 
-module power_lid_voltmeters_screw_holes(specs=power_voltmeter_specs,
-                                        default_cbore_h=power_lid_thickness / 2,
-                                        default_cbore_autoscale_step=0.2,
-                                        default_cbore_d_step=1.8,
-                                        default_reverse=false,
-                                        sink=false,
-                                        thickness=power_lid_thickness) {
+module power_lid_voltmeters_bolt_holes(specs=power_voltmeter_specs,
+                                       default_cbore_h=power_lid_thickness / 2,
+                                       default_cbore_autoscale_step=0.2,
+                                       default_cbore_d_step=1.8,
+                                       default_reverse=false,
+                                       sink=false,
+                                       thickness=power_lid_thickness) {
   for (volt_spec=specs) {
     let (v_spec = volt_spec[0],
          positions = volt_spec[1],
-         screw_size = v_spec[0],
-         screw_dia = v_spec[1],
+         bolt_spacing = v_spec[0],
+         bolt_dia = v_spec[1],
          board_size = v_spec[2],
          standoff_spec=v_spec[6],
          board_w=board_size[0],
@@ -68,12 +68,12 @@ module power_lid_voltmeters_screw_holes(specs=power_voltmeter_specs,
          cbore_reverse=with_default(cbore_spec[3], default_reverse)) {
 
       translate([positions[0], positions[1], 0]) {
-        translate([- board_w / 2, max(board_len, screw_size[1]) / 2, 0]) {
+        translate([- board_w / 2, max(board_len, bolt_spacing[1]) / 2, 0]) {
           rotate([0, 0, is_undef(positions[3]) ? 0 : positions[3]]) {
-            four_corner_children(size=screw_size) {
+            four_corner_children(size=bolt_spacing) {
               translate([0, 0, -0.05]) {
                 rotate([0, 0, 180]) {
-                  counterbore(d=screw_dia,
+                  counterbore(d=bolt_dia,
                               h=thickness,
                               bore_h=cbore_h,
                               bore_d=cbore_d,
@@ -94,8 +94,8 @@ module power_lid_voltmeters_placeholders(specs=power_voltmeter_specs, echo_wirin
   for (i = [0 : len(specs) - 1]) {
     let (v_spec = specs[i][0],
          positions = specs[i][1],
-         screw_size = v_spec[0],
-         screw_dia = v_spec[1],
+         bolt_spacing = v_spec[0],
+         bolt_dia = v_spec[1],
          board_size = v_spec[2],
          display_spec = v_spec[3],
          pins_spec = v_spec[4],
@@ -123,7 +123,7 @@ module power_lid_voltmeters_placeholders(specs=power_voltmeter_specs, echo_wirin
       translate([positions[0], positions[1], -pin_h
                  - positions[2]]) {
         translate([- board_w / 2,
-                   max(board_len, screw_size[1]) / 2, 0]) {
+                   max(board_len, bolt_spacing[1]) / 2, 0]) {
           if (echo_wiring_len && is_num(text_spec[0])) {
             echo(str("total_wire_length for voltmeter ", str(i),
                      " (",
@@ -142,8 +142,8 @@ module power_lid_voltmeters_placeholders(specs=power_voltmeter_specs, echo_wirin
                         board_w=board_w,
                         board_len=board_len,
                         board_h=board_h,
-                        screw_size=screw_size,
-                        screw_dia=screw_dia,
+                        bolt_spacing=bolt_spacing,
+                        bolt_dia=bolt_dia,
                         display_w=display_w,
                         display_len=display_len,
                         display_h=display_h,
@@ -279,16 +279,16 @@ module power_lid_atm_fuse_placeholders(specs=power_lid_side_wall_1_atm_fuse_spec
   }
 }
 
-module power_case_lid_screw_holes_pair() {
+module power_case_lid_bolt_holes_pair() {
   mirror_copy([0, 1, 0]) {
     translate([0,
-               side_screw_start,
+               side_bolt_start,
                0]) {
       rotate([0, 90, 0]) {
-        counterbore(d=power_case_rail_screw_dia,
+        counterbore(d=power_case_rail_bolt_dia,
                     h=side_wall_w + 1,
                     bore_h=power_lid_thickness / 2,
-                    bore_d=power_case_rail_screw_dia * 1.5,
+                    bore_d=power_case_rail_bolt_dia * 1.5,
                     center=true,
                     sink=false);
       }
@@ -296,22 +296,22 @@ module power_case_lid_screw_holes_pair() {
   }
 }
 
-module power_lid_side_screw_holes() {
+module power_lid_side_bolt_holes() {
 
   union() {
     mirror_copy([1, 0, 0]) {
       translate([half_of_inner_x
                  + half_of_side_wall_w, 0,
                  power_lid_height
-                 - power_case_rail_screw_dia]) {
-        power_case_lid_screw_holes_pair();
+                 - power_case_rail_bolt_dia]) {
+        power_case_lid_bolt_holes_pair();
       }
     }
     // mirror_copy([1, 0, 0]) {
     //   translate([half_of_inner_x
     //              + half_of_side_wall_w, 0,
-    //              + power_case_rail_screw_dia]) {
-    //     power_case_lid_screw_holes_pair();
+    //              + power_case_rail_bolt_dia]) {
+    //     power_case_lid_bolt_holes_pair();
     //   }
     // }
   }
@@ -322,19 +322,19 @@ module power_lid_xt_90_slot() {
     rotate([0, 0, 180]) {
       rounded_rect_two(xt_90_size, center=true);
     }
-    four_corner_holes_2d(xt_90_screw_size,
+    four_corner_holes_2d(xt_90_bolt_spacing,
                          center=true,
-                         hole_dia=xt_90_screw_dia);
+                         hole_dia=xt_90_bolt_dia);
   }
 }
 
 module with_xt90_position() {
   translate([half_of_inner_x
-             - max(xt_90_size[0], xt_90_screw_size[0]) / 2
+             - max(xt_90_size[0], xt_90_bolt_spacing[0]) / 2
              - xt_90_position[0],
              half_of_inner_y
-             - max(xt_90_size[1], xt_90_screw_size[1]) / 2
-             + xt_90_screw_dia / 2
+             - max(xt_90_size[1], xt_90_bolt_spacing[1]) / 2
+             + xt_90_bolt_dia / 2
              - xt_90_position[1],
              0]) {
     children();
@@ -376,7 +376,7 @@ module power_lid(show_switch_button=false,
               counterbore_single_slots_by_specs(specs=specs,
                                                 thickness=power_lid_thickness);
             }
-            for (specs=power_lid_rect_screw_holes) {
+            for (specs=power_lid_rect_bolt_holes) {
               four_corner_hole_rows(specs=specs,
                                     thickness=power_lid_thickness);
             }
@@ -404,7 +404,7 @@ module power_lid(show_switch_button=false,
                  center=true);
           }
 
-          power_lid_side_screw_holes();
+          power_lid_side_bolt_holes();
         }
       }
 
@@ -433,20 +433,20 @@ module power_lid(show_switch_button=false,
       }
       if (show_bolts) {
         translate([0, -half_of_inner_y, 0]) {
-          for (specs = power_lid_rect_screw_holes) {
+          for (specs = power_lid_rect_bolt_holes) {
             four_corner_hole_rows(specs=specs,
-                                  screw_mode=true,
+                                  bolt_mode=true,
                                   thickness=power_lid_thickness);
           }
         }
       }
 
       if (show_dc_regulator) {
-        for (group_i = [0 : len(power_lid_rect_screw_holes) - 1]) {
-          let (specs = power_lid_rect_screw_holes[group_i]) {
+        for (group_i = [0 : len(power_lid_rect_bolt_holes) - 1]) {
+          let (specs = power_lid_rect_bolt_holes[group_i]) {
             let (idx = find_index(specs, "DC")) {
               if (idx >= 0) {
-                let (spec = power_lid_rect_screw_holes[group_i][idx],
+                let (spec = power_lid_rect_bolt_holes[group_i][idx],
                      dia = spec[1],
                      offsets = spec[2],
                      x_offset = offsets[1],
@@ -509,7 +509,7 @@ module power_lid(show_switch_button=false,
     }
 
     translate([half_of_inner_x, -half_of_inner_y, 0]) {
-      power_lid_voltmeters_screw_holes();
+      power_lid_voltmeters_bolt_holes();
     }
     if (use_toggle_switch) {
       mirror_copy([1, 0, 0]) {

@@ -17,12 +17,12 @@ function pan_servo_full_height() =
 
 function pan_servo_height_after_hat() =
   servo_height_after_hat(h=pan_servo_size[2],
-                         z_offst=pan_screws_hat_z_offset,
+                         z_offst=pan_bolts_hat_z_offset,
                          hat_thickness=pan_servo_hat_thickness);
 
 function pan_servo_height_before_hat() =
   servo_height_before_hat(h=pan_servo_size[2],
-                          z_offst=pan_screws_hat_z_offset,
+                          z_offst=pan_bolts_hat_z_offset,
                           hat_thickness=pan_servo_hat_thickness);
 
 function pan_servo_gear_height() =
@@ -31,19 +31,21 @@ function pan_servo_gear_height() =
 function pan_servo_gear_x_center() =
   pan_servo_size[0] / 2 - pan_servo_gearbox_d1 / 2;
 
-module pan_servo(center=false, servo_color=pan_servo_color,
+module pan_servo(center=false,
+                 servo_color=pan_servo_color,
+                 servo_horn_rotation=0,
                  show_servo_horn=true,
                  alpha=1) {
   servo(size=[pan_servo_size[0],
               pan_servo_size[1],
               pan_servo_size[2]],
-        screws_dia=head_neck_tilt_servo_screw_dia,
+        bolts_dia=head_neck_tilt_servo_bolt_dia,
         servo_hat_w=pan_servo_hat_w,
         center=center,
         servo_hat_h=pan_servo_hat_h,
         servo_hat_thickness=pan_servo_hat_thickness,
-        screws_offset=pan_servo_screws_offset,
-        screws_hat_z_offset=pan_screws_hat_z_offset,
+        bolts_offset=pan_servo_bolts_offset,
+        bolts_hat_z_offset=pan_bolts_hat_z_offset,
         alpha=alpha,
         servo_color=servo_color,
         gearbox_box_color=pan_servo_color,
@@ -56,7 +58,7 @@ module pan_servo(center=false, servo_color=pan_servo_color,
         gearbox_d2=pan_servo_gearbox_d2,
         gearbox_x_offset=pan_servo_gearbox_x_offset,
         gearbox_mode=pan_servo_gearbox_mode,
-        servo_horn_rotation=0,
+        servo_horn_rotation=servo_horn_rotation,
         show_servo_horn=show_servo_horn,
         gearbox_gear_size=pan_servo_gearbox_size) {
 

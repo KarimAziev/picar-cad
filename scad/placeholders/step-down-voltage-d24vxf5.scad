@@ -154,12 +154,12 @@ module step_down_voltage_standoffs(standoff_h=step_down_voltage_regulator_stando
   mirror_copy([0, 1, 0]) {
     mirror_copy([1, 0, 0]) {
       color("gold", alpha=1) {
-        dia = step_down_voltage_screw_hole_dia + 0.4;
+        dia = step_down_voltage_bolt_hole_dia + 0.4;
         translate([-step_down_voltage_regulator_len / 2
-                   + step_down_voltage_screw_hole_dia / 2
-                   + step_down_voltage_screw_x_distance,
+                   + step_down_voltage_bolt_hole_dia / 2
+                   + step_down_voltage_bolt_x_distance,
                    -step_down_voltage_regulator_w / 2
-                   + step_down_voltage_screw_y_distance,
+                   + step_down_voltage_bolt_y_distance,
                    -standoff_h]) {
           cylinder(h = step_down_voltage_regulator_thickness + standoff_h,
                    r = dia / 2,
@@ -197,7 +197,7 @@ module power_inductor(w=step_down_voltage_power_inductor_size[0],
 module step_down_voltage_regulator(standoff_h=5,
                                    show_terminal_vin=false,
                                    show_terminal_vout=true) {
-  screw_dia = step_down_voltage_screw_hole_dia + 0.4;
+  bolt_dia = step_down_voltage_bolt_hole_dia + 0.4;
   z_offst = step_down_voltage_regulator_thickness / 2;
 
   union() {
@@ -214,7 +214,7 @@ module step_down_voltage_regulator(standoff_h=5,
           translate([0, 0, -h / 2]) {
             linear_extrude(height=h, center=false, convexity=2) {
               four_corner_holes_2d(size=step_down_voltage_screw_terminal_holes,
-                                   hole_dia=screw_dia,
+                                   hole_dia=bolt_dia,
                                    center=true);
             }
           }
@@ -313,7 +313,7 @@ module step_down_voltage_regulator(standoff_h=5,
              cyl_h = 6.85,
              cyl_cutout_w = d * 0.9) {
           translate([step_down_voltage_screw_terminal_holes[0] / 2 - d / 2
-                     - screw_dia / 2
+                     - bolt_dia / 2
                      - x_dist,
                      step_down_voltage_regulator_w / 2
                      - d / 2

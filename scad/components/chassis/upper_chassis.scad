@@ -31,31 +31,31 @@ use <util.scad>
 use <chassis_connector.scad>
 
 upper_side_hole_pts            =  scale_upper_trapezoid_pts(x=chassis_trapezoid_hole_width,
-                                                y=chassis_trapezoid_hole_len);
+                                                            y=chassis_trapezoid_hole_len);
 
 front_panel_chassis_slot_depth = chassis_thickness / 2;
-front_pan_y                    = chassis_upper_len + front_panel_screw_y_offset();
-effective_front_pan_dia        = max(front_panel_connector_screw_bore_dia,
-                                  front_panel_connector_screw_dia) / 2;
+front_pan_y                    = chassis_upper_len + front_panel_bolt_y_offset();
+effective_front_pan_dia        = max(front_panel_connector_bolt_bore_dia,
+                                     front_panel_connector_bolt_dia) / 2;
 front_pan_end                  = front_pan_y - effective_front_pan_dia;
 top_ribbon_hole_pos            = front_pan_end
-                                  - chassis_pan_servo_top_ribbon_cuttout_h
-                                  - chassis_upper_front_padding_y;
+  - chassis_pan_servo_top_ribbon_cuttout_h
+  - chassis_upper_front_padding_y;
 
 head_pos                       = -upper_chassis_holes_border_w * 2
-                                  - chassis_pan_servo_recesess_y_len
-                                  - chassis_pan_servo_recesess_thickness / 2
-                                  + top_ribbon_hole_pos
-                                  - upper_chassis_holes_border_w
-                                  - chassis_head_zone_y_offset;
+  - chassis_pan_servo_recesess_y_len
+  - chassis_pan_servo_recesess_thickness / 2
+  + top_ribbon_hole_pos
+  - upper_chassis_holes_border_w
+  - chassis_head_zone_y_offset;
 
 hole_h                         = chassis_thickness + 1;
 steering_pan_pos               = chassis_upper_len - steering_panel_distance_from_top;
 
 trapezoid_rows_params          = calc_cols_params(gap=chassis_pan_servo_side_trapezoid_gap
-                                         + upper_chassis_holes_border_w,
-                                         cols=chassis_pan_servo_side_trapezoid_rows,
-                                         w=chassis_trapezoid_hole_len,);
+                                                  + upper_chassis_holes_border_w,
+                                                  cols=chassis_pan_servo_side_trapezoid_rows,
+                                                  w=chassis_trapezoid_hole_len,);
 trapezoid_step                 = trapezoid_rows_params[0];
 trapezoid_total_y              = trapezoid_rows_params[1];
 
@@ -64,7 +64,7 @@ top_most_row_params = calc_cols_params(cols=chassis_top_most_holes_rows,
                                        gap=chassis_top_most_holes_gap);
 
 top_most_rects_start           = top_ribbon_hole_pos - top_most_row_params[1]
-                                  - chassis_top_most_holes_side_y_offset;
+  - chassis_top_most_holes_side_y_offset;
 
 top_rib_hole_pts               = scale_upper_trapezoid_pts(x=chassis_pan_servo_top_ribbon_cuttout_len / 2,
                                                            y=chassis_pan_servo_top_ribbon_cuttout_h);
@@ -186,15 +186,15 @@ module pan_servo_slot_3d() {
     scale_upper_trapezoid_pts(x=chassis_pan_servo_recesess_thickness,
                               y=chassis_pan_servo_recesess_y_len);
 
-  step = chassis_pan_servo_mount_screw_d + chassis_pan_servo_mount_screw_distance;
+  step = chassis_pan_servo_screw_d + chassis_pan_servo_screws_gap;
 
   slot_rad = chassis_pan_servo_slot_dia / 2;
   total_x = round((chassis_pan_servo_recesess_x_len / 2) / step);
   total_y = round((chassis_pan_servo_recesess_y_len / 2) / step);
   hole_h = chassis_thickness + 1;
   union() {
-    translate([0, 0, chassis_thickness - chassis_pan_servo_slot_depth + 0.5]) {
-      linear_extrude(height=chassis_pan_servo_slot_depth + 0.5,
+    translate([0, 0, chassis_thickness - chassis_pan_servo_slot_recess + 0.5]) {
+      linear_extrude(height=chassis_pan_servo_slot_recess + 0.5,
                      center=false,
                      convexity=2) {
 
@@ -216,21 +216,21 @@ module pan_servo_slot_3d() {
       cylinder(r=slot_rad, h=hole_h, $fn=60);
       mirror_copy([1, 0, 0]) {
         translate([slot_rad
-                   + chassis_pan_servo_mount_screw_distance, 0, 0]) {
-          columns_children(gap=chassis_pan_servo_mount_screw_distance,
+                   + chassis_pan_servo_screws_gap, 0, 0]) {
+          columns_children(gap=chassis_pan_servo_screws_gap,
                            cols=total_x,
-                           w=chassis_pan_servo_mount_screw_d) {
-            cylinder(r=chassis_pan_servo_mount_screw_d / 2, h=hole_h, $fn=60);
+                           w=chassis_pan_servo_screw_d) {
+            cylinder(r=chassis_pan_servo_screw_d / 2, h=hole_h, $fn=60);
           }
         }
       }
       mirror_copy([0, 1, 0]) {
         translate([0, slot_rad
-                   + chassis_pan_servo_mount_screw_distance, 0]) {
-          rows_children(gap=chassis_pan_servo_mount_screw_distance,
+                   + chassis_pan_servo_screws_gap, 0]) {
+          rows_children(gap=chassis_pan_servo_screws_gap,
                         rows=total_y,
-                        w=chassis_pan_servo_mount_screw_d) {
-            cylinder(r=chassis_pan_servo_mount_screw_d / 2, h=hole_h, $fn=60);
+                        w=chassis_pan_servo_screw_d) {
+            cylinder(r=chassis_pan_servo_screw_d / 2, h=hole_h, $fn=60);
           }
         }
       }
@@ -458,7 +458,7 @@ module chassis_top_most_side_holes(border_mode=false,
 module chassis_upper_front_panel_slot() {
   translate([0,
              + chassis_upper_len
-             + front_panel_screw_y_offset(),
+             + front_panel_bolt_y_offset(),
              0]) {
     translate([0,
                front_panel_connector_len / 2
@@ -482,12 +482,12 @@ module chassis_upper_front_panel_slot() {
         }
       }
     }
-    translate([0, front_panel_connector_screws_padding_y, 0]) {
-      four_corner_children(front_panel_connector_screws_size, center=true) {
-        counterbore(d=front_panel_connector_screw_dia,
+    translate([0, front_panel_connector_bolts_padding_y, 0]) {
+      four_corner_children(front_panel_connector_bolt_spacing, center=true) {
+        counterbore(d=front_panel_connector_bolt_dia,
                     h=front_panel_thickness,
                     bore_d=0,
-                    bore_h=front_panel_connector_screw_bore_h,
+                    bore_h=front_panel_connector_bolt_bore_h,
                     autoscale_step=0.1,
                     reverse=true);
       }
@@ -528,7 +528,7 @@ module chassis_upper_3d(panel_color="white",
                         show_tie_rod=false,
                         show_servo=false,
                         show_knuckles=false,
-                        head_z_rotation=0,
+                        tilt_servo_rotation=0,
                         show_distance=false,) {
 
   difference() {
@@ -589,7 +589,7 @@ module chassis_upper_3d(panel_color="white",
     translate([0,
                head_pos,
                chassis_thickness
-               - chassis_pan_servo_slot_depth]) {
+               - chassis_pan_servo_slot_recess]) {
       head_neck(center_pan_servo_slot=true,
                 show_pan_servo=show_pan_servo,
                 show_tilt_servo=show_tilt_servo,
@@ -597,7 +597,7 @@ module chassis_upper_3d(panel_color="white",
                 show_camera=show_camera,
                 show_ir_led=show_ir_led,
                 show_head=show_head,
-                head_z_rotation=head_z_rotation,
+                tilt_servo_rotation=tilt_servo_rotation,
                 bracket_color=with_default(bracket_color, panel_color),
                 head_color=with_default(head_color, panel_color));
     }
@@ -606,8 +606,8 @@ module chassis_upper_3d(panel_color="white",
   if (show_front_panel || show_ultrasonic || show_front_rear_panel) {
     translate([0,
                front_pan_y -
-               max(front_panel_connector_screw_bore_dia,
-                   front_panel_connector_screw_dia) / 2,
+               max(front_panel_connector_bolt_bore_dia,
+                   front_panel_connector_bolt_dia) / 2,
                chassis_thickness
                - front_panel_chassis_slot_depth]) {
       front_panel_assembly(show_ultrasonic=show_ultrasonic,
@@ -643,7 +643,7 @@ module chassis_upper(panel_color="white",
                      show_tie_rod=true,
                      show_servo=true,
                      show_knuckles=true,
-                     head_z_rotation=0,
+                     tilt_servo_rotation=0,
                      show_distance=false,) {
   union() {
     translate([0, chassis_transition_len, 0]) {
@@ -673,7 +673,7 @@ module chassis_upper(panel_color="white",
                        show_pinion=show_pinion,
                        show_tie_rod=show_tie_rod,
                        show_servo=show_servo,
-                       head_z_rotation=head_z_rotation,
+                       tilt_servo_rotation=tilt_servo_rotation,
                        show_knuckles=show_knuckles,
                        show_distance=show_distance);
     }
@@ -710,7 +710,7 @@ module chassis_upper_printable() {
                   show_tie_rod=false,
                   show_servo=false,
                   show_knuckles=false,
-                  head_z_rotation=0,
+                  tilt_servo_rotation=0,
                   show_distance=false,);
   }
 }

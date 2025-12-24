@@ -22,11 +22,11 @@ This repository contains the 3D model source files for a four-wheeled robot chas
 >     - [Camera Module](#camera-module)
 >     - [Ultrasonic](#ultrasonic)
 >     - [IR LED](#ir-led)
->     - [Screws and Nuts](#screws-and-nuts)
+>     - [Bolts and Nuts](#bolts-and-nuts)
 >       - [Steering panel](#steering-panel)
 >       - [Steering pinion](#steering-pinion)
 >         - [For Servo gear](#for-servo-gear)
->         - [Self-tapping screws for servo arm](#self-tapping-screws-for-servo-arm)
+>         - [Self-tapping bolts for servo arm](#self-tapping-bolts-for-servo-arm)
 >       - [Steering Knuckle](#steering-knuckle)
 >       - [Raspberry Pi](#raspberry-pi-1)
 >       - [Battery holder](#battery-holder)
@@ -51,7 +51,7 @@ The robot model is designed around the following core elements:
 - **Rear-Wheel Drive**: Two individual motors drive the rear wheels. Both standard yellow DC motors and N20-type motors are supported.
 - **Modular Head Mount**: The head mount is designed to accommodate two Raspberry Pi Camera Module 3 or more sensors (e.g., day/night configuration).
 - **Extendable Power Tiers**: Side and center slots allow for independent modules for power management: servo driver HAT, motor driver HAT, UPS for Raspberry Pi 5, etc.
-- **Raspberry Pi**: The chassis includes placements and screw holes for the Raspberry Pi 5 and multiple 18650 battery holders.
+- **Raspberry Pi**: The chassis includes placements and bolt holes for the Raspberry Pi 5 and multiple 18650 battery holders.
 
 ## Ackermann Geometry
 
@@ -99,7 +99,7 @@ This project supports three **EMAX ES08MA II** servos by default. If using diffe
 
 ### Raspberry Pi
 
-Raspberry Pi 5 is supported by default. To use a different model, adjust the relevant variables prefixed with `rpi_` (e.g., `rpi_screws_size`).
+Raspberry Pi 5 is supported by default. To use a different model, adjust the relevant variables prefixed with `rpi_` (e.g., `rpi_bolt_spacing`).
 
 ### Power Supply
 
@@ -128,41 +128,41 @@ The design also supports case for [IR Waveshare Infrared LED Light Board Module]
 
 The original LED board is incompatible with the Raspberry Camera Module 3, and the quality of Waveshare’s original camera is unsatisfactory.
 
-Nevertheless, this LED board can be used with Camera Module 3 and other Raspberry Pi cameras. To do so, solder two wires (**GND** and **V+**) to the screw holes on the LED board (the screw holes serve both for mechanical attachment and for power). Then connect the positive wire to **3.3V** and the ground wire to **GND**.
+Nevertheless, this LED board can be used with Camera Module 3 and other Raspberry Pi cameras. To do so, solder two wires (**GND** and **V+**) to the bolt holes on the LED board (the bolt holes serve both for mechanical attachment and for power). Then connect the positive wire to **3.3V** and the ground wire to **GND**.
 
-### Screws and Nuts
+### Bolts and Nuts
 
-Since the default chassis thickness is **4 mm** (changeable via the variable `chassis_thickness`), use screws at least **8 mm** long for fastenings that go through the chassis, depending on the nuts. I suggest using lock nuts for these screws, but plain nuts are also acceptable.
+Since the default chassis thickness is **4 mm** (changeable via the variable `chassis_thickness`), use bolts at least **8 mm** long for fastenings that go through the chassis, depending on the nuts. I suggest using lock nuts for these bolts, but plain nuts are also acceptable.
 
 The tables below are grouped by component. I haven't combined them into a single table with total quantities because totals depend on which components you use - for example, you may or may not include the UPS Module S3.
 
-Each table includes a "Variable" column that refers to a configurable variable in parameters.scad. You can change it to the screw diameter you want to use.
+Each table includes a "Variable" column that refers to a configurable variable in parameters.scad. You can change it to the bolt diameter you want to use.
 
 #### Steering panel
 
-| Size                     | Length (mm) | Amount | Nuts | Variable                                   |
-| ------------------------ | ----------- | ------ | ---- | ------------------------------------------ |
-| M2.5                     | 8           | 4      | 2    | `steering_panel_hinge_screw_dia`           |
-| M2                       | 8           | 2      | 2    | `steering_servo_screw_dia`                 |
-| M3                       | 20          | 2      | 2    | `steering_servo_mount_connector_screw_dia` |
-| M2 or M2.5 for tight fit | 10          | 4      | 4    | `steering_kingpin_post_screw_dia`          |
+| Size                     | Length (mm) | Amount | Nuts | Variable                                  |
+| ------------------------ | ----------- | ------ | ---- | ----------------------------------------- |
+| M2.5                     | 8           | 4      | 2    | `steering_panel_hinge_bolt_dia`           |
+| M2                       | 8           | 2      | 2    | `steering_servo_bolt_dia`                 |
+| M3                       | 20          | 2      | 2    | `steering_servo_mount_connector_bolt_dia` |
+| M2 or M2.5 for tight fit | 10          | 4      | 4    | `steering_kingpin_post_bolt_dia`          |
 
 #### Steering pinion
 
-Your servo pack should already include screws, a servo arm, and self-tapping screws to secure the servo arm, but I'll list them here for reference as well.
+Your servo pack should already include bolts, a servo arm, and self-tapping bolts to secure the servo arm, but I'll list them here for reference as well.
 
 ##### For Servo gear
 
-| Size | Length (mm) | Amount | Nuts | Variable                   |
-| ---- | ----------- | ------ | ---- | -------------------------- |
-| M2   | 4           | 1      | 0    | `steering_servo_screw_dia` |
+| Size | Length (mm) | Amount | Nuts | Variable                  |
+| ---- | ----------- | ------ | ---- | ------------------------- |
+| M2   | 4           | 1      | 0    | `steering_servo_bolt_dia` |
 
 > [!TIP]
-> The variable `steering_servo_screw_dia` is used only in assembly views, but there are useful variables that define the diameter of the hole at the center of the pinion where you insert the servo's gearbox - `steering_pinion_center_hole_dia`. Its default size is **6.5** mm.
+> The variable `steering_servo_bolt_dia` is used only in assembly views, but there are useful variables that define the diameter of the hole at the center of the pinion where you insert the servo's gearbox - `steering_pinion_center_hole_dia`. Its default size is **6.5** mm.
 
-##### Self-tapping screws for servo arm
+##### Self-tapping bolts for servo arm
 
-Self-tapping screws should also be included in your pack. The diameter may differ slightly, but the screws should still fit due to the nature of self-tapping screws.
+Self-tapping bolts should also be included in your pack. The diameter may differ slightly, but the bolts should still fit due to the nature of self-tapping bolts.
 
 | Size | Length (mm) | Amount    | Nuts | Variable                    |
 | ---- | ----------- | --------- | ---- | --------------------------- |
@@ -170,91 +170,91 @@ Self-tapping screws should also be included in your pack. The diameter may diffe
 
 #### Steering Knuckle
 
-| Size                     | Length (mm) | Amount            | Nuts | Variable                  |
-| ------------------------ | ----------- | ----------------- | ---- | ------------------------- |
-| M2.5                     | 10          | 4 (2 per knuckle) | 0    | `knuckle_shaft_screw_dia` |
-| M2 or M2.5 for tight fit | 10          | 4 (2 per knuckle) | 0    | `tie_rod_shaft_screw_dia` |
+| Size                     | Length (mm) | Amount            | Nuts | Variable                 |
+| ------------------------ | ----------- | ----------------- | ---- | ------------------------ |
+| M2.5                     | 10          | 4 (2 per knuckle) | 0    | `knuckle_shaft_bolt_dia` |
+| M2 or M2.5 for tight fit | 10          | 4 (2 per knuckle) | 0    | `tie_rod_shaft_bolt_dia` |
 
 #### Raspberry Pi
 
-The exact screw length depends on the standoffs you use. Since the default chassis thickness is 4 mm, you should use screws that are at least 6 mm long.
+The exact bolt length depends on the standoffs you use. Since the default chassis thickness is 4 mm, you should use bolts that are at least 6 mm long.
 
-| Size | Length (mm) | Amount | Nuts/Standoffs | Variable             |
-| ---- | ----------- | ------ | -------------- | -------------------- |
-| M2   | 6 or higher | 4      | 4              | `rpi_screw_hole_dia` |
+| Size | Length (mm) | Amount | Nuts/Standoffs | Variable            |
+| ---- | ----------- | ------ | -------------- | ------------------- |
+| M2   | 6 or higher | 4      | 4              | `rpi_bolt_hole_dia` |
 
 #### Battery holder
 
 You can attach one or two battery holders to the bottom of the chassis.
 
-| Size | Length (mm) | Amount | Nuts | Variable                   |
-| ---- | ----------- | ------ | ---- | -------------------------- |
-| M2.5 | 8 or higher | 2      | 1    | `battery_holder_screw_dia` |
+| Size | Length (mm) | Amount | Nuts | Variable                  |
+| ---- | ----------- | ------ | ---- | ------------------------- |
+| M2.5 | 8 or higher | 2      | 1    | `battery_holder_bolt_dia` |
 
 #### UPS module S3
 
 You should use either 4 or 8 M3 standoffs. If you use 8 standoffs, the nuts listed below are not needed.
 
-| Size | Length (mm) | Amount | Nuts | Variable                |
-| ---- | ----------- | ------ | ---- | ----------------------- |
-| M3   | 8 or higher | 4      | 4    | `battery_ups_screw_dia` |
+| Size | Length (mm) | Amount | Nuts | Variable               |
+| ---- | ----------- | ------ | ---- | ---------------------- |
+| M3   | 8 or higher | 4      | 4    | `battery_ups_bolt_dia` |
 
 #### Motor brackets
 
 ##### For two N20 motors
 
-| Size | Length (mm) | Amount | Nuts | Variable              |
-| ---- | ----------- | ------ | ---- | --------------------- |
-| M2.5 | 8 or higher | 4      | 4    | `n20_motor_screw_dia` |
+| Size | Length (mm) | Amount | Nuts | Variable             |
+| ---- | ----------- | ------ | ---- | -------------------- |
+| M2.5 | 8 or higher | 4      | 4    | `n20_motor_bolt_dia` |
 
 ##### For two standard (yellow) motors
 
-| Size | Length (mm) | Amount | Nuts | Variable                                    |
-| ---- | ----------- | ------ | ---- | ------------------------------------------- |
-| M3   | 28          | 4      | 4    | `standard_motor_bracket_motor_screw_hole`   |
-| M2   | 8 or higher | 4      | 4    | `standard_motor_bracket_chassis_screw_hole` |
+| Size | Length (mm) | Amount | Nuts | Variable                                   |
+| ---- | ----------- | ------ | ---- | ------------------------------------------ |
+| M3   | 28          | 4      | 4    | `standard_motor_bracket_motor_bolt_hole`   |
+| M2   | 8 or higher | 4      | 4    | `standard_motor_bracket_chassis_bolt_hole` |
 
 #### Head
 
 ##### For two Raspberry Pi Camera Module 3 boards
 
-| Size | Length (mm) | Amount                | Nuts | Variable                |
-| ---- | ----------- | --------------------- | ---- | ----------------------- |
-| M2   | 4 or higher | 8 (4 for each camera) | 8    | `head_camera_screw_dia` |
+| Size | Length (mm) | Amount                | Nuts | Variable               |
+| ---- | ----------- | --------------------- | ---- | ---------------------- |
+| M2   | 4 or higher | 8 (4 for each camera) | 8    | `head_camera_bolt_dia` |
 
-As with the steering servo, your servo pack should already include screws, a servo arm, and self-tapping screws to secure the servo arm. The diameter of the hole on the head where the tilt-servo gearbox mounts is defined by `head_servo_mount_dia`.
+As with the steering servo, your servo pack should already include bolts, a servo arm, and self-tapping bolts to secure the servo arm. The diameter of the hole on the head where the tilt-servo gearbox mounts is defined by `head_servo_mount_dia`.
 
 The corresponding hole for the pan servo on the chassis is controlled by `chassis_pan_servo_slot_dia`.
 
 #### Head neck
 
-| Size | Length (mm) | Amount | Nuts | Variable                         |
-| ---- | ----------- | ------ | ---- | -------------------------------- |
-| M2   | 6 or higher | 2      | 2    | `head_neck_pan_servo_screw_dia`  |
-| M2   | 6 or higher | 2      | 2    | `head_neck_tilt_servo_screw_dia` |
+| Size | Length (mm) | Amount | Nuts | Variable                        |
+| ---- | ----------- | ------ | ---- | ------------------------------- |
+| M2   | 6 or higher | 2      | 2    | `head_neck_pan_servo_bolt_dia`  |
+| M2   | 6 or higher | 2      | 2    | `head_neck_tilt_servo_bolt_dia` |
 
 #### IR Case for the Infrared LED Light Board
 
-| Size | Length (mm) | Amount | Nuts | Variable                 |
-| ---- | ----------- | ------ | ---- | ------------------------ |
-| M2   | 6 or higher | 2      | 2    | `ir_case_screw_dia`      |
-| M2   | 6 or higher | 2      | 2    | `ir_case_rail_screw_dia` |
+| Size | Length (mm) | Amount | Nuts | Variable                |
+| ---- | ----------- | ------ | ---- | ----------------------- |
+| M2   | 6 or higher | 2      | 2    | `ir_case_bolt_dia`      |
+| M2   | 6 or higher | 2      | 2    | `ir_case_rail_bolt_dia` |
 
-Variable `ir_case_screw_dia` defines the diameter of the screw holes that attach the case to the head; `ir_case_rail_screw_dia` defines the diameter of the rail holes that secure the IR LED to the case itself.
+Variable `ir_case_bolt_dia` defines the diameter of the bolt holes that attach the case to the head; `ir_case_rail_bolt_dia` defines the diameter of the rail holes that secure the IR LED to the case itself.
 
 #### Ultrasonic case for HC-SR04
 
-| Size | Length (mm)  | Amount | Nuts | Variable                          |
-| ---- | ------------ | ------ | ---- | --------------------------------- |
-| M2.5 | 10 or higher | 2 or 3 | 2    | `front_panel_connector_screw_dia` |
-| M2.5 | 10 or higher | 2      | 2    | `front_panel_screw_dia`           |
+| Size | Length (mm)  | Amount | Nuts | Variable                         |
+| ---- | ------------ | ------ | ---- | -------------------------------- |
+| M2.5 | 10 or higher | 2 or 3 | 2    | `front_panel_connector_bolt_dia` |
+| M2.5 | 10 or higher | 2      | 2    | `front_panel_bolt_dia`           |
 
-`front_panel_connector_screw_dia` defines the diameter of the screw hole on the bracket that connects to the chassis, and `front_panel_screw_dia` defines the diameter of the screw hole on the front panel that secures the ultrasonic sensor, which is placed between the front panel and the bracket.
+`front_panel_connector_bolt_dia` defines the diameter of the bolt hole on the bracket that connects to the chassis, and `front_panel_bolt_dia` defines the diameter of the bolt hole on the front panel that secures the ultrasonic sensor, which is placed between the front panel and the bracket.
 
 #### Wheel hubs
 
-Each wheel hub requires 6 M2.5 (or M3 for a very tight fit) screws and nuts.
+Each wheel hub requires 6 M2.5 (or M3 for a very tight fit) bolts and nuts.
 
-| Size                     | Length (mm)  | Amount               | Nuts | Variable              |
-| ------------------------ | ------------ | -------------------- | ---- | --------------------- |
-| M2.5 or M3 for tight fit | 12 or higher | 12 (6 per wheel hub) | 12   | `wheel_hub_screw_dia` |
+| Size                     | Length (mm)  | Amount               | Nuts | Variable             |
+| ------------------------ | ------------ | -------------------- | ---- | -------------------- |
+| M2.5 or M3 for tight fit | 12 or higher | 12 (6 per wheel hub) | 12   | `wheel_hub_bolt_dia` |

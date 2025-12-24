@@ -432,28 +432,28 @@ function calc_isosceles_trapezoid_top_width(bottom_width,
 
 /**
    ─────────────────────────────────────────────────────────────────────────────
-   screw_x_offst
+   bolt_x_offst
    ─────────────────────────────────────────────────────────────────────────────
 
-   Calculates the translation positions for screws.
+   Calculates the translation positions for bolts.
 
    **Parameters:**
 
    `slot_w`: The width of the centered parent slot.
-   `screw_dia`: The diameter of the screw.
-   `distance`: The desired distance between the centered parent slot and the screw.
+   `bolt_dia`: The diameter of the bolt.
+   `distance`: The desired distance between the centered parent slot and the bolt.
 
    **Returns:**
-   The x offset for placing the screw relative to slot center.
+   The x offset for placing the bolt relative to slot center.
 
    **Example:**
 
    ```scad
-   screw_x_offst(10, 3.5, 2) // -> 8.75
+   bolt_x_offst(10, 3.5, 2) // -> 8.75
    ```
 */
-function screw_x_offst(slot_w, screw_dia, distance) =
-  (slot_w * 0.5 + screw_dia * 0.5) + distance;
+function bolt_x_offst(slot_w, bolt_dia, distance) =
+  (slot_w * 0.5 + bolt_dia * 0.5) + distance;
 
 /**
    ─────────────────────────────────────────────────────────────────────────────

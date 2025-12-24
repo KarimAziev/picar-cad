@@ -56,7 +56,7 @@ module motor_gearbox() {
                   [offst_a, -offst_b, -offst_c]]) {
           translate([x[0], -standard_motor_gearbox_body_main_len * 0.5
                      + 6, 0]) {
-            circle(r = standard_motor_bracket_motor_screw_hole / 2, $fn=60);
+            circle(r = standard_motor_bracket_motor_bolt_hole / 2, $fn=60);
             translate([x[1], x[2], 0]) {
               circle(r = m25_hole_dia / 2, $fn=60);
             }

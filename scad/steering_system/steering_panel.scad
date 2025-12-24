@@ -13,7 +13,7 @@
  **************************************************************************************
  *                          +---------------------------+
  *                          |                           |
- *                          |         M2 screw hole     |
+ *                          |         M2 bolt hole     |
  *                          |                           |
  *                          |            *              |
  *                          |      +-------------+      |
@@ -66,14 +66,14 @@ use <../lib/transforms.scad>
 use <../lib/holes.scad>
 use <../components/chassis/util.scad>
 
-steering_hinge_screw_rad = steering_panel_hinge_screw_dia / 2;
+steering_hinge_bolt_rad = steering_panel_hinge_bolt_dia / 2;
 
 hinge_pts = scale_upper_trapezoid_pts(x=steering_panel_hinge_w,
                                       y=steering_panel_hinge_length
                                       + steering_panel_hinge_corner_rad);
 
-hinge_h                  = max(steering_rack_support_thickness * 0.8,
-                               1);
+hinge_h                 = max(steering_rack_support_thickness * 0.8,
+                              1);
 
 module steering_panel_kingpin_connector() {
   knuckle_rad = knuckle_dia / 2;
@@ -84,10 +84,10 @@ module steering_panel_kingpin_connector() {
                    center=false) {
       difference() {
         ring_2d(r=knuckle_rad, $fn=360, fn=100, w=border_w);
-        circle(r=steering_hinge_screw_rad, $fn=360);
+        circle(r=steering_hinge_bolt_rad, $fn=360);
       }
     }
-    steering_kingpin_post_screw_holes();
+    steering_kingpin_post_bolt_holes();
   }
 }
 
@@ -104,13 +104,13 @@ function knuckle_connectors_x_offsets() =
    -half_of_len + knuckle_rad];
 
 module hinge_3d(slot_mode=false) {
-  max_d = max(steering_panel_hinge_screw_dia, steering_panel_hinge_bore_dia);
+  max_d = max(steering_panel_hinge_bolt_dia, steering_panel_hinge_bore_dia);
   if (slot_mode) {
-    translate([max_d / 2 + steering_panel_hinge_screw_x_distance,
-               max_d / 2 + steering_panel_hinge_screw_distance,
+    translate([max_d / 2 + steering_panel_hinge_bolt_x_distance,
+               max_d / 2 + steering_panel_hinge_bolt_distance,
                0]) {
       counterbore(h=chassis_thickness,
-                  d=steering_panel_hinge_screw_dia,
+                  d=steering_panel_hinge_bolt_dia,
                   bore_d=steering_panel_hinge_chassis_bore_dia,
                   bore_h=chassis_counterbore_h,
                   sink=true,
@@ -124,11 +124,11 @@ module hinge_3d(slot_mode=false) {
           polygon(hinge_pts);
         }
       }
-      translate([max_d / 2 + steering_panel_hinge_screw_x_distance,
-                 max_d / 2 + steering_panel_hinge_screw_distance,
+      translate([max_d / 2 + steering_panel_hinge_bolt_x_distance,
+                 max_d / 2 + steering_panel_hinge_bolt_distance,
                  0]) {
         counterbore(h=hinge_h,
-                    d=steering_panel_hinge_screw_dia,
+                    d=steering_panel_hinge_bolt_dia,
                     bore_d=steering_panel_hinge_bore_dia,
                     bore_h=hinge_h / 2,
                     sink=false,
@@ -153,7 +153,7 @@ module steering_chassis_bar_3d(length=steering_panel_length,
       for (x = x_offsets) {
         translate([x, 0, 0]) {
           counterbore(h=chassis_thickness,
-                      d=steering_panel_hinge_screw_dia,
+                      d=steering_panel_hinge_bolt_dia,
                       bore_d=steering_panel_hinge_bore_dia,
                       bore_h=steering_panel_hinge_bore_h,
                       sink=true,
@@ -207,7 +207,7 @@ module steering_rack_support(show_rack=false,
                          r=0);
           }
           translate([0, steering_rack_support_width, 0]) {
-            steering_servo_mount_panel_screw_holes();
+            steering_servo_mount_panel_bolt_holes();
           }
 
           translate([0, -servo_mount_clearance / 2, 0]) {

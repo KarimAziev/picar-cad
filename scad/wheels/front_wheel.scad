@@ -22,10 +22,10 @@ module front_wheel(w=wheel_w,
                    hub_h=wheel_hub_h,
                    hub_inner_rim_h=wheel_hub_inner_rim_h,
                    hub_inner_rim_w=wheel_hub_inner_rim_w,
-                   screws_dia=wheel_hub_screw_dia,
-                   screws_n=wheel_screws_n,
-                   screw_boss_h=wheel_screw_boss_h,
-                   screw_boss_w=wheel_screw_boss_w,
+                   bolts_dia=wheel_hub_bolt_dia,
+                   bolts_n=wheel_bolts_n,
+                   bolt_boss_h=wheel_bolt_boss_h,
+                   bolt_boss_w=wheel_bolt_boss_w,
                    show_bearing=false,
                    wheel_color="white",
                    hub_lower_color="white") {
@@ -50,10 +50,10 @@ module front_wheel(w=wheel_w,
                           h=hub_h,
                           inner_rim_h=hub_inner_rim_h,
                           inner_rim_w=hub_inner_rim_w,
-                          screws_dia=screws_dia,
-                          screws_n=screws_n,
-                          screw_boss_h=screw_boss_h,
-                          screw_boss_w=screw_boss_w);
+                          bolts_dia=bolts_dia,
+                          bolts_n=bolts_n,
+                          bolt_boss_h=bolt_boss_h,
+                          bolt_boss_w=bolt_boss_w);
         }
       }
       if (show_bearing) {

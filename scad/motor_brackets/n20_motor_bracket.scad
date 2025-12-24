@@ -2,13 +2,13 @@
  * Module: A mounting bracket for the N20 micro gear motor.
  *
  * This module provides a mechanical bracket for securely mounting an N20 motor
- * to a robot or chassis, using two side screw holes. The bracket surrounds the
- * cylindrical body of the motor and includes a screw panel that can be mounted
+ * to a robot or chassis, using two side bolt holes. The bracket surrounds the
+ * cylindrical body of the motor and includes a bolt panel that can be mounted
  * to a flat surface (e.g., robot chassis).
  *
  * The bracket includes:
  * - A circular cutout with notches to hold the motor's flattened sides, preventing rotation.
- * - A screw panel with two mounting holes to affix the bracket securely to a surface.
+ * - A bolt panel with two mounting holes to affix the bracket securely to a surface.
  * - An integrated support structure to ensure a snug and vibration-resistant fit.
  *
  * The `n20_motor_assembly()` module visualizes how the motor (and optionally a rear wheel)
@@ -16,8 +16,8 @@
  *
  * @modules:
  * - `n20_motor_bracket()`: Renders the actual bracket geometry.
- * - `n20_motor_screw_holes()`: Renders the mounting holes on the screw panel.
- * - `n20_motor_screws_panel()`: Renders the panel containing mounting holes.
+ * - `n20_motor_bolt_holes()`: Renders the mounting holes on the bolt panel.
+ * - `n20_motor_bolts_panel()`: Renders the panel containing mounting holes.
  * - `n20_motor_assembly(show_motor=true, show_wheel=false)`: Full motor-bracket assembly:
  *    including the motor and optionally a rear wheel.
  *
@@ -39,27 +39,27 @@ use <../placeholders/bolt.scad>
 
 function n20_motor_width() = n20_can_dia + n20_motor_bracket_thickness * 2;
 
-function n20_motor_screws_panel_thickness() =
+function n20_motor_bolts_panel_thickness() =
   n20_reductor_dia -
   (n20_can_dia -  cutout_depth(r=n20_can_dia / 2, cutout_w=n20_can_cutout_w));
 
-function n20_motor_screws_panel_x_offset() =
+function n20_motor_bolts_panel_x_offset() =
   notched_circle_square_center_x(r=n20_can_dia / 2,
                                  cutout_w=n20_can_cutout_w)
   - n20_can_cutout_w / 2 + (n20_motor_bracket_thickness / 2);
 
-module n20_motor_screw_holes_2d() {
-  screws_rad = n20_motor_screw_dia / 2;
-  n20_motor_with_screw_holes_positions() {
-    circle(r=screws_rad, $fn=360);
+module n20_motor_bolt_holes_2d() {
+  bolts_rad = n20_motor_bolt_dia / 2;
+  n20_motor_with_bolt_holes_positions() {
+    circle(r=bolts_rad, $fn=360);
   }
 }
 
-module n20_motor_with_screw_holes_positions() {
+module n20_motor_with_bolt_holes_positions() {
   for (i = [0:1]) {
     translate([i == 0
-               ? -n20_motor_screws_panel_offset
-               : n20_motor_screws_panel_offset,
+               ? -n20_motor_bolts_panel_offset
+               : n20_motor_bolts_panel_offset,
                0,
                0]) {
       children();
@@ -67,14 +67,14 @@ module n20_motor_with_screw_holes_positions() {
   }
 }
 
-module n20_motor_screw_holes_3d(reverse=false,
-                                h,
-                                sink=false,
-                                bore_h) {
-  n20_motor_with_screw_holes_positions() {
+module n20_motor_bolt_holes_3d(reverse=false,
+                               h,
+                               sink=false,
+                               bore_h) {
+  n20_motor_with_bolt_holes_positions() {
     counterbore(h=h,
-                d=n20_motor_screw_dia,
-                bore_d=n20_motor_screw_bore_dia,
+                d=n20_motor_bolt_dia,
+                bore_d=n20_motor_bolt_bore_dia,
                 bore_h=(is_undef(bore_h) ? h / 2 : bore_h),
                 sink=sink,
                 fn=100,
@@ -82,13 +82,13 @@ module n20_motor_screw_holes_3d(reverse=false,
   }
 }
 
-module n20_motor_screws_panel() {
+module n20_motor_bolts_panel() {
   cutout_depth = cutout_depth(r=n20_can_dia / 2, cutout_w=n20_can_cutout_w);
   h = n20_can_height / 2;
-  w = n20_motor_screws_panel_len;
+  w = n20_motor_bolts_panel_len;
 
-  effective_h = n20_motor_screws_panel_thickness();
-  x_offst = n20_motor_screws_panel_x_offset();
+  effective_h = n20_motor_bolts_panel_thickness();
+  x_offst = n20_motor_bolts_panel_x_offset();
 
   translate([x_offst, 0, h]) {
     rotate([90, 0, 90]) {
@@ -106,9 +106,9 @@ module n20_motor_screws_panel() {
             }
           }
         }
-        n20_motor_screw_holes_3d(h=effective_h,
-                                 sink=false,
-                                 reverse=true);
+        n20_motor_bolt_holes_3d(h=effective_h,
+                                sink=false,
+                                reverse=true);
       }
     }
   }
@@ -141,7 +141,7 @@ module n20_motor_bracket() {
                        x_cutouts_n=2, $fn=360);
       }
     }
-    n20_motor_screws_panel();
+    n20_motor_bolts_panel();
   }
 }
 
@@ -161,13 +161,13 @@ module n20_motor_assembly(show_motor=true,
     if (show_bolt) {
 
       h = n20_can_height / 2;
-      x_offst = n20_motor_screws_panel_x_offset();
+      x_offst = n20_motor_bolts_panel_x_offset();
 
-      bolt_height = round(with_default(bolt_h, chassis_thickness - n20_motor_screw_bore_h
-                                       + n20_motor_screws_panel_thickness() + bolt_visible_h));
+      bolt_height = round(with_default(bolt_h, chassis_thickness - n20_motor_bolt_bore_h
+                                       + n20_motor_bolts_panel_thickness() + bolt_visible_h));
       translate([x_offst + bolt_height, 0, h]) {
         rotate([90, 0, 90]) {
-          n20_motor_with_screw_holes_positions() {
+          n20_motor_with_bolt_holes_positions() {
 
             rotate([0, 180, 0]) {
               bolt(h=bolt_height,
@@ -176,7 +176,7 @@ module n20_motor_assembly(show_motor=true,
                    lock_nut=lock_nut,
                    show_nut=show_nut,
                    bolt_color=bolt_color,
-                   d=n20_motor_screw_dia);
+                   d=n20_motor_bolt_dia);
             }
           }
         }

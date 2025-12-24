@@ -10,7 +10,7 @@
  *
  * - `knuckle_kingpin_connector`: A central cylindrical piece with a bearing cutout for attaching kingpin posts.
  *
- * - `knuckle_tie_rod_shaft_arm`: An elongated arm with a cutout and screw holes for the tie rod shaft.
+ * - `knuckle_tie_rod_shaft_arm`: An elongated arm with a cutout and bolt holes for the tie rod shaft.
  *
  * - `knuckle_bent_shaft_rack_link_arm`: An arm with two cutouts: one for the
  *    curved axle shaft and one for a bearing that connects the arm to the rack
@@ -117,13 +117,13 @@ module knuckle_bent_shaft_rack_link_arm(knuckle_color="white",
                           children_modes=["difference", "union"],
                           fn=360) {
           h = knuckle_shaft_connector_dia + 1;
-          translate([offst, 0, knuckle_height - knuckle_shaft_screws_offset]) {
-            knuckle_screws_slots(d=knuckle_shaft_screw_dia, h=h);
+          translate([offst, 0, knuckle_height - knuckle_shaft_bolts_offset]) {
+            knuckle_bolts_slots(d=knuckle_shaft_bolt_dia, h=h);
             translate([0,
                        0,
-                       - knuckle_shaft_screw_dia
-                       - knuckle_shaft_screws_distance]) {
-              knuckle_screws_slots(d=knuckle_shaft_screw_dia, h=h);
+                       - knuckle_shaft_bolt_dia
+                       - knuckle_shaft_bolts_distance]) {
+              knuckle_bolts_slots(d=knuckle_shaft_bolt_dia, h=h);
             }
           }
 
@@ -187,13 +187,13 @@ module knuckle_tie_rod_shaft_arm(border_w=knuckle_border_w,
           translate([offst,
                      0,
                      tie_rod_shaft_knuckle_arm_height
-                     - tie_rod_shaft_screw_offset]) {
-            knuckle_screws_slots(d=tie_rod_shaft_screw_dia,
-                                 h=h);
-            translate([0, 0, -tie_rod_shaft_screw_dia
-                       - tie_rod_shaft_screw_distance]) {
-              knuckle_screws_slots(d=tie_rod_shaft_screw_dia,
-                                   h=h);
+                     - tie_rod_shaft_bolt_offset]) {
+            knuckle_bolts_slots(d=tie_rod_shaft_bolt_dia,
+                                h=h);
+            translate([0, 0, -tie_rod_shaft_bolt_dia
+                       - tie_rod_shaft_bolt_distance]) {
+              knuckle_bolts_slots(d=tie_rod_shaft_bolt_dia,
+                                  h=h);
             }
           }
         }

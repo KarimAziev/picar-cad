@@ -10,14 +10,14 @@ use <pin_headers.scad>
 use <screw_terminal.scad>
 use <../lib/placement.scad>
 
-module pad_hole(screw_d,
+module pad_hole(bolt_d,
                 thickness,
                 specs) {
   sorted_specs = sort_by_idx(elems=specs, idx=0, asc=true);
   union() {
     for (i = [0 : len(sorted_specs) - 1]) {
       let (spec = specs[i],
-           prev_spec_dia=i > 0 ? specs[i - 1][0] : screw_d,
+           prev_spec_dia=i > 0 ? specs[i - 1][0] : bolt_d,
            dia = spec[0],
            colr = spec[1],
            w = (dia - prev_spec_dia) / 2) {
@@ -35,5 +35,5 @@ module pad_hole(screw_d,
   }
 }
 
-pad_hole(screw_d=2.0, thickness=2, specs=[[3.4, yellow_3],
-                                          [4.0, "white"]]);
+pad_hole(bolt_d=2.0, thickness=2, specs=[[3.4, yellow_3],
+                                         [4.0, "white"]]);

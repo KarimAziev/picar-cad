@@ -309,7 +309,7 @@ module bolt(d = 2.5,                 // major diameter (mm)
         }
 
         if (head_type != "none") {
-          echo("bolt dia", d, "bolt height", h);
+
           let (head_spec = plist_get(head_type,
                                      plist_get("head", bolt_spec, []),
                                      []),

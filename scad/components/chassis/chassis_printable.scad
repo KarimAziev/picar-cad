@@ -41,7 +41,7 @@ module chassis_printable(panel_color=panel_color,
                     show_tie_rod=false,
                     show_servo=false,
                     show_knuckles=false,
-                    head_z_rotation=false,
+                    tilt_servo_rotation=false,
                     show_distance=false);
     }
     chassis_body(motor_type=motor_type,

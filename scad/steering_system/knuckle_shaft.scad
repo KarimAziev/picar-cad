@@ -6,7 +6,7 @@
  *
  * The shaft is composed of vertical and horizontal cylindrical segments arranged
  * in an "elbow" configuration, forming a rigid connection. It is designed to be
- * secured in place via a single mounting screw.
+ * secured in place via a single mounting bolt.
  *
  * Main module:
  * - knuckle_shaft:
@@ -21,8 +21,8 @@
  * - knuckle_bent:
  *     Utility module that creates a curved bend via rotate_extrude().
  *
- * - knuckle_screws_slots:
- *     Cuts a slot for a screw that fixes the shaft in place.
+ * - knuckle_bolts_slots:
+ *     Cuts a slot for a bolt that fixes the shaft in place.
  *
  * - knuckle_shaft_print_plate:
  *     Optional helper that places and mirrors the shaft for 3D printing layout.
@@ -50,14 +50,14 @@ module knuckle_shaft(show_wheel=false,
 
     translate([0,
                0,
-               -knuckle_shaft_screws_offset]) {
+               -knuckle_shaft_bolts_offset]) {
       rotate([0, 0, 90]) {
-        knuckle_screws_slots(d=knuckle_shaft_screw_dia);
+        knuckle_bolts_slots(d=knuckle_shaft_bolt_dia);
         translate([0,
                    0,
-                   - knuckle_shaft_screw_dia
-                   - knuckle_shaft_screws_distance]) {
-          knuckle_screws_slots(d=knuckle_shaft_screw_dia);
+                   - knuckle_shaft_bolt_dia
+                   - knuckle_shaft_bolts_distance]) {
+          knuckle_bolts_slots(d=knuckle_shaft_bolt_dia);
         }
       }
     }
@@ -132,9 +132,9 @@ module knuckle_bent_shaft(show_wheel=false,
   }
 }
 
-module knuckle_screws_slots(d=knuckle_shaft_screw_dia,
-                            h=knuckle_shaft_dia + 1,
-                            fn=360) {
+module knuckle_bolts_slots(d=knuckle_shaft_bolt_dia,
+                           h=knuckle_shaft_dia + 1,
+                           fn=360) {
   translate([0, 0, -d / 2]) {
     rotate([90, 0, 0]) {
       cylinder(h=h, r=d / 2, center=true, $fn=fn);

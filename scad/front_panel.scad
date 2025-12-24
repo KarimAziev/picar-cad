@@ -4,12 +4,12 @@
 //
 //  - The main chassis-integrated front panel with integrated slots for mounting the HC-SR04 ultrasonic sensor.
 //  - A detachable back panel that secures the ultrasonic sensor from behind.
-//  - A separate sensor fixation detail which is secured using either two R3090 rivets, or M2.5 screws.
+//  - A separate sensor fixation detail which is secured using either two R3090 rivets, or M2.5 bolts.
 //
 // Sensor and Attachment Information:
 //
 //  - Sensor: HC-SR04 ultrasonic sensor
-//  - Attachment Hardware: M2.5 screws
+//  - Attachment Hardware: M2.5 bolts
 
 include <parameters.scad>
 include <colors.scad>
@@ -65,35 +65,35 @@ module ultrasonic_rect_slots_2d(h=front_panel_height,
   }
 }
 
-module ultrasonic_screws_2d(size=ultrasonic_screw_size,
-                            d=ultrasonic_screw_dia) {
+module ultrasonic_bolts_2d(size=ultrasonic_bolt_spacing,
+                           d=ultrasonic_bolt_dia) {
 
   four_corner_holes_2d(size=size, center=true, hole_dia=d);
 }
 
-module front_panel_connector_screws(reverse_y=false,
-                                    use_counterbore=false,) {
+module front_panel_connector_bolts(reverse_y=false,
+                                   use_counterbore=false,) {
   half_len = front_panel_connector_len / 2;
   half_w   = front_panel_connector_width / 2;
-  screw_r  = front_panel_connector_screw_dia / 2;
+  bolt_r  = front_panel_connector_bolt_dia / 2;
 
-  s_x = half_w - screw_r;
-  s_y = half_len - screw_r;
+  s_x = half_w - bolt_r;
+  s_y = half_len - bolt_r;
 
-  function screw_x(dx) = sign(dx) * s_x - dx;
-  function screw_y(dy) = s_y - abs(dy);
+  function bolt_x(dx) = sign(dx) * s_x - dx;
+  function bolt_y(dy) = s_y - abs(dy);
 
-  for (off = front_panel_connector_screw_offsets) {
-    x = screw_x(off[0]);
-    y = screw_y(off[1]);
+  for (off = front_panel_connector_bolt_offsets) {
+    x = bolt_x(off[0]);
+    y = bolt_y(off[1]);
     translate([x, reverse_y ? -y : y, 0]) {
       if (!use_counterbore) {
-        circle(r = screw_r, $fn = 360);
+        circle(r = bolt_r, $fn = 360);
       } else {
-        counterbore(d=front_panel_connector_screw_dia,
+        counterbore(d=front_panel_connector_bolt_dia,
                     h=front_panel_thickness,
-                    bore_d=front_panel_connector_screw_bore_dia,
-                    bore_h=front_panel_connector_screw_bore_h,
+                    bore_d=front_panel_connector_bolt_bore_dia,
+                    bore_h=front_panel_connector_bolt_bore_h,
                     autoscale_step=0.1,
                     reverse=true);
       }
@@ -101,10 +101,10 @@ module front_panel_connector_screws(reverse_y=false,
   }
 }
 
-function front_panel_screw_y_offset(x, y) =
-  - max(front_panel_connector_screw_bore_dia,
-        front_panel_connector_screw_dia) / 2
-  - front_panel_connector_screws_padding_y;
+function front_panel_bolt_y_offset(x, y) =
+  - max(front_panel_connector_bolt_bore_dia,
+        front_panel_connector_bolt_dia) / 2
+  - front_panel_connector_bolts_padding_y;
 
 module front_panel_connector(w=front_panel_connector_width,
                              h=front_panel_connector_len,
@@ -130,23 +130,23 @@ module front_panel_connector(w=front_panel_connector_width,
     }
     translate([0,
                h / 2
-               + front_panel_screw_y_offset(), 0]) {
-      four_corner_children(front_panel_connector_screws_size, center=true) {
-        counterbore(d=front_panel_connector_screw_dia,
+               + front_panel_bolt_y_offset(), 0]) {
+      four_corner_children(front_panel_connector_bolt_spacing, center=true) {
+        counterbore(d=front_panel_connector_bolt_dia,
                     h=front_panel_thickness,
-                    bore_d=front_panel_connector_screw_bore_dia,
-                    bore_h=front_panel_connector_screw_bore_h,
+                    bore_d=front_panel_connector_bolt_bore_dia,
+                    bore_h=front_panel_connector_bolt_bore_h,
                     autoscale_step=0.1,
                     reverse=true);
       }
     }
-    // front_panel_connector_screws(use_counterbore=true);
+    // front_panel_connector_bolts(use_counterbore=true);
   }
 }
 
 module front_panel_main(w=front_panel_width,
                         h=front_panel_height,
-                        screws_x_offset=front_panel_screws_x_offset,
+                        bolts_x_offset=front_panel_bolts_x_offset,
                         thickness=front_panel_thickness,
                         angle=front_panel_rotation_angle,
                         show_front_rear_panel=false,
@@ -195,12 +195,12 @@ module front_panel_main(w=front_panel_width,
                   rounded_rect(size=[w, h],
                                r=front_panel_offset_rad,
                                center=true);
-                  translate([0, front_panel_screws_y_offst, 0]) {
-                    two_x_screws_2d(x=screws_x_offset,
-                                    d=front_panel_screw_dia);
+                  translate([0, front_panel_bolts_y_offst, 0]) {
+                    two_x_bolts_2d(x=bolts_x_offset,
+                                   d=front_panel_bolt_dia);
                   }
-                  translate([0, front_panel_screws_y_offst, 0]) {
-                    ultrasonic_screws_2d();
+                  translate([0, front_panel_bolts_y_offst, 0]) {
+                    ultrasonic_bolts_2d();
                   }
 
                   ultrasonic_sensor_mounts_2d();
@@ -222,8 +222,8 @@ module front_panel_main(w=front_panel_width,
               translate([0, 0, thickness / 2]) {
                 linear_extrude(height=rear_panel_z, center=false) {
                   mirror_copy([1, 0, 0]) {
-                    translate([screws_x_offset, front_panel_screws_y_offst, 0]) {
-                      circle(r=front_panel_screw_dia / 2
+                    translate([bolts_x_offset, front_panel_bolts_y_offst, 0]) {
+                      circle(r=front_panel_bolt_dia / 2
                              + front_panel_rear_panel_ring_width + 0.4,
                              $fn=100);
                     }
@@ -240,7 +240,7 @@ module front_panel_main(w=front_panel_width,
 
 module front_panel(w=front_panel_width,
                    h=front_panel_height,
-                   screws_x_offset=front_panel_screws_x_offset,
+                   bolts_x_offset=front_panel_bolts_x_offset,
                    thickness=front_panel_thickness,
                    angle=front_panel_rotation_angle,
                    colr="white",
@@ -258,7 +258,7 @@ module front_panel(w=front_panel_width,
     translate([-w / 2, -y, -bbox_h]) {
       front_panel_main(w=w,
                        h=h,
-                       screws_x_offset=screws_x_offset,
+                       bolts_x_offset=bolts_x_offset,
                        thickness=thickness,
                        show_ultrasonic=show_ultrasonic,
                        show_front_rear_panel=show_front_rear_panel,
@@ -283,7 +283,7 @@ module front_panel(w=front_panel_width,
 
 module front_panel_back_mount(h=front_panel_height,
                               w=front_panel_width,
-                              screws_x_offset=front_panel_screws_x_offset,
+                              bolts_x_offset=front_panel_bolts_x_offset,
                               thickness=front_panel_rear_panel_thickness) {
 
   union() {
@@ -292,8 +292,8 @@ module front_panel_back_mount(h=front_panel_height,
         rounded_rect(size=[w, h],
                      center=true,
                      r=front_panel_offset_rad);
-        four_corner_holes_2d(size=ultrasonic_screw_size,
-                             hole_dia=ultrasonic_screw_dia + 0.2,
+        four_corner_holes_2d(size=ultrasonic_bolt_spacing,
+                             hole_dia=ultrasonic_bolt_dia + 0.2,
                              center=true);
 
         ultrasonic_smd_slots(half_of_board_w=ultrasonic_w / 2,
@@ -306,9 +306,9 @@ module front_panel_back_mount(h=front_panel_height,
                            center=true);
         }
 
-        translate([0, -front_panel_screws_y_offst, 0]) {
-          two_x_screws_2d(x=screws_x_offset,
-                          d=front_panel_screw_dia);
+        translate([0, -front_panel_bolts_y_offst, 0]) {
+          two_x_bolts_2d(x=bolts_x_offset,
+                         d=front_panel_bolt_dia);
         }
         four_corner_holes_2d(size=ultrasonic_solder_blobs_positions,
                              hole_dia=front_panel_solder_blob_dia,
@@ -333,9 +333,9 @@ module front_panel_back_mount(h=front_panel_height,
                      center=false,
                      convexity=2) {
         mirror_copy([1, 0, 0]) {
-          translate([screws_x_offset,
-                     -front_panel_screws_y_offst, 0]) {
-            ring_2d(r=front_panel_screw_dia / 2,
+          translate([bolts_x_offset,
+                     -front_panel_bolts_y_offst, 0]) {
+            ring_2d(r=front_panel_bolt_dia / 2,
                     fn=100,
                     w=front_panel_rear_panel_ring_width,
                     outer=true);

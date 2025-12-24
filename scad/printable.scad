@@ -117,7 +117,7 @@ module printable(spacing=5) {
 
       translate([0, -head_neck_pan_servo_slot_height, 0]) {
         if (show_motor_brackets && motor_type == "n20") {
-          translate([0, -n20_motor_screws_panel_len, n20_can_height / 2]) {
+          translate([0, -n20_motor_bolts_panel_len, n20_can_height / 2]) {
             color(blue_grey_carbon) {
               rotate([0, 90, 90]) {
                 n20_motor_bracket();

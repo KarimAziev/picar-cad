@@ -36,27 +36,27 @@ module gpio_expansion_board(show_standoff=true,
 
                          r=gpio_expansion_corner_rad,
                          center=true);
-            four_corner_holes_2d(size=rpi_screws_size, center=true);
-            four_corner_holes_2d(size=gpio_expansion_screws_size_2, center=true);
+            four_corner_holes_2d(size=rpi_bolt_spacing, center=true);
+            four_corner_holes_2d(size=gpio_expansion_bolt_spacing_2, center=true);
           }
         }
       }
-      four_corner_children(size=rpi_screws_size) {
+      four_corner_children(size=rpi_bolt_spacing) {
         pad_hole(specs=gpio_expansion_mounting_hole_pad_spec,
                  thickness=h,
-                 screw_d=gpio_expansion_screw_dia);
+                 bolt_d=gpio_expansion_bolt_dia);
       }
-      four_corner_children(size=gpio_expansion_screws_size_2) {
+      four_corner_children(size=gpio_expansion_bolt_spacing_2) {
         pad_hole(specs=gpio_expansion_mounting_hole_pad_spec,
                  thickness=h,
-                 screw_d=gpio_expansion_screw_dia);
+                 bolt_d=gpio_expansion_bolt_dia);
       }
 
       translate([-w / 2 + rpi_pin_header_width,
                  -l / 2
                  + rpi_pin_header_width
                  * rpi_pin_headers_cols / 2
-                 + rpi_screws_offset * 2,
+                 + rpi_bolts_offset * 2,
                  -gpio_expansion_header_height]) {
         union() {
           pin_headers(cols=rpi_pin_headers_cols,
@@ -73,7 +73,7 @@ module gpio_expansion_board(show_standoff=true,
                  -l / 2
                  + rpi_pin_header_width
                  * rpi_pin_headers_cols / 2
-                 + rpi_screws_offset * 2,
+                 + rpi_bolts_offset * 2,
                  h]) {
         union() {
           pin_headers(cols=rpi_pin_headers_cols,
@@ -169,8 +169,8 @@ module gpio_expansion_board(show_standoff=true,
 
       if (show_standoff) {
         translate([0, 0, -gpio_expansion_header_height - extra_standoff_h]) {
-          four_corner_children(rpi_screws_size) {
-            standoffs_stack(d=gpio_expansion_screw_dia,
+          four_corner_children(rpi_bolt_spacing) {
+            standoffs_stack(d=gpio_expansion_bolt_dia,
                             show_nut=show_nut,
                             colr=gpio_expansion_standoff_color,
                             min_h=gpio_expansion_header_height

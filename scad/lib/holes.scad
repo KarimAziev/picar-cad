@@ -2,8 +2,8 @@
  * Module: Modules for holes counterbore, countersink,
  * counterbore_single_slots_by_specs, four_corner_children,
  * four_corner_holes_2d, four_corner_hole_rows, notched_circle,
- * two_x_screws_2d/3d,
- * dotted_screws_line_y
+ * two_x_bolts_2d/3d,
+ * dotted_bolts_line_y
  *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
@@ -206,7 +206,7 @@ module four_corner_holes_2d(size=[10, 10],
     }
 }
 
-module dotted_screws_line_y(x_poses, y, d=1.5) {
+module dotted_bolts_line_y(x_poses, y, d=1.5) {
   for (x = x_poses) {
     translate([x, y]) {
       circle(d = d, $fn = 50);
@@ -214,7 +214,7 @@ module dotted_screws_line_y(x_poses, y, d=1.5) {
   }
 }
 
-module two_x_screws_3d(x=0, d=2.4, center=true, h=10) {
+module two_x_bolts_3d(x=0, d=2.4, center=true, h=10) {
   translate([x, 0, 0]) {
     cylinder(h, r=d / 2, $fn=360, center=center);
   }
@@ -225,7 +225,7 @@ module two_x_screws_3d(x=0, d=2.4, center=true, h=10) {
     }
   }
 }
-module two_x_screws_2d(x=0, d=2.4, fn=360) {
+module two_x_bolts_2d(x=0, d=2.4, fn=360) {
   mirror_copy([1, 0, 0]) {
     translate([x, 0, 0]) {
       circle(r = d / 2, $fn=fn);
@@ -349,7 +349,7 @@ module four_corner_hole_rows(specs,
                              sink=false,
                              center=false,
                              children_by_idx = false,
-                             screw_mode = false) {
+                             bolt_mode = false) {
   sizes = map_idx(specs, 0, []);
   dia_sizes = map_idx(specs, 1, []);
 
@@ -362,7 +362,7 @@ module four_corner_hole_rows(specs,
 
   bore_sizes = map_idx(specs, 3, []);
   debug_specs = map_idx(specs, 4, []);
-  screw_mode_specs = map_idx(specs, 5, []);
+  bolt_mode_specs = map_idx(specs, 5, []);
 
   for (i = [0 : len(specs) - 1]) {
     let (spec=specs[i],
@@ -379,10 +379,10 @@ module four_corner_hole_rows(specs,
          autoscale_step = with_default(bore_spec[2], 0.1),
          bore_reverse = bore_spec[3],
          debug_spec = with_default(debug_specs[i], [false]),
-         screw_spec = with_default(screw_mode_specs[i], []),
-         bolt_type = with_default(screw_spec[0], "pan"),
-         bolt_h = with_default(screw_spec[1], thickness + 2),
-         bolt_head_h = with_default(screw_spec[2], 2)) {
+         bolt_spec = with_default(bolt_mode_specs[i], []),
+         bolt_type = with_default(bolt_spec[0], "pan"),
+         bolt_h = with_default(bolt_spec[1], thickness + 2),
+         bolt_head_h = with_default(bolt_spec[2], 2)) {
 
       translate([x - (center ? 0 : x_sizes[i] / 2), y + y_offset, 0]) {
         $spec = spec;
@@ -398,7 +398,7 @@ module four_corner_hole_rows(specs,
                                      y_sizes[i]],
                                center=center) {
             debug_highlight(debug=debug_spec[0]) {
-              if (screw_mode) {
+              if (bolt_mode) {
                 translate([0, 0, -bolt_h + (thickness - (bore_h > 0 && bore_d > dia
                                                          ? bore_h
                                                          : 0))]) {

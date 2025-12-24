@@ -20,11 +20,11 @@ module ultrasonic(center=true) {
   half_of_board_h = ultrasonic_h / 2;
 
   transducer_rad = ultrasonic_transducer_dia / 2;
-  text_x = ultrasonic_screw_size[0] / 2
-    - ultrasonic_screw_dia / 2
+  text_x = ultrasonic_bolt_spacing[0] / 2
+    - ultrasonic_bolt_dia / 2
     - ultrasonic_text_size;
 
-  text_y = -ultrasonic_screw_size[1] / 2;
+  text_y = -ultrasonic_bolt_spacing[1] / 2;
 
   texts = [["T", -text_x],
            ["R", text_x]];
@@ -38,8 +38,8 @@ module ultrasonic(center=true) {
             rounded_rect(size=[ultrasonic_w, ultrasonic_h],
                          center=true,
                          r=ultrasonic_offset_rad);
-            four_corner_holes_2d(size=ultrasonic_screw_size,
-                                 hole_dia=ultrasonic_screw_dia,
+            four_corner_holes_2d(size=ultrasonic_bolt_spacing,
+                                 hole_dia=ultrasonic_bolt_dia,
                                  center=true);
           }
         }

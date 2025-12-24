@@ -20,11 +20,11 @@ function steering_pinion_tooth_height() =
                     teeth_count=steering_pinion_teeth_count,
                     clearance=steering_pinion_clearance);
 
-module steering_pinion_screws_2d(r_pitch,
-                                 servo_dia=steering_pinion_center_hole_dia,
-                                 screw_dia=steering_pinion_screw_dia,
-                                 offst_c=steering_pinion_screws_servo_distance,
-                                 spacing=steering_pinion_screws_spacing) {
+module steering_pinion_bolts_2d(r_pitch,
+                                servo_dia=steering_pinion_center_hole_dia,
+                                screw_dia=steering_pinion_screw_dia,
+                                offst_c=steering_pinion_bolts_servo_distance,
+                                spacing=steering_pinion_bolts_spacing) {
   union() {
     initial_pos = servo_dia / 2 + screw_dia / 2;
 
@@ -55,11 +55,11 @@ module steering_pinion() {
        pressure_angle=steering_pinion_pressure_angle,
        clearance=steering_pinion_clearance,
        backlash=steering_pinion_backlash) {
-    steering_pinion_screws_2d(r_pitch=r_pitch / 2,
-                              servo_dia=steering_pinion_center_hole_dia,
-                              screw_dia=steering_pinion_screw_dia,
-                              offst_c=steering_pinion_screws_servo_distance,
-                              spacing=steering_pinion_screws_spacing);
+    steering_pinion_bolts_2d(r_pitch=r_pitch / 2,
+                             servo_dia=steering_pinion_center_hole_dia,
+                             screw_dia=steering_pinion_screw_dia,
+                             offst_c=steering_pinion_bolts_servo_distance,
+                             spacing=steering_pinion_bolts_spacing);
   }
 }
 

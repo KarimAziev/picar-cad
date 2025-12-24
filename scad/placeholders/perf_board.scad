@@ -34,8 +34,8 @@ module perf_board(size=[20, 80, 1.6],
                   pad_dia=1.9,
                   d=1,
                   spacing=0.54,
-                  screw_d=2.0,
-                  screw_size=power_lid_breadboard_screw_size,
+                  bolt_d=2.0,
+                  bolt_spacing=power_lid_breadboard_bolt_spacing,
                   rows=28,
                   cols=6,
                   $fn=100,
@@ -101,7 +101,7 @@ module perf_board(size=[20, 80, 1.6],
     }
     translate([0, 0, -0.1]) {
       linear_extrude(height=z + 0.2, center=false) {
-        four_corner_holes_2d(size=screw_size, hole_dia=screw_d,
+        four_corner_holes_2d(size=bolt_spacing, hole_dia=bolt_d,
                              center=true);
       }
     }
@@ -113,8 +113,8 @@ perf_board(size=[20, 80, 1.6],
            pad_dia=1.9,
            d=1,
            spacing=0.54,
-           screw_d=2.0,
-           screw_size=power_lid_breadboard_screw_size,
+           bolt_d=2.0,
+           bolt_spacing=power_lid_breadboard_bolt_spacing,
            rows=28,
            cols=6,
            $fn=100,

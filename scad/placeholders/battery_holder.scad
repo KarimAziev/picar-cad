@@ -22,7 +22,7 @@ module battery_holder(batteries_count=battery_holder_batteries_count,
                       full_width,
                       full_len,
                       thickness=battery_holder_thickness,
-                      screw_hole_dia=3.5,
+                      bolt_hole_dia=3.5,
                       contact_inc_step=1,
                       show_battery=true,
                       show_atm_fuse=true,
@@ -71,7 +71,7 @@ module battery_holder(batteries_count=battery_holder_batteries_count,
           battery_holder_single_assembly(full_width=full_width,
                                          full_len=full_len,
                                          thickness=thickness,
-                                         screw_hole_dia=screw_hole_dia,
+                                         bolt_hole_dia=bolt_hole_dia,
                                          show_battery=show_battery,
                                          contact_inc_step=contact_inc_step);
         }
@@ -109,7 +109,7 @@ module battery_holder(batteries_count=battery_holder_batteries_count,
 module battery_holder_single(full_width,
                              full_len,
                              thickness=battery_holder_thickness,
-                             screw_hole_dia=3.5,
+                             bolt_hole_dia=3.5,
                              contact_inc_step=1) {
 
   full_width = is_undef(full_width)
@@ -126,7 +126,7 @@ module battery_holder_single(full_width,
         difference() {
           square([full_width, full_len]);
           translate([full_width / 2, full_len / 2, 0]) {
-            circle(r=screw_hole_dia / 2);
+            circle(r=bolt_hole_dia / 2);
           }
         }
       }
@@ -156,7 +156,7 @@ module battery_holder_single(full_width,
 module battery_holder_single_assembly(full_width,
                                       full_len,
                                       thickness=battery_holder_thickness,
-                                      screw_hole_dia=3.5,
+                                      bolt_hole_dia=3.5,
                                       contact_inc_step=1,
                                       show_battery=true) {
 
@@ -172,7 +172,7 @@ module battery_holder_single_assembly(full_width,
     battery_holder_single(full_width=full_width,
                           full_len=full_len,
                           thickness=thickness,
-                          screw_hole_dia=screw_hole_dia,
+                          bolt_hole_dia=bolt_hole_dia,
                           contact_inc_step=contact_inc_step);
 
     if (show_battery) {

@@ -45,11 +45,11 @@ module ai_hat(center=true, show_pins=true, show_standoff=true,
             translate([0, -l / 2 + ai_hat_front_cutout_size[1] / 2, 0]) {
               rounded_rect_two(size=ai_hat_front_cutout_size, center=true);
             }
-            four_corner_holes_2d(rpi_screws_size, center=true);
+            four_corner_holes_2d(rpi_bolt_spacing, center=true);
           }
         }
       }
-      translate([-w / 2, -l / 2 + rpi_screws_offset * 2, 0]) {
+      translate([-w / 2, -l / 2 + rpi_bolts_offset * 2, 0]) {
         translate([0, 0, h]) {
           pin_headers(cols=rpi_pin_headers_cols,
                       rows=rpi_pin_headers_rows,
@@ -76,8 +76,8 @@ module ai_hat(center=true, show_pins=true, show_standoff=true,
 
       if (show_standoff) {
         translate([0, 0, -ai_hat_header_height]) {
-          four_corner_children(rpi_screws_size) {
-            standoffs_stack(d=ai_hat_screw_dia,
+          four_corner_children(rpi_bolt_spacing) {
+            standoffs_stack(d=ai_hat_bolt_dia,
                             min_h=ai_hat_header_height + extra_standoff_h);
           }
         }
@@ -92,10 +92,10 @@ module ai_hat(center=true, show_pins=true, show_standoff=true,
                         txt_color=metallic_silver_1);
         }
       }
-      four_corner_children(rpi_screws_size) {
+      four_corner_children(rpi_bolt_spacing) {
         pad_hole(specs=ai_hat_mounting_hole_pad_spec,
                  thickness=h,
-                 screw_d=ai_hat_screw_dia);
+                 bolt_d=ai_hat_bolt_dia);
       }
     }
   }

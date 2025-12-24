@@ -21,8 +21,8 @@ function panel_stack_size() =
   [max(fusers_size[0], buttons_size[0]),
    max(fusers_size[1], buttons_size[1])];
 
-function panel_stack_screw_size() =
-  let (fusers_size = fuse_panel_screw_size(),
+function panel_stack_bolt_spacing() =
+  let (fusers_size = fuse_panel_bolt_spacing(),
        buttons_size = control_panel_bolt_size())
   [max(fusers_size[0], buttons_size[0]),
    max(fusers_size[1], buttons_size[1])];
@@ -37,7 +37,7 @@ module panel_stack(show_fusers=true,
                    y_axle=true,
                    panel_color=white_snow_1) {
   size = panel_stack_size();
-  screws_size = panel_stack_screw_size();
+  bolt_spacing = panel_stack_bolt_spacing();
   w = size[0];
   l = size[1];
 
@@ -53,13 +53,13 @@ module panel_stack(show_fusers=true,
 
             fuse_panel(show_fusers=show_fusers,
                        show_standoff=true,
-                       screws_size=screws_size,
+                       bolt_spacing=bolt_spacing,
                        size=size,
                        panel_color=panel_color,
                        show_lid=show_lid,
                        show_bolt=true,
                        center=true) {
-              four_corner_children(size=screws_size,
+              four_corner_children(size=bolt_spacing,
                                    center=true,) {
                 standoffs_stack(d=panel_stack_bolt_dia,
                                 min_h=max_lid_h,
@@ -71,7 +71,7 @@ module panel_stack(show_fusers=true,
                               show_standoff=true,
                               panel_color=panel_color,
                               size=size,
-                              screws_size=screws_size);
+                              bolt_spacing=bolt_spacing);
               }
             }
           }
@@ -79,7 +79,7 @@ module panel_stack(show_fusers=true,
       } else if (show_fuse_panel) {
         fuse_panel(show_fusers=show_fusers,
                    show_standoff=show_standoff,
-                   screws_size=screws_size,
+                   bolt_spacing=bolt_spacing,
                    show_lid=show_lid,
                    show_nut=true,
                    show_bolt=true,
@@ -89,7 +89,7 @@ module panel_stack(show_fusers=true,
       } else if (show_buttons_panel) {
         control_panel(show_buttons=show_buttons,
                       show_standoff=show_standoff,
-                      screws_size=screws_size,
+                      bolt_spacing=bolt_spacing,
                       show_nut=true,
                       show_bolt=true,
                       center=center,
@@ -100,16 +100,16 @@ module panel_stack(show_fusers=true,
   }
 }
 
-module panel_stack_screw_holes(y_axle=true, center=false) {
+module panel_stack_bolt_holes(y_axle=true, center=false) {
   size = panel_stack_size();
-  screws_size = panel_stack_screw_size();
+  bolt_spacing = panel_stack_bolt_spacing();
   w = size[0];
   l = size[1];
 
   maybe_translate([0, y_axle ? 0 : center ? 0 : w, 0]) {
     maybe_rotate([0, 0, y_axle ? 0 : -90]) {
       translate([center ? 0 : w / 2, center ? 0 : l / 2, 0]) {
-        four_corner_children(size=screws_size,
+        four_corner_children(size=bolt_spacing,
                              center=true) {
           counterbore(h=chassis_thickness,
                       d=panel_stack_bolt_dia,
@@ -125,32 +125,32 @@ module panel_stack_print_plate(show_buttons_panel=true,
                                show_fuse_panel=true,
                                spacing=2) {
   size = panel_stack_size();
-  screws_size = panel_stack_screw_size();
+  bolt_spacing = panel_stack_bolt_spacing();
 
   if (show_buttons_panel && show_fuse_panel) {
     translate([size[0] / 2 + spacing, 0, 0]) {
       control_panel(show_buttons=false,
                     show_standoff=false,
-                    screws_size=screws_size,
+                    bolt_spacing=bolt_spacing,
                     center=true,
                     size=size);
     }
     translate([-size[0] / 2 - spacing, 0, 0]) {
       fuse_panel(show_fusers=false,
                  show_standoff=false,
-                 screws_size=screws_size,
+                 bolt_spacing=bolt_spacing,
                  size=size,
                  center=true);
     }
   } else if (show_fuse_panel) {
     fuse_panel(show_standoff=false,
-               screws_size=screws_size,
+               bolt_spacing=bolt_spacing,
                center=true,
                size=size);
   } else if (show_buttons_panel) {
     control_panel(show_buttons=show_buttons,
                   show_standoff=false,
-                  screws_size=screws_size,
+                  bolt_spacing=bolt_spacing,
                   center=true,
                   size=size);
   }
@@ -165,5 +165,5 @@ panel_stack(show_buttons_panel=true,
             y_axle=false,
             center=false);
 
-// panel_stack_screw_holes(y_axle=false,
+// panel_stack_bolt_holes(y_axle=false,
 //                         center=false);

@@ -7,8 +7,8 @@
  * The kingpin post consists of three stacked cylinders:
  *
  * 1. The lower mounting flange/cylinder, which is inserted into the side panel
- * and contains two screw holes (diameter controlled by
- * `steering_kingpin_post_screw_dia`).
+ * and contains two bolt holes (diameter controlled by
+ * `steering_kingpin_post_bolt_dia`).
  *
  * 2. The middle cylindrical boss, which matches the knuckle diameter.
  *
@@ -25,7 +25,7 @@ include <../colors.scad>
 use <bearing_shaft.scad>
 use <../lib/transforms.scad>
 
-steering_hinge_screw_rad = steering_panel_hinge_screw_dia / 2;
+steering_hinge_bolt_rad = steering_panel_hinge_bolt_dia / 2;
 
 module steering_kingpin_post() {
   border_rad = (knuckle_dia - (steering_kingpin_post_border_w * 2)) / 2
@@ -39,7 +39,7 @@ module steering_kingpin_post() {
                  r=border_rad,
                  center=false,
                  $fn=360);
-        steering_kingpin_post_screw_holes();
+        steering_kingpin_post_bolt_holes();
       }
       translate([0, 0, steering_rack_support_thickness]) {
         bearing_shaft_connector(lower_d=knuckle_dia,
@@ -55,31 +55,31 @@ module steering_kingpin_post() {
       cylinder(h=knuckle_pin_lower_height
                + steering_rack_support_thickness
                + center_hole_extra_h,
-               r=steering_hinge_screw_rad,
+               r=steering_hinge_bolt_rad,
                center=false,
                $fn=200);
     }
   }
 }
 
-module steering_kingpin_post_screw_holes() {
+module steering_kingpin_post_bolt_holes() {
   mirror_copy([1, 0, 0]) {
-    translate([steering_hinge_screw_rad * 2 + 0.1,
+    translate([steering_hinge_bolt_rad * 2 + 0.1,
                0, steering_rack_support_thickness / 2
-               - steering_hinge_screw_rad]) {
+               - steering_hinge_bolt_rad]) {
       extra_h = 1;
-      screw_rad = steering_kingpin_post_screw_dia / 2;
+      bolt_rad = steering_kingpin_post_bolt_dia / 2;
       h = knuckle_dia + extra_h;
       seam_h = 0.8;
-      translate([0, 0, screw_rad]) {
+      translate([0, 0, bolt_rad]) {
         rotate([90, 0, 0]) {
           cylinder(h=h,
-                   r=screw_rad,
+                   r=bolt_rad,
                    $fn=100,
                    center=true);
         }
       }
-      translate([0, -h / 2, steering_kingpin_post_screw_dia - seam_h / 2]) {
+      translate([0, -h / 2, steering_kingpin_post_bolt_dia - seam_h / 2]) {
         cube([0.4, h, seam_h]);
       }
     }

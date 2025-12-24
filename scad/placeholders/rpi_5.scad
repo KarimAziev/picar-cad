@@ -282,8 +282,8 @@ module rpi_standoffs(standoff_height=rpi_standoff_height,
                      bolt_visible_h) {
   show_bolt = !is_undef(bolt_visible_h);
 
-  translate([rpi_screws_offset, rpi_screws_offset, -standoff_height]) {
-    four_corner_children(size=rpi_screws_size,
+  translate([rpi_bolts_offset, rpi_bolts_offset, -standoff_height]) {
+    four_corner_children(size=rpi_bolt_spacing,
                          center=false) {
 
       standoffs_stack(d=m2_hole_dia,
@@ -304,13 +304,13 @@ module rpi_5(show_standoffs=false,
              bolt_visible_h=chassis_thickness - chassis_counterbore_h,
              slot_mode=false) {
   if (slot_mode) {
-    translate([rpi_screws_offset, rpi_screws_offset, 0]) {
-      four_corner_children(rpi_screws_size,
+    translate([rpi_bolts_offset, rpi_bolts_offset, 0]) {
+      four_corner_children(rpi_bolt_spacing,
                            center=false) {
-        counterbore(d=rpi_screw_hole_dia,
+        counterbore(d=rpi_bolt_hole_dia,
                     h=chassis_thickness,
                     bore_h=chassis_counterbore_h,
-                    bore_d=rpi_screw_cbore_dia,
+                    bore_d=rpi_bolt_cbore_dia,
                     autoscale_step=0.1,
                     sink=true,
                     reverse=true);
@@ -325,8 +325,8 @@ module rpi_5(show_standoffs=false,
             linear_extrude(height=rpi_thickness, center=false) {
               difference() {
                 rounded_rect([rpi_width, rpi_len], r=rpi_offset_rad);
-                translate([rpi_screws_offset, rpi_screws_offset, 0]) {
-                  four_corner_holes_2d(size=rpi_screws_size,
+                translate([rpi_bolts_offset, rpi_bolts_offset, 0]) {
+                  four_corner_holes_2d(size=rpi_bolt_spacing,
                                        center=false,
                                        hole_dia=m25_hole_dia);
                 }
@@ -339,7 +339,7 @@ module rpi_5(show_standoffs=false,
           }
 
           translate([0, 0, rpi_thickness / 2]) {
-            translate([0, rpi_screws_offset * 2, 0]) {
+            translate([0, rpi_bolts_offset * 2, 0]) {
               rpi_pin_headers();
               translate([rpi_pin_header_width * 2 + 1,
                          0,
@@ -353,10 +353,10 @@ module rpi_5(show_standoffs=false,
               linear_extrude(height=0.1, center=false) {
                 for (x_ind = [0, 1])
                   for (y_ind = [0, 1]) {
-                    x_pos = x_ind * rpi_screws_size[0];
-                    y_pos = y_ind * rpi_screws_size[1];
-                    translate([x_pos + rpi_screws_offset,
-                               y_pos + rpi_screws_offset]) {
+                    x_pos = x_ind * rpi_bolt_spacing[0];
+                    y_pos = y_ind * rpi_bolt_spacing[1];
+                    translate([x_pos + rpi_bolts_offset,
+                               y_pos + rpi_bolts_offset]) {
                       ring_2d(r=m25_hole_dia / 2, w=1,
                               outer=true,
                               fn=40);

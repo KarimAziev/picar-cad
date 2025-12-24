@@ -11,21 +11,26 @@ use <../lib/shapes2d.scad>
 use <../lib/trapezoids.scad>
 use <../lib/transforms.scad>
 
-module servo_horn_single() {
-  servo_horn_arm_len = (servo_horn_len / 2);
-  rad = servo_horn_outer_dia / 2;
-  step = servo_horn_screw_d + servo_horn_screws_distance;
-  amount = servo_horn_holes_n;
-  screw_rad = servo_horn_screw_d / 2;
+module servo_horn_single(arm_len=(servo_horn_len / 2),
+                         center_ring_dia=servo_horn_center_ring_outer_dia,
+                         screw_d=servo_horn_screw_d,
+                         screw_holes_count=servo_horn_holes_n,
+                         arm_bottom_width=servo_horn_starting_arm_w,
+                         arm_top_width=servo_horn_ending_arm_w,
+                         screws_gap=servo_horn_screws_distance) {
+  rad = center_ring_dia / 2;
+  step = screw_d + screws_gap;
+
+  screw_rad = screw_d / 2;
   difference() {
     hull() {
-      circle(r=rad, $fn=100);
+      circle(r=rad, $fn=60);
       mirror_copy([0, 1, 0]) {
-        translate([0, servo_horn_w_2 / 2 + rad, 0]) {
-          trapezoid_rounded_top(b=servo_horn_w_1,
-                                t=servo_horn_w_2,
+        translate([0, arm_top_width / 2 + rad, 0]) {
+          trapezoid_rounded_top(b=arm_bottom_width,
+                                t=arm_top_width,
                                 r_factor=0.4,
-                                h=servo_horn_arm_len,
+                                h=arm_len,
                                 center=true);
         }
       }
@@ -33,15 +38,15 @@ module servo_horn_single() {
     for (dir = [-1, 1]) {
       group_offst = (dir < 0
                      ? -rad
-                     - servo_horn_screws_distance
+                     - screws_gap
                      : rad
-                     + servo_horn_screws_distance);
+                     + screws_gap);
 
       translate([0, group_offst, 0]) {
-        for (i = [0 : amount - 1]) {
+        for (i = [0 : screw_holes_count - 1]) {
           x = i * step * dir;
           translate([0, x, 0]) {
-            circle(r=screw_rad, $fn=360);
+            circle(r=screw_rad, $fn=60);
           }
         }
       }
@@ -49,34 +54,60 @@ module servo_horn_single() {
   }
 }
 
-module servo_horn(single=false) {
-  rad = servo_horn_outer_dia / 2;
-  color(light_grey, alpha=1) {
-    union() {
-      translate([0, 0, servo_horn_arm_z_offset]) {
-        linear_extrude(height=servo_horn_thickness, center=false) {
-          difference() {
-            union() {
-              servo_horn_single();
-              if (!single) {
-                rotate([0, 0, 90]) {
-                  servo_horn_single();
+module servo_horn(single=false,
+                  center_ring_dia=servo_horn_center_ring_outer_dia,
+                  center_ring_inner_dia=servo_horn_center_ring_inner_dia,
+                  center_hole_dia=servo_horn_center_hole_dia,
+                  thickness=servo_horn_arm_thickness,
+                  arm_z_offset=servo_horn_arm_z_offset,
+                  horn_height=servo_horn_ring_height,
+                  arm_len=(servo_horn_len / 2),
+                  screw_d=servo_horn_screw_d,
+                  screw_holes_count=servo_horn_holes_n,
+                  arm_bottom_width=servo_horn_starting_arm_w,
+                  arm_top_width=servo_horn_ending_arm_w,
+                  screws_gap=servo_horn_screws_distance,
+                  single_rotation=90,
+                  center=true) {
+  rad = center_ring_dia / 2;
+
+  module servo_horn_trapezoid() {
+    servo_horn_single(arm_len=arm_len,
+                      center_ring_dia=center_ring_dia,
+                      screw_d=screw_d,
+                      screw_holes_count=screw_holes_count,
+                      arm_bottom_width=arm_bottom_width,
+                      arm_top_width=arm_top_width,
+                      screws_gap=screws_gap);
+  }
+  translate([center ? 0 : arm_len, center ? 0 : arm_len, 0]) {
+    color(light_grey, alpha=1) {
+      union() {
+        translate([0, 0, arm_z_offset]) {
+          linear_extrude(height=thickness, center=false) {
+            difference() {
+              union() {
+                servo_horn_trapezoid();
+                if (!single) {
+                  rotate([0, 0, single_rotation]) {
+                    servo_horn_trapezoid();
+                  }
                 }
+                circle(r=rad, $fn=60);
               }
-              circle(r=rad, $fn=100);
+              circle(r=center_hole_dia / 2, $fn=40);
             }
-            circle(r=servo_horn_hole_dia / 2, $fn=40);
           }
         }
-      }
-      linear_extrude(height=servo_horn_h, center=false) {
-        ring_2d(r=rad,
-                w=(servo_horn_outer_dia - servo_horn_inner_dia) / 2,
-                fn=40,
-                outer=false);
+        linear_extrude(height=horn_height, center=false) {
+          ring_2d(r=rad,
+                  w=(center_ring_dia - center_ring_inner_dia) / 2,
+                  fn=40,
+                  outer=false);
+        }
       }
     }
   }
 }
 
-servo_horn();
+servo_horn(center=false);

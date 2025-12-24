@@ -140,10 +140,10 @@ fuse_panels_specs                                = [(fuse_panel_default_toggle_s
                                                     fuse_panel_default_toggle_switch_spec,
                                                     fuse_panel_default_toggle_switch_spec,];
 
-m1_hole_dia                                      = 1.2; // M1 screw hole diameter
-m2_hole_dia                                      = 2.4; // M2 screw hole diameter
-m25_hole_dia                                     = 2.6; // M2.5 screw hole diameter
-m3_hole_dia                                      = 3.2; // M3 screw hole diameter
+m1_hole_dia                                      = 1.2; // M1 bolt hole diameter
+m2_hole_dia                                      = 2.4; // M2 bolt hole diameter
+m25_hole_dia                                     = 2.6; // M2.5 bolt hole diameter
+m3_hole_dia                                      = 3.2; // M3 bolt hole diameter
 
 m2_pan_head_dia                                  = 3.5;
 m25_pan_head_dia                                 = 4.3;
@@ -306,46 +306,46 @@ battery_ups_holder_thickness                     = 1.86;
 // Y offset for the UPS HAT slot, measured from the end of the chassis
 battery_ups_offset                               = 2;
 
-// The Y and X dimensions of the screw positions for the UPS HAT slot.
-// This forms a square with a screw hole centered on each corner.
-battery_ups_module_screws_size                   = [86, 46];
+// The Y and X dimensions of the bolt positions for the UPS HAT slot.
+// This forms a square with a bolt hole centered on each corner.
+battery_ups_module_bolt_spacing                  = [86, 46];
 
-battery_ups_module_screws_enabled                = false;
+battery_ups_module_bolts_enabled                 = false;
 
-// the diameter for fastening screws
-battery_ups_screw_dia                            = m3_hole_dia;
+// the diameter for fastening bolts
+battery_ups_bolt_dia                             = m3_hole_dia;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Battery holders under the case
 // ─────────────────────────────────────────────────────────────────────────────
 
-// Starting Y-offset for extra battery screws
-battery_screws_y_start                           = -30;
+// Starting Y-offset for extra battery bolts
+battery_bolts_y_start                            = -30;
 
-// Ending Y-offset for extra battery screws
-battery_screws_y_offset_end                      = 0;
+// Ending Y-offset for extra battery bolts
+battery_bolts_y_offset_end                       = 0;
 
-// Step/increment along the Y-axis for extra battery screws
-battery_screws_y_offset_step                     = 10;
+// Step/increment along the Y-axis for extra battery bolts
+battery_bolts_y_offset_step                      = 10;
 
-// Dimensions for the screw hole pattern (width, height)
-battery_holder_screw_holes_size                  = [20, 10]; // [width, height] of the screw pattern
+// Dimensions for the bolt hole pattern (width, height)
+battery_holder_bolt_holes_size                   = [20, 10]; // [width, height] of the bolt pattern
 
-// Diameter of the screw holes
-battery_holder_screw_dia                         = m25_hole_dia;
+// Diameter of the bolt holes
+battery_holder_bolt_dia                          = m25_hole_dia;
 
 // Number of fragments for rendering circle (defines resolution)
-battery_screws_fn_val                            = 360;
+battery_bolts_fn_val                             = 360;
 
-// X-offset for positioning screws relative to the center
-battery_screws_x_offset                          = 24;
+// X-offset for positioning bolts relative to the center
+battery_bolts_x_offset                           = 24;
 
-// Y offsets for positioning screws relative to the center
+// Y offsets for positioning bolts relative to the center
 
 battery_holes_y_positions                        = [];
 
-smd_battery_holder_screws_x_offset               = 31.5;
-smd_battery_holder_screws_y_offset               = 21;
+smd_battery_holder_bolts_x_offset                = 31.5;
+smd_battery_holder_bolts_y_offset                = 21;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 16850 battery dimensions
@@ -368,25 +368,25 @@ smd_battery_holder_front_rear_thickness          = 3.6;
 smd_battery_holder_inner_thickness               = 0.9;
 smd_battery_holder_side_thickness                = 1.8;
 
-smd_battery_holder_screw_dia                     = m3_hole_dia;
-smd_battery_holder_screw_recess_size             = [9, 5, 2];
-smd_battery_holder_screws_size                   = [0, 56.0];
+smd_battery_holder_bolt_dia                      = m3_hole_dia;
+smd_battery_holder_bolt_recess_size              = [9, 5, 2];
+smd_battery_holder_bolt_spacing                  = [0, 56.0];
 smd_battery_holder_batteries_count               = 2;
 smd_battery_holder_inner_cutout_size             = [9.0, 66.6];
 smd_battery_holder_inner_side_h                  = 10;
 
-smd_battery_holder_chassis_specs                 = [[[[smd_battery_holder_screws_size[0],
-                                                       smd_battery_holder_screws_size[1],],
-                                                      smd_battery_holder_screw_dia,
+smd_battery_holder_chassis_specs                 = [[[[smd_battery_holder_bolt_spacing[0],
+                                                       smd_battery_holder_bolt_spacing[1],],
+                                                      smd_battery_holder_bolt_dia,
                                                       [smd_battery_holder_length / 2,
-                                                       smd_battery_holder_screws_x_offset + 2,
-                                                       smd_battery_holder_screws_y_offset],]],
-                                                    [[[smd_battery_holder_screws_size[0],
-                                                       smd_battery_holder_screws_size[1],],
-                                                      smd_battery_holder_screw_dia,
+                                                       smd_battery_holder_bolts_x_offset + 2,
+                                                       smd_battery_holder_bolts_y_offset],]],
+                                                    [[[smd_battery_holder_bolt_spacing[0],
+                                                       smd_battery_holder_bolt_spacing[1],],
+                                                      smd_battery_holder_bolt_dia,
                                                       [smd_battery_holder_length / 2,
-                                                       -smd_battery_holder_screws_x_offset,
-                                                       smd_battery_holder_screws_y_offset],]]];
+                                                       -smd_battery_holder_bolts_x_offset,
+                                                       smd_battery_holder_bolts_y_offset],]]];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Camera's placeholder dimensions
@@ -408,7 +408,7 @@ camera_lens_connectors                           = [[6.0, 3.2, 1.5, matte_black,
                                                     [8.0, 4.0, 1.5, onyx, "cube", -1]];
 
 camera_lens_distance_from_top                    = 9;
-camera_screw_hole_dia                            = 2.0;
+camera_bolt_hole_dia                             = 2.0;
 camera_offset_rad                                = 2.0;
 camera_holes_size                                = [21, 12.5];
 camera_holes_distance_from_top                   = 1;
@@ -470,7 +470,7 @@ chassis_connector_len_clearance                  = 0.4;
 chassis_connector_dia                            = m3_hole_dia;
 
 chassis_connector_edge_distance                  = 1.5;
-chassis_connector_screw_positions                = [50, 25, 0];
+chassis_connector_bolt_positions                 = [50, 25, 0];
 
 chassis_lower_cutout_pts                         = [[0, 0],
                                                     [26, 0],
@@ -515,7 +515,9 @@ chassis_side_hole_border_h                       = 0.8;
 // diameter of the pan servo mounting hole at the front of the chassis
 chassis_pan_servo_slot_dia                       = 6.5;
 
-chassis_pan_servo_slot_depth                     = 2.0;
+// The depth of the cross-shaped recess in the chassis for mounting the steering
+// servo and its horn (either a vertical one or also cross-shaped).
+chassis_pan_servo_slot_recess                    = constraint(2.0, 0, chassis_thickness - 1);
 
 chassis_pan_servo_top_ribbon_cuttout_len         = min(18, chassis_upper_w * 0.8);
 chassis_pan_servo_top_ribbon_cuttout_h           = 2;
@@ -535,8 +537,10 @@ chassis_top_most_holes_rows                      = 2;
 chassis_pan_servo_recesess_y_len                 = 14;
 chassis_pan_servo_recesess_x_len                 = 16;
 chassis_pan_servo_recesess_thickness             = 5;
-chassis_pan_servo_mount_screw_d                  = 1.5;
-chassis_pan_servo_mount_screw_distance           = 0.5;
+// diameter of the screw holes along pan servo slot
+chassis_pan_servo_screw_d                        = 1.5;
+// the distance between screw holes along pan servo slot
+chassis_pan_servo_screws_gap                     = 0.5;
 chassis_pan_servo_rib_slots_rows                 = 3;
 chassis_pan_servo_rib_slots_gap                  = 3;
 chassis_pan_servo_rib_slots_len                  = 20;
@@ -571,22 +575,22 @@ front_panel_thickness                            = 2.5;   // panel thickness
 front_panel_rotation_angle                       = 5;
 
 front_panel_rear_panel_thickness                 = 1.5;
-front_panel_connector_screw_dia                  = m25_hole_dia;
+front_panel_connector_bolt_dia                   = m25_hole_dia;
 
-front_panel_connector_screw_bore_dia             = front_panel_connector_screw_dia * 2.5;
-front_panel_connector_screw_bore_h               = min(1.5,
+front_panel_connector_bolt_bore_dia              = front_panel_connector_bolt_dia * 2.5;
+front_panel_connector_bolt_bore_h                = min(1.5,
                                                        front_panel_thickness * 0.7);
 
 front_panel_connector_len                        = 15;
 
 front_panel_connector_width                      = constraint(chassis_upper_w - 2, 10, 30);
-front_panel_connector_screws_padding_y           = 1;
+front_panel_connector_bolts_padding_y            = 1;
 
-front_panel_connector_screws_size                = [constraint(10, front_panel_connector_screw_bore_dia * 2 + 3,
+front_panel_connector_bolt_spacing               = [constraint(10, front_panel_connector_bolt_bore_dia * 2 + 3,
                                                                front_panel_connector_width), 0];
 
-front_panel_connector_screw_offsets              = [[4, 3], [-4, 3]];
-front_panel_screw_dia                            = m25_hole_dia;
+front_panel_connector_bolt_offsets               = [[4, 3], [-4, 3]];
+front_panel_bolt_dia                             = m25_hole_dia;
 
 // diameter of each mounting hole ("eye") for the ultrasonic sensors
 front_panel_ultrasonic_sensor_dia                = 16.5;
@@ -595,11 +599,11 @@ front_panel_ultrasonic_sensor_dia                = 16.5;
 front_panel_ultrasonic_sensors_offset            = 10.10;
 
 // horizontal offset between the ultrasonic sensor mounting holes
-front_panel_screws_x_offset                      = 27;
+front_panel_bolts_x_offset                       = 27;
 
 front_panel_connector_offset_rad                 = 3;
 front_panel_ultrasonic_y_offset                  = 0;
-front_panel_screws_y_offst                       = 0;
+front_panel_bolts_y_offst                        = 0;
 front_panel_offset_rad                           = front_panel_height * 0.18;
 
 // the diameter of the holes for four solder blobs on the back rear mount
@@ -620,7 +624,7 @@ front_panel_rear_panel_ring_width                = 2;
 // Head
 // ─────────────────────────────────────────────────────────────────────────────
 
-head_camera_screw_dia                            = m2_hole_dia;
+head_camera_bolt_dia                             = m2_hole_dia;
 
 head_camera_lens_width                           = 14;
 head_camera_lens_height                          = 23;
@@ -629,33 +633,33 @@ head_camera_lens_height                          = 23;
 head_camera_module_3_size                        = [head_camera_lens_width,
                                                     head_camera_lens_height];
 
-// Dimensions for the screw hole area of the Camera Module.
-// These form a rectangle around the camera hole, with a screw hole
+// Dimensions for the bolt hole area of the Camera Module.
+// These form a rectangle around the camera hole, with a bolt hole
 // centered at each corner to secure the camera module.
-head_camera_module_3_screw_holes_size            = [head_camera_lens_width +
-                                                    head_camera_screw_dia + 4.2,
+head_camera_module_3_bolt_holes_size             = [head_camera_lens_width +
+                                                    head_camera_bolt_dia + 4.2,
                                                     12.73];
 
-// Vertical offset to move the screw hole grid below the top edge
+// Vertical offset to move the bolt hole grid below the top edge
 // of the camera lens hole.
-head_camera_screw_y_offset_from_camera_hole      = 2.0;
+head_camera_bolt_y_offset_from_camera_hole       = 2.0;
 
 // List of camera mounting configurations.
 // Each item is an array of:
 // [ [lens_hole_width, lens_hole_height],
-//   vertical_offset_for_screw_holes_relative_to_camera_hole,
-//   [screw_hole_region_width, screw_hole_region_height],
+//   vertical_offset_for_bolt_holes_relative_to_camera_hole,
+//   [bolt_hole_region_width, bolt_hole_region_height],
 //   optional_color_for_assembly_view
 //  ]
 //
 // To configure a single camera, remove one of the internal elements.
 head_cameras                                     = [[head_camera_module_3_size,
                                                      1,
-                                                     head_camera_module_3_screw_holes_size,
+                                                     head_camera_module_3_bolt_holes_size,
                                                      green_2],
                                                     [head_camera_module_3_size,
-                                                     head_camera_screw_y_offset_from_camera_hole,
-                                                     head_camera_module_3_screw_holes_size,
+                                                     head_camera_bolt_y_offset_from_camera_hole,
+                                                     head_camera_module_3_bolt_holes_size,
                                                      noir_1]];
 
 // Vertical distance between camera modules (center-to-center spacing).
@@ -686,7 +690,7 @@ head_servo_mount_dia                             = 6.5;
 
 // Diameter of the screws used to mount the servo motor.
 // The screws are placed radially around the main servo mounting hole.
-head_servo_screw_dia                             = 1.5;
+head_servo_horn_screw_dia                        = 1.5;
 
 // Height of the side panel of the head, matching the height of the front plate.
 head_side_panel_height                           = head_plate_height;
@@ -750,42 +754,36 @@ head_top_plate_extra_slots_dia                   = 4;
 /**
  * Width (X-dimension) of the rectangular cutout slot for the pan servo.
  * Typically matches or slightly exceeds the physical servo width.
- * Units: mm
  */
 head_neck_pan_servo_slot_width                   = 23.6;
 
 /**
  * Height (Y-dimension) of the rectangular pan servo slot.
  * Matches the thickness (depth) of the servo body horizontally.
- * Units: mm
  */
 head_neck_pan_servo_slot_height                  = 12;
 
 /**
- * Diameter of the screw holes used to fasten the pan servo to the neck bracket.
+ * Diameter of the bolt holes used to fasten the pan servo to the neck bracket.
  * Two holes are centered on the width and offset laterally.
- * Units: mm
  */
-head_neck_pan_servo_screw_dia                    = 2;
+head_neck_pan_servo_bolt_dia                     = 2;
 
 /**
- * Offset distance from the servo slot width to the screw hole center.
+ * Offset distance from the servo slot width to the bolt hole center.
  * Applies symmetrically on both sides of the slot.
- * Units: mm
  */
-head_neck_pan_servo_screws_offset                = 1;
+head_neck_pan_servo_bolts_offset                 = 1;
 
 /**
  * Thickness of the horizontal base panel of the bracket,
  * which holds the pan servo.
- * Units: mm
  */
 head_neck_pan_servo_slot_thickness               = 2.5;
 
 /**
  * Extra width to add around the main bracket body to accommodate
  * alignment, mechanical clearance, or additional structural space.
- * Units: mm
  */
 head_neck_pan_servo_extra_w                      = 4;
 
@@ -867,8 +865,8 @@ ir_case_rail_angle                               = 10;
 // Rail corner rounding radius.
 ir_case_rail_offset_rad                          = 0.0;
 
-// Diameter for the holes in the rail meant for M2 screws.
-ir_case_rail_screw_dia                           = m2_hole_dia;
+// Diameter for the holes in the rail meant for M2 bolts.
+ir_case_rail_bolt_dia                            = m2_hole_dia;
 
 // Additional clearance for the rail (gap to allow slider movement).
 ir_case_rail_clearance                           = 0.3;
@@ -882,12 +880,12 @@ ir_case_l_bracket_h                              = 20;
 // L-bracket leg length (depth of bracket from case wall).
 ir_case_l_bracket_len                            = 5;
 
-// Screw hole diameter used across the case / bracket (M2 holes).
-ir_case_screw_dia                                = m2_hole_dia;
+// Bolt hole diameter used across the case / bracket (M2 holes).
+ir_case_bolt_dia                                 = m2_hole_dia;
 
-// X offsets for additional pan holes along the screw row (relative offsets).
-// Array of offsets in mm; used to create multiple holes along the screw line.
-ir_case_screw_pan_holes_x_offsets                = [0, 5];
+// X offsets for additional pan holes along the bolt row (relative offsets).
+// Array of offsets in mm; used to create multiple holes along the bolt line.
+ir_case_bolt_pan_holes_x_offsets                 = [0, 5];
 
 // Actual LED physical diameter (measured component). Note: very close to ir_case_led_dia.
 // Keep consistent: ir_led_dia is the real LED, ir_case_led_dia is the case cutout dimension.
@@ -917,8 +915,8 @@ ir_led_light_detector_dia_1                      = 5.3;
 // Light detector larger diameter (tapered detector model - other end radius).
 ir_led_light_detector_dia_2                      = 5.9;
 
-// Screw diameter used on the LED board mounting (M2).
-ir_led_screw_dia                                 = m2_hole_dia;
+// Bolt diameter used on the LED board mounting (M2).
+ir_led_bolt_dia                                  = m2_hole_dia;
 
 // Y offset of the LED center relative to the board origin in the board model.
 ir_led_y_offset                                  = 2;
@@ -939,15 +937,15 @@ ir_case_head_side_panel_x_2                      = + ir_case_thickness
 ir_case_head_side_panel_x_1                      = + ir_led_light_detector_h / 2
                                                 + ir_led_height;
 
-// Y coordinate for the first column of screw positions (centered on the LED height).
+// Y coordinate for the first column of bolt positions (centered on the LED height).
 ir_case_head_side_panel_y_1                      = -ir_led_height / 2;
 
-// Y coordinate for the second column of screw positions (bottom of the case).
+// Y coordinate for the second column of bolt positions (bottom of the case).
 ir_case_head_side_panel_y_2                      = -ir_case_height / 2;
 
-// Array of four [x,y] positions used to lay out the four screw mounting holes
+// Array of four [x,y] positions used to lay out the four bolt mounting holes
 // that attach the case to the head side panel. Each element is [x, y].
-ir_case_head_screws_side_panel_positions         = [[ir_case_head_side_panel_x_1,
+ir_case_head_bolts_side_panel_positions          = [[ir_case_head_side_panel_x_1,
                                                      ir_case_head_side_panel_y_1],
                                                     [ir_case_head_side_panel_x_2,
                                                      ir_case_head_side_panel_y_1],
@@ -971,43 +969,37 @@ lipo_pack_height                                 = 48.4;  // Height of the batte
 /**
  * Physical size of the pan servo in [length (X), width (Y), height (Z)].
  * Measured as the actuator body without hat or gearbox.
- * Units: mm
  */
 pan_servo_size                                   = [23.48, 11.7, 20.3];
 
 /**
- * Distance between the slot edge and screw center for fastening.
+ * Distance between the slot edge and bolt center for fastening.
  * Used during visualization and mounting slot generation.
- * Units: mm
  */
-pan_servo_screws_offset                          = 1;
+pan_servo_bolts_offset                           = 1;
 
 /**
  * Width of the "hat" (top flange) on the servo.
  * This includes mounting holes and is typically wider than the body.
- * Units: mm
  */
 pan_servo_hat_w                                  = 32.11;
 
 /**
  * Height (Y) dimension of the servo's "hat" section.
  * Equal to servo width unless asymmetrically hatched.
- * Units: mm
  */
 pan_servo_hat_h                                  = pan_servo_size[1];
 
 /**
  * Vertical thickness of the servo hat, i.e., how thick the extension flange is.
- * Units: mm
  */
 pan_servo_hat_thickness                          = 1.7;
 
 /**
  * Distance from the top of the servo body to the bottom of the hat.
  * Accounts for mechanical separation between body and hat.
- * Units: mm
  */
-pan_screws_hat_z_offset                          = 4;
+pan_bolts_hat_z_offset                           = 4;
 
 /**
  * Servo label text for visualization purposes.
@@ -1025,7 +1017,6 @@ pan_servo_text_size                              = 3;
 /**
  * Height of the gearbox block directly above the servo body.
  * The base volume that holds gears before the gear stack begins.
- * Units: mm
  */
 pan_servo_gearbox_h                              = 4;
 
@@ -1042,21 +1033,18 @@ pan_servo_gearbox_size                           = [[0.4, 6.09, matte_black],
 /**
  * Diameter of the first (largest) gear or lid on the gear stack.
  * Used to compute alignment and transitions.
- * Units: mm
  */
 pan_servo_gearbox_d1                             = 11.51;
 
 /**
  * Diameter of the secondary gear/layer in the stack.
  * Typically used for angled profiles and hull blending.
- * Units: mm
  */
 pan_servo_gearbox_d2                             = 6.56;
 
 /**
  * Horizontal offset on the X-axis to place the second gear (d2)
  * shifted relative to the first gear (d1), for hull or profile shaping.
- * Units: mm
  */
 pan_servo_gearbox_x_offset                       = 3;
 
@@ -1075,7 +1063,6 @@ pan_servo_color                                  = jet_black;
 /**
  * Length of the chamfered or cutout region at the bottom of the servo body.
  * Used for display detail in component preview.
- * Units: mm
  */
 pan_servo_cutted_len                             = 3;
 
@@ -1086,55 +1073,47 @@ pan_servo_cutted_len                             = 3;
 /**
  * Width (X-axis) of the tilt servo mounting slot.
  * Should closely match the physical width of the servo body.
- * Units: mm
  */
 head_neck_tilt_servo_slot_width                  = 23.6;
 
 /**
  * Height (Y-axis) of the tilt servo slot in the vertical bracket.
  * Should correspond to the depth of the servo side profile.
- * Units: mm
  */
 head_neck_tilt_servo_slot_height                 = 12;
 
 /**
  * Diameter of the holes used for fastening the servo to the bracket.
  * Applies to both pan and tilt servos.
- * Units: mm
  */
-head_neck_tilt_servo_screw_dia                   = 2;
+head_neck_tilt_servo_bolt_dia                    = 2;
 
 /**
- * Lateral horizontal offset from the slot centerline to each screw hole center.
- * Units: mm
+ * Lateral horizontal offset from the slot centerline to each bolt hole center.
  */
-head_neck_tilt_servo_screws_offset               = 1;
+head_neck_tilt_servo_bolts_offset                = 1;
 
 /**
  * Thickness of the vertical support plate in which the tilt servo is mounted.
  * Same as the vertical thickness of the L-bracket.
- * Units: mm
  */
 head_neck_tilt_servo_slot_thickness              = 2.5;
 
 /**
  * Additional width added beyond the tilt servo slot to ensure clearance and rigidity.
  * Allow placement of head/servo structures with sufficient tolerance.
- * Units: mm
  */
 head_neck_tilt_servo_extra_w                     = 4;
 
 /**
  * Additional lower structural height added **below** tilt servo slot.
  * Provides more support at the base and positions the servo higher.
- * Units: mm
  */
 head_neck_tilt_servo_extra_lower_h               = 5;
 
 /**
  * Additional height added **above** the tilt servo placement.
- * Allows for mounting clearance or screw pass-through from above.
- * Units: mm
+ * Allows for mounting clearance or bolt pass-through from above.
  */
 head_neck_tilt_servo_extra_top_h                 = 3;
 
@@ -1145,49 +1124,42 @@ head_neck_tilt_servo_extra_top_h                 = 3;
 /**
  * Physical dimensions of the tilt servo: [Length, Width, Height].
  * Measurement excludes mounting hat and gear housing.
- * Units: mm
  */
 tilt_servo_size                                  = [23.48, 11.7, 20.3];
 
 /**
- * Screw offset distance from the slot to centers of mounting holes.
+ * Bolt offset distance from the slot to centers of mounting holes.
  * Used during servo slot modeling and visualization.
- * Units: mm
  */
-tilt_servo_screws_offset                         = 1;
+tilt_servo_bolts_offset                          = 1;
 
 /**
  * Width of the mounting flange ("hat") for the tilt servo.
  * Usually wider than the central body to allow secure fastening.
- * Units: mm
  */
 tilt_servo_hat_w                                 = 32.11;
 
 /**
  * Height of the servo hat (Y axis).
  * Should match the width of the servo body.
- * Units: mm
  */
 tilt_servo_hat_h                                 = tilt_servo_size[1];
 
 /**
  * Thickness of the tilt servo's mounting flange ("hat").
- * Used to offset and extrude screw holders in 3D view.
- * Units: mm
+ * Used to offset and extrude bolt holders in 3D view.
  */
 tilt_servo_hat_thickness                         = 1.6;
 
 /**
- * Distance from the top of the servo body to screw-holding surface (flange).
+ * Distance from the top of the servo body to bolt-holding surface (flange).
  * Used to vertically position the hat relative to the main body.
- * Units: mm
  */
-tilt_screws_hat_z_offset                         = 4;
+tilt_bolts_hat_z_offset                          = 4;
 
 /**
  * Horizontal offset between the two gearbox shaft diameters
  * (used when blending large/small gear diameters visually).
- * Units: mm
  */
 tilt_servo_gearbox_x_offset                      = 3;
 
@@ -1213,7 +1185,6 @@ tilt_servo_text_size                             = 3;
 /**
  * Height of the gearbox housing above the main servo body.
  * Does not include stacked gears.
- * Units: mm
  */
 tilt_servo_gearbox_h                             = 4;
 
@@ -1229,13 +1200,11 @@ tilt_servo_gearbox_size                          = [[0.4, 6.09, matte_black],
 
 /**
  * Diameter of the primary (largest) top gear in the tilt servo’s gearbox.
- * Units: mm
  */
 tilt_servo_gearbox_d1                            = 11.51;
 
 /**
  * Diameter of secondary/inner gear used for visuals or profile blending.
- * Units: mm
  */
 tilt_servo_gearbox_d2                            = 6.56;
 
@@ -1247,7 +1216,6 @@ tilt_servo_color                                 = jet_black;
 /**
  * Length of the angled cut (chamfer) at the servo body base.
  * Used in visual model to distinguish component edges.
- * Units: mm
  */
 tilt_servo_cutted_len                            = 3;
 
@@ -1298,15 +1266,15 @@ knuckle_shaft_dia                                = 8;
 // should be larger than the shaft itself.
 knuckle_shaft_connector_dia                      = knuckle_shaft_dia * 1.4;
 
-// The diameter of the fastening screws on the knuckle connector for the wheel
+// The diameter of the fastening bolts on the knuckle connector for the wheel
 // shaft.
-knuckle_shaft_screw_dia                          = m25_hole_dia;
+knuckle_shaft_bolt_dia                           = m25_hole_dia;
 
-// The distance from the top of the shaft to the screw holes
-knuckle_shaft_screws_offset                      = 1;
+// The distance from the top of the shaft to the bolt holes
+knuckle_shaft_bolts_offset                       = 1;
 
-// distance between screw holes on the shaft
-knuckle_shaft_screws_distance                    = 2;
+// distance between bolt holes on the shaft
+knuckle_shaft_bolts_distance                     = 2;
 
 // The length of the vertical part of the (curved) axle shaft that connects the
 // steering knuckle to the wheel hub
@@ -1378,36 +1346,36 @@ n20_end_cap_circle_hole_dia                      = 3;
 // ─────────────────────────────────────────────────────────────────────────────
 n20_motor_bracket_tolerance                      = 0.2;
 n20_motor_bracket_thickness                      = 3;
-n20_motor_screws_panel_offset                    = 11.3;
-n20_motor_screws_panel_length                    = 4;
-n20_motor_screw_dia                              = m25_hole_dia;
-n20_motor_screw_bore_dia                         = n20_motor_screw_dia * 2;
-n20_motor_screw_bore_h                           = chassis_counterbore_h;
+n20_motor_bolts_panel_offset                     = 11.3;
+n20_motor_bolts_panel_length                     = 4;
+n20_motor_bolt_dia                               = m25_hole_dia;
+n20_motor_bolt_bore_dia                          = n20_motor_bolt_dia * 2;
+n20_motor_bolt_bore_h                            = chassis_counterbore_h;
 
 n20_motor_chassis_y_distance                     = 0;
 n20_motor_chassis_x_distance                     = -9;
 
-n20_motor_screws_panel_len                       = n20_can_dia
+n20_motor_bolts_panel_len                        = n20_can_dia
                                                 + n20_motor_bracket_thickness
                                                 * 2
-                                                + n20_motor_screw_dia
+                                                + n20_motor_bolt_dia
                                                 * 2
-                                                + n20_motor_screws_panel_length
+                                                + n20_motor_bolts_panel_length
                                                 * 2;
 
 chassis_single_holes_specs                       = [[[8, 0, -5, 0]],
                                                     [[8, 0, 5, 0]],
                                                     [[6, 0,
-                                                      chassis_body_w / 2 - n20_motor_screws_panel_offset
+                                                      chassis_body_w / 2 - n20_motor_bolts_panel_offset
                                                       - n20_can_height, -40]],
                                                     [[6, 30.2,
-                                                      chassis_body_w / 2 - n20_motor_screws_panel_offset
+                                                      chassis_body_w / 2 - n20_motor_bolts_panel_offset
                                                       - n20_can_height, -30]],
                                                     [[6.0, 30.2,
-                                                      -chassis_body_w / 2 + n20_motor_screws_panel_offset
+                                                      -chassis_body_w / 2 + n20_motor_bolts_panel_offset
                                                       + n20_can_height, -40]],
                                                     [[6.0, 30.2,
-                                                      -chassis_body_w / 2 + n20_motor_screws_panel_offset
+                                                      -chassis_body_w / 2 + n20_motor_bolts_panel_offset
                                                       + n20_can_height, -30]]];
 
 chassis_rect_holes_specs                         = [[[[10, 20, 4.0], [10, 0, 40]], // third in the center
@@ -1443,14 +1411,14 @@ rear_panel_switch_slot_cbore_dia                 = 18;
 rear_panel_switch_slot_cbore_h                   = 2;
 
 rear_panel_holes_x_offsets                       = [-16, 16];
-rear_panel_screw_holes_x_offsets                 = [-16, 16];
-rear_panel_screw_hole_dia                        = m25_hole_dia;
-rear_panel_screw_cbore_hole_dia                  = 5.0;
-rear_panel_screw_cbore_h                         = 2.0;
+rear_panel_bolt_holes_x_offsets                  = [-16, 16];
+rear_panel_bolt_hole_dia                         = m25_hole_dia;
+rear_panel_bolt_cbore_hole_dia                   = 5.0;
+rear_panel_bolt_cbore_h                          = 2.0;
 rear_panel_mount_thickness                       = 2.5;
 rear_panel_thickness                             = 3;
 
-rear_panel_screw_offset                          = 3;
+rear_panel_bolt_offset                           = 3;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Raspberry Pi dimensions (defaults are for Raspberry PI 5)
@@ -1459,15 +1427,15 @@ rear_panel_screw_offset                          = 3;
 rpi_chassis_y_position                           = 0;
 rpi_chassis_x_position                           = -32.5;
 
-// The X and Y dimensions of the screw positions for the Raspberry Pi 5 slot.
-// This forms a square with a screw hole centered on each corner.
-rpi_screws_size                                  = [50, 58];
+// The X and Y dimensions of the bolt positions for the Raspberry Pi 5 slot.
+// This forms a square with a bolt hole centered on each corner.
+rpi_bolt_spacing                                 = [50, 58];
 
-// The diameter of the screw holes for the Raspberry Pi 5 slot.
-rpi_screw_hole_dia                               = m2_hole_dia;
-rpi_screw_cbore_dia                              = m2_round_head_dia + 0.1;
+// The diameter of the bolt holes for the Raspberry Pi 5 slot.
+rpi_bolt_hole_dia                                = m2_hole_dia;
+rpi_bolt_cbore_dia                               = m2_round_head_dia + 0.1;
 
-rpi_screws_offset                                = m25_hole_dia + 0.4;
+rpi_bolts_offset                                 = m25_hole_dia + 0.4;
 rpi_pin_headers_cols                             = 20;
 rpi_pin_headers_rows                             = 2;
 
@@ -1536,8 +1504,8 @@ rpi_on_off_button_dia                            = 1.5;
 
 //The height of the standoffs for Raspberry Pi
 rpi_standoff_height                              = 6;
-rpi_csi_position_x                               = rpi_screws_size[0] - rpi_csi_size[0] / 2 - 2;
-rpi_csi_position_y                               = rpi_screws_size[1] - m25_hole_dia - 1;
+rpi_csi_position_x                               = rpi_bolt_spacing[0] - rpi_csi_size[0] / 2 - 2;
+rpi_csi_position_y                               = rpi_bolt_spacing[1] - m25_hole_dia - 1;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // AI HAT+
@@ -1545,7 +1513,7 @@ rpi_csi_position_y                               = rpi_screws_size[1] - m25_hole
 
 ai_hat_size                                      = [56.7, 65, 1.5];
 ai_hat_corner_rad                                = 2.4;
-ai_hat_screw_dia                                 = m25_hole_dia;
+ai_hat_bolt_dia                                  = m25_hole_dia;
 
 ai_hat_mounting_hole_pad_spec                    = [[m25_hole_dia + 2.5, yellow_3]];
 ai_hat_csi_slot_size                             = [rpi_csi_size[0] + 4, ai_hat_size[1]
@@ -1564,9 +1532,9 @@ ai_hat_pin_height                                = 10.57;
 
 servo_driver_hat_size                            = [30.26, 65.25, 1.65];
 servo_driver_corner_rad                          = 2;
-servo_driver_hat_screws_size                     = [25, 58];
+servo_driver_hat_bolt_spacing                    = [25, 58];
 
-servo_driver_hat_screw_dia                       = m25_hole_dia;
+servo_driver_hat_bolt_dia                        = m25_hole_dia;
 servo_driver_hat_standoff_color                  = "white";
 servo_driver_hat_mounting_hole_pad_spec          = [[m25_hole_dia + 2.5, "white"]];
 
@@ -1623,7 +1591,7 @@ servo_driver_hat_chip_2_x_distance               = 46;
 
 motor_driver_hat_size                            = [56.7, 65, 1.9];
 motor_driver_hat_corner_rad                      = 2.4;
-motor_driver_hat_screw_dia                       = m25_hole_dia;
+motor_driver_hat_bolt_dia                        = m25_hole_dia;
 motor_driver_hat_standoff_color                  = "white";
 motor_driver_hat_mounting_hole_pad_spec          = [[m25_hole_dia + 2.5, "white"]];
 
@@ -1677,10 +1645,10 @@ motor_driver_hat_extra_capacitors                = [[5.5, 2.58, 5.5, 0, 5],
 // ─────────────────────────────────────────────────────────────────────────────
 // GPIO Expansion Board
 // ─────────────────────────────────────────────────────────────────────────────
-gpio_expansion_screws_size_2                     = [38, 58];
+gpio_expansion_bolt_spacing_2                    = [38, 58];
 gpio_expansion_size                              = [55.0, 65.25, 1.65];
 
-gpio_expansion_screw_dia                         = m25_hole_dia;
+gpio_expansion_bolt_dia                          = m25_hole_dia;
 gpio_expansion_standoff_color                    = "white";
 gpio_expansion_corner_rad                        = 2;
 gpio_expansion_mounting_hole_pad_spec            = [[m25_hole_dia + 2.5, dark_gold_1]];
@@ -1720,8 +1688,8 @@ voltmeter_display_len                            = 22.65;
 voltmeter_display_w                              = 14.45;
 voltmeter_display_h                              = 6.16;
 
-voltmeter_screw_size                             = [0, 27.70];
-voltmeter_screw_dia                              = m3_hole_dia;
+voltmeter_bolt_spacing                           = [0, 27.70];
+voltmeter_bolt_dia                               = m3_hole_dia;
 voltmeter_standoff_body_d                        = 4.58;
 voltmeter_standoff_thread_h                      = 5;
 
@@ -1752,8 +1720,8 @@ voltmeter_chassis_specs                          = [];
 xt_90_size                                       = [10.30, 22.20];
 xt_90_position                                   = [3, 1];
 
-xt_90_screw_size                                 = [0, 32.20];
-xt_90_screw_dia                                  = m3_hole_dia;
+xt_90_bolt_spacing                               = [0, 32.20];
+xt_90_bolt_dia                                   = m3_hole_dia;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // XT90E-M connector placeholder
@@ -1803,8 +1771,8 @@ power_case_round_rad                             = 1; // Corner radius for round
 // INA 260
 // ─────────────────────────────────────────────────────────────────────────────
 
-ina260_screw_size                                = [17.78, 0];
-ina260_screw_dia                                 = m25_hole_dia;
+ina260_bolt_spacing                              = [17.78, 0];
+ina260_bolt_dia                                  = m25_hole_dia;
 ina260_size                                      = [22.9, 23.1, 1.65];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1854,24 +1822,24 @@ power_case_front_slot_padding_x                  = 5.0;
 power_case_front_slot_gap_z                      = 3.9;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Power module case bottom wall and mounting screws
+// Power module case bottom wall and mounting bolts
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Thickness of the bottom wall (floor) of the case.
-// This affects internal clearance and screw/counterbore depths.
+// This affects internal clearance and bolt/counterbore depths.
 power_case_bottom_thickness                      = 2.0;
 
-// The X and Y spacing for the 4 corner mounting screw positions.
+// The X and Y spacing for the 4 corner mounting bolt positions.
 // Provided as [X_spacing, Y_spacing]. These define the square/rectangle on which
 // the four mounting holes are placed; used by four_corner_children/four_corner_holes.
 
-power_case_bottom_screw_size                     = [40, 88];
-// Screw/cutout sizes for mounting the power module to the chassis.
-// The screw hole diameter for through holes in the bottom/back wall.
-power_case_bottom_screw_dia                      = m3_hole_dia;
+power_case_bottom_bolt_spacing                   = [40, 88];
+// Bolt/cutout sizes for mounting the power module to the chassis.
+// The bolt hole diameter for through holes in the bottom/back wall.
+power_case_bottom_bolt_dia                       = m3_hole_dia;
 
-// Counterbore diameter for the screw head recess on the bottom/back wall.
-// This is the larger diameter of the counterbore so the screw head can sit flush.
+// Counterbore diameter for the bolt head recess on the bottom/back wall.
+// This is the larger diameter of the counterbore so the bolt head can sit flush.
 power_case_bottom_cbore_dia                      = 6.0;
 
 power_case_bottom_cbore_h                        = 1.0;
@@ -1879,8 +1847,8 @@ power_case_bottom_cbore_h                        = 1.0;
 power_case_chassis_x_offset                      = 0;
 power_case_chassis_y_offset                      = 0;
 
-power_case_screw_size_offset_x                   = 0;
-power_case_screw_size_offset_y                   = 18;
+power_case_bolt_spacing_offset_x                 = 0;
+power_case_bolt_spacing_offset_y                 = 18;
 
 power_case_standoff_h                            = 10;
 power_case_standoff_thread_h                     = 5;
@@ -1899,15 +1867,15 @@ power_case_rail_rad                              = 0.0;
 // Vertical thickness of the rail profile (height of the dovetail section).
 power_case_rail_height                           = 4;
 
-// Diameter of screw holes that run through the rail for mounting hardware.
-power_case_rail_screw_dia                        = m25_hole_dia + 0.1;
+// Diameter of bolt holes that run through the rail for mounting hardware.
+power_case_rail_bolt_dia                         = m25_hole_dia + 0.1;
 
-// Distance from the centerline of the rail to the screw groove (used to place clearance slots).
-power_case_rail_screw_groove_distance            = 6.5;
+// Distance from the centerline of the rail to the bolt groove (used to place clearance slots).
+power_case_rail_bolt_groove_distance             = 6.5;
 
-// Internal side wall thickness computed from overall width and the screw pattern.
+// Internal side wall thickness computed from overall width and the bolt pattern.
 // This determines the width of the side wall between the central battery pocket and outer shell.
-// Changing the screw pose values will change this computed thickness.
+// Changing the bolt pose values will change this computed thickness.
 power_case_side_wall_thickness                   = 2.3;
 
 power_lid_extra_side_thickness                   = 2;
@@ -1937,8 +1905,8 @@ power_lid_width                                  = power_case_width
 
 power_lid_thickness                              = 2;
 
-power_voltmeter_specs                            = [[[voltmeter_screw_size,
-                                                      voltmeter_screw_dia,
+power_voltmeter_specs                            = [[[voltmeter_bolt_spacing,
+                                                      voltmeter_bolt_dia,
                                                       [voltmeter_board_w,
                                                        voltmeter_board_len,
                                                        voltmeter_board_h,],
@@ -1965,8 +1933,8 @@ power_voltmeter_specs                            = [[[voltmeter_screw_size,
                                                        red_1,
                                                        [0, 0.6]]],
                                                      [-25, -12, 3, -90, true]],
-                                                    [[voltmeter_screw_size,
-                                                      voltmeter_screw_dia,
+                                                    [[voltmeter_bolt_spacing,
+                                                      voltmeter_bolt_dia,
                                                       [voltmeter_board_w,
                                                        voltmeter_board_len,
                                                        voltmeter_board_h,],
@@ -1998,8 +1966,8 @@ power_voltmeter_specs                            = [[[voltmeter_screw_size,
                                                       0,
                                                       0,
                                                       true]],
-                                                    [[voltmeter_screw_size,
-                                                      voltmeter_screw_dia,
+                                                    [[voltmeter_bolt_spacing,
+                                                      voltmeter_bolt_dia,
                                                       [voltmeter_board_w,
                                                        voltmeter_board_len,
                                                        voltmeter_board_h,],
@@ -2032,12 +2000,12 @@ power_voltmeter_specs                            = [[[voltmeter_screw_size,
                                                       0,
                                                       true]],];
 
-power_lid_breadboard_screw_size                  = [16.0, 76.0];
+power_lid_breadboard_bolt_spacing                = [16.0, 76.0];
 // [16.0, 76.0];
-power_lid_breadboard_screw_dia                   = m2_hole_dia;
+power_lid_breadboard_bolt_dia                    = m2_hole_dia;
 
 // [[[x, y], diameter, [gap_for_next_item, x_offset, y_offset], [bore_dia, bore_h, auto_scale_step, reverse]?, [debug?, text] ]],
-power_lid_rect_screw_holes                       = [[[[15.2, 35.55],
+power_lid_rect_bolt_holes                        = [[[[15.2, 35.55],
                                                       m2_hole_dia,
                                                       [10, -11.9, 14.55],
                                                       [6 , 1.0, 0.1, false],
@@ -2055,9 +2023,9 @@ power_lid_rect_screw_holes                       = [[[[15.2, 35.55],
                                                        4,
                                                        2,
                                                        2]]],
-                                                    [[[power_lid_breadboard_screw_size[0],
-                                                       power_lid_breadboard_screw_size[1]],
-                                                      power_lid_breadboard_screw_dia,
+                                                    [[[power_lid_breadboard_bolt_spacing[0],
+                                                       power_lid_breadboard_bolt_spacing[1]],
+                                                      power_lid_breadboard_bolt_dia,
                                                       [0, 15, 18],
                                                       [],
                                                       [false,
@@ -2070,9 +2038,9 @@ power_lid_rect_screw_holes                       = [[[[15.2, 35.55],
                                                        undef,
                                                        "center",
                                                        "baseline"]]],
-                                                    [[[ina260_screw_size[0],
-                                                       ina260_screw_size[1]],
-                                                      ina260_screw_dia,
+                                                    [[[ina260_bolt_spacing[0],
+                                                       ina260_bolt_spacing[1]],
+                                                      ina260_bolt_dia,
                                                       [10,
                                                        17,
                                                        38],
@@ -2263,9 +2231,9 @@ control_panel_thickness                          = toggle_switch_nut_out_h + 2;
 // ─────────────────────────────────────────────────────────────────────────────
 // Standard (see motor_type) motor brackets dimension
 // ─────────────────────────────────────────────────────────────────────────────
-standard_motor_bracket_screws_size               = [-0, 0];
-standard_motor_bracket_chassis_screw_hole        = m2_hole_dia;
-standard_motor_bracket_motor_screw_hole          = m3_hole_dia;
+standard_motor_bracket_bolt_spacing              = [-0, 0];
+standard_motor_bracket_chassis_bolt_hole         = m2_hole_dia;
+standard_motor_bracket_motor_bolt_hole           = m3_hole_dia;
 standard_motor_bracket_y_offset                  = 0; // distance from the end of the chassis
 standard_motor_bracket_width                     = 10;
 standard_motor_bracket_thickness                 = 3;
@@ -2303,25 +2271,46 @@ step_down_voltage_regulator_w                    = 20.4;
 step_down_voltage_regulator_thickness            = 1.8;
 step_down_voltage_regulator_standoff_h           = 2;
 
-step_down_voltage_screw_hole_dia                 = 2.1;
-step_down_voltage_screw_x_distance               = 1.5;
-step_down_voltage_screw_y_distance               = 2.54;
+step_down_voltage_bolt_hole_dia                  = 2.1;
+step_down_voltage_bolt_x_distance                = 1.5;
+step_down_voltage_bolt_y_distance                = 2.54;
 step_down_voltage_screw_terminal_holes           = [35.5, 5];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Servo horn
 // ─────────────────────────────────────────────────────────────────────────────
-servo_horn_thickness                             = 1.5;
-servo_horn_w_1                                   = 5.25;
-servo_horn_w_2                                   = 4.03;
-servo_horn_outer_dia                             = 5.90;
-servo_horn_inner_dia                             = 3.87;
-servo_horn_hole_dia                              = 1.87;
-servo_horn_h                                     = 4.54;
+
+// Each arm has the shape of a trapezoid.
+// These trapezoids form either a cross (4 arms) or a single bar (2 arms).
+// This is the starting width of the arm trapezoid, measured from the center.
+servo_horn_starting_arm_w                        = 5.25;
+// This is the ending width of the arm trapezoid.
+servo_horn_ending_arm_w                          = 4.03;
+// A ring is placed at the center where the arms meet. This is the ring's outer diameter.
+servo_horn_center_ring_outer_dia                 = 5.90;
+// This is the ring's inner diameter.
+servo_horn_center_ring_inner_dia                 = 3.87;
+
+// This is the total height of the ring and the horn itself.
+servo_horn_ring_height                           = 4.54;
+
+// This is the thickness of each arm.
+servo_horn_arm_thickness                         = 1.5;
+
+// This is the Z offset (height) of the arms from the bottom of the ring.
 servo_horn_arm_z_offset                          = 2.5;
+
+// This is the through-hole diameter at the center for the servo motor.
+servo_horn_center_hole_dia                       = 1.87;
+
+// This is the total length of the horn (two arms + center ring).
 servo_horn_len                                   = 24;
+
+// The diameter of fastening screw holes
 servo_horn_screw_d                               = 0.8;
+// This is the distance between screw holes.
 servo_horn_screws_distance                       = 2.84;
+// This is the number of screw holes on each arm.
 servo_horn_holes_n                               = 2;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -2338,13 +2327,13 @@ steering_servo_slot_width                        = 12;
 steering_servo_slot_height                       = 23.6;
 steering_servo_size                              = [23.48, 11.7, 20.3];
 
-// offset between the servo slot and the fastening screws
-steering_servo_screws_offset                     = 1;
+// offset between the servo slot and the fastening bolts
+steering_servo_bolts_offset                      = 1;
 
 steering_servo_hat_w                             = 33;
 steering_servo_hat_h                             = steering_servo_size[1];
 steering_servo_hat_thickness                     = 1.6;
-steering_screws_hat_z_offset                     = 4;
+steering_bolts_hat_z_offset                      = 4;
 steering_servo_gearbox_x_offset                  = 3;
 steering_servo_gearbox_mode                      = "hull";
 steering_servo_text                              = [["EMAX",
@@ -2378,8 +2367,8 @@ steering_panel_length                            = 134;
 // knuckles at each side
 steering_rack_support_width                      = 8;
 
-// The diameter of the fastening screws for the servo
-steering_servo_screw_dia                         = 2;
+// The diameter of the fastening bolts for the servo
+steering_servo_bolt_dia                          = 2;
 
 // The thickness of the panel that holds the rack and the pins for the steering
 // knuckles at each side
@@ -2397,13 +2386,13 @@ steering_panel_hinge_length                      = 10;
 steering_panel_hinge_w                           = 8;
 steering_panel_hinge_x_offset                    = 1;
 steering_panel_hinge_corner_rad                  = 0.5;
-steering_panel_hinge_screw_dia                   = m25_hole_dia;
-steering_panel_hinge_bore_dia                    = steering_panel_hinge_screw_dia * 2;
-steering_panel_hinge_chassis_bore_dia            = steering_panel_hinge_screw_dia * 2.2;
+steering_panel_hinge_bolt_dia                    = m25_hole_dia;
+steering_panel_hinge_bore_dia                    = steering_panel_hinge_bolt_dia * 2;
+steering_panel_hinge_chassis_bore_dia            = steering_panel_hinge_bolt_dia * 2.2;
 steering_panel_hinge_bore_h                      = chassis_counterbore_h;
 
-steering_panel_hinge_screw_distance              = 1;
-steering_panel_hinge_screw_x_distance            = 1;
+steering_panel_hinge_bolt_distance               = 1;
+steering_panel_hinge_bolt_x_distance             = 1;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Rack and Pinion
@@ -2439,9 +2428,9 @@ steering_pinion_screw_dia                        = 1.5;
 // Number of teeth on the pinion
 steering_pinion_teeth_count                      = 24;
 
-steering_pinion_screws_spacing                   = 0.5;
+steering_pinion_bolts_spacing                    = 0.5;
 
-steering_pinion_screws_servo_distance            = 0.8;
+steering_pinion_bolts_servo_distance             = 0.8;
 steering_pinion_clearance                        = 0.1;
 steering_pinion_backlash                         = 0.05;
 
@@ -2514,17 +2503,17 @@ steering_rack_anti_tilt_key_thickness            = 0.8;
 steering_rack_anti_tilt_rack_x_offset            = -0.3;
 steering_rack_anti_tilt_key_height               = steering_rack_z_distance_from_panel + 0.1;
 
-steering_kingpin_post_screw_dia                  = m25_hole_dia;
+steering_kingpin_post_bolt_dia                   = m25_hole_dia;
 steering_kingpin_post_border_w                   = 2;
 
-steering_servo_screw_distance_from_top           = 1;
+steering_servo_bolt_distance_from_top            = 1;
 steering_servo_mount_width                       = 23.5;
 steering_servo_mount_height                      = 39.5;
 steering_servo_mount_length                      = 5.5;
 steering_servo_mount_connector_length            = 2.5;
 steering_servo_mount_connector_thickness         = steering_rack_support_thickness  * 0.65;
-steering_servo_mount_connector_screw_dia         = m3_hole_dia;
-steering_servo_mount_connector_screw_x           = 3;
+steering_servo_mount_connector_bolt_dia          = m3_hole_dia;
+steering_servo_mount_connector_bolt_x            = 3;
 
 // Knuckle center along X. Do not edit, used for Ackermann geometry calculations
 steering_x_left_knuckle                          = -steering_panel_length / 2
@@ -2558,9 +2547,9 @@ tie_rod_bearing_x_offset                         = 2;
 tie_rod_shaft_dia                                = 8.0;
 
 tie_rod_shaft_knuckle_arm_dia                    = tie_rod_shaft_dia * 1.4;
-tie_rod_shaft_screw_dia                          = m2_hole_dia;
-tie_rod_shaft_screw_offset                       = 1;
-tie_rod_shaft_screw_distance                     = 2.0;
+tie_rod_shaft_bolt_dia                           = m2_hole_dia;
+tie_rod_shaft_bolt_offset                        = 1;
+tie_rod_shaft_bolt_distance                      = 2.0;
 tie_rod_shaft_len                                = knuckle_shaft_vertical_len + 6;
 
 tie_rod_shaft_knuckle_arm_height                 = 9;
@@ -2603,8 +2592,8 @@ ultrasonic_oscillator_thickness                  = 3.33;
 ultrasonic_oscillator_y_offset                   = 0.8;
 ultrasonic_oscillator_solder_x                   = 2;
 
-ultrasonic_screw_dia                             = 2.0;
-ultrasonic_screw_size                            = [42.0, 17.50];
+ultrasonic_bolt_dia                              = 2.0;
+ultrasonic_bolt_spacing                          = [42.0, 17.50];
 
 ultrasonic_smd_len                               = 8;
 ultrasonic_smd_h                                 = 1.65;
@@ -2635,10 +2624,10 @@ wheel_hub_d                                      = 22;
 wheel_hub_h                                      = 7.2;
 wheel_hub_inner_rim_h                            = 1.4;
 wheel_hub_inner_rim_w                            = 1.2;
-wheel_hub_screw_dia                              = m25_hole_dia;
-wheel_screws_n                                   = 6;
-wheel_screw_boss_w                               = 1;
-wheel_screw_boss_h                               = 2;
+wheel_hub_bolt_dia                               = m25_hole_dia;
+wheel_bolts_n                                    = 6;
+wheel_bolt_boss_w                                = 1;
+wheel_bolt_boss_h                                = 2;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Rear wheels
@@ -2758,7 +2747,7 @@ steering_rack_link_rack_side_w_length            = steering_distance_between_kin
 // wheelbase, calculated from the center of the rear axle
 steering_wheelbase_effective                     = abs(chassis_len
                                                        - steering_panel_distance_from_top
-                                                       - n20_motor_screws_panel_len / 2
+                                                       - n20_motor_bolts_panel_len / 2
                                                        - n20_motor_chassis_y_distance);
 
 // The angle of the tie-rod arms that forms the Ackermann trapezoid

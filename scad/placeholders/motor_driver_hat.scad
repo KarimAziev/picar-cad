@@ -89,7 +89,7 @@ module motor_driver_hat(center=true, show_pins=true,
               rounded_rect([w, l], r=motor_driver_hat_corner_rad, center=false);
             }
 
-            four_corner_holes_2d(rpi_screws_size, center=true);
+            four_corner_holes_2d(rpi_bolt_spacing, center=true);
           }
         }
       }
@@ -97,7 +97,7 @@ module motor_driver_hat(center=true, show_pins=true,
                  -l / 2
                  + rpi_pin_header_width
                  * rpi_pin_headers_cols / 2
-                 + rpi_screws_offset * 2,
+                 + rpi_bolts_offset * 2,
                  -motor_driver_hat_header_height]) {
         pin_headers(cols=rpi_pin_headers_cols,
                     rows=rpi_pin_headers_rows,
@@ -132,7 +132,7 @@ module motor_driver_hat(center=true, show_pins=true,
         }
       }
 
-      translate([-w / 2, -l / 2 + rpi_screws_offset * 2, 0]) {
+      translate([-w / 2, -l / 2 + rpi_bolts_offset * 2, 0]) {
         if (show_pins) {
           translate([0, 0, h]) {
             pin_headers(cols=rpi_pin_headers_cols,
@@ -189,8 +189,8 @@ module motor_driver_hat(center=true, show_pins=true,
 
       if (show_standoff) {
         translate([0, 0, -motor_driver_hat_header_height - extra_standoff_h]) {
-          four_corner_children(rpi_screws_size) {
-            standoffs_stack(d=motor_driver_hat_screw_dia,
+          four_corner_children(rpi_bolt_spacing) {
+            standoffs_stack(d=motor_driver_hat_bolt_dia,
                             colr=motor_driver_hat_standoff_color,
                             min_h=motor_driver_hat_header_height
                             + extra_standoff_h);
@@ -198,10 +198,10 @@ module motor_driver_hat(center=true, show_pins=true,
         }
       }
 
-      four_corner_children(rpi_screws_size) {
+      four_corner_children(rpi_bolt_spacing) {
         pad_hole(specs=motor_driver_hat_mounting_hole_pad_spec,
                  thickness=h,
-                 screw_d=motor_driver_hat_screw_dia);
+                 bolt_d=motor_driver_hat_bolt_dia);
       }
     }
   }

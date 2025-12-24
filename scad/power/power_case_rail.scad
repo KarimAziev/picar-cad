@@ -43,11 +43,11 @@ module power_case_rail(h=power_case_rail_height,
              center=true);
         translate([0,
                    -power_case_groove_thickness / 2
-                   - power_case_rail_screw_dia / 2
-                   - power_case_rail_screw_groove_distance
+                   - power_case_rail_bolt_dia / 2
+                   - power_case_rail_bolt_groove_distance
                    , 0]) {
           rotate([0, 90, 0]) {
-            cylinder(h=w + 1, r=power_case_rail_screw_dia / 2,
+            cylinder(h=w + 1, r=power_case_rail_bolt_dia / 2,
                      center=true,
                      $fn=360);
           }

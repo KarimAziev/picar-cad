@@ -17,12 +17,12 @@ function steering_servo_full_height() =
 
 function steering_servo_height_after_hat() =
   servo_height_after_hat(h=steering_servo_size[2],
-                         z_offst=steering_screws_hat_z_offset,
+                         z_offst=steering_bolts_hat_z_offset,
                          hat_thickness=steering_servo_hat_thickness);
 
 function steering_servo_height_before_hat() =
   servo_height_before_hat(h=steering_servo_size[2],
-                          z_offst=steering_screws_hat_z_offset,
+                          z_offst=steering_bolts_hat_z_offset,
                           hat_thickness=steering_servo_hat_thickness);
 
 function steering_servo_gear_height() =
@@ -32,13 +32,13 @@ module steering_servo(center=false, servo_color=steering_servo_color, alpha=1) {
   servo(size=[steering_servo_size[0],
               steering_servo_size[1],
               steering_servo_size[2]],
-        screws_dia=steering_servo_screw_dia,
+        bolts_dia=steering_servo_bolt_dia,
         servo_hat_w=steering_servo_hat_w,
         center=center,
         servo_hat_h=steering_servo_hat_h,
         servo_hat_thickness=steering_servo_hat_thickness,
-        screws_offset=steering_servo_screws_offset,
-        screws_hat_z_offset=steering_screws_hat_z_offset,
+        bolts_offset=steering_servo_bolts_offset,
+        bolts_hat_z_offset=steering_bolts_hat_z_offset,
         servo_color=servo_color,
         alpha=alpha,
         gearbox_box_color=servo_color,

@@ -44,12 +44,12 @@ module camera_module(board_color=green_2,
                        fn=40);
           translate([0, camera_h / 2
                      - camera_holes_size[1] / 2
-                     - camera_screw_hole_dia / 2
+                     - camera_bolt_hole_dia / 2
                      - camera_holes_distance_from_top,
                      0]) {
             four_corner_holes_2d(size=camera_holes_size,
                                  center=true,
-                                 hole_dia=camera_screw_hole_dia,
+                                 hole_dia=camera_bolt_hole_dia,
                                  fn_val=60);
           }
         }
@@ -61,19 +61,19 @@ module camera_module(board_color=green_2,
         linear_extrude(height=camera_thickness + 0.1, center=false) {
           translate([0, camera_h / 2
                      - camera_holes_size[1] / 2
-                     - camera_screw_hole_dia / 2
+                     - camera_bolt_hole_dia / 2
                      - camera_holes_distance_from_top,
                      0]) {
             size = camera_holes_size;
             border_w = (camera_w - camera_holes_size[0] -
-                        camera_screw_hole_dia) / 2;
+                        camera_bolt_hole_dia) / 2;
 
             for (x_ind = [0, 1]) {
               for (y_ind = [0, 1]) {
                 x_pos = -size[0] / 2 + x_ind * size[0];
                 y_pos = -size[1] / 2 + y_ind * size[1];
                 translate([x_pos, y_pos]) {
-                  ring_2d(d=camera_screw_hole_dia,
+                  ring_2d(d=camera_bolt_hole_dia,
                           w=border_w,
                           fn=30,
                           outer=true);

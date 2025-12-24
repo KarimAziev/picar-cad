@@ -24,7 +24,7 @@ module chassis_connector_tongue() {
                       chassis_connector_height]);
         mirror_copy([1, 0, 0]) {
 
-          for (x = chassis_connector_screw_positions) {
+          for (x = chassis_connector_bolt_positions) {
             translate([x,
                        -chassis_connector_len / 2 + chassis_connector_dia / 2
                        + chassis_connector_edge_distance,
@@ -55,7 +55,7 @@ module chassis_connector_groove() {
   }
 
   mirror_copy([1, 0, 0]) {
-    for (x = chassis_connector_screw_positions) {
+    for (x = chassis_connector_bolt_positions) {
       translate([x,
                  -chassis_connector_len + chassis_connector_dia / 2
                  + chassis_connector_edge_distance,

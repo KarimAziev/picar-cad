@@ -9,7 +9,7 @@
  *   larger assembly (e.g., scad/ir_case.scad and head/head_mount.scad).
  *
  * Main modules
- * - ir_led_board()            // renders the PCB, mounting ears, screw holes,
+ * - ir_led_board()            // renders the PCB, mounting ears, bolt holes,
  *                             // the LED body and its light detector - centered
  *                             // for easy placement in assemblies.
  * - ir_led()                  // renders only the LED cylinder (useful for
@@ -71,7 +71,7 @@ module ir_led() {
 module ir_led_board() {
   ear_dia = (ir_led_board_w - ir_led_board_cutout_depth) / 2 - 0.2;
   ear_rad = ear_dia / 2;
-  screw_rad = ir_led_screw_dia / 2;
+  bolt_rad = ir_led_bolt_dia / 2;
   union() {
     color(matte_black, alpha=1) {
       linear_extrude(height=ir_led_thickness, center=false) {
@@ -103,12 +103,12 @@ module ir_led_board() {
                              fn=40);
               }
               translate([0,
-                         screw_rad + 0.4, 0]) {
+                         bolt_rad + 0.4, 0]) {
                 translate([ear_rad, 0, 0]) {
-                  circle(r=screw_rad, $fn=10);
+                  circle(r=bolt_rad, $fn=10);
                 }
                 translate([ir_led_board_w - ear_rad, 0, 0]) {
-                  circle(r=screw_rad, $fn=10);
+                  circle(r=bolt_rad, $fn=10);
                 }
               }
             }

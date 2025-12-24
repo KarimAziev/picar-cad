@@ -61,7 +61,7 @@ full_panel_len          = (panel_stack_bolt_cbore_dia + total_len)
 full_panel_width        = (panel_stack_bolt_cbore_dia + max_len) +
   panel_stack_padding_x + panel_stack_bolt_padding * 2;
 
-panel_screw_size        = [full_panel_width
+panel_bolt_spacing      = [full_panel_width
                            - panel_stack_bolt_cbore_dia
                            - panel_stack_bolt_padding,
                            full_panel_len
@@ -76,7 +76,7 @@ standoff_bore_h         = (is_undef(standoff_params) || is_undef(standoff_params
   plist_get("thread_h", standoff_params[0]) / 2;
 
 function control_panel_size() = [full_panel_width, full_panel_len, control_panel_thickness];
-function control_panel_bolt_size() = panel_screw_size;
+function control_panel_bolt_size() = panel_bolt_spacing;
 function control_panel_max_height() = max_height;
 
 function control_panel_standoff_height() =
@@ -160,7 +160,7 @@ module control_panel(specs=control_panel_switch_button_specs,
                      bolt_visible_h=chassis_thickness - standoff_bore_h,
                      panel_color = white_snow_1,
                      size=[full_panel_width, full_panel_len],
-                     screws_size=panel_screw_size) {
+                     bolt_spacing=panel_bolt_spacing) {
   standoff_full_h = control_panel_standoff_height();
   standoff_real_h = standoff_full_h - standoff_bore_h;
   full_w = size[0];
@@ -180,7 +180,7 @@ module control_panel(specs=control_panel_switch_button_specs,
           }
         }
 
-        four_corner_children(size=screws_size, center=true) {
+        four_corner_children(size=bolt_spacing, center=true) {
           counterbore(d=panel_stack_bolt_dia,
                       h=control_panel_thickness,
                       bore_h=standoff_bore_h,
@@ -201,7 +201,7 @@ module control_panel(specs=control_panel_switch_button_specs,
       if (show_standoff) {
         translate([0, 0,
                    -standoff_full_h + standoff_bore_h]) {
-          four_corner_children(size=screws_size,
+          four_corner_children(size=bolt_spacing,
                                center=true,) {
 
             standoffs_stack(d=panel_stack_bolt_dia,

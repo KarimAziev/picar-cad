@@ -51,9 +51,9 @@ smd_battery_holder_contact_outer_bottom_cutout_size     = [2.96,
 module smd_battery_holder(height=smd_battery_holder_height,
                           length=smd_battery_holder_length,
                           amount=smd_battery_holder_batteries_count,
-                          screw_dia=smd_battery_holder_screw_dia,
-                          screws_size=smd_battery_holder_screws_size,
-                          screw_recess_size=smd_battery_holder_screw_recess_size,
+                          bolt_dia=smd_battery_holder_bolt_dia,
+                          bolt_spacing=smd_battery_holder_bolt_spacing,
+                          bolt_recess_size=smd_battery_holder_bolt_recess_size,
                           bottom_thickness=smd_battery_holder_bottom_thickness,
                           side_thickness=smd_battery_holder_side_thickness,
                           front_rear_thickness=smd_battery_holder_front_rear_thickness,
@@ -159,14 +159,14 @@ module smd_battery_holder(height=smd_battery_holder_height,
                         total_l,
                         height,]);
         }
-        four_corner_children(size=screws_size) {
-          translate([0, 0, screw_recess_size[2]]) {
-            cube_3d(size=[screw_recess_size[0],
-                          screw_recess_size[1],
+        four_corner_children(size=bolt_spacing) {
+          translate([0, 0, bolt_recess_size[2]]) {
+            cube_3d(size=[bolt_recess_size[0],
+                          bolt_recess_size[1],
                           height]);
           }
           translate([0, 0, -0.1]) {
-            cylinder(d=screw_dia,
+            cylinder(d=bolt_dia,
                      h=height + 0.1,
                      $fn=360);
           }
@@ -192,8 +192,8 @@ module smd_battery_holder(height=smd_battery_holder_height,
         let (blt_h = round(bottom_thickness + chassis_thickness + bolt_visible_h),
              bolt_h = blt_h % 2 == 0 ? blt_h : blt_h + 1) {
           translate([0, 0, -bolt_h + bottom_thickness]) {
-            four_corner_children(size=screws_size) {
-              bolt(d=screw_dia,
+            four_corner_children(size=bolt_spacing) {
+              bolt(d=bolt_dia,
                    h=bolt_h,
                    head_type=bolt_head_type,
                    nut_head_distance=bottom_thickness + chassis_thickness,

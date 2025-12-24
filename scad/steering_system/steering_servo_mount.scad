@@ -3,9 +3,9 @@
  *
  * This file defines a detachable vertical panel with a servo slot.
  *
- * This panel attaches to the steering panel with two screws. By default, M3
- * screws are used, but this can be changed via the
- * `steering_servo_mount_connector_screw_dia` variable.
+ * This panel attaches to the steering panel with two bolts. By default, M3
+ * bolts are used, but this can be changed via the
+ * `steering_servo_mount_connector_bolt_dia` variable.
  *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
@@ -33,18 +33,18 @@ module steering_servo_mount_connector(clearance=0.0) {
   }
 }
 
-module steering_servo_mount_panel_screw_holes() {
+module steering_servo_mount_panel_bolt_holes() {
   h = steering_rack_support_width
     + steering_vertical_panel_thickness
     + steering_servo_mount_connector_length
     + 1;
 
-  r = steering_servo_mount_connector_screw_dia / 2;
+  r = steering_servo_mount_connector_bolt_dia / 2;
 
   mirror_copy([1, 0, 0]) {
     translate([steering_servo_mount_width / 2
                - r
-               - steering_servo_mount_connector_screw_x, 0, 0]) {
+               - steering_servo_mount_connector_bolt_x, 0, 0]) {
       rotate([90, 0, 0]) {
         cylinder(h=h, r=r, center=false, $fn=150);
       }
@@ -58,9 +58,9 @@ module steering_servo_mount(show_servo=false,
                             pinion_color=blue_grey_carbon) {
   slot_w = steering_servo_slot_width + 0.4;
   slot_h = steering_servo_slot_height + 0.2;
-  screws_offst_y = screw_x_offst(slot_h,
-                                 steering_servo_screw_dia,
-                                 steering_servo_screws_offset);
+  bolts_offst_y = bolt_x_offst(slot_h,
+                               steering_servo_bolt_dia,
+                               steering_servo_bolts_offset);
   z_r = min(0.1 * steering_servo_mount_height, 3);
 
   union() {
@@ -87,14 +87,14 @@ module steering_servo_mount(show_servo=false,
             union() {
               translate([0,
                          steering_servo_mount_height / 2
-                         - screws_offst_y
-                         - steering_servo_screw_dia * 0.5
-                         - steering_servo_screw_distance_from_top,
+                         - bolts_offst_y
+                         - steering_servo_bolt_dia * 0.5
+                         - steering_servo_bolt_distance_from_top,
                          0]) {
                 square([slot_w, slot_h], center=true);
-                for (y = [-screws_offst_y, screws_offst_y]) {
+                for (y = [-bolts_offst_y, bolts_offst_y]) {
                   translate([0, y, 0]) {
-                    circle(r=steering_servo_screw_dia * 0.5, $fn=360);
+                    circle(r=steering_servo_bolt_dia * 0.5, $fn=360);
                   }
                 };
               }
@@ -105,10 +105,10 @@ module steering_servo_mount(show_servo=false,
           steering_servo_mount_connector();
         }
       }
-      steering_servo_mount_panel_screw_holes();
+      steering_servo_mount_panel_bolt_holes();
     }
     if (show_servo) {
-      servo_dia = steering_servo_screw_dia + 0.3;
+      servo_dia = steering_servo_bolt_dia + 0.3;
       servo_w = steering_servo_size[1];
 
       servo_y = -steering_servo_height_after_hat()
@@ -119,7 +119,7 @@ module steering_servo_mount(show_servo=false,
 
       z_offset = steering_servo_mount_height -
         (steering_rack_support_thickness / 2)
-        - steering_servo_screws_offset
+        - steering_servo_bolts_offset
         - servo_dia
         - servo_dia / 2;
       translate([servo_w / 2, servo_y, z_offset]) {

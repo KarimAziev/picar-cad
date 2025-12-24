@@ -110,22 +110,22 @@ module servo_driver_hat(show_standoff=true, center=true) {
                                servo_driver_hat_size[1]],
                          r=servo_driver_corner_rad,
                          center=true);
-            four_corner_holes_2d(size=servo_driver_hat_screws_size,
+            four_corner_holes_2d(size=servo_driver_hat_bolt_spacing,
                                  center=true);
           }
         }
       }
-      four_corner_children(size=servo_driver_hat_screws_size) {
+      four_corner_children(size=servo_driver_hat_bolt_spacing) {
         pad_hole(specs=servo_driver_hat_mounting_hole_pad_spec,
                  thickness=h,
-                 screw_d=servo_driver_hat_screw_dia);
+                 bolt_d=servo_driver_hat_bolt_dia);
       }
 
       translate([-half_of_w + rpi_pin_header_width,
                  -half_of_l
                  + rpi_pin_header_width
                  * rpi_pin_headers_cols / 2
-                 + rpi_screws_offset * 2,
+                 + rpi_bolts_offset * 2,
                  -servo_driver_hat_header_height]) {
         pin_headers(cols=rpi_pin_headers_cols,
                     rows=rpi_pin_headers_rows,
@@ -326,9 +326,9 @@ module servo_driver_hat(show_standoff=true, center=true) {
       }
       if (show_standoff) {
         translate([0, 0, -servo_driver_hat_header_height]) {
-          four_corner_children(servo_driver_hat_screws_size) {
+          four_corner_children(servo_driver_hat_bolt_spacing) {
             if ($x_i == 0) {
-              standoffs_stack(d=servo_driver_hat_screw_dia,
+              standoffs_stack(d=servo_driver_hat_bolt_dia,
                               colr=servo_driver_hat_standoff_color,
                               min_h=servo_driver_hat_header_height);
             }

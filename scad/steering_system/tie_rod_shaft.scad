@@ -51,16 +51,16 @@ module tie_rod_shaft(shaft_color="white",
         }
         translate([0, 0,
                    tie_rod_shaft_full_len()
-                   - tie_rod_shaft_screw_offset]) {
+                   - tie_rod_shaft_bolt_offset]) {
           rotate([0, 0, 90]) {
-            knuckle_screws_slots(d=tie_rod_shaft_screw_dia,
-                                 h=tie_rod_shaft_dia);
+            knuckle_bolts_slots(d=tie_rod_shaft_bolt_dia,
+                                h=tie_rod_shaft_dia);
             translate([0,
                        0,
-                       - tie_rod_shaft_screw_dia
-                       - tie_rod_shaft_screw_distance]) {
-              knuckle_screws_slots(d=tie_rod_shaft_screw_dia,
-                                   h=tie_rod_shaft_dia);
+                       - tie_rod_shaft_bolt_dia
+                       - tie_rod_shaft_bolt_distance]) {
+              knuckle_bolts_slots(d=tie_rod_shaft_bolt_dia,
+                                  h=tie_rod_shaft_dia);
             }
           }
         }

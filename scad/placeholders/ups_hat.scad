@@ -28,7 +28,7 @@ function ups_hat_polygon_cutout_points(max_len, max_height) =
 module ups_hat(size=battery_ups_size,
                holder_size=battery_ups_holder_size,
                holder_thickness=battery_ups_holder_thickness,
-               screw_dia=battery_ups_screw_dia,
+               bolt_dia=battery_ups_bolt_dia,
                standoff_h=5,
                max_cutout_len,
                max_cutout_height) {
@@ -62,12 +62,12 @@ module ups_hat(size=battery_ups_size,
             rounded_rect([total_len, total_w],
                          r=total_len * 0.05,
                          center=false);
-            translate([(total_len - battery_ups_module_screws_size[0]) / 2,
-                       (total_w - battery_ups_module_screws_size[1]) / 2,
+            translate([(total_len - battery_ups_module_bolt_spacing[0]) / 2,
+                       (total_w - battery_ups_module_bolt_spacing[1]) / 2,
                        0]) {
-              four_corner_holes_2d(size=battery_ups_module_screws_size,
+              four_corner_holes_2d(size=battery_ups_module_bolt_spacing,
                                    center=false,
-                                   hole_dia=screw_dia,
+                                   hole_dia=bolt_dia,
                                    fn_val=10);
             }
           }
@@ -123,16 +123,16 @@ module ups_hat(size=battery_ups_size,
     }
   }
   color("gold", alpha=1) {
-    translate([(total_len - battery_ups_module_screws_size[0]) / 2,
-               (total_w - battery_ups_module_screws_size[1]) / 2,
+    translate([(total_len - battery_ups_module_bolt_spacing[0]) / 2,
+               (total_w - battery_ups_module_bolt_spacing[1]) / 2,
                0]) {
       for (x_ind = [0, 1])
         for (y_ind = [0, 1]) {
-          x_pos = x_ind * battery_ups_module_screws_size[0];
-          y_pos = y_ind * battery_ups_module_screws_size[1];
+          x_pos = x_ind * battery_ups_module_bolt_spacing[0];
+          y_pos = y_ind * battery_ups_module_bolt_spacing[1];
           translate([x_pos, y_pos]) {
             linear_extrude(height=standoff_h, center=false) {
-              circle(r=screw_dia / 2);
+              circle(r=bolt_dia / 2);
             }
           }
         }

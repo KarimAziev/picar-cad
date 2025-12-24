@@ -48,7 +48,7 @@ full_panel_len          = (panel_stack_bolt_dia + total_len) +
 full_panel_width        = (panel_stack_bolt_dia + max_len) +
   panel_stack_padding_x + panel_stack_bolt_padding * 2;
 
-panel_screw_size        = [full_panel_width
+panel_bolt_spacing      = [full_panel_width
                            - panel_stack_bolt_cbore_dia
                            - panel_stack_bolt_padding,
                            full_panel_len
@@ -60,7 +60,7 @@ standoff_bore_h         = fuse_panel_thickness / 2;
 
 function fuse_panel_size() = [full_panel_width, full_panel_len,
                               fuse_panel_thickness];
-function fuse_panel_screw_size() = panel_screw_size;
+function fuse_panel_bolt_spacing() = panel_bolt_spacing;
 function fuse_panel_max_body_height() = max_body_height;
 function fuse_panel_max_lid_height() = max_lid_height;
 function fuse_panel_max_hole_depth() = max_hole_depth;
@@ -130,7 +130,7 @@ module fuse_panel(show_fusers=false,
                   show_lid=true,
                   panel_color=white_snow_1,
                   size=[full_panel_width, full_panel_len],
-                  screws_size=panel_screw_size,
+                  bolt_spacing=panel_bolt_spacing,
                   show_bolt=false,
                   show_nut=false,
                   bolt_head_type="hex",
@@ -162,7 +162,7 @@ module fuse_panel(show_fusers=false,
               }
             }
 
-            four_corner_children(size=screws_size, center=true) {
+            four_corner_children(size=bolt_spacing, center=true) {
               counterbore(d=panel_stack_bolt_dia,
                           h=fuse_panel_thickness,
                           bore_h=standoff_bore_h,
@@ -185,7 +185,7 @@ module fuse_panel(show_fusers=false,
             translate([0,
                        0,
                        -standoff_full_h + standoff_bore_h]) {
-              four_corner_children(size=screws_size,
+              four_corner_children(size=bolt_spacing,
                                    center=true,) {
                 standoffs_stack(d=panel_stack_bolt_dia,
                                 min_h=standoff_desired_body_h,

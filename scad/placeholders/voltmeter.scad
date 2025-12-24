@@ -119,11 +119,11 @@ module voltmeter_display(display_w=voltmeter_display_w,
 module voltmeter_board(show_standoffs=true,
                        standoff_thread_h=voltmeter_standoff_thread_h,
                        snandoff_body_h=voltmeter_pin_h,
-                       screw_dia=voltmeter_screw_dia,
+                       bolt_dia=voltmeter_bolt_dia,
                        board_w=voltmeter_board_w,
                        board_len=voltmeter_board_len,
                        board_h=voltmeter_board_h,
-                       screw_size=voltmeter_screw_size,
+                       bolt_spacing=voltmeter_bolt_spacing,
                        wiring_d=voltmeter_wiring_d,
                        wiring_gap=voltmeter_wiring_gap,
                        pin_h=voltmeter_pin_h,
@@ -144,10 +144,10 @@ module voltmeter_board(show_standoffs=true,
                      board_len,
                      board_h]);
           }
-          four_corner_children(size=screw_size) {
+          four_corner_children(size=bolt_spacing) {
             color(green_2, alpha=1) {
-              cube_3d(size=[screw_dia + 2,
-                            screw_dia + 2,
+              cube_3d(size=[bolt_dia + 2,
+                            bolt_dia + 2,
                             board_h], center=true);
             }
           }
@@ -220,10 +220,10 @@ module voltmeter_board(show_standoffs=true,
           }
         }
       }
-      four_corner_children(size=screw_size) {
+      four_corner_children(size=bolt_spacing) {
         translate([0, 0, -0.5]) {
           cylinder(h=board_h + 1,
-                   r=screw_dia / 2,
+                   r=bolt_dia / 2,
                    center = false,
                    $fn=15);
         }
@@ -231,10 +231,10 @@ module voltmeter_board(show_standoffs=true,
     }
 
     if (show_standoffs) {
-      four_corner_children(size=screw_size) {
+      four_corner_children(size=bolt_spacing) {
         translate([0, 0, -snandoff_body_h]) {
           standoff(thread_h=standoff_thread_h,
-                   thread_d=screw_dia,
+                   thread_d=bolt_dia,
                    body_h=snandoff_body_h,
                    body_d=standoff_body_d);
         }
@@ -252,8 +252,8 @@ module voltmeter(show_standoffs=true,
                  board_w=voltmeter_board_w,
                  board_len=voltmeter_board_len,
                  board_h=voltmeter_board_h,
-                 screw_size=voltmeter_screw_size,
-                 screw_dia=voltmeter_screw_dia,
+                 bolt_spacing=voltmeter_bolt_spacing,
+                 bolt_dia=voltmeter_bolt_dia,
                  display_w=voltmeter_display_w,
                  display_len=voltmeter_display_len,
                  display_h=voltmeter_display_h,
@@ -279,8 +279,8 @@ module voltmeter(show_standoffs=true,
                       board_w=board_w,
                       board_len=board_len,
                       board_h=board_h,
-                      screw_size=screw_size,
-                      screw_dia=screw_dia,
+                      bolt_spacing=bolt_spacing,
+                      bolt_dia=bolt_dia,
                       wiring_d=wiring_d,
                       wiring=wiring,
                       wiring_gap=wiring_gap,

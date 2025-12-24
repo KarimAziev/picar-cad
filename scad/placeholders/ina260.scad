@@ -144,8 +144,8 @@ ina260_show_pins                          = true;
 ina260_show_terminal                      = true;
 
 module ina260(size=ina260_size,
-              screw_size=ina260_screw_size,
-              screw_d=ina260_screw_dia,
+              bolt_spacing=ina260_bolt_spacing,
+              bolt_d=ina260_bolt_dia,
               corner_rad=ina260_corner_rad,
               pad_hole_spec=ina260_mounting_hole_pad_spec,
               pin_holes_text_specs=ina260_pad_holes_text_specs,
@@ -195,7 +195,7 @@ module ina260(size=ina260_size,
   pin_gap = pin_step - pin_d;
 
   mounting_hole_y_offset = ysize / 2
-    - screw_d / 2
+    - bolt_d / 2
     - ina260_mounting_hole_distance;
   union() {
     difference() {
@@ -210,8 +210,8 @@ module ina260(size=ina260_size,
               translate([0,
                          mounting_hole_y_offset,
                          0]) {
-                four_corner_holes_2d(size=screw_size,
-                                     hole_dia=screw_d,
+                four_corner_holes_2d(size=bolt_spacing,
+                                     hole_dia=bolt_d,
                                      center=true);
               }
             }
@@ -233,8 +233,8 @@ module ina260(size=ina260_size,
           }
         }
         translate([0, mounting_hole_y_offset, 0]) {
-          four_corner_children(size=screw_size, center=true) {
-            pad_hole(screw_d=screw_d,
+          four_corner_children(size=bolt_spacing, center=true) {
+            pad_hole(bolt_d=bolt_d,
                      thickness=thickness,
                      specs=pad_hole_spec);
           }
@@ -422,7 +422,7 @@ module ina260(size=ina260_size,
                    bx = i * step + pin_d / 2) {
 
                 translate([bx, pin_d + pin_y_offset, 0]) {
-                  pad_hole(screw_d=pin_hole_d,
+                  pad_hole(bolt_d=pin_hole_d,
                            thickness=thickness,
                            specs=pin_hole_pad_spec);
                   color(colr, alpha=1) {

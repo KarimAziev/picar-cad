@@ -26,6 +26,7 @@ use <../lib/functions.scad>
 use <../lib/shapes2d.scad>
 use <../lib/holes.scad>
 use <../lib/transforms.scad>
+use <../placeholders/servo_horn.scad>
 
 tilt_angle        = atan2((-head_side_panel_curve_end)
                           - (-head_side_panel_bottom),
@@ -53,8 +54,8 @@ module head_front_camera(spec,
                          do_cut=true,
                          do_place_camera=false) {
   hole_size       = spec[0];
-  screw_hole_y    = spec[1];
-  screw_hole_size = spec[2];
+  bolt_hole_y    = spec[1];
+  bolt_hole_size = spec[2];
   final_y         = camera_final_y(i);
 
   translate([-hole_size[0] / 2, final_y, 0]) {
@@ -62,22 +63,22 @@ module head_front_camera(spec,
       square(hole_size, center=false);
 
       translate([hole_size[0] / 2,
-                 screw_hole_size[1] / 2 + head_camera_screw_dia / 2
-                 + screw_hole_y,
+                 bolt_hole_size[1] / 2 + head_camera_bolt_dia / 2
+                 + bolt_hole_y,
                  0]) {
-        four_corner_holes_2d(size = screw_hole_size, center = true,
-                             hole_dia = head_camera_screw_dia, fn_val = 360);
+        four_corner_holes_2d(size = bolt_hole_size, center = true,
+                             hole_dia = head_camera_bolt_dia, fn_val = 360);
       }
     }
 
     if (do_place_camera) {
       board_color = is_undef(spec[3]) ? green_2 : spec[3];
       translate([hole_size[0] / 2,
-                 screw_hole_size[1] / 2 + head_camera_screw_dia / 2
-                 + screw_hole_y
+                 bolt_hole_size[1] / 2 + head_camera_bolt_dia / 2
+                 + bolt_hole_y
                  + camera_h / 2
                  - camera_holes_size[1] / 2
-                 - camera_screw_hole_dia / 2
+                 - camera_bolt_hole_dia / 2
                  - camera_holes_distance_from_top,
                  0]) {
         rotate([0, 0, 180]) {
@@ -219,40 +220,58 @@ module side_panel_extra_slots_2d() {
 
   for (off = head_hole_row_offsets) {
     if (off >= 0) {
-      dotted_screws_line_y(head_extra_side_slots_x_positions,
-                           y=head_side_panel_extra_slot_ypos[1] + off,
-                           d=head_extra_slots_dia);
+      dotted_bolts_line_y(head_extra_side_slots_x_positions,
+                          y=head_side_panel_extra_slot_ypos[1] + off,
+                          d=head_extra_slots_dia);
     }
     else {
-      dotted_screws_line_y(head_extra_side_slots_x_positions,
-                           y=head_side_panel_extra_slot_ypos[0] + off,
-                           d=head_extra_slots_dia);
+      dotted_bolts_line_y(head_extra_side_slots_x_positions,
+                          y=head_side_panel_extra_slot_ypos[0] + off,
+                          d=head_extra_slots_dia);
     }
   }
 
-  dotted_screws_line_y([head_side_panel_width * 0.50,
-                        head_side_panel_width * 0.66,
-                        head_side_panel_width * 0.85],
-                       y=head_extra_holes_offset * 5,
-                       d=head_extra_slots_dia);
+  dotted_bolts_line_y([head_side_panel_width * 0.50,
+                       head_side_panel_width * 0.66,
+                       head_side_panel_width * 0.85],
+                      y=head_extra_holes_offset * 5,
+                      d=head_extra_slots_dia);
 }
 
-module side_panel_servo_slots(offst_from_center_hole=2.0,
-                              screws_distance=0.5) {
+module side_panel_with_servo_horn_center_position() {
   centers = side_panel_servo_center();
+
+  translate(centers) {
+    children();
+  }
+}
+
+module side_panel_servo_horn() {
+  translate([0, head_side_panel_curve_end, head_plate_thickness]) {
+
+    side_panel_with_servo_horn_center_position() {
+      rotate([0, 0, tilt_angle]) {
+        servo_horn(center=true);
+      }
+    }
+  }
+}
+
+module side_panel_servo_horn_slot_2d(offst_from_center_hole=2.0,
+                                     screws_gap=0.5) {
 
   angle_cos = cos(tilt_angle);
   angle_sin = sin(tilt_angle);
-  step = head_servo_screw_dia + screws_distance;
+  step = head_servo_horn_screw_dia + screws_gap;
   amount = floor((head_side_panel_height / 2) / step);
 
-  translate(centers) {
+  side_panel_with_servo_horn_center_position() {
     circle(d = head_servo_mount_dia, $fn = 360);
 
     for (dir = [-1, 1]) {
       group_offst = (dir < 0
-                     ? -head_servo_screw_dia / 2 - offst_from_center_hole
-                     : head_servo_screw_dia / 2 + offst_from_center_hole);
+                     ? -head_servo_horn_screw_dia / 2 - offst_from_center_hole
+                     : head_servo_horn_screw_dia / 2 + offst_from_center_hole);
 
       for (i = [1 : (amount/2)]) {
         base_offst = i * step * dir;
@@ -260,7 +279,7 @@ module side_panel_servo_slots(offst_from_center_hole=2.0,
         y = (group_offst + base_offst) * angle_sin;
 
         translate([x, y, 0]) {
-          circle(r = head_servo_screw_dia/2, $fn = 360);
+          circle(r = head_servo_horn_screw_dia/2, $fn = 360);
         }
       }
     }
@@ -272,22 +291,26 @@ module side_panel_2d() {
     translate([0, head_side_panel_curve_end, 0]) {
       difference() {
         polygon(points=side_panel_points);
-        side_panel_servo_slots();
+        side_panel_servo_horn_slot_2d();
         side_panel_extra_slots_2d();
       }
     }
 
-    head_panel_ir_case_screw_holes();
+    head_panel_ir_case_bolt_holes();
   }
 }
 
-module side_panel_3d() {
+module side_panel_3d(show_servo_horn=false) {
   linear_extrude(height=head_plate_thickness) {
     side_panel_2d();
   }
+  if (show_servo_horn) {
+    side_panel_servo_horn();
+  }
 }
 
-module side_panel(is_left=true) {
+module side_panel(is_left=true,
+                  show_servo_horn=false) {
   offsets = [head_plate_width / 2,
              -head_plate_height / 2];
 
@@ -295,28 +318,28 @@ module side_panel(is_left=true) {
     translate([-offsets[0], offsets[1], 0]) {
       mirror([1, 0, 0]) {
         rotate([0, 90, 0]) {
-          side_panel_3d();
+          side_panel_3d(show_servo_horn=show_servo_horn);
         }
       }
     }
   } else {
     translate([offsets[0], offsets[1], 0]) {
       rotate([0, 90, 0]) {
-        side_panel_3d();
+        side_panel_3d(show_servo_horn=show_servo_horn);
       }
     }
   }
 }
-module head_panel_ir_case_screw_holes() {
-  for (spec = ir_case_head_screws_side_panel_positions) {
-    translate([spec[0] + ir_case_screw_dia / 2
+module head_panel_ir_case_bolt_holes() {
+  for (spec = ir_case_head_bolts_side_panel_positions) {
+    translate([spec[0] + ir_case_bolt_dia / 2
                + head_plate_thickness,
                spec[1] +
                head_side_panel_height, 0]) {
-      circle(r=ir_case_screw_dia / 2, $fn=360);
-      for (x=ir_case_screw_pan_holes_x_offsets) {
+      circle(r=ir_case_bolt_dia / 2, $fn=360);
+      for (x=ir_case_bolt_pan_holes_x_offsets) {
         translate([x, 0, 0]) {
-          circle(r=ir_case_screw_dia / 2, $fn=360);
+          circle(r=ir_case_bolt_dia / 2, $fn=360);
         }
       }
     }
@@ -326,15 +349,15 @@ module head_ir_case(ir_case_color=jet_black,
                     ir_rail_color=cobalt_blue_metallic,
                     show_ir_led=true,
                     show_ir_case_rail=true,) {
-  spec = ir_case_head_screws_side_panel_positions[0];
-  screw_rad = ir_case_screw_dia / 2;
+  spec = ir_case_head_bolts_side_panel_positions[0];
+  bolt_rad = ir_case_bolt_dia / 2;
   ir_case_x = head_plate_width / 2
     + head_plate_thickness
     + ir_case_l_bracket_len;
   ir_case_y = (head_side_panel_curve_end / 2)
-    - ir_case_slider_y_pos() + spec[1] + screw_rad;
+    - ir_case_slider_y_pos() + spec[1] + bolt_rad;
   ir_case_z = (-ir_case_l_bracket_h - ir_case_full_thickness() / 2)
-    + ir_case_l_bracket_h / 2 + screw_rad + head_plate_thickness
+    + ir_case_l_bracket_h / 2 + bolt_rad + head_plate_thickness
     + spec[0];
   translate([ir_case_x,
              ir_case_y,
@@ -348,6 +371,7 @@ module head_ir_case(ir_case_color=jet_black,
 module head_mount(head_color="white",
                   ir_case_color=jet_black,
                   ir_rail_color=jet_black,
+                  show_servo_horn=false,
                   show_ir_case=false,
                   show_ir_led=true,
                   show_camera=false,
@@ -364,8 +388,8 @@ module head_mount(head_color="white",
         connector_plate_up();
         connector_plate_down();
         head_upper_plate();
-        side_panel(true);
-        side_panel(false);
+        side_panel(is_left=true);
+        side_panel(false, show_servo_horn=show_servo_horn);
       }
     }
   }
@@ -401,4 +425,5 @@ module head_mount(head_color="white",
 }
 
 head_mount(show_ir_case=false,
-           show_camera=false);
+           show_camera=false,
+           show_servo_horn=true);

@@ -6,15 +6,15 @@
  * and the quality of Waveshare’s original camera is unsatisfactory.
  *
  * Nevertheless, this LED board can be used with Camera Module 3 and other
- * Raspberry Pi cameras. To do so, solder two wires (GND and V+) to the screw
- * holes on the LED board (the screw holes serve both for mechanical attachment
+ * Raspberry Pi cameras. To do so, solder two wires (GND and V+) to the bolt
+ * holes on the LED board (the bolt holes serve both for mechanical attachment
  * and for power). Then connect the positive wire to 3.3V and the ground wire to
  * GND.
  *
  * Two key modules in this file:
 
  * ir_case_printable: provides the LED housing and a “rail” that secures it with
- * two M2 screws. The housing also includes a bracket for mounting to the robot
+ * two M2 bolts. The housing also includes a bracket for mounting to the robot
  * head.
  *
  * ir_case_assembly: renders the assembled unit. (In head/head_mount.scad you
@@ -62,12 +62,12 @@ module ir_case_slider_holes_2d() {
   y_pos = ir_case_slider_y_pos();
   translate([ir_case_carriage_len / 2,
              y_pos, 0]) {
-    circle(r=ir_case_rail_screw_dia / 2, $fn=360);
+    circle(r=ir_case_rail_bolt_dia / 2, $fn=360);
   }
   translate([ir_case_width
              - ir_case_carriage_len / 2,
              y_pos, 0]) {
-    circle(r=ir_case_rail_screw_dia / 2, $fn=360);
+    circle(r=ir_case_rail_bolt_dia / 2, $fn=360);
   }
 }
 
@@ -208,10 +208,10 @@ module ir_case_base_plate(h=ir_case_thickness) {
   }
 }
 
-module ir_case_screws_pan_holes() {
-  for (x=ir_case_screw_pan_holes_x_offsets) {
+module ir_case_bolts_pan_holes() {
+  for (x=ir_case_bolt_pan_holes_x_offsets) {
     translate([0, x, 0]) {
-      circle(r=ir_case_screw_dia / 2, $fn=360);
+      circle(r=ir_case_bolt_dia / 2, $fn=360);
     }
   }
 }
@@ -225,7 +225,7 @@ module ir_case_bracket() {
             children_modes=[["difference", "horizontal"]],
             y_r=min(ir_case_l_bracket_h, ir_case_l_bracket_w) * 0.5,
             z_r=0) {
-    ir_case_screws_pan_holes();
+    ir_case_bolts_pan_holes();
   }
 }
 

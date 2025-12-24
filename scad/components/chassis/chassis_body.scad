@@ -60,7 +60,7 @@ show_lipo_pack           = false;
 show_batteries           = false;
 show_rpi                 = false;
 
-rpi_position_x           = -rpi_screws_size[0] / 2 + rpi_chassis_x_position;
+rpi_position_x           = -rpi_bolt_spacing[0] / 2 + rpi_chassis_x_position;
 rpi_position_y           = -rpi_len - rpi_chassis_y_position;
 
 power_case_position_y    = -power_case_length / 2 - power_case_chassis_y_offset;
@@ -83,7 +83,7 @@ module chassis_body_2d() {
   }
 }
 function raspberry_pi_y_positions() =
-  let (basic_y = (rpi_screws_size[1]) / 2 + rpi_screws_offset,
+  let (basic_y = (rpi_bolt_spacing[1]) / 2 + rpi_bolts_offset,
        end = -chassis_body_len + rpi_chassis_y_position - basic_y,
        start = end + rpi_len)
   [start, end];
@@ -95,25 +95,25 @@ function motor_bracket_y_pos() =
 function motor_bracket_x_pos() =
   (chassis_body_w * 0.5) - (standard_motor_bracket_height * 0.5);
 
-module ups_hat_screws_2d() {
-  four_corner_holes_2d(size=battery_ups_module_screws_size,
+module ups_hat_bolts_2d() {
+  four_corner_holes_2d(size=battery_ups_module_bolt_spacing,
                        center=true,
-                       hole_dia=battery_ups_screw_dia);
+                       hole_dia=battery_ups_bolt_dia);
 }
 
-module standard_battery_holders_screws_2d(x_offst=battery_screws_x_offset) {
-  battery_holders_screws(x_offst=x_offst,
-                         y_positions=battery_holes_y_positions,
-                         d=battery_holder_screw_dia,
-                         size=battery_holder_screw_holes_size,
-                         fn_val= battery_screws_fn_val);
+module standard_battery_holders_bolts_2d(x_offst=battery_bolts_x_offset) {
+  battery_holders_bolts(x_offst=x_offst,
+                        y_positions=battery_holes_y_positions,
+                        d=battery_holder_bolt_dia,
+                        size=battery_holder_bolt_holes_size,
+                        fn_val= battery_bolts_fn_val);
 }
 
-module battery_holders_screws(x_offst,
-                              y_positions,
-                              d,
-                              size,
-                              fn_val=battery_screws_fn_val) {
+module battery_holders_bolts(x_offst,
+                             y_positions,
+                             d,
+                             size,
+                             fn_val=battery_bolts_fn_val) {
   union() {
     for (y = y_positions) {
       mirror_copy([1, 0, 0]) {
@@ -143,10 +143,10 @@ module standard_motor_bracket_wall(show_motor=false, show_wheel=false) {
 
 module n20_bracket_left(show_motor=false, show_wheel=false) {
   x = -(chassis_body_w * 0.5) - n20_motor_chassis_x_distance;
-  y = -chassis_body_len + n20_motor_screws_panel_len / 2
+  y = -chassis_body_len + n20_motor_bolts_panel_len / 2
     + n20_motor_chassis_y_distance;
-  z = n20_motor_screws_panel_x_offset() +
-    chassis_thickness + n20_motor_screws_panel_thickness();
+  z = n20_motor_bolts_panel_x_offset() +
+    chassis_thickness + n20_motor_bolts_panel_thickness();
   translate([x,
              y,
              z]) {
@@ -163,16 +163,16 @@ module chassis_with_panel_stack_position() {
   }
 }
 
-module n20_bracket_screws() {
-  pan_len = n20_motor_screws_panel_len;
+module n20_bracket_bolts() {
+  pan_len = n20_motor_bolts_panel_len;
   x = -chassis_body_w * 0.5 - n20_motor_chassis_x_distance + n20_can_height / 2;
   y = -chassis_body_len + pan_len / 2 + n20_motor_chassis_y_distance;
 
   translate([x, y, 0]) {
     rotate([0, 0, 90]) {
-      n20_motor_screw_holes_3d(h=chassis_thickness,
-                               bore_h=n20_motor_screw_bore_h,
-                               reverse=false);
+      n20_motor_bolt_holes_3d(h=chassis_thickness,
+                              bore_h=n20_motor_bolt_bore_h,
+                              reverse=false);
     }
   }
 }
@@ -237,15 +237,15 @@ module chassis_body_3d(panel_color="white") {
       }
 
       mirror_copy([1, 0, 0]) {
-        n20_bracket_screws();
+        n20_bracket_bolts();
 
-        // standard_motor_bracket_screws();
+        // standard_motor_bracket_bolts();
       }
 
       chassis_with_panel_stack_position() {
-        panel_stack_screw_holes(center=false,
-                                y_axle=chassis_panel_stack_orientation
-                                == "vertical");
+        panel_stack_bolt_holes(center=false,
+                               y_axle=chassis_panel_stack_orientation
+                               == "vertical");
       }
 
       for (specs = smd_battery_holder_chassis_specs) {
@@ -270,12 +270,12 @@ module chassis_body_3d(panel_color="white") {
       }
 
       chassis_with_panel_stack_position() {
-        let (screw_size = panel_stack_screw_size(),
+        let (bolt_spacing = panel_stack_bolt_spacing(),
              size_i = chassis_panel_stack_orientation == "vertical" ? 0 : 1) {
 
           translate([max(panel_stack_bolt_cbore_dia,
                          panel_stack_bolt_dia)
-                     + screw_size[size_i] / 2,
+                     + bolt_spacing[size_i] / 2,
                      0,
                      -0.05]) {
             for (specs=chassis_panel_stack_slot_specs) {
@@ -302,12 +302,12 @@ module chassis_body_3d(panel_color="white") {
     }
 
     chassis_with_panel_stack_position() {
-      let (screw_size = panel_stack_screw_size(),
+      let (bolt_spacing = panel_stack_bolt_spacing(),
            size_i = chassis_panel_stack_orientation == "vertical" ? 0 : 1) {
 
         translate([max(panel_stack_bolt_cbore_dia,
                        panel_stack_bolt_dia)
-                   + screw_size[size_i] / 2,
+                   + bolt_spacing[size_i] / 2,
                    0,
                    -0.05]) {
           chassis_body_border_slots(groups=chassis_panel_stack_slot_specs,
@@ -322,7 +322,7 @@ module chassis_body_3d(panel_color="white") {
   }
 }
 function ups_hat_y_pos() = -chassis_len / 2
-  + battery_ups_module_screws_size[1] / 2
+  + battery_ups_module_bolt_spacing[1] / 2
   + max_lower_cutout
   + m3_hole_dia / 2 + battery_ups_offset;
 
@@ -409,15 +409,15 @@ module chassis_body(panel_color="white",
         half_of_holder_width = full_holder_width / 2;
 
         translate([0, battery_holder_y_pos, chassis_thickness]) {
-          translate([battery_screws_x_offset - half_of_holder_width,
+          translate([battery_bolts_x_offset - half_of_holder_width,
                      battery_holder_y_pos - half_of_holder_len,
                      0]) {
             battery_holder();
           }
 
           if (battery_holder_batteries_count <= 2) {
-            translate([- battery_screws_x_offset
-                       - battery_screws_x_offset,
+            translate([- battery_bolts_x_offset
+                       - battery_bolts_x_offset,
                        battery_holder_y_pos - half_of_holder_len,
                        0]) {
               battery_holder(show_battery=show_batteries);
