@@ -211,6 +211,7 @@ module power_case_assembly(alpha=1,
                            show_standoffs=true,
                            case_color=metallic_silver_5,
                            slot_mode=false,
+                           show_xt90e=true,
                            bolt_visible_h=chassis_thickness
                            - chassis_counterbore_h) {
   // Placeholder for LiPo pack
@@ -243,7 +244,8 @@ module power_case_assembly(alpha=1,
         translate([0, 0, power_case_height + power_lid_height + 0]) {
           rotate([180, 0, 0]) {
 
-            power_lid(lid_color=case_color);
+            power_lid(lid_color=case_color,
+                      show_xt90e=show_xt90e);
           }
         }
       }
@@ -275,5 +277,6 @@ power_case_assembly(show_lipo_pack=false,
                     alpha=1,
                     show_lid=false,
                     show_standoffs=true,
+                    show_xt90e=true,
                     slot_mode=false,
                     case_color=blue_grey_carbon);

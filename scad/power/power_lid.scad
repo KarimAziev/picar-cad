@@ -24,6 +24,7 @@ use <../lib/placement.scad>
 use <../lib/transforms.scad>
 use <../lib/shapes2d.scad>
 use <../placeholders/bolt.scad>
+use <../placeholders/xt90e-m.scad>
 
 side_wall_w           = power_case_side_wall_thickness
   + power_case_rail_tolerance
@@ -127,7 +128,7 @@ module power_lid_voltmeters_placeholders(specs=power_voltmeter_specs, echo_wirin
             echo(str("total_wire_length for voltmeter ", str(i),
                      " (",
                      ceil(text_spec[0]),
-                     "): ",),
+                     "mm): ",),
                  total_wire_length(concat([[0, 0, 0]],
                                           wiring)));
           }
@@ -327,14 +328,28 @@ module power_lid_xt_90_slot() {
   }
 }
 
+module with_xt90_position() {
+  translate([half_of_inner_x
+             - max(xt_90_size[0], xt_90_screw_size[0]) / 2
+             - xt_90_position[0],
+             half_of_inner_y
+             - max(xt_90_size[1], xt_90_screw_size[1]) / 2
+             + xt_90_screw_dia / 2
+             - xt_90_position[1],
+             0]) {
+    children();
+  }
+}
+
 module power_lid(show_switch_button=false,
-                 show_dc_regulator=true,
+                 show_dc_regulator=false,
                  lid_color=blue_grey_carbon,
-                 show_ato_fuse=true,
-                 show_voltmeter=true,
+                 show_ato_fuse=false,
+                 show_voltmeter=false,
                  show_bolts=false,
-                 show_atm_side_fuse_holders=true,
-                 echo_wiring_len=true,
+                 show_xt90e=false,
+                 show_atm_side_fuse_holders=false,
+                 echo_wiring_len=false,
                  use_toggle_switch=false) {
 
   function contains_name(x, name) =
@@ -371,14 +386,7 @@ module power_lid(show_switch_button=false,
                                  thickness=power_lid_thickness);
             }
           }
-          translate([half_of_inner_x
-                     - max(xt_90_size[0], xt_90_screw_size[0]) / 2
-                     - xt_90_position[0],
-                     half_of_inner_y
-                     - max(xt_90_size[1], xt_90_screw_size[1]) / 2
-                     + xt_90_screw_dia / 2
-                     - xt_90_position[1]
-                     , 0]) {
+          with_xt90_position() {
             linear_extrude(height=power_lid_thickness + 1, center=false) {
               power_lid_xt_90_slot();
             }
@@ -477,6 +485,15 @@ module power_lid(show_switch_button=false,
       if (show_atm_side_fuse_holders) {
         power_lid_side_wall_slots(slot_mode=false);
       }
+      if (show_xt90e) {
+        translate([0, 0, -power_lid_thickness]) {
+          with_xt90_position() {
+            rotate([0, 0, 180]) {
+              xt90e(show_bolt=show_bolts);
+            }
+          }
+        }
+      }
     }
 
     mirror_copy([1, 0, 0]) {
@@ -517,10 +534,13 @@ module power_lid(show_switch_button=false,
   }
 }
 
-power_lid(show_dc_regulator=false,
-          show_switch_button=false,
-          show_voltmeter=false,
-          show_bolts=false,
+power_lid(show_switch_button=false,
+          show_dc_regulator=false,
+          lid_color=blue_grey_carbon,
           show_ato_fuse=false,
+          show_voltmeter=false,
+          show_bolts=true,
+          show_xt90e=true,
           show_atm_side_fuse_holders=false,
+          echo_wiring_len=true,
           use_toggle_switch=false);

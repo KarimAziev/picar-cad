@@ -44,6 +44,7 @@ use <chassis_connector.scad>
 show_motor               = true;
 show_motor_brackets      = true;
 show_wheels              = false;
+show_xt90e               = false;
 show_rear_panel          = false;
 show_buttons_panel       = false;
 show_fuse_panel          = false;
@@ -327,6 +328,7 @@ function ups_hat_y_pos() = -chassis_len / 2
 
 module chassis_body(panel_color="white",
                     power_case_color="lightgrey",
+                    show_xt90e=show_xt90e,
                     motor_type=motor_type,
                     show_motor=show_motor,
                     show_motor_brackets=show_motor_brackets,
@@ -461,7 +463,8 @@ module chassis_body(panel_color="white",
                -chassis_counterbore_h]) {
       power_case_assembly(case_color=power_case_color,
                           show_lipo_pack=show_lipo_pack,
-                          show_lid=show_power_case_lid,);
+                          show_lid=show_power_case_lid,
+                          show_xt90e=show_xt90e);
     }
   }
   if (show_ups_hat) {

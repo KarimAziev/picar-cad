@@ -57,7 +57,9 @@ module chassis(panel_color              = "white",
                show_power_case_lid      = true,
                show_lipo_pack           = true,
                show_batteries           = true,
+               show_xt90e               = true,
                show_rpi                 = true,) {
+
   union() {
     chassis_upper(panel_color=panel_color,
                   show_front_panel=show_front_panel,
@@ -84,8 +86,10 @@ module chassis(panel_color              = "white",
                   show_knuckles=show_knuckles,
                   head_z_rotation=head_z_rotation,
                   show_distance=show_distance);
+
     chassis_body(motor_type=motor_type,
                  show_motor=show_motor,
+                 show_xt90e=show_xt90e,
                  show_wheels=show_wheels,
                  show_motor_brackets=show_motor_brackets,
                  show_rear_panel=show_rear_panel,

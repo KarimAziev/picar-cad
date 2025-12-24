@@ -23,6 +23,7 @@ module counterbore(h,
                    center=false,
                    sink=false,
                    fn=60,
+                   no_bore=false,
                    autoscale_step = 0.1,
                    reverse=false) {
   bore_h = is_undef(bore_h) ? h * 0.3 : bore_h;
@@ -68,12 +69,13 @@ module counterbore(h,
         main_slot();
       }
     }
-
-    translate([0, 0, !reverse ? h - bore_h
-               : auto_scale
-               ? -autoscale_step
-               : 0]) {
-      cbore_hole();
+    if (!no_bore) {
+      translate([0, 0, !reverse ? h - bore_h
+                 : auto_scale
+                 ? -autoscale_step
+                 : 0]) {
+        cbore_hole();
+      }
     }
   };
 }
@@ -86,6 +88,7 @@ module rect_slot(h,
                  r,
                  r_factor=0.3,
                  fn=40,
+                 two_rounded_corners=false,
                  reverse=false,
                  center=false) {
 
@@ -119,11 +122,18 @@ module rect_slot(h,
                    ? h + (autoscale_step * 2)
                    : h,
                    center=false) {
-      rounded_rect(size=[slot_x, slot_y],
-                   r_factor=r_factor,
-                   fn=fn,
-                   r=r,
-                   center=true);
+      if (!two_rounded_corners) {
+        rounded_rect(size=[slot_x, slot_y],
+                     r_factor=r_factor,
+                     fn=fn,
+                     r=r,
+                     center=true);
+      } else {
+        rounded_rect_two(size=[slot_x, slot_y],
+                         r_factor=r_factor,
+                         r=r,
+                         center=true);
+      }
     }
   }
 
@@ -143,13 +153,21 @@ module rect_slot(h,
 
       if (recess_enabled) {
         translate([0, 0, recess_z]) {
+
           linear_extrude(height=recess_base_h +
                          (auto_scale ? autoscale_step : 0), center=false) {
-            rounded_rect(size=[recess_x, recess_y],
-                         r_factor=r_factor,
-                         r=r,
-                         fn=fn,
-                         center=true);
+            if (!two_rounded_corners) {
+              rounded_rect(size=[recess_x, recess_y],
+                           r_factor=r_factor,
+                           r=r,
+                           fn=fn,
+                           center=true);
+            } else {
+              rounded_rect_two(size=[slot_x, slot_y],
+                               r_factor=r_factor,
+                               r=r,
+                               center=true);
+            }
           }
         }
       }

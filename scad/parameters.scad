@@ -1746,6 +1746,42 @@ voltmeter_wiring_d                               = 1.5;
 voltmeter_chassis_specs                          = [];
 
 // ─────────────────────────────────────────────────────────────────────────────
+// XT90 connector placeholder
+// ─────────────────────────────────────────────────────────────────────────────
+
+xt_90_size                                       = [10.30, 22.20];
+xt_90_position                                   = [3, 1];
+
+xt_90_screw_size                                 = [0, 32.20];
+xt_90_screw_dia                                  = m3_hole_dia;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// XT90E-M connector placeholder
+// ─────────────────────────────────────────────────────────────────────────────
+xt90e_size                                       = [xt_90_size[0], xt_90_size[1], 15.1];
+xt90e_mounting_panel_size                        = [17.4, 42, 3];
+xt90e_shell_h                                    = 15.1;
+xt90e_mount_spacing                              = 32.4;
+xt90e_mount_dia                                  = m3_hole_dia;
+xt90e_mount_cbore_dia                            = m3_countersunk_head_dia;
+xt90e_mount_cbore_h                              = m3_countersunk_head_h;
+
+xt90e_pin_spacing                                = 10.16;
+xt90e_pin_dia                                    = 5.2;
+xt90e_contact_dia                                = 5.7;
+xt90e_contact_h                                  = 5.7;
+xt90e_contact_thickness                          = 0.8;
+xt90e_contact_wall_h                             = 3;
+xt90e_contact_base_h                             = 2;
+
+xt90e_pin_length                                 = 13.5;
+
+xt90e_pin_thickness                              = 1;
+
+xt90e_shell_color                                = matte_black;
+xt90e_pin_color                                  = dark_gold_2;
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Power module case dimensions
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -2056,12 +2092,6 @@ power_lid_single_holes_specs                     = [[[8, 15.2, -0, 25]]];
 
 power_lid_side_wall_1_circle_holes               = [[[8, 15.2, -2, 5], [8, 15.2, -2, 5]]];
 power_lid_side_wall_2_circle_holes               = [[[8, 22.2, -2, 5], [8, 15.2, -2, 5]]];
-
-xt_90_size                                       = [10.30, 22.20];
-xt_90_position                                   = [3, 1];
-
-xt_90_screw_size                                 = [0, 32.20];
-xt_90_screw_dia                                  = m3_hole_dia;
 
 // [...[[x, y, radius], [y_gap, x_offset, y_offset], [counterbore_x, counterbore_y, counterbore_z], higlight?]]
 power_lid_cube_holes                             = [[[[atm_fuse_holder_2_mounting_hole_h + 2,

@@ -22,6 +22,13 @@ module translate_copy(v) {
   }
 }
 
+module rotate_copy(v) {
+  children();
+  translate(v) {
+    children();
+  }
+}
+
 module offset_3d(r=1, size=20, fn=12) {
   if (r == 0) {
     children();

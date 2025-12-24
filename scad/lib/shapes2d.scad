@@ -75,10 +75,12 @@ module rounded_rect(size, r=undef, center=false, fn, r_factor=0.3) {
   rounded_rect_two([80, 40], r=undef, center=false, segments=24);
   ```
 */
-module rounded_rect_two(size, r=undef, center=false, segments=10) {
+module rounded_rect_two(size, r=undef, center=false, segments=10,
+                        r_factor=0.5) {
+
   w = size[0];
   h = size[1];
-  rad = is_undef(r) ? (min(h, w)) / 2 : r;
+  rad = is_undef(r) ? (min(h, w)) * r_factor : r;
   offst = center ? [-w/2, -h/2] : [0, 0];
 
   pts_bottom = [[0, 0], [w, 0]];
