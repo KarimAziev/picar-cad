@@ -50,7 +50,7 @@ module camera_module(board_color=green_2,
             four_corner_holes_2d(size=camera_holes_size,
                                  center=true,
                                  hole_dia=camera_bolt_hole_dia,
-                                 fn_val=60);
+                                 fn=60);
           }
         }
       }

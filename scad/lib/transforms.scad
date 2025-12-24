@@ -85,13 +85,13 @@ module four_corner_children(size=[10, 10],
 module four_corner_holes_2d(size=[10, 10],
                             center=false,
                             hole_dia=3,
-                            fn_val=60) {
+                            fn=60) {
   for (x_ind = [0, 1])
     for (y_ind = [0, 1]) {
       x_pos = (center ? -size[0] / 2 : 0) + x_ind * size[0];
       y_pos = (center ? -size[1] / 2 : 0) + y_ind * size[1];
       translate([x_pos, y_pos]) {
-        circle(r=hole_dia / 2, $fn=fn_val);
+        circle(r=hole_dia / 2, $fn=fn);
         children();
       }
     }

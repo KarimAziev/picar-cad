@@ -106,14 +106,14 @@ module standard_battery_holders_bolts_2d(x_offst=battery_bolts_x_offset) {
                         y_positions=battery_holes_y_positions,
                         d=battery_holder_bolt_dia,
                         size=battery_holder_bolt_holes_size,
-                        fn_val= battery_bolts_fn_val);
+                        fn=battery_bolts_fn_val);
 }
 
 module battery_holders_bolts(x_offst,
                              y_positions,
                              d,
                              size,
-                             fn_val=battery_bolts_fn_val) {
+                             fn=battery_bolts_fn_val) {
   union() {
     for (y = y_positions) {
       mirror_copy([1, 0, 0]) {
@@ -124,7 +124,7 @@ module battery_holders_bolts(x_offst,
             four_corner_holes_2d(size = size,
                                  center = true,
                                  hole_dia = d,
-                                 fn_val = fn_val);
+                                 fn = fn);
           }
         }
       }

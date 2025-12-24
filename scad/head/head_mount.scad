@@ -68,7 +68,7 @@ module head_front_camera(spec,
                  + bolt_hole_y,
                  0]) {
         four_corner_holes_2d(size = bolt_hole_size, center = true,
-                             hole_dia = head_camera_bolt_dia, fn_val = 360);
+                             hole_dia = head_camera_bolt_dia, fn = 360);
       }
     }
 
