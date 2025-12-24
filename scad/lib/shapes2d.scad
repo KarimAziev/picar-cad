@@ -15,6 +15,7 @@
   - `r_factor`: fraction of the smaller dimension to use for radius when r is undef (default `0.3`).
   - `center`:   if `true`, the rectangle is centered at the origin. If `false`, the lower-left corner is at the origin.
   - `fn`:       resolution (`$fn`) passed to the circle() calls; controls the smoothness of the rounded corners.
+  - `side`:     The side to roundness. One of: "all" (default) | "top" | "left" | "right" | "bottom".
 
   **Examples**
   ```scad
@@ -24,13 +25,20 @@
   rounded_rect([100, 10], r=undef, r_factor=0.25, center=false, fn=36);
   ```
 */
-module rounded_rect(size, r=undef, center=false, fn, r_factor=0.3) {
+module rounded_rect(size, r=undef, center=false, fn, r_factor=0.3, side) {
   w = size[0];
   h = size[1];
-  rad = is_undef(r) ? (min(h, w)) * r_factor : r;
+  rad = min(is_undef(r) ? (min(h, w)) * r_factor : r, w / 2, h / 2);
   if (rad == 0) {
     square(size, center=center);
-  } else {
+  } else if (is_string(side) && side != "all") {
+    rounded_rect_two(size=size,
+                     r=r,
+                     r_factor=r_factor,
+                     side=side,
+                     center=center);
+  }
+  else {
     offst = center ? [-w/2, -h/2] : [0, 0];
 
     hull() {
@@ -63,6 +71,7 @@ module rounded_rect(size, r=undef, center=false, fn, r_factor=0.3) {
   the lower-left corner is at the origin.
   - `segments`: number of subdivisions used to approximate each quarter-circle
   arc. Increasing this improves smoothness at the cost of more points.
+  - `side`: The side to roundness. One of: "top" (default) | "left" | "right" | "bottom".
 
   - Ensure `r` is `<= min(width, height)/2` for expected results (the code does
   not enforce a clamp).
@@ -75,37 +84,41 @@ module rounded_rect(size, r=undef, center=false, fn, r_factor=0.3) {
   rounded_rect_two([80, 40], r=undef, center=false, segments=24);
   ```
 */
+
 module rounded_rect_two(size, r=undef, center=false, segments=10,
-                        r_factor=0.5) {
+                        r_factor=0.5,
+                        side = "top" // "top" | "left" | "right" | "bottom"
+                       ) {
 
   w = size[0];
   h = size[1];
-  rad = is_undef(r) ? (min(h, w)) * r_factor : r;
+  rad = min(is_undef(r) ? (min(h, w)) * r_factor : r, w / 2, h / 2);
+
   offst = center ? [-w/2, -h/2] : [0, 0];
 
-  pts_bottom = [[0, 0], [w, 0]];
-  pts_right = [[w, 0], [w, h - rad]];
-  arc_top_right = [for (i = [1 : segments])
-      let (a = i * (90 / segments))
-        [(w - rad) + rad * cos(a), (h - rad) + rad * sin(a)]];
-  pts_top_edge = [[w - rad, h], [rad, h]];
+  round_tl = (side == "top")|| (side == "left");
+  round_tr = (side == "top")|| (side == "right");
+  round_br = (side == "bottom") || (side == "right");
+  round_bl = (side == "bottom") || (side == "left");
 
-  arc_top_left = [for (i = [1 : segments])
-      let (a = 90 + i * (90 / segments))
-        [rad + rad * cos(a), (h - rad) + rad * sin(a)]];
+  function arc(cx, cy, a0, a1) =
+    [for (i = [1:segments])
+        let (a = a0 + i * ((a1 - a0)/segments))
+          [cx + rad*cos(a), cy + rad*sin(a)]];
 
-  pts_left = [[0, h - rad], [0, 0]];
+  pts =
+    concat(round_bl ? [[rad, 0]] : [[0, 0]],
+           round_br ? [[w-rad, 0]] : [[w, 0]],
+           round_br ? arc(w-rad, rad, -90, 0) : [],
+           round_tr ? [[w, h-rad]] : [[w, h]],
+           round_tr ? arc(w-rad, h-rad, 0, 90) : [],
+           round_tl ? [[rad, h]] : [[0, h]],
+           round_tl ? arc(rad, h-rad, 90, 180) : [],
+           round_bl ? [[0, rad]] : [[0, 0]],
+           round_bl ? arc(rad, rad, 180, 270) : []);
 
-  pts = concat(pts_bottom,
-               pts_right,
-               arc_top_right,
-               pts_top_edge,
-               arc_top_left,
-               pts_left);
-
-  translate(offst) {
+  translate(offst)
     polygon(points = pts);
-  }
 }
 
 /*
