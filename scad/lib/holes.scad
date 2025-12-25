@@ -8,6 +8,7 @@
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */
+
 use <shapes3d.scad>
 use <transforms.scad>
 use <functions.scad>
@@ -71,7 +72,9 @@ module counterbore(h,
       }
     }
     if (!no_bore) {
-      translate([0, 0, !reverse ? h - bore_h
+      translate([0,
+                 0,
+                 !reverse ? h - bore_h
                  : auto_scale
                  ? -autoscale_step
                  : 0]) {
@@ -150,18 +153,14 @@ module rect_slot(h,
         translate([0, 0, recess_z]) {
 
           linear_extrude(height=recess_base_h +
-                         (auto_scale ? autoscale_step : 0), center=false) {
-            linear_extrude(height=auto_scale
-                           ? h + (autoscale_step * 2)
-                           : h,
-                           center=false) {
-              rounded_rect(size=[recess_x, recess_y],
-                           r_factor=r_factor,
-                           r=r,
-                           side=side,
-                           fn=fn,
-                           center=true);
-            }
+                         (auto_scale ? autoscale_step : 0),
+                         center=false) {
+            rounded_rect(size=[recess_x, recess_y],
+                         r_factor=r_factor,
+                         r=r,
+                         side=side,
+                         fn=fn,
+                         center=true);
           }
         }
       }
@@ -393,13 +392,14 @@ module four_corner_hole_rows(specs,
                                center=center) {
             debug_highlight(debug=debug_spec[0]) {
               if (bolt_mode) {
-                translate([0, 0, -bolt_h + (thickness - (bore_h > 0 && bore_d > dia
-                                                         ? bore_h
-                                                         : 0))]) {
+                translate([0,
+                           0,
+                           -bolt_h + (thickness - (bore_h > 0 && bore_d > dia
+                                                   ? bore_h
+                                                   : 0))]) {
                   bolt(d=dia,
+
                        h=bolt_h,
-                       head_h=bolt_head_h,
-                       head_d=head_d,
                        head_type=bolt_type);
                 }
               } else {
@@ -442,25 +442,25 @@ difference() {
   rect_slot(size=[10, 20],
             recess_size=[12, 25],
             h=3,
-            reverse=false,
+            reverse=true,
             autoscale_step=1,
             center=true);
 }
 
-translate([100, 0, 0]) {
+// translate([100, 0, 0]) {
 
-  #counterbore(h=3,
-               d=3,
-               bore_d=6,
-               bore_h=2,
-               sink=false,
-               fn=100,
-               autoscale_step=1,
-               reverse=false);
-  #rect_slot(size=[10, 20],
-             recess_size=[12, 25],
-             h=3,
-             reverse=false,
-             autoscale_step=1,
-             center=false,);
-}
+//   #counterbore(h=3,
+//                d=3,
+//                bore_d=6,
+//                bore_h=2,
+//                sink=false,
+//                fn=100,
+//                autoscale_step=1,
+//                reverse=false);
+//   #rect_slot(size=[10, 20],
+//              recess_size=[12, 25],
+//              h=3,
+//              reverse=false,
+//              autoscale_step=1,
+//              center=false);
+// }
