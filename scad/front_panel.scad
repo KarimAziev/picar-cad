@@ -23,9 +23,9 @@ use <lib/functions.scad>
 use <lib/shapes3d.scad>
 
 rear_panel_z = ultrasonic_pin_len_b
-  - ultrasonic_thickness
-  - ultrasonic_pin_protrusion_h
-  + ultrasonic_pin_thickness;
+                - ultrasonic_thickness
+                - ultrasonic_pin_protrusion_h
+                + ultrasonic_pin_thickness;
 
 module ultrasonic_sensor_mounts_2d(d=front_panel_ultrasonic_sensor_dia) {
   rad = d / 2;
@@ -46,9 +46,11 @@ module ultrasonic_rect_slots_2d(h=front_panel_height,
 
   union() {
     if (oscilator_h > 0 && oscilator_w > 0) {
-      translate([0, h / 2 - oscilator_h / 2
+      translate([0,
+                 h / 2 - oscilator_h / 2
                  - ultrasonic_oscillator_y_offset]) {
-        rounded_rect([oscilator_w, oscilator_h], center=true,
+        rounded_rect([oscilator_w, oscilator_h],
+                     center=true,
                      r=min(2,
                            min(oscilator_h, oscilator_w) * 0.3),
                      fn=20);
@@ -57,9 +59,11 @@ module ultrasonic_rect_slots_2d(h=front_panel_height,
 
     if (jack_h > 0 && jack_w > 0) {
       translate([0, -h / 2 + jack_h / 2]) {
-        rounded_rect([jack_w, jack_h], center=true,
+        rounded_rect([jack_w, jack_h],
+                     center=true,
                      r=min(2,
-                           min(jack_h, jack_w) * 0.3), fn=20);
+                           min(jack_h, jack_w) * 0.3),
+                     fn=20);
       }
     }
   }
@@ -72,7 +76,7 @@ module ultrasonic_bolts_2d(size=ultrasonic_bolt_spacing,
 }
 
 module front_panel_connector_bolts(reverse_y=false,
-                                   use_counterbore=false,) {
+                                   use_counterbore=false) {
   half_len = front_panel_connector_len / 2;
   half_w   = front_panel_connector_width / 2;
   bolt_r  = front_panel_connector_bolt_dia / 2;
@@ -110,7 +114,8 @@ module front_panel_connector(w=front_panel_connector_width,
                              h=front_panel_connector_len,
                              thickness=front_panel_thickness) {
   difference() {
-    linear_extrude(height=thickness, center=false) {
+    linear_extrude(height=thickness,
+                   center=false) {
       difference() {
         rounded_rect_two(size = [w,
                                  h],
@@ -118,7 +123,8 @@ module front_panel_connector(w=front_panel_connector_width,
                          r=front_panel_connector_offset_rad);
         if (front_panel_connector_rect_cutout_size[0] > 0
             && front_panel_connector_rect_cutout_size[1] > 0) {
-          translate([0, -h / 2 +
+          translate([0,
+                     -h / 2 +
                      front_panel_connector_rect_cutout_size[1] / 2
                      + rear_panel_z
                      + thickness,
@@ -130,7 +136,8 @@ module front_panel_connector(w=front_panel_connector_width,
     }
     translate([0,
                h / 2
-               + front_panel_bolt_y_offset(), 0]) {
+               + front_panel_bolt_y_offset(),
+               0]) {
       four_corner_children(front_panel_connector_bolt_spacing, center=true) {
         counterbore(d=front_panel_connector_bolt_dia,
                     h=front_panel_thickness,
@@ -176,7 +183,8 @@ module front_panel_main(w=front_panel_width,
           translate([w / 2, h / 2, 0]) {
             if (show_front_rear_panel) {
               rotate([0, 0, 0]) {
-                translate([0, 0,
+                translate([0,
+                           0,
                            front_panel_thickness
                            + ultrasonic_thickness
                            + rear_panel_z]) {
@@ -208,7 +216,8 @@ module front_panel_main(w=front_panel_width,
                 }
               }
 
-              translate([0, 0,
+              translate([0,
+                         0,
                          thickness - front_panel_ultrasonic_cutout_depth + 0.1]) {
                 linear_extrude(height=front_panel_ultrasonic_cutout_depth,
                                center=false) {
@@ -334,7 +343,8 @@ module front_panel_back_mount(h=front_panel_height,
                      convexity=2) {
         mirror_copy([1, 0, 0]) {
           translate([bolts_x_offset,
-                     -front_panel_bolts_y_offst, 0]) {
+                     -front_panel_bolts_y_offst,
+                     0]) {
             ring_2d(r=front_panel_bolt_dia / 2,
                     fn=100,
                     w=front_panel_rear_panel_ring_width,
@@ -371,7 +381,9 @@ module front_panel_assembly(panel_color="white",
                           angle=front_panel_rotation_angle);
 
   if (show_front_panel) {
-    translate([0, front_panel_connector_len + front_panel_thickness / 2, -bbox[0] / 2]) {
+    translate([0,
+               front_panel_connector_len + front_panel_thickness / 2,
+               -bbox[0] / 2]) {
       rotate([0, 180, 0]) {
         rotate([0, 0, 0]) {
           front_panel(colr=panel_color,

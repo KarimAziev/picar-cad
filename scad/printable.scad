@@ -97,18 +97,23 @@ module printable(spacing=5) {
         tie_rod_shafts_printable();
       }
     }
-    translate([0, head_plate_height
+
+    translate([0,
+               head_plate_height
                + knuckle_shaft_lower_horiz_len
                + knuckle_dia
-               + knuckle_shaft_dia, 0]) {
+               + knuckle_shaft_dia,
+               0]) {
       knuckle_print_plate();
       translate([0, knuckle_shaft_lower_horiz_len, 0]) {
         knuckle_shaft_print_plate();
       }
     }
 
-    translate([0, -head_plate_height
-               - head_neck_pan_servo_slot_height / 2, 0]) {
+    translate([0,
+               -head_plate_height
+               - head_neck_pan_servo_slot_height / 2,
+               0]) {
       if (show_head_neck) {
         color("white", alpha=1) {
           head_neck();
@@ -161,7 +166,8 @@ module printable(spacing=5) {
       }
     }
 
-    translate([0, -front_panel_height / 2
+    translate([0,
+               -front_panel_height / 2
                - steering_panel_length / 2
                - knuckle_dia / 2 - spacing,
                0]) {
@@ -175,7 +181,8 @@ module printable(spacing=5) {
           steering_servo_mount();
         }
 
-        translate([0, steering_rack_support_width / 2
+        translate([0,
+                   steering_rack_support_width / 2
                    + rack_max_w
                    + spacing,
                    0]) {
@@ -196,8 +203,12 @@ module printable(spacing=5) {
         + steering_rack_link_bearing_outer_d + steering_rack_link_linkage_width;
       pinion_offst = steering_pinion_d + steering_pinion_tooth_height() * 2;
 
-      translate([0, -steering_panel_length / 2 - knuckle_dia / 2
-                 - max(pinion_offst / 2, bracket_offst / 2) - spacing, 0]) {
+      translate([0,
+                 -steering_panel_length / 2
+                 - knuckle_dia / 2
+                 - max(pinion_offst / 2, bracket_offst / 2)
+                 - spacing,
+                 0]) {
         if (show_pinion) {
           color(blue_grey_carbon, alpha=1) {
             steering_pinion();
@@ -226,9 +237,11 @@ module printable(spacing=5) {
     }
   }
 
-  translate([0, -half_of_chassis_len - max(rear_panel_size[1]
-                                           + rear_panel_mount_thickness
-                                           * 2, wheel_dia) / 2 - 10, 0]) {
+  translate([0,
+             -half_of_chassis_len - max(rear_panel_size[1]
+                                        + rear_panel_mount_thickness
+                                        * 2, wheel_dia) / 2 - 10,
+             0]) {
     front_wheels_x = -rear_panel_size[0] / 2 - rear_panel_mount_thickness
       - wheel_dia / 2 - spacing;
     wheel_hub_x = show_front_wheels
@@ -293,9 +306,11 @@ module printable(spacing=5) {
       translate([0, 0, wheel_tire_width / 2]) {
 
         color(matte_black) {
-          translate([0, -max(rear_panel_size[1]
-                             + rear_panel_mount_thickness
-                             * 2, wheel_dia) / 2 - outer_tire_r - spacing, 0]) {
+          translate([0,
+                     -max(rear_panel_size[1]
+                          + rear_panel_mount_thickness
+                          * 2, wheel_dia) / 2 - outer_tire_r - spacing,
+                     0]) {
             tire();
             translate([-outer_tire_r * 2 - spacing, 0, 0]) {
               tire();

@@ -65,15 +65,15 @@ rpi_position_y           = -rpi_len - rpi_chassis_y_position;
 
 power_case_position_y    = -power_case_length / 2 - power_case_chassis_y_offset;
 power_case_position_x    = chassis_body_w / 2
-  - power_case_width / 2
-  + power_case_chassis_x_offset;
+                            - power_case_width / 2
+                            + power_case_chassis_x_offset;
 
 max_lower_cutout         = max([for (v = chassis_lower_cutout_pts) v[1]]);
 
 body_pts                 = concat(chassis_lower_cutout_pts,
-                                  [[chassis_body_half_w, chassis_body_len +
-                                    max_lower_cutout],
-                                   [0, chassis_body_len  + max_lower_cutout]],);
+                            [[chassis_body_half_w, chassis_body_len +
+                            max_lower_cutout],
+                            [0, chassis_body_len  + max_lower_cutout]]);
 
 module chassis_body_2d() {
   offset_vertices_2d(r=chassis_offset_rad) {
@@ -186,7 +186,8 @@ module chassis_body_border_slots(groups, center_group=true, center=true) {
            size = spec[0]) {
 
         translate([center ? 0 : size[0] / 2,
-                   center ? 0 : size[1] / 2, chassis_thickness]) {
+                   center ? 0 : size[1] / 2,
+                   chassis_thickness]) {
 
           difference() {
             linear_extrude(height=chassis_side_hole_border_h,
@@ -200,7 +201,8 @@ module chassis_body_border_slots(groups, center_group=true, center=true) {
             translate([0, 0, -0.5]) {
               linear_extrude(height=chassis_side_hole_border_h + 1,
                              center=false) {
-                rounded_rect(size=[size[0], size[1]], r=
+                rounded_rect(size=[size[0], size[1]],
+                             r=
                              size[2],
                              center=true);
               }
@@ -399,7 +401,7 @@ module chassis_body(panel_color="white",
         batteries_holder_assembly_y_idx = batteries_holder_assembly_y_idx;
         battery_holder_y_pos = is_undef(battery_holes_y_positions
                                         [batteries_holder_assembly_y_idx])
-          ? battery_holes_y_positions[batteries_holder_assembly_y_idx - 1]
+                                        ? battery_holes_y_positions[batteries_holder_assembly_y_idx - 1]
           : battery_holes_y_positions[batteries_holder_assembly_y_idx];
         full_holder_len = battery_holder_full_len(battery_holder_thickness)
           * battery_holder_batteries_count;

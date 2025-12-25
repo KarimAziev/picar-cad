@@ -48,6 +48,9 @@ use <../placeholders/servo.scad>
 use <../placeholders/pan_servo.scad>
 use <../placeholders/tilt_servo.scad>
 
+pan_servo_rotation  = 0; // [-179:179]
+tilt_servo_rotation = 0; // [-90:90]
+
 function head_neck_full_w(base_width=max(head_neck_pan_servo_slot_width,
                                          head_neck_tilt_servo_slot_width),
                           bolts_dia=max(head_neck_pan_servo_bolt_dia,
@@ -78,8 +81,8 @@ module head_neck_base(show_tilt_servo=false,
                       show_ir_case=false,
                       show_ir_led=true,
                       show_servo_horn=true,
-                      tilt_servo_rotation=0,
-                      pan_servo_rotation=0,
+                      tilt_servo_rotation=tilt_servo_rotation,
+                      pan_servo_rotation=pan_servo_rotation,
                       bracket_color=matte_black,
                       head_color="white") {
   pan_servo_h = pan_servo_size[2];
@@ -105,7 +108,7 @@ module head_neck_base(show_tilt_servo=false,
                             ["union", "horizontal"],
                             ["difference", "vertical"],
                             ["union", "vertical"]],
-            center=false,
+                            center=false,
             y_r=pan_rad,
             z_r=tilt_rad) {
     servo_slot_2d(size=[head_neck_pan_servo_slot_width,
@@ -184,8 +187,8 @@ module head_neck(center_pan_servo_slot=false,
                  show_ir_led=true,
                  show_servo_horn=true,
                  bracket_color=matte_black,
-                 tilt_servo_rotation=0,
-                 pan_servo_rotation=0,
+                 tilt_servo_rotation=tilt_servo_rotation,
+                 pan_servo_rotation=pan_servo_rotation,
                  head_color="white") {
 
   module head_neck_mod() {

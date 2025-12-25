@@ -61,6 +61,7 @@ module xt90_contact_pin(pin_d,
 }
 
 module xt90_shell(size=[xt_90_size[0], xt_90_size[1], 15.1],
+                  round_side="top",
                   r_factor=0.5,
                   thickness,
                   pin_length,
@@ -79,7 +80,7 @@ module xt90_shell(size=[xt_90_size[0], xt_90_size[1], 15.1],
         rect_slot(size=[size[0] - thickness / 2, size[1] - thickness],
                   h=pin_length,
                   r_factor=r_factor,
-                  two_rounded_corners=true,
+                  side=round_side,
                   reverse=false,
                   center=true);
       }

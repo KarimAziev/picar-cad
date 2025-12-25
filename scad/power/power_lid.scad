@@ -27,8 +27,8 @@ use <../placeholders/bolt.scad>
 use <../placeholders/xt90e-m.scad>
 
 side_wall_w           = power_case_side_wall_thickness
-  + power_case_rail_tolerance
-  + power_lid_extra_side_thickness;
+                         + power_case_rail_tolerance
+                         + power_lid_extra_side_thickness;
 
 inner_y_cutout        = power_case_length - side_wall_w * 2;
 inner_x_cutout        = power_lid_width - side_wall_w * 2;
@@ -39,10 +39,10 @@ half_of_side_wall_w   = side_wall_w / 2;
 
 tumbler_side_cutout_h = side_wall_w + 0.2;
 side_bolt_start       = power_case_length / 2 -
-  power_case_groove_edge_distance
-  -power_case_groove_thickness / 2
-  - power_case_rail_bolt_dia / 2
-  - power_case_rail_bolt_groove_distance;
+                         power_case_groove_edge_distance
+                         -power_case_groove_thickness / 2
+                         - power_case_rail_bolt_dia / 2
+                         - power_case_rail_bolt_groove_distance;
 
 module power_lid_voltmeters_bolt_holes(specs=power_voltmeter_specs,
                                        default_cbore_h=power_lid_thickness / 2,
@@ -90,7 +90,8 @@ module power_lid_voltmeters_bolt_holes(specs=power_voltmeter_specs,
   }
 }
 
-module power_lid_voltmeters_placeholders(specs=power_voltmeter_specs, echo_wiring_len=true) {
+module power_lid_voltmeters_placeholders(specs=power_voltmeter_specs,
+                                         echo_wiring_len=true) {
   for (i = [0 : len(specs) - 1]) {
     let (v_spec = specs[i][0],
          positions = specs[i][1],
@@ -118,12 +119,15 @@ module power_lid_voltmeters_placeholders(specs=power_voltmeter_specs, echo_wirin
          wiring_d=wiring_spec[0],
          wiring=wiring_spec[1],
          wiring_gap=wiring_spec[2],
-         wiring_distance=wiring_spec[3],) {
+         wiring_distance=wiring_spec[3]) {
 
-      translate([positions[0], positions[1], -pin_h
+      translate([positions[0],
+                 positions[1],
+                 -pin_h
                  - positions[2]]) {
         translate([- board_w / 2,
-                   max(board_len, bolt_spacing[1]) / 2, 0]) {
+                   max(board_len, bolt_spacing[1]) / 2,
+                   0]) {
           if (echo_wiring_len && is_num(text_spec[0])) {
             echo(str("total_wire_length for voltmeter ", str(i),
                      " (",
@@ -221,7 +225,7 @@ module power_lid_atm_fuse_placeholders(specs=power_lid_side_wall_1_atm_fuse_spec
          cbore_sizes = map_idx(specs, 2, [0, 0]),
          heights = map_idx(sizes, 0, 0),
          cbore_heigts = map_idx(cbore_sizes, 0, 0),
-         max_h = max(concat(cbore_heigts, heights)),) {
+         max_h = max(concat(cbore_heigts, heights))) {
 
       translate([-0.1, 0, max_h / 2 + power_lid_thickness]) {
         if (slot_mode) {
@@ -301,7 +305,8 @@ module power_lid_side_bolt_holes() {
   union() {
     mirror_copy([1, 0, 0]) {
       translate([half_of_inner_x
-                 + half_of_side_wall_w, 0,
+                 + half_of_side_wall_w,
+                 0,
                  power_lid_height
                  - power_case_rail_bolt_dia]) {
         power_case_lid_bolt_holes_pair();
@@ -488,9 +493,7 @@ module power_lid(show_switch_button=false,
       if (show_xt90e) {
         translate([0, 0, -power_lid_thickness]) {
           with_xt90_position() {
-            rotate([0, 0, 180]) {
-              xt90e(show_bolt=show_bolts);
-            }
+            xt90e(show_bolt=show_bolts, round_side="bottom");
           }
         }
       }
@@ -539,8 +542,8 @@ power_lid(show_switch_button=false,
           lid_color=blue_grey_carbon,
           show_ato_fuse=false,
           show_voltmeter=false,
-          show_bolts=true,
-          show_xt90e=true,
+          show_bolts=false,
+          show_xt90e=false,
           show_atm_side_fuse_holders=false,
           echo_wiring_len=true,
           use_toggle_switch=false);

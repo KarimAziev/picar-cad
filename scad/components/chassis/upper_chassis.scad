@@ -27,6 +27,7 @@ use <../../placeholders/bolt.scad>
 use <../../head/head_mount.scad>
 use <../../head/head_neck.scad>
 use <../../placeholders/pan_servo.scad>
+
 use <util.scad>
 use <chassis_connector.scad>
 
@@ -36,18 +37,18 @@ upper_side_hole_pts            =  scale_upper_trapezoid_pts(x=chassis_trapezoid_
 front_panel_chassis_slot_depth = chassis_thickness / 2;
 front_pan_y                    = chassis_upper_len + front_panel_bolt_y_offset();
 effective_front_pan_dia        = max(front_panel_connector_bolt_bore_dia,
-                                     front_panel_connector_bolt_dia) / 2;
+                                  front_panel_connector_bolt_dia) / 2;
 front_pan_end                  = front_pan_y - effective_front_pan_dia;
 top_ribbon_hole_pos            = front_pan_end
-  - chassis_pan_servo_top_ribbon_cuttout_h
-  - chassis_upper_front_padding_y;
+                                  - chassis_pan_servo_top_ribbon_cuttout_h
+                                  - chassis_upper_front_padding_y;
 
 head_pos                       = -upper_chassis_holes_border_w * 2
-  - chassis_pan_servo_recesess_y_len
-  - chassis_pan_servo_recesess_thickness / 2
-  + top_ribbon_hole_pos
-  - upper_chassis_holes_border_w
-  - chassis_head_zone_y_offset;
+                                  - chassis_pan_servo_recesess_y_len
+                                  - chassis_pan_servo_recesess_thickness / 2
+                                  + top_ribbon_hole_pos
+                                  - upper_chassis_holes_border_w
+                                  - chassis_head_zone_y_offset;
 
 hole_h                         = chassis_thickness + 1;
 steering_pan_pos               = chassis_upper_len - steering_panel_distance_from_top;
@@ -55,7 +56,7 @@ steering_pan_pos               = chassis_upper_len - steering_panel_distance_fro
 trapezoid_rows_params          = calc_cols_params(gap=chassis_pan_servo_side_trapezoid_gap
                                                   + upper_chassis_holes_border_w,
                                                   cols=chassis_pan_servo_side_trapezoid_rows,
-                                                  w=chassis_trapezoid_hole_len,);
+                                                  w=chassis_trapezoid_hole_len);
 trapezoid_step                 = trapezoid_rows_params[0];
 trapezoid_total_y              = trapezoid_rows_params[1];
 
@@ -64,7 +65,7 @@ top_most_row_params = calc_cols_params(cols=chassis_top_most_holes_rows,
                                        gap=chassis_top_most_holes_gap);
 
 top_most_rects_start           = top_ribbon_hole_pos - top_most_row_params[1]
-  - chassis_top_most_holes_side_y_offset;
+                                  - chassis_top_most_holes_side_y_offset;
 
 top_rib_hole_pts               = scale_upper_trapezoid_pts(x=chassis_pan_servo_top_ribbon_cuttout_len / 2,
                                                            y=chassis_pan_servo_top_ribbon_cuttout_h);
@@ -160,7 +161,7 @@ module chassis_upper_side_rect_holes(start=0,
                                parallelogram=parallelogram,
                                border_w = border_mode
                                ? chassis_side_hole_border_w
-                               : undef,);
+                               : undef);
 }
 
 module chassis_side_holes_3d(border_mode=false) {
@@ -171,7 +172,8 @@ module chassis_side_holes_3d(border_mode=false) {
              : -0.5]) {
     linear_extrude(height=border_mode
                    ? chassis_side_hole_border_h
-                   : chassis_thickness + 1, center=false) {
+                   : chassis_thickness + 1,
+                   center=false) {
 
       children();
     }
@@ -216,7 +218,9 @@ module pan_servo_slot_3d() {
       cylinder(r=slot_rad, h=hole_h, $fn=60);
       mirror_copy([1, 0, 0]) {
         translate([slot_rad
-                   + chassis_pan_servo_screws_gap, 0, 0]) {
+                   + chassis_pan_servo_screws_gap,
+                   0,
+                   0]) {
           columns_children(gap=chassis_pan_servo_screws_gap,
                            cols=total_x,
                            w=chassis_pan_servo_screw_d) {
@@ -225,8 +229,10 @@ module pan_servo_slot_3d() {
         }
       }
       mirror_copy([0, 1, 0]) {
-        translate([0, slot_rad
-                   + chassis_pan_servo_screws_gap, 0]) {
+        translate([0,
+                   slot_rad
+                   + chassis_pan_servo_screws_gap,
+                   0]) {
           rows_children(gap=chassis_pan_servo_screws_gap,
                         rows=total_y,
                         w=chassis_pan_servo_screw_d) {
@@ -329,8 +335,10 @@ module chassis_upper_rib_hole(border_mode=false) {
 }
 
 module chassis_upper_rib_hole_slot(border_mode=false) {
-  translate([0, top_ribbon_hole_pos
-             - (border_mode ? upper_chassis_holes_border_w : 0) , 0]) {
+  translate([0,
+             top_ribbon_hole_pos
+             - (border_mode ? upper_chassis_holes_border_w : 0) ,
+             0]) {
     chassis_upper_rib_hole(border_mode=border_mode);
   }
 }
@@ -345,20 +353,23 @@ module chassis_mid_side_trapezoids(border_mode=false) {
       linear_extrude(height=border_mode
                      ?
                      chassis_side_hole_border_h
-                     : hole_h, center=false) {
+                     : hole_h,
+                     center=false) {
         for (i = [0 : chassis_pan_servo_side_trapezoid_rows - 1]) {
           let (by = i * trapezoid_step,
                available_w =
                poly_width_at_y(pts=chassis_upper_pts,
                                y_target=by + head_pos)) {
-            translate([0, by -(border_mode
-                               ? upper_chassis_holes_border_w
-                               : 0),
+            translate([0,
+                       by -(border_mode
+                            ? upper_chassis_holes_border_w
+                            : 0),
                        0]) {
 
               translate([available_w -
                          chassis_trapezoid_hole_x_distance,
-                         -chassis_trapezoid_hole_len / 2, 0]) {
+                         -chassis_trapezoid_hole_len / 2,
+                         0]) {
                 if (border_mode) {
                   offset_vertices_2d(r=0.4) {
                     translate([0, upper_chassis_holes_border_w, 0]) {
@@ -414,14 +425,16 @@ module chassis_upper_transition_rect_slots(border_mode=false) {
                                  center=false) {
                     rounded_rect(size=[size[0] + 1,
                                        size[1] + 1],
-                                 r=size[2], center=true);
+                                 r=size[2],
+                                 center=true);
                   }
                 }
                 translate([0, 0, -0.5]) {
                   linear_extrude(height=chassis_trapezoid_border_height
                                  + 1,
                                  center=false) {
-                    rounded_rect(size=[size[0], size[1]], r=size[2],
+                    rounded_rect(size=[size[0], size[1]],
+                                 r=size[2],
                                  center=true);
                   }
                 }
@@ -528,8 +541,9 @@ module chassis_upper_3d(panel_color="white",
                         show_tie_rod=false,
                         show_servo=false,
                         show_knuckles=false,
+                        pan_servo_rotation=0,
                         tilt_servo_rotation=0,
-                        show_distance=false,) {
+                        show_distance=false) {
 
   difference() {
     color(panel_color, alpha=1) {
@@ -597,6 +611,7 @@ module chassis_upper_3d(panel_color="white",
                 show_camera=show_camera,
                 show_ir_led=show_ir_led,
                 show_head=show_head,
+                pan_servo_rotation=pan_servo_rotation,
                 tilt_servo_rotation=tilt_servo_rotation,
                 bracket_color=with_default(bracket_color, panel_color),
                 head_color=with_default(head_color, panel_color));
@@ -644,7 +659,8 @@ module chassis_upper(panel_color="white",
                      show_servo=true,
                      show_knuckles=true,
                      tilt_servo_rotation=0,
-                     show_distance=false,) {
+                     show_distance=false,
+                     pan_servo_rotation=0) {
   union() {
     translate([0, chassis_transition_len, 0]) {
       chassis_upper_3d(panel_color=panel_color,
@@ -674,6 +690,7 @@ module chassis_upper(panel_color="white",
                        show_tie_rod=show_tie_rod,
                        show_servo=show_servo,
                        tilt_servo_rotation=tilt_servo_rotation,
+                       pan_servo_rotation=pan_servo_rotation,
                        show_knuckles=show_knuckles,
                        show_distance=show_distance);
     }
@@ -711,7 +728,7 @@ module chassis_upper_printable() {
                   show_servo=false,
                   show_knuckles=false,
                   tilt_servo_rotation=0,
-                  show_distance=false,);
+                  show_distance=false);
   }
 }
 
