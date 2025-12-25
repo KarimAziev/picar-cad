@@ -26,23 +26,36 @@ use <../lib/shapes2d.scad>
 use <../placeholders/bolt.scad>
 use <../placeholders/xt90e-m.scad>
 
-side_wall_w           = power_case_side_wall_thickness
-                         + power_case_rail_tolerance
-                         + power_lid_extra_side_thickness;
+show_xt90e                 = false;
+show_dc_regulator          = false;
+show_ato_fuse              = false;
+show_voltmeter             = false;
+show_bolts                 = false;
+show_atm_side_fuse_holders = false;
+echo_wiring_lenghts        = false;
+echo_wiring_len            = true;
 
-inner_y_cutout        = power_case_length - side_wall_w * 2;
-inner_x_cutout        = power_lid_width - side_wall_w * 2;
+/* [Power lid switch button] */
+use_toggle_switch          = false;
+show_switch_button         = false;
 
-half_of_inner_y       = inner_y_cutout / 2;
-half_of_inner_x       = inner_x_cutout / 2;
-half_of_side_wall_w   = side_wall_w / 2;
+side_wall_w                = power_case_side_wall_thickness
+                              + power_case_rail_tolerance
+                              + power_lid_extra_side_thickness;
 
-tumbler_side_cutout_h = side_wall_w + 0.2;
-side_bolt_start       = power_case_length / 2 -
-                         power_case_groove_edge_distance
-                         -power_case_groove_thickness / 2
-                         - power_case_rail_bolt_dia / 2
-                         - power_case_rail_bolt_groove_distance;
+inner_y_cutout             = power_case_length - side_wall_w * 2;
+inner_x_cutout             = power_lid_width - side_wall_w * 2;
+
+half_of_inner_y            = inner_y_cutout / 2;
+half_of_inner_x            = inner_x_cutout / 2;
+half_of_side_wall_w        = side_wall_w / 2;
+
+tumbler_side_cutout_h      = side_wall_w + 0.2;
+side_bolt_start            = power_case_length / 2 -
+                              power_case_groove_edge_distance
+                              -power_case_groove_thickness / 2
+                              - power_case_rail_bolt_dia / 2
+                              - power_case_rail_bolt_groove_distance;
 
 module power_lid_voltmeters_bolt_holes(specs=power_voltmeter_specs,
                                        default_cbore_h=power_lid_thickness / 2,
@@ -324,12 +337,15 @@ module power_lid_side_bolt_holes() {
 
 module power_lid_xt_90_slot() {
   union() {
-    rotate([0, 0, 180]) {
-      rounded_rect_two(xt_90_size, center=true);
-    }
-    four_corner_holes_2d(xt_90_bolt_spacing,
-                         center=true,
-                         hole_dia=xt_90_bolt_dia);
+    rect_slot(size=xt_90_size,
+              h=power_lid_thickness,
+              center=true,
+              side="bottom",
+              r_factor=0.5);
+    four_corner_children(xt_90_bolt_spacing,
+                         center=true) {
+      counterbore(d=xt_90_bolt_dia, h=power_lid_thickness);
+    };
   }
 }
 
@@ -392,9 +408,7 @@ module power_lid(show_switch_button=false,
             }
           }
           with_xt90_position() {
-            linear_extrude(height=power_lid_thickness + 1, center=false) {
-              power_lid_xt_90_slot();
-            }
+            power_lid_xt_90_slot();
           }
 
           power_lid_side_wall_slots();
@@ -527,7 +541,7 @@ module power_lid(show_switch_button=false,
                    + power_lid_toggle_switch_distance_from_bottom]) {
           rotate([90, 0, 90]) {
             counterbore(d=power_lid_toggle_switch_dia,
-                        h=tumbler_side_cutout_h + 0.1,
+                        h=tumbler_side_cutout_h,
                         bore_h=tumbler_side_cutout_h / 2,
                         bore_d=power_lid_toggle_switch_cbore_dia);
           }
@@ -537,13 +551,12 @@ module power_lid(show_switch_button=false,
   }
 }
 
-power_lid(show_switch_button=false,
-          show_dc_regulator=false,
-          lid_color=blue_grey_carbon,
-          show_ato_fuse=false,
-          show_voltmeter=false,
-          show_bolts=false,
-          show_xt90e=false,
-          show_atm_side_fuse_holders=false,
-          echo_wiring_len=true,
-          use_toggle_switch=false);
+power_lid(show_switch_button=show_switch_button,
+          show_dc_regulator=show_dc_regulator,
+          show_ato_fuse=show_ato_fuse,
+          show_voltmeter=show_voltmeter,
+          show_bolts=show_bolts,
+          show_xt90e=show_xt90e,
+          show_atm_side_fuse_holders=show_atm_side_fuse_holders,
+          echo_wiring_len=echo_wiring_len,
+          use_toggle_switch=use_toggle_switch);
