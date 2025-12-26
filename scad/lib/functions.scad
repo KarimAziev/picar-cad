@@ -946,3 +946,45 @@ function best_height_combo(min_h, heights, limit) =
            let (r = best_height_combo(min_h - h, heights, limit - 1))
              r == [] && min_h - h > 0 ? [] : concat([h], r)])
   best_list_by_lower_sum(candidates);
+
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   repeat
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Returns a fixed list of size n containing a specified identical value.
+
+   **Example**:
+   ```scad
+   repeat("a", 3) // ["a", "a", "a"]
+   repeat("a", 2) // ["a", "a"]
+   repeat("a", 1) // ["a"]
+   repeat("a", 0) // []
+
+   ```
+*/
+function repeat(v, n=1) =
+  (n <= 0) ? [] : [for (i = [0 : n-1]) v];
+
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   join
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Joins strings with an optional separator and limit.
+
+
+   **Example**:
+   ```scad
+   join(["a", "b", "c"]) // -> "abc"
+   join(["a", "b", "c"], sep=" ") // -> "a b c"
+   join([], sep=" ") // -> ""
+
+   ```
+*/
+
+function join(parts, sep="", limit = undef) =
+  let (n = is_undef(limit) ? len(parts) : limit)
+  n == 0 ? "" :
+  n == 1 ? parts[n-1] :
+  str(join(parts, sep, n-1), sep, parts[n-1]);
