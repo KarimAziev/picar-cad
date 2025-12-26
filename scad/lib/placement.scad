@@ -74,7 +74,7 @@ module row_of_cubes(total_width,
   }
   ```
  */
-module columns_children(cols, w, gap, center=false) {
+module columns_children(cols, w, gap=0, center=false) {
   cols_params = calc_cols_params(cols=cols, w=w, gap=gap);
   step = cols_params[0];
   total_x = cols_params[1];
@@ -101,7 +101,7 @@ module columns_children(cols, w, gap, center=false) {
  */
 module rows_children(rows,
                      w,
-                     gap,
+                     gap=0,
                      center=false,
                      reverse=false) {
   rows_params = calc_cols_params(cols=rows, w=w, gap=gap);
