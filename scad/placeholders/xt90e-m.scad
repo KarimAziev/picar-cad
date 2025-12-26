@@ -50,6 +50,7 @@ module xt90e_mounting_panel(size=xt90e_mounting_panel_size,
                             center=true,
                             show_bolt=false,
                             bolt_head_type="pan",
+                            round_side="top",
                             bolt_visible_h=4,
                             bolt_through_h=power_lid_thickness,
                             show_nut=true) {
@@ -60,13 +61,16 @@ module xt90e_mounting_panel(size=xt90e_mounting_panel_size,
   translate([center ? 0 : w / 2, center ? 0 : length / 2, 0]) {
     union() {
       difference() {
-        linear_extrude(height=thickness, center=false) {
+        linear_extrude(height=thickness,
+                       center=false,
+                       convexity=2) {
           difference() {
 
             rounded_rect([w, length],
                          center=true,
                          r_factor=r_factor);
             rounded_rect_two(slot_size,
+                             side=round_side,
                              center=true,
                              r_factor=slot_r_factor);
           }
@@ -145,6 +149,7 @@ module xt90e(shell_size=xt90e_size,
                              r_factor=r_factor,
                              slot_r_factor=shell_r_factor,
                              bolt_dia=mount_dia,
+                             round_side=round_side,
                              bolt_bore_d=mount_bore_dia,
                              bolt_bore_h=mount_bore_h,
                              bolt_spacing=mount_spacing,
@@ -173,4 +178,4 @@ module xt90e(shell_size=xt90e_size,
   }
 }
 
-xt90e();
+xt90e(round_side="bottom");

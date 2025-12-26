@@ -73,8 +73,13 @@ module xt90_shell(size=[xt_90_size[0], xt_90_size[1], 15.1],
              center ? 0 : length / 2,
              0]) {
     difference() {
-      linear_extrude(height=h, center=false) {
-        rounded_rect_two(size, center=true);
+      linear_extrude(height=h,
+                     center=false,
+                     convexity=2) {
+        rounded_rect(size,
+                     center=true,
+                     side=round_side,
+                     r_factor=r_factor);
       }
       if (!is_undef(pin_length) && !is_undef(thickness)) {
         rect_slot(size=[size[0] - thickness / 2, size[1] - thickness],
