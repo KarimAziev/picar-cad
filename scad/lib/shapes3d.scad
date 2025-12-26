@@ -127,7 +127,9 @@ module rounded_rect_recess(size,
     : recess_thickness;
   recess_size = recess_size && recess_size[0] && recess_size[1] ? recess_size : undef;
   recess_z = recess_reverse ? thickness - recess_t : 0;
-  translate([center ? 0 : max(size[0], is_undef(recess_size) ? 0 : recess_size[0]) / 2,
+  translate([center
+             ? 0
+             : max(size[0], is_undef(recess_size) ? 0 : recess_size[0]) / 2,
              center ? 0 : max(size[1], is_undef(recess_size) ? 0 : recess_size[1]) / 2,
              0]) {
     union() {

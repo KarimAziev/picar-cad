@@ -85,7 +85,10 @@ module rounded_rect(size, r=undef, center=false, fn, r_factor=0.3, side) {
   ```
 */
 
-module rounded_rect_two(size, r=undef, center=false, segments=10,
+module rounded_rect_two(size,
+                        r=undef,
+                        center=false,
+                        segments=10,
                         r_factor=0.5,
                         side = "top" // "top" | "left" | "right" | "bottom"
                        ) {
@@ -148,7 +151,7 @@ module chamfered_square(size, chamfer) {
          [-h,     -h + c],
          [-h,      h - c],
          [-h + c,  h]];
-  polygon(points = pts);
+         polygon(points = pts);
 }
 
 /*
@@ -272,7 +275,7 @@ module star_2d(n=5, r_outer=20, r_inner=10) {
       let (angle = 360 / (2*n) * i,
            r = (i % 2 == 0) ? r_outer : r_inner)
         [r * cos(angle), r * sin(angle)]];
-  polygon(points = pts);
+        polygon(points = pts);
 }
 
 /*
