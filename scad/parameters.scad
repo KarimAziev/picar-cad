@@ -32,8 +32,6 @@ atc_ato_blade_mounting_wall_h                        = 17.45;
 atc_ato_blade_mounting_wall_w                        = 25.0;
 atc_ato_blade_mounting_wall_thickness                = 3.30;
 
-atc_ato_blade_fuse_y_distance                        = 33.0;
-
 atc_ato_blade_fuse_holder_bottom_cover_h             = 12.22;
 atc_ato_blade_fuse_holder_bottom_cover_w             = 24;
 atc_ato_blade_fuse_holder_bottom_cover_thickness     = 14.56;
@@ -735,8 +733,8 @@ head_cameras                                         = [[head_camera_module_3_si
 // If more than one camera is present, a fixed spacing of 2 mm is used.
 // If only one camera is mounted, use half of its height for centering.
 head_cameras_y_distance                              = len(head_cameras) > 1
-                                                ? 2.0
-                                                : (head_cameras[0][0][1] / 2);
+                                                     ? 2.0
+                                                     : (head_cameras[0][0][1] / 2);
 
 // Width of the front face plate where the camera modules are mounted.
 head_plate_width                                     = 38;
@@ -1000,11 +998,11 @@ ir_led_light_detector_offset_x                       = 1;
 // These precomputed values sum stacked thicknesses so the case clears the side panel.
 // ir_case_head_side_panel_x_2 is further from the panel than x_1.
 ir_case_head_side_panel_x_2                          = + ir_case_thickness
-                                                + ir_case_led_boss_thickness
-                                                + ir_led_thickness
-                                                + ir_led_light_detector_h / 2;
+                                                     + ir_case_led_boss_thickness
+                                                     + ir_led_thickness
+                                                     + ir_led_light_detector_h / 2;
 ir_case_head_side_panel_x_1                          = + ir_led_light_detector_h / 2
-                                                + ir_led_height;
+                                                     + ir_led_height;
 
 // Y coordinate for the first column of bolt positions (centered on the LED height).
 ir_case_head_side_panel_y_1                          = -ir_led_height / 2;
@@ -1348,9 +1346,9 @@ knuckle_shaft_bolts_distance                         = 2;
 // The length of the vertical part of the (curved) axle shaft that connects the
 // steering knuckle to the wheel hub
 knuckle_shaft_vertical_len                           = knuckle_height +
-                                                (motor_type == "n20"
-                                                 ? 21.5
-                                                 : 26.5);
+                                                     (motor_type == "n20"
+                                                      ? 21.5
+                                                      : 26.5);
 
 // The additional length of the connector for the shaft in the knuckle and the
 // corresponding curved axle shaft
@@ -1360,10 +1358,10 @@ knuckle_shaft_connector_extra_arm_len                = 1;
 
 // The additional length of the for the shaft itself
 knuckle_shaft_extra_len                              = assembly_shaft_use_front_steering
-                                                &&
-                                                assembly_use_front_steering
-                                                ? 5
-                                                : 0;
+                                                     &&
+                                                     assembly_use_front_steering
+                                                     ? 5
+                                                     : 0;
 
 // The length of the lower horizontal part of the (curved) axle shaft that is
 // inserted into the wheel hub
@@ -1425,12 +1423,12 @@ n20_motor_chassis_y_distance                         = 0;
 n20_motor_chassis_x_distance                         = -9;
 
 n20_motor_bolts_panel_len                            = n20_can_dia
-                                                + n20_motor_bracket_thickness
-                                                * 2
-                                                + n20_motor_bolt_dia
-                                                * 2
-                                                + n20_motor_bolts_panel_length
-                                                * 2;
+                                                     + n20_motor_bracket_thickness
+                                                     * 2
+                                                     + n20_motor_bolt_dia
+                                                     * 2
+                                                     + n20_motor_bolts_panel_length
+                                                     * 2;
 
 chassis_single_holes_specs                           = [[[8, 0, -5, 0]],
                                                         [[8, 0, 5, 0]],
@@ -1450,7 +1448,6 @@ chassis_single_holes_specs                           = [[[8, 0, -5, 0]],
 chassis_rect_holes_specs                             = [[[[10, 20, 4.0], [10, 0, 40]], // third in the center
                                                          [[10, 20, 4.0], [10, 0, 38]], // second in the center
                                                          [[10, 20, 4.0], [10, 0, 35]]], // first in the center
-                       // rectangulars on the both sides
                                                         [[[10, 15, 4.0], [10,
                                                                           chassis_body_w / 2 - 6.5,
                                                                           40]],
@@ -1793,13 +1790,6 @@ voltmeter_default_pins_spec                          = ["size", [voltmeter_pin_t
                                                         "count", voltmeter_pins_count,
                                                         "total_len", voltmeter_pins_len];
 
-voltmeter_default_display_spec                       = ["size", [voltmeter_display_w,
-                                                                 voltmeter_display_len,
-                                                                 voltmeter_display_h],
-                                                        "upper_thickness", 1,
-                                                        "upper_color", matte_black,
-                                                        "bottom_color", "white"];
-
 voltmeter_default_spec                               = ["display", ["size", [voltmeter_display_w,
                                                                              voltmeter_display_len,
                                                                              voltmeter_display_h],
@@ -1834,10 +1824,8 @@ voltmeter_chassis_specs                              = [];
 // ─────────────────────────────────────────────────────────────────────────────
 
 xt_90_size                                           = [10.30, 22.20];
-xt_90_position                                       = [3, 1];
 
 xt_90_bolt_spacing                                   = [0, 32.20];
-xt_90_bolt_dia                                       = m3_hole_dia;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // XT90E-M connector placeholder
@@ -1973,10 +1961,6 @@ power_case_standoff_thread_h                         = 5;
 // Power socket case
 // ─────────────────────────────────────────────────────────────────────────────
 
-power_socket_case_thickness                          = 3;
-
-power_socket_case_height                             = 10;
-
 power_socket_bolt_lid_mounting_spacing               = [35, 90];
 
 power_socket_case_front_thickness                    = 4;
@@ -2037,7 +2021,7 @@ power_socket_case_side_panel_slots                   = [["placeholder", "atm_fus
                                                          "recess_reverse", false,
                                                          "type", "rect",
                                                          "x_offset", 30,
-                                                         "y_offset",  + 2,
+                                                         "y_offset", 2,
                                                          "rotation", 0,
                                                          "slot_size", [atm_fuse_holder_2_mounting_hole_l + 1,
                                                                        atm_fuse_holder_2_mounting_hole_h + 2],
@@ -2096,9 +2080,13 @@ power_socket_case_side_panel_slots                   = [["placeholder", "atm_fus
 power_socket_case_mounting_panel_size                = plist_get("placeholder_size",
                                                                  power_socket_case_jack_plist,
                                                                  xt90e_mounting_panel_size);
-power_socket_case_mounting_panel_thickness           = power_socket_case_mounting_panel_size[2];
 power_socket_case_mounting_panel_h                   = power_socket_case_mounting_panel_size[0];
-power_socket_case_size                               = [power_case_width, power_case_length, power_socket_case_mounting_panel_size[0] + power_socket_case_bottom_thickness + power_socket_case_rim_h];
+power_socket_case_mounting_panel_thickness           = power_socket_case_mounting_panel_size[2];
+power_socket_case_size                               = [power_case_width,
+                                                        power_case_length,
+                                                        power_socket_case_mounting_panel_h
+                                                        + power_socket_case_bottom_thickness
+                                                        + power_socket_case_rim_h];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Power module case dovetail rail parameters
@@ -2133,217 +2121,9 @@ power_case_rail_tolerance                            = 0.4;
 power_case_rail_relief_depth                         = 0.12; // 0.12…0.15
 
 power_lid_height                                     = 12.5;
-power_lid_width                                      = power_case_width
-                                                + power_case_side_wall_thickness
-                                                + power_case_rail_tolerance / 2;
+power_lid_width                                      = power_case_width + power_case_side_wall_thickness + power_case_rail_tolerance / 2;
 
 power_lid_thickness                                  = 2;
-
-power_voltmeter_specs                                = [[[voltmeter_bolt_spacing,
-                                                          voltmeter_bolt_dia,
-                                                          [voltmeter_board_w,
-                                                           voltmeter_board_len,
-                                                           voltmeter_board_h,],
-                                                          [voltmeter_display_w,
-                                                           voltmeter_display_len,
-                                                           voltmeter_display_h,
-                                                           1,
-                                                           voltmeter_display_indicators_len],
-                                                          [voltmeter_pins_count,
-                                                           voltmeter_pin_h,
-                                                           voltmeter_pin_thickness,
-                                                           voltmeter_pins_len],
-                                                          [voltmeter_wiring_d,
-                                                           [[-5, -5, -2],
-                                                            [-15, -10, -1],
-                                                            [10, -15, -2],
-                                                            [20, 0, 0]],
-                                                           voltmeter_wiring_gap,
-                                                           voltmeter_wiring_distance],
-                                                          [voltmeter_standoff_body_d],
-                                                          ["16.4", 6.15,
-                                                           "DSEG14 Classic:style=Italic",
-                                                           1.2,
-                                                           red_1,
-                                                           [0, 0.6]]],
-                                                         [-22, -12, 3, -90, true]],
-                                                        [[voltmeter_bolt_spacing,
-                                                          voltmeter_bolt_dia,
-                                                          [voltmeter_board_w,
-                                                           voltmeter_board_len,
-                                                           voltmeter_board_h,],
-                                                          [voltmeter_display_w,
-                                                           voltmeter_display_len,
-                                                           voltmeter_display_h,
-                                                           1,
-                                                           voltmeter_display_indicators_len],
-                                                          [voltmeter_pins_count,
-                                                           voltmeter_pin_h,
-                                                           voltmeter_pin_thickness,
-                                                           voltmeter_pins_len],
-                                                          [voltmeter_wiring_d,
-                                                           [[0, -5, -2],
-                                                            [-22, 15, -1],
-                                                            [-22, 15, -20],
-                                                            [-65, 15, -20],
-                                                            [-60, 25, -25]],
-                                                           voltmeter_wiring_gap,
-                                                           voltmeter_wiring_distance],
-                                                          [voltmeter_standoff_body_d],
-                                                          ["8.02", 6.15,
-                                                           "DSEG14 Classic:style=Italic",
-                                                           1.2,
-                                                           red_1,
-                                                           [0, 0.6]]],
-                                                         [-38,
-                                                          107,
-                                                          0,
-                                                          0,
-                                                          true]],
-                                                        [[voltmeter_bolt_spacing,
-                                                          voltmeter_bolt_dia,
-                                                          [voltmeter_board_w,
-                                                           voltmeter_board_len,
-                                                           voltmeter_board_h,],
-                                                          [voltmeter_display_w,
-                                                           voltmeter_display_len,
-                                                           voltmeter_display_h,
-                                                           1,
-                                                           voltmeter_display_indicators_len],
-                                                          [voltmeter_pins_count,
-                                                           voltmeter_pin_h,
-                                                           voltmeter_pin_thickness,
-                                                           voltmeter_pins_len],
-                                                          [voltmeter_wiring_d,
-                                                           [[0, 5, -2],
-                                                            [-22, 10, -1],
-                                                            [-32, 10, -49],
-                                                            [-70, -20, -49],
-                                                            [-70, 0, -45]],
-                                                           voltmeter_wiring_gap,
-                                                           voltmeter_wiring_distance],
-                                                          [voltmeter_standoff_body_d],
-                                                          ["8.10", 6.15,
-                                                           "DSEG14 Classic:style=Italic",
-                                                           1.2,
-                                                           red_1,
-                                                           [0, 0.6]]],
-                                                         [-38,
-                                                          70,
-                                                          0,
-                                                          0,
-                                                          true]],];
-
-power_lid_breadboard_bolt_spacing                    = [16.0, 76.0];
-// [16.0, 76.0];
-power_lid_breadboard_bolt_dia                        = m2_hole_dia;
-
-// [[[x, y], diameter, [gap_for_next_item, x_offset, y_offset], [bore_dia, bore_h, auto_scale_step, reverse]?, [debug?, text] ]],
-power_lid_rect_bolt_holes                            = [[[[15.2, 35.55],
-                                                          m2_hole_dia,
-                                                          [10, -11.9, 14.55],
-                                                          [8 , 1.0, 0.1, false],
-                                                          [false,
-                                                           "DC",
-                                                           1.5,
-                                                           "red",
-                                                           [0, 0, 90],
-                                                           [-2, 0, 0],
-                                                           undef,
-                                                           undef,
-                                                           "center",
-                                                           "baseline"],
-                                                          ["pan",
-                                                           4,
-                                                           2,
-                                                           2]]],
-                                                        [[[power_lid_breadboard_bolt_spacing[0],
-                                                           power_lid_breadboard_bolt_spacing[1]],
-                                                          power_lid_breadboard_bolt_dia,
-                                                          [0, 15, 18],
-                                                          [],
-                                                          [false,
-                                                           "Breadboard",
-                                                           1.5,
-                                                           "red",
-                                                           [0, 0, 90],
-                                                           [-2, 0, 0],
-                                                           undef,
-                                                           undef,
-                                                           "center",
-                                                           "baseline"]]],
-                                                        [[[ina260_bolt_spacing[0],
-                                                           ina260_bolt_spacing[1]],
-                                                          ina260_bolt_dia,
-                                                          [10,
-                                                           17,
-                                                           38],
-                                                          [],
-                                                          [false,
-                                                           "INA260",
-                                                           2,
-                                                           "red",
-                                                           [0, 0, 90],
-                                                           [-2, 0, 0],
-                                                           undef,
-                                                           undef,
-                                                           "center",
-                                                           "baseline"]]]];
-// [...[x, y, radius, y_gap, x_offset, y_offset, [counterbore_x, counterbore_y, counterbore_z], higlight?]]
-power_lid_single_holes_specs                         = [[[8, 15.2, -0, 25]]];
-
-power_lid_side_wall_1_circle_holes                   = [[[8, 15.2, -1, -20],
-                                                         [8, 15.2, -1,-20],
-                                                         [8, 15.2, -1, -20],
-                                                         [8, 15.2, -1, -20],
-                                                         [8, 15.2, -1, -20]]];
-power_lid_side_wall_2_circle_holes                   = [[[8, 15.2, -1, -20],
-                                                         [8, 15.2, -1,-20],
-                                                         [8, 15.2, -1, -20],
-                                                         [8, 15.2, -1, -20],
-                                                         [8, 15.2, -1, -20],]];
-
-// [...[[x, y, radius], [y_gap, x_offset, y_offset], [counterbore_x, counterbore_y, counterbore_z], higlight?]]
-power_lid_cube_holes                                 = [[[[atm_fuse_holder_2_mounting_hole_h + 2,
-                                                           atm_fuse_holder_2_mounting_hole_l + 0.8,
-                                                           atm_fuse_holder_2_mounting_hole_r + 1],
-                                                          [0,
-                                                           12.5,
-                                                           70],]],
-                                                        [[[atm_fuse_holder_2_mounting_hole_h + 2,
-                                                           atm_fuse_holder_2_mounting_hole_l + 0.8,
-                                                           atm_fuse_holder_2_mounting_hole_r + 1],
-                                                          [0,
-                                                           -3.5,
-                                                           70],]],
-                                                        [[[9.5, 30.4, 2.0], [0, -16.7, -10]],
-                                                         [[9.5, 8.4, 2.0], [26, -16.7, 18]],
-                                                         [[6, 20, 1.0], [26, -19.0, 9]],]];
-
-// [[slot_h, slot_l, slot_r, hole_depth, slot_tolerance_r?],
-//  [y_gap, x, y, z?],
-//  [counterbore_x, counterbore_y, counterbore_thickness],
-//  [fuse_placeholder_body_top_l,
-//   fuse_placeholder_body_bottom_l,
-//   fuse_placeholder_body_w,
-//   fuse_placeholder_body_h,
-//   matte_black_2],
-//  [fuse_placeholder_lid_top_l,
-//   fuse_placeholder_lid_bottom_l,
-//   fuse_placeholder_lid_w,
-//   fuse_placeholder_lid_h,
-//   fuse_placeholder_lid_color]]
-power_lid_side_wall_1_atm_fuse_specs                 = [];
-
-power_lid_side_wall_2_atm_fuse_specs                 = [];
-
-power_lid_toggle_switch_size                         = [38.6, 18.2];
-power_lid_toggle_switch_dia                          = 13;
-power_lid_toggle_switch_cbore_dia                    = 18;
-
-power_lid_toggle_switch_distance_from_bottom         = -1.5;
-power_lid_toggle_switch_distance_from_y              = 3;
-power_lid_toggle_switch_wall_thickness               = 0;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Switch button placeholder
@@ -2450,7 +2230,7 @@ step_down_voltage_regulator_thickness                = 1.8;
 step_down_voltage_regulator_standoff_h               = 2;
 
 step_down_voltage_bolt_hole_dia                      = 2.1;
-step_down_voltage_bolt_bore_dia                      = 4.2;
+
 step_down_voltage_bolt_x_distance                    = 1.5;
 step_down_voltage_bolt_y_distance                    = 2.54;
 step_down_voltage_screw_terminal_holes               = [35.5, 5];
@@ -2681,7 +2461,7 @@ steering_rack_link_linkage_thickness                 = steering_rack_link_bearin
 
 // The length of the rail in the center of the steering panel that holds the rack
 steering_panel_rail_len                              = steering_panel_length
-                                                - knuckle_dia * 2;
+                                                     - knuckle_dia * 2;
 
 steering_panel_rail_rad                              = 0.5;
 
@@ -2720,7 +2500,7 @@ steering_servo_mount_connector_bolt_x                = 3;
 
 // Knuckle center along X. Do not edit, used for Ackermann geometry calculations
 steering_x_left_knuckle                              = -steering_panel_length / 2
-                                                + knuckle_dia / 2;
+                                                     + knuckle_dia / 2;
 
 // Diameter and width of the tie rod
 tie_rod_outer_dia                                    = 14.0;
@@ -2900,13 +2680,13 @@ wheel_tire_groove_depth                              = 3.4;
 
 // center of the left wheel
 wheel_center_offset                                  = wheel_w / 2 +
-                                                (wheel_rear_shaft_protrusion_height
-                                                 - (knuckle_shaft_dia / 2));
+                                                     (wheel_rear_shaft_protrusion_height
+                                                      - (knuckle_shaft_dia / 2));
 
 // distance between centers of the front wheels
 wheels_track_width                                   = steering_panel_length
-                                                + (wheel_center_offset * 2)
-                                                - knuckle_shaft_dia / 2;
+                                                     + (wheel_center_offset * 2)
+                                                     - knuckle_shaft_dia / 2;
 
 // The full lateral length of the knuckle tie-rod arm.
 // This value is used as the side length of the Ackermann trapezoid when computing
@@ -2915,37 +2695,37 @@ steering_arm_full_len = calc_knuckle_connector_full_len(length=knuckle_tie_rod_s
                                                         parent_dia=knuckle_dia,
                                                         outer_d=tie_rod_shaft_knuckle_arm_dia,
                                                         border_w=knuckle_border_w)
-                                                + knuckle_dia / 2
-                                                - knuckle_border_w
-                                                + ((tie_rod_shaft_knuckle_arm_dia - tie_rod_shaft_dia) / 2) / 2;
+                                                     + knuckle_dia / 2
+                                                     - knuckle_border_w
+                                                     + ((tie_rod_shaft_knuckle_arm_dia - tie_rod_shaft_dia) / 2) / 2;
 
 // Do not edit, used for Ackermann geometry calculations
 steering_rack_link_bearing_border_w                  = (steering_rack_link_bearing_outer_d
                                                         - steering_rack_link_bearing_d)
-                                                / 2;
+                                                     / 2;
 
 // X-coordinate of the steering-rack bearing connector center
 steering_rack_connector_x_pos                        = -steering_rack_teethed_length
-                                                / 2
-                                                - steering_rack_link_bearing_outer_d
-                                                / 2
-                                                + steering_rack_link_bearing_border_w;
+                                                     / 2
+                                                     - steering_rack_link_bearing_outer_d
+                                                     / 2
+                                                     + steering_rack_link_bearing_border_w;
 
 // X-axis distance between the kingpin post and the steering-rack bearing connector center
 steering_distance_between_kingpin_and_rack           = abs(steering_x_left_knuckle)
-                                                - abs(steering_rack_connector_x_pos);
+                                                     - abs(steering_rack_connector_x_pos);
 
 // The length of the L-bracket part that is connected to the rack
 steering_rack_link_rack_side_h_length                = knuckle_shaft_connector_extra_len
-                                                + knuckle_shaft_connector_dia
-                                                + knuckle_shaft_connector_extra_arm_len
-                                                + steering_rack_link_bearing_outer_d / 2
-                                                + steering_rack_link_bearing_border_w;
+                                                     + knuckle_shaft_connector_dia
+                                                     + knuckle_shaft_connector_extra_arm_len
+                                                     + steering_rack_link_bearing_outer_d / 2
+                                                     + steering_rack_link_bearing_border_w;
 
 // The length of the L-shaped rack link that is connected to the knuckle
 steering_rack_link_rack_side_w_length                = steering_distance_between_kingpin_and_rack
-                                                - steering_rack_link_bearing_d
-                                                - steering_rack_link_bearing_border_w;
+                                                     - steering_rack_link_bearing_d
+                                                     - steering_rack_link_bearing_border_w;
 
 // wheelbase, calculated from the center of the rear axle
 steering_wheelbase_effective                         = abs(chassis_len
@@ -2967,8 +2747,8 @@ tie_rod_bearing_center_distance                      = calc_isosceles_trapezoid_
 
 // Overall tie rod length including bearing landings and offsets
 tie_rod_len                                          = tie_rod_bearing_center_distance
-                                                + tie_rod_bearing_outer_dia
-                                                + tie_rod_bearing_x_offset * 2;
+                                                     + tie_rod_bearing_outer_dia
+                                                     + tie_rod_bearing_x_offset * 2;
 // Local Variables:
-// c-label-minimum-indentation: 48
+// c-label-minimum-indentation: 53
 // End:
