@@ -19,6 +19,8 @@ use <../lib/placement.scad>
 use <standoff.scad>
 use <screw_terminal.scad>
 use <smd_chip.scad>
+use <smt_can_capacitor.scad>
+use <../lib/plist.scad>
 
 module motor_driver_chip() {
   smd_chip(length=motor_driver_hat_chip_len,
@@ -42,38 +44,8 @@ module motor_driver_voltage_level_conversion_chip() {
            center=true);
 }
 
-module motor_driver_hat_capacitor(d=7, h=2.58, cyl_h=6.85) {
-  let (chamfer=d / 6,
-       cube_y=d - chamfer * 2,
-       cyl_cutout_w = d * 0.9) {
-    union() {
-      color(matte_black, alpha=1) {
-        linear_extrude(height=h, center=false) {
-          chamfered_square(size=d, chamfer=chamfer);
-        }
-        translate([-d / 2, -cube_y / 2 + chamfer, 0]) {
-          cube([d, cube_y, h]);
-        }
-      }
-      color(metallic_silver_1, alpha=1) {
-        cylinder(h=cyl_h - 0.01, d=d, $fn=80);
-      }
-      color(matte_black) {
-        translate([0, 0, cyl_h - 1]) {
-          difference() {
-            cylinder(h=1, d=d - 0.1, $fn=80);
-            notched_circle(h=1 + 0.1, d=d + 0.1,
-                           x_cutouts_n=0,
-                           y_cutouts_n=1,
-                           cutout_w=cyl_cutout_w);
-          }
-        }
-      }
-    }
-  }
-}
-
-module motor_driver_hat(center=true, show_pins=true,
+module motor_driver_hat(center=true,
+                        show_pins=true,
                         extra_standoff_h=0,
                         show_standoff=true) {
   w = motor_driver_hat_size[0];
@@ -147,25 +119,11 @@ module motor_driver_hat(center=true, show_pins=true,
         }
       }
 
-      translate([motor_driver_hat_capacitor_x_offset,
-                 l / 2
-                 - motor_driver_hat_capacitor_d / 2
-                 - motor_driver_hat_capacitor_y_offset, h]) {
-        motor_driver_hat_capacitor(h=motor_driver_hat_capacitor_h,
-                                   d=motor_driver_hat_capacitor_d,
-                                   cyl_h=motor_driver_hat_capacitor_cyl_h,);
-      }
-
-      for (params = motor_driver_hat_extra_capacitors) {
-        let (d = params[0],
-             h = params[1],
-             cyl_d = params[2],
-             x_offset = params[3],
-             y_offset = params[4],) {
+      for (plist = motor_driver_hat_extra_capacitors_plists) {
+        let (x_offset = plist_get("x_offset", plist, 0),
+             y_offset = plist_get("y_offset", plist, 0)) {
           translate([x_offset, y_offset, 0]) {
-            motor_driver_hat_capacitor(h=h,
-                                       d=d,
-                                       cyl_h=cyl_d,);
+            smt_can_capacitor_from_plist(plist);
           }
         }
       }

@@ -1697,16 +1697,27 @@ motor_driver_hat_voltage_chip_y_distance             = 4;
 motor_driver_hat_upper_header_height                 = 9;
 motor_driver_hat_upper_pin_height                    = 5;
 
-motor_driver_hat_capacitor_d                         = 10;
-motor_driver_hat_capacitor_h                         = 2.58;
-
-motor_driver_hat_capacitor_cyl_h                     = 7.5;
-motor_driver_hat_capacitor_x_offset=0;
-motor_driver_hat_capacitor_y_offset=3;
-
-motor_driver_hat_extra_capacitors                    = [[5.5, 2.58, 5.5, 0, 5],
-                                                        [5.5, 2.58, 5.5, -10, 5],
-                                                        [5.5, 2.58, 5.5, 24, 10]];
+motor_driver_hat_extra_capacitors_plists             = [["d", 10.0,
+                                                         "h", 9.5,
+                                                         "base_h", 2.58,
+                                                         "text_rows", ["470", "35V", "VRT"],
+                                                         "x_offset", 0,
+                                                         "y_offset", 24.5],
+                                                        ["d", 5.5,
+                                                         "h", 5.5,
+                                                         "base_h", 2.58,
+                                                         "x_offset", 0,
+                                                         "y_offset", 5],
+                                                        ["d", 5.5,
+                                                         "h", 5.5,
+                                                         "base_h", 2.58,
+                                                         "x_offset", -10,
+                                                         "y_offset", 5],
+                                                        ["d", 5.5,
+                                                         "h", 5.5,
+                                                         "base_h", 2.58,
+                                                         "x_offset", 24,
+                                                         "y_offset", 10]];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // GPIO Expansion Board
