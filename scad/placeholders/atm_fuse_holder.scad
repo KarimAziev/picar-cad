@@ -140,7 +140,7 @@ module atm_fuse_holder_body(size=[atm_fuse_holder_2_body_bottom_l,
   wiring_left_pts = plist_get("left_pts",
                               wiring,
                               [[25, 0, 0]]);
-  wiring_right_pts = plist_get("left_pts",
+  wiring_right_pts = plist_get("right_pts",
                                wiring,
                                [[-25, 0, 0]]);
 

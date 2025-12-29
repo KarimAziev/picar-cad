@@ -96,7 +96,8 @@ module power_socket_case(jack_plist=power_socket_case_jack_plist,
                          slot_mode=false,
                          standoff_thread_h=power_case_standoff_thread_h,
                          show_standoffs=show_standoffs,
-                         bolt_visible_h=chassis_thickness - chassis_counterbore_h,
+                         bolt_visible_h=chassis_thickness -
+                         chassis_counterbore_h,
                          show_socket=show_socket,
                          show_bolt=show_bolt,
                          show_lid=show_lid,
@@ -242,7 +243,8 @@ module power_socket_case(jack_plist=power_socket_case_jack_plist,
         }
         if (show_socket) {
           translate([0,
-                     -l / 2 - mounting_panel_thickness,
+                     -l / 2
+                     - mounting_panel_thickness,
                      mounting_panel_h / 2]) {
             rotate([-90, 90, 0]) {
               xt90e_m_from_plist(jack_plist,
@@ -319,4 +321,4 @@ module power_socket_case(jack_plist=power_socket_case_jack_plist,
   }
 }
 
-power_socket_case(show_standoffs=true);
+power_socket_case();
