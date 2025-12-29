@@ -1,3 +1,4 @@
+
 /**
  * Module: Power Control Lid
  *
@@ -7,6 +8,7 @@
 
 include <../parameters.scad>
 include <../colors.scad>
+include <../power_lid_parameters.scad>
 
 use <power_case_rail.scad>
 use <../placeholders/lipo_pack.scad>
@@ -15,7 +17,6 @@ use <../placeholders/toggle_switch.scad>
 use <../placeholders/atc_ato_blade_fuse_holder.scad>;
 use <../placeholders/step-down-voltage-d24vxf5.scad>
 use <../placeholders/voltmeter.scad>
-use <../placeholders/atm_fuse_holder.scad>
 use <../wire.scad>
 use <../lib/functions.scad>
 use <../lib/shapes3d.scad>
@@ -25,272 +26,56 @@ use <../lib/transforms.scad>
 use <../lib/shapes2d.scad>
 use <../placeholders/bolt.scad>
 use <../placeholders/xt90e-m.scad>
+use <../core/slot_layout.scad>
+use <../lib/plist.scad>
+use <../core/slot_layout_components.scad>
 
-show_xt90e                 = false;
-show_dc_regulator          = false;
-show_ato_fuse              = false;
-show_voltmeter             = false;
-show_bolts                 = false;
-show_atm_side_fuse_holders = false;
-echo_wiring_lenghts        = false;
-echo_wiring_len            = true;
+show_xt90e            = false;
+show_dc_regulator     = false;
+show_ato_fuse         = false;
+show_voltmeter        = false;
+show_bolt             = false;
+show_atm_fuse_holders = false;
+show_perf_board       = false;
 
 /* [Power lid switch button] */
-use_toggle_switch          = false;
-show_switch_button         = false;
+use_toggle_switch     = false;
+show_switch_button    = true;
 
-side_wall_w                = power_case_side_wall_thickness
-                              + power_case_rail_tolerance
-                              + power_lid_extra_side_thickness;
+bolt_visible_h        = power_lid_thickness + 4;
 
-inner_y_cutout             = power_case_length - side_wall_w * 2;
-inner_x_cutout             = power_lid_width - side_wall_w * 2;
+side_wall_w           = power_case_side_wall_thickness
+  + power_case_rail_tolerance
+  + power_lid_extra_side_thickness;
 
-half_of_inner_y            = inner_y_cutout / 2;
-half_of_inner_x            = inner_x_cutout / 2;
-half_of_side_wall_w        = side_wall_w / 2;
+inner_y_cutout        = power_case_length - side_wall_w * 2;
+inner_x_cutout        = power_lid_width - side_wall_w * 2;
 
-tumbler_side_cutout_h      = side_wall_w + 0.2;
-side_bolt_start            = power_case_length / 2 -
-                              power_case_groove_edge_distance
-                              -power_case_groove_thickness / 2
-                              - power_case_rail_bolt_dia / 2
-                              - power_case_rail_bolt_groove_distance;
+half_of_inner_y       = inner_y_cutout / 2;
+half_of_inner_x       = inner_x_cutout / 2;
+half_of_side_wall_w   = side_wall_w / 2;
 
-module power_lid_voltmeters_bolt_holes(specs=power_voltmeter_specs,
-                                       default_cbore_h=power_lid_thickness / 2,
-                                       default_cbore_autoscale_step=0.2,
-                                       default_cbore_d_step=1.8,
-                                       default_reverse=false,
-                                       sink=false,
-                                       thickness=power_lid_thickness) {
-  for (volt_spec=specs) {
-    let (v_spec = volt_spec[0],
-         positions = volt_spec[1],
-         bolt_spacing = v_spec[0],
-         bolt_dia = v_spec[1],
-         board_size = v_spec[2],
-         standoff_spec=v_spec[6],
-         board_w=board_size[0],
-         board_len=board_size[1],
-         standoff_body_d = standoff_spec[0],
-         cbore_spec=v_spec[8],
-         cbore_d = with_default(cbore_spec[0], standoff_body_d + default_cbore_d_step),
-         cbore_h = with_default(cbore_spec[1], default_cbore_h),
-         cbore_step = with_default(cbore_spec[2], default_cbore_autoscale_step),
-         cbore_reverse=with_default(cbore_spec[3], default_reverse)) {
+tumbler_side_cutout_h = side_wall_w + 0.2;
+side_bolt_start       = power_case_length / 2
+  - power_case_rail_bolt_dia / 2
+  - power_case_rail_hole_distance_from_edge;
 
-      translate([positions[0], positions[1], 0]) {
-        translate([- board_w / 2, max(board_len, bolt_spacing[1]) / 2, 0]) {
-          rotate([0, 0, is_undef(positions[3]) ? 0 : positions[3]]) {
-            four_corner_children(size=bolt_spacing) {
-              translate([0, 0, -0.05]) {
-                rotate([0, 0, 180]) {
-                  counterbore(d=bolt_dia,
-                              h=thickness,
-                              bore_h=cbore_h,
-                              bore_d=cbore_d,
-                              reverse=cbore_reverse,
-                              autoscale_step=cbore_step,
-                              sink=sink);
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-module power_lid_voltmeters_placeholders(specs=power_voltmeter_specs,
-                                         echo_wiring_len=true) {
-  for (i = [0 : len(specs) - 1]) {
-    let (v_spec = specs[i][0],
-         positions = specs[i][1],
-         bolt_spacing = v_spec[0],
-         bolt_dia = v_spec[1],
-         board_size = v_spec[2],
-         display_spec = v_spec[3],
-         pins_spec = v_spec[4],
-         wiring_spec = v_spec[5],
-         standoff_spec=v_spec[6],
-         text_spec=v_spec[7],
-         board_w=board_size[0],
-         board_len=board_size[1],
-         board_h=board_size[2],
-         display_w=display_spec[0],
-         display_len=display_spec[1],
-         display_h=display_spec[2],
-         display_top_h=display_spec[3],
-         display_indicators_len=display_spec[4],
-         standoff_body_d = standoff_spec[0],
-         pins_count=pins_spec[0],
-         pin_h=pins_spec[1],
-         pin_thickness=pins_spec[2],
-         pins_len=pins_spec[3],
-         wiring_d=wiring_spec[0],
-         wiring=wiring_spec[1],
-         wiring_gap=wiring_spec[2],
-         wiring_distance=wiring_spec[3]) {
-
-      translate([positions[0],
-                 positions[1],
-                 -pin_h
-                 - positions[2]]) {
-        translate([- board_w / 2,
-                   max(board_len, bolt_spacing[1]) / 2,
-                   0]) {
-          if (echo_wiring_len && is_num(text_spec[0])) {
-            echo(str("total_wire_length for voltmeter ", str(i),
-                     " (",
-                     ceil(text_spec[0]),
-                     "mm): ",),
-                 total_wire_length(concat([[0, 0, 0]],
-                                          wiring)));
-          }
-
-          rotate([180, 0, is_undef(positions[3]) ? 0 : positions[3]]) {
-            if (positions[4]) {
-              voltmeter(show_standoffs=true,
-                        snandoff_body_h=positions[2]
-                        + pin_h,
-                        standoff_body_d=standoff_body_d,
-                        board_w=board_w,
-                        board_len=board_len,
-                        board_h=board_h,
-                        bolt_spacing=bolt_spacing,
-                        bolt_dia=bolt_dia,
-                        display_w=display_w,
-                        display_len=display_len,
-                        display_h=display_h,
-                        display_indicators_len=display_indicators_len,
-                        display_top_h=display_top_h,
-                        pin_h=pin_h,
-                        pins_len=pins_len,
-                        pin_thickness=pin_thickness,
-                        pins_count=pins_count,
-                        wiring_d=wiring_d,
-                        wiring=wiring,
-                        wiring_gap=wiring_gap,
-                        wiring_distance=wiring_distance,
-                        text_spec=text_spec);
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-module power_lid_side_wall_circular_slots(specs=power_lid_side_wall_1_circle_holes,
-                                          cfactor=1.5) {
-  for (specs=specs) {
-    let (heights = map_idx(specs, 0, 0),
-         max_h = max(heights) * cfactor) {
-      translate([0, 0, max_h / 2]) {
-        rotate([0, 90, 0]) {
-          counterbore_single_slots_by_specs(specs=specs,
-                                            cfactor=cfactor,
-                                            thickness=side_wall_w);
-        }
-      }
-    }
-  }
-}
-
-module power_lid_single_side_wall_slots(circular_specs=power_lid_side_wall_1_circle_holes,
-                                        atm_fuse_specs=power_lid_side_wall_1_atm_fuse_specs,
-                                        slot_mode=true) {
-  union() {
+module power_lid_side_wall_slots(specs=power_lid_side_slots,
+                                 slot_mode=true,
+                                 direction="btt") {
+  total_size = get_total_size(specs, direction=direction);
+  max_xlen = total_size[0];
+  y_len = total_size[1];
+  mirror_copy([1, 0, 0]) {
     translate([half_of_inner_x,
-               power_lid_toggle_switch_size[0] - half_of_inner_y,
-               power_lid_thickness]) {
-
-      if (slot_mode) {
-        power_lid_side_wall_circular_slots(specs=circular_specs);
-      }
-
-      power_lid_atm_fuse_placeholders(specs=atm_fuse_specs,
-                                      slot_mode=slot_mode);
-    }
-  }
-}
-
-module power_lid_side_wall_slots(slot_mode=true) {
-  union() {
-    power_lid_single_side_wall_slots(circular_specs=power_lid_side_wall_1_circle_holes,
-                                     atm_fuse_specs=power_lid_side_wall_1_atm_fuse_specs,
-                                     slot_mode=slot_mode);
-    mirror([1, 0, 0]) {
-      power_lid_single_side_wall_slots(circular_specs=power_lid_side_wall_2_circle_holes,
-                                       atm_fuse_specs=power_lid_side_wall_2_atm_fuse_specs,
-                                       slot_mode=slot_mode);
-    }
-  }
-}
-
-module power_lid_atm_fuse_placeholders(specs=power_lid_side_wall_1_atm_fuse_specs,
-                                       thickness=side_wall_w,
-                                       slot_mode=true) {
-  for (specs=specs) {
-    let (sizes = map_idx(specs, 0, [0, 0]),
-         cbore_sizes = map_idx(specs, 2, [0, 0]),
-         heights = map_idx(sizes, 0, 0),
-         cbore_heigts = map_idx(cbore_sizes, 0, 0),
-         max_h = max(concat(cbore_heigts, heights))) {
-
-      translate([-0.1, 0, max_h / 2 + power_lid_thickness]) {
-        if (slot_mode) {
-          rounded_rect_slots(specs=specs,
-                             thickness=thickness,
-                             rotation=[0, 90, 0],
-                             center=true);
-        } else {
-          rounded_rect_slots(specs=specs,
-                             thickness=thickness,
-                             center=true,
-                             rotation=[0, 0, -90]) {
-
-            let (spec = $spec,
-                 mounting_hole_raw_spec = spec[0],
-                 cbore_spec = spec[2],
-                 reversed = cbore_spec[3],
-                 body_spec = spec[3],
-                 body_h = body_spec[3],
-                 cbore_thickness=cbore_spec[2],
-                 half_of_body_h = body_h / 2,
-                 wire_spec=spec[7],
-                 wire_d=wire_spec[0],
-                 wire_points=wire_spec[1],
-                 y_offset =  reversed ? half_of_body_h +
-                 cbore_thickness
-                 : -half_of_body_h + cbore_thickness) {
-
-              translate([0, y_offset, -body_spec[2] / 2]) {
-                rotate([0, 0, reversed ? 180 : 0]) {
-                  atm_fuse_holder(show_lid=spec[4][5],
-                                  show_body=body_spec[5],
-                                  center_x=true,
-                                  center_y=true,
-                                  center_z=false,
-                                  mounting_hole_spec=[mounting_hole_raw_spec[0],
-                                                      mounting_hole_raw_spec[1],
-                                                      mounting_hole_raw_spec[2],
-                                                      mounting_hole_raw_spec[4],
-                                                      mounting_hole_raw_spec[3]],
-
-                                  body_spec=body_spec,
-                                  lid_spec=spec[4],
-                                  body_rib_spec=spec[5],
-                                  wiring_d=wire_d,
-                                  wire_points=wire_points,
-                                  lid_rib_spec=spec[6]);
-                }
-              }
-            }
-          }
-        }
+               -y_len / 2,
+               power_lid_thickness + max_xlen / 2]) {
+      rotate([0, 90, 0]) {
+        slot_layout_components(specs=specs,
+                               thickness=side_wall_w,
+                               align_to_axle=0,
+                               direction=direction,
+                               use_children=!slot_mode);
       }
     }
   }
@@ -325,63 +110,20 @@ module power_lid_side_bolt_holes() {
         power_case_lid_bolt_holes_pair();
       }
     }
-    // mirror_copy([1, 0, 0]) {
-    //   translate([half_of_inner_x
-    //              + half_of_side_wall_w, 0,
-    //              + power_case_rail_bolt_dia]) {
-    //     power_case_lid_bolt_holes_pair();
-    //   }
-    // }
   }
 }
 
-module power_lid_xt_90_slot() {
-  union() {
-    rect_slot(size=xt_90_size,
-              h=power_lid_thickness,
-              center=true,
-              side="bottom",
-              r_factor=0.5);
-    four_corner_children(xt_90_bolt_spacing,
-                         center=true) {
-      counterbore(d=xt_90_bolt_dia, h=power_lid_thickness);
-    };
-  }
-}
-
-module with_xt90_position() {
-  translate([half_of_inner_x
-             - max(xt_90_size[0], xt_90_bolt_spacing[0]) / 2
-             - xt_90_position[0],
-             half_of_inner_y
-             - max(xt_90_size[1], xt_90_bolt_spacing[1]) / 2
-             + xt_90_bolt_dia / 2
-             - xt_90_position[1],
-             0]) {
-    children();
-  }
-}
-
-module power_lid(show_switch_button=false,
-                 show_dc_regulator=false,
+module power_lid(show_switch_button=show_switch_button,
+                 show_dc_regulator=show_dc_regulator,
                  lid_color=blue_grey_carbon,
-                 show_ato_fuse=false,
-                 show_voltmeter=false,
-                 show_bolts=false,
-                 show_xt90e=false,
-                 show_atm_side_fuse_holders=false,
-                 echo_wiring_len=false,
-                 use_toggle_switch=false) {
-
-  function contains_name(x, name) =
-    is_list(x)
-    ? (len([for (e = x) if (contains_name(e, name)) 1]) > 0)
-    : (x == name);
-
-  // return index of first top-level element in `arr` that contains `name` (0-based), or -1
-  function find_index(arr, name, i = 0) =
-    i >= len(arr) ? -1
-    : (contains_name(arr[i], name) ? i : find_index(arr, name, i + 1));
+                 show_ato_fuse=show_ato_fuse,
+                 show_voltmeter=show_voltmeter,
+                 show_bolt=show_bolt,
+                 show_xt90e=show_xt90e,
+                 show_perf_board=show_perf_board,
+                 show_atm_fuse_holders=show_atm_fuse_holders,
+                 left_columns = power_lid_left_slots,
+                 right_columns = power_lid_right_slots) {
 
   difference() {
     union() {
@@ -392,127 +134,36 @@ module power_lid(show_switch_button=false,
                              power_lid_height],
                        center=true);
 
-          translate([0, -half_of_inner_y, 0]) {
-            for (specs=power_lid_single_holes_specs) {
-              counterbore_single_slots_by_specs(specs=specs,
-                                                thickness=power_lid_thickness);
-            }
-            for (specs=power_lid_rect_bolt_holes) {
-              four_corner_hole_rows(specs=specs,
-                                    thickness=power_lid_thickness);
-            }
-            for (specs=power_lid_cube_holes) {
-
-              rounded_rect_slots(specs=specs,
-                                 thickness=power_lid_thickness);
-            }
-          }
-          with_xt90_position() {
-            power_lid_xt_90_slot();
+          translate([0, 0, 0]) {
+            power_lid_side_wall_slots();
           }
 
-          power_lid_side_wall_slots();
-
-          translate([0,
-                     power_lid_toggle_switch_wall_thickness,
-                     power_lid_thickness +
-                     (power_lid_height / 2)]) {
-            cube(size=[inner_x_cutout,
-                       power_case_length + 1,
-                       power_lid_height],
-                 center=true);
+          translate([0, 0, -1]) {
+            cube_3d(size=[inner_x_cutout,
+                          power_case_length + 1,
+                          power_lid_height + 2]);
           }
 
           power_lid_side_bolt_holes();
         }
       }
 
-      if (show_switch_button || show_dc_regulator) {
-        translate([0,
-                   -power_case_length / 2
-                   + power_lid_toggle_switch_cbore_dia / 2
-                   + power_lid_toggle_switch_wall_thickness
-                   + power_lid_toggle_switch_distance_from_y
-                   + toggle_switch_size[0] / 2,
-                   toggle_switch_size[1] / 2
-                   + max(power_lid_thickness, power_case_rail_height)
-                   + power_lid_toggle_switch_distance_from_bottom]) {
-          if (show_switch_button) {
-            rotate([90, 0, 90]) {
-              toggle_switch();
-            }
-          }
-        }
-      }
-
-      if (show_voltmeter) {
-        translate([half_of_inner_x, -half_of_inner_y, 0]) {
-          power_lid_voltmeters_placeholders(echo_wiring_len=echo_wiring_len);
-        }
-      }
-      if (show_bolts) {
-        translate([0, -half_of_inner_y, 0]) {
-          for (specs = power_lid_rect_bolt_holes) {
-            four_corner_hole_rows(specs=specs,
-                                  bolt_mode=true,
-                                  thickness=power_lid_thickness);
-          }
-        }
-      }
-
-      if (show_dc_regulator) {
-        for (group_i = [0 : len(power_lid_rect_bolt_holes) - 1]) {
-          let (specs = power_lid_rect_bolt_holes[group_i]) {
-            let (idx = find_index(specs, "DC")) {
-              if (idx >= 0) {
-                let (spec = power_lid_rect_bolt_holes[group_i][idx],
-                     dia = spec[1],
-                     offsets = spec[2],
-                     x_offset = offsets[1],
-                     y_offset = offsets[2]) {
-                  translate([-half_of_inner_x
-                             - x_offset +
-                             dia / 2,
-                             -half_of_inner_y
-                             + step_down_voltage_regulator_len / 2 +
-                             y_offset
-                             - dia,
-                             -step_down_voltage_regulator_standoff_h]) {
-                    rotate([180, 0, 90]) {
-                      step_down_voltage_regulator();
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-      if (show_ato_fuse) {
-        translate([half_of_inner_x - atc_ato_blade_full_w() / 2
-                   - atc_ato_blade_mounting_wall_w / 2,
-                   half_of_inner_y
-                   - atc_ato_blade_fuse_y_distance,
-                   atc_ato_blade_full_thickness() / 2
-                   + power_lid_thickness]) {
-
-          rotate([90, 0, 0]) {
-            atc_ato_blade_fuse_holder();
-          }
-        }
-      }
-      if (show_atm_side_fuse_holders) {
-        power_lid_side_wall_slots(slot_mode=false);
-      }
-      if (show_xt90e) {
-        translate([0, 0, -power_lid_thickness]) {
-          with_xt90_position() {
-            xt90e(show_bolt=show_bolts, round_side="bottom");
-          }
+      translate([0, 0, power_lid_thickness]) {
+        rotate([180, 0, 0]) {
+          power_lid_base(lid_color=lid_color,
+                         show_switch_button=show_switch_button,
+                         show_dc_regulator=show_dc_regulator,
+                         show_perf_board=show_perf_board,
+                         show_ato_fuse=show_ato_fuse,
+                         show_bolt=show_bolt,
+                         show_voltmeter=show_voltmeter,
+                         show_xt90e=show_xt90e,
+                         show_atm_fuse_holders=show_atm_fuse_holders,
+                         left_columns=left_columns,
+                         right_columns=right_columns);
         }
       }
     }
-
     mirror_copy([1, 0, 0]) {
       translate([power_lid_width / 2
                  - half_of_side_wall_w,
@@ -524,28 +175,105 @@ module power_lid(show_switch_button=false,
         }
       }
     }
+  }
+}
 
-    translate([half_of_inner_x, -half_of_inner_y, 0]) {
-      power_lid_voltmeters_bolt_holes();
-    }
-    if (use_toggle_switch) {
-      mirror_copy([1, 0, 0]) {
-        translate([power_lid_width / 2 - tumbler_side_cutout_h,
-                   -power_case_length / 2
-                   + power_lid_toggle_switch_cbore_dia / 2
-                   + power_lid_toggle_switch_wall_thickness
-                   + power_lid_toggle_switch_distance_from_y
-                   + toggle_switch_size[0] / 2,
-                   power_lid_toggle_switch_cbore_dia / 2
-                   + max(power_lid_thickness, power_case_rail_height)
-                   + power_lid_toggle_switch_distance_from_bottom]) {
-          rotate([90, 0, 90]) {
-            counterbore(d=power_lid_toggle_switch_dia,
-                        h=tumbler_side_cutout_h,
-                        bore_h=tumbler_side_cutout_h / 2,
-                        bore_d=power_lid_toggle_switch_cbore_dia);
-          }
+module power_lid_base(size=[inner_x_cutout,
+                            power_case_length,
+                            power_lid_thickness],
+                      lid_color=blue_grey_carbon,
+                      show_switch_button=false,
+                      show_dc_regulator=show_dc_regulator,
+                      show_ato_fuse=false,
+                      show_voltmeter=false,
+                      show_xt90e=false,
+                      show_perf_board=show_perf_board,
+                      show_atm_fuse_holders=false,
+                      show_bolt=show_bolt,
+                      left_columns=power_lid_left_slots,
+                      right_columns=power_lid_right_slots) {
+
+  w = size[0];
+  l = size[1];
+  thickness = size[2];
+
+  difference() {
+    union() {
+      color(lid_color, alpha=1) {
+        difference() {
+          rounded_cube(size=[w, l, thickness]);
+          power_lid_slots(left_columns=left_columns,
+                          right_columns=right_columns);
         }
+      }
+
+      translate([0, 0, thickness]) {
+        power_lid_slots(use_children=true,
+                        left_columns=left_columns,
+                        right_columns=right_columns,
+                        show_switch_button=show_switch_button,
+                        show_dc_regulator=show_dc_regulator,
+                        show_bolt=show_bolt,
+                        show_ato_fuse=show_ato_fuse,
+                        show_voltmeter=show_voltmeter,
+                        show_perf_board=show_perf_board,
+                        show_xt90e=show_xt90e,
+                        show_atm_fuse_holders=show_atm_fuse_holders);
+      }
+    }
+  }
+}
+
+module power_lid_slots(left_columns,
+                       right_columns,
+                       debug=false,
+                       use_children=false,
+                       show_switch_button=false,
+                       show_dc_regulator=show_dc_regulator,
+                       show_ato_fuse=false,
+                       show_voltmeter=show_voltmeter,
+                       show_xt90e=false,
+                       show_perf_board=show_perf_board,
+                       show_atm_fuse_holders=false,
+                       show_bolt=show_bolt,
+                       thickness=power_lid_thickness) {
+
+  union() {
+    translate([0, half_of_inner_y, 0]) {
+      translate([-half_of_inner_x, 0, 0]) {
+        slot_layout_components(specs=left_columns,
+                               thickness=thickness,
+                               debug=debug,
+                               align_to_axle=1,
+                               use_children=use_children,
+                               direction="ttb",
+                               show_perf_board=show_perf_board,
+                               bolt_visible_h=bolt_visible_h,
+                               show_switch_button=show_switch_button,
+                               show_dc_regulator=show_dc_regulator,
+                               show_ato_fuse=show_ato_fuse,
+                               show_voltmeter=show_voltmeter,
+                               show_xt90e=show_xt90e,
+                               show_bolt=show_bolt,
+                               show_atm_fuse_holders=show_atm_fuse_holders);
+      }
+
+      translate([half_of_inner_x, 0, 0]) {
+        slot_layout_components(specs=right_columns,
+                               thickness=thickness,
+                               debug=debug,
+                               align_to_axle=-1,
+                               use_children=use_children,
+                               direction="ttb",
+                               show_perf_board=show_perf_board,
+                               bolt_visible_h=bolt_visible_h,
+                               show_switch_button=show_switch_button,
+                               show_dc_regulator=show_dc_regulator,
+                               show_ato_fuse=show_ato_fuse,
+                               show_voltmeter=show_voltmeter,
+                               show_xt90e=show_xt90e,
+                               show_bolt=show_bolt,
+                               show_atm_fuse_holders=show_atm_fuse_holders);
       }
     }
   }
@@ -555,8 +283,6 @@ power_lid(show_switch_button=show_switch_button,
           show_dc_regulator=show_dc_regulator,
           show_ato_fuse=show_ato_fuse,
           show_voltmeter=show_voltmeter,
-          show_bolts=show_bolts,
+          show_bolt=show_bolt,
           show_xt90e=show_xt90e,
-          show_atm_side_fuse_holders=show_atm_side_fuse_holders,
-          echo_wiring_len=echo_wiring_len,
-          use_toggle_switch=use_toggle_switch);
+          show_atm_fuse_holders=show_atm_fuse_holders);

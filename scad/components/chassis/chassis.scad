@@ -61,6 +61,7 @@ module chassis(panel_color              = "white",
                show_ups_hat             = false,
                show_power_case          = true,
                show_power_case_lid      = true,
+               show_socket_case = true,
                show_lipo_pack           = true,
                show_batteries           = true,
                show_xt90e               = true,
@@ -113,7 +114,8 @@ module chassis(panel_color              = "white",
                  show_lipo_pack=show_lipo_pack,
                  power_case_color=power_case_color,
                  show_batteries=show_batteries,
-                 show_rpi=show_rpi);
+                 show_rpi=show_rpi,
+                 show_socket_case=show_socket_case);
   }
   if (show_ackermann_triangle) {
     translate([0,

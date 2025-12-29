@@ -11,6 +11,9 @@ use <../lib/holes.scad>
 use <../lib/shapes3d.scad>
 use <../lib/shapes2d.scad>
 use <../lib/transforms.scad>
+use <../wire.scad>
+use <../lib/plist.scad>
+use <../lib/functions.scad>
 
 module xt90_contact_pin(pin_d,
                         contact_d,
@@ -20,24 +23,26 @@ module xt90_contact_pin(pin_d,
                         contact_thickness,
                         pin_color,
                         pin_h,
-                        contact_h) {
+                        contact_h,
+                        wiring_d,
+                        wiring,
+                        wiring_color) {
+
   color(pin_color, alpha=1) {
     union() {
-      translate([0, 0, 0]) {
-        difference() {
-          cylinder(d=pin_d, h=pin_h, $fn=8);
-          translate([0, 0, -0.1]) {
-            cube_3d([0.5, pin_d + 1, pin_h]);
-            cube_3d([pin_d + 1, 0.5, pin_h]);
-            counterbore(d=contact_d
-                        - pin_thickness * 2,
-                        no_bore=true,
-                        h=contact_h);
-          }
+      difference() {
+        cylinder(d=pin_d, h=pin_h, $fn=8);
+        translate([0, 0, -0.1]) {
+          cube_3d([0.5, pin_d + 1, pin_h]);
+          cube_3d([pin_d + 1, 0.5, pin_h]);
+          counterbore(d=contact_d
+                      - pin_thickness * 2,
+                      no_bore=true,
+                      h=contact_h);
         }
-        translate([0, 0, pin_h]) {
-          cylinder(d=contact_d, h=0.1);
-        }
+      }
+      translate([0, 0, pin_h]) {
+        cylinder(d=contact_d, h=0.1);
       }
       translate([0, 0, pin_h]) {
 
@@ -55,6 +60,15 @@ module xt90_contact_pin(pin_d,
             cube_3d([contact_d, contact_d, contact_wall_h + 0.1]);
           }
         }
+      }
+    }
+  }
+  if (!is_undef(wiring) && len(wiring) > 0) {
+    let (dia = with_default(wiring_d, pin_d * 0.8)) {
+      translate([0, 0, pin_h]) {
+        wire_path(concat([[0, 0, 0]], wiring),
+                  d=dia,
+                  colr=wiring_color);
       }
     }
   }

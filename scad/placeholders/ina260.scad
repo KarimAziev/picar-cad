@@ -10,6 +10,7 @@ use <pin_headers.scad>
 use <screw_terminal.scad>
 use <../lib/placement.scad>
 use <pad_hole.scad>
+use <../lib/plist.scad>
 
 // [...[diameter, color]]
 ina260_mounting_hole_pad_spec             = [[3.4, yellow_3],
@@ -143,6 +144,44 @@ ina260_i2c_addr_text_spec                 = [0.9, "Liberation Sans:style=Bold", 
 ina260_show_pins                          = true;
 ina260_show_terminal                      = true;
 
+ina_plist                                 = ["placeholder_size", ina260_size,
+                                             "slot_size", ina260_bolt_spacing,
+                                             "d", ina260_bolt_dia,
+                                             "corner_rad", ina260_corner_rad,
+                                             "pad_hole_spec", ina260_mounting_hole_pad_spec,
+                                             "pin_holes_text_specs", ina260_pad_holes_text_specs,
+                                             "default_pin_text_spec", ina260_pin_holes_default_text_spec,
+                                             "chip_size", ina260_chip_size,
+                                             "chip_jlead_lower_lead_fraction", ina260_chip_jlead_lower_lead_fraction,
+                                             "chip_jlead_thickness", ina260_chip_jlead_thickness,
+                                             "chip_y_offset", ina260_chip_y_offset,
+                                             "chip_jlead_count", ina260_chip_pin_count,
+                                             "pin_hole_d", ina260_pin_d,
+                                             "pin_hole_pad_spec", ina260_pin_hole_pad_spec,
+                                             "pin_step", ina260_pin_step,
+                                             "pin_y_offset", ina260_pin_hole_y_offset,
+                                             "pin_height", ina260_pin_height,
+                                             "pin_thickness", ina260_pin_thickness,
+                                             "pin_header_height", ina260_pin_header_height,
+                                             "pin_header_thickness", ina260_pin_header_thickness,
+                                             "pin_header_z_offset", ina260_pin_header_z_offset,
+                                             "top_texts", ina260_top_texts,
+                                             "bottom_texts", ina260_bottom_texts,
+                                             "power_pad", ["pin_hole_d", ina260_power_pad_pin_hole_d,
+                                                           "d", ina260_power_pad_d,
+                                                           "len", ina260_power_pad_len,
+                                                           "colr", ina260_power_pad_colr,
+                                                           "y_offset", ina260_power_pad_y_offset,
+                                                           "x_offset", ina260_power_pad_x_offset,
+                                                           "border_w", ina260_power_pad_border_w,
+                                                           "pad_texts", ina260_power_pad_texts,
+                                                           "rect_padding", ina260_power_rect_padding,
+                                                           "text_spec", ina260_power_pad_text_spec],
+                                             "i2c_addr_specs", ina260_i2c_addr_specs,
+                                             "i2c_addr_text_spec", ina260_i2c_addr_text_spec,
+                                             "show_pins", ina260_show_pins,
+                                             "show_terminal", ina260_show_terminal];
+
 module ina260(size=ina260_size,
               bolt_spacing=ina260_bolt_spacing,
               bolt_d=ina260_bolt_dia,
@@ -189,7 +228,8 @@ module ina260(size=ina260_size,
   chip_thickness                        = chip_size[2];
 
   pin_hole_largest_pad_spec = sort_by_idx(elems=pin_hole_pad_spec,
-                                          idx=0, asc=false)[0];
+                                          idx=0,
+                                          asc=false)[0];
   pin_d = pin_hole_largest_pad_spec[0];
 
   pin_gap = pin_step - pin_d;
@@ -241,7 +281,8 @@ module ina260(size=ina260_size,
         }
 
         if (len(i2c_addr_specs) > 0) {
-          translate([-xsize / 2, -ysize / 2 +
+          translate([-xsize / 2,
+                     -ysize / 2 +
                      pin_d / 2 + pin_y_offset +
                      i2c_addr_specs[0][0][1],
                      thickness]) {
@@ -286,7 +327,8 @@ module ina260(size=ina260_size,
                          y_offset,
                          -0.1]) {
                 color(power_pad_colr, alpha=1) {
-                  linear_extrude(height=thickness + 0.2, center=false,
+                  linear_extrude(height=thickness + 0.2,
+                                 center=false,
                                  convexity=2) {
                     capsule(y=power_pad_len, d=power_pad_d);
                   }
@@ -302,7 +344,8 @@ module ina260(size=ina260_size,
                       translate([0, 0, thickness]) {
                         color(power_pad_text_spec[2], alpha=1) {
                           rotate([0, 0, z_rotation]) {
-                            linear_extrude(height=0.15, center=false,
+                            linear_extrude(height=0.15,
+                                           center=false,
                                            convexity=2) {
                               text(txt,
                                    size=power_pad_text_spec[0],
@@ -354,7 +397,8 @@ module ina260(size=ina260_size,
               translate(translation) {
                 color(colr, alpha=1) {
                   rotate([0, 0, z_rotation]) {
-                    linear_extrude(height=0.01, center=false,
+                    linear_extrude(height=0.01,
+                                   center=false,
                                    convexity=2) {
                       text(txt,
                            size=size,
@@ -378,12 +422,13 @@ module ina260(size=ina260_size,
                translation=txt_spec[4],
                size=txt_spec[5],
                font=txt_spec[6],
-               colr=txt_spec[7],) {
+               colr=txt_spec[7]) {
             translate(translation) {
               translate([0, 0, thickness]) {
                 color(colr, alpha=1) {
                   rotate([0, 0, z_rotation]) {
-                    linear_extrude(height=0.01, center=false,
+                    linear_extrude(height=0.01,
+                                   center=false,
                                    convexity=2) {
                       text(txt,
                            size=size,
@@ -401,7 +446,8 @@ module ina260(size=ina260_size,
         let (step = pin_step,
              cols = len(pin_holes_text_specs),
              total_x = cols * pin_d + (cols - 1) * pin_gap) {
-          translate([-total_x / 2, -ysize / 2 - pin_d / 2,
+          translate([-total_x / 2,
+                     -ysize / 2 - pin_d / 2,
                      0]) {
             for (i = [0 : len(pin_holes_text_specs) - 1]) {
               let (text_spec = pin_holes_text_specs[i],
@@ -465,8 +511,10 @@ module ina260(size=ina260_size,
       }
       mirror_copy([1, 0, 0]) {
         let (full_len = power_pad_len + power_pad_d) {
-          translate([power_pad_x_offset, ysize / 2 - full_len / 2
-                     - power_pad_y_offset, -0.15]) {
+          translate([power_pad_x_offset,
+                     ysize / 2 - full_len / 2
+                     - power_pad_y_offset,
+                     -0.15]) {
             color(power_pad_colr, alpha=1) {
               cylinder(d=power_pad_pin_hole_d, h=thickness + 0.3, $fn=30);
             }
@@ -476,7 +524,8 @@ module ina260(size=ina260_size,
     }
 
     if (show_terminal) {
-      translate([0, ysize / 2 - ina260_screw_terminal_thickness / 2
+      translate([0,
+                 ysize / 2 - ina260_screw_terminal_thickness / 2
                  - power_pad_y_offset + power_pad_pin_hole_d / 2,
                  thickness]) {
         screw_terminal(thickness=ina260_screw_terminal_thickness,
@@ -513,6 +562,49 @@ module ina260(size=ina260_size,
         }
       }
     }
+  }
+}
+
+module ina260_screw_terminal(plist,
+                             parent_size,
+                             power_pad_pin_hole_d) {
+  plist = with_default(plist, []);
+  thickness = plist_get("thickness", plist, ina260_screw_terminal_thickness);
+  isosceles_trapezoid = plist_get("isosceles_trapezoid",
+                                  plist,
+                                  ina260_screw_terminal_isosceles_trapezoid);
+  base_h = plist_get("base_h", plist, ina260_screw_terminal_base_h);
+  top_l = plist_get("top_l", plist, ina260_screw_terminal_top_l);
+  top_h = plist_get("top_h", plist, ina260_screw_terminal_top_h);
+  contacts_n = plist_get("contacts_n", plist, ina260_screw_terminal_contacts_n);
+  contact_w = plist_get("contact_w", plist, ina260_screw_terminal_contact_w);
+  contact_h = plist_get("contact_h", plist, ina260_screw_terminal_contact_h);
+  pitch = plist_get("pitch", plist, ina260_screw_terminal_pitch);
+  colr = plist_get("colr", plist, ina260_screw_terminal_colr);
+  pin_thickness = plist_get("pin_thickness",
+                            plist,
+                            ina260_screw_terminal_pin_thickness);
+  pin_h = plist_get("pin_h", plist, ina260_screw_terminal_pin_h);
+  wall_thickness = plist_get("wall_thickness",
+                             plist,
+                             ina260_screw_terminal_wall_thickness);
+  translate([0,
+             ysize / 2 - ina260_screw_terminal_thickness / 2
+             - power_pad_y_offset + power_pad_pin_hole_d / 2,
+             thickness]) {
+    screw_terminal(thickness=ina260_screw_terminal_thickness,
+                   isosceles_trapezoid=ina260_screw_terminal_isosceles_trapezoid,
+                   base_h=ina260_screw_terminal_base_h,
+                   top_l=ina260_screw_terminal_top_l,
+                   top_h=ina260_screw_terminal_top_h,
+                   contacts_n=ina260_screw_terminal_contacts_n,
+                   contact_w=ina260_screw_terminal_contact_w,
+                   contact_h=ina260_screw_terminal_contact_h,
+                   pitch=ina260_screw_terminal_pitch,
+                   colr=ina260_screw_terminal_colr,
+                   pin_thickness=ina260_screw_terminal_pin_thickness,
+                   pin_h=ina260_screw_terminal_pin_h,
+                   wall_thickness=ina260_screw_terminal_wall_thickness);
   }
 }
 

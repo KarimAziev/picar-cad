@@ -12,8 +12,6 @@ use <../lib/shapes2d.scad>
 use <../lib/shapes3d.scad>
 use <../lib/transforms.scad>
 
-;
-
 function atc_ato_blade_full_h() =
   atc_ato_blade_fuse_holder_bottom_cover_h
   + atc_ato_blade_fuse_holder_top_cover_h;
@@ -43,7 +41,8 @@ module atc_ato_blade_fuse_holder_top_cover() {
         translate([atc_ato_blade_fuse_holder_top_cover_w / 2
                    - atc_ato_blade_fuse_holder_top_joint_thickness / 2
                    - atc_ato_blade_fuse_holder_top_rad,
-                   atc_ato_blade_fuse_holder_top_cover_thickness / 2, 0]) {
+                   atc_ato_blade_fuse_holder_top_cover_thickness / 2,
+                   0]) {
           atc_ato_blade_fuse_holder_top_holder_wall_joint();
         }
       }
@@ -55,7 +54,8 @@ module atc_ato_blade_fuse_holder_top_cover() {
         rounded_cube([atc_ato_blade_mounting_wall_w +
                       (atc_ato_blade_fuse_holder_top_cover_w / 2),
                       atc_ato_blade_mounting_wall_thickness,
-                      atc_ato_blade_mounting_wall_h], center=false,
+                      atc_ato_blade_mounting_wall_h],
+                     center=false,
                      r=0.5);
       }
 
@@ -64,7 +64,8 @@ module atc_ato_blade_fuse_holder_top_cover() {
                    - atc_ato_blade_mounting_wall_thickness / 2
                    - atc_ato_blade_fuse_holder_top_rad,
                    -atc_ato_blade_fuse_holder_top_cover_thickness / 2
-                   - atc_ato_blade_mounting_wall_thickness / 2 + 0.5, 0]) {
+                   - atc_ato_blade_mounting_wall_thickness / 2 + 0.5,
+                   0]) {
           rounded_cube([atc_ato_blade_fuse_holder_top_cover_w * 0.1,
                         atc_ato_blade_mounting_wall_thickness,
                         atc_ato_blade_fuse_holder_top_cover_h]);

@@ -17,35 +17,33 @@ use <../lib/transforms.scad>
 use <../placeholders/atm_fuse_holder.scad>
 use <control_panel.scad>
 use <../lib/plist.scad>
+use <../core/slot_layout.scad>
 
-slot_specs              = [for (spec = fuse_panels_specs) plist_get("slot", spec)];
-body_specs              = [for (spec = fuse_panels_specs) plist_get("body", spec)];
-body_rib_specs          = [for (spec = fuse_panels_specs) plist_get("body_ribs", spec)];
-lid_specs               = [for (spec = fuse_panels_specs) plist_get("lid", spec)];
-lid_rib_specs           = [for (spec = fuse_panels_specs) plist_get("lid_ribs", spec)];
-lengths                 = [for (slot_spec = slot_specs) slot_spec[1]];
-thicknesses             = [for (body_spec = body_specs) body_spec[2]];
-rib_thicknesses         = [for (rib_spec = body_rib_specs) rib_spec[4]];
-hole_depths             = [for (slot_spec = slot_specs) slot_spec[3]];
-body_heights            = [for (body_spec = body_specs) body_spec[3]];
-lid_heights             = [for (lid_spec = lid_specs) lid_spec[3]];
+max_body_height  = max([for (pl = fuse_panel_plist_specs) let (body = plist_get("body", pl, []),
+                                                               size = plist_get("size", body, []),
+                                                               height =
+                                                               with_default(size[2],
+                                                                            atm_fuse_holder_2_body_h))
+                                                            height]);
 
-max_hole_depth          = max(hole_depths);
-max_body_height         = max(body_heights);
-max_lid_height          = max(lid_heights);
-max_len                 = max(lengths);
+max_lid_height  = max([for (pl = fuse_panel_plist_specs) let (cap = plist_get("cap", pl, []),
+                                                              size = plist_get("size", cap, []),
+                                                              height = with_default(size[2],
+                                                                                    atm_fuse_holder_2_lid_h))
+                                                           height]);
 
-y_sizes                 = [for (i = [0 : len(fuse_panels_specs) - 1])
-    max(slot_specs[i][0],
-        thicknesses[i] + rib_thicknesses[i] * 2)];
+flipped_len             = len([for (pl = fuse_panel_plist_specs) if (plist_get("cap_to_bottom", pl) == true) pl]);
+is_flipped              = flipped_len > 0;
+is_all_flipped          = flipped_len == len(fuse_panel_plist_specs);
 
-total_len               = sum(y_sizes) + (len(y_sizes) - 1)
-  * fuse_panel_row_gap;
+total_size              = get_total_size(fuse_panel_plist_specs,
+                                         direction="ttb");
 
-full_panel_len          = (panel_stack_bolt_dia + total_len) +
-  panel_stack_padding_y + panel_stack_bolt_padding * 2;
+total_len               = total_size[1];
 
-full_panel_width        = (panel_stack_bolt_dia + max_len) +
+full_panel_len          = total_len + panel_stack_padding_y + panel_stack_bolt_padding * 2;
+
+full_panel_width        = (panel_stack_bolt_dia + total_size[0]) +
   panel_stack_padding_x + panel_stack_bolt_padding * 2;
 
 panel_bolt_spacing      = [full_panel_width
@@ -55,67 +53,77 @@ panel_bolt_spacing      = [full_panel_width
                            - panel_stack_bolt_cbore_dia
                            - panel_stack_bolt_padding];
 
-standoff_desired_body_h = max_body_height + chassis_thickness + 2;
+lower_h                 = is_all_flipped
+  ? max_lid_height
+  : is_flipped
+  ? max(max_body_height, max_lid_height)
+  : max_body_height;
+
+upper_h                 = is_all_flipped
+  ? max_body_height
+  : is_flipped
+  ? max(max_body_height, max_lid_height)
+  : max_body_height;
+
+standoff_desired_body_h = lower_h + chassis_thickness + 2;
 standoff_bore_h         = fuse_panel_thickness / 2;
+
+function fuse_panel_bolt_spacing() = panel_bolt_spacing;
 
 function fuse_panel_size() = [full_panel_width, full_panel_len,
                               fuse_panel_thickness];
-function fuse_panel_bolt_spacing() = panel_bolt_spacing;
-function fuse_panel_max_body_height() = max_body_height;
-function fuse_panel_max_lid_height() = max_lid_height;
-function fuse_panel_max_hole_depth() = max_hole_depth;
 
-function fuse_panel_standoff_height() =
-  let (params = calc_standoff_params(d=panel_stack_bolt_dia,
+function fuse_panel_standoff_height(d=panel_stack_bolt_dia) =
+  let (params = calc_standoff_params(d=d,
                                      min_h=standoff_desired_body_h),
-       height = (is_undef(params) || is_undef(params[1])) ?
-       max_body_height : sum(params[1]))
+       height = (is_undef(params) || is_undef(params[1])) ? lower_h : sum(params[1]))
+  height;
+
+function fuse_panel_standoff_upper_height(d=panel_stack_bolt_dia) =
+  let (params = calc_standoff_params(d=d,
+                                     min_h=upper_h),
+       height = (is_undef(params) || is_undef(params[1])) ? upper_h : sum(params[1]))
   height;
 
 function fuse_panel_standoff_translate_height(x, y) =
   fuse_panel_standoff_height() - standoff_bore_h;
 
+function fuse_panel_standoff_upper_h(x, y) =
+  fuse_panel_standoff_height() - standoff_bore_h;
+
 module fuse_panel_slots(slot_mode = true,
-                        gap = fuse_panel_row_gap,
-                        show_lid = true,
-                        center = true) {
-  translate([center ? 0 : max_len / 2,
-             center
-             ? -total_len / 2 - y_sizes[0] / 2
-             : -y_sizes[0] / 2,
-             0]) {
-    for (i = [0 : len(fuse_panels_specs) - 1]) {
-      let (spec = fuse_panels_specs[i],
-           slot_spec = plist_get("slot", spec),
-           body_spec = plist_get("body", spec),
-           body_rib_spec = plist_get("body_ribs", spec),
-           lid_spec = plist_get("lid", spec),
-           lid_rib_spec = plist_get("lid_ribs", spec),
-           prev_y_size = i > 0 ? sum(y_sizes, i) : 0,
-           curr_size = y_sizes[i],
-           y = (gap * i) + prev_y_size + curr_size) {
-        translate([0, y, 0]) {
-          if (!slot_mode) {
-            rotate([90, 0, 0]) {
-              atm_fuse_holder(body_spec=body_spec,
-                              body_rib_spec=body_rib_spec,
-                              lid_spec=lid_spec,
-                              lid_rib_spec=lid_rib_spec,
-                              show_lid=show_lid,
-                              lid_z_offset=fuse_panel_thickness,
-                              center_x=true,
-                              center_y=false,
-                              center_z=true);
+                        show_atm_fuse_holders = true,
+                        show_cap = true,
+                        thickness=fuse_panel_thickness) {
+  slot_layout(fuse_panel_plist_specs,
+              direction="ttb",
+              center=true,
+              use_children=!slot_mode,
+              thickness=thickness,
+              align_to_axle=0,
+              align=0) {
+    plist = $spec;
+    custom_slot_mode = $custom;
+    placeholder = plist_get("placeholder", plist);
+
+    if (!custom_slot_mode) {
+      if (show_atm_fuse_holders && placeholder == "atm_fuse_holder") {
+        let (body_size = plist_get("size", plist_get("body", plist, [])),
+             flip = plist_get("cap_to_bottom", plist, false),
+             body_h = with_default(body_size[2], atm_fuse_holder_2_body_h),
+             merged_pl = show_cap == false
+             ? plist_merge(plist, ["show_cap", show_cap])
+             : plist) {
+
+          if (flip) {
+            translate([0, 0, body_h]) {
+              rotate([180, 0, 0]) {
+                atm_fuse_holder_from_spec(merged_pl);
+              }
             }
           } else {
-            translate([0, 0, -0.5]) {
-              linear_extrude(height=fuse_panel_thickness + 1, center=false) {
-                rounded_rect(size=[slot_spec[1],
-                                   slot_spec[0]],
-                             r=slot_spec[2],
-                             center=true,
-                             fn=100);
-              }
+            translate([0, 0, -body_h]) {
+              atm_fuse_holder_from_spec(merged_pl);
             }
           }
         }
@@ -127,7 +135,7 @@ module fuse_panel_slots(slot_mode = true,
 module fuse_panel(show_fusers=false,
                   show_standoff=true,
                   center=false,
-                  show_lid=true,
+                  show_cap=true,
                   panel_color=white_snow_1,
                   size=[full_panel_width, full_panel_len],
                   bolt_spacing=panel_bolt_spacing,
@@ -138,8 +146,9 @@ module fuse_panel(show_fusers=false,
                   bolt_visible_h=chassis_thickness - standoff_bore_h,
                   corner_factor=panel_stack_corner_radius_factor) {
 
-  standoff_full_h = fuse_panel_standoff_height();
+  standoff_lower_full_h = fuse_panel_standoff_height();
   standoff_real_h = fuse_panel_standoff_translate_height();
+  upper_standoff_h = fuse_panel_standoff_upper_height();
   full_w = size[0];
   full_l = size[1];
 
@@ -173,20 +182,18 @@ module fuse_panel(show_fusers=false,
                           sink=false);
             }
 
-            fuse_panel_slots(gap=fuse_panel_row_gap,
-                             slot_mode=true,
-                             center=true);
+            fuse_panel_slots(slot_mode=true);
           }
           if (show_fusers) {
             fuse_panel_slots(slot_mode=false,
-                             show_lid=show_lid);
+                             show_cap=show_cap);
           }
           if (show_standoff) {
             translate([0,
                        0,
-                       -standoff_full_h + standoff_bore_h]) {
+                       -standoff_lower_full_h + standoff_bore_h]) {
               four_corner_children(size=bolt_spacing,
-                                   center=true,) {
+                                   center=true) {
                 standoffs_stack(d=panel_stack_bolt_dia,
                                 min_h=standoff_desired_body_h,
                                 show_bolt=show_bolt,
@@ -200,17 +207,30 @@ module fuse_panel(show_fusers=false,
             }
           }
         }
-        translate([0, 0, fuse_panel_thickness]) {
-          children();
+
+        if ($children) {
+          translate([0, 0, fuse_panel_thickness]) {
+            four_corner_children(size=bolt_spacing, center=true) {
+              standoffs_stack(d=panel_stack_bolt_dia,
+                              min_h=upper_h,
+                              show_bolt=show_bolt,
+                              show_nut=show_nut,
+                              bolt_color=bolt_color,
+                              nut_pos=fuse_panel_thickness,
+                              bolt_visible_h=bolt_visible_h,
+                              bolt_head_type=bolt_head_type,
+                              thread_at_top=true);
+            }
+            translate([0, 0, upper_standoff_h]) {
+              children();
+            }
+          }
         }
       }
     }
   }
 }
 
-fuse_panel(center=false,
-           show_fusers=true,
-           show_standoff=true,
-           show_nut=true,
-           show_bolt=true,
-           show_lid=false);
+fuse_panel(center=true, show_fusers=true, show_cap=true) {
+  cube([10, 20, 10]);
+}

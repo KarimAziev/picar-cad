@@ -1,5 +1,7 @@
 
 // Creates an isosceles trapezoid.
+use <transforms.scad>
+
 module trapezoid(b=20, t=10, h=15, center=false) {
   m = (b - t) / 2;
 
@@ -14,8 +16,8 @@ module trapezoid(b=20, t=10, h=15, center=false) {
 }
 
 // Creates an isosceles trapezoid with rounded corners
-module trapezoid_rounded(b=20, t=10, h=15, r=undef, center=false) {
-  rad = is_undef(r) ? min(b, t, h) * 0.1 : r;
+module trapezoid_rounded(b=20, t=10, h=15, r=undef, center=false, r_factor=0.1) {
+  rad = is_undef(r) ? min(b, t, h) * r_factor : r;
   offset(r=rad, chamfer=false) {
     offset(r=-rad, chamfer=false) {
       trapezoid(b=b, t=t, h=h, center=center);
@@ -69,6 +71,66 @@ module trapezoid_rounded_top(b=20,
                                r_factor=r_factor,
                                center=center,
                                $fn=$fn);
+    }
+  }
+}
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   trapezoid_vertical
+   ─────────────────────────────────────────────────────────────────────────────
+   Parameters:
+
+   - `size`: the list of `[lower_x, y, z, upper_x]`:
+   - `r`: corner radius
+   - `r_factor`: if corner radius is not provided, it will be calculated as `min(lower_x, upper_x, z) * r_factor`
+   - `round_side`: which side should be rounded. One of: "all" (default) | "top" | "bottom"
+   - `center`: whether to center trapezoid
+
+
+   **Example**:
+   ```scad
+   trapezoid_vertical(round_side="bottom", center=true, size=[18, 10, 15, 14])
+
+   ```
+*/
+module trapezoid_vertical(size=[20, 10, 15, 12],
+                          r,
+                          r_factor=0.1,
+                          round_side="all", // "all" | "top" | "bottom"
+                          center=true) {
+  b = size[0];
+  l = size[1];
+  h = size[2];
+  t = is_undef(size[3]) ? b : size[3];
+
+  translate([center ? -b / 2 : t > b ? (t - b) / 2 : 0, center ? l / 2 : l, 0]) {
+    if (round_side == "top") {
+      translate([b / 2, 0, h / 2]) {
+        rotate([90, 0, 0]) {
+          linear_extrude(height=l, center=false) {
+            trapezoid_rounded_top(t=t,
+                                  b=b,
+                                  h=h,
+                                  r=r,
+                                  r_factor=r_factor,
+                                  center=true);
+          }
+        }
+      }
+    } else {
+      rotate([90, 0, 0]) {
+        linear_extrude(height=l, center=false) {
+          if (is_undef(round_side) || round_side == "all") {
+            trapezoid_rounded(t=t, b=b, h=h, r=r, r_factor=r_factor);
+          }  else if (round_side == "bottom") {
+            trapezoid_rounded_bottom(t=t,
+                                     b=b,
+                                     h=h,
+                                     r=r,
+                                     r_factor=r_factor);
+          }
+        }
+      }
     }
   }
 }

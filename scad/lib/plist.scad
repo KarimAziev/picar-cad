@@ -20,6 +20,7 @@ function plist_is(value) =
    plist_get("none", my_plist, "default") // -> "default"
    ```
 */
+
 function plist_get(key, plist, default) =
   plist_has(key, plist)
   ? [for (i = [0:len(plist) - 1]) if (i % 2 == 0 && plist[i] == key)

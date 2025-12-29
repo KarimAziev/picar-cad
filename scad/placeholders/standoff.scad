@@ -35,6 +35,11 @@ function calc_standoff_params(d, min_h) =
                           body_heights=plist_get("body_heights", found, [])))
   [found, standoffs];
 
+function standoff_real_h(min_h, d) =
+  let (standoffs=calc_standoff_params(min_h=standoff_h, d=bolt_d),
+       yy = y * y)
+  sqrt(xx + yy);
+
 module standoff(thread_d=3,
                 thread_h=5,
                 body_h=4,
@@ -65,7 +70,8 @@ module standoff(thread_d=3,
         cylinder(d=is_undef(body_d) ?
                  thread_d * 2
                  : body_d,
-                 h=body_h, $fn=$fn);
+                 h=body_h,
+                 $fn=$fn);
       }
 
       translate([0, 0, -0.1]) {
@@ -159,7 +165,7 @@ module standoffs_stack(d,
                        nut_color=metallic_silver_3,
                        nut_pos,
                        show_nut = false,
-                       fn=6,) {
+                       fn=6) {
 
   standoffs = calc_standoff_params(min_h=min_h, d=d);
 
@@ -273,7 +279,7 @@ module standoff_grid(sizes=[[3, 5.20, 5, [20, 15, 10, 9, 8, 6, 5], 6],
                              white_off_1]],
                      gap=6,
                      show_text=true,
-                     colr=yellow_2,) {
+                     colr=yellow_2) {
   max_body_d = max([for (n = sizes) n[1]]);
   rows_children(gap=gap, rows=len(sizes), w=max_body_d) {
     let (spec = sizes[$i]) {
@@ -308,7 +314,8 @@ standoff(show_bolt=true,
          thread_at_top=false,
          bolt_visible_h=2,
          nut_pos=nut_pos,
-         body_h=12, show_nut=true);
+         body_h=12,
+         show_nut=true);
 translate([0, 0, 5 - nut_pos]) {
 
   #cube([2, 2, nut_pos]);

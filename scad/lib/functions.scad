@@ -110,13 +110,16 @@ function calc_notch_width(dia, w) =
    ```scad
    sum([1, 5, 10]); // 16
    sum([1, 5, 10], 2); // 6
+   sum([]); // 0
    ```
 */
 function sum(list, count=undef) =
   let (length = is_undef(count) ? len(list) : count)
-  length < 2
-  ? list[0]
-  : (list[length - 1] + sum(list, length - 1));
+  length == 0
+  ? 0
+  : length < 2
+  ? with_default(list[0], 0)
+  : (with_default(list[length - 1], 0) + sum(list, length - 1));
 
 /**
    ─────────────────────────────────────────────────────────────────────────────
@@ -831,8 +834,8 @@ function search_idx(l, val) = search_idxs(l, val)[0];
 
    **Example**:
    ```scad
-   member([2, 1, 2, 3], 2); // => true
-   member([2, 1, 2, 3], 10); // => false
+   member(2, [2, 1, 2, 3]); // => true
+   member(10, [2, 1, 2, 3]); // => false
    ```
 */
 function member(x, xs) =

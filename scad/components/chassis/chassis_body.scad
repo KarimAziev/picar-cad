@@ -59,21 +59,22 @@ show_power_case_lid      = false;
 show_lipo_pack           = false;
 show_batteries           = false;
 show_rpi                 = false;
+show_socket_case         = true;
 
 rpi_position_x           = -rpi_bolt_spacing[0] / 2 + rpi_chassis_x_position;
 rpi_position_y           = -rpi_len - rpi_chassis_y_position;
 
 power_case_position_y    = -power_case_length / 2 - power_case_chassis_y_offset;
 power_case_position_x    = chassis_body_w / 2
-                            - power_case_width / 2
-                            + power_case_chassis_x_offset;
+  - power_case_width / 2
+  + power_case_chassis_x_offset;
 
 max_lower_cutout         = max([for (v = chassis_lower_cutout_pts) v[1]]);
 
 body_pts                 = concat(chassis_lower_cutout_pts,
-                            [[chassis_body_half_w, chassis_body_len +
-                            max_lower_cutout],
-                            [0, chassis_body_len  + max_lower_cutout]]);
+                                  [[chassis_body_half_w, chassis_body_len +
+                                    max_lower_cutout],
+                                   [0, chassis_body_len  + max_lower_cutout]]);
 
 module chassis_body_2d() {
   offset_vertices_2d(r=chassis_offset_rad) {
@@ -348,7 +349,8 @@ module chassis_body(panel_color="white",
                     show_power_case_lid=show_power_case_lid,
                     show_lipo_pack=show_lipo_pack,
                     show_batteries=show_batteries,
-                    show_rpi=show_rpi) {
+                    show_rpi=show_rpi,
+                    show_socket_case=show_socket_case) {
   chassis_body_3d(panel_color=panel_color);
   if (show_buttons_panel || show_fuse_panel) {
     translate([0, 0, chassis_thickness / 2]) {
@@ -401,7 +403,7 @@ module chassis_body(panel_color="white",
         batteries_holder_assembly_y_idx = batteries_holder_assembly_y_idx;
         battery_holder_y_pos = is_undef(battery_holes_y_positions
                                         [batteries_holder_assembly_y_idx])
-                                        ? battery_holes_y_positions[batteries_holder_assembly_y_idx - 1]
+          ? battery_holes_y_positions[batteries_holder_assembly_y_idx - 1]
           : battery_holes_y_positions[batteries_holder_assembly_y_idx];
         full_holder_len = battery_holder_full_len(battery_holder_thickness)
           * battery_holder_batteries_count;
@@ -459,14 +461,16 @@ module chassis_body(panel_color="white",
     }
   }
 
-  if (show_power_case) {
+  if (show_power_case || show_socket_case) {
     translate([power_case_position_x,
                power_case_position_y,
                -chassis_counterbore_h]) {
       power_case_assembly(case_color=power_case_color,
                           show_lipo_pack=show_lipo_pack,
+                          show_standoffs=true,
                           show_lid=show_power_case_lid,
-                          show_xt90e=show_xt90e);
+                          show_lid_xt90e=show_xt90e,
+                          show_socket_case=show_socket_case);
     }
   }
   if (show_ups_hat) {

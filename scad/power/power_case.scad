@@ -7,6 +7,8 @@
 
 include <../parameters.scad>
 include <../colors.scad>
+include <../power_lid_parameters.scad>
+
 use <../placeholders/lipo_pack.scad>
 use <../slider.scad>
 use <power_lid.scad>
@@ -16,31 +18,37 @@ use <../lib/holes.scad>
 use <../lib/placement.scad>
 use <../lib/transforms.scad>
 use <../placeholders/standoff.scad>
+use <power_socket_case.scad>
 
-slot_mode                  = false;
+slot_mode                         = false;
 
 /* [Mounting] */
-show_standoffs             = false;
-bolt_visible_h             = chassis_thickness - chassis_counterbore_h;  // [0:20]
+show_standoffs                    = true;
+bolt_visible_h                    = chassis_thickness - chassis_counterbore_h;  // [0:20]
+
+/* [Socket case] */
+show_socket_case                  = true;
+show_socket_case_atm_fuse_holders = true;
+show_socket                       = true;
 
 /* [Lipo] */
-show_lipo_pack             = false;
+show_lipo_pack                    = true;
 
-case_color                 = blue_grey_carbon;
+case_color                        = white_snow_1;
 
 /* [Power lid] */
-show_lid                   = true;
-show_lid_xt90e             = false;
-show_lid_dc_regulator      = false;
-show_lid_ato_fuse          = false;
-show_lid_voltmeter         = false;
-show_lid_bolts             = false;
-show_atm_side_fuse_holders = false;
-lid_echo_wiring_lenghts    = false;
+show_lid                          = true;
+show_lid_xt90e                    = true;
+show_lid_dc_regulator             = true;
+show_lid_ato_fuse                 = true;
+show_lid_voltmeter                = true;
+show_lid_bolts                    = true;
+show_atm_fuse_holders             = true;
+show_perf_board                   = true;
 
 /* [Power lid switch button] */
-use_lid_toggle_switch      = false;
-show_lid_switch_button     = false;
+use_lid_toggle_switch             = false;
+show_lid_switch_button            = false;
 
 module power_case(case_color=metallic_silver_5, alpha=1) {
   inner_x_cutout = power_case_width - power_case_side_wall_thickness * 2;
@@ -153,33 +161,6 @@ module power_case(case_color=metallic_silver_5, alpha=1) {
           }
         }
       }
-
-      mirror_copy([0, 1, 0]) {
-        mirror_copy([1, 0, 0]) {
-          translate([power_case_width / 2
-                     - power_case_side_wall_thickness / 2,
-                     power_case_length / 2
-                     - power_case_rabet_thickness
-                     + power_case_rabet_w,
-                     power_case_height - power_case_rabet_h]) {
-            translate([0, 0, power_case_rabet_h / 2]) {
-              cube([power_case_rabet_w,
-                    power_case_rabet_thickness,
-                    power_case_rabet_h],
-                   center=true);
-              translate([0,
-                         -power_case_rabet_thickness / 2
-                         + power_case_rabet_w / 2,
-                         -power_case_rail_height / 2]) {
-                cube([power_case_rabet_w,
-                      power_case_rabet_w,
-                      power_case_rail_height],
-                     center=true);
-              }
-            }
-          }
-        }
-      }
     }
   }
 }
@@ -234,17 +215,20 @@ module power_case_assembly(alpha=1,
                            standoff_thread_h=power_case_standoff_thread_h,
                            show_lipo_pack=show_lipo_pack,
                            show_standoffs=show_standoffs,
+                           show_socket_case_atm_fuse_holders=show_socket_case_atm_fuse_holders,
+                           show_socket=show_socket,
                            case_color=case_color,
                            slot_mode=slot_mode,
+                           show_socket_case=show_socket_case,
                            show_lid_xt90e=show_lid_xt90e,
                            show_lid = show_lid,
                            show_lid_dc_regulator=show_lid_dc_regulator,
                            show_lid_ato_fuse=show_lid_ato_fuse,
                            show_lid_voltmeter=show_lid_voltmeter,
                            show_lid_bolts=show_lid_bolts,
-                           show_atm_side_fuse_holders=show_atm_side_fuse_holders,
+                           show_atm_fuse_holders=show_atm_fuse_holders,
+                           show_perf_board=show_perf_board,
                            bolt_visible_h=bolt_visible_h) {
-  // Placeholder for LiPo pack
 
   if (slot_mode) {
     translate([power_case_bolt_spacing_offset_x,
@@ -265,50 +249,70 @@ module power_case_assembly(alpha=1,
   } else {
     translate([0,
                0,
-               show_standoffs ? standoff_h + bolt_visible_h
-               + chassis_counterbore_h : 0]) {
-      if (show_lipo_pack) {
-        translate([0, 0, power_case_bottom_thickness + 0.1]) {
-          lipo_pack();
-        }
-      }
+               0]) {
+      if (show_socket_case) {
+        power_socket_case(show_standoffs=show_standoffs,
+                          case_color=case_color,
+                          standoff_h=standoff_h,
+                          assembly=true,
+                          assembly_debug=false,
+                          show_lid=true,
+                          show_socket=show_socket,
+                          show_atm_fuse_holders=show_socket_case_atm_fuse_holders,
+                          standoff_thread_h=standoff_thread_h);
+      };
 
-      if (show_lid) {
-        translate([0, 0, power_case_height + power_lid_height + 0]) {
-          rotate([180, 0, 0]) {
-
-            power_lid(use_toggle_switch=use_lid_toggle_switch,
-                      show_switch_button=show_lid_switch_button,
-                      show_dc_regulator=show_lid_dc_regulator,
-                      lid_color=case_color,
-                      show_ato_fuse=show_lid_ato_fuse,
-                      show_voltmeter=show_lid_voltmeter,
-                      show_bolts=show_lid_bolts,
-                      show_xt90e=show_lid_xt90e,
-                      show_atm_side_fuse_holders=show_atm_side_fuse_holders,
-                      echo_wiring_len=lid_echo_wiring_lenghts);
+      translate([0,
+                 0,
+                 show_socket_case ? (power_socket_case_size[2] + power_socket_case_lid_thickness
+                                     +
+                                     (show_standoffs ?
+                                      +(standoff_h + standoff_thread_h)
+                                      + standoff_thread_h : 0)) : 0]) {
+        if (show_lipo_pack) {
+          translate([0, 0, power_case_bottom_thickness + 0.1]) {
+            lipo_pack();
           }
         }
-      }
 
-      union() {
-        // Power case
-        power_case(case_color=case_color, alpha=alpha);
-        if (show_standoffs) {
-          translate([power_case_bolt_spacing_offset_x,
-                     power_case_bolt_spacing_offset_y,
-                     0]) {
+        if (show_lid) {
+          translate([0, 0, power_case_height + power_lid_height + 0]) {
+            rotate([180, 0, 0]) {
 
-            four_corner_children(size=power_case_bottom_bolt_spacing,
-                                 center=true) {
-              translate([0,
-                         0,
-                         -(standoff_h + standoff_thread_h) + standoff_thread_h]) {
-                standoff(body_h=standoff_h,
-                         thread_at_top=true,
-                         show_bolt=true,
-                         bolt_visible_h=bolt_visible_h,
-                         thread_h=standoff_thread_h);
+              power_lid(show_switch_button=show_lid_switch_button,
+                        show_dc_regulator=show_lid_dc_regulator,
+                        lid_color=case_color,
+                        show_ato_fuse=show_lid_ato_fuse,
+                        show_voltmeter=show_lid_voltmeter,
+                        show_bolt=show_lid_bolts,
+                        show_xt90e=show_lid_xt90e,
+                        show_perf_board=show_perf_board,
+                        show_atm_fuse_holders=show_atm_fuse_holders,
+                        left_columns = power_lid_left_slots,
+                        right_columns = power_lid_right_slots);
+            }
+          }
+        }
+
+        union() {
+          // Power case
+          power_case(case_color=case_color, alpha=alpha);
+          if (show_standoffs) {
+            translate([power_case_bolt_spacing_offset_x,
+                       power_case_bolt_spacing_offset_y,
+                       0]) {
+
+              four_corner_children(size=power_case_bottom_bolt_spacing,
+                                   center=true) {
+                translate([0,
+                           0,
+                           -(standoff_h + standoff_thread_h) + standoff_thread_h]) {
+                  standoff(body_h=standoff_h,
+                           thread_at_top=true,
+                           show_bolt=true,
+                           bolt_visible_h=bolt_visible_h,
+                           thread_h=standoff_thread_h);
+                }
               }
             }
           }

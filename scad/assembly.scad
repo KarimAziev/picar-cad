@@ -67,6 +67,7 @@ show_power_case          = false;
 show_power_case_lid      = false;
 show_lipo_pack           = false;
 power_case_color         = "grey";
+show_socket_case         = true;
 
 /* [Batteries] */
 show_smd_battery_holders = false;
@@ -76,7 +77,7 @@ show_batteries           = false;
 show_ups_hat             = false;
 
 /* [Raspberry PI] */
-show_rpi                 = false;
+show_rpi                 = true;
 
 /* [Debug] */
 show_ackermann_triangle  = false;
@@ -123,6 +124,7 @@ chassis(panel_color=panel_color,
         show_ups_hat=show_ups_hat,
         show_power_case=show_power_case,
         show_power_case_lid=show_power_case_lid,
+        show_socket_case=show_socket_case,
         show_lipo_pack=show_lipo_pack,
         show_batteries=show_batteries,
         show_rpi=show_rpi);

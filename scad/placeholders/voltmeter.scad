@@ -7,133 +7,101 @@
 
 include <../parameters.scad>
 include <../colors.scad>
-;
 use <./pins.scad>
 use <./rpi_5.scad>
 use <../wire.scad>
 use <standoff.scad>
 use <../lib/shapes3d.scad>
 use <../lib/transforms.scad>
+use <../lib/plist.scad>
+use <../lib/text.scad>
+use <../lib/functions.scad>
 
-module voltmeter_display(display_w=voltmeter_display_w,
-                         display_len=voltmeter_display_len,
-                         display_h=voltmeter_display_h,
-                         display_indicators_len=voltmeter_display_indicators_len,
-                         display_top_h=1,
-                         use_textmetrics=true,
-                         text_spec=voltemeter_text_spec) {
-  main_h = display_h - display_top_h;
-  union() {
-    color("white", alpha=1) {
-      cube_3d([display_w,
-               display_len,
-               main_h]);
-    }
-    translate([0, 0, main_h]) {
-      color(matte_black, alpha=1) {
-        cube_3d([display_w, display_len, display_top_h]);
-      }
-      if (use_textmetrics && !is_undef(text_spec)) {
-        translate([0, 0, display_top_h]) {
-          let (txt=text_spec[0],
-               size=text_spec[1],
-               font=text_spec[2],
-               spacing=text_spec[3],
-               colr=text_spec[4],
-               tm=textmetrics(text=txt,
-                              spacing=spacing,
-                              halign="center",
-                              size=text_spec[1],
-                              font=font),
-               trans_spec=is_undef(text_spec[5]) ? [0, 0] : text_spec[5],
-               text_len = tm.size[0],
-               text_h = tm.size[1]) {
-            translate(trans_spec) {
-              translate([text_h / 2,
-                         0,
-                         0]) {
-                color(colr, alpha=1) {
-                  rotate([0, 0, 180]) {
-                    rotate([0, 0, -90]) {
-                      linear_extrude(height=0.01, center=false) {
-                        text(txt,
-                             spacing=spacing,
-                             halign="center",
-                             size=size,
-                             font=font);
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      } else {
-        color(metallic_silver_3, alpha=1) {
-          let (allowed_w = display_w * 0.9,
-               total_inner_w = allowed_w * 0.92,
-               L = display_len * 0.90,
-               n = display_indicators_len,
-               t = (L / n) - 1,
-               g = (L - n * t) / (n - 1),
-               margin = (display_len - L) / 2,
-               step = t + g,
-               start = margin + t/2) {
-            translate([0, -display_len / 2, 0]) {
-              for (i = [0 : n - 1]) {
-                let (y = start + i * step,
-                     inner_t = t * 0.8,
-                     inner_w = (total_inner_w / 2)) {
-                  translate([0, y, 0])
-                    union() {
-                    difference() {
-                      rounded_cube(size=[allowed_w, t, display_top_h + 0.01],
-                                   center=true,
-                                   r_factor=0.1);
-                      translate([inner_w / 2, 0, 0]) {
-                        rounded_cube(size=[inner_w - 0.5, inner_t, display_top_h + 0.1],
-                                     center=true,
-                                     r_factor=0.3);
-                      }
-                      translate([-inner_w / 2, 0, 0]) {
-                        rounded_cube(size=[inner_w - 0.5, inner_t, display_top_h + 0.1],
-                                     center=true,
-                                     r_factor=0.3);
-                      }
-                    }
-                    translate([allowed_w / 2 - 0.5, t / 2 + g / 3, 0]) {
-                      cylinder(h = display_top_h + 0.01, r = 0.5, center = false, $fn=10);
-                    }
-                  }
-                }
-              }
-            }
-          }
+module voltemeter_text(txt, text_props) {
+  let (rotation=plist_get("rotation", text_props, [0, 0, 0]),
+       translation=plist_get("translation", text_props, [0, 0, 0]),
+       merged_pl = plist_merge(with_default(text_props, []),
+                               ["rotation", [0, 0, -90]])) {
+    translate(translation) {
+      rotate(rotation) {
+        rotate([0, 0, 180]) {
+          text_from_plist(txt=txt,
+                          plist=merged_pl,
+                          default_halign = "center",
+                          default_valign = "center",
+                          default_font="DSEG14 Classic:style=Italic",
+                          default_size=4,
+                          default_spacing=1,
+                          default_color=red_1);
         }
       }
     }
   }
 }
 
+module voltmeter_display(txt, display, text_props) {
+  let (size=plist_get("size",
+                      display,
+                      [voltmeter_display_w,
+                       voltmeter_display_len,
+                       voltmeter_display_h]),
+       display_w=size[0],
+       display_len=size[1],
+       display_h=size[2],
+       txt=with_default(txt, plist_get("text", with_default(text_props, []))),
+       upper_thickness=plist_get("upper_thickness", display, 1),
+       upper_color=plist_get("upper_color", display, matte_black),
+       bottom_color=plist_get("bottom_color", display, "white")) {
+    main_h = display_h - upper_thickness;
+    union() {
+      color(bottom_color, alpha=1) {
+        cube_3d([display_w,
+                 display_len,
+                 main_h]);
+      }
+      translate([0, 0, main_h]) {
+        color(upper_color, alpha=1) {
+          cube_3d([display_w, display_len, upper_thickness]);
+        }
+
+        if (!is_undef(txt)) {
+          translate([0, 0, upper_thickness]) {
+            voltemeter_text(txt, text_props);
+          }
+        }
+      }
+    }
+  }
+}
 module voltmeter_board(show_standoffs=true,
-                       standoff_thread_h=voltmeter_standoff_thread_h,
-                       snandoff_body_h=voltmeter_pin_h,
+                       size=[voltmeter_board_w,
+                             voltmeter_board_len,
+                             voltmeter_board_h],
+                       pins=voltmeter_default_pins_spec,
+                       wiring=["d", voltmeter_wiring_d,
+                               "distance", voltmeter_wiring_distance,
+                               "path", []],
                        bolt_dia=voltmeter_bolt_dia,
-                       board_w=voltmeter_board_w,
-                       board_len=voltmeter_board_len,
-                       board_h=voltmeter_board_h,
                        bolt_spacing=voltmeter_bolt_spacing,
-                       wiring_d=voltmeter_wiring_d,
-                       wiring_gap=voltmeter_wiring_gap,
-                       pin_h=voltmeter_pin_h,
-                       pins_len=voltmeter_pins_len,
-                       pin_thickness=voltmeter_pin_thickness,
-                       pins_count=voltmeter_pins_count,
-                       wiring_distance=voltmeter_wiring_distance,
-                       standoff_body_d=voltmeter_standoff_body_d,
-                       wiring=[[50, -80, 0]]) {
+                       standoff_body_h=voltmeter_pin_h) {
+
+  board_w = size[0];
+  board_len = size[1];
+  board_h = size[2];
+
+  wiring_d = plist_get("d", wiring, 3);
   wiring_r = wiring_d / 2;
+  wiring_distance = plist_get("distance", wiring, voltmeter_wiring_distance);
+  wiring_gap = plist_get("gap", wiring, voltmeter_wiring_gap);
+  wpath = plist_get("path", wiring, []);
+  pin_size = plist_get("size",
+                       pins,
+                       [voltmeter_pin_thickness, voltmeter_pin_h]);
+
+  pins_count = plist_get("count", pins, 0);
+  pins_len = plist_get("total_len", pins, 0);
+  pin_thickness = pin_size[0];
+  pin_h = pin_size[1];
 
   union() {
     difference() {
@@ -148,11 +116,11 @@ module voltmeter_board(show_standoffs=true,
             color(green_2, alpha=1) {
               cube_3d(size=[bolt_dia + 2,
                             bolt_dia + 2,
-                            board_h], center=true);
+                            board_h],
+                      center=true);
             }
           }
         }
-
         gap = (pins_len -
                pins_count * pin_thickness)
           / (pins_count - 1);
@@ -183,7 +151,6 @@ module voltmeter_board(show_standoffs=true,
         }
 
         let (wiring_pin_h=1) {
-
           translate([board_w / 2 - wiring_r,
                      board_len / 2
                      - wiring_r
@@ -195,25 +162,26 @@ module voltmeter_board(show_standoffs=true,
                        r2=wiring_r * 1.2,
                        $fn=10);
               translate([0,
-                         -wiring_d -
-                         wiring_gap, 0]) {
+                         -wiring_d - wiring_gap,
+                         0]) {
                 cylinder(h=wiring_pin_h,
                          r1=wiring_r * 0.3,
                          r2=wiring_r * 1.2,
                          $fn=10);
               }
             }
-            translate([0, 0, -wiring_r]) {
-              color(red_1, alpha=1) {
+            if (!is_undef(wpath) && len(wpath) > 0) {
+              translate([0, 0, -wiring_r]) {
                 wire_path(concat([[0, 0, 0]],
-                                 wiring),
-                          d=wiring_d);
-              }
-              translate([0, -wiring_gap - wiring_r, 0]) {
-                color(black_1, alpha=1) {
+                                 wpath),
+                          d=wiring_d,
+                          colr=red_1);
+
+                translate([0, -wiring_gap - wiring_r, 0]) {
                   wire_path(concat([[0, 0, 0]],
-                                   wiring),
-                            d=wiring_d);
+                                   wpath),
+                            d=wiring_d,
+                            colr=black_1);
                 }
               }
             }
@@ -232,81 +200,106 @@ module voltmeter_board(show_standoffs=true,
 
     if (show_standoffs) {
       four_corner_children(size=bolt_spacing) {
-        translate([0, 0, -snandoff_body_h]) {
-          standoff(thread_h=standoff_thread_h,
-                   thread_d=bolt_dia,
-                   body_h=snandoff_body_h,
-                   body_d=standoff_body_d);
+        translate([0, 0, -standoff_body_h]) {
+          standoffs_stack(d=bolt_dia,
+                          min_h=standoff_body_h);
+        }
+      }
+    }
+  }
+}
+module voltmeter(show_standoffs=true,
+                 show_board=true,
+                 show_display=true,
+                 stand_up=true,
+                 center=true,
+                 standoff_body_h=voltmeter_pin_h,
+                 board_size=[voltmeter_board_w,
+                             voltmeter_board_len,
+                             voltmeter_board_h],
+                 bolt_spacing=voltmeter_bolt_spacing,
+                 bolt_dia=voltmeter_bolt_dia,
+                 display=plist_get("display", voltmeter_default_spec),
+                 text=plist_get("text", voltmeter_default_spec, ""),
+                 text_props=plist_get("text_props", voltmeter_default_spec,
+                                      ["font", "DSEG14 Classic:style=Italic", "size", 6]),
+                 pins=voltmeter_default_pins_spec,
+                 wiring=["d", voltmeter_wiring_d,
+                         "distance", voltmeter_wiring_distance,
+                         "path", []]) {
+  standoff_params = calc_standoff_params(min_h=standoff_body_h, d=bolt_dia);
+  standoff_real_h = len(standoff_params[1]) > 0 ? sum(standoff_params[1]) : 0;
+  translate([center ? 0 : max(board_size[0], bolt_spacing[0]) / 2,
+             center ? 0 : max(board_size[1], bolt_spacing[1] + bolt_dia) / 2,
+             stand_up ? standoff_real_h : 0]) {
+    union() {
+      if (show_board) {
+        voltmeter_board(show_standoffs=show_standoffs,
+                        size=board_size,
+                        pins=pins,
+                        wiring=wiring,
+                        bolt_dia=bolt_dia,
+                        bolt_spacing=bolt_spacing,
+                        standoff_body_h=standoff_real_h);
+      }
+      if (show_display && !is_undef(display)) {
+        translate([0, 0, board_size[2]]) {
+          voltmeter_display(txt=text, display=display, text_props=text_props);
         }
       }
     }
   }
 }
 
-module voltmeter(show_standoffs=true,
-                 show_board=true,
-                 show_display=true,
-                 standoff_thread_h=voltmeter_standoff_thread_h,
-                 snandoff_body_h=voltmeter_pin_h,
-                 standoff_body_d=voltmeter_standoff_body_d,
-                 board_w=voltmeter_board_w,
-                 board_len=voltmeter_board_len,
-                 board_h=voltmeter_board_h,
-                 bolt_spacing=voltmeter_bolt_spacing,
-                 bolt_dia=voltmeter_bolt_dia,
-                 display_w=voltmeter_display_w,
-                 display_len=voltmeter_display_len,
-                 display_h=voltmeter_display_h,
-                 display_indicators_len=voltmeter_display_indicators_len,
-                 display_top_h=1,
-                 pin_h=voltmeter_pin_h,
-                 pins_len=voltmeter_pins_len,
-                 pin_thickness=voltmeter_pin_thickness,
-                 pins_count=voltmeter_pins_count,
-                 wiring_d=voltmeter_wiring_d,
-                 wiring=[[-5, -5, -2],
-                         [-15, -10, -1],
-                         [10, -15, -2],
-                         [20, 0, 0]],
-                 wiring_gap=voltmeter_wiring_gap,
-                 wiring_distance=voltmeter_wiring_distance,
-                 text_spec=voltemeter_text_spec) {
-  union() {
-    if (show_board) {
-      voltmeter_board(show_standoffs=show_standoffs,
-                      standoff_thread_h=standoff_thread_h,
-                      snandoff_body_h=snandoff_body_h,
-                      board_w=board_w,
-                      board_len=board_len,
-                      board_h=board_h,
-                      bolt_spacing=bolt_spacing,
-                      bolt_dia=bolt_dia,
-                      wiring_d=wiring_d,
-                      wiring=wiring,
-                      wiring_gap=wiring_gap,
-                      pin_h=pin_h,
-                      pins_len=pins_len,
-                      pin_thickness=pin_thickness,
-                      pins_count=pins_count,
-                      wiring_distance=wiring_distance,
-                      standoff_body_d=standoff_body_d);
-    }
-    if (show_display) {
-      translate([0, 0, board_h]) {
-        voltmeter_display(display_w=display_w,
-                          display_len=display_len,
-                          display_h=display_h,
-                          display_indicators_len=display_indicators_len,
-                          display_top_h=display_top_h,
-                          text_spec=text_spec);
-      }
-    }
+module voltmeter_from_plist(plist,
+                            center=true,
+                            debug=false,
+                            stand_up=false,
+                            show_standoffs=true) {
+  if (debug) {
+    echo("voltmeter_from_plist plist: ", plist);
   }
+  data = plist;
+  text_props = plist_get("text_props", plist);
+  text = plist_get("text", plist);
+  board_size = plist_get("placeholder_size",
+                         plist,
+                         [voltmeter_board_w,
+                          voltmeter_board_len,
+                          voltmeter_board_h]);
+  slot_size = plist_get("slot_size",
+                        data,
+                        voltmeter_bolt_spacing);
+  bolt_dia = plist_get("d", data, voltmeter_bolt_dia);
+  display = plist_get("display", data, []);
+  wiring = plist_get("wiring", data, []);
+  pins = plist_get("pins", data, []);
+
+  show_standoffs = plist_get("show_standoffs", data, show_standoffs);
+  standoff_body_h = plist_get("standoff_body_h",
+                              data,
+                              voltmeter_pin_h);
+  hide_board = plist_get("hide_board", plist, false);
+  hide_display = plist_get("hide_display", plist, false);
+  voltmeter(show_standoffs=show_standoffs,
+            show_board=!hide_board,
+            show_display=!hide_display,
+            standoff_body_h=standoff_body_h,
+            board_size=board_size,
+            bolt_spacing=slot_size,
+            bolt_dia=bolt_dia,
+            display=display,
+            pins=pins,
+            wiring=wiring,
+            text=text,
+            text_props=text_props,
+            stand_up=stand_up,
+            center=center);
 }
 
-rotate([0, 0, 0]) {
-  voltmeter(wiring=[[0, -5, -2],
-                    [-22, -15, -1],
-                    [-22, 10, -60],
-                    [-70, 10, -60]]);
-}
+voltmeter_from_plist(center=false,
+                     debug=false,
+                     stand_up=true,
+                     plist=plist_merge(voltmeter_default_spec,
+                                       ["wiring", plist_merge(plist_get("wiring", voltmeter_default_spec),
+                                                              ["path", []])],));

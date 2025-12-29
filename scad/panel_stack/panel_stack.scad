@@ -33,7 +33,7 @@ module panel_stack(show_fusers=true,
                    show_buttons_panel=true,
                    show_fuse_panel=true,
                    center=false,
-                   show_lid=true,
+                   show_cap=true,
                    y_axle=true,
                    panel_color=white_snow_1) {
   size = panel_stack_size();
@@ -45,34 +45,21 @@ module panel_stack(show_fusers=true,
     maybe_rotate([0, 0, y_axle ? 0 : -90]) {
       if (show_buttons_panel && show_fuse_panel) {
         translate([center ? 0 : w / 2, center ? 0 : l / 2, 0]) {
-          let (max_lid_h = fuse_panel_max_lid_height(),
-               standoff_params =
-               calc_standoff_params(d=panel_stack_bolt_dia,
-                                    min_h=max_lid_h),
-               standoff_extra_height = sum(standoff_params[1])) {
-
-            fuse_panel(show_fusers=show_fusers,
-                       show_standoff=true,
-                       bolt_spacing=bolt_spacing,
-                       size=size,
-                       panel_color=panel_color,
-                       show_lid=show_lid,
-                       show_bolt=true,
-                       center=true) {
-              four_corner_children(size=bolt_spacing,
-                                   center=true,) {
-                standoffs_stack(d=panel_stack_bolt_dia,
-                                min_h=max_lid_h,
-                                thread_at_top=true);
-              }
-              translate([0, 0, standoff_extra_height]) {
-                control_panel(center=true,
-                              show_buttons=show_buttons,
-                              show_standoff=true,
-                              panel_color=panel_color,
-                              size=size,
-                              bolt_spacing=bolt_spacing);
-              }
+          fuse_panel(show_fusers=show_fusers,
+                     show_standoff=true,
+                     bolt_spacing=bolt_spacing,
+                     size=size,
+                     panel_color=panel_color,
+                     show_cap=show_cap,
+                     show_bolt=true,
+                     center=true) {
+            translate([0, 0, 0]) {
+              control_panel(center=true,
+                            show_buttons=show_buttons,
+                            show_standoff=true,
+                            panel_color=panel_color,
+                            size=size,
+                            bolt_spacing=bolt_spacing);
             }
           }
         }
@@ -80,7 +67,7 @@ module panel_stack(show_fusers=true,
         fuse_panel(show_fusers=show_fusers,
                    show_standoff=show_standoff,
                    bolt_spacing=bolt_spacing,
-                   show_lid=show_lid,
+                   show_cap=show_cap,
                    show_nut=true,
                    show_bolt=true,
                    panel_color=panel_color,

@@ -12,6 +12,7 @@ use <../lib/shapes3d.scad>
 use <../lib/transforms.scad>
 use <../lib/holes.scad>
 use <../lib/functions.scad>
+use <../lib/plist.scad>
 
 function toggle_switch_calc_desired_thickness(extra_thickness, nut_bore_h) =
   extra_thickness + nut_bore_h;
@@ -27,8 +28,8 @@ module toggle_switch(size                               = toggle_switch_size,
                      terminal_size                      = toggle_switch_terminal_size,
                      thread_border_w                    = toggle_switch_thread_border_w,
                      metallic_head_h                    = toggle_switch_metallic_head_h,
-                     center_x=true,
-                     center_y= true) {
+                     center_x                           = true,
+                     center_y                           = true) {
   thread_inner_dia = thread_d - thread_border_w;
 
   r_inner = thread_inner_dia / 2;
@@ -54,7 +55,9 @@ module toggle_switch(size                               = toggle_switch_size,
                              size[2]
                              - metallic_head_h]);
         }
-        translate([0, 0, size[2]
+        translate([0,
+                   0,
+                   size[2]
                    - metallic_head_h]) {
           color(metallic_silver_1, alpha=1) {
             rounded_cube(size=[size[0],
@@ -66,7 +69,9 @@ module toggle_switch(size                               = toggle_switch_size,
       mirror_copy([1, 0, 0]) {
         color(metallic_silver_1, alpha=1) {
           translate([size[0] / 2
-                     - terminal_size[0] / 2 - 0.1, 0, 0]) {
+                     - terminal_size[0] / 2 - 0.1,
+                     0,
+                     0]) {
             rounded_cube(terminal_size);
           }
         }
@@ -75,14 +80,17 @@ module toggle_switch(size                               = toggle_switch_size,
       translate([0, 0, terminal_size[2] + size[2]]) {
         color(metallic_silver_1, alpha=1) {
           cylinder(h=nut_bore_h,
-                   d=nut_d, $fn=6);
+                   d=nut_d,
+                   $fn=6);
 
           difference() { // bordered cylinder
             cylinder(h=thread_h,
-                     d=thread_d, $fn=30);
+                     d=thread_d,
+                     $fn=30);
             translate([0, 0, thread_h / 2]) {
               cylinder(h=thread_h,
-                       d=thread_inner_dia, $fn=30);
+                       d=thread_inner_dia,
+                       $fn=30);
             }
           }
           rotate([0, lever_angle, 0]) {
@@ -130,4 +138,38 @@ module toggle_switch_counterbore(thread_d                           = toggle_swi
               reverse=reverse);
 }
 
-toggle_switch(center_x=false, center_y=false);
+module toggle_switch_from_plist(plist, center_x=false, center_y=false) {
+  plist = with_default([]);
+  size = plist_get("placeholder_size", plist,  toggle_switch_size);
+  thread_h = plist_get("thread_h", plist,  toggle_switch_thread_h);
+  thread_d = plist_get("thread_d", plist,  toggle_switch_thread_d);
+  nut_d = plist_get("nut_d", plist,  toggle_switch_nut_d);
+  nut_bore_h = plist_get("nut_bore_h", plist,  toggle_switch_nut_out_h);
+  lever_dia_1 = plist_get("lever_dia_1", plist,  toggle_switch_lever_dia_1);
+  lever_dia_2 = plist_get("lever_dia_2", plist,  toggle_switch_lever_dia_2);
+  lever_h = plist_get("lever_h", plist,  toggle_switch_lever_h);
+  terminal_size = plist_get("terminal_size",
+                            plist,
+                            toggle_switch_terminal_size);
+  thread_border_w = plist_get("thread_border_w",
+                              plist,
+                              toggle_switch_thread_border_w);
+  metallic_head_h = plist_get("metallic_head_h",
+                              plist,
+                              toggle_switch_metallic_head_h);
+  toggle_switch(size=size,
+                thread_h=thread_h,
+                thread_d=thread_d,
+                nut_d=nut_d,
+                nut_bore_h=nut_bore_h,
+                lever_dia_1=lever_dia_1,
+                lever_dia_2=lever_dia_2,
+                lever_h=lever_h,
+                terminal_size=terminal_size,
+                thread_border_w=thread_border_w,
+                metallic_head_h=metallic_head_h,
+                center_x=center_x,
+                center_y=center_y);
+}
+
+toggle_switch_from_plist(center_x=false, center_y=false);

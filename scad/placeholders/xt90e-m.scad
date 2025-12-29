@@ -19,6 +19,7 @@ use <../lib/shapes2d.scad>
 use <../lib/transforms.scad>
 use <bolt.scad>
 use <xt90.scad>
+use <../lib/plist.scad>
 
 module xt90e_mounting_pattern(h,
                               spacing,
@@ -122,9 +123,13 @@ module xt90e(shell_size=xt90e_size,
              shell_color=xt90e_shell_color,
              bolt_visible_h=power_lid_thickness + 4,
              bolt_head_type="pan",
-             round_side="top",
-             bolt_visible_h=4,
+             round_side="bottom",
              bolt_through_h=power_lid_thickness,
+             gnd_wiring_color=matte_black,
+             gnd_wiring,
+             vcc_wiring,
+             vcc_wiring_color=red_1,
+             standup=false,
              show_bolt=true,
              show_nut=true,
              center=true) {
@@ -135,7 +140,7 @@ module xt90e(shell_size=xt90e_size,
 
   translate([center ? 0 : max_w / 2,
              center ? 0 : max_len / 2,
-             0]) {
+             standup ? mounting_panel_size[2] : 0]) {
     union() {
       color(shell_color, alpha=1) {
         xt90_shell(size=shell_size,
@@ -161,21 +166,157 @@ module xt90e(shell_size=xt90e_size,
                              center=true);
       };
 
-      mirror_copy([0, 1, 0]) {
-        translate([0, pin_spacing - pin_dia, 0]) {
-          xt90_contact_pin(pin_d=pin_dia,
-                           pin_h=pin_length,
-                           pin_color=pin_color,
-                           pin_thickness=pin_thickness,
-                           contact_thickness=contact_thickness,
-                           contact_d=contact_d,
-                           contact_h=contact_h + max_h - pin_length,
-                           contact_wall_h=contact_wall_h,
-                           contact_base_h=contact_base_h);
-        }
+      translate([0, pin_spacing - pin_dia, 0]) {
+        xt90_contact_pin(pin_d=pin_dia,
+                         pin_h=pin_length,
+                         pin_color=pin_color,
+                         pin_thickness=pin_thickness,
+                         contact_thickness=contact_thickness,
+                         contact_d=contact_d,
+                         contact_h=contact_h + max_h - pin_length,
+                         contact_wall_h=contact_wall_h,
+                         wiring_color=round_side == "bottom" ? vcc_wiring_color
+                         : gnd_wiring_color,
+                         wiring=round_side == "bottom" ? vcc_wiring : gnd_wiring,
+                         contact_base_h=contact_base_h);
+      }
+      translate([0, -pin_spacing + pin_dia, 0]) {
+        xt90_contact_pin(pin_d=pin_dia,
+                         pin_h=pin_length,
+                         pin_color=pin_color,
+                         pin_thickness=pin_thickness,
+                         contact_thickness=contact_thickness,
+                         contact_d=contact_d,
+                         contact_h=contact_h + max_h - pin_length,
+                         contact_wall_h=contact_wall_h,
+                         wiring_color=round_side == "bottom"
+                         ? gnd_wiring_color
+                         : vcc_wiring_color,
+                         wiring=round_side == "bottom" ? gnd_wiring : vcc_wiring,
+                         contact_base_h=contact_base_h);
       }
     }
   }
 }
 
-xt90e(round_side="bottom");
+module xt_90_slot(spec, thickness=power_lid_thickness) {
+  union() {
+    rect_slot(size=plist_get("slot_size", spec),
+              h=thickness,
+              center=true,
+              side=plist_get("round_side", spec, "bottom"),
+              r_factor=plist_get("r_factor", spec, 0.5));
+    four_corner_children(size=plist_get("bolt_spacing", spec),
+                         center=true) {
+      counterbore(d=plist_get("mount_dia", spec),
+                  h=thickness);
+    };
+  }
+}
+
+module xt90e_m_from_plist(plist,
+                          standup=false,
+                          show_bolt=true,
+                          bolt_visible_h = 4,
+                          bolt_through_h = power_lid_thickness,
+                          show_nut=true,
+                          center=true) {
+  plist = with_default(plist,[]);
+  shell_size = plist_get("shell_size", plist, xt90e_size);
+  mounting_panel_size = plist_get("placeholder_size",
+                                  plist,
+                                  xt90e_mounting_panel_size);
+  mount_spacing = plist_get("mount_spacing", plist, xt90e_mount_spacing);
+  mount_dia = plist_get("mount_dia", plist, xt90e_mount_dia);
+  mount_bore_dia = plist_get("mount_bore_dia", plist, xt90e_mount_cbore_dia);
+  mount_bore_h = plist_get("mount_bore_h", plist, xt90e_mount_cbore_h);
+  r_factor = plist_get("r_factor", plist, 0.3);
+  shell_r_factor = plist_get("shell_r_factor", plist, 0.5);
+  contact_d = plist_get("contact_d", plist, xt90e_contact_dia);
+  contact_h = plist_get("contact_h", plist, xt90e_contact_h);
+  contact_wall_h = plist_get("contact_wall_h", plist, xt90e_contact_wall_h);
+  contact_base_h = plist_get("contact_base_h", plist, xt90e_contact_base_h);
+  contact_thickness = plist_get("contact_thickness",
+                                plist,
+                                xt90e_contact_thickness);
+  pin_color = plist_get("pin_color", plist, xt90e_pin_color);
+  pin_spacing = plist_get("pin_spacing", plist, xt90e_pin_spacing);
+  pin_dia = plist_get("pin_dia", plist, xt90e_pin_dia);
+  pin_length = plist_get("pin_length", plist, xt90e_pin_length);
+  pin_thickness = plist_get("pin_thickness", plist, xt90e_pin_thickness);
+  shell_color = plist_get("shell_color", plist, xt90e_shell_color);
+  bolt_head_type = plist_get("bolt_head_type", plist, "pan");
+  round_side = plist_get("round_side", plist, "bottom");
+  gnd_wiring_color = plist_get("gnd_wiring_color", plist, matte_black);
+  gnd_wiring = plist_get("gnd_wiring", plist, []);
+  vcc_wiring = plist_get("vcc_wiring", plist, []);
+  vcc_wiring_color = plist_get("vcc_wiring_color", plist, red_1);
+
+  xt90e(shell_size=shell_size,
+        mounting_panel_size=mounting_panel_size,
+        mount_spacing=mount_spacing,
+        mount_dia=mount_dia,
+        mount_bore_dia=mount_bore_dia,
+        mount_bore_h=mount_bore_h,
+        r_factor=r_factor,
+        shell_r_factor=shell_r_factor,
+        contact_d=contact_d,
+        contact_h=contact_h,
+        contact_wall_h=contact_wall_h,
+        contact_base_h=contact_base_h,
+        contact_thickness=contact_thickness,
+        pin_color=pin_color,
+        pin_spacing=pin_spacing,
+        pin_dia=pin_dia,
+        pin_length=pin_length,
+        pin_thickness=pin_thickness,
+        shell_color=shell_color,
+        bolt_visible_h=bolt_visible_h,
+        bolt_head_type=bolt_head_type,
+        round_side=round_side,
+        bolt_through_h=bolt_through_h,
+        gnd_wiring_color=gnd_wiring_color,
+        gnd_wiring=gnd_wiring,
+        vcc_wiring=vcc_wiring,
+        vcc_wiring_color=vcc_wiring_color,
+        standup=standup,
+        show_bolt=show_bolt,
+        show_nut=show_nut,
+        center=center);
+}
+
+xt90e_m_from_plist(plist=["type", "custom",
+                          "placeholder", "xt90e_m",
+                          "placeholder_size", xt90e_mounting_panel_size,
+                          "slot_size", xt_90_size,
+                          "shell_size", xt90e_size,
+                          "mounting_panel_size", xt90e_mounting_panel_size,
+                          "bolt_spacing", xt_90_bolt_spacing,
+                          "align", 1,
+                          "gap_before", 5,
+                          "mount_spacing", xt90e_mount_spacing,
+                          "mount_dia", xt90e_mount_dia,
+                          "mount_bore_dia", xt90e_mount_cbore_dia,
+                          "mount_bore_h", xt90e_mount_cbore_h,
+                          "r_factor", 0.3,
+                          "shell_r_factor", 0.5,
+                          "contact_d", xt90e_contact_dia,
+                          "contact_h", xt90e_contact_h,
+                          "contact_wall_h", xt90e_contact_wall_h,
+                          "contact_base_h", xt90e_contact_base_h,
+                          "contact_thickness", xt90e_contact_thickness,
+                          "pin_color", xt90e_pin_color,
+                          "pin_spacing", xt90e_pin_spacing,
+                          "pin_dia", xt90e_pin_dia,
+                          "pin_length", xt90e_pin_length,
+                          "pin_thickness", xt90e_pin_thickness,
+                          "shell_color", xt90e_shell_color,
+                          "bolt_head_type", "pan",
+                          "round_side", "bottom",
+                          "gnd_wiring_color", matte_black,
+                          "gnd_wiring", [[0, 0, 40]],
+                          "vcc_wiring", [[0, 0, 40]],
+                          "vcc_wiring_color", red_1],
+                   standup=false,
+                   bolt_visible_h=10,
+                   bolt_through_h=5);

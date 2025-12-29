@@ -9,8 +9,14 @@ include <../colors.scad>
 use <../lib/shapes3d.scad>
 use <../lib/trapezoids.scad>
 use <../lib/placement.scad>
+use <../lib/plist.scad>
+use <../lib/functions.scad>
 
-function screw_terminal_width(base_w, pitch, contacts_n, contact_w, wall_thickness)=
+function screw_terminal_width(base_w,
+                              pitch,
+                              contacts_n,
+                              contact_w,
+                              wall_thickness) =
   let (needed_contacts_span = (contacts_n <= 1)
        ? contact_w
        : (contact_w + (contacts_n - 1) * pitch),
@@ -19,6 +25,18 @@ function screw_terminal_width(base_w, pitch, contacts_n, contact_w, wall_thickne
   is_undef(base_w)
   ? (needed_contacts_span + 2 * side_margin)
   : base_w;
+
+function screw_terminal_width_from_plist(plist=[]) =
+  let (base_w = plist_get("base_w", plist),
+       pitch = plist_get("pitch", plist),
+       contacts_n = plist_get("contacts_n", plist),
+       contact_w = plist_get("contact_w", plist),
+       wall_thickness = plist_get("wall_thickness", plist))
+  screw_terminal_width(base_w=base_w,
+                       pitch=pitch,
+                       contact_w=contact_w,
+                       wall_thickness=wall_thickness,
+                       contacts_n=contacts_n);
 
 module screw_terminal(base_w = undef,            // overall base width (optional)
                       base_h = 6.8,              // base height (Z)
@@ -100,7 +118,8 @@ module screw_terminal(base_w = undef,            // overall base width (optional
               }
             }
 
-            translate([cx - pin_thickness / 2, 0 - pin_thickness / 2,
+            translate([cx - pin_thickness / 2,
+                       0 - pin_thickness / 2,
                        -pin_h + wall_thickness]) {
               cube_3d([pin_thickness, pin_thickness, pin_h], center = false);
             }
@@ -119,4 +138,37 @@ module screw_terminal(base_w = undef,            // overall base width (optional
   }
 }
 
-screw_terminal(contacts_n=2, center=false);
+module screw_terminal_from_plist(plist, center=false) {
+  plist = with_default(plist, []);
+  base_w = plist_get("base_w", plist);
+  thickness = plist_get("thickness", plist, 7.6);
+  isosceles_trapezoid = plist_get("isosceles_trapezoid", plist, false);
+  base_h = plist_get("base_h", plist, 6.8);
+  top_l = plist_get("top_l", plist, 5.50);
+  top_h = plist_get("top_h", plist, 3.2);
+  contacts_n = plist_get("contacts_n", plist, 2);
+  contact_w = plist_get("contact_w", plist, 3.5);
+  contact_h = plist_get("contact_h", plist, 4.47);
+  pitch = plist_get("pitch", plist, 4.5);
+  colr = plist_get("colr", plist, medium_blue_2);
+  pin_thickness = plist_get("pin_thickness", plist, 0.4);
+  pin_h = plist_get("pin_h", plist, 3.9);
+  wall_thickness = plist_get("wall_thickness", plist, 0.6);
+  screw_terminal(thickness=thickness,
+                 isosceles_trapezoid=isosceles_trapezoid,
+                 base_h=base_h,
+                 top_l=top_l,
+                 base_w=base_w,
+                 top_h=top_h,
+                 contacts_n=contacts_n,
+                 contact_w=contact_w,
+                 contact_h=contact_h,
+                 pitch=pitch,
+                 colr=colr,
+                 pin_thickness=pin_thickness,
+                 pin_h=pin_h,
+                 wall_thickness=wall_thickness,
+                 center=center);
+}
+
+screw_terminal_from_plist(center=false);
