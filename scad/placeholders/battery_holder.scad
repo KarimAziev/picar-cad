@@ -15,90 +15,51 @@ use <../lib/transforms.scad>
 
 battery_holder_color = matte_black;
 
-function battery_holder_full_len(thickness) = battery_height + thickness * 3;
-function battery_holder_full_width(thickness) = battery_dia + thickness * 2;
+function battery_holder_full_len(thickness, battery_height) = battery_height + thickness * 2;
+function battery_holder_full_width(thickness, battery_dia) = battery_dia + thickness * 2;
 
-module battery_holder(batteries_count=battery_holder_batteries_count,
+function battery_holder_calc_full_w(inner_thickness,
+                                    count,
+                                    battery_dia) =
+  let (single_width = battery_holder_full_width(thickness=inner_thickness,
+                                                battery_dia=battery_dia),
+       total_w = single_width * count)
+  total_w;
+
+module battery_holder(count=battery_holder_batteries_count,
+                      battery_dia=battery_dia,
+                      battery_height=battery_height,
                       full_width,
                       full_len,
                       thickness=battery_holder_thickness,
                       bolt_hole_dia=3.5,
                       contact_inc_step=1,
-                      show_battery=true,
-                      show_atm_fuse=true,
-                      atm_fuse_spec=[[atm_fuse_holder_2_mounting_hole_h,
-                                      atm_fuse_holder_2_mounting_hole_l,
-                                      atm_fuse_holder_2_mounting_hole_r,
-                                      atm_fuse_holder_2_mounting_hole_depth],
-                                     [atm_fuse_holder_2_body_top_l,
-                                      atm_fuse_holder_2_body_bottom_l,
-                                      atm_fuse_holder_2_body_thickness,
-                                      atm_fuse_holder_2_body_h,
-                                      matte_black_2,
-                                      true],
-                                     [atm_fuse_holder_2_lid_top_l,
-                                      atm_fuse_holder_2_lid_bottom_l,
-                                      atm_fuse_holder_2_lid_thickness,
-                                      atm_fuse_holder_2_lid_h,
-                                      matte_black_2,
-                                      true],
-                                     [atm_fuse_holder_2_body_rib_l,
-                                      atm_fuse_holder_2_body_rib_h,
-                                      atm_fuse_holder_2_body_rib_n,
-                                      atm_fuse_holder_2_body_rib_distance,
-                                      atm_fuse_holder_2_body_rib_thickness],
-                                     [atm_fuse_holder_2_lid_rib_l,
-                                      atm_fuse_holder_2_lid_rib_h,
-                                      atm_fuse_holder_2_lid_rib_n,
-                                      atm_fuse_holder_2_lid_rib_distance,
-                                      atm_fuse_holder_2_lid_rib_thickness],
-                                     [atm_fuse_holder_body_wiring_d,
-                                      [[15, 0, 0],
-                                       [0, 0, 0]]]]) {
+                      show_battery=false,
+                      center=true) {
 
-  if (batteries_count > 0) {
-    full_width = is_undef(full_width)
-      ? battery_holder_full_width(thickness)
+  if (count > 0) {
+    single_width = is_undef(full_width)
+      ? battery_holder_full_width(thickness, battery_dia=battery_dia)
       : full_width;
 
+    full_width = single_width * count;
+
     full_len = is_undef(full_len)
-      ? battery_holder_full_len(thickness)
+      ? battery_holder_full_len(thickness, battery_height=battery_height)
       : full_len;
 
-    union() {
-      for (i = [0 : batteries_count - 1]) {
-        translate([i * full_width, 0, 0]) {
-          battery_holder_single_assembly(full_width=full_width,
-                                         full_len=full_len,
-                                         thickness=thickness,
-                                         bolt_hole_dia=bolt_hole_dia,
-                                         show_battery=show_battery,
-                                         contact_inc_step=contact_inc_step);
-        }
-      }
-    }
-    if (show_atm_fuse) {
-      let (mounting_hole_raw_spec = atm_fuse_spec[0],
-           body_spec = atm_fuse_spec[1],
-           lid_spec=atm_fuse_spec[2],
-           body_rib_spec=atm_fuse_spec[3],
-           lid_rib_spec=atm_fuse_spec[4],
-           wire_spec=atm_fuse_spec[5],
-           wire_d=wire_spec[0],
-           wire_points=wire_spec[1],) {
-
-        translate([-body_spec[3], 40, 0]) {
-          rotate([0, 0, 90]) {
-            atm_fuse_holder(show_lid=lid_spec[5],
-                            show_body=body_spec[5],
-                            center=false,
-                            mounting_hole_spec=mounting_hole_raw_spec,
-                            body_spec=body_spec,
-                            lid_spec=lid_spec,
-                            body_rib_spec=body_rib_spec,
-                            wiring_d=wire_d,
-                            wire_points=wire_points,
-                            lid_rib_spec=lid_rib_spec);
+    translate([center ? -full_width / 2 : 0, center ? -full_len / 2 : 0, 0]) {
+      union() {
+        for (i = [0 : count - 1]) {
+          translate([i * single_width, 0, 0]) {
+            battery_holder_single_assembly(full_width=single_width,
+                                           full_len=full_len,
+                                           thickness=thickness,
+                                           battery_height=battery_height,
+                                           battery_dia=battery_dia,
+                                           bolt_hole_dia=bolt_hole_dia,
+                                           show_battery=show_battery,
+                                           contact_inc_step=contact_inc_step);
           }
         }
       }
@@ -108,16 +69,20 @@ module battery_holder(batteries_count=battery_holder_batteries_count,
 
 module battery_holder_single(full_width,
                              full_len,
+                             battery_height,
+                             battery_dia,
                              thickness=battery_holder_thickness,
                              bolt_hole_dia=3.5,
                              contact_inc_step=1) {
 
   full_width = is_undef(full_width)
-    ? battery_holder_full_width(thickness)
+    ? battery_holder_full_width(thickness,
+                                battery_dia=battery_dia)
     : full_width;
 
   full_len = is_undef(full_len)
-    ? battery_holder_full_len(thickness)
+    ? battery_holder_full_len(thickness,
+                              battery_height=battery_height)
     : full_len;
 
   union() {
@@ -157,15 +122,17 @@ module battery_holder_single_assembly(full_width,
                                       full_len,
                                       thickness=battery_holder_thickness,
                                       bolt_hole_dia=3.5,
+                                      battery_height,
+                                      battery_dia,
                                       contact_inc_step=1,
                                       show_battery=true) {
 
   full_width = is_undef(full_width)
-    ? battery_holder_full_width(thickness)
+    ? battery_holder_full_width(thickness, battery_dia=battery_dia)
     : full_width;
 
   full_len = is_undef(full_len)
-    ? battery_holder_full_len(thickness)
+    ? battery_holder_full_len(thickness, battery_height=battery_height)
     : full_len;
 
   union() {
@@ -173,14 +140,16 @@ module battery_holder_single_assembly(full_width,
                           full_len=full_len,
                           thickness=thickness,
                           bolt_hole_dia=bolt_hole_dia,
-                          contact_inc_step=contact_inc_step);
+                          contact_inc_step=contact_inc_step,
+                          battery_height=battery_height,
+                          battery_dia=battery_dia);
 
     if (show_battery) {
       translate([full_width / 2,
                  full_len - thickness,
                  full_width / 2]) {
         rotate([90, 0, 0]) {
-          battery();
+          battery(h=battery_height, d=battery_dia);
         }
       }
     }
@@ -189,6 +158,7 @@ module battery_holder_single_assembly(full_width,
 
 module battery_holder_top_wall(width=battery_dia + battery_holder_thickness * 2,
                                height=battery_dia,
+
                                thickness=battery_holder_thickness,
                                battery_contact_dia=5,
                                contact_inc_step=1) {

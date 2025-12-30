@@ -405,7 +405,8 @@ module chassis_body(panel_color="white",
                                         [batteries_holder_assembly_y_idx])
           ? battery_holes_y_positions[batteries_holder_assembly_y_idx - 1]
           : battery_holes_y_positions[batteries_holder_assembly_y_idx];
-        full_holder_len = battery_holder_full_len(battery_holder_thickness)
+        full_holder_len = battery_holder_full_len(battery_holder_thickness,
+                                                  battery_height=battery_height)
           * battery_holder_batteries_count;
         full_holder_width = battery_holder_full_width(battery_holder_thickness)
           * battery_holder_batteries_count;
@@ -436,7 +437,8 @@ module chassis_body(panel_color="white",
     translate([0, 0, chassis_thickness]) {
       for (specs = smd_battery_holder_chassis_specs) {
         let (width = smd_battery_holder_calc_full_w(smd_battery_holder_inner_thickness,
-                                                    smd_battery_holder_batteries_count)) {
+                                                    count=smd_battery_holder_batteries_count,
+                                                    battery_dia=battery_dia)) {
 
           translate([0, -smd_battery_holder_length, 0]) {
             rotate([0, 0, 0]) {

@@ -16,15 +16,26 @@ use <../lib/trapezoids.scad>
 use <../lib/placement.scad>
 use <../lib/functions.scad>
 use <bolt.scad>
+use <../lib/plist.scad>
 
-function smd_battery_holder_full_len(bottom_thickness) = battery_height + bottom_thickness * 2;
-function smd_battery_holder_full_width(inner_thickness) = battery_dia + inner_thickness * 2;
+function smd_battery_holder_full_len(bottom_thickness, battery_height) = battery_height + bottom_thickness * 2;
+function smd_battery_holder_full_width(inner_thickness, battery_dia) = battery_dia + inner_thickness * 2;
 
 function smd_battery_holder_calc_full_w(inner_thickness=smd_battery_holder_inner_thickness,
-                                        amount=smd_battery_holder_batteries_count) =
-  let (single_width = smd_battery_holder_full_width(inner_thickness),
-       total_w = single_width * amount)
+                                        count=smd_battery_holder_batteries_count,
+                                        battery_dia) =
+  let (single_width = smd_battery_holder_full_width(inner_thickness=inner_thickness,
+                                                    battery_dia=battery_dia),
+       total_w = single_width * count)
   total_w;
+
+function smd_battery_holder_add_placeholder_size(plist) =
+  let (count = plist_get("count", plist),
+       battery_dia = plist_get("battery_dia", plist),
+       inner_thickness = plist_get("inner_thickness", plist))
+  smd_battery_holder_calc_full_w(inner_thickness=inner_thickness,
+                                 count=count,
+                                 battery_dia=battery_dia);
 
 smd_battery_holder_side_wall_h                          = 12.5;
 smd_battery_holder_side_wall_center_cutout_size         = [25, 7];
@@ -48,9 +59,65 @@ smd_battery_holder_contact_outer_bottom_cutout_size     = [2.96,
                                                            (smd_battery_holder_front_rear_thickness / 2),
                                                            smd_battery_holder_height - 2];
 
+module smd_battery_with_mounting_holes_positions(count=smd_battery_holder_batteries_count,
+                                                 bolt_spacing=smd_battery_holder_bolt_spacing,
+                                                 inner_thickness=smd_battery_holder_inner_thickness,
+                                                 battery_dia) {
+  single_width = smd_battery_holder_full_width(inner_thickness,
+                                               battery_dia=battery_dia);
+
+  y_size = is_num(bolt_spacing) ? bolt_spacing : bolt_spacing[1];
+
+  if (count > 1) {
+    total_w = single_width * count;
+    translate([-total_w / 2, 0, 0]) {
+      for (i = [0:count - 2]) {
+        let (n = i + 1,
+             v = single_width * n) {
+          echo(i, v);
+          translate([v, 0, 0]) {
+            for (y_ind = [0, 1]) {
+              y_pos = -y_size / 2 + y_ind * y_size;
+
+              translate([0, y_pos]) {
+                children();
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+module smd_battery_slot(count=smd_battery_holder_batteries_count,
+                        bolt_spacing=smd_battery_holder_bolt_spacing,
+                        bolt_dia=smd_battery_holder_bolt_dia,
+                        inner_thickness=smd_battery_holder_inner_thickness,
+                        battery_dia,
+                        thickness) {
+  smd_battery_with_mounting_holes_positions(count=count,
+                                            bolt_spacing=bolt_spacing,
+                                            inner_thickness=inner_thickness,
+                                            battery_dia=battery_dia) {
+    translate([0, 0, with_default(thickness, 0)]) {
+
+      union() {
+        translate([0, 0, -0.1]) {
+          cylinder(d=bolt_dia,
+                   h=thickness + 0.1,
+                   $fn=200);
+        }
+      }
+    }
+  }
+}
+
 module smd_battery_holder(height=smd_battery_holder_height,
                           length=smd_battery_holder_length,
-                          amount=smd_battery_holder_batteries_count,
+                          battery_dia=battery_dia,
+                          battery_height=battery_height,
+                          count=smd_battery_holder_batteries_count,
                           bolt_dia=smd_battery_holder_bolt_dia,
                           bolt_spacing=smd_battery_holder_bolt_spacing,
                           bolt_recess_size=smd_battery_holder_bolt_recess_size,
@@ -84,14 +151,18 @@ module smd_battery_holder(height=smd_battery_holder_height,
                           bolt_head_type="round",
                           bolt_visible_h = 2) {
 
-  if (amount > 0) {
+  if (count > 0) {
 
-    single_width = smd_battery_holder_full_width(inner_thickness);
+    single_width = smd_battery_holder_full_width(inner_thickness,
+                                                 battery_dia=battery_dia);
 
-    total_w = smd_battery_holder_calc_full_w(inner_thickness, amount);
+    total_w = smd_battery_holder_calc_full_w(inner_thickness=inner_thickness,
+                                             count=count,
+                                             battery_dia=battery_dia);
 
     full_len = is_undef(length)
-      ? smd_battery_holder_full_len(front_rear_thickness)
+      ? smd_battery_holder_full_len(front_rear_thickness,
+                                    battery_height=battery_height)
       : length;
 
     total_l = full_len - front_rear_thickness * 2;
@@ -100,10 +171,12 @@ module smd_battery_holder(height=smd_battery_holder_height,
       difference() {
         translate([-total_w / 2, -full_len / 2, 0]) {
           union() {
-            for (i = [0 : amount - 1]) {
+            for (i = [0 : count - 1]) {
               translate([i * single_width, 0, 0]) {
                 smd_battery_holder_single_assembly(full_width=single_width,
                                                    full_len=full_len,
+                                                   battery_dia=battery_dia,
+                                                   battery_height=battery_height,
                                                    height=height,
                                                    bottom_thickness=bottom_thickness,
                                                    inner_cutout_size=inner_cutout_size,
@@ -121,7 +194,7 @@ module smd_battery_holder(height=smd_battery_holder_height,
                                                    inner_hook_cutout_size=inner_hook_cutout_size,
                                                    inner_hook_y_position=inner_hook_y_position,
                                                    outer_hook_cutout_size=outer_hook_cutout_size,
-                                                   outer_bottom_cutout_size=outer_bottom_cutout_size,);
+                                                   outer_bottom_cutout_size=outer_bottom_cutout_size);
               }
             }
           }
@@ -159,28 +232,36 @@ module smd_battery_holder(height=smd_battery_holder_height,
                         total_l,
                         height,]);
         }
-        four_corner_children(size=bolt_spacing) {
-          translate([0, 0, bolt_recess_size[2]]) {
-            cube_3d(size=[bolt_recess_size[0],
-                          bolt_recess_size[1],
-                          height]);
-          }
-          translate([0, 0, -0.1]) {
-            cylinder(d=bolt_dia,
-                     h=height + 0.1,
-                     $fn=360);
+
+        smd_battery_with_mounting_holes_positions(count=count,
+                                                  bolt_spacing=bolt_spacing,
+                                                  inner_thickness=inner_thickness,
+                                                  battery_dia=battery_dia) {
+          union() {
+            translate([0, 0, bolt_recess_size[2]]) {
+              cube_3d(size=[bolt_recess_size[0],
+                            bolt_recess_size[1],
+                            height]);
+            }
+            translate([0, 0, -0.1]) {
+              cylinder(d=bolt_dia,
+                       h=height + 0.1,
+                       $fn=360);
+            }
           }
         }
       }
       translate([-total_w / 2, -full_len / 2, 0]) {
-        for (i = [0 : amount - 1]) {
+        for (i = [0 : count - 1]) {
           translate([i * single_width, 0, 0]) {
             if (show_battery) {
               translate([single_width / 2, full_len / 2, 0]) {
-                translate([0, battery_height / 2,
+                translate([0,
+                           battery_height / 2,
                            battery_dia / 2]) {
                   rotate([90, 0, 0]) {
-                    battery();
+                    battery(d=battery_dia,
+                            h=battery_height);
                   }
                 }
               }
@@ -192,7 +273,10 @@ module smd_battery_holder(height=smd_battery_holder_height,
         let (blt_h = round(bottom_thickness + chassis_thickness + bolt_visible_h),
              bolt_h = blt_h % 2 == 0 ? blt_h : blt_h + 1) {
           translate([0, 0, -bolt_h + bottom_thickness]) {
-            four_corner_children(size=bolt_spacing) {
+            smd_battery_with_mounting_holes_positions(count=count,
+                                                      bolt_spacing=bolt_spacing,
+                                                      battery_dia=battery_dia,
+                                                      inner_thickness=inner_thickness) {
               bolt(d=bolt_dia,
                    h=bolt_h,
                    head_type=bolt_head_type,
@@ -210,6 +294,8 @@ module smd_battery_holder(height=smd_battery_holder_height,
 module smd_battery_holder_single_assembly(full_width,
                                           full_len,
                                           height,
+                                          battery_dia,
+                                          battery_height,
                                           bottom_thickness=battery_holder_thickness,
                                           front_rear_thickness,
                                           center=false,
@@ -231,12 +317,13 @@ module smd_battery_holder_single_assembly(full_width,
                                           outer_bottom_cutout_size=smd_battery_holder_contact_outer_bottom_cutout_size) {
   full_dia= battery_dia + tolerance;
   full_width = is_undef(full_width)
-    ? smd_battery_holder_full_width(bottom_thickness)
+    ? smd_battery_holder_full_width(bottom_thickness,
+                                    battery_dia=battery_dia)
     : full_width;
 
   full_len = is_undef(full_len)
-    ? smd_battery_holder_full_len(front_rear_thickness)
-
+    ? smd_battery_holder_full_len(front_rear_thickness,
+                                  battery_height=battery_height)
     : full_len;
 
   union() {
@@ -256,7 +343,7 @@ module smd_battery_holder_single_assembly(full_width,
                                                 outer_hook_y_position=smd_battery_holder_contact_outer_hook_cutout_y_position,
                                                 total_height=height,
                                                 front_rear_thickness=front_rear_thickness,
-                                                outer_bottom_cutout_size=outer_bottom_cutout_size,);
+                                                outer_bottom_cutout_size=outer_bottom_cutout_size);
             }
           }
 
@@ -299,7 +386,8 @@ module smd_battery_holder_single_assembly(full_width,
         }
       }
       if (show_battery) {
-        translate([0, battery_height / 2,
+        translate([0,
+                   battery_height / 2,
                    battery_dia / 2]) {
           rotate([90, 0, 0]) {
             battery();
@@ -347,7 +435,6 @@ module smd_battery_holder_contact_cutout(contact_w=smd_battery_holder_contact_wi
                                          front_rear_thickness=smd_battery_holder_front_rear_thickness,
                                          outer_bottom_cutout_size=smd_battery_holder_contact_outer_bottom_cutout_size,
                                          inc_step=4) {
-  // -outer_size[1] / 2 + front_rear_thickness / 2
   outer_thickness = outer_size[1] + inc_step;
   inner_thickness = inner_size[1] + inc_step;
   bottom_outer_thickness = outer_bottom_cutout_size[1] + inc_step;
@@ -358,7 +445,8 @@ module smd_battery_holder_contact_cutout(contact_w=smd_battery_holder_contact_wi
             contact_h,
             total_height + 1],
            center=true);
-      translate([0, -inner_size[1] / 2
+      translate([0,
+                 -inner_size[1] / 2
                  + front_rear_thickness / 2
                  + inc_step / 2,
                  total_height - inner_size[2]]) {
@@ -366,12 +454,15 @@ module smd_battery_holder_contact_cutout(contact_w=smd_battery_holder_contact_wi
                                                hook_cutout_size=inner_hook_cutout_size,
                                                hook_y_position=inner_hook_y_position);
       }
-      translate([0, outer_size[1] / 2 - front_rear_thickness / 2 - inc_step / 2, 0]) {
+      translate([0,
+                 outer_size[1] / 2 - front_rear_thickness / 2 - inc_step / 2,
+                 0]) {
         smd_battery_holder_contact_cutout_base(size=[outer_size[0], outer_thickness, outer_size[2] + inc_step],
                                                hook_cutout_size=outer_hook_cutout_size,
                                                hook_y_position=outer_hook_y_position);
       }
-      translate([0, outer_bottom_cutout_size[1] / 2 - front_rear_thickness / 2 - inc_step / 2,
+      translate([0,
+                 outer_bottom_cutout_size[1] / 2 - front_rear_thickness / 2 - inc_step / 2,
                  -inc_step]) {
         cube_3d(size=[outer_bottom_cutout_size[0], bottom_outer_thickness, outer_bottom_cutout_size[2] + inc_step]);
       }
