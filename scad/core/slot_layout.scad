@@ -100,8 +100,7 @@ function get_total_x(specs) =
   len(specs) == 0 ? 0 :
   sum(concat(get_x_sizes(specs),
              get_gaps_before(specs),
-             get_gaps_after(specs)))
-  ;
+             get_gaps_after(specs)));
 
 function get_total_len(specs, direction) =
   len(specs) == 0
@@ -124,29 +123,7 @@ function get_total_size(specs, direction) =
   : [get_max_x(specs),
      sum(concat(get_y_sizes(specs),
                 get_gaps_before(specs),
-                get_gaps_after(specs))),]
-  ;
-
-/**
-
- **Parameters:**
- `specs`: list of plists with specifications
- `direction`: one of:
- - `btt`: Bottom to top. (default)
- - `ttb`: Top to bottom.
- - `ltr`: Left to right.
- - `rtl`: Right to left.
- `center`: Whether to center slots on their primary axle.
- If direction is `btt` or `ttb` - on Y-axle,  if `ltr` or `rlt` - on the X-axle.
- `align_to_axle`: 1 (default), 0, or -1.
- `align`: 1, 0 (default), or -1.
- `use_children`: Whether to use placeholders (as children) instead of all slots.
- Note, for custom types children will still be used.
- `thickness`: Target thickness to make slots in. Shouldn't be centered on Z-axle.
- `debug`: Whether to display indices around items.
- `show_borders`: Whether to show borders around elements for debugging.
-
-*/
+                get_gaps_after(specs)))];
 
 /**
  *
@@ -186,6 +163,16 @@ function get_total_size(specs, direction) =
  *   -  1 aligns the group to the positive side of the cross axis
  *   -  0 no cross-axis shift
  *   - -1 aligns to the negative side
+ *
+ * `align_on_primary_axle` : -1|0|1 = 0
+ *   Primary-axis anchoring of the *whole group* relative to the origin when
+ *   `center == false`. This controls whether the layout starts/ends at the
+ *   origin (depending on direction):
+ *   -  0 no primary-axis shift (default behavior)
+ *   -  1 align the group so its “start” edge sits on the origin
+ *        ("ltr"/"btt": start at 0; "rtl"/"ttb": start at total size)
+ *   - -1 align the group so its “end” edge sits on the origin
+ *        ("ltr"/"btt": end at -total size; "rtl"/"ttb": end at 0)
  *
  * `align` : -1|0|1 = 0
  *   Default per-item alignment on the cross-axis within the group envelope:
@@ -255,6 +242,7 @@ module slot_layout(specs,
                    debug = false,
                    align = 0,
                    align_to_axle = 1,
+                   align_on_primary_axle = 0,
                    use_children=false,
                    show_borders=false,
                    thickness=3) {
@@ -295,8 +283,25 @@ module slot_layout(specs,
   total_x = total_size[0];
   total_y = total_size[1];
 
-  group_x = y_axle ? (max_x_size / 2 * align_to_axle) : center ? total_x / 2 : 0;
-  group_y = x_axle ? (max_y_size / 2 * align_to_axle) : center ? total_y / 2 : 0;
+  group_x = y_axle
+    ? (max_x_size / 2 * align_to_axle)
+    : center
+    ? total_x / 2
+    : align_on_primary_axle == 1
+    ? (is_ltr ? 0 : total_x)
+    : align_on_primary_axle == -1
+    ? (is_ltr ? -total_x : 0)
+    : 0;
+
+  group_y = x_axle
+    ? (max_y_size / 2 * align_to_axle)
+    : center
+    ? total_y / 2
+    : align_on_primary_axle == 1
+    ? (is_btt ? 0 : total_y)
+    : align_on_primary_axle == -1
+    ? (is_btt ? -total_y : 0)
+    : 0;
 
   ratio = (is_ltr || is_btt) ? 1 : -1;
 
@@ -445,6 +450,10 @@ module slot_layout(specs,
 }
 
 module slot_grid_rows(nested_specs,
+                      center = false,
+                      align_to_axle = 1,
+                      use_children=false,
+                      show_borders=false,
                       direction = "btt", // "btt" (bottom to top, default) or "ttb" (top to bottom)
                       cols_direction = "ltr", // | "ltr" | "rtl",
                       debug = false,
@@ -462,11 +471,16 @@ module slot_grid_rows(nested_specs,
                    + curr_offset * (direction == "btt" ? 1 : -1),
                    0]) {
           slot_layout(specs=specs,
-                      align_to_axle=0,
                       direction=cols_direction,
                       debug=debug,
                       align=align,
-                      thickness=thickness);
+                      thickness=thickness,
+                      center=center,
+                      align_to_axle=align_to_axle,
+                      use_children=use_children,
+                      show_borders=show_borders) {
+            children();
+          };
         }
       }
     }
@@ -474,6 +488,10 @@ module slot_grid_rows(nested_specs,
 }
 
 module slot_grid_cols(nested_specs,
+                      center = false,
+                      align_to_axle = 1,
+                      use_children=false,
+                      show_borders=false,
                       direction = "ltr", // "btt" (bottom to top, default) or "ttb" (top to bottom)
                       cols_direction = "btt", // | "ltr" | "rtl",
                       debug = false,
@@ -491,11 +509,16 @@ module slot_grid_cols(nested_specs,
                    0,
                    0]) {
           slot_layout(specs=specs,
-                      align_to_axle=0,
                       direction=cols_direction,
                       debug=debug,
                       align=align,
-                      thickness=thickness);
+                      thickness=thickness,
+                      center=center,
+                      align_to_axle=align_to_axle,
+                      use_children=use_children,
+                      show_borders=show_borders) {
+            children();
+          }
         }
       }
     }
@@ -533,7 +556,6 @@ my_specs = [["type", "rect",
              "gap_before", 0,
              "gap_after", 2,
              "rotation", 0,
-             "align", 0,
              "slot_size", [20, 5],
              "corner_factor", 0.5,
              "round_side", "all",
@@ -574,16 +596,9 @@ my_specs = [["type", "rect",
              "corner_factor", 0.3,
              "round_side", "all",
              "placeholder_size", [10, 20],
-             "align", 0,
+
              "recess_h", 0.5,
              "recess_reverse", false,
              "recess_size", [],
              "x_offset", 0,
              "y_offset", 0]];
-
-slot_layout(specs=my_specs,
-            align=-1,
-            align_to_axle=0,
-            debug=true,
-            center=true,
-            direction="rtl");
