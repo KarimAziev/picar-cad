@@ -144,14 +144,11 @@ module text_from_plist(txt,
   if (!is_undef(plist)) {
     let (txt_raw = is_undef(txt) ? plist_get("text", plist, txt) : txt,
          txt = is_num(txt_raw) ? str(txt_raw) : txt_raw,
-         size = (with_default(plist_get("size", plist), default_size)),
-         colr = (with_default(plist_get("color", plist), default_color)),
-         rotation = (with_default(plist_get("rotation", plist),
-                                  default_rotation)),
-         translation = (with_default(plist_get("translation", plist),
-                                     default_translation)),
-         spacing = (with_default(plist_get("spacing", plist),
-                                 default_spacing)),
+         size = plist_get("size", plist, default_size),
+         colr = plist_get("color", plist, default_color),
+         rotation = plist_get("rotation", plist, default_rotation),
+         translation = plist_get("translation", plist, default_translation),
+         spacing = plist_get("spacing", plist, default_spacing),
          font = with_default(plist_get("font", plist, default_font)),
          halign = with_default(plist_get("halign", plist), default_halign),
          valign = with_default(plist_get("valign", plist), default_valign),
@@ -182,6 +179,165 @@ module text_from_plist(txt,
                    font=font,
                    halign=halign,
                    valign=valign);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+function get_z_rotation(spec) =
+  let (rotation = plist_get("rotation", spec),
+       z_rotation = is_list(rotation) ? rotation[2] : rotation)
+  z_rotation;
+
+function get_rotation(spec) =
+  let (rotation = plist_get("rotation", spec))
+  is_list(rotation)
+  ? [for (v = [rotation[0],
+               rotation[1],
+               rotation[2]])
+    with_default(v, 0, "number")]
+  : is_num(rotation) ? [0, 0, rotation] : rotation;
+
+function should_swap_size(spec) =
+  let (z_rotation = get_z_rotation(spec))
+  is_num(z_rotation) && abs(z_rotation) == 90;
+
+function get_text_size(txt, plist) =
+  let (tm = textmetrics(text=txt,
+                        size=plist_get("size", plist),
+                        font=plist_get("font", plist),
+                        spacing=plist_get("spacing", plist),
+                        halign=plist_get("halign", plist),
+                        valign=plist_get("valign", plist)),
+       should_swap = should_swap_size(plist))
+  should_swap ? [tm.size[1], tm.size[0]] : tm.size;
+
+function get_y_size(spec) =
+  get_size_at(1, spec);
+
+function get_gap_before(spec) =
+  plist_get("gap_before", spec, 0);
+
+function get_gap_after(spec) =
+  plist_get("gap_after", spec, 0);
+
+function get_gap_x_offset(spec) =
+  let (tr = plist_get("translation", spec))
+  is_list(tr) ? tr[0] : 0;
+
+function get_gap_y_offset(spec, default_gap = 0) =
+  let (tr = plist_get("translation", spec))
+  is_list(tr) ? tr[1] : default_gap;
+
+module text_rows(texts = [],
+                 plist,
+                 gap = 0,
+                 default_font,
+                 default_height = 0.1,
+                 default_size = 4,
+                 default_spacing = 1,
+                 default_halign = "center",
+                 default_valign = "center",
+                 default_rotation,
+                 default_translation,
+                 default_color,
+                 center_x=false,
+                 center_y=true,
+                align_to_bottom=true,) {
+  texts = [for (v = with_default(texts, []))
+      if (!is_undef(v) &&
+          (is_string(v) || is_num(v) ||
+           (is_list(v) &&
+            is_string(plist_get("text", v))
+            || is_num(plist_get("text", v))))) v];
+
+  if (len(texts) > 0) {
+    plist = with_default(plist, []);
+    gap = with_default(gap, 0);
+    default_plist = plist_merge(["font", default_font,
+                                 "height",  default_height,
+                                 "size",  default_size,
+                                 "spacing",  default_spacing,
+                                 "halign",  default_halign,
+                                 "valign",  default_valign,
+                                 "rotation",  default_rotation,
+                                 "translation",  default_translation,
+                                 "color", default_color],
+                                plist);
+    text_strings = [for (v = texts) let (txt = is_string(v) || is_num(v)
+                                         ? v : plist_get("text", v, ""))
+                                      is_num(txt) ? str(txt) : txt];
+    text_plists = [for (v = texts) is_string(v)
+                                     ? plist_merge(default_plist, ["text", v])
+                                     : plist_merge(should_swap_size(v)
+                                                   ? plist_merge(default_plist, ["valign", "center",
+                                                                                 "halign", "center",
+                                                                                ])
+                                                   : default_plist, v)];
+
+    text_sizes = [for (v = text_plists) get_text_size(plist_get("text", v), v)];
+    echo("text_sizes", text_sizes);
+    x_sizes = [for (v = text_sizes) v[0]];
+    y_sizes = [for (v = text_sizes) v[1]];
+
+    gaps_before = [for (v = text_plists) get_gap_before(v)];
+    gaps_after = [for (v = text_plists) get_gap_after(v)];
+
+    max_x_size = max(x_sizes);
+    gaps = repeat(gap, len(gaps_after));
+    total_size = [max_x_size,
+                  sum(concat(y_sizes,
+                             gaps_before,
+                             drop_last(gaps_after, 1),
+                             drop_last(gaps, 1)))];
+
+    translate([center_x ? -max_x_size / 2 : 0,
+               center_y ? total_size[1] / 2 : align_to_bottom ? total_size[1] : 0,
+               0]) {
+      union() {
+        for (i = [0 : len(text_plists) - 1]) {
+          let (txt = text_strings[i],
+               spec = text_plists[i],
+               ratio = -1,
+               prev_y_acc = sum(y_sizes, i),
+               prev_gap_after = sum(gaps_after, i),
+               prev_gap_before = sum(gaps_before, i),
+               curr_gap_before = get_gap_before(spec),
+               curr_y = y_sizes[i],
+               gap_acc = sum([prev_gap_after,
+                              prev_gap_before,
+                              curr_gap_before,
+                              gap * i]),
+               translation = plist_get("translation", spec),
+               rotation = get_rotation(spec),
+               y_acc = ratio * sum([prev_y_acc, gap_acc, curr_y / 2]),
+               height = plist_get("height", spec, 0.1),
+               size = plist_get("size", spec),
+               spacing = plist_get("spacing", spec),
+               font = plist_get("font", spec),
+               valign = plist_get("valign", spec),
+               halign = plist_get("halign", spec),
+               colr = plist_get("colr", spec),
+               y_offset = plist_get("y_offset", spec, 0),
+               final_y = y_acc + ratio * y_offset) {
+            translate([0, final_y, 0]) {
+              color(colr) {
+                maybe_translate(translation) {
+                  maybe_rotate(rotation) {
+                    linear_extrude(height=height, center=false) {
+                      text(text=txt,
+                           size=size,
+                           spacing=spacing,
+                           font=font,
+                           halign=halign,
+                           valign=valign);
+                    }
+                  }
+                }
+              }
             }
           }
         }
