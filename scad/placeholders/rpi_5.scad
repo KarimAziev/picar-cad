@@ -19,6 +19,12 @@ use <motor_driver_hat.scad>
 use <gpio_expansion_board.scad>
 use <standoff.scad>
 
+show_standoffs            = false;
+show_ai_hat               = true;
+show_motor_driver_hat     = true;
+show_servo_driver_hat     = true;
+show_gpio_expansion_board = true;
+
 module io_controller(size=rpi_io_size) {
   color(matte_black, alpha=1) {
     rpi_rectangle_3d(size);
@@ -301,12 +307,12 @@ module rpi_standoffs(standoff_height=rpi_standoff_height,
   }
 }
 
-module rpi_5(show_standoffs=false,
+module rpi_5(show_standoffs=show_standoffs,
+             show_ai_hat=show_ai_hat,
+             show_motor_driver_hat=show_motor_driver_hat,
+             show_servo_driver_hat=show_servo_driver_hat,
+             show_gpio_expansion_board=show_gpio_expansion_board,
              standoff_height=rpi_standoff_height,
-             show_ai_hat=true,
-             show_motor_driver_hat=true,
-             show_servo_driver_hat=true,
-             show_gpio_expansion_board=true,
              bolt_visible_h=chassis_thickness - chassis_counterbore_h,
              slot_mode=false) {
   if (slot_mode) {
@@ -494,6 +500,6 @@ module rpi_5(show_standoffs=false,
   }
 }
 
-rpi_5(show_standoffs=true,
-      show_ai_hat=true,
+rpi_5(show_standoffs=show_standoffs,
+      show_ai_hat=show_ai_hat,
       bolt_visible_h=chassis_thickness - chassis_counterbore_h);
