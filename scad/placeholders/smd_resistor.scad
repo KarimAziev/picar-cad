@@ -3,8 +3,8 @@ include <../colors.scad>
 use <../lib/shapes2d.scad>
 use <../lib/shapes3d.scad>
 use <../lib/transforms.scad>
-
-function with_default(val, default) = is_undef(val) ? default : val;
+use <../lib/plist.scad>
+use <../lib/functions.scad>
 
 module smd_resistor(size=[3.2, 1.4, 0.4],
                     border_color="white",
@@ -129,7 +129,7 @@ module smd_resistors_row(size,
                          text_gap=1,
                          axle="y",
                          center=false,
-                         use_inner_round=false,) {
+                         use_inner_round=false) {
 
   y_axle = axle == "y";
   val_idx = y_axle ? 1 : 0;
@@ -320,12 +320,68 @@ module smd_resistors_from_specs(specs=[[[2.0, 3.3, 2.5, 0.1, false],
   }
 }
 
-smd_resistors_from_specs(specs=[[[6.15, 6.15, 2.7, 0.01, false],
-                                 [metallic_silver_1, 0.00, 1.0],
-                                 [metallic_silver_1, 0.1],
-                                 ["100", "white"],
-                                 [-5.60, 1.5, 0],
-                                 []]]);
+module smd_resistor_from_plist(plist, center=true) {
+  plist = with_default(plist, []);
+  size = plist_get("placeholder_size", plist, [3.2, 1.4, 0.4]);
+  border_color = plist_get("border_color", plist, "white");
+  body_h = plist_get("body_h", plist, 0.1);
+  border_w = plist_get("border_w", plist, undef);
+  border_p = plist_get("border_p", plist, 0.2);
+  body_color = plist_get("body_color", plist, matte_black);
+  fillet_factor = plist_get("fillet_factor", plist, 0.2);
+  pad_color = plist_get("pad_color", plist, "lightyellow");
+  pad_factor_x = plist_get("pad_factor_x", plist, 0.5);
+  pad_factor_y = plist_get("pad_factor_y", plist, 0.9);
+  marking = plist_get("marking", plist, undef);
+  mark_color = plist_get("mark_color", plist, undef);
+  mark_size = plist_get("mark_size", plist, undef);
+  mark_font = plist_get("mark_font", plist, "Liberation Sans:style=Bold");
+  mark_spacing = plist_get("mark_spacing", plist, 0.8);
+  use_inner_round = plist_get("use_inner_round", plist, false);
+
+  smd_resistor(size=size,
+               center=center,
+               border_color=border_color,
+               body_h=body_h,
+               border_w=border_w,
+               border_p=border_p,
+               body_color=body_color,
+               fillet_factor=fillet_factor,
+               pad_color=pad_color,
+               pad_factor_x=pad_factor_x,
+               pad_factor_y=pad_factor_y,
+               marking=marking,
+               mark_color=mark_color,
+               mark_size=mark_size,
+               mark_font=mark_font,
+               mark_spacing=mark_spacing,
+               use_inner_round=use_inner_round);
+}
+
+smd_plist = ["placeholder_size", [8.2, 3.4, 0.4],
+             "border_color", "white",
+             "body_h", 0.1,
+             "border_w", undef,
+             "border_p", 0.2,
+             "body_color", matte_black,
+             "fillet_factor", 0.2,
+             "pad_color", "lightyellow",
+             "pad_factor_x", 0.5,
+             "pad_factor_y", 0.9,
+             "marking", "103",
+             "mark_color", "red",
+             "mark_size", 2,
+             "mark_font", "Liberation Sans:style=Bold",
+             "mark_spacing", 0.8,];
+
+// smd_resistors_from_specs(specs=[[[6.15, 6.15, 2.7, 0.01, false],
+//                                  [metallic_silver_1, 0.00, 1.0],
+//                                  [metallic_silver_1, 0.1],
+//                                  ["100", "white"],
+//                                  [-5.60, 1.5, 0],
+//                                  []]]);
+
+smd_resistor_from_plist(smd_plist);
 
 // smd_resistor(size=[3.2, 1.4, 0.4],
 //              border_color="white",

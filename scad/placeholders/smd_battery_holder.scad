@@ -32,10 +32,12 @@ function smd_battery_holder_calc_full_w(inner_thickness=smd_battery_holder_inner
 function smd_battery_holder_add_placeholder_size(plist) =
   let (count = plist_get("count", plist),
        battery_dia = plist_get("battery_dia", plist),
-       inner_thickness = plist_get("inner_thickness", plist))
-  smd_battery_holder_calc_full_w(inner_thickness=inner_thickness,
-                                 count=count,
-                                 battery_dia=battery_dia);
+       inner_thickness = plist_get("inner_thickness", plist),
+       full_w = smd_battery_holder_calc_full_w(inner_thickness=inner_thickness,
+                                               count=count,
+                                               battery_dia=battery_dia))
+  plist_merge(["placeholder_size", [full_w, plist_get("length", plist, battery_height)]],
+              plist);
 
 smd_battery_holder_side_wall_h                          = 12.5;
 smd_battery_holder_side_wall_center_cutout_size         = [25, 7];
@@ -90,12 +92,18 @@ module smd_battery_with_mounting_holes_positions(count=smd_battery_holder_batter
   }
 }
 
-module smd_battery_slot(count=smd_battery_holder_batteries_count,
-                        bolt_spacing=smd_battery_holder_bolt_spacing,
-                        bolt_dia=smd_battery_holder_bolt_dia,
-                        inner_thickness=smd_battery_holder_inner_thickness,
-                        battery_dia,
-                        thickness) {
+module smd_battery_holder_slot(plist,
+                               thickness) {
+  count = plist_get("count", plist, smd_battery_holder_batteries_count);
+  bolt_spacing = plist_get("bolt_spacing",
+                           plist,
+                           smd_battery_holder_bolt_spacing);
+  bolt_dia = plist_get("bolt_dia", plist, smd_battery_holder_bolt_dia);
+  inner_thickness = plist_get("inner_thickness",
+                              plist,
+                              smd_battery_holder_inner_thickness);
+  battery_dia = plist_get("battery_dia", plist, undef);
+
   smd_battery_with_mounting_holes_positions(count=count,
                                             bolt_spacing=bolt_spacing,
                                             inner_thickness=inner_thickness,
@@ -111,6 +119,119 @@ module smd_battery_slot(count=smd_battery_holder_batteries_count,
       }
     }
   }
+}
+
+module smd_battery_holder_from_plist(plist) {
+  plist = with_default(plist, []);
+  height = plist_get("height", plist, smd_battery_holder_height);
+  length = plist_get("length", plist, smd_battery_holder_length);
+  battery_dia = plist_get("battery_dia", plist, battery_dia);
+  battery_height = plist_get("battery_height", plist, battery_height);
+  count = plist_get("count", plist, smd_battery_holder_batteries_count);
+  bolt_dia = plist_get("bolt_dia", plist, smd_battery_holder_bolt_dia);
+  bolt_spacing = plist_get("bolt_spacing",
+                           plist,
+                           smd_battery_holder_bolt_spacing);
+  bolt_recess_size = plist_get("bolt_recess_size",
+                               plist,
+                               smd_battery_holder_bolt_recess_size);
+  bottom_thickness = plist_get("bottom_thickness",
+                               plist,
+                               smd_battery_holder_bottom_thickness);
+  side_thickness = plist_get("side_thickness",
+                             plist,
+                             smd_battery_holder_side_thickness);
+  front_rear_thickness = plist_get("front_rear_thickness",
+                                   plist,
+                                   smd_battery_holder_front_rear_thickness);
+  inner_cutout_size = plist_get("inner_cutout_size",
+                                plist,
+                                smd_battery_holder_inner_cutout_size);
+  inner_thickness = plist_get("inner_thickness",
+                              plist,
+                              smd_battery_holder_inner_thickness);
+  inner_cutout_h = plist_get("inner_cutout_h",
+                             plist,
+                             smd_battery_holder_inner_side_h);
+  side_wall_h = plist_get("side_wall_h", plist, smd_battery_holder_side_wall_h);
+  side_wall_center_cutout_size = plist_get("side_wall_center_cutout_size",
+                                           plist,
+                                           smd_battery_holder_side_wall_center_cutout_size);
+  side_wall_top_rear_cutout_size = plist_get("side_wall_top_rear_cutout_size",
+                                             plist,
+                                             smd_battery_holder_side_wall_top_rear_cutout_size);
+  contact_width = plist_get("contact_width",
+                            plist,
+                            smd_battery_holder_contact_width);
+  contact_thickness = plist_get("contact_thickness",
+                                plist,
+                                smd_battery_holder_contact_thickness);
+  outer_contact_size = plist_get("outer_contact_size",
+                                 plist,
+                                 smd_battery_holder_contact_outer_cutout_size);
+  inner_contact_cutout_size = plist_get("inner_contact_cutout_size",
+                                        plist,
+                                        smd_battery_holder_contact_inner_cutout_size);
+  contact_hole_d = plist_get("contact_hole_d", plist, 1);
+  contact_mount_bottom_size = plist_get("contact_mount_bottom_size",
+                                        plist,
+                                        [smd_battery_holder_contact_width,
+                                         4.54,
+                                         smd_battery_holder_contact_thickness]);
+  inner_hook_cutout_size = plist_get("inner_hook_cutout_size",
+                                     plist,
+                                     smd_battery_holder_contact_inner_hook_cutout_size);
+  inner_hook_y_position = plist_get("inner_hook_y_position",
+                                    plist,
+                                    smd_battery_holder_contact_inner_hook_cutout_y_position);
+  outer_hook_cutout_size = plist_get("outer_hook_cutout_size",
+                                     plist,
+                                     smd_battery_holder_contact_outer_hook_cutout_size);
+  outer_bottom_cutout_size = plist_get("outer_bottom_cutout_size",
+                                       plist,
+                                       smd_battery_holder_contact_outer_bottom_cutout_size);
+  show_battery = plist_get("show_battery", plist, false);
+  show_contact = plist_get("show_contact", plist, true);
+  show_bolt = plist_get("show_bolt", plist, true);
+  show_nut = plist_get("show_nut", plist, true);
+  lock_nut = plist_get("lock_nut", plist, false);
+  bolt_head_type = plist_get("bolt_head_type", plist, "round");
+  bolt_visible_h = plist_get("bolt_visible_h", plist,  2);
+
+  smd_battery_holder(height=height,
+                     length=length,
+                     battery_dia=battery_dia,
+                     battery_height=battery_height,
+                     count=count,
+                     bolt_dia=bolt_dia,
+                     bolt_spacing=bolt_spacing,
+                     bolt_recess_size=bolt_recess_size,
+                     bottom_thickness=bottom_thickness,
+                     side_thickness=side_thickness,
+                     front_rear_thickness=front_rear_thickness,
+                     inner_cutout_size=inner_cutout_size,
+                     inner_thickness=inner_thickness,
+                     inner_cutout_h=inner_cutout_h,
+                     side_wall_h=side_wall_h,
+                     side_wall_center_cutout_size=side_wall_center_cutout_size,
+                     side_wall_top_rear_cutout_size=side_wall_top_rear_cutout_size,
+                     contact_width=contact_width,
+                     contact_thickness=contact_thickness,
+                     outer_contact_size=outer_contact_size,
+                     inner_contact_cutout_size=inner_contact_cutout_size,
+                     contact_hole_d=contact_hole_d,
+                     contact_mount_bottom_size=contact_mount_bottom_size,
+                     inner_hook_cutout_size=inner_hook_cutout_size,
+                     inner_hook_y_position=inner_hook_y_position,
+                     outer_hook_cutout_size=outer_hook_cutout_size,
+                     outer_bottom_cutout_size=outer_bottom_cutout_size,
+                     show_battery=show_battery,
+                     show_contact=show_contact,
+                     show_bolt=show_bolt,
+                     show_nut=show_nut,
+                     lock_nut=lock_nut,
+                     bolt_head_type=bolt_head_type,
+                     bolt_visible_h=bolt_visible_h);
 }
 
 module smd_battery_holder(height=smd_battery_holder_height,
