@@ -140,7 +140,6 @@ module screw_terminal(base_w = undef,            // overall base width (optional
 
 module screw_terminal_from_plist(plist, center=false) {
   plist = with_default(plist, []);
-  base_w = plist_get("base_w", plist);
   thickness = plist_get("thickness", plist, 7.6);
   isosceles_trapezoid = plist_get("isosceles_trapezoid", plist, false);
   base_h = plist_get("base_h", plist, 6.8);
@@ -154,6 +153,9 @@ module screw_terminal_from_plist(plist, center=false) {
   pin_thickness = plist_get("pin_thickness", plist, 0.4);
   pin_h = plist_get("pin_h", plist, 3.9);
   wall_thickness = plist_get("wall_thickness", plist, 0.6);
+  base_w = plist_get("base_w",
+                     plist,
+                     screw_terminal_width_from_plist(plist));
   screw_terminal(thickness=thickness,
                  isosceles_trapezoid=isosceles_trapezoid,
                  base_h=base_h,
@@ -171,4 +173,20 @@ module screw_terminal_from_plist(plist, center=false) {
                  center=center);
 }
 
-screw_terminal_from_plist(center=false);
+screw_terminal_from_plist(["placeholder", "screw_terminal",
+
+                           "base_w",  undef,
+                           "base_h",  8.8,
+                           "thickness",  10.6,
+                           "top_l",  5.50,
+                           "top_h",  3.2,
+                           "contacts_n",  2,
+                           "contact_w",  3.5,
+                           "contact_h",  4.47,
+                           "pitch",  4.5,
+                           "colr",  medium_blue_2,
+                           "pin_thickness",  0.4,
+                           "pin_h",  3.9,
+                           "wall_thickness",  0.6,
+                           "isosceles_trapezoid", false,],
+                          center=true);
