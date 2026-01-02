@@ -5,8 +5,13 @@
  * License: GPL-3.0-or-later
  */
 
-module debug_polygon(points, paths=undef, convexity=undef, debug=true,
-                     arrow_size=1, font_size=4, font_color="red",
+module debug_polygon(points,
+                     paths=undef,
+                     convexity=undef,
+                     debug=true,
+                     arrow_size=1,
+                     font_size=4,
+                     font_color="red",
                      show_arrows=false) {
   polygon(points=points, paths=paths, convexity=convexity);
 
@@ -78,7 +83,7 @@ module bounding_box(excess=0, planar=false) {
         }
       }
     } else {
-      xs = excess<.1? 1: excess;
+      xs = excess < .1 ? 1: excess;
       linear_extrude(xs, center=true)
         projection() {
         rotate([90, 0, 0]) {
@@ -169,7 +174,6 @@ module bounding_box(excess=0, planar=false) {
 // // Example(3D):
 // module shapes() {
 //   translate([10, 8, 4]) cube(5);
-//   translate([3, 0, 12]) cube(2);
 // }
 // #bounding_box() {
 //   shapes();
