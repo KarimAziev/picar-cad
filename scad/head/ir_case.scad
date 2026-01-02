@@ -29,7 +29,7 @@ include <../parameters.scad>
 include <../colors.scad>
 
 use <../lib/l_bracket.scad>
-use <../slider.scad>
+use <../lib/slider.scad>
 use <../placeholders/ir_led.scad>
 use <../lib/transforms.scad>
 
@@ -61,12 +61,14 @@ function ir_case_rail_y_pos() =
 module ir_case_slider_holes_2d() {
   y_pos = ir_case_slider_y_pos();
   translate([ir_case_carriage_len / 2,
-             y_pos, 0]) {
+             y_pos,
+             0]) {
     circle(r=ir_case_rail_bolt_dia / 2, $fn=360);
   }
   translate([ir_case_width
              - ir_case_carriage_len / 2,
-             y_pos, 0]) {
+             y_pos,
+             0]) {
     circle(r=ir_case_rail_bolt_dia / 2, $fn=360);
   }
 }
@@ -83,7 +85,8 @@ module ir_case_rail() {
   base_w = (ir_case_carriage_wall_thickness * 2) + inner_w;
 
   difference() {
-    translate([ir_case_width, ir_case_rail_y_pos()
+    translate([ir_case_width,
+               ir_case_rail_y_pos()
                - ir_case_carriage_wall_thickness,
                full_thickness]) {
 
@@ -198,9 +201,11 @@ module ir_case_base_plate(h=ir_case_thickness) {
   linear_extrude(height=h, center=false, convexity=2) {
     difference() {
       ir_case_outline_2d();
-      translate([0, ir_case_height
+      translate([0,
+                 ir_case_height
                  - ir_case_holes_full_h()
-                 - ir_case_holes_distance_from_top, 0]) {
+                 - ir_case_holes_distance_from_top,
+                 0]) {
         ir_case_holes_2d();
       }
       ir_case_slider_holes_2d();
@@ -237,7 +242,8 @@ module ir_case() {
   union() {
     difference() {
       ir_case_base_plate(h=full_thickness);
-      translate([0, y_offst,
+      translate([0,
+                 y_offst,
                  ir_case_led_boss_thickness]) {
         linear_extrude(height=ir_case_thickness + ir_case_led_boss_thickness,
                        center=false,

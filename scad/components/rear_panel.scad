@@ -6,13 +6,13 @@
  * License: GPL-3.0-or-later
  */
 
-include <parameters.scad>
+include <../parameters.scad>
 
-use <lib/l_bracket.scad>
-use <lib/holes.scad>
-use <lib/shapes2d.scad>
-use <placeholders/toggle_switch.scad>
-use <lib/slots.scad>
+use <../lib/l_bracket.scad>
+use <../lib/holes.scad>
+use <../lib/shapes2d.scad>
+use <../placeholders/toggle_switch.scad>
+use <../lib/slots.scad>
 
 
 

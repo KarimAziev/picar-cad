@@ -9,7 +9,7 @@ include <../parameters.scad>
 include <../colors.scad>
 use <./pins.scad>
 use <./rpi_5.scad>
-use <../wire.scad>
+use <../lib/wire.scad>
 use <standoff.scad>
 use <../lib/shapes3d.scad>
 use <../lib/transforms.scad>

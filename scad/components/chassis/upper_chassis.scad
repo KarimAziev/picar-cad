@@ -7,7 +7,7 @@
 
 include <../../parameters.scad>
 include <../../colors.scad>
-use <../../front_panel.scad>
+use <../front_panel.scad>
 use <../../placeholders/ups_hat.scad>
 use <../../steering_system/steering_panel.scad>
 use <../../steering_system/rack_and_pinion_assembly.scad>

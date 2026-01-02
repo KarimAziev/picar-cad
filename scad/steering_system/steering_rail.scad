@@ -1,5 +1,5 @@
 include <../parameters.scad>
-use <../slider.scad>
+use <../lib/slider.scad>
 
 module steering_rack_anti_tilt_key() {
   translate([-steering_panel_rail_len / 2,

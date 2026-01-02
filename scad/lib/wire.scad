@@ -6,8 +6,8 @@
  * License: GPL-3.0-or-later
  */
 
-include <colors.scad>
-use <lib/functions.scad>
+include <../colors.scad>
+use <functions.scad>
 
 function total_wire_length(points) =
   len(points) < 2 ? 0 :

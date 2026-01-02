@@ -10,7 +10,7 @@ include <../colors.scad>
 include <../power_lid_parameters.scad>
 
 use <../placeholders/lipo_pack.scad>
-use <../slider.scad>
+use <../lib/slider.scad>
 use <power_lid.scad>
 use <power_case_rail.scad>
 use <../lib/shapes3d.scad>
@@ -20,8 +20,6 @@ use <../lib/transforms.scad>
 use <../placeholders/standoff.scad>
 use <power_socket_case.scad>
 use <../lib/slots.scad>
-
-
 
 slot_mode                         = false;
 

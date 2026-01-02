@@ -24,7 +24,7 @@ use <../../placeholders/motor.scad>
 use <../../placeholders/smd_battery_holder.scad>
 use <../../placeholders/bolt.scad>
 
-use <../../rear_panel.scad>
+use <../rear_panel.scad>
 
 use <../../motor_brackets/standard_motor_bracket.scad>
 use <../../motor_brackets/n20_motor_bracket.scad>

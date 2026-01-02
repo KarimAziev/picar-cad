@@ -9,7 +9,7 @@ include <../parameters.scad>
 include <../colors.scad>
 
 use <../placeholders/lipo_pack.scad>;
-use <../slider.scad>;
+use <../lib/slider.scad>;
 use <power_lid.scad>
 use <../lib/transforms.scad>
 use <../lib/shapes3d.scad>

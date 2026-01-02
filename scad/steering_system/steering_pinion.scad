@@ -8,7 +8,7 @@
 include <../parameters.scad>
 
 use <rack_util.scad>
-use <../gear.scad>
+use <../lib/gear.scad>
 use <../lib/placement.scad>
 
 function steering_pinion_tooth_pitch() =

@@ -11,17 +11,17 @@
 //  - Sensor: HC-SR04 ultrasonic sensor
 //  - Attachment Hardware: M2.5 bolts
 
-include <parameters.scad>
-include <colors.scad>
+include <../parameters.scad>
+include <../colors.scad>
 
-use <placeholders/ultrasonic.scad>
-use <placeholders/smd/smd_chip.scad>
-use <lib/shapes2d.scad>
-use <lib/holes.scad>
-use <lib/transforms.scad>
-use <lib/functions.scad>
-use <lib/shapes3d.scad>
-use <lib/slots.scad>
+use <../placeholders/ultrasonic.scad>
+use <../placeholders/smd/smd_chip.scad>
+use <../lib/shapes2d.scad>
+use <../lib/holes.scad>
+use <../lib/transforms.scad>
+use <../lib/functions.scad>
+use <../lib/shapes3d.scad>
+use <../lib/slots.scad>
 
 
 

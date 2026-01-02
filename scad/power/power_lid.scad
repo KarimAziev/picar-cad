@@ -12,12 +12,12 @@ include <../power_lid_parameters.scad>
 
 use <power_case_rail.scad>
 use <../placeholders/lipo_pack.scad>
-use <../slider.scad>
+use <../lib/slider.scad>
 use <../placeholders/toggle_switch.scad>
 use <../placeholders/atc_ato_blade_fuse_holder.scad>;
 use <../placeholders/step-down-voltage-d24vxf5.scad>
 use <../placeholders/voltmeter.scad>
-use <../wire.scad>
+use <../lib/wire.scad>
 use <../lib/functions.scad>
 use <../lib/shapes3d.scad>
 use <../lib/holes.scad>

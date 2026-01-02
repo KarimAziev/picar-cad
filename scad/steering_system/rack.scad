@@ -10,8 +10,8 @@
 include <../parameters.scad>
 include <../colors.scad>
 
-use <../gear.scad>
-use <../slider.scad>
+use <../lib/gear.scad>
+use <../lib/slider.scad>
 use <rack_connector.scad>
 use <rack_util.scad>
 use <rack_link.scad>

@@ -11,7 +11,7 @@ use <../lib/holes.scad>
 use <../lib/shapes3d.scad>
 use <../lib/shapes2d.scad>
 use <../lib/transforms.scad>
-use <../wire.scad>
+use <../lib/wire.scad>
 use <../lib/plist.scad>
 use <../lib/functions.scad>
 use <../lib/slots.scad>

@@ -20,8 +20,8 @@ include <parameters.scad>
 include <colors.scad>
 
 use <head/ir_case.scad>
-use <front_panel.scad>
-use <rear_panel.scad>
+use <components/front_panel.scad>
+use <components/rear_panel.scad>
 use <head/head_mount.scad>
 use <head/head_neck.scad>
 use <motor_brackets/n20_motor_bracket.scad>
