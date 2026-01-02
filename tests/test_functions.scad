@@ -169,6 +169,50 @@ module test_sum() {
   assert_eq(sum([1], 3), 1, "sum([1], 3)");
 }
 
+module test_rot2() {
+  assert_eq(rot2([1, 0], 90), [0, 1], "rot2([1, 0], 90)");
+  assert_eq([for (v = rot2([10, 5], -45)) truncate(v, 1)],
+            [10.6, -3.5],
+            "rot2([10, 5], -45)");
+  assert_eq([for (v = rot2([10, 5], -31)) truncate(v, 1)],
+            [11.1, -0.8],
+            "rot2([10, 5], -31)");
+}
+
+module test_rotated_bbox2() {
+  assert_eq(rotated_bbox2(20, 10, 90),
+            [-10, 0, 0, 20],
+            "rotated_bbox2(20, 10, 90)");
+  assert_eq(rotated_bbox2(20, 10, 0),
+            [0, 0, 20, 10],
+            "rotated_bbox2(20, 10, 0)");
+
+  assert_eq([for (v = rotated_bbox2(20, 10, 45)) truncate(v, 1)],
+            [-7, 0, 14.1, 21.2],
+            "rotated_bbox2(20, 10, 45)");
+
+  assert_eq([for (v = rotated_bbox2(20, 10, 28)) truncate(v, 1)],
+            [-4.6, 0, 17.6, 18.2],
+            "rotated_bbox2(20, 10, 28)");
+}
+
+module test_calc_rotated_bbox() {
+  assert_eq(calc_rotated_bbox(20, 10, 90),
+            [10, 20, 10, 0],
+            "calc_rotated_bbox(20, 10, 90)");
+  assert_eq(calc_rotated_bbox(20, 10, 0),
+            [20, 10, 0, 0],
+            "calc_rotated_bbox(20, 10, 0)");
+
+  assert_eq([for (v = calc_rotated_bbox(20, 10, 45)) truncate(v, 1)],
+            [21.2, 21.2, 7, 0],
+            "calc_rotated_bbox(20, 10, 45)");
+
+  assert_eq([for (v = calc_rotated_bbox(20, 10, 17)) truncate(v, 1)],
+            [22, 15.4, 2.9, 0],
+            "calc_rotated_bbox(20, 10, 17)");
+}
+
 test_slice();
 test_take();
 test_take_last();
@@ -178,3 +222,6 @@ test_best_by_lower_sum();
 test_best_list_by_lower_sum();
 test_best_height_combo_at_least();
 test_sum();
+test_rot2();
+test_rotated_bbox2();
+test_calc_rotated_bbox();

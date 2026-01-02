@@ -991,3 +991,104 @@ function join(parts, sep="", limit = undef) =
   n == 0 ? "" :
   n == 1 ? parts[n-1] :
   str(join(parts, sep, n-1), sep, parts[n-1]);
+
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   rot2
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Rotates a 2D point `p` around the origin by `a` degrees (counter-clockwise).
+
+   Parameters:
+   - `p` (vec2): Point `[x, y]`
+   - `a` (number): Angle in degrees
+
+   Returns:
+   - (vec2) Rotated point `[x, y]`
+
+   **Example**:
+   ```scad
+   rot2([1, 0], 90);   // -> [0, 1]
+   rot2([10, 5], -45); // -> [10.6066, -3.53553] rotates clockwise
+   ```
+*/
+function rot2(p, a) =
+  [p[0] * cos(a) - p[1] * sin(a),
+   p[0] * sin(a) + p[1] * cos(a)];
+
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   rotated_bbox2
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Computes the axis-aligned bounding box (AABB) of the rectangle `[0..w]×[0..h]`
+   after rotating it by `a` degrees around the origin.
+
+   Parameters:
+   - `w` (number): Rectangle width (X size)
+   - `h` (number): Rectangle height (Y size)
+   - `a` (number): Rotation angle in degrees (about Z / in XY plane)
+
+   Returns:
+   - (vec4) `[minx, miny, maxx, maxy]` of the rotated rectangle.
+
+   **Example**:
+   ```scad
+   rotated_bbox2(20, 10, 90); // -> [-10, 0, 0, 20]
+   rotated_bbox2(20, 10, 0);  // -> [0, 0, 20, 10]
+   ```
+*/
+function rotated_bbox2(w, h, a) =
+  let (p0 = rot2([0, 0], a),
+       p1 = rot2([w, 0], a),
+       p2 = rot2([0, h], a),
+       p3 = rot2([w, h], a),
+       minx = min(p0[0], p1[0], p2[0], p3[0]),
+       miny = min(p0[1], p1[1], p2[1], p3[1]),
+       maxx = max(p0[0], p1[0], p2[0], p3[0]),
+       maxy = max(p0[1], p1[1], p2[1], p3[1]))
+  [minx, miny, maxx, maxy];
+
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   calc_rotated_bbox
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Convenience wrapper around `rotated_bbox2()` that returns:
+
+   - the rotated full extents (`fullx`, `fully`)
+   - the translation (`sx`, `sy`) needed to move the rotated shape so that the
+   bounding box minimum becomes `[0, 0]`.
+
+   This is useful for rotating a non-centered rectangle/cube around the origin
+   while keeping the final result entirely in the positive XY quadrant.
+
+   Parameters:
+   - `w` (number): Width in X
+   - `h` (number): Height in Y
+   - `a` (number): Rotation angle in degrees
+
+   Returns:
+   - (vec4) `[fullx, fully, sx, sy]`
+
+   Where:
+   - `fullx = maxx - minx`
+   - `fully = maxy - miny`
+   - `sx = -minx`
+   - `sy = -miny`
+
+   **Example**:
+   ```scad
+
+   calc_rotated_bbox(20, 10, 0); // [10, 20, 10, 0]
+   calc_rotated_bbox(20, 10, 0); // [20, 10, 0, 0]
+   calc_rotated_bbox(20, 10, 45) // [~21.2132, ~21.2132, ~7.07107, 0]
+   ```
+*/
+function calc_rotated_bbox(w, h, a) =
+  let (b = rotated_bbox2(w, h, a))
+  [b[2] - b[0],   // fullx
+   b[3] - b[1],   // fully
+   -b[0],          // sx
+   -b[1]           // sy
+  ];
