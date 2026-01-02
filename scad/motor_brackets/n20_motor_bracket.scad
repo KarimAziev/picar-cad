@@ -28,14 +28,15 @@
 include <../parameters.scad>
 include <../colors.scad>
 
-use <../l_bracket.scad>
-use <../wheels/rear_wheel.scad>
+use <../placeholders/bolt.scad>
 use <../placeholders/n20_motor.scad>
+use <../wheels/rear_wheel.scad>
+use <../lib/l_bracket.scad>
 use <../lib/functions.scad>
 use <../lib/shapes2d.scad>
 use <../lib/shapes3d.scad>
 use <../lib/holes.scad>
-use <../placeholders/bolt.scad>
+use <../lib/slots.scad>
 
 function n20_motor_width() = n20_can_dia + n20_motor_bracket_thickness * 2;
 
@@ -102,7 +103,8 @@ module n20_motor_bolts_panel() {
                            fn=360);
               rounded_rect(size = [w, h * 2],
                            r=min(h, w) * 0.5,
-                           center=true, fn=360);
+                           center=true,
+                           fn=360);
             }
           }
         }
@@ -138,7 +140,8 @@ module n20_motor_bracket() {
                        d=n20_can_dia +
                        n20_motor_bracket_tolerance,
                        cutout_w=n20_can_cutout_w,
-                       x_cutouts_n=2, $fn=360);
+                       x_cutouts_n=2,
+                       $fn=360);
       }
     }
     n20_motor_bolts_panel();

@@ -18,6 +18,9 @@ use <servo_driver_hat.scad>
 use <motor_driver_hat.scad>
 use <gpio_expansion_board.scad>
 use <standoff.scad>
+use <../lib/slots.scad>
+
+
 
 show_standoffs            = false;
 show_ai_hat               = true;

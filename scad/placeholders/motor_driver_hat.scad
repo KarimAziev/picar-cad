@@ -8,158 +8,83 @@
 include <../parameters.scad>
 include <../colors.scad>
 
+use <../core/pcb_builder.scad>
 use <../lib/shapes2d.scad>
+use <../lib/shapes3d.scad>
+use <../lib/plist.scad>
 use <../lib/holes.scad>
 use <../lib/transforms.scad>
 use <pin_headers.scad>
-use <../lib/shapes3d.scad>
-use <bcm.scad>
 use <pad_hole.scad>
-use <../lib/placement.scad>
 use <standoff.scad>
-use <screw_terminal.scad>
-use <smd_chip.scad>
-use <smt_can_capacitor.scad>
-use <../lib/plist.scad>
 
-module motor_driver_chip() {
-  smd_chip(length=motor_driver_hat_chip_len,
-           w=motor_driver_hat_chip_w,
-           j_lead_n=motor_driver_hat_chip_j_lead_n,
-           j_lead_thickness=motor_driver_hat_chip_j_lead_thickness,
-           total_w=motor_driver_hat_chip_total_w,
-           h=motor_driver_hat_chip_h,
-           smd_color=black_1,
-           center=true);
-}
-
-module motor_driver_voltage_level_conversion_chip() {
-  smd_chip(length=motor_driver_hat_voltage_chip_len,
-           w=motor_driver_hat_voltage_chip_w,
-           j_lead_n=motor_driver_hat_voltage_chip_j_lead_n,
-           j_lead_thickness=motor_driver_hat_voltage_chip_j_lead_thickness,
-           total_w=motor_driver_hat_voltage_chip_total_w,
-           h=motor_driver_hat_voltage_chip_h,
-           smd_color=black_1,
-           center=true);
-}
-
-module motor_driver_hat(center=true,
+module motor_driver_hat(plist=motor_driver_grid,
                         show_pins=true,
                         extra_standoff_h=0,
-                        show_standoff=true) {
+                        show_standoff=true,
+                        center=true,
+                        debug=false) {
   w = motor_driver_hat_size[0];
   l = motor_driver_hat_size[1];
   h = motor_driver_hat_size[2];
+  max_pad_hole = len(motor_driver_hat_mounting_hole_pad_spec) > 0
+    ? max([for (v = motor_driver_hat_mounting_hole_pad_spec) v[0]])
+    : motor_driver_hat_bolt_dia;
 
-  translate([center ? 0 : w / 2, center ? 0 : l / 2, 0]) {
+  translate([center ? -w / 2 : 0, center ? l / 2 : l, 0]) {
     union() {
-      color(medium_blue_1, alpha=1) {
-        linear_extrude(height=h, center=false) {
-          difference() {
-            translate([-w / 2, -l / 2, 0]) {
-              rounded_rect([w, l], r=motor_driver_hat_corner_rad, center=false);
+      translate([w / 2, -l / 2, 0]) {
+        union() {
+          color(medium_blue_1, alpha=1) {
+            linear_extrude(height=h, center=false) {
+              difference() {
+                translate([-w / 2, -l / 2, 0]) {
+                  rounded_rect([w, l],
+                               r=motor_driver_hat_corner_rad,
+                               center=false);
+                }
+
+                four_corner_holes_2d(rpi_bolt_spacing, center=true);
+              }
             }
-
-            four_corner_holes_2d(rpi_bolt_spacing, center=true);
           }
-        }
-      }
-      translate([-w / 2 + rpi_pin_header_width,
-                 -l / 2
-                 + rpi_pin_header_width
-                 * rpi_pin_headers_cols / 2
-                 + rpi_bolts_offset * 2,
-                 -motor_driver_hat_header_height]) {
-        pin_headers(cols=rpi_pin_headers_cols,
-                    rows=rpi_pin_headers_rows,
-                    header_width=rpi_pin_header_width,
-                    header_height=motor_driver_hat_header_height,
-                    pin_height=motor_driver_hat_pin_height,
-                    z_offset=-motor_driver_hat_header_height,
-                    p=0.65,
-                    center=true);
-      }
-
-      mirror_copy([1, 0, 0]) {
-        translate([motor_driver_hat_chip_total_w / 2
-                   + motor_driver_hat_chip_distance_between,
-                   -l / 2 + motor_driver_hat_chip_len / 2
-                   + motor_driver_hat_chip_y_distance,
-                   h]) {
-          rotate([0, 0, 90]) {
-            motor_driver_chip();
+          translate([-w / 2, -l / 2 + rpi_bolts_offset * 2, 0]) {
+            if (show_pins) {
+              translate([0, 0, h]) {
+                pin_headers(cols=rpi_pin_headers_cols,
+                            rows=rpi_pin_headers_rows,
+                            header_width=rpi_pin_header_width,
+                            header_height=motor_driver_hat_upper_header_height,
+                            pin_height=motor_driver_hat_upper_pin_height,
+                            z_offset=-motor_driver_hat_upper_header_height,
+                            p=0.65,
+                            center=false);
+              }
+            }
           }
-        }
-      }
-
-      translate([-w / 2 + motor_driver_hat_voltage_chip_total_w / 2
-                 + motor_driver_hat_voltage_chip_x_distance,
-                 l / 2
-                 - motor_driver_hat_voltage_chip_len / 2
-                 - motor_driver_hat_voltage_chip_y_distance,
-                 h]) {
-        rotate([0, 0, 90]) {
-          motor_driver_voltage_level_conversion_chip();
-        }
-      }
-
-      translate([-w / 2, -l / 2 + rpi_bolts_offset * 2, 0]) {
-        if (show_pins) {
-          translate([0, 0, h]) {
-            pin_headers(cols=rpi_pin_headers_cols,
-                        rows=rpi_pin_headers_rows,
-                        header_width=rpi_pin_header_width,
-                        header_height=motor_driver_hat_upper_header_height,
-                        pin_height=motor_driver_hat_upper_pin_height,
-                        z_offset=-motor_driver_hat_upper_header_height,
-                        p=0.65,
-                        center=false);
+          if (show_standoff) {
+            translate([0,
+                       0,
+                       -motor_driver_hat_header_height - extra_standoff_h]) {
+              four_corner_children(rpi_bolt_spacing) {
+                standoffs_stack(d=motor_driver_hat_bolt_dia,
+                                colr=motor_driver_hat_standoff_color,
+                                min_h=motor_driver_hat_header_height
+                                + extra_standoff_h);
+              }
+            }
           }
-        }
-      }
 
-      for (plist = motor_driver_hat_extra_capacitors_plists) {
-        let (x_offset = plist_get("x_offset", plist, 0),
-             y_offset = plist_get("y_offset", plist, 0)) {
-          translate([x_offset, y_offset, 0]) {
-            smt_can_capacitor_from_plist(plist);
-          }
-        }
-      }
-
-      translate([0,
-                 -l / 2
-                 + motor_driver_hat_screw_terminal_thickness / 2
-                 + motor_driver_hat_screw_terminal_distance,
-                 h]) {
-        rotate([0, 0, 180]) {
-          screw_terminal(thickness=motor_driver_hat_screw_terminal_thickness,
-                         base_h=motor_driver_hat_screw_terminal_base_h,
-                         top_h=motor_driver_hat_screw_terminal_top_h,
-                         top_l=motor_driver_hat_screw_terminal_top_l,
-                         contacts_n=motor_driver_hat_screw_terminal_contacts_n,
-                         contact_w=motor_driver_hat_screw_terminal_contact_w,
-                         contact_h=motor_driver_hat_screw_terminal_contact_h,
-                         pitch=motor_driver_hat_screw_terminal_pitch);
-        }
-      }
-
-      if (show_standoff) {
-        translate([0, 0, -motor_driver_hat_header_height - extra_standoff_h]) {
           four_corner_children(rpi_bolt_spacing) {
-            standoffs_stack(d=motor_driver_hat_bolt_dia,
-                            colr=motor_driver_hat_standoff_color,
-                            min_h=motor_driver_hat_header_height
-                            + extra_standoff_h);
+            pad_hole(specs=motor_driver_hat_mounting_hole_pad_spec,
+                     thickness=h,
+                     bolt_d=motor_driver_hat_bolt_dia);
           }
         }
       }
 
-      four_corner_children(rpi_bolt_spacing) {
-        pad_hole(specs=motor_driver_hat_mounting_hole_pad_spec,
-                 thickness=h,
-                 bolt_d=motor_driver_hat_bolt_dia);
+      translate([max_pad_hole, 0, 0]) {
+        slot_or_placeholder_grid(plist, debug=debug, mode="placeholder");
       }
     }
   }

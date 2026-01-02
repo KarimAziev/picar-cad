@@ -30,6 +30,9 @@ use <../../placeholders/pan_servo.scad>
 
 use <util.scad>
 use <chassis_connector.scad>
+use <../../lib/slots.scad>
+
+
 
 upper_side_hole_pts            =  scale_upper_trapezoid_pts(x=chassis_trapezoid_hole_width,
                                                             y=chassis_trapezoid_hole_len);

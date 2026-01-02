@@ -14,6 +14,9 @@ use <../lib/shapes2d.scad>
 use <../lib/transforms.scad>
 use <../placeholders/standoff.scad>
 use <../lib/holes.scad>
+use <../lib/slots.scad>
+
+
 
 function panel_stack_size() =
   let (fusers_size = fuse_panel_size(),

@@ -13,6 +13,17 @@ use <../lib/debug.scad>
 use <../lib/text.scad>
 use <../colors.scad>
 use <../lib/transforms.scad>
+use <../lib/slots.scad>
+
+
+
+function slot_spec_is_valid(spec) =
+  plist_is(spec)
+  && (!plist_has("specs", spec)
+      || slot_specs_are_valid(plist_get("specs", spec, [])));
+
+function slot_specs_are_valid(specs) =
+  len([for (v = specs) if (!slot_spec_is_valid(v)) 1]) == 0;
 
 function get_rect_sizes(spec) =
   let (recess_size = plist_get("recess_size", spec, [0, 0]),
@@ -42,29 +53,55 @@ function get_four_corner_hole_size_at(i, spec) =
        + effective_dia),
       with_default(placeholder_size[i], 0));
 
-function get_size_at(i, spec) =
-  let (rotation = plist_get("rotation", spec, 0),
-       flipped = abs(rotation) == 90,
-       type = plist_get("type", spec),
-       v = type == "rect" || type == "custom"
-       ? get_rect_max_size_at(i, spec)
-       : type == "counterbore"
-       ? get_counterbore_size_at(i, spec)
-       : type == "four_corner_holes"
-       ? get_four_corner_hole_size_at(i, spec)
-       : 0)
-  v;
+function get_placeholder_size(spec) =
+  let (slot_size = plist_get("slot_size", spec, [0, 0]),
+       placeholder_size = plist_get("placeholder_size", spec, [0, 0]))
+  [with_default(slot_size[0], with_default(placeholder_size[0], 0)),
+   with_default(slot_size[1], with_default(placeholder_size[1], 0))];
+
+function is_nested_spec(spec) =
+  plist_has("specs", spec);
+
+function get_nested_specs(spec) =
+  plist_get("specs", spec, []);
+
+function get_nested_direction(spec, parent_direction="btt") =
+  plist_get("direction", spec, parent_direction);
 
 function should_swap_size(spec) =
   let (rotation = plist_get("rotation", spec, 0),
        flipped = abs(rotation) == 90)
   flipped;
 
-function get_x_size(spec) =
-  get_size_at(0, spec);
+function get_spec_base_size(spec, parent_direction="btt") =
+  is_nested_spec(spec)
+  ? get_total_size(get_nested_specs(spec),
+                   direction=get_nested_direction(spec, parent_direction))
+  : let (type = plist_get("type", spec),
+         fallback_size = get_placeholder_size(spec))
+  type == "rect" || type == "custom"
+  ? [get_rect_max_size_at(0, spec),
+     get_rect_max_size_at(1, spec)]
+  : type == "counterbore"
+  ? [get_counterbore_size_at(0, spec),
+     get_counterbore_size_at(1, spec)]
+  : type == "four_corner_holes"
+  ? [get_four_corner_hole_size_at(0, spec),
+     get_four_corner_hole_size_at(1, spec)]
+  : fallback_size;
 
-function get_y_size(spec) =
-  get_size_at(1, spec);
+function get_size_at(i, spec, parent_direction="btt") =
+  get_spec_base_size(spec, parent_direction)[i];
+
+function get_x_size(spec, parent_direction="btt") =
+  let (base_size = get_spec_base_size(spec, parent_direction),
+       swapped = should_swap_size(spec))
+  swapped ? base_size[1] : base_size[0];
+
+function get_y_size(spec, parent_direction="btt") =
+  let (base_size = get_spec_base_size(spec, parent_direction),
+       swapped = should_swap_size(spec))
+  swapped ? base_size[0] : base_size[1];
 
 function get_gap_before(spec) =
   plist_get("gap_before", spec, 0);
@@ -78,11 +115,11 @@ function get_gap_x_offset(spec) =
 function get_gap_y_offset(spec) =
   plist_get("y_offset", spec, 0);
 
-function get_y_sizes(specs) =
-  [for (v = specs) should_swap_size(v) ? get_x_size(v) : get_y_size(v)];
+function get_y_sizes(specs, parent_direction="btt") =
+  [for (v = specs) get_y_size(v, parent_direction)];
 
-function get_x_sizes(specs) =
-  [for (v = specs) should_swap_size(v) ? get_y_size(v) : get_x_size(v)];
+function get_x_sizes(specs, parent_direction="btt") =
+  [for (v = specs) get_x_size(v, parent_direction)];
 
 function get_gaps_before(specs) =
   [for (v = specs) get_gap_before(v)];
@@ -90,15 +127,15 @@ function get_gaps_before(specs) =
 function get_gaps_after(specs) =
   [for (v = specs) get_gap_after(v)];
 
-function get_max_x(specs) =
-  max(get_x_sizes(specs));
+function get_max_x(specs, parent_direction="btt") =
+  len(specs) == 0 ? 0 : max(get_x_sizes(specs, parent_direction));
 
-function get_max_y(specs) =
-  max(get_y_sizes(specs));
+function get_max_y(specs, parent_direction="btt") =
+  len(specs) == 0 ? 0 : max(get_y_sizes(specs, parent_direction));
 
-function get_total_x(specs) =
+function get_total_x(specs, parent_direction="btt") =
   len(specs) == 0 ? 0 :
-  sum(concat(get_x_sizes(specs),
+  sum(concat(get_x_sizes(specs, parent_direction),
              get_gaps_before(specs),
              get_gaps_after(specs)));
 
@@ -107,7 +144,8 @@ function get_total_len(specs, direction) =
   ? 0
   : sum(concat((direction == "ltr"
                 || direction == "rtl" ?
-                get_x_sizes(specs) : get_y_sizes(specs)),
+                get_x_sizes(specs, direction)
+                : get_y_sizes(specs, direction)),
                get_gaps_before(specs),
                get_gaps_after(specs)));
 
@@ -116,12 +154,12 @@ function get_total_size(specs, direction) =
   ? [0, 0]
   : (direction == "ltr"
      || direction == "rtl")
-  ? [sum(concat(get_x_sizes(specs),
+  ? [sum(concat(get_x_sizes(specs, direction),
                 get_gaps_before(specs),
                 get_gaps_after(specs))),
-     get_max_y(specs),]
-  : [get_max_x(specs),
-     sum(concat(get_y_sizes(specs),
+     get_max_y(specs, direction),]
+  : [get_max_x(specs, direction),
+     sum(concat(get_y_sizes(specs, direction),
                 get_gaps_before(specs),
                 get_gaps_after(specs)))];
 
@@ -224,6 +262,14 @@ function get_total_size(specs, direction) =
  * - `"debug_text"` : Plist or string. Optional per-item debug controls (shown when not using children).
  * - `"placeholder_size"` : [x,y], Alternative footprint used for size computation (useful with children).
  *
+ * Nested layout fields:
+ * - `"specs"` : list(plist). When present, renders a nested `slot_layout` using these specs.
+ * - `"direction"` : string. Direction passed to the nested layout (defaults to the parent `direction`).
+ * - `"center"`, `"align"`, `"align_to_axle"`, `"align_on_primary_axle"` :
+ *     Optional overrides forwarded to the nested layout.
+ * - `"use_children"`, `"show_borders"`, `"debug"`, `"thickness"` :
+ *     Optional rendering overrides forwarded to the nested layout.
+ *
  *
  * `"rect"` fields:
  * - `"corner_rad"`, `"corner_factor"`, `"round_side"`
@@ -247,6 +293,20 @@ module slot_layout(specs,
                    show_borders=false,
                    thickness=3) {
 
+  // was_valid = slot_specs_are_valid(specs);
+
+  // if (!was_valid) {
+  //   specs =plist_get("specs", specs);
+  //   direction = plist_get("direction", plist,  "btt");
+  //   center = plist_get("center", plist,  false);
+  //   debug = plist_get("debug", plist,  false);
+  //   align = plist_get("align", plist,  0);
+  //   align_to_axle = plist_get("align_to_axle", plist,  1);
+  //   align_on_primary_axle = plist_get("align_on_primary_axle", plist,  0);
+  //   use_children = plist_get("use_children", plist, false);
+  //   show_borders = plist_get("show_borders", plist, false);
+  // }
+
   align = with_default(align, 0);
   align_to_axle = with_default(align_to_axle, 1);
   global_debug = debug;
@@ -260,16 +320,16 @@ module slot_layout(specs,
          str("Invalid align to axle: ", align_to_axle,
              " but should be 1, 0 or -1"));
 
-  assert([for (v = specs) plist_is(v)],
+  assert(slot_specs_are_valid(specs),
          "Provided specs are not list of plists");
 
   mapped_specs = specs;
-  x_sizes = get_x_sizes(mapped_specs);
-  y_sizes = get_y_sizes(mapped_specs);
+  x_sizes = get_x_sizes(mapped_specs, direction);
+  y_sizes = get_y_sizes(mapped_specs, direction);
   gaps_before = get_gaps_before(mapped_specs);
   gaps_after = get_gaps_after(mapped_specs);
-  max_x_size = get_max_x(mapped_specs);
-  max_y_size = get_max_y(mapped_specs);
+  max_x_size = get_max_x(mapped_specs, direction);
+  max_y_size = get_max_y(mapped_specs, direction);
 
   is_ltr = direction == "ltr";
   is_btt = direction == "btt";
@@ -318,6 +378,9 @@ module slot_layout(specs,
     for (i = [0 : len(mapped_specs) - 1]) {
       let (spec = specs[i],
            spec_type = plist_get("type", spec),
+           nested = is_nested_spec(spec),
+           nested_specs = get_nested_specs(spec),
+           direction = get_nested_direction(spec, direction),
            debug = plist_get("debug", spec),
            debug_text = plist_get("debug_text", spec),
            prev_y_acc = sum(y_sizes, i),
@@ -378,7 +441,31 @@ module slot_layout(specs,
           $custom = !use_children && spec_type == "custom";
 
           rotate([0, 0, rotation]) {
-            if (use_children && $children) {
+
+            if (nested) {
+              slot_layout(specs=nested_specs,
+                          direction=direction,
+                          center=plist_get("center", spec, center),
+                          debug=plist_get("debug", spec, debug),
+                          align=plist_get("align", spec, align),
+                          align_to_axle=plist_get("align_to_axle",
+                                                  spec,
+                                                  align_to_axle),
+                          align_on_primary_axle=plist_get("align_on_primary_axle",
+                                                          spec,
+                                                          align_on_primary_axle),
+                          use_children=plist_get("use_children",
+                                                 spec,
+                                                 use_children),
+                          show_borders=plist_get("show_borders",
+                                                 spec,
+                                                 show_borders),
+                          thickness=plist_get("thickness",
+                                              spec,
+                                              thickness)) {
+                children();
+              }
+            } else if (use_children && $children) {
               children();
             } else {
               if (debug && !is_undef(debug_text)) {
@@ -459,7 +546,8 @@ module slot_grid_rows(nested_specs,
                       debug = false,
                       align = 1,
                       thickness=3) {
-  row_sizes = [for (v = nested_specs) get_max_y(v)];
+  row_sizes = [for (v = nested_specs)
+      get_total_size(v, direction=cols_direction)[1]];
 
   translate([0, 0, 0]) {
     for (i = [0 : len(nested_specs) - 1]) {
@@ -497,7 +585,8 @@ module slot_grid_cols(nested_specs,
                       debug = false,
                       align = 1,
                       thickness=3) {
-  row_sizes = [for (v = nested_specs) get_max_x(v)];
+  row_sizes = [for (v = nested_specs)
+      get_total_size(v, direction=cols_direction)[0]];
 
   translate([0, 0, 0]) {
     for (i = [0 : len(nested_specs) - 1]) {
@@ -554,51 +643,48 @@ four_corner_holes_spec_example = ["type", "four_corner_holes",
 
 my_specs = [["type", "rect",
              "gap_before", 0,
-             "gap_after", 2,
              "rotation", 0,
-             "slot_size", [20, 5],
-             "corner_factor", 0.5,
-             "round_side", "all",
+             "slot_size", [10, 20],
+             "corner_rad", 0,
+             "gap_after", 1,
              "x_offset", 0,
              "y_offset", 0],
-            ["type", "rect",
-             "gap_before", 5,
-             "gap_after", 0,
-             "slot_size", [15, 25],
-             "corner_rad", 0,
-             "corner_factor", 0.3,
-             "round_side", "all",
-             "placeholder_size", [10, 20],
-             "recess_h", 0.5,
-             "recess_reverse", false,
-             "recess_size", [],
-             "x_offset", 0,
-             "y_offset", 0],
-            ["type", "four_corner_holes",
+            ["specs", [["type", "counterbore",
+                        "gap_before", 0,
+                        "rotation", 0,
+                        "d", 9,
+                        "corner_factor", 0.5,
+                        "round_side", "all",
+                        "x_offset", 0,
+                        "y_offset", 0],
+                       ["specs",
+                        [["type", "rect",
+                          "gap_before", 0,
+                          "rotation", 0,
+                          "slot_size", [20, 5],
+                          "corner_factor", 0.5,
+                          "round_side", "all",
+                          "x_offset", 0,
+                          "y_offset", 0],
+                         ["type", "rect",
+                          "gap_before", 0,
+                          "rotation", 0,
+                          "slot_size", [20, 5],
+                          "corner_factor", 0.5,
+                          "round_side", "all",
+                          "x_offset", 0,
+                          "y_offset", 0]],
+                        "direction", "ttb",]],
+             "direction", "ltr",
+             "align_to_axle", 0,
+             "align_on_primary_axle", 0,
+             "center",  false,
              "gap_before", 0,
              "gap_after", 0,
-             "rotation", 90,
-             "slot_size", rpi_bolt_spacing,
-             "d", rpi_bolt_hole_dia,
-             "bore_d", rpi_bolt_cbore_dia,
-             "bore_h", 1,
-             "sink", false,
-             "placeholder_size", [rpi_width, rpi_len,
-                                  rpi_thickness],
-             "bore_reverse", false,
-             "x_offset", 0,
-             "y_offset", 0,],
-            ["type", "rect",
-             "gap_before", 0,
-             "gap_after", 0,
-             "slot_size", [15, 25],
-             "corner_rad", 0,
-             "corner_factor", 0.3,
-             "round_side", "all",
-             "placeholder_size", [10, 20],
-
-             "recess_h", 0.5,
-             "recess_reverse", false,
-             "recess_size", [],
+             "rotation", 0,
              "x_offset", 0,
              "y_offset", 0]];
+
+slot_layout(my_specs,
+            direction="ttb",
+            align_on_primary_axle=1);

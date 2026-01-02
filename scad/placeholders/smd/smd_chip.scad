@@ -9,16 +9,16 @@
  * License: GPL-3.0-or-later
  */
 
-include <../parameters.scad>
-include <../colors.scad>
+include <../../parameters.scad>
+include <../../colors.scad>
 
-use <../l_bracket.scad>
-use <pins.scad>
-use <../lib/shapes2d.scad>
-use <../lib/transforms.scad>
-use <../lib/plist.scad>
-use <../lib/functions.scad>
-use <../lib/text.scad>
+use <../../lib/l_bracket.scad>
+use <../pins.scad>
+use <../../lib/shapes2d.scad>
+use <../../lib/transforms.scad>
+use <../../lib/plist.scad>
+use <../../lib/functions.scad>
+use <../../lib/text.scad>
 
 module smd_chip_2d(length,
                    w,
@@ -138,7 +138,7 @@ module smd_chip_from_plist(plist,
   chip_y = chip_size[1];
   chip_z = chip_size[2];
 
-  translate([center ? 0 : -total_x / 2, center ? 0 : total_y / 2, 0]) {
+  translate([center ? 0 : total_x / 2, center ? 0 : total_y / 2, 0]) {
     union() {
       color(chip_color, alpha=1) {
         linear_extrude(height=chip_z, center=false) {
@@ -244,4 +244,5 @@ smd_chip_from_plist(["placeholder", "smd_chip",
                                     "halign", "center"],
                      "j_lead", [["count", 11,
                                  "thickness", 0.4,
-                                 "sides", ["top", "bottom"]]]]);
+                                 "sides", ["top", "bottom"]]]],
+                    center=false);

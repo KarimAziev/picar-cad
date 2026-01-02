@@ -8,9 +8,9 @@
 include <../parameters.scad>
 include <../colors.scad>
 
-use <../l_bracket.scad>
+use <../lib/l_bracket.scad>
 use <pins.scad>
-use <smd_chip.scad>
+use <smd/smd_chip.scad>
 use <../lib/shapes2d.scad>
 use <../lib/holes.scad>
 use <../lib/transforms.scad>

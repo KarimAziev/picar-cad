@@ -17,8 +17,8 @@ use <screw_terminal.scad>
 use <pad_hole.scad>
 use <../lib/placement.scad>
 use <standoff.scad>
-use <smd_chip.scad>
-use <smd_resistor.scad>
+use <smd/smd_chip.scad>
+use <smd/smd_resistor.scad>
 use <../lib/shapes3d.scad>
 use <../lib/functions.scad>
 

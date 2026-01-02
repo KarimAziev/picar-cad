@@ -8,7 +8,7 @@
 include <../parameters.scad>
 include <../colors.scad>
 
-use <../l_bracket.scad>
+use <../lib/l_bracket.scad>
 
 function j_lead_full_len(lower_len, upper_len, thickness) =
   lower_len + upper_len + thickness + thickness / 2;

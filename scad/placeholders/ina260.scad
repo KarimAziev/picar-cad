@@ -1,7 +1,7 @@
 include <../parameters.scad>
 use <../lib/shapes2d.scad>
 use <../lib/holes.scad>
-use <smd_chip.scad>
+use <smd/smd_chip.scad>
 use <../lib/transforms.scad>
 use <../lib/shapes3d.scad>
 use <../lib/functions.scad>

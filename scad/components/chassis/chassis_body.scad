@@ -40,9 +40,12 @@ use <../../power/power_case.scad>
 
 use <upper_chassis.scad>
 use <chassis_connector.scad>
+use <../../core/slot_layout.scad>
+use <../../lib/plist.scad>
+use <../../core/slot_layout_components.scad>
 
-show_motor               = true;
-show_motor_brackets      = true;
+show_motor               = false;
+show_motor_brackets      = false;
 show_wheels              = false;
 show_xt90e               = false;
 show_rear_panel          = false;
@@ -59,7 +62,7 @@ show_power_case_lid      = false;
 show_lipo_pack           = false;
 show_batteries           = false;
 show_rpi                 = false;
-show_socket_case         = true;
+show_socket_case         = false;
 
 rpi_position_x           = -rpi_bolt_spacing[0] / 2 + rpi_chassis_x_position;
 rpi_position_y           = -rpi_len - rpi_chassis_y_position;
@@ -129,6 +132,18 @@ module battery_holders_bolts(x_offst,
           }
         }
       }
+    }
+  }
+}
+
+module chassis_body(size, slots_and_placeholders, assembly) {
+  union() {
+    difference() {
+      cube(size=size);
+      make_slots(size=size, slots=slots_and_placeholders, mode="slots");
+    }
+    if (assembly) {
+      make_slots(size=size, slots=slots_and_placeholders, mode="placeholder");
     }
   }
 }
@@ -441,19 +456,16 @@ module chassis_body(panel_color="white",
                                                     battery_dia=battery_dia)) {
 
           translate([0, -smd_battery_holder_length, 0]) {
-            rotate([0, 0, 0]) {
+            four_corner_hole_rows(specs=specs,
+                                  thickness=chassis_thickness,
+                                  default_bore_dia_factor=1,
+                                  default_bore_h_factor=0,
+                                  sink=true,
+                                  center=false) {
 
-              four_corner_hole_rows(specs=specs,
-                                    thickness=chassis_thickness,
-                                    default_bore_dia_factor=1,
-                                    default_bore_h_factor=0,
-                                    sink=true,
-                                    center=false) {
-
-                translate([0, 0, -chassis_thickness + 0.1]) {
-                  rotate([180, 0, 0]) {
-                    smd_battery_holder(show_battery=show_batteries);
-                  }
+              translate([0, 0, -chassis_thickness + 0.1]) {
+                rotate([180, 0, 0]) {
+                  smd_battery_holder(show_battery=show_batteries);
                 }
               }
             }
@@ -483,6 +495,89 @@ module chassis_body(panel_color="white",
     }
   }
 }
+
+function normalize_slot(plist) = plist_get("placeholder", plist)
+  == "smd_battery_holder"
+  ? smd_battery_holder_add_placeholder_size(plist)
+  : plist;
+
+function normalize_slots(slots) = [for (v = slots) normalize_slot(v)];
+
+chassis_bottom_slots = [[["type", "custom",
+                          "placeholder", "smd_battery_holder",
+                          "rotation", 0,
+                          "height", smd_battery_holder_height,
+                          "length", smd_battery_holder_length,
+                          "battery_dia", battery_dia,
+                          "battery_height", battery_height,
+                          "count", smd_battery_holder_batteries_count,
+                          "bolt_dia", smd_battery_holder_bolt_dia,
+                          "bolt_spacing", smd_battery_holder_bolt_spacing,
+                          "bolt_recess_size", smd_battery_holder_bolt_recess_size,
+                          "bottom_thickness", smd_battery_holder_bottom_thickness,
+                          "side_thickness", smd_battery_holder_side_thickness,
+                          "front_rear_thickness", smd_battery_holder_front_rear_thickness,
+                          "inner_cutout_size", smd_battery_holder_inner_cutout_size,
+                          "inner_thickness", smd_battery_holder_inner_thickness,
+                          "inner_cutout_h", smd_battery_holder_inner_side_h,
+                          "contact_hole_d", 1,
+                          "show_battery", false,
+                          "show_contact", true,
+                          "show_bolt", true,
+                          "show_nut", true,
+                          "lock_nut", false,
+                          "bolt_head_type", "round",
+                          "bolt_visible_h",  2],
+                         ["type", "custom",
+                          "placeholder", "smd_battery_holder",
+                          "rotation", 0,
+                          "height", smd_battery_holder_height,
+                          "length", smd_battery_holder_length,
+                          "battery_dia", battery_dia,
+                          "battery_height", battery_height,
+                          "count", smd_battery_holder_batteries_count,
+                          "bolt_dia", smd_battery_holder_bolt_dia,
+                          "bolt_spacing", smd_battery_holder_bolt_spacing,
+                          "bolt_recess_size", smd_battery_holder_bolt_recess_size,
+                          "bottom_thickness", smd_battery_holder_bottom_thickness,
+                          "side_thickness", smd_battery_holder_side_thickness,
+                          "front_rear_thickness", smd_battery_holder_front_rear_thickness,
+                          "inner_cutout_size", smd_battery_holder_inner_cutout_size,
+                          "inner_thickness", smd_battery_holder_inner_thickness,
+                          "inner_cutout_h", smd_battery_holder_inner_side_h,
+                          "contact_hole_d", 1,
+                          "show_battery", false,
+                          "show_contact", true,
+                          "show_bolt", true,
+                          "show_nut", true,
+                          "lock_nut", false,
+                          "bolt_head_type", "round",
+                          "bolt_visible_h",  2]],
+                        [["type", "custom",
+                          "placeholder", "smd_battery_holder",
+                          "rotation", 90,
+                          "height", smd_battery_holder_height,
+                          "length", smd_battery_holder_length,
+                          "battery_dia", battery_dia,
+                          "battery_height", battery_height,
+                          "count", smd_battery_holder_batteries_count,
+                          "bolt_dia", smd_battery_holder_bolt_dia,
+                          "bolt_spacing", smd_battery_holder_bolt_spacing,
+                          "bolt_recess_size", smd_battery_holder_bolt_recess_size,
+                          "bottom_thickness", smd_battery_holder_bottom_thickness,
+                          "side_thickness", smd_battery_holder_side_thickness,
+                          "front_rear_thickness", smd_battery_holder_front_rear_thickness,
+                          "inner_cutout_size", smd_battery_holder_inner_cutout_size,
+                          "inner_thickness", smd_battery_holder_inner_thickness,
+                          "inner_cutout_h", smd_battery_holder_inner_side_h,
+                          "contact_hole_d", 1,
+                          "show_battery", false,
+                          "show_contact", true,
+                          "show_bolt", true,
+                          "show_nut", true,
+                          "lock_nut", false,
+                          "bolt_head_type", "round",
+                          "bolt_visible_h",  2]]];
 
 union() {
   chassis_body();

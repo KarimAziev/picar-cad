@@ -13,6 +13,9 @@ use <../lib/transforms.scad>
 use <../lib/holes.scad>
 use <../lib/functions.scad>
 use <../lib/plist.scad>
+use <../lib/slots.scad>
+
+
 
 function toggle_switch_calc_desired_thickness(extra_thickness, nut_bore_h) =
   extra_thickness + nut_bore_h;

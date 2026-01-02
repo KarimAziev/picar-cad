@@ -19,6 +19,9 @@ use <../lib/placement.scad>
 use <../lib/transforms.scad>
 use <../placeholders/standoff.scad>
 use <power_socket_case.scad>
+use <../lib/slots.scad>
+
+
 
 slot_mode                         = false;
 

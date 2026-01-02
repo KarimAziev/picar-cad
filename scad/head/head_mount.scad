@@ -20,7 +20,7 @@
 include <../parameters.scad>
 include <../colors.scad>
 
-use <../ir_case.scad>
+use <ir_case.scad>
 use <../placeholders/camera.scad>
 use <../lib/functions.scad>
 use <../lib/shapes2d.scad>

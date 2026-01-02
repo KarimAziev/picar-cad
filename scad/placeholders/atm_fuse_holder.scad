@@ -16,6 +16,9 @@ use <../lib/transforms.scad>
 use <../lib/plist.scad>
 use <../lib/holes.scad>
 use <../lib/stairs.scad>
+use <../lib/slots.scad>
+
+
 
 function atm_fuse_holder_full_thickness(body_thickness, rib_thickness) =
   body_thickness + rib_thickness * 2;

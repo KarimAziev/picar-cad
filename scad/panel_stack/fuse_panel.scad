@@ -18,6 +18,9 @@ use <../placeholders/atm_fuse_holder.scad>
 use <control_panel.scad>
 use <../lib/plist.scad>
 use <../core/slot_layout.scad>
+use <../lib/slots.scad>
+
+
 
 max_body_height  = max([for (pl = fuse_panel_plist_specs) let (body = plist_get("body", pl, []),
                                                                size = plist_get("size", body, []),

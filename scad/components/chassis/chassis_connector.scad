@@ -13,6 +13,9 @@ use <../../lib/shapes2d.scad>
 use <../../lib/holes.scad>
 use<../../lib/transforms.scad>
 use <../../lib/shapes3d.scad>
+use <../../lib/slots.scad>
+
+
 
 module  chassis_connector_tongue() {
   translate([0, 0, chassis_connector_height]) {

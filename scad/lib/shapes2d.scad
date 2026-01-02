@@ -151,7 +151,26 @@ module chamfered_square(size, chamfer) {
          [-h,     -h + c],
          [-h,      h - c],
          [-h + c,  h]];
-         polygon(points = pts);
+  polygon(points = pts);
+}
+
+module chamfered_rect(size, chamfer) {
+  x = size[0];
+  y = size[1];
+  chamfer = is_undef(chamfer) ? y / 4 : chamfer;
+  hy = y / 2;
+  hx = x / 2;
+  cy = chamfer > hy ? hy : chamfer;
+  cx = chamfer > hx ? hx : chamfer;
+  pts = [[hx - cx,  hy],
+         [hx,      hy - cy],
+         [hx,     -hy + cy],
+         [hx - cx, -hy],
+         [-hx + cx, -hy],
+         [-hx,     -hy + cy],
+         [-hx,      hy - cy],
+         [-hx + cx,  hy]];
+  polygon(points = pts);
 }
 
 /*
@@ -275,7 +294,7 @@ module star_2d(n=5, r_outer=20, r_inner=10) {
       let (angle = 360 / (2*n) * i,
            r = (i % 2 == 0) ? r_outer : r_inner)
         [r * cos(angle), r * sin(angle)]];
-        polygon(points = pts);
+  polygon(points = pts);
 }
 
 /*
@@ -350,6 +369,46 @@ module capsule(y, d, center=true, $fn=64) {
     hull() {
       circle(r=r, $fn=$fn);
       translate([0, y]) circle(r=r, $fn=$fn);
+    }
+  }
+}
+
+module capsule_x(x, d, center=true, $fn=64) {
+  r = d / 2;
+  origin_shift = center ? [-x / 2, 0] : [r, r];
+  translate(origin_shift) {
+    hull() {
+      circle(r=r, $fn=$fn);
+      translate([x, 0]) circle(r=r, $fn=$fn);
+    }
+  }
+}
+
+module rect_border(size,
+                   border_w=0.5,
+                   inner=true,
+                   r=0,
+                   center=false,
+                   fn,
+                   r_factor=0.3,
+                   round_side) {
+  container_size = inner ? size : [size[0] + border_w, size[1] + border_w];
+  translate([center ? 0 : size[0] / 2, center ? 0 : size[1] / 2, 0]) {
+
+    difference() {
+      rounded_rect(size=container_size,
+                   r=r,
+                   center=true,
+                   fn=fn,
+                   r_factor=r_factor,
+                   side=round_side);
+      rounded_rect(size=[container_size[0] - border_w,
+                         container_size[1] - border_w],
+                   r=r,
+                   center=true,
+                   fn=fn,
+                   r_factor=r_factor,
+                   side=round_side);
     }
   }
 }

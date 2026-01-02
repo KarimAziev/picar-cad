@@ -14,7 +14,7 @@
 include <../parameters.scad>
 include <../colors.scad>
 
-use <../l_bracket.scad>
+use <../lib/l_bracket.scad>
 use <../placeholders/steering_servo.scad>
 use <steering_pinion.scad>
 use <rack_util.scad>

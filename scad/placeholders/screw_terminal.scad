@@ -28,10 +28,10 @@ function screw_terminal_width(base_w,
 
 function screw_terminal_width_from_plist(plist=[]) =
   let (base_w = plist_get("base_w", plist),
-       pitch = plist_get("pitch", plist),
-       contacts_n = plist_get("contacts_n", plist),
-       contact_w = plist_get("contact_w", plist),
-       wall_thickness = plist_get("wall_thickness", plist))
+       pitch = plist_get("pitch", plist, 4.5),
+       contacts_n = plist_get("contacts_n", plist, 2),
+       contact_w = plist_get("contact_w", plist, 3.5),
+       wall_thickness = plist_get("wall_thickness", plist, 0.6))
   screw_terminal_width(base_w=base_w,
                        pitch=pitch,
                        contact_w=contact_w,
@@ -174,13 +174,12 @@ module screw_terminal_from_plist(plist, center=false) {
 }
 
 screw_terminal_from_plist(["placeholder", "screw_terminal",
-
                            "base_w",  undef,
                            "base_h",  8.8,
                            "thickness",  10.6,
                            "top_l",  5.50,
                            "top_h",  3.2,
-                           "contacts_n",  2,
+                           "contacts_n",  6,
                            "contact_w",  3.5,
                            "contact_h",  4.47,
                            "pitch",  4.5,
@@ -189,4 +188,4 @@ screw_terminal_from_plist(["placeholder", "screw_terminal",
                            "pin_h",  3.9,
                            "wall_thickness",  0.6,
                            "isosceles_trapezoid", false,],
-                          center=true);
+                          center=false);

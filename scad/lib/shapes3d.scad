@@ -160,3 +160,26 @@ module cube_center_y(size) {
     cube(size);
   }
 }
+
+module cube_border(size,
+                   h,
+                   border_w=0.5,
+                   inner=true,
+                   r=0,
+                   center=false,
+                   fn,
+                   r_factor=0.3,
+                   round_side) {
+  linear_extrude(height=is_undef(h) ? size[2] : h,
+                 center=false,
+                 convexity=2) {
+    rect_border(size=[size[0], size[1]],
+                border_w=border_w,
+                inner=inner,
+                r=r,
+                center=center,
+                fn=fn,
+                r_factor=r_factor,
+                round_side=round_side);
+  }
+}

@@ -17,12 +17,15 @@ use <../lib/transforms.scad>
 use <../core/slot_layout_components.scad>
 use <../lib/holes.scad>
 use <../core/slot_layout.scad>
-use <../components/closable_box.scad>
+use <../components/closable_box/sliding_box.scad>
 use <../lib/text.scad>
 use <../placeholders/xt90e-m.scad>
 use <../lib/debug.scad>
 use <power_socket_lid.scad>
 use <../placeholders/standoff.scad>
+use <../lib/slots.scad>
+
+
 
 show_atm_fuse_holders = false;
 show_socket           = false;

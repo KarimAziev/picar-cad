@@ -58,13 +58,16 @@ use <bearing_shaft.scad>
 use <steering_rail.scad>
 use <rack.scad>
 use <knuckle_connector.scad>
-use <../l_bracket.scad>
+use <../lib/l_bracket.scad>
 use <steering_servo_mount.scad>
 use <../lib/functions.scad>
 use <../lib/shapes2d.scad>
 use <../lib/transforms.scad>
 use <../lib/holes.scad>
 use <../components/chassis/util.scad>
+use <../lib/slots.scad>
+
+
 
 steering_hinge_bolt_rad = steering_panel_hinge_bolt_dia / 2;
 

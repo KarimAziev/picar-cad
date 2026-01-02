@@ -29,6 +29,9 @@ use <../placeholders/xt90e-m.scad>
 use <../core/slot_layout.scad>
 use <../lib/plist.scad>
 use <../core/slot_layout_components.scad>
+use <../lib/slots.scad>
+
+
 
 show_xt90e            = false;
 show_dc_regulator     = false;

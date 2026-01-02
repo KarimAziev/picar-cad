@@ -1,6 +1,11 @@
 /**
  * Module: SMT (Surface Mount Technology) Can Style Electrolytic Capacitor
  *
+ * Surface-mount technology, originally called planar mounting,[1] is a
+ * method in which the electrical components are mounted directly onto the
+ * surface of a printed circuit board (PCB). An electrical component mounted
+ * in this manner is referred to as a surface-mount device (SMD).
+ *
  * The SMT Can Style Electrolytic Capacitor is designed to be mounted
  * directly on the surface of a printed circuit board (PCB), eliminating the
  * need for additional space.
@@ -25,22 +30,22 @@
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */
-include <../colors.scad>
-include <../lib/shapes2d.scad>
-use <../lib/shapes3d.scad>
-use <../lib/plist.scad>
-use <../lib/trapezoids.scad>
-use <../lib/text.scad>
-use <../lib/placement.scad>
-use <../lib/functions.scad>
+include <../../colors.scad>
+include <../../lib/shapes2d.scad>
+use <../../lib/shapes3d.scad>
+use <../../lib/plist.scad>
+use <../../lib/trapezoids.scad>
+use <../../lib/text.scad>
+use <../../lib/placement.scad>
+use <../../lib/functions.scad>
 
-module smt_can_capacitor(d,
-                         h,
-                         base_h,
-                         text_rows = [],
-                         marking_color=matte_black,
-                         base_color=matte_black,
-                         can_color=metallic_silver_1) {
+module can_capacitor(d,
+                     h,
+                     base_h,
+                     text_rows = [],
+                     marking_color=matte_black,
+                     base_color=matte_black,
+                     can_color=metallic_silver_1) {
 
   let (chamfer=d / 6,
        cube_y=d - chamfer * 2,
@@ -107,29 +112,34 @@ module smt_can_capacitor(d,
   }
 }
 
-module smt_can_capacitor_from_plist(plist) {
-  rotation = plist_get("rotation", plist);
+module can_capacitor_from_plist(plist, center=true) {
+  rotation = plist_get("spin", plist);
+  d = plist_get("d", plist);
   module capacitor() {
-    smt_can_capacitor(h=plist_get("h", plist),
-                      d=plist_get("d", plist),
-                      base_h=plist_get("base_h", plist),
-                      text_rows=plist_get("text_rows", plist, []),
-                      marking_color=plist_get("marking_color", plist, matte_black),
-                      can_color=plist_get("can_color", plist, metallic_silver_1));
+    can_capacitor(h=plist_get("h", plist),
+                  d=plist_get("d", plist),
+                  base_h=plist_get("base_h", plist),
+                  text_rows=plist_get("text_rows", plist, []),
+                  marking_color=plist_get("marking_color", plist, matte_black),
+                  can_color=plist_get("can_color", plist, metallic_silver_1));
   }
-  if (is_num(rotation)) {
-    rotate([0, 0, rotation]) {
+
+  translate([center ? 0 : d / 2, center ? 0 : d / 2, 0]) {
+    if (is_num(rotation)) {
+      rotate([0, 0, rotation]) {
+        capacitor();
+      }
+    } else {
       capacitor();
     }
-  } else {
-    capacitor();
   }
 }
 
-smt_can_capacitor_from_plist(["d", 7,
-                              "base_h", 2.58,
-                              "h", 6.85,
-                              "marking_color", "red",
-                              "can_color", metallic_silver_1,
-                              "text_rows", ["47", "HFT", "S92"],
-                              "rotation", 0]);
+can_capacitor_from_plist(["d", 7,
+                          "base_h", 2.58,
+                          "h", 6.85,
+                          "marking_color", "red",
+                          "can_color", metallic_silver_1,
+                          "text_rows", ["47", "HFT", "S92"],
+                          "spin", 90],
+                         center=false);

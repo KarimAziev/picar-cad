@@ -43,7 +43,7 @@ include <../parameters.scad>
 include <../colors.scad>
 use <head_mount.scad>
 
-use <../l_bracket.scad>
+use <../lib/l_bracket.scad>
 use <../placeholders/servo.scad>
 use <../placeholders/pan_servo.scad>
 use <../placeholders/tilt_servo.scad>

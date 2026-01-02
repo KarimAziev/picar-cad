@@ -19,7 +19,7 @@
 include <parameters.scad>
 include <colors.scad>
 
-use <ir_case.scad>
+use <head/ir_case.scad>
 use <front_panel.scad>
 use <rear_panel.scad>
 use <head/head_mount.scad>

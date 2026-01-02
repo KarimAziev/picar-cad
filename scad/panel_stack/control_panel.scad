@@ -18,6 +18,9 @@ use <../lib/transforms.scad>
 use <../lib/functions.scad>
 use <../placeholders/bolt.scad>
 use <../lib/plist.scad>
+use <../lib/slots.scad>
+
+
 
 sizes                   = [for (spec = control_panel_switch_button_specs)
     plist_get("size", spec)];

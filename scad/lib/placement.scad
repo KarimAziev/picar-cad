@@ -7,6 +7,9 @@
 use <shapes3d.scad>
 use <holes.scad>
 use <functions.scad>
+use <slots.scad>
+
+
 
 module row_of_circles(total_width,
                       d,

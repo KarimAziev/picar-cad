@@ -8,15 +8,17 @@ include <../parameters.scad>
 include <../colors.scad>
 include <../power_lid_parameters.scad>
 
-use <smd_chip.scad>
+use <smd/smd_chip.scad>
 use <../lib/shapes2d.scad>
 use <../lib/shapes3d.scad>
 use <../lib/holes.scad>
 use <../lib/transforms.scad>
 use <screw_terminal.scad>
 use <standoff.scad>
-use <smt_can_capacitor.scad>
+use <smd/can_capacitor.scad>
 use <../lib/plist.scad>
+use <../lib/slots.scad>
+use <smd/power_inductor.scad>
 
 // [x, y, z, round_radius]
 
@@ -176,17 +178,6 @@ module step_down_voltage_smd_chip(w=step_down_voltage_smd_chip_w,
            total_w=w,
            h=h,
            center=false);
-}
-
-module power_inductor(w=step_down_voltage_power_inductor_size[0],
-                      l=step_down_voltage_power_inductor_size[1],
-                      h=step_down_voltage_power_inductor_size[2],
-                      r=step_down_voltage_power_inductor_size[3]) {
-  color(metallic_silver_8, alpha=1) {
-    linear_extrude(height=h, center=false) {
-      rounded_rect(size=[w, l], r=r);
-    }
-  }
 }
 
 default_dc_screw_terminal_props = ["thickness", step_down_voltage_screw_terminal_thickness,
@@ -391,7 +382,10 @@ module step_down_voltage_regulator(plist = [],
                        -w / 2 +
                        step_down_voltage_power_regulator_y_distance,
                        0]) {
-              power_inductor();
+              shielded_power_inductor(size=[step_down_voltage_power_inductor_size[0],
+                                            step_down_voltage_power_inductor_size[1],
+                                            step_down_voltage_power_inductor_size[2]],
+                                      r=step_down_voltage_power_inductor_size[3]);
             }
 
             for (item = step_down_voltage_surface_mount_chips_specs) {
@@ -426,7 +420,7 @@ module step_down_voltage_regulator(plist = [],
             for (pl = step_down_voltage_can_capacitors) {
               let (pos = plist_get("position", pl, [])) {
                 translate(pos) {
-                  smt_can_capacitor_from_plist(pl);
+                  can_capacitor_from_plist(pl);
                 }
               }
             }

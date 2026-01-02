@@ -1,0 +1,206 @@
+/**
+ * Module: Grid component
+ *
+ *
+ * Author: Karim Aziiev <karim.aziiev@gmail.com>
+ * License: GPL-3.0-or-later
+ */
+include <../colors.scad>
+use <../lib/shapes2d.scad>
+use <../lib/functions.scad>
+use <../lib/plist.scad>
+use <../lib/debug.scad>
+use <../lib/text.scad>
+use <../lib/shapes3d.scad>
+
+function percent_to_mm(percent, total_val) = percent * total_val / 100;
+function maybe_to_mm(val, total_val) = val > 1 ? val : percent_to_mm(val * 100,
+                                                                     total_val);
+
+// sum of a[0..i-1]
+function sum_prefix(a, i) = i <= 0 ? 0 : sum([for (k=[0:i-1]) a[k]]);
+
+function grid_is(x) = plist_is(x) && plist_get("type", x, "") == "grid";
+function row_is(x)= plist_is(x) && !is_undef(plist_get("cells", x, undef));
+function cell_is(x) = plist_is(x) && !is_undef(plist_get("w", x, undef));
+
+module grid_plist_render(size,
+                         grid,
+                         mode,
+                         debug=false,
+                         debug_spec=[],
+                         level=0) {
+  inner_x = size[0];
+  inner_y = size[1];
+
+  rows = plist_get("rows", grid, []);
+
+  debug_spec = with_default(debug_spec, []);
+  debug_gap = plist_get("gap", debug_spec, 10);
+  debug_color = plist_get("color", debug_spec, yellow_3);
+  debug_size = plist_get("size", debug_spec, 4);
+  debug_border_w = plist_get("border_w", debug_spec, 1);
+  debug_border_h = plist_get("border_h", debug_spec, 1);
+  debug_text_h = plist_get("text_h", debug_spec, 1);
+
+  row_h_specs = [for (r = rows) plist_get("h", r, 0)];
+  row_heights = [for (hs = row_h_specs) maybe_to_mm(hs, inner_y)];
+
+  for (ri=[0:len(rows)-1]) {
+    row = rows[ri];
+    assert(row_is(row),
+           str("Row ", ri, " must be a plist with keys 'h' and 'cells'"));
+
+    h = row_heights[ri];
+    y_acc = sum_prefix(row_heights, ri);
+
+    translate([0, -y_acc - h, 0]) {
+
+      if (debug) {
+        translate([-debug_gap, h / 2, 0]) {
+          text_from_plist(str("L", level, " R", ri, "  ", truncate(h), "mm"),
+                          default_halign="right",
+                          default_size=debug_size,
+                          default_color=debug_color,
+                          default_valign="bottom");
+        }
+      }
+
+      cells = plist_get("cells", row, []);
+
+      w_specs = [for (c=cells) plist_get("w", c, 0)];
+      widths  = [for (ws=w_specs) maybe_to_mm(ws, inner_x)];
+
+      for (ci=[0:len(cells)-1]) {
+        cell = cells[ci];
+        assert(cell_is(cell),
+               str("Cell R", ri,"C", ci," must be a plist with key 'w'"));
+
+        w = widths[ci];
+        x_acc = sum_prefix(widths, ci);
+        cell_debug = plist_get("debug", cell);
+
+        translate([x_acc, 0, 0]) {
+          nested = plist_get("grid", cell, undef);
+
+          if ((debug || cell_debug) && is_undef(nested)) {
+            color(debug_color, alpha=1)
+              cube_border(size=[w, h],
+                          center=false,
+                          border_w=debug_border_w,
+                          h=debug_border_h);
+
+            translate([w / 2, h / 2, 0]) {
+              color(debug_color, alpha=1)
+                text_fit(txt=str(truncate(w), "mm"),
+                         x=w / 2,
+                         y=h / 2,
+                         h=debug_text_h);
+            }
+          }
+
+          $mode = mode;
+          $cell_size = [w, h];
+          $cell = cell;
+          $spin = plist_get("spin", cell, 0);
+          $slot = plist_get("slot", cell, []);
+          $slot_type = plist_get("type", $slot);
+          $placeholder = plist_get("placeholder", cell, []);
+          $placeholder_type = plist_get("type", $placeholder);
+
+          if (!is_undef(nested)) {
+            assert(grid_is(nested),
+                   str("Cell R", ri,"C", ci," has 'grid' but it's not a grid plist"));
+
+            translate([0, h, 0]) {
+
+              grid_plist_render(size=[w, h],
+                                grid=nested,
+                                debug=debug,
+                                debug_spec=debug_spec,
+                                level=level + 1) {
+                children();
+              }
+            }
+          } else {
+
+            children();
+          }
+        }
+      }
+    }
+  }
+}
+
+module grid_plist(grid,
+                  debug=false,
+                  mode,
+                  debug_spec=["gap", 10,
+                              "color", yellow_3,
+                              "text_h", 1,
+                              "border_h", 2,
+                              "border_w", 0.5,
+                              "size", 2],
+                  level=0) {
+  assert(grid_is(grid),
+         "grid_plist: grid must be a plist with type='grid'");
+
+  size = plist_get("size", grid, undef);
+  assert(!is_undef(size) && len(size)==2,
+         "grid_plist: grid must have 'size'=[x,y] at top level");
+
+  grid_plist_render(size=size,
+                    grid=grid,
+                    debug=debug,
+                    mode=mode,
+                    debug_spec=debug_spec,
+                    level=level) {
+    $mode = mode;
+    children();
+  }
+}
+parent_size = [56.7, 65];
+
+grid_plist(["type","grid",
+            "size", parent_size,
+            "rows", [["h", 12.0, "cells",
+                      [["w", 0.25],
+                       ["w", 0.25, "grid",
+                        ["type","grid",
+                         "rows",
+                         [["h", 0.5, "cells",
+                           [["w", 1.0]]],
+                          ["h", 0.5, "cells",
+                           [["w", 0.5,
+                             "slot", ["type",
+                                      "rect",
+                                      "size", [10, 5]],
+                             "placeholder", ["type",
+                                             "atm_fuse_holder"]],
+                            ["w", 0.5]]]]]],
+                       ["w", 0.25],
+                       ["w", 0.25]]],
+
+                     ["h", 11.0, "cells",
+                      [["w", 0.25],
+                       ["w", 0.5],
+                       ["w", 0.25]]],
+                     ["h", 6.0,  "cells", [["w", 0.25],
+                                           ["w", 0.5],
+                                           ["w", 0.25]]],
+                     ["h", 11.0, "cells", [["w", 0.5],
+                                           ["w", 0.5]]],
+                     ["h", 3.0,  "cells", [["w", 0.2],
+                                           ["w", 0.2],
+                                           ["w", 0.2],
+                                           ["w", 0.2],
+                                           ["w", 0.2]]],
+                     ["h", 3.0,  "cells", [["w", 0.2],
+                                           ["w", 0.2],
+                                           ["w", 0.2],
+                                           ["w", 0.2],
+                                           ["w", 0.2]]],
+                     ["h", 4.0,  "cells", [["w", 0.1],
+                                           ["w", 0.8],
+                                           ["w", 0.1]]]]],
+           debug=true);

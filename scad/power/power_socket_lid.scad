@@ -15,10 +15,12 @@ use <../lib/transforms.scad>
 use <../core/slot_layout_components.scad>
 use <../lib/holes.scad>
 use <../core/slot_layout.scad>
-use <../components/closable_box.scad>
+use <../components/closable_box/sliding_box.scad>
 use <../lib/text.scad>
 use <../placeholders/xt90e-m.scad>
 use <../lib/debug.scad>
+use <../lib/slots.scad>
+use <../components/closable_box/sliding_lid.scad>
 
 module power_socket_case_lid(size=power_socket_case_size,
                              color,
@@ -42,24 +44,24 @@ module power_socket_case_lid(size=power_socket_case_size,
 
   module lid_box() {
     color(color, alpha=1) {
-      box_lid(size=size,
-              thickness=lid_thickness,
-              debug=debug,
-              side_thickness=side_thickness,
-              corner_rad=corner_rad,
-              use_inner_round=use_inner_round,
-              rim_h=rim_h,
-              fn=fn,
-              include_rim_sizing=include_rim_sizing,
-              front_thickness=front_thickness,
-              rim_w=rim_w,
-              rim_front_w=rim_front_w,
-              hook_h=hook_h,
-              hook_l=hook_l,
-              rail_thickness=rail_thickness,
-              rail_tolerance=rail_tolerance,
-              rail_top_thickness=rail_top_thickness,
-              hook_distance=hook_distance);
+      sliding_lid(size=size,
+                  thickness=lid_thickness,
+                  debug=debug,
+                  side_thickness=side_thickness,
+                  corner_rad=corner_rad,
+                  use_inner_round=use_inner_round,
+                  rim_h=rim_h,
+                  fn=fn,
+                  include_rim_sizing=include_rim_sizing,
+                  front_thickness=front_thickness,
+                  rim_w=rim_w,
+                  rim_front_w=rim_front_w,
+                  hook_h=hook_h,
+                  hook_l=hook_l,
+                  rail_thickness=rail_thickness,
+                  rail_tolerance=rail_tolerance,
+                  rail_top_thickness=rail_top_thickness,
+                  hook_distance=hook_distance);
     }
   }
   difference() {

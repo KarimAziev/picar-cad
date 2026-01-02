@@ -20,6 +20,9 @@ use <../lib/transforms.scad>
 use <bolt.scad>
 use <xt90.scad>
 use <../lib/plist.scad>
+use <../lib/slots.scad>
+
+
 
 module xt90e_mounting_pattern(h,
                               spacing,

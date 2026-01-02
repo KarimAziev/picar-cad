@@ -8,10 +8,13 @@
 
 include <parameters.scad>
 
-use <l_bracket.scad>
+use <lib/l_bracket.scad>
 use <lib/holes.scad>
 use <lib/shapes2d.scad>
 use <placeholders/toggle_switch.scad>
+use <lib/slots.scad>
+
+
 
 function rear_panel_bolt_panel_width() =
   max(rear_panel_bolt_hole_dia + rear_panel_bolt_offset * 2,

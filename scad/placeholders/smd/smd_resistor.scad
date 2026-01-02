@@ -1,10 +1,10 @@
-include <../colors.scad>
+include <../../colors.scad>
 
-use <../lib/shapes2d.scad>
-use <../lib/shapes3d.scad>
-use <../lib/transforms.scad>
-use <../lib/plist.scad>
-use <../lib/functions.scad>
+use <../../lib/shapes2d.scad>
+use <../../lib/shapes3d.scad>
+use <../../lib/transforms.scad>
+use <../../lib/plist.scad>
+use <../../lib/functions.scad>
 
 module smd_resistor(size=[3.2, 1.4, 0.4],
                     border_color="white",
@@ -323,6 +323,8 @@ module smd_resistors_from_specs(specs=[[[2.0, 3.3, 2.5, 0.1, false],
 module smd_resistor_from_plist(plist, center=true) {
   plist = with_default(plist, []);
   size = plist_get("placeholder_size", plist, [3.2, 1.4, 0.4]);
+  x = size[0];
+  y = size[1];
   border_color = plist_get("border_color", plist, "white");
   body_h = plist_get("body_h", plist, 0.1);
   border_w = plist_get("border_w", plist, undef);
@@ -330,8 +332,8 @@ module smd_resistor_from_plist(plist, center=true) {
   body_color = plist_get("body_color", plist, matte_black);
   fillet_factor = plist_get("fillet_factor", plist, 0.2);
   pad_color = plist_get("pad_color", plist, "lightyellow");
-  pad_factor_x = plist_get("pad_factor_x", plist, 0.5);
-  pad_factor_y = plist_get("pad_factor_y", plist, 0.9);
+  pad_factor_x = plist_get("pad_factor_x", plist, x > y ? 0.6 : 1.1);
+  pad_factor_y = plist_get("pad_factor_y", plist, x < y ? 0.6 : 1.1);
   marking = plist_get("marking", plist, undef);
   mark_color = plist_get("mark_color", plist, undef);
   mark_size = plist_get("mark_size", plist, undef);
@@ -366,13 +368,10 @@ smd_plist = ["placeholder_size", [8.2, 3.4, 0.4],
              "body_color", matte_black,
              "fillet_factor", 0.2,
              "pad_color", "lightyellow",
-             "pad_factor_x", 0.5,
-             "pad_factor_y", 0.9,
              "marking", "103",
-             "mark_color", "red",
              "mark_size", 2,
              "mark_font", "Liberation Sans:style=Bold",
-             "mark_spacing", 0.8,];
+             "mark_spacing", 0.8];
 
 // smd_resistors_from_specs(specs=[[[6.15, 6.15, 2.7, 0.01, false],
 //                                  [metallic_silver_1, 0.00, 1.0],
@@ -381,7 +380,7 @@ smd_plist = ["placeholder_size", [8.2, 3.4, 0.4],
 //                                  [-5.60, 1.5, 0],
 //                                  []]]);
 
-smd_resistor_from_plist(smd_plist);
+smd_resistor_from_plist(smd_plist, center=false);
 
 // smd_resistor(size=[3.2, 1.4, 0.4],
 //              border_color="white",

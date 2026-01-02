@@ -432,6 +432,7 @@ smd_battery_holder_side_thickness                    = 1.8;
 smd_battery_holder_bolt_dia                          = m3_hole_dia;
 smd_battery_holder_bolt_recess_size                  = [9, 5, 2];
 smd_battery_holder_bolt_spacing                      = [0, 56.0];
+smd_battery_holder_single_bolt_spacing               = 56.0;
 smd_battery_holder_batteries_count                   = 2;
 smd_battery_holder_inner_cutout_size                 = [9.0, 66.6];
 smd_battery_holder_inner_side_h                      = 10;
@@ -447,7 +448,7 @@ smd_battery_holder_chassis_specs                     = [[[[smd_battery_holder_bo
                                                           smd_battery_holder_bolt_dia,
                                                           [smd_battery_holder_length / 2,
                                                            -smd_battery_holder_bolts_x_offset,
-                                                           smd_battery_holder_bolts_y_offset],]]];
+                                                           smd_battery_holder_bolts_y_offset]]]];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Camera's placeholder dimensions
@@ -1664,60 +1665,210 @@ motor_driver_hat_mounting_hole_pad_spec              = [[m25_hole_dia + 2.5, "wh
 motor_driver_hat_header_height                       = 13.15;
 motor_driver_hat_pin_height                          = 8.5;
 
-motor_driver_hat_screw_terminal_distance             = 2.5;
-motor_driver_hat_screw_terminal_thickness            = 5.8;
-motor_driver_hat_screw_terminal_base_h               = 6.8;              // base height (Z)
-motor_driver_hat_screw_terminal_top_l                = 4.50;              // top trapezoid top side length
-motor_driver_hat_screw_terminal_top_h                = 3.2;               // top trapezoid height
-motor_driver_hat_screw_terminal_contacts_n           = 6;            // number of contact boxes
-motor_driver_hat_screw_terminal_contact_w            = 3.5;           // contact box width (X)
-motor_driver_hat_screw_terminal_contact_h            = 4.47;          // contact box height (Z)
-motor_driver_hat_screw_terminal_pitch                = 5.0;              // center-to-center spacing (X)
-
-motor_driver_hat_chip_len                            = 15;
-motor_driver_hat_chip_w                              = 10;
-
-motor_driver_hat_chip_j_lead_n                       = 11;
-motor_driver_hat_chip_j_lead_thickness               = 0.4;
-motor_driver_hat_chip_total_w                        = 17;
-motor_driver_hat_chip_h                              = 1.65;
-motor_driver_hat_chip_distance_between               = 4;
-motor_driver_hat_chip_y_distance                     = 18;
-
-motor_driver_hat_voltage_chip_len                    = 15;
-motor_driver_hat_voltage_chip_w                      = 7;
-
-motor_driver_hat_voltage_chip_j_lead_n               = 11;
-motor_driver_hat_voltage_chip_j_lead_thickness       = 0.4;
-motor_driver_hat_voltage_chip_total_w                = 17;
-motor_driver_hat_voltage_chip_h                      = 1.65;
-motor_driver_hat_voltage_chip_x_distance             = 4;
-motor_driver_hat_voltage_chip_y_distance             = 4;
-
-motor_driver_hat_upper_header_height                 = 9;
-motor_driver_hat_upper_pin_height                    = 5;
-
-motor_driver_hat_extra_capacitors_plists             = [["d", 10.0,
-                                                         "h", 9.5,
-                                                         "base_h", 2.58,
-                                                         "text_rows", ["470", "35V", "VRT"],
-                                                         "x_offset", 0,
-                                                         "y_offset", 24.5],
-                                                        ["d", 5.5,
-                                                         "h", 5.5,
-                                                         "base_h", 2.58,
-                                                         "x_offset", 0,
-                                                         "y_offset", 5],
-                                                        ["d", 5.5,
-                                                         "h", 5.5,
-                                                         "base_h", 2.58,
-                                                         "x_offset", -10,
-                                                         "y_offset", 5],
-                                                        ["d", 5.5,
-                                                         "h", 5.5,
-                                                         "base_h", 2.58,
-                                                         "x_offset", 24,
-                                                         "y_offset", 10]];
+motor_driver_grid                                    = ["type","grid",
+                                                        "size", [motor_driver_hat_size[0] - 7, motor_driver_hat_size[1]],
+                                                        "rows",
+                                                        [["h", 2.0, "cells", [["w", 1]]],
+                                                         ["h", 14.0,
+                                                          "cells", [["w", 20,
+                                                                     "align_y", 1,
+                                                                     "placeholder",
+                                                                     ["type", "smd_chip",
+                                                                      "placeholder_size", [13, 15.6],
+                                                                      "corner_rad", 0.0,
+                                                                      "chip_size", [7.7, 15.6, 3.2],
+                                                                      "j_lead",
+                                                                      [["count", 11,
+                                                                        "thickness", 0.4,
+                                                                        "sides", ["left", "right"]]]]],
+                                                                    ["w", 0.25,
+                                                                     "grid",
+                                                                     ["type","grid",
+                                                                      "rows",
+                                                                      [["h", 11, "cells",
+                                                                        [["w", 0.5,
+                                                                          "placeholder",
+                                                                          ["type", "can_capacitor",
+                                                                           "d", 10.0,
+                                                                           "h", 10.6,
+                                                                           "base_h", 2.58,
+                                                                           "text_rows", ["470", "35V", "VRT"]]],
+                                                                         ["w", 0.5]]],
+                                                                       ["h", 0.5, "cells",
+                                                                        [["w", 1.0,
+                                                                          "spin", 0,
+                                                                          "placeholder",
+                                                                          ["type", "smd_resistor",
+                                                                           "placeholder_size", [6.8, 2.6, 2]]]]]]]],
+                                                                    ["w", 0.25,
+                                                                     "align_y", 1,
+                                                                     "placeholder",
+                                                                     ["type", "smd_chip",
+                                                                      "placeholder_size", [10, 12],
+                                                                      "corner_rad", 0.0,
+                                                                      "chip_size", [10, 8.8, 4.40],
+                                                                      "j_lead",
+                                                                      [["count", 5,
+                                                                        "thickness", 0.8,
+                                                                        "sides", ["bottom"]]]]]]],
+                                                         ["h", 2.0,
+                                                          "cells", [["w", 1]]],
+                                                         ["h", 11.0,
+                                                          "cells", [["w", 7],
+                                                                    ["w", 0.2,
+                                                                     "spin", 90,
+                                                                     "placeholder", ["type", "can_capacitor",
+                                                                                     "d", 6.4,
+                                                                                     "base_h", 2.58,
+                                                                                     "h", 5.5,
+                                                                                     "marking_color", matte_black,
+                                                                                     "can_color", metallic_silver_1,
+                                                                                     "text_rows", ["47", "HFT", "S92"],
+                                                                                     "rotation", 0]],
+                                                                    ["w", 0.2,
+                                                                     "spin", -90,
+                                                                     "placeholder", ["type", "can_capacitor",
+                                                                                     "d", 6.4,
+                                                                                     "base_h", 2.58,
+                                                                                     "h", 5.5,
+                                                                                     "marking_color", matte_black,
+                                                                                     "can_color", metallic_silver_1,
+                                                                                     "text_rows", ["47", "HFT", "S92"],
+                                                                                     "rotation", 0]],
+                                                                    ["w", 0.1,
+                                                                     "align_x", -1,
+                                                                     "spin", 90,
+                                                                     "placeholder",
+                                                                     ["type", "smd_resistor",
+                                                                      "placeholder_size", [6.8, 2.6, 2]]],
+                                                                    ["w", 0.3,
+                                                                     "grid",
+                                                                     ["type","grid",
+                                                                      "rows",
+                                                                      [["h", 0.7, "cells",
+                                                                        [["w", 0.8,
+                                                                          "placeholder",
+                                                                          ["type", "unshielded_power_inductor",
+                                                                           "placeholder_size", [5.8, 5.8, 6],
+                                                                           "text", 330,]],
+                                                                         ["w", 0.5,
+                                                                          "placeholder",
+                                                                          ["type", "can_capacitor",
+                                                                           "d", 6.4,
+                                                                           "base_h", 2.58,
+                                                                           "h", 5.5,
+                                                                           "text_rows", ["47", "HFT", "S92"],
+                                                                           "rotation", 0]]]],
+                                                                       ["h", 0.5, "cells",
+                                                                        [["w", 1.0]]]]]]]],
+                                                         ["h", 17.0,
+                                                          "cells", [["w", 0.4,
+                                                                     "placeholder",
+                                                                     ["type", "smd_chip",
+                                                                      "placeholder_size", [15.6, 17],
+                                                                      "corner_rad", 0.0,
+                                                                      "chip_size", [11.0, 15, 3.2],
+                                                                      "text_rows", ["MC33886VW"],
+                                                                      "text_props", ["size", 1.0,
+                                                                                     "gap", 3,
+                                                                                     "rotation", [0, 0, -90],
+                                                                                     "colr", "lightgrey",
+                                                                                     "spacing", 0.9,
+                                                                                     "height", 0.1,
+                                                                                     "valign", "center",
+                                                                                     "halign", "center"],
+                                                                      "j_lead",
+                                                                      [["count", 11,
+                                                                        "thickness", 0.4,
+                                                                        "sides", ["left", "right"]]]]],
+                                                                    ["w", 8],
+                                                                    ["w", 0.4,
+                                                                     "placeholder",
+                                                                     ["type", "smd_chip",
+                                                                      "placeholder_size", [15.6, 17],
+                                                                      "corner_rad", 0.0,
+                                                                      "chip_size", [11.0, 15, 3.2],
+                                                                      "text_rows", ["MC33886VW"],
+                                                                      "text_props", ["size", 1.0,
+                                                                                     "gap", 3,
+                                                                                     "rotation", [0, 0, -90],
+                                                                                     "colr", "lightgrey",
+                                                                                     "spacing", 0.9,
+                                                                                     "height", 0.1,
+                                                                                     "valign", "center",
+                                                                                     "halign", "center"],
+                                                                      "j_lead",
+                                                                      [["count", 11,
+                                                                        "thickness", 0.4,
+                                                                        "sides", ["left", "right"]]]]],
+                                                                    ["w", 0.2,
+                                                                     "align_x", -1,
+                                                                     "spin", -90,
+                                                                     "placeholder",
+                                                                     ["type", "text",
+                                                                      "color", "white",
+                                                                      "size", 1.5,
+                                                                      "text", "RPI Motor Driver Board",
+                                                                      "spacing", 1,
+                                                                      "halign", "left",
+                                                                      "valign", "baseline",]]]],
+                                                         ["h", 2,
+                                                          "cells", [["w", 1]]],
+                                                         ["h", 2.7,
+                                                          "debug", true,
+                                                          "cells", [["w", 0.05],
+                                                                    ["w", 0.17,
+                                                                     "debug", true,
+                                                                     "placeholder", ["type", "shottky_diode",
+                                                                                     "placeholder_size", [6.8, 2.6, 2]]],
+                                                                    ["w", 0.17,
+                                                                     "placeholder", ["type", "shottky_diode",
+                                                                                     "placeholder_size", [6.8, 2.6, 2]]],
+                                                                    ["w", 0.17],
+                                                                    ["w", 0.17,
+                                                                     "placeholder", ["type", "shottky_diode",
+                                                                                     "placeholder_size", [6.8, 2.6, 2]]],
+                                                                    ["w", 0.17,
+                                                                     "placeholder", ["type", "shottky_diode",
+                                                                                     "placeholder_size", [6.8, 2.6, 2]]]]],
+                                                         ["h", 2,
+                                                          "cells", [["w", 1]]],
+                                                         ["h", 2.7,
+                                                          "cells", [["w", 0.05],
+                                                                    ["w", 0.17,
+                                                                     "placeholder", ["type", "shottky_diode",
+                                                                                     "placeholder_size", [6.8, 2.6, 2]]],
+                                                                    ["w", 0.17,
+                                                                     "placeholder", ["type", "shottky_diode",
+                                                                                     "placeholder_size", [6.8, 2.6, 2]]],
+                                                                    ["w", 0.17,
+                                                                     "placeholder", ["type", "shottky_diode",
+                                                                                     "placeholder_size", [6.8, 2.6, 2]]],
+                                                                    ["w", 0.17,
+                                                                     "placeholder", ["type", "shottky_diode",
+                                                                                     "placeholder_size", [6.8, 2.6, 2]]],
+                                                                    ["w", 0.17,
+                                                                     "placeholder", ["type", "shottky_diode",
+                                                                                     "placeholder_size", [6.8, 2.6, 2]]]]],
+                                                         ["h", 10.0,
+                                                          "cells", [["w", 0.1],
+                                                                    ["w", 0.8,
+                                                                     "spin", 180,
+                                                                     "placeholder", ["type", "screw_terminal",
+                                                                                     "base_h",  6.8,
+                                                                                     "thickness",  5.8,
+                                                                                     "top_l",  4.50,
+                                                                                     "top_h",  3.2,
+                                                                                     "contacts_n",  6,
+                                                                                     "contact_w",  3.5,
+                                                                                     "contact_h",  4.47,
+                                                                                     "pitch",  5.0,
+                                                                                     "colr",  medium_blue_2,
+                                                                                     "pin_thickness",  0.4,
+                                                                                     "pin_h",  3.9,
+                                                                                     "wall_thickness",  0.6,
+                                                                                     "isosceles_trapezoid", false,]],
+                                                                    ["w", 0.1]]]]];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // GPIO Expansion Board

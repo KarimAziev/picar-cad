@@ -1,3 +1,4 @@
+use <functions.scad>
 
 module fillet(r) {
   offset(r = -r) {
@@ -98,8 +99,9 @@ module four_corner_holes_2d(size=[10, 10],
 }
 
 module maybe_rotate(rotation) {
-  if (is_list(rotation)
-      && (rotation[0] != 0 || rotation[1] != 0 || rotation[2] != 0)) {
+  if (is_list(rotation) &&
+      len([for (v = rotation) if (is_num(v)) v]) == 3 &&
+      len([for (v = rotation) if (v != 0) v]) > 0) {
     rotate(rotation) {
       children();
     }
@@ -110,11 +112,78 @@ module maybe_rotate(rotation) {
 
 module maybe_translate(v) {
   if (is_list(v)
-      && (v[0] != 0 || v[1] != 0 || v[2] != 0)) {
+      && len([for (n = v) if (is_num(n)) n]) == 3
+      && len([for (n = v) if (n != 0) n]) > 0) {
     translate(v) {
       children();
     }
   } else {
     children();
+  }
+}
+
+module spin_keep_bbox_at_origin(size, a) {
+  if (is_undef(a) || a == 0) {
+    children();
+  } else {
+    p = calc_rotated_bbox(size[0], size[1], a);
+    translate([p[2], p[3], 0]) {
+      rotate([0, 0, a]) {
+        children();
+      }
+    }
+  }
+}
+
+module align_children(parent_size,
+                      size,
+                      align_x=-1,
+                      align_y=-1) {
+  cell_x = parent_size[0];
+  cell_y = parent_size[1];
+  full_x = size[0];
+  full_y = size[1];
+
+  dx = cell_x - full_x;
+  dy = cell_y - full_y;
+
+  x = align_x == -1
+    ? 0
+    : align_x == 0
+    ? dx / 2
+    : dx;
+
+  y = align_y == 0
+    ? dy / 2
+    : align_y == 1
+    ? dy
+    : 0;
+
+  translate([x, y, 0]) {
+    children();
+  }
+}
+
+module align_children_with_spin(parent_size,
+                                size,
+                                align_x=-1,
+                                align_y=-1,
+                                spin=0) {
+  let (params = calc_rotated_bbox(size[0], size[1],
+                                  spin),
+       full_x = params[0],
+       full_y = params[1],
+       sx = params[2],
+       sy = params[3]) {
+    align_children(parent_size=parent_size,
+                   size=[full_x, full_y],
+                   align_x=align_x,
+                   align_y=align_y) {
+      translate([sx, sy, 0]) {
+        rotate([0, 0, spin]) {
+          children();
+        }
+      }
+    }
   }
 }
