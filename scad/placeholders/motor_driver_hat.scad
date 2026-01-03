@@ -5,10 +5,11 @@
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */
+
 include <../parameters.scad>
 include <../colors.scad>
 
-use <../core/pcb_builder.scad>
+use <../core/pcb_grid.scad>
 use <../lib/shapes2d.scad>
 use <../lib/shapes3d.scad>
 use <../lib/plist.scad>
@@ -48,6 +49,7 @@ module motor_driver_hat(plist=motor_driver_grid,
               }
             }
           }
+
           translate([-w / 2, -l / 2 + rpi_bolts_offset * 2, 0]) {
             if (show_pins) {
               translate([0, 0, h]) {
@@ -84,7 +86,7 @@ module motor_driver_hat(plist=motor_driver_grid,
       }
 
       translate([max_pad_hole, 0, 0]) {
-        slot_or_placeholder_grid(plist, debug=debug, mode="placeholder");
+        pcb_grid(plist, debug=debug, mode="placeholder");
       }
     }
   }

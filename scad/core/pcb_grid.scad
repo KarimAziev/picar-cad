@@ -8,18 +8,18 @@ use <smd_placeholder_renderer.scad>
 use <../placeholders/smd/can_capacitor.scad>
 use <../lib/plist.scad>
 
-module slot_or_placeholder_grid(grid,
-                                debug=false,
-                                mode,
-                                thickness=2,
-                                debug_spec=["gap", 10,
-                                            "color", yellow_3,
-                                            "text_h", 1,
-                                            "border_h", 2,
-                                            "border_w", 0.5,
-                                            "size", 2],
+module pcb_grid(grid,
+                debug=false,
+                mode,
+                thickness=2,
+                debug_spec=["gap", 10,
+                            "color", yellow_3,
+                            "text_h", 1,
+                            "border_h", 2,
+                            "border_w", 0.5,
+                            "size", 2],
 
-                                level=0) {
+                level=0) {
 
   assert(grid_is(grid),
          "grid_plist: grid must be a plist with type='grid'");
@@ -53,6 +53,6 @@ module slot_or_placeholder_grid(grid,
   }
 }
 
-slot_or_placeholder_grid(motor_driver_grid,
-                         debug=true,
-                         mode="placeholder");
+pcb_grid(motor_driver_grid,
+         debug=true,
+         mode="placeholder");
