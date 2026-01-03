@@ -6,16 +6,15 @@ include <../parameters.scad>
 
 use <../lib/plist.scad>
 use <../lib/functions.scad>
-use <../core/slot_layout.scad>
+use <../lib/transforms.scad>
 use <../lib/debug.scad>
+use <../lib/text.scad>
 use <../placeholders/smd/smd_resistor.scad>
 use <../placeholders/smd/smd_chip.scad>
 use <../placeholders/screw_terminal.scad>
 use <../placeholders/smd/can_capacitor.scad>
-use <../lib/transforms.scad>
 use <../placeholders/smd/schottky_diode.scad>
 use <../placeholders/smd/ceramic_capacitor.scad>
-use <../lib/text.scad>
 use <../placeholders/smd/power_inductor.scad>
 use <../placeholders/pin_headers.scad>
 
