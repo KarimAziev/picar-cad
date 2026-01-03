@@ -19,7 +19,7 @@ use <../lib/shapes2d.scad>
 use <../placeholders/bolt.scad>
 use <../placeholders/xt90e-m.scad>
 use <../lib/plist.scad>
-use <../placeholders/atm_fuse_holder.scad>
+use <../placeholders/atm_fuse_holder/atm_fuse_holder.scad>
 use <../placeholders/perf_board.scad>
 use <../placeholders/rpi_5.scad>
 use <../placeholders/smd_battery_holder.scad>

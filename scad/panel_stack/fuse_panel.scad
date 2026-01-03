@@ -14,7 +14,7 @@ use <../lib/holes.scad>
 use <../placeholders/standoff.scad>
 use <../lib/placement.scad>
 use <../lib/transforms.scad>
-use <../placeholders/atm_fuse_holder.scad>
+use <../placeholders/atm_fuse_holder/atm_fuse_holder.scad>
 use <control_panel.scad>
 use <../lib/plist.scad>
 use <../core/slot_layout.scad>

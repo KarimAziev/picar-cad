@@ -5,20 +5,18 @@
  * License: GPL-3.0-or-later
  */
 
-include <../parameters.scad>
-include <../colors.scad>
+include <../../parameters.scad>
+include <../../colors.scad>
 
-use <../lib/wire.scad>
-use <../lib/shapes2d.scad>
-use <../lib/shapes3d.scad>
-use <../lib/trapezoids.scad>
-use <../lib/transforms.scad>
-use <../lib/plist.scad>
-use <../lib/holes.scad>
-use <../lib/stairs.scad>
-use <../lib/slots.scad>
-
-
+use <../../lib/wire.scad>
+use <../../lib/shapes2d.scad>
+use <../../lib/shapes3d.scad>
+use <../../lib/trapezoids.scad>
+use <../../lib/transforms.scad>
+use <../../lib/plist.scad>
+use <../../lib/holes.scad>
+use <../../lib/stairs.scad>
+use <../../lib/slots.scad>
 
 function atm_fuse_holder_full_thickness(body_thickness, rib_thickness) =
   body_thickness + rib_thickness * 2;
@@ -300,7 +298,7 @@ module atm_fuse_holder_cap(size=[atm_fuse_holder_2_lid_top_l,
   }
 }
 
-module atm_fuse_holder_from_spec(plist) {
+module atm_fuse_holder_from_spec(plist, center=true) {
   plist = with_default(plist, []);
   body_plist = plist_get("body", plist, []);
   size = plist_get("size",
@@ -365,36 +363,39 @@ module atm_fuse_holder_from_spec(plist) {
                                  "thickness", atm_fuse_holder_2_lid_rib_thickness,
                                  "distance_from_top", atm_fuse_holder_2_lid_rib_distance]]);
 
-  union() {
-    if (show_body) {
-      atm_fuse_holder_body(size=size,
-                           round_side=body_round_side,
-                           color=color,
-                           wiring=wiring,
-                           corner_rad=body_corner_rad,
-                           rib=rib,
-                           cap_collar=cap_collar);
-    }
+  translate([0, 0, 0]) {
 
-    if (show_cap) {
-      translate([0, 0, size[2]]) {
-        atm_fuse_holder_cap(size=plist_get("size", cap_plist, [atm_fuse_holder_2_lid_bottom_l,
-                                                               atm_fuse_holder_2_lid_thickness,
-                                                               atm_fuse_holder_2_lid_h,
-                                                               atm_fuse_holder_2_lid_top_l]),
-                            cap_collar_size=plist_get("size", cap_collar, [atm_fuse_holder_2_mounting_hole_l,
-                                                                           atm_fuse_holder_2_mounting_hole_h,
-                                                                           atm_fuse_holder_2_mounting_hole_depth]),
-                            corner_rad=plist_get("corner_rad", cap_plist, 0),
-                            color=color,
+    union() {
+      if (show_body) {
+        atm_fuse_holder_body(size=size,
+                             round_side=body_round_side,
+                             color=color,
+                             wiring=wiring,
+                             corner_rad=body_corner_rad,
+                             rib=rib,
+                             cap_collar=cap_collar);
+      }
 
-                            rib=plist_get("rib",
-                                          cap_plist,
-                                          ["h", atm_fuse_holder_2_lid_rib_h,
-                                           "l", atm_fuse_holder_2_lid_rib_l,
-                                           "n", atm_fuse_holder_2_lid_rib_n,
-                                           "thickness", atm_fuse_holder_2_lid_rib_thickness,
-                                           "distance_from_top", atm_fuse_holder_2_lid_rib_distance]));
+      if (show_cap) {
+        translate([0, 0, size[2]]) {
+          atm_fuse_holder_cap(size=plist_get("size", cap_plist, [atm_fuse_holder_2_lid_bottom_l,
+                                                                 atm_fuse_holder_2_lid_thickness,
+                                                                 atm_fuse_holder_2_lid_h,
+                                                                 atm_fuse_holder_2_lid_top_l]),
+                              cap_collar_size=plist_get("size", cap_collar, [atm_fuse_holder_2_mounting_hole_l,
+                                                                             atm_fuse_holder_2_mounting_hole_h,
+                                                                             atm_fuse_holder_2_mounting_hole_depth]),
+                              corner_rad=plist_get("corner_rad", cap_plist, 0),
+                              color=color,
+
+                              rib=plist_get("rib",
+                                            cap_plist,
+                                            ["h", atm_fuse_holder_2_lid_rib_h,
+                                             "l", atm_fuse_holder_2_lid_rib_l,
+                                             "n", atm_fuse_holder_2_lid_rib_n,
+                                             "thickness", atm_fuse_holder_2_lid_rib_thickness,
+                                             "distance_from_top", atm_fuse_holder_2_lid_rib_distance]));
+        }
       }
     }
   }
