@@ -24,7 +24,8 @@ module motor_driver_hat(plist=motor_driver_grid,
                         extra_standoff_h=0,
                         show_standoff=true,
                         center=true,
-                        debug=false) {
+                        debug=false,
+                        debug_spec=["border_h", motor_driver_hat_size[2]]) {
   w = motor_driver_hat_size[0];
   l = motor_driver_hat_size[1];
   h = motor_driver_hat_size[2];
@@ -86,10 +87,13 @@ module motor_driver_hat(plist=motor_driver_grid,
       }
 
       translate([max_pad_hole, 0, 0]) {
-        pcb_grid(plist, debug=debug, mode="placeholder");
+        pcb_grid(plist,
+                 debug=debug,
+                 mode="placeholder",
+                 debug_spec=debug_spec);
       }
     }
   }
 }
 
-motor_driver_hat(center=false);
+motor_driver_hat(center=false, debug=false);

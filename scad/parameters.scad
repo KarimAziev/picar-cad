@@ -426,8 +426,8 @@ battery_21700_h                                      = 70.0;
 // Default battery dimensions
 // ─────────────────────────────────────────────────────────────────────────────
 
-battery_dia                                          = 18;
-battery_height                                       = 65.0;
+battery_dia                                          = battery_18650_dia;
+battery_height                                       = battery_18650_h;
 battery_positive_pole_height                         = 1.0;
 battery_positive_pole_dia                            = 5.63;
 
@@ -1819,7 +1819,7 @@ motor_driver_grid                                    = ["type","grid",
                                                                       [["count", 11,
                                                                         "thickness", 0.4,
                                                                         "sides", ["left", "right"]]]]],
-                                                                    ["w", 0.2,
+                                                                    ["w", 0.07,
                                                                      "align_x", -1,
                                                                      "spin", -90,
                                                                      "placeholder",
@@ -1833,10 +1833,10 @@ motor_driver_grid                                    = ["type","grid",
                                                          ["h", 2,
                                                           "cells", [["w", 1]]],
                                                          ["h", 2.7,
-                                                          "debug", true,
+                                                          "debug", false,
                                                           "cells", [["w", 0.05],
                                                                     ["w", 0.17,
-                                                                     "debug", true,
+                                                                     "debug", false,
                                                                      "placeholder", ["type", "shottky_diode",
                                                                                      "placeholder_size", [6.8, 2.6, 2]]],
                                                                     ["w", 0.17,
@@ -1886,7 +1886,7 @@ motor_driver_grid                                    = ["type","grid",
                                                                                      "pin_h",  3.9,
                                                                                      "wall_thickness",  0.6,
                                                                                      "isosceles_trapezoid", false,]],
-                                                                    ["w", 0.1]]]]];
+                                                                    ["w", 0.15]]]]];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // GPIO Expansion Board

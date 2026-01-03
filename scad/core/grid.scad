@@ -36,12 +36,12 @@ module grid_plist_render(size,
   rows = plist_get("rows", grid, []);
 
   debug_spec = with_default(debug_spec, []);
-  debug_gap = plist_get("gap", debug_spec, 10);
+  debug_gap = plist_get("gap", debug_spec, 4);
   debug_color = plist_get("color", debug_spec, yellow_3);
-  debug_size = plist_get("size", debug_spec, 4);
   debug_border_w = plist_get("border_w", debug_spec, 1);
   debug_border_h = plist_get("border_h", debug_spec, 1);
   debug_text_h = plist_get("text_h", debug_spec, 1);
+  debug_cell_text_h = plist_get("text_cell_h", debug_spec, 1);
 
   row_h_specs = [for (r = rows) plist_get("h", r, 0)];
   row_heights = [for (hs = row_h_specs) maybe_to_mm(hs, inner_y)];
@@ -51,18 +51,35 @@ module grid_plist_render(size,
     assert(row_is(row),
            str("Row ", ri, " must be a plist with keys 'h' and 'cells'"));
 
+    debug_row = plist_get("debug", row, false);
+
     h = row_heights[ri];
+    half_h = h / 2;
+
     y_acc = sum_prefix(row_heights, ri);
 
     translate([0, -y_acc - h, 0]) {
 
-      if (debug) {
-        translate([-debug_gap, h / 2, 0]) {
-          text_from_plist(str("L", level, " R", ri, "  ", truncate(h), "mm"),
-                          default_halign="right",
-                          default_size=debug_size,
-                          default_color=debug_color,
-                          default_valign="bottom");
+      if (debug || debug_row) {
+        color(debug_color, alpha=1) {
+          cube_border(size=[inner_x, h],
+                      center=false,
+                      border_w=debug_border_w,
+                      h=debug_border_h);
+        }
+        if (!is_undef(debug_text_h) && debug_text_h > 0) {
+          color(debug_color, alpha=1) {
+            let (txt = str("L", level, " R", ri, "  ",
+                           truncate(h), "mm"),
+                 txt_len = len(txt)) {
+              translate([-debug_gap - txt_len, h / 2, 0]) {
+                text_fit(txt=txt,
+                         x=txt_len,
+                         y=half_h,
+                         h=debug_text_h);
+              }
+            }
+          }
         }
       }
 
@@ -77,6 +94,7 @@ module grid_plist_render(size,
                str("Cell R", ri,"C", ci," must be a plist with key 'w'"));
 
         w = widths[ci];
+        half_w = w / 2;
         x_acc = sum_prefix(widths, ci);
         cell_debug = plist_get("debug", cell);
 
@@ -84,18 +102,21 @@ module grid_plist_render(size,
           nested = plist_get("grid", cell, undef);
 
           if ((debug || cell_debug) && is_undef(nested)) {
-            color(debug_color, alpha=1)
+            color(debug_color, alpha=1) {
               cube_border(size=[w, h],
                           center=false,
                           border_w=debug_border_w,
                           h=debug_border_h);
+            }
 
-            translate([w / 2, h / 2, 0]) {
-              color(debug_color, alpha=1)
-                text_fit(txt=str(truncate(w), "mm"),
-                         x=w / 2,
-                         y=h / 2,
-                         h=debug_text_h);
+            if (!is_undef(debug_cell_text_h) && debug_cell_text_h > 0) {
+              translate([half_w, half_h, 0]) {
+                color(debug_color, alpha=1)
+                  text_fit(txt=str(truncate(w), "mm"),
+                           x=half_w,
+                           y=half_h,
+                           h=debug_text_h);
+              }
             }
           }
 
