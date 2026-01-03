@@ -139,28 +139,34 @@ module align_children(parent_size,
                       size,
                       align_x=-1,
                       align_y=-1) {
-  cell_x = parent_size[0];
-  cell_y = parent_size[1];
-  full_x = size[0];
-  full_y = size[1];
-
-  dx = cell_x - full_x;
-  dy = cell_y - full_y;
-
-  x = align_x == -1
-    ? 0
-    : align_x == 0
-    ? dx / 2
-    : dx;
-
-  y = align_y == 0
-    ? dy / 2
-    : align_y == 1
-    ? dy
-    : 0;
-
-  translate([x, y, 0]) {
+  if (!is_list(parent_size)
+      || !is_num(parent_size[0])
+      || !is_num(parent_size[1])) {
     children();
+  } else {
+    cell_x = parent_size[0];
+    cell_y = parent_size[1];
+    full_x = size[0];
+    full_y = size[1];
+
+    dx = cell_x - full_x;
+    dy = cell_y - full_y;
+
+    x = align_x == -1
+      ? 0
+      : align_x == 0
+      ? dx / 2
+      : dx;
+
+    y = align_y == 0
+      ? dy / 2
+      : align_y == 1
+      ? dy
+      : 0;
+
+    translate([x, y, 0]) {
+      children();
+    }
   }
 }
 
@@ -169,21 +175,30 @@ module align_children_with_spin(parent_size,
                                 align_x=-1,
                                 align_y=-1,
                                 spin=0) {
-  let (params = calc_rotated_bbox(size[0], size[1],
-                                  spin),
-       full_x = params[0],
-       full_y = params[1],
-       sx = params[2],
-       sy = params[3]) {
-    align_children(parent_size=parent_size,
-                   size=[full_x, full_y],
-                   align_x=align_x,
-                   align_y=align_y) {
-      translate([sx, sy, 0]) {
-        rotate([0, 0, spin]) {
-          children();
+  if (!is_undef(spin) && spin != 0) {
+    let (params = calc_rotated_bbox(size[0], size[1],
+                                    spin),
+         full_x = params[0],
+         full_y = params[1],
+         sx = params[2],
+         sy = params[3]) {
+      align_children(parent_size=parent_size,
+                     size=[full_x, full_y],
+                     align_x=align_x,
+                     align_y=align_y) {
+        translate([sx, sy, 0]) {
+          rotate([0, 0, spin]) {
+            children();
+          }
         }
       }
+    }
+  } else {
+    align_children(parent_size=parent_size,
+                   size=size,
+                   align_x=align_x,
+                   align_y=align_y) {
+      children();
     }
   }
 }
