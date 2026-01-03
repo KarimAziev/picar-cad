@@ -27,6 +27,29 @@ function four_corner_counterbores_full_size(size,
        max_d = inhibit_bore ? d : (is_undef(bore_d) ? d * 2.8 : bore_d))
   [for (v = size) v + max_d];
 
+function rect_recess_enabled(size, recess_size) = let (slot_x = size[0],
+                                                       slot_y = size[1],
+                                                       disabled =
+                                                       is_undef(recess_size)
+                                                       || is_undef(recess_size[0])
+                                                       || is_undef(recess_size[1]))
+  !disabled &&
+  (with_default(recess_size[0], 0) > slot_x
+   || with_default(recess_size[1], 0) > slot_y);
+
+function full_rect_slot_size(size, recess_size) =
+  let (slot_x = size[0],
+       slot_y = size[1],
+       recess_enabled = rect_recess_enabled(size=size, recess_size=recess_size),
+       x = recess_enabled
+       ? max(with_default(recess_size[0], 0), slot_x)
+       : slot_x,
+
+       y = recess_enabled
+       ? max(with_default(recess_size[1], 0), slot_y)
+       : slot_y)
+  [x, y];
+
 module counterbore(h,
                    d,
                    bore_d,
@@ -118,17 +141,16 @@ module rect_slot(h,
   slot_x = size[0];
   slot_y = size[1];
 
+  auto_scale = !is_undef(autoscale_step) && autoscale_step != 0;
+
   recess_size = with_default(recess_size, []);
 
-  recess_enabled = (!is_undef(recess_size[0])
-                    || !is_undef(recess_size[1])) &&
-    (with_default(recess_size[0], 0) > slot_x
-     || with_default(recess_size[1], 0) > slot_y);
+  recess_enabled = rect_recess_enabled(size=size, recess_size=recess_size);
 
-  auto_scale = !is_undef(autoscale_step) && autoscale_step != 0;
   recess_x = recess_enabled
     ? max(with_default(recess_size[0], 0), slot_x)
     : recess_size[0];
+
   recess_y = recess_enabled
     ? max(with_default(recess_size[1], 0), slot_y)
     : recess_size[1];
