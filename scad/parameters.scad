@@ -1665,6 +1665,9 @@ motor_driver_hat_mounting_hole_pad_spec              = [[m25_hole_dia + 2.5, "wh
 motor_driver_hat_header_height                       = 13.15;
 motor_driver_hat_pin_height                          = 8.5;
 
+motor_driver_hat_upper_header_height                 = 9;
+motor_driver_hat_upper_pin_height                    = 5;
+
 motor_driver_grid                                    = ["type","grid",
                                                         "size", [motor_driver_hat_size[0] - 7, motor_driver_hat_size[1]],
                                                         "rows",
