@@ -44,7 +44,7 @@ module knuckle_connector(parent_dia,
 
   union() {
     color(connector_color) {
-      linear_extrude(height=h, center=false) {
+      linear_extrude(height=h, center=false, convexity=2) {
         difference() {
           translate([0, -offst, 0]) {
             difference() {
@@ -121,7 +121,7 @@ module knuckle_connector_outer(h,
   ring_w = (outer_d - inner_d) / 2;
   union() {
     color(connector_color) {
-      linear_extrude(height=h, center=false) {
+      linear_extrude(height=h, center=false, convexity=2) {
         translate([0, -outer_d / 2, 0]) {
           difference() {
             square([x_offst, outer_d], center=false);
