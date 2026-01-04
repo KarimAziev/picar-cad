@@ -100,6 +100,10 @@ atm_fuse_holder_2_mounting_hole_h                    = 8.0;
 atm_fuse_holder_2_mounting_hole_depth                = 5.2;
 atm_fuse_holder_2_mounting_hole_r                    = 5.0;
 
+atm_fuse_holder_cap_hole_size                        = [atm_fuse_holder_2_mounting_hole_l * 0.8,
+                                                        atm_fuse_holder_2_mounting_hole_h,
+                                                        atm_fuse_holder_2_lid_h * 0.8];
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Fusers holder
 // ─────────────────────────────────────────────────────────────────────────────
