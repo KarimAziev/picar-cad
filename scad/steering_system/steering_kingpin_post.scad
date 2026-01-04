@@ -24,6 +24,7 @@ include <../colors.scad>
 
 use <bearing_shaft.scad>
 use <../lib/transforms.scad>
+use <../lib/slots.scad>
 
 steering_hinge_bolt_rad = steering_panel_hinge_bolt_dia / 2;
 
@@ -65,22 +66,29 @@ module steering_kingpin_post() {
 module steering_kingpin_post_bolt_holes() {
   mirror_copy([1, 0, 0]) {
     translate([steering_hinge_bolt_rad * 2 + 0.1,
-               0, steering_rack_support_thickness / 2
+               0,
+               steering_rack_support_thickness / 2
                - steering_hinge_bolt_rad]) {
       extra_h = 1;
       bolt_rad = steering_kingpin_post_bolt_dia / 2;
       h = knuckle_dia + extra_h;
-      seam_h = 0.8;
+      seam_h = 0.4;
+      seam_w = 0.4;
       translate([0, 0, bolt_rad]) {
         rotate([90, 0, 0]) {
           cylinder(h=h,
                    r=bolt_rad,
-                   $fn=100,
+                   $fn=360,
                    center=true);
         }
       }
-      translate([0, -h / 2, steering_kingpin_post_bolt_dia - seam_h / 2]) {
-        cube([0.4, h, seam_h]);
+
+      translate([-seam_w / 2, -h / 2, steering_kingpin_post_bolt_dia - 0.2]) {
+        cube([seam_w, h, seam_h]);
+      }
+
+      translate([-seam_w / 2, -h / 2, -seam_h + 0.2]) {
+        cube([seam_w, h, seam_h]);
       }
     }
   }
