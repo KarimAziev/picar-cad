@@ -67,8 +67,6 @@ use <../lib/holes.scad>
 use <../components/chassis/util.scad>
 use <../lib/slots.scad>
 
-
-
 steering_hinge_bolt_rad = steering_panel_hinge_bolt_dia / 2;
 
 hinge_pts = scale_upper_trapezoid_pts(x=steering_panel_hinge_w,
@@ -219,7 +217,9 @@ module steering_rack_support(show_rack=false,
         }
 
         for (x = knuckle_x_poses) {
-          translate([x, 0, -steering_rack_support_thickness
+          translate([x,
+                     0,
+                     -steering_rack_support_thickness
                      / 2]) {
             steering_panel_kingpin_connector();
             if (show_kingpin_posts) {
@@ -235,7 +235,9 @@ module steering_rack_support(show_rack=false,
     }
 
     if (show_rack) {
-      translate([0, 0, steering_rack_support_thickness / 2
+      translate([0,
+                 0,
+                 steering_rack_support_thickness / 2
                  + steering_rack_z_distance_from_panel]) {
         rotate([0, 0, 180]) {
           rack_mount(show_brackets=show_brackets,
@@ -265,6 +267,7 @@ module steering_panel(panel_color,
                             show_brackets=show_brackets,
                             show_kingpin_posts=show_kingpin_posts,
                             rack_color=rack_color);
+
       translate([0, 0, steering_rack_support_thickness / 2]) {
         color(panel_color, alpha=1) {
           steering_rail();
@@ -282,16 +285,15 @@ module steering_panel(panel_color,
   }
 }
 
-// steering_panel(panel_color="white",
-//                show_servo=false,
-//                show_rack=false,
-//                show_brackets=false,
-//                rack_color=cobalt_blue_metallic,
-//                show_kingpin_posts=false,
-//                show_servo_mount_panel=false,
-//                show_pinion=true,
-//                center_y=false);
-steering_rack_support();
+steering_panel(panel_color="white",
+               show_servo=false,
+               show_rack=false,
+               show_brackets=false,
+               rack_color=cobalt_blue_metallic,
+               show_kingpin_posts=false,
+               show_servo_mount_panel=false,
+               show_pinion=true,
+               center_y=false);
 
 // translate([0, 0, 0]) {
 //   #cube([steering_panel_hinge_w, steering_panel_hinge_length, 7]);
