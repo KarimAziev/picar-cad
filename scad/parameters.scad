@@ -1353,11 +1353,13 @@ knuckle_shaft_connector_dia                          = knuckle_shaft_dia * 1.4;
 // shaft.
 knuckle_shaft_bolt_dia                               = m25_hole_dia;
 
+knuckle_shaft_bolt_cbore_dia                         = m25_pan_head_dia + 0.2;
+
 // The distance from the top of the shaft to the bolt holes
-knuckle_shaft_bolts_offset                           = 1;
+knuckle_shaft_bolts_offset                           = 2;
 
 // distance between bolt holes on the shaft
-knuckle_shaft_bolts_distance                         = 2;
+knuckle_shaft_bolts_distance                         = 3;
 
 // The length of the vertical part of the (curved) axle shaft that connects the
 // steering knuckle to the wheel hub
@@ -2716,6 +2718,7 @@ tie_rod_shaft_dia                                    = 8.0;
 
 tie_rod_shaft_knuckle_arm_dia                        = tie_rod_shaft_dia * 1.4;
 tie_rod_shaft_bolt_dia                               = m2_hole_dia;
+tie_rod_shaft_knuckle_cbore_dia                      = m2_pan_head_dia + 0.2;
 tie_rod_shaft_bolt_offset                            = 1;
 tie_rod_shaft_bolt_distance                          = 2.0;
 tie_rod_shaft_len                                    = knuckle_shaft_vertical_len + 6;

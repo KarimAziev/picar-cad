@@ -39,6 +39,7 @@ include <../parameters.scad>
 include <../colors.scad>
 
 use <../wheels/front_wheel.scad>
+use <../lib/slots.scad>
 
 module knuckle_shaft(show_wheel=false,
                      knuckle_shaft_color="white") {
@@ -133,11 +134,23 @@ module knuckle_bent_shaft(show_wheel=false,
 }
 
 module knuckle_bolts_slots(d=knuckle_shaft_bolt_dia,
+                           bore_d=knuckle_shaft_bolt_cbore_dia,
                            h=knuckle_shaft_dia + 1,
+                           bore_h,
+                           reverse,
+                           sink,
                            fn=360) {
   translate([0, 0, -d / 2]) {
     rotate([90, 0, 0]) {
-      cylinder(h=h, r=d / 2, center=true, $fn=fn);
+      translate([0, 0, -h / 2]) {
+        counterbore(h=h,
+                    d=d,
+                    bore_d=bore_d,
+                    bore_h=bore_h,
+                    sink=sink,
+                    fn=fn,
+                    reverse=reverse);
+      }
     }
   }
 }
