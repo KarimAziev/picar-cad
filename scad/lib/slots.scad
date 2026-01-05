@@ -8,6 +8,7 @@
 use <transforms.scad>
 use <functions.scad>
 use <shapes2d.scad>
+use <plist.scad>
 
 function is_no_bore(no_bore,
                     bore_h,
@@ -26,6 +27,14 @@ function four_corner_counterbores_full_size(size,
   let (inhibit_bore = is_no_bore(no_bore=no_bore, bore_h=bore_h, bore_d=bore_d),
        max_d = inhibit_bore ? d : (is_undef(bore_d) ? d * 2.8 : bore_d))
   [for (v = size) v + max_d];
+
+function four_corner_counterbores_full_size_from_plist(plist) =
+  four_corner_counterbores_full_size(size=plist_get("slot_size", plist,
+                                                    plist_get("size", plist)),
+                                     d=plist_get("d", plist, undef),
+                                     bore_d=plist_get("bore_d", plist, undef),
+                                     bore_h=plist_get("bore_h", plist, undef),
+                                     no_bore=plist_get("no_bore", plist,  false));
 
 function rect_recess_enabled(size, recess_size) = let (slot_x = size[0],
                                                        slot_y = size[1],
@@ -49,6 +58,13 @@ function full_rect_slot_size(size, recess_size) =
        ? max(with_default(recess_size[1], 0), slot_y)
        : slot_y)
   [x, y];
+
+function rect_slot_full_size_from_plist(plist) =
+  full_rect_slot_size(size=plist_get(plist_get("slot_size",
+                                               plist,
+                                               plist_get("size", plist)),
+                                     plist),
+                      d=plist_get("recess_size", plist));
 
 module counterbore(h,
                    d,
@@ -275,6 +291,85 @@ module four_corner_counterbores(size,
       }
     }
   }
+}
+
+module rect_slot_from_plist(plist, center=false) {
+  plist = with_default(plist, []);
+  h = plist_get("h", plist);
+  recess_h = plist_get("recess_h", plist);
+  size = plist_get("slot_size",
+                   plist,
+                   plist_get("size", plist));
+  recess_size = plist_get("recess_size", plist);
+  autoscale_step = plist_get("autoscale_step", plist,  0.1);
+  recess_corner_r = plist_get("recess_corner_r", plist);
+  r = plist_get("r", plist);
+  r_factor = plist_get("r_factor", plist, 0.3);
+  fn = plist_get("fn", plist, 40);
+  side = plist_get("side", plist);
+  reverse = plist_get("reverse", plist, false);
+  rect_slot(h=h,
+            recess_h=recess_h,
+            size=size,
+            recess_size=recess_size,
+            autoscale_step=autoscale_step,
+            recess_corner_r=recess_corner_r,
+            r=r,
+            r_factor=r_factor,
+            fn=fn,
+            side=side,
+            reverse=reverse,
+            center=center);
+}
+
+module four_corner_counterbores_from_plist(plist, center=true) {
+  plist = with_default(plist, []);
+  size = plist_get("slot_size",
+                   plist,
+                   plist_get("size", plist));
+  h = plist_get("h", plist);
+  d = plist_get("d", plist);
+  bore_d = plist_get("bore_d", plist);
+  bore_h = plist_get("bore_h", plist);
+  sink = plist_get("sink", plist, false);
+  fn = plist_get("fn", plist, 60);
+  no_bore = plist_get("no_bore", plist, false);
+  autoscale_step = plist_get("autoscale_step", plist,  0.1);
+  reverse = plist_get("reverse", plist, false);
+  four_corner_counterbores(size=size,
+                           h=h,
+                           d=d,
+                           bore_d=bore_d,
+                           bore_h=bore_h,
+                           sink=sink,
+                           fn=fn,
+                           no_bore=no_bore,
+                           autoscale_step=autoscale_step,
+                           reverse=reverse,
+                           center=center);
+}
+
+module counterbore_from_plist(plist, center=true) {
+  plist = with_default(plist, []);
+  h = plist_get("h", plist);
+  d = plist_get("d", plist);
+  bore_d = plist_get("bore_d", plist);
+  bore_h = plist_get("bore_h", plist);
+  sink = plist_get("sink", plist, false);
+  fn = plist_get("fn", plist, 60);
+  no_bore = plist_get("no_bore", plist, false);
+  autoscale_step = plist_get("autoscale_step", plist,  0.1);
+  reverse = plist_get("reverse", plist, false);
+  counterbore(h=h,
+              d=d,
+              bore_d=bore_d,
+              bore_h=bore_h,
+              sink=sink,
+              fn=fn,
+              no_bore=no_bore,
+              autoscale_step=autoscale_step,
+              reverse=reverse,
+              center=center);
 }
 
 translate([-10, 0, 0]) {

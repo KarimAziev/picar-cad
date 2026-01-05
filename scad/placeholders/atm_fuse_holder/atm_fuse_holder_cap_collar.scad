@@ -18,10 +18,10 @@ use <../../lib/stairs.scad>
 use <../../lib/slots.scad>
 use <atm_fuse_holder_cap.scad>
 
-module atm_fuse_holder_body_cap_collar(size=[atm_fuse_holder_2_mounting_hole_l,
-                                             atm_fuse_holder_2_mounting_hole_h,
-                                             atm_fuse_holder_2_mounting_hole_depth],
-                                       r=atm_fuse_holder_2_mounting_hole_r,
+module atm_fuse_holder_body_cap_collar(size=[atm_fuse_holder_mounting_hole_l,
+                                             atm_fuse_holder_mounting_hole_h,
+                                             atm_fuse_holder_mounting_hole_depth],
+                                       r=atm_fuse_holder_mounting_hole_r,
                                        fuse_holes_spacing=[8, 4],
                                        fuse_hole_size=[6.0, 1.82],
                                        fuse_holes_pad_x=4,

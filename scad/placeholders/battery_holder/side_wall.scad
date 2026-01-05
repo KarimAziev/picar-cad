@@ -131,4 +131,4 @@ module battery_holder_side_wall(type=side_wall_type,
   }
 }
 
-battery_holder_side_wall(front_rear_thickness=smd_battery_holder_front_rear_thickness);
+battery_holder_side_wall(front_rear_thickness=battery_holder_front_rear_thickness);

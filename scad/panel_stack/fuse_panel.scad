@@ -26,13 +26,13 @@ max_body_height  = max([for (pl = fuse_panel_plist_specs) let (body = plist_get(
                                                                size = plist_get("size", body, []),
                                                                height =
                                                                with_default(size[2],
-                                                                            atm_fuse_holder_2_body_h))
+                                                                            atm_fuse_holder_body_h))
                                                             height]);
 
 max_lid_height  = max([for (pl = fuse_panel_plist_specs) let (cap = plist_get("cap", pl, []),
                                                               size = plist_get("size", cap, []),
                                                               height = with_default(size[2],
-                                                                                    atm_fuse_holder_2_lid_h))
+                                                                                    atm_fuse_holder_cap_h))
                                                            height]);
 
 flipped_len             = len([for (pl = fuse_panel_plist_specs) if (plist_get("cap_to_bottom", pl) == true) pl]);
@@ -113,7 +113,7 @@ module fuse_panel_slots(slot_mode = true,
       if (show_atm_fuse_holders && placeholder == "atm_fuse_holder") {
         let (body_size = plist_get("size", plist_get("body", plist, [])),
              flip = plist_get("cap_to_bottom", plist, false),
-             body_h = with_default(body_size[2], atm_fuse_holder_2_body_h),
+             body_h = with_default(body_size[2], atm_fuse_holder_body_h),
              merged_pl = show_cap == false
              ? plist_merge(plist, ["show_cap", show_cap])
              : plist) {

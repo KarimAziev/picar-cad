@@ -65,7 +65,8 @@ module standard_motor_bracket(size=[standard_motor_bracket_width,
         }
         if (show_motor || show_wheel) {
           translate([standard_motor_gearbox_body_main_len / 2
-                     - standard_motor_body_neck_len / 2, 0,
+                     - standard_motor_body_neck_len / 2,
+                     0,
                      -standard_motor_gearbox_side_height / 2]) {
             rotate([180, 180, 0]) {
               motor(show_wheel=show_wheel);
@@ -78,3 +79,4 @@ module standard_motor_bracket(size=[standard_motor_bracket_width,
 }
 
 standard_motor_bracket(show_motor=false);
+//standard_motor_bracket_bolts_holes_2d(3);

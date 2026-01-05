@@ -1,5 +1,4 @@
 
-include <../../parameters.scad>
 include <../../colors.scad>
 use <../../lib/shapes3d.scad>
 use <../../lib/functions.scad>
@@ -10,16 +9,18 @@ use <../spring.scad>
 contact_width_factor = 0.362;
 contact_thickness    = 0.6;
 
-terminal_type        = "coil_spring"; // [coil_spring, solder_tab]
+terminal_type        = "solder_tab"; // [coil_spring, solder_tab]
 
 function solder_tab_contact_mount_w(battery_dia,
                                     contact_hole_d=1)
-= max(contact_width_factor * battery_dia, contact_hole_d + 2);
+= max(contact_width_factor * battery_dia, with_default(contact_hole_d, 1) + 2);
 
 function solder_tab_contact_mount_outer_size(battery_dia,
                                              contact_hole_d=1,
                                              thickness=contact_thickness)
-= let (contact_w = max(contact_width_factor * battery_dia, with_default(contact_hole_d, 1) + 2))
+= let (contact_w =
+       solder_tab_contact_mount_w(battery_dia=battery_dia,
+                                  contact_hole_d=contact_hole_d))
   [contact_w, contact_w * 0.69, with_default(thickness, contact_thickness)];
 
 function solder_tab_outer_len(battery_dia,
@@ -141,9 +142,9 @@ module solder_tab_cutout(battery_dia,
   }
 }
 
-module battery_holder_solder_tab_contact(battery_dia=battery_dia,
+module battery_holder_solder_tab_contact(battery_dia=18,
                                          thickness=contact_thickness,
-                                         holder_height=smd_battery_holder_height,
+                                         holder_height=14.92,
                                          front_rear_thickness,
                                          contact_hole_d=1,
                                          angle = 0) {
@@ -228,12 +229,12 @@ module battery_holder_solder_tab_contact(battery_dia=battery_dia,
 }
 
 module battery_holder_contact(terminal_type=terminal_type,
-                              battery_len=battery_height,
-                              battery_dia=battery_dia,
+                              battery_len=65,
+                              battery_dia=18,
                               thickness=contact_thickness,
-                              holder_height=smd_battery_holder_height,
+                              holder_height=14.92,
                               bottom_thickness=1.2,
-                              front_rear_thickness=smd_battery_holder_front_rear_thickness,
+                              front_rear_thickness=3.6,
                               use_spring=true,
                               contact_color,
                               coil_spring_d,

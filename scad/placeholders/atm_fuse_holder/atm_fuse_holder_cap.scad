@@ -14,10 +14,10 @@ use <../../lib/plist.scad>
 use <../../lib/stairs.scad>
 use <../../lib/slots.scad>
 
-module atm_fuse_holder_cap(size=[atm_fuse_holder_2_lid_top_l,
-                                 atm_fuse_holder_2_lid_thickness,
-                                 atm_fuse_holder_2_lid_h,
-                                 atm_fuse_holder_2_lid_bottom_l],
+module atm_fuse_holder_cap(size=[atm_fuse_holder_cap_top_l,
+                                 atm_fuse_holder_cap_thickness,
+                                 atm_fuse_holder_cap_h,
+                                 atm_fuse_holder_cap_bottom_l],
                            rib,
                            round_side="top",
                            corner_rad=2,
@@ -29,7 +29,7 @@ module atm_fuse_holder_cap(size=[atm_fuse_holder_2_lid_top_l,
   rib_colr = plist_get("color", rib, matte_black);
   rib_thickness = plist_get("thickness",
                             rib,
-                            atm_fuse_holder_2_lid_rib_thickness);
+                            atm_fuse_holder_cap_rib_thickness);
 
   hole_size = with_default(atm_fuse_holder_cap_hole_size, []);
 
@@ -37,9 +37,9 @@ module atm_fuse_holder_cap(size=[atm_fuse_holder_2_lid_top_l,
   w = size[0] - rib_thickness * 2;
   h = size[2];
 
-  rib_h = plist_get("h", rib, atm_fuse_holder_2_lid_rib_h);
-  rib_l = plist_get("l", rib, atm_fuse_holder_2_lid_rib_l);
-  rib_n = plist_get("n", rib, atm_fuse_holder_2_lid_rib_n);
+  rib_h = plist_get("h", rib, atm_fuse_holder_cap_rib_h);
+  rib_l = plist_get("l", rib, atm_fuse_holder_cap_rib_l);
+  rib_n = plist_get("n", rib, atm_fuse_holder_cap_rib_n);
 
   rib_distance = plist_get("distance_from_top", rib, 0);
 
@@ -82,17 +82,17 @@ module atm_fuse_holder_cap_from_plist(plist) {
   plist = with_default(plist, []);
   size = plist_get("size",
                    plist,
-                   [atm_fuse_holder_2_lid_top_l,
-                    atm_fuse_holder_2_lid_thickness,
-                    atm_fuse_holder_2_lid_h,
-                    atm_fuse_holder_2_lid_bottom_l]);
+                   [atm_fuse_holder_cap_top_l,
+                    atm_fuse_holder_cap_thickness,
+                    atm_fuse_holder_cap_h,
+                    atm_fuse_holder_cap_bottom_l]);
   rib = plist_get("rib",
                   plist,
-                  ["h", atm_fuse_holder_2_lid_rib_h,
-                   "l", atm_fuse_holder_2_lid_rib_l,
-                   "n", atm_fuse_holder_2_lid_rib_n,
-                   "thickness", atm_fuse_holder_2_lid_rib_thickness,
-                   "distance_from_top", atm_fuse_holder_2_lid_rib_distance]);
+                  ["h", atm_fuse_holder_cap_rib_h,
+                   "l", atm_fuse_holder_cap_rib_l,
+                   "n", atm_fuse_holder_cap_rib_n,
+                   "thickness", atm_fuse_holder_cap_rib_thickness,
+                   "distance_from_top", atm_fuse_holder_cap_rib_distance]);
   round_side = plist_get("round_side", plist, "top");
   corner_rad = plist_get("corner_rad", plist, 2);
   cap_hole_size = plist_get("hole_size", plist);
@@ -106,16 +106,16 @@ module atm_fuse_holder_cap_from_plist(plist) {
                       color=color);
 }
 
-atm_fuse_holder_cap_from_plist(["size", [atm_fuse_holder_2_lid_top_l,
-                                         atm_fuse_holder_2_lid_thickness,
-                                         atm_fuse_holder_2_lid_h,
-                                         atm_fuse_holder_2_lid_bottom_l,],
+atm_fuse_holder_cap_from_plist(["size", [atm_fuse_holder_cap_top_l,
+                                         atm_fuse_holder_cap_thickness,
+                                         atm_fuse_holder_cap_h,
+                                         atm_fuse_holder_cap_bottom_l,],
                                 "corner_rad", 2,
                                 "round_side", "top",
                                 "hole_size", atm_fuse_holder_cap_hole_size,
                                 "color", matte_black_2,
-                                "rib", ["h", atm_fuse_holder_2_lid_rib_h,
-                                        "l", atm_fuse_holder_2_lid_rib_l,
-                                        "n", atm_fuse_holder_2_lid_rib_n,
-                                        "thickness", atm_fuse_holder_2_lid_rib_thickness,
-                                        "distance_from_top", atm_fuse_holder_2_lid_rib_distance]]);
+                                "rib", ["h", atm_fuse_holder_cap_rib_h,
+                                        "l", atm_fuse_holder_cap_rib_l,
+                                        "n", atm_fuse_holder_cap_rib_n,
+                                        "thickness", atm_fuse_holder_cap_rib_thickness,
+                                        "distance_from_top", atm_fuse_holder_cap_rib_distance]]);

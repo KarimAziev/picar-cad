@@ -8,6 +8,10 @@
 include <../../parameters.scad>
 include <../../colors.scad>
 
+use <../../core/slot_layout.scad>
+use <../../core/slot_layout_components.scad>
+use <../../core/slot_placeholder_grid.scad>
+
 use <../../lib/functions.scad>
 use <../../lib/shapes2d.scad>
 use <../../lib/holes.scad>
@@ -16,15 +20,14 @@ use <../../lib/placement.scad>
 use <../../lib/transforms.scad>
 use <../../lib/debug.scad>
 use <../../lib/shapes3d.scad>
+use <../../lib/plist.scad>
+use <../../lib/slots.scad>
 
 use <../../placeholders/rpi_5.scad>
-use <../../placeholders/battery_holder.scad>
 use <../../placeholders/ups_hat.scad>
 use <../../placeholders/motor.scad>
-use <../../placeholders/smd_battery_holder.scad>
+use <../../placeholders/battery_holder/battery_holder.scad>
 use <../../placeholders/bolt.scad>
-
-use <../rear_panel.scad>
 
 use <../../motor_brackets/standard_motor_bracket.scad>
 use <../../motor_brackets/n20_motor_bracket.scad>
@@ -33,51 +36,49 @@ use <../../panel_stack/fuse_panel.scad>
 use <../../panel_stack/control_panel.scad>
 use <../../panel_stack/panel_stack.scad>
 
-use <../../wheels/rear_wheel.scad>
-
 use <../../power/power_lid.scad>
 use <../../power/power_case.scad>
 
+use <../../wheels/rear_wheel.scad>
+
+use <../rear_panel.scad>
+
 use <upper_chassis.scad>
 use <chassis_connector.scad>
-use <../../core/slot_layout.scad>
-use <../../lib/plist.scad>
-use <../../core/slot_layout_components.scad>
 
-show_motor               = false;
-show_motor_brackets      = false;
-show_wheels              = false;
-show_xt90e               = false;
-show_rear_panel          = false;
-show_buttons_panel       = false;
-show_fuse_panel          = false;
-show_buttons             = false;
-show_fusers              = false;
-show_rear_panel_buttons  = false;
-show_battery_holders     = false;
-show_smd_battery_holders = true;
-show_ups_hat             = false;
-show_power_case          = false;
-show_power_case_lid      = false;
-show_lipo_pack           = false;
-show_batteries           = false;
-show_rpi                 = false;
-show_socket_case         = false;
+show_motor              = false;
+show_motor_brackets     = false;
+show_wheels             = false;
+show_xt90e              = false;
+show_rear_panel         = false;
+show_buttons_panel      = false;
+show_fuse_panel         = false;
+show_buttons            = false;
+show_fusers             = false;
+show_rear_panel_buttons = false;
+show_battery_holders    = false;
+show_ups_hat            = false;
+show_power_case         = false;
+show_power_case_lid     = false;
+show_lipo_pack          = false;
+show_batteries          = false;
+show_rpi                = false;
+show_socket_case        = false;
 
-rpi_position_x           = -rpi_bolt_spacing[0] / 2 + rpi_chassis_x_position;
-rpi_position_y           = -rpi_len - rpi_chassis_y_position;
+rpi_position_x          = -rpi_bolt_spacing[0] / 2 + rpi_chassis_x_position;
+rpi_position_y          = -rpi_len - rpi_chassis_y_position;
 
-power_case_position_y    = -power_case_length / 2 - power_case_chassis_y_offset;
-power_case_position_x    = chassis_body_w / 2
+power_case_position_y   = -power_case_length / 2 - power_case_chassis_y_offset;
+power_case_position_x   = chassis_body_w / 2
   - power_case_width / 2
   + power_case_chassis_x_offset;
 
-max_lower_cutout         = max([for (v = chassis_lower_cutout_pts) v[1]]);
+max_lower_cutout        = max([for (v = chassis_lower_cutout_pts) v[1]]);
 
-body_pts                 = concat(chassis_lower_cutout_pts,
-                                  [[chassis_body_half_w, chassis_body_len +
-                                    max_lower_cutout],
-                                   [0, chassis_body_len  + max_lower_cutout]]);
+body_pts                = concat(chassis_lower_cutout_pts,
+                                 [[chassis_body_half_w, chassis_body_len +
+                                   max_lower_cutout],
+                                  [0, chassis_body_len  + max_lower_cutout]]);
 
 module chassis_body_2d() {
   offset_vertices_2d(r=chassis_offset_rad) {
@@ -105,37 +106,6 @@ module ups_hat_bolts_2d() {
                        hole_dia=battery_ups_bolt_dia);
 }
 
-module standard_battery_holders_bolts_2d(x_offst=battery_bolts_x_offset) {
-  battery_holders_bolts(x_offst=x_offst,
-                        y_positions=battery_holes_y_positions,
-                        d=battery_holder_bolt_dia,
-                        size=battery_holder_bolt_holes_size,
-                        fn=battery_bolts_fn_val);
-}
-
-module battery_holders_bolts(x_offst,
-                             y_positions,
-                             d,
-                             size,
-                             fn=battery_bolts_fn_val) {
-  union() {
-    for (y = y_positions) {
-      mirror_copy([1, 0, 0]) {
-        translate([-x_offst, y, 0]) {
-          if ($children) {
-            children();
-          } else {
-            four_corner_holes_2d(size = size,
-                                 center = true,
-                                 hole_dia = d,
-                                 fn = fn);
-          }
-        }
-      }
-    }
-  }
-}
-
 module chassis_body(size, slots_and_placeholders, assembly) {
   union() {
     difference() {
@@ -156,6 +126,17 @@ module standard_motor_bracket_wall(show_motor=false, show_wheel=false) {
     }
   }
 }
+module standard_motor_bracket_bolts(extra_x=0, extra_y=0) {
+  translate([motor_bracket_x_pos() + extra_x,
+             motor_bracket_y_pos() + extra_y,
+             0]) {
+    four_corner_counterbores(size=standard_motor_bracket_bolt_spacing,
+                             center=true,
+                             h=chassis_thickness,
+                             d=standard_motor_bracket_chassis_bolt_hole);
+  }
+}
+// standard_motor_bracket_bolts(-standard_motor_bracket_thickness * 2);
 
 module n20_bracket_left(show_motor=false, show_wheel=false) {
   x = -(chassis_body_w * 0.5) - n20_motor_chassis_x_distance;
@@ -255,9 +236,13 @@ module chassis_body_3d(panel_color="white") {
       }
 
       mirror_copy([1, 0, 0]) {
-        n20_bracket_bolts();
+        if (motor_type == "n20") {
+          n20_bracket_bolts();
+        }
 
-        // standard_motor_bracket_bolts();
+        if (motor_type == "standard") {
+          standard_motor_bracket_bolts();
+        }
       }
 
       chassis_with_panel_stack_position() {
@@ -266,17 +251,12 @@ module chassis_body_3d(panel_color="white") {
                                == "vertical");
       }
 
-      for (specs = smd_battery_holder_chassis_specs) {
-        translate([0, -smd_battery_holder_length, 0]) {
-          rotate([0, 0, 0]) {
-            four_corner_hole_rows(specs,
-                                  thickness=chassis_thickness,
-                                  default_bore_dia_factor=1,
-                                  default_bore_h_factor=0.1,
-                                  sink=true,
-                                  center=true);
-          }
-        }
+      translate([-chassis_body_w / 2, 0, 0]) {
+        slot_or_placeholder_grid(mode="slot",
+                                 thickness=chassis_thickness,
+                                 debug_spec=["border_h", chassis_thickness + 1],
+                                 grid=chassis_body_battery_holders_specs,
+                                 debug=false);
       }
 
       translate([rpi_position_x, rpi_position_y, 0]) {
@@ -358,12 +338,10 @@ module chassis_body(panel_color="white",
                     show_fusers=show_fusers,
                     show_rear_panel_buttons=show_rear_panel_buttons,
                     show_battery_holders=show_battery_holders,
-                    show_smd_battery_holders=show_smd_battery_holders,
                     show_ups_hat=show_ups_hat,
                     show_power_case=show_power_case,
                     show_power_case_lid=show_power_case_lid,
                     show_lipo_pack=show_lipo_pack,
-                    show_batteries=show_batteries,
                     show_rpi=show_rpi,
                     show_socket_case=show_socket_case) {
   chassis_body_3d(panel_color=panel_color);
@@ -383,6 +361,16 @@ module chassis_body(panel_color="white",
       rpi_5(slot_mode=false,
             show_standoffs=true,
             standoff_height=rpi_standoff_height);
+    }
+  }
+
+  if (show_battery_holders) {
+    translate([-chassis_body_w / 2, 0, 0]) {
+      slot_or_placeholder_grid(mode="placeholder",
+                               thickness=chassis_thickness,
+                               debug_spec=["border_h", chassis_thickness + 1],
+                               grid=chassis_body_battery_holders_specs,
+                               debug=false);
     }
   }
 
@@ -413,65 +401,6 @@ module chassis_body(panel_color="white",
           n20_bracket_left(show_motor=show_motor, show_wheel=show_wheels);
         }
       }
-
-      if (show_battery_holders && len(battery_holes_y_positions) > 0) {
-        batteries_holder_assembly_y_idx = batteries_holder_assembly_y_idx;
-        battery_holder_y_pos = is_undef(battery_holes_y_positions
-                                        [batteries_holder_assembly_y_idx])
-          ? battery_holes_y_positions[batteries_holder_assembly_y_idx - 1]
-          : battery_holes_y_positions[batteries_holder_assembly_y_idx];
-        full_holder_len = battery_holder_full_len(battery_holder_thickness,
-                                                  battery_height=battery_height)
-          * battery_holder_batteries_count;
-        full_holder_width = battery_holder_full_width(battery_holder_thickness)
-          * battery_holder_batteries_count;
-        half_of_holder_len = full_holder_len / 2;
-        half_of_holder_width = full_holder_width / 2;
-
-        translate([0, battery_holder_y_pos, chassis_thickness]) {
-          translate([battery_bolts_x_offset - half_of_holder_width,
-                     battery_holder_y_pos - half_of_holder_len,
-                     0]) {
-            battery_holder();
-          }
-
-          if (battery_holder_batteries_count <= 2) {
-            translate([- battery_bolts_x_offset
-                       - battery_bolts_x_offset,
-                       battery_holder_y_pos - half_of_holder_len,
-                       0]) {
-              battery_holder(show_battery=show_batteries);
-            }
-          }
-        }
-      }
-    }
-  }
-
-  if (show_smd_battery_holders) {
-    translate([0, 0, chassis_thickness]) {
-      for (specs = smd_battery_holder_chassis_specs) {
-        let (width = smd_battery_holder_calc_full_w(smd_battery_holder_inner_thickness,
-                                                    count=smd_battery_holder_batteries_count,
-                                                    battery_dia=battery_dia)) {
-
-          translate([0, -smd_battery_holder_length, 0]) {
-            four_corner_hole_rows(specs=specs,
-                                  thickness=chassis_thickness,
-                                  default_bore_dia_factor=1,
-                                  default_bore_h_factor=0,
-                                  sink=true,
-                                  center=false) {
-
-              translate([0, 0, -chassis_thickness + 0.1]) {
-                rotate([180, 0, 0]) {
-                  smd_battery_holder(show_battery=show_batteries);
-                }
-              }
-            }
-          }
-        }
-      }
     }
   }
 
@@ -495,89 +424,6 @@ module chassis_body(panel_color="white",
     }
   }
 }
-
-function normalize_slot(plist) = plist_get("placeholder", plist)
-  == "smd_battery_holder"
-  ? smd_battery_holder_add_placeholder_size(plist)
-  : plist;
-
-function normalize_slots(slots) = [for (v = slots) normalize_slot(v)];
-
-chassis_bottom_slots = [[["type", "custom",
-                          "placeholder", "smd_battery_holder",
-                          "rotation", 0,
-                          "height", smd_battery_holder_height,
-                          "length", smd_battery_holder_length,
-                          "battery_dia", battery_dia,
-                          "battery_height", battery_height,
-                          "count", smd_battery_holder_batteries_count,
-                          "bolt_dia", smd_battery_holder_bolt_dia,
-                          "bolt_spacing", smd_battery_holder_bolt_spacing,
-                          "bolt_recess_size", smd_battery_holder_bolt_recess_size,
-                          "bottom_thickness", smd_battery_holder_bottom_thickness,
-                          "side_thickness", smd_battery_holder_side_thickness,
-                          "front_rear_thickness", smd_battery_holder_front_rear_thickness,
-                          "inner_cutout_size", smd_battery_holder_inner_cutout_size,
-                          "inner_thickness", smd_battery_holder_inner_thickness,
-                          "inner_cutout_h", smd_battery_holder_inner_side_h,
-                          "contact_hole_d", 1,
-                          "show_battery", false,
-                          "show_contact", true,
-                          "show_bolt", true,
-                          "show_nut", true,
-                          "lock_nut", false,
-                          "bolt_head_type", "round",
-                          "bolt_visible_h",  2],
-                         ["type", "custom",
-                          "placeholder", "smd_battery_holder",
-                          "rotation", 0,
-                          "height", smd_battery_holder_height,
-                          "length", smd_battery_holder_length,
-                          "battery_dia", battery_dia,
-                          "battery_height", battery_height,
-                          "count", smd_battery_holder_batteries_count,
-                          "bolt_dia", smd_battery_holder_bolt_dia,
-                          "bolt_spacing", smd_battery_holder_bolt_spacing,
-                          "bolt_recess_size", smd_battery_holder_bolt_recess_size,
-                          "bottom_thickness", smd_battery_holder_bottom_thickness,
-                          "side_thickness", smd_battery_holder_side_thickness,
-                          "front_rear_thickness", smd_battery_holder_front_rear_thickness,
-                          "inner_cutout_size", smd_battery_holder_inner_cutout_size,
-                          "inner_thickness", smd_battery_holder_inner_thickness,
-                          "inner_cutout_h", smd_battery_holder_inner_side_h,
-                          "contact_hole_d", 1,
-                          "show_battery", false,
-                          "show_contact", true,
-                          "show_bolt", true,
-                          "show_nut", true,
-                          "lock_nut", false,
-                          "bolt_head_type", "round",
-                          "bolt_visible_h",  2]],
-                        [["type", "custom",
-                          "placeholder", "smd_battery_holder",
-                          "rotation", 90,
-                          "height", smd_battery_holder_height,
-                          "length", smd_battery_holder_length,
-                          "battery_dia", battery_dia,
-                          "battery_height", battery_height,
-                          "count", smd_battery_holder_batteries_count,
-                          "bolt_dia", smd_battery_holder_bolt_dia,
-                          "bolt_spacing", smd_battery_holder_bolt_spacing,
-                          "bolt_recess_size", smd_battery_holder_bolt_recess_size,
-                          "bottom_thickness", smd_battery_holder_bottom_thickness,
-                          "side_thickness", smd_battery_holder_side_thickness,
-                          "front_rear_thickness", smd_battery_holder_front_rear_thickness,
-                          "inner_cutout_size", smd_battery_holder_inner_cutout_size,
-                          "inner_thickness", smd_battery_holder_inner_thickness,
-                          "inner_cutout_h", smd_battery_holder_inner_side_h,
-                          "contact_hole_d", 1,
-                          "show_battery", false,
-                          "show_contact", true,
-                          "show_bolt", true,
-                          "show_nut", true,
-                          "lock_nut", false,
-                          "bolt_head_type", "round",
-                          "bolt_visible_h",  2]]];
 
 union() {
   chassis_body();

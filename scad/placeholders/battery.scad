@@ -11,7 +11,7 @@ use <../lib/functions.scad>
 use <../lib/text.scad>
 
 module battery(d=battery_dia,
-               h=battery_height,
+               h=battery_length,
                positive_pole_dia=battery_positive_pole_dia,
                positive_pole_h=battery_positive_pole_height,
                top_border_h=0.7,

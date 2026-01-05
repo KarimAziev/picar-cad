@@ -20,13 +20,13 @@ use <../../lib/slots.scad>
 use <atm_fuse_holder_cap.scad>
 use <atm_fuse_holder_cap_collar.scad>
 
-module atm_fuse_holder_body(size=[atm_fuse_holder_2_body_bottom_l,
-                                  atm_fuse_holder_2_body_thickness,
-                                  atm_fuse_holder_2_body_h,
-                                  atm_fuse_holder_2_body_top_l],
+module atm_fuse_holder_body(size=[atm_fuse_holder_body_bottom_l,
+                                  atm_fuse_holder_body_thickness,
+                                  atm_fuse_holder_body_h,
+                                  atm_fuse_holder_body_top_l],
                             round_side="top",
                             color=matte_black_2,
-                            wiring=["d", atm_fuse_holder_2_body_wiring_d,
+                            wiring=["d", atm_fuse_holder_body_wiring_d,
                                     "socket_type", "cylinder",
                                     "socket_type_len", 4,
                                     "color", red_1,
@@ -44,18 +44,18 @@ module atm_fuse_holder_body(size=[atm_fuse_holder_2_body_bottom_l,
   rib_colr = plist_get("color", rib, matte_black);
   rib_thickness = plist_get("thickness",
                             rib,
-                            atm_fuse_holder_2_body_rib_thickness);
+                            atm_fuse_holder_body_rib_thickness);
 
   thickness = size[1];
   h = size[2];
   w = size[0] - rib_thickness * 2;
 
-  rib_h = plist_get("h", rib, atm_fuse_holder_2_body_rib_h);
-  rib_l = plist_get("l", rib, atm_fuse_holder_2_body_rib_l);
-  rib_n = plist_get("n", rib, atm_fuse_holder_2_body_rib_n);
+  rib_h = plist_get("h", rib, atm_fuse_holder_body_rib_h);
+  rib_l = plist_get("l", rib, atm_fuse_holder_body_rib_l);
+  rib_n = plist_get("n", rib, atm_fuse_holder_body_rib_n);
   rib_distance = plist_get("distance_from_top", rib, 0);
 
-  wiring_d = plist_get("d", wiring, atm_fuse_holder_2_body_wiring_d);
+  wiring_d = plist_get("d", wiring, atm_fuse_holder_body_wiring_d);
   wiring_base_type = plist_get("socket_type", wiring, "sphere");
   wiring_left_pts = plist_get("left_pts",
                               wiring,
@@ -99,10 +99,10 @@ module atm_fuse_holder_body(size=[atm_fuse_holder_2_body_bottom_l,
     translate([0, 0, h]) {
       atm_fuse_holder_body_cap_collar(size=plist_get("size",
                                                      cap_collar_plist,
-                                                     [atm_fuse_holder_2_mounting_hole_l,
-                                                      atm_fuse_holder_2_mounting_hole_h,
-                                                      atm_fuse_holder_2_mounting_hole_depth]),
-                                      r=plist_get("r", cap_collar_plist, atm_fuse_holder_2_mounting_hole_r),
+                                                     [atm_fuse_holder_mounting_hole_l,
+                                                      atm_fuse_holder_mounting_hole_h,
+                                                      atm_fuse_holder_mounting_hole_depth]),
+                                      r=plist_get("r", cap_collar_plist, atm_fuse_holder_mounting_hole_r),
                                       fuse_holes_spacing=plist_get("fuse_holes_spacing", cap_collar_plist, [8, 4]),
                                       fuse_hole_size=plist_get("fuse_hole_size", cap_collar_plist, [6.0, 1.82]),
                                       fuse_holes_pad_x=plist_get("fuse_holes_pad_x", cap_collar_plist, 4),

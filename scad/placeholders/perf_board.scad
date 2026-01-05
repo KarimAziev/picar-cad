@@ -142,7 +142,8 @@ module perf_bord_from_plist(plist,
                             stand_up=true,
                             show_bolt = true,
                             show_standoff = true,
-                            show_nut=true) {
+                            show_nut=true,
+                            center=false) {
   plist = with_default(plist, []);
   size = plist_get("size", plist, [20, 80, 1.6]);
   corner_r = plist_get("corner_r", plist, 1);
@@ -166,30 +167,32 @@ module perf_bord_from_plist(plist,
   bus_pad_color = plist_get("bus_pad_color", plist, "silver");
   standoff_h = plist_get("standoff_h", plist,  2);
 
-  perf_board(size=size,
-             corner_r=corner_r,
-             pad_dia=pad_dia,
-             perf_grid_d=perf_grid_d,
-             spacing=spacing,
-             bolt_d=bolt_d,
-             bolt_spacing=bolt_spacing,
-             rows=rows,
-             cols=cols,
-             $fn=$fn,
-             bus_pad_rx=bus_pad_rx,
-             bus_pad_ry=bus_pad_ry,
-             bus_pad_cols=bus_pad_cols,
-             bus_pad_offset=bus_pad_offset,
-             bus_pad_spacing=bus_pad_spacing,
-             perf_color=perf_color,
-             pin_color=pin_color,
-             standoff_h=standoff_h,
-             bolt_visible_h=bolt_visible_h,
-             bus_pad_color=bus_pad_color,
-             stand_up=stand_up,
-             show_bolt=show_bolt,
-             show_standoff=show_standoff,
-             show_nut=show_nut);
+  translate([center ? 0 : size[0] / 2, center ? 0 : size[1] / 2, 0]) {
+    perf_board(size=size,
+               corner_r=corner_r,
+               pad_dia=pad_dia,
+               perf_grid_d=perf_grid_d,
+               spacing=spacing,
+               bolt_d=bolt_d,
+               bolt_spacing=bolt_spacing,
+               rows=rows,
+               cols=cols,
+               $fn=$fn,
+               bus_pad_rx=bus_pad_rx,
+               bus_pad_ry=bus_pad_ry,
+               bus_pad_cols=bus_pad_cols,
+               bus_pad_offset=bus_pad_offset,
+               bus_pad_spacing=bus_pad_spacing,
+               perf_color=perf_color,
+               pin_color=pin_color,
+               standoff_h=standoff_h,
+               bolt_visible_h=bolt_visible_h,
+               bus_pad_color=bus_pad_color,
+               stand_up=stand_up,
+               show_bolt=show_bolt,
+               show_standoff=show_standoff,
+               show_nut=show_nut);
+  }
 }
 
 perf_bord_from_plist();

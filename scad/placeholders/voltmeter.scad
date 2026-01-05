@@ -16,6 +16,7 @@ use <../lib/transforms.scad>
 use <../lib/plist.scad>
 use <../lib/text.scad>
 use <../lib/functions.scad>
+use <../lib/slots.scad>
 
 module voltemeter_text(txt, text_props) {
   let (rotation=plist_get("rotation", text_props, [0, 0, 0]),
@@ -78,6 +79,7 @@ module voltmeter_board(show_standoffs=true,
                              voltmeter_board_len,
                              voltmeter_board_h],
                        pins=voltmeter_default_pins_spec,
+                       bolt_padding=2,
                        wiring=["d", voltmeter_wiring_d,
                                "distance", voltmeter_wiring_distance,
                                "path", []],
@@ -114,8 +116,8 @@ module voltmeter_board(show_standoffs=true,
           }
           four_corner_children(size=bolt_spacing) {
             color(green_2, alpha=1) {
-              cube_3d(size=[bolt_dia + 2,
-                            bolt_dia + 2,
+              cube_3d(size=[bolt_dia + bolt_padding,
+                            bolt_dia + bolt_padding,
                             board_h],
                       center=true);
             }
@@ -213,6 +215,7 @@ module voltmeter(show_standoffs=true,
                  show_display=true,
                  stand_up=true,
                  center=true,
+                 bolt_padding=2,
                  standoff_body_h=voltmeter_pin_h,
                  board_size=[voltmeter_board_w,
                              voltmeter_board_len,
@@ -237,6 +240,7 @@ module voltmeter(show_standoffs=true,
         voltmeter_board(show_standoffs=show_standoffs,
                         size=board_size,
                         pins=pins,
+                        bolt_padding=bolt_padding,
                         wiring=wiring,
                         bolt_dia=bolt_dia,
                         bolt_spacing=bolt_spacing,
@@ -253,6 +257,12 @@ module voltmeter(show_standoffs=true,
 
 module voltmeter_from_plist(plist,
                             center=true,
+                            align_x = -1,
+                            align_y = -1,
+                            thickness=2,
+                            cell_size,
+                            spin,
+                            slot_mode=false,
                             debug=false,
                             stand_up=false,
                             show_standoffs=true) {
@@ -267,11 +277,22 @@ module voltmeter_from_plist(plist,
                          [voltmeter_board_w,
                           voltmeter_board_len,
                           voltmeter_board_h]);
+
   slot_size = plist_get("slot_size",
                         data,
                         voltmeter_bolt_spacing);
+
+  bolt_padding = plist_get("bolt_padding",
+                           plist,
+                           2);
   bolt_dia = plist_get("d", data, voltmeter_bolt_dia);
   display = plist_get("display", data, []);
+  display_size = plist_get("size",
+                           display,
+                           [voltmeter_display_w,
+                            voltmeter_display_len,
+                            voltmeter_display_h]);
+
   wiring = plist_get("wiring", data, []);
   pins = plist_get("pins", data, []);
 
@@ -281,25 +302,80 @@ module voltmeter_from_plist(plist,
                               voltmeter_pin_h);
   hide_board = plist_get("hide_board", plist, false);
   hide_display = plist_get("hide_display", plist, false);
-  voltmeter(show_standoffs=show_standoffs,
-            show_board=!hide_board,
-            show_display=!hide_display,
-            standoff_body_h=standoff_body_h,
-            board_size=board_size,
-            bolt_spacing=slot_size,
-            bolt_dia=bolt_dia,
-            display=display,
-            pins=pins,
-            wiring=wiring,
-            text=text,
-            text_props=text_props,
-            stand_up=stand_up,
-            center=center);
+
+  slot_plist = plist_merge(["d", bolt_dia,
+                            "bore_d", bolt_dia * 2,
+                            "bore_h", thickness / 2],
+                           plist_merge(plist, ["h", thickness]));
+
+  module slot() {
+
+    four_corner_counterbores_from_plist(slot_plist, center=true);
+  }
+  full_slot_size = four_corner_counterbores_full_size_from_plist(slot_plist);
+
+  full_size = [max(display_size[0],
+                   board_size[0],
+                   full_slot_size[0]),
+               max(board_size[1] + bolt_padding,
+                   full_slot_size[1],
+                   display_size[1])];
+
+  module slot_or_placeholder() {
+    if (slot_mode) {
+      slot();
+    } else {
+      voltmeter(show_standoffs=show_standoffs,
+                show_board=!hide_board,
+                show_display=!hide_display,
+                standoff_body_h=standoff_body_h,
+                board_size=board_size,
+                bolt_spacing=slot_size,
+                bolt_padding=bolt_padding,
+                bolt_dia=bolt_dia,
+                display=display,
+                pins=pins,
+                wiring=wiring,
+                text=text,
+                text_props=text_props,
+                stand_up=stand_up,
+                center=true);
+    }
+  }
+  if (center) {
+    maybe_rotate([0, 0, spin]) {
+      slot_or_placeholder();
+    }
+  } else {
+    align_children_with_spin(parent_size=cell_size,
+                             size=full_size,
+                             align_x=align_x,
+                             align_y=align_y,
+                             spin=spin) {
+      translate([full_size[0] / 2, full_size[1] / 2, 0]) {
+        slot_or_placeholder();
+      }
+    }
+  }
 }
 
 voltmeter_from_plist(center=false,
                      debug=false,
                      stand_up=true,
+                     slot_mode=true,
                      plist=plist_merge(voltmeter_default_spec,
-                                       ["wiring", plist_merge(plist_get("wiring", voltmeter_default_spec),
-                                                              ["path", []])],));
+                                       ["wiring",
+                                        plist_merge(plist_get("wiring",
+                                                              voltmeter_default_spec),
+                                                    ["path", []])],));
+
+voltmeter_from_plist(center=false,
+                     debug=false,
+                     stand_up=true,
+                     slot_mode=false,
+
+                     plist=plist_merge(voltmeter_default_spec,
+                                       ["wiring",
+                                        plist_merge(plist_get("wiring",
+                                                              voltmeter_default_spec),
+                                                    ["path", []])],));

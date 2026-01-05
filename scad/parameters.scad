@@ -12,6 +12,7 @@ include <colors.scad>
 use <lib/functions.scad>
 use <steering_system/knuckle_util.scad>
 use <lib/plist.scad>
+use <placeholders/battery_holder/util.scad>
 
 assembly_use_front_steering                          = false;
 assembly_shaft_use_front_steering                    = true;
@@ -41,128 +42,66 @@ atc_ato_blade_fuse_holder_bottom_rad                 = 5;
 // Inline ATM fuse holder
 // ─────────────────────────────────────────────────────────────────────────────
 
-atm_fuse_holder_body_thickness                       = 11.60;
-atm_fuse_holder_body_bottom_l                        = 20.42;
-atm_fuse_holder_body_top_l                           = 25.5;
-atm_fuse_holder_body_h                               = 11.90;
-
-atm_fuse_holder_lid_thickness                        = 10.50;
-atm_fuse_holder_lid_top_l                            = 20.93;
-atm_fuse_holder_lid_bottom_l                         = 25.66;
-atm_fuse_holder_lid_h                                = 19.50;
-
 atm_fuse_holder_body_wiring_d                        = 3.8;
+atm_fuse_holder_body_bottom_l                        = 28.50;
+atm_fuse_holder_body_top_l                           = 28.9;
+atm_fuse_holder_body_h                               = 15.070;
+atm_fuse_holder_body_thickness                       = 12.20;
 
-atm_fuse_holder_body_rib_l                           = 9.8;
-atm_fuse_holder_body_rib_h                           = 5.00;
-atm_fuse_holder_body_rib_n                           = 3;
-atm_fuse_holder_body_rib_distance                    = 2;
-atm_fuse_holder_body_rib_thickness                   = 1.415;
+atm_fuse_holder_cap_thickness                        = 11.60;
+atm_fuse_holder_cap_top_l                            = 24.60;
+atm_fuse_holder_cap_bottom_l                         = 23.07;
+atm_fuse_holder_cap_h                                = 21.64;
 
-atm_fuse_holder_lid_rib_l                            = 9.8;
-atm_fuse_holder_lid_rib_h                            = 6.06;
-atm_fuse_holder_lid_rib_n                            = 3;
-atm_fuse_holder_lid_rib_distance                     = 2;
-atm_fuse_holder_lid_rib_thickness                    = 1.415;
+atm_fuse_holder_body_rib_thickness                   = 1.0;
+atm_fuse_holder_body_rib_h                           = 10.00;
+atm_fuse_holder_body_rib_l                           = 19.03;
+// number of the ribs
+atm_fuse_holder_body_rib_n                           = 5;
 
-atm_fuse_holder_mounting_hole_l                      = 21.8;
-atm_fuse_holder_mounting_hole_h                      = 6.7;
+atm_fuse_holder_cap_rib_thickness                    = 1.0;
+atm_fuse_holder_cap_rib_h                            = 14.30;
+
+atm_fuse_holder_cap_rib_l                            = 13.3;
+// number of the ribs
+atm_fuse_holder_cap_rib_n                            = 7;
+atm_fuse_holder_cap_rib_distance                     = 7.22;
+
+atm_fuse_holder_mounting_hole_l                      = 22.0;
+atm_fuse_holder_mounting_hole_h                      = 8.0;
 atm_fuse_holder_mounting_hole_depth                  = 5.2;
-atm_fuse_holder_mounting_hole_r                      = 2.8;
+atm_fuse_holder_mounting_hole_r                      = 5.0;
 
-atm_fuse_holder_2_body_wiring_d                      = 3.8;
-atm_fuse_holder_2_body_bottom_l                      = 28.50;
-atm_fuse_holder_2_body_top_l                         = 28.9;
-atm_fuse_holder_2_body_h                             = 15.070;
-atm_fuse_holder_2_body_thickness                     = 12.20;
-
-atm_fuse_holder_2_lid_thickness                      = 11.60;
-atm_fuse_holder_2_lid_top_l                          = 24.60;
-atm_fuse_holder_2_lid_bottom_l                       = 23.07;
-atm_fuse_holder_2_lid_h                              = 21.64;
-
-atm_fuse_holder_2_body_rib_thickness                 = 1.0;
-atm_fuse_holder_2_body_rib_h                         = 10.00;
-atm_fuse_holder_2_body_rib_l                         = 19.03;
-atm_fuse_holder_2_body_rib_n                         = 5;
-atm_fuse_holder_2_body_rib_distance                  = 3;
-
-atm_fuse_holder_2_lid_rib_thickness                  = 1.0;
-atm_fuse_holder_2_lid_rib_h                          = 14.30;
-
-atm_fuse_holder_2_lid_rib_l                          = 13.3;
-// numer of the ribs
-atm_fuse_holder_2_lid_rib_n                          = 7;
-atm_fuse_holder_2_lid_rib_distance                   = 7.22;
-
-atm_fuse_holder_2_mounting_hole_l                    = 22.0;
-atm_fuse_holder_2_mounting_hole_h                    = 8.0;
-atm_fuse_holder_2_mounting_hole_depth                = 5.2;
-atm_fuse_holder_2_mounting_hole_r                    = 5.0;
-
-atm_fuse_holder_cap_hole_size                        = [atm_fuse_holder_2_mounting_hole_l * 0.8,
-                                                        atm_fuse_holder_2_mounting_hole_h,
-                                                        atm_fuse_holder_2_lid_h * 0.8];
+atm_fuse_holder_cap_hole_size                        = [atm_fuse_holder_mounting_hole_l * 0.8,
+                                                        atm_fuse_holder_mounting_hole_h,
+                                                        atm_fuse_holder_cap_h * 0.8];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Fusers holder
 // ─────────────────────────────────────────────────────────────────────────────
-fuse_panel_row_gap                                   = 2;
 fuse_panel_thickness                                 = 3;
-fuse_panel_default_toggle_switch_spec                = ["slot", [atm_fuse_holder_2_mounting_hole_h + 2,
-                                                                 atm_fuse_holder_2_mounting_hole_l + 1,
-                                                                 atm_fuse_holder_2_mounting_hole_r,
-                                                                 atm_fuse_holder_2_mounting_hole_depth],
-                                                        "body",
-                                                        [atm_fuse_holder_2_body_top_l,
-                                                         atm_fuse_holder_2_body_bottom_l,
-                                                         atm_fuse_holder_2_body_thickness,
-                                                         atm_fuse_holder_2_body_h,
-                                                         matte_black_2],
-                                                        "body_ribs",
-                                                        [atm_fuse_holder_2_body_rib_l,
-                                                         atm_fuse_holder_2_body_rib_h,
-                                                         atm_fuse_holder_2_body_rib_n,
-                                                         atm_fuse_holder_2_body_rib_distance,
-                                                         atm_fuse_holder_2_body_rib_thickness],
-                                                        "lid",
-                                                        [atm_fuse_holder_2_lid_top_l,
-                                                         atm_fuse_holder_2_lid_bottom_l,
-                                                         atm_fuse_holder_2_lid_thickness,
-                                                         atm_fuse_holder_2_lid_h,
-                                                         matte_black_2],
-                                                        "lid_ribs",
-                                                        [atm_fuse_holder_2_lid_rib_l,
-                                                         atm_fuse_holder_2_lid_rib_h,
-                                                         atm_fuse_holder_2_lid_rib_n,
-                                                         atm_fuse_holder_2_lid_rib_distance,
-                                                         atm_fuse_holder_2_lid_rib_thickness]];
-
-fuse_panels_specs                                    = [(fuse_panel_default_toggle_switch_spec),
-                                                        fuse_panel_default_toggle_switch_spec,
-                                                        fuse_panel_default_toggle_switch_spec,];
 
 atm_fuse_default_plist                               = ["placeholder", "atm_fuse_holder",
                                                         "type", "rect",
-                                                        "slot_size", [atm_fuse_holder_2_mounting_hole_l + 1,
-                                                                      atm_fuse_holder_2_mounting_hole_h + 2],
-                                                        "corner_rad", atm_fuse_holder_2_mounting_hole_r,
-                                                        "placeholder_size", [max(atm_fuse_holder_2_body_top_l,
-                                                                                 atm_fuse_holder_2_body_bottom_l)
+                                                        "slot_size", [atm_fuse_holder_mounting_hole_l + 1,
+                                                                      atm_fuse_holder_mounting_hole_h + 2],
+                                                        "corner_rad", atm_fuse_holder_mounting_hole_r,
+                                                        "placeholder_size", [max(atm_fuse_holder_body_top_l,
+                                                                                 atm_fuse_holder_body_bottom_l)
                                                                              + 12,
-                                                                             atm_fuse_holder_2_body_thickness],
-                                                        "body", ["size", [atm_fuse_holder_2_body_bottom_l,
-                                                                          atm_fuse_holder_2_body_thickness,
-                                                                          atm_fuse_holder_2_body_h,
-                                                                          atm_fuse_holder_2_body_top_l],
+                                                                             atm_fuse_holder_body_thickness],
+                                                        "body", ["size", [atm_fuse_holder_body_bottom_l,
+                                                                          atm_fuse_holder_body_thickness,
+                                                                          atm_fuse_holder_body_h,
+                                                                          atm_fuse_holder_body_top_l],
                                                                  "corner_rad", 2,
                                                                  "round_side", "bottom",
-                                                                 "rib", ["h", atm_fuse_holder_2_body_rib_h,
-                                                                         "l", atm_fuse_holder_2_body_rib_l,
-                                                                         "n", atm_fuse_holder_2_body_rib_n,
-                                                                         "thickness", atm_fuse_holder_2_body_rib_thickness,
+                                                                 "rib", ["h", atm_fuse_holder_body_rib_h,
+                                                                         "l", atm_fuse_holder_body_rib_l,
+                                                                         "n", atm_fuse_holder_body_rib_n,
+                                                                         "thickness", atm_fuse_holder_body_rib_thickness,
                                                                          "distance_from_top", 0]],
-                                                        "wiring", ["d", atm_fuse_holder_2_body_wiring_d,
+                                                        "wiring", ["d", atm_fuse_holder_body_wiring_d,
                                                                    "socket_type", "cylinder",
                                                                    "socket_type_len", 5,
                                                                    "color", red_1,
@@ -172,10 +111,10 @@ atm_fuse_default_plist                               = ["placeholder", "atm_fuse
                                                         "color", matte_black_2,
                                                         "show_cap", true,
                                                         "show_body", true,
-                                                        "cap_collar", ["size", [atm_fuse_holder_2_mounting_hole_l - 2,
-                                                                                atm_fuse_holder_2_mounting_hole_h,
-                                                                                atm_fuse_holder_2_mounting_hole_depth],
-                                                                       "r", atm_fuse_holder_2_mounting_hole_r,
+                                                        "cap_collar", ["size", [atm_fuse_holder_mounting_hole_l - 2,
+                                                                                atm_fuse_holder_mounting_hole_h,
+                                                                                atm_fuse_holder_mounting_hole_depth],
+                                                                       "r", atm_fuse_holder_mounting_hole_r,
                                                                        "fuse_holes_spacing", [8, 4],
                                                                        "fuse_hole_size", [6.0, 1.82],
                                                                        "fuse_holes_pad_x", 4,
@@ -185,18 +124,18 @@ atm_fuse_default_plist                               = ["placeholder", "atm_fuse
                                                                        "colr", matte_black,
                                                                        "rib_colr", matte_black_2,
                                                                        "rib_positions", [0.5]],
-                                                        "cap", ["size", [atm_fuse_holder_2_lid_top_l,
-                                                                         atm_fuse_holder_2_lid_thickness,
-                                                                         atm_fuse_holder_2_lid_h,
-                                                                         atm_fuse_holder_2_lid_bottom_l,],
+                                                        "cap", ["size", [atm_fuse_holder_cap_top_l,
+                                                                         atm_fuse_holder_cap_thickness,
+                                                                         atm_fuse_holder_cap_h,
+                                                                         atm_fuse_holder_cap_bottom_l,],
                                                                 "corner_rad", 2,
                                                                 "round_side", "top",
                                                                 "color", matte_black_2,
-                                                                "rib", ["h", atm_fuse_holder_2_lid_rib_h,
-                                                                        "l", atm_fuse_holder_2_lid_rib_l,
-                                                                        "n", atm_fuse_holder_2_lid_rib_n,
-                                                                        "thickness", atm_fuse_holder_2_lid_rib_thickness,
-                                                                        "distance_from_top", atm_fuse_holder_2_lid_rib_distance]]];
+                                                                "rib", ["h", atm_fuse_holder_cap_rib_h,
+                                                                        "l", atm_fuse_holder_cap_rib_l,
+                                                                        "n", atm_fuse_holder_cap_rib_n,
+                                                                        "thickness", atm_fuse_holder_cap_rib_thickness,
+                                                                        "distance_from_top", atm_fuse_holder_cap_rib_distance]]];
 
 m1_hole_dia                                          = 1.2; // M1 bolt hole diameter
 m2_hole_dia                                          = 2.4; // M2 bolt hole diameter
@@ -381,38 +320,6 @@ battery_ups_module_bolts_enabled                     = false;
 battery_ups_bolt_dia                                 = m3_hole_dia;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Battery holders under the case
-// ─────────────────────────────────────────────────────────────────────────────
-
-// Starting Y-offset for extra battery bolts
-battery_bolts_y_start                                = -30;
-
-// Ending Y-offset for extra battery bolts
-battery_bolts_y_offset_end                           = 0;
-
-// Step/increment along the Y-axis for extra battery bolts
-battery_bolts_y_offset_step                          = 10;
-
-// Dimensions for the bolt hole pattern (width, height)
-battery_holder_bolt_holes_size                       = [20, 10]; // [width, height] of the bolt pattern
-
-// Diameter of the bolt holes
-battery_holder_bolt_dia                              = m25_hole_dia;
-
-// Number of fragments for rendering circle (defines resolution)
-battery_bolts_fn_val                                 = 360;
-
-// X-offset for positioning bolts relative to the center
-battery_bolts_x_offset                               = 24;
-
-// Y offsets for positioning bolts relative to the center
-
-battery_holes_y_positions                            = [];
-
-smd_battery_holder_bolts_x_offset                    = 31.5;
-smd_battery_holder_bolts_y_offset                    = 21;
-
-// ─────────────────────────────────────────────────────────────────────────────
 // 16850 battery dimensions
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -430,44 +337,65 @@ battery_21700_h                                      = 70.0;
 // Default battery dimensions
 // ─────────────────────────────────────────────────────────────────────────────
 
+// The default battery diameter to use in battery holders.
 battery_dia                                          = battery_18650_dia;
-battery_height                                       = battery_18650_h;
+// The default battery height to use in battery holders.
+battery_length                                       = battery_18650_h;
+
+// Positive terminal (top) height.
 battery_positive_pole_height                         = 1.0;
+
+// Positive terminal (top) diameter.
 battery_positive_pole_dia                            = 5.63;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Battery holder dimensions
+// Default battery holder parameters
 // ─────────────────────────────────────────────────────────────────────────────
-battery_holder_thickness                             = 1.82;
-battery_holder_batteries_count                       = 2;
 
-smd_battery_holder_length                            = 77.32;
-smd_battery_holder_height                            = 14.92;
-smd_battery_holder_bottom_thickness                  = 1.2;
-smd_battery_holder_front_rear_thickness              = 3.6;
-smd_battery_holder_inner_thickness                   = 0.9;
-smd_battery_holder_side_thickness                    = 1.8;
+// Two side-wall styles: skeleton or enclosed.
+battery_holder_side_wall_type                        = "skeleton"; // [enclosed: Enclosed, skeleton: Skeleton (open frame)]
 
-smd_battery_holder_bolt_dia                          = m3_hole_dia;
-smd_battery_holder_bolt_recess_size                  = [9, 5, 2];
-smd_battery_holder_bolt_spacing                      = [0, 56.0];
-smd_battery_holder_single_bolt_spacing               = 56.0;
-smd_battery_holder_batteries_count                   = 2;
-smd_battery_holder_inner_cutout_size                 = [9.0, 66.6];
-smd_battery_holder_inner_side_h                      = 10;
+// Default number of battery cells to use.
+battery_holder_cell_count                            = 2;
 
-smd_battery_holder_chassis_specs                     = [[[[smd_battery_holder_bolt_spacing[0],
-                                                           smd_battery_holder_bolt_spacing[1],],
-                                                          smd_battery_holder_bolt_dia,
-                                                          [smd_battery_holder_length / 2,
-                                                           smd_battery_holder_bolts_x_offset + 2,
-                                                           smd_battery_holder_bolts_y_offset],]],
-                                                        [[[smd_battery_holder_bolt_spacing[0],
-                                                           smd_battery_holder_bolt_spacing[1],],
-                                                          smd_battery_holder_bolt_dia,
-                                                          [smd_battery_holder_length / 2,
-                                                           -smd_battery_holder_bolts_x_offset,
-                                                           smd_battery_holder_bolts_y_offset]]]];
+// Height of the holder walls between cells.
+battery_holder_divider_wall_h                        = 10;
+
+// Diameter of the mounting bolt.
+battery_holder_bolt_dia                              = m3_hole_dia;
+
+// Terminal type: circular contact with a helical spring (positive polarity) or
+// rectangular external tabs.
+battery_holder_terminal_type                         = "solder_tab"; // [coil_spring: Circular contact with a helical spring, solder_tab: Rectangular external connection-style tabs]
+
+/* [Parameters of the slot for squared external connection-style tabs (solder_tab)] */
+// The additional length to add to the cutout for the external terminal contact.
+battery_holder_tab_slot_extra_len                    = 5;
+// The additional width to add to the cutout for the terminal contact.
+battery_holder_tab_slot_extra_w                      = 5;
+
+// Diameter of the hole on the terminal contact (placeholder setting only).
+battery_holder_tab_hole_d                            = 1;
+
+battery_holder_mount_type                            = "intercell"; // [under_cell: Under each cell, intercell: Between the cells]
+
+/* [Intercell battery holder parameters] */
+// Bolt spacing is applied only when battery_holder_mount_type == "intercell",
+// because in under-cell style holders the bolts are placed at the center of each cell.
+battery_holder_bolt_spacing                          = [0, 56.0];
+// Squared recess size around the mounting-bolt holes on the inner wall of the placeholder.
+battery_holder_bolt_recess_size                      = [9, 5, 2];
+
+/* [Common battery holder parameters] */
+// Bottom thickness of the holder. Note: intercell mount type doesn't have a solid
+// bottom, since it has cutouts between cells.
+battery_holder_bottom_thickness                      = 1.2;
+// Thickness of the front and rear walls.
+battery_holder_front_rear_thickness                  = 3.6;
+// Thickness of the inner walls.
+battery_holder_inner_thickness                       = 0.9;
+// Thickness of the side walls.
+battery_holder_side_thickness                        = 1.8;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Camera's placeholder dimensions
@@ -644,6 +572,39 @@ chassis_upper_side_hole_start                        = 14;
 chassis_upper_rect_holes_specs                       = [[[[32, 5, 1.0], [0, -8, 7]],  // camera ribbon holes
                                                          [[32, 5, 1.0], [0, -8, 8]],
                                                          [[32, 5, 1.0], [0, -8, 9]]]];
+
+chassis_body_battery_holders_specs                   = ["type", "grid",
+                                                        "size", [chassis_body_w, chassis_body_len],
+                                                        "rows",
+                                                        maybe_add_battery_holders_rows_h([["cells",
+                                                                                           [["w", 0.5,
+                                                                                             "align_y", 0,
+                                                                                             "align_x", 0,
+                                                                                             "placeholder",
+                                                                                             ["y_offset", -7.5,
+                                                                                              "x_offset", 1.5,
+                                                                                              "placeholder_type", "battery_holder",
+                                                                                              "battery_len", battery_length,
+                                                                                              "battery_dia", battery_dia,
+                                                                                              "mount_type", battery_holder_mount_type,
+                                                                                              "reverse", true,
+                                                                                              "show_bolt", false,
+                                                                                              "terminal_type", battery_holder_terminal_type,
+                                                                                              "side_wall_cutout_type", battery_holder_side_wall_type]],
+                                                                                            ["w", 0.5,
+                                                                                             "align_y", 0,
+                                                                                             "align_x", 0,
+                                                                                             "placeholder",
+                                                                                             ["placeholder_type", "battery_holder",
+                                                                                              "y_offset", -7.5,
+                                                                                              "x_offset", 4.0,
+                                                                                              "reverse", true,
+                                                                                              "show_bolt", false,
+                                                                                              "battery_len", battery_length,
+                                                                                              "battery_dia", battery_dia,
+                                                                                              "mount_type", battery_holder_mount_type,
+                                                                                              "terminal_type", battery_holder_terminal_type,
+                                                                                              "side_wall_cutout_type", battery_holder_side_wall_type]]]]])];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Front panel dimensions
@@ -1470,6 +1431,7 @@ chassis_single_holes_specs                           = [[[8, 0, -5, 0]],
 chassis_rect_holes_specs                             = [[[[10, 20, 4.0], [10, 0, 40]], // third in the center
                                                          [[10, 20, 4.0], [10, 0, 38]], // second in the center
                                                          [[10, 20, 4.0], [10, 0, 35]]], // first in the center
+                                           // side holes
                                                         [[[10, 15, 4.0], [10,
                                                                           chassis_body_w / 2 - 6.5,
                                                                           40]],
@@ -1484,10 +1446,12 @@ chassis_rect_holes_specs                             = [[[[10, 20, 4.0], [10, 0,
                                                                           40]]]];
 
 chassis_panel_stack_slot_specs                       = [[[[15, 30, 6.0], [14, 35, 0]],  // side hole near fuse stack
-                                                         [[32, 15, 3.0], [0, 47.2, 0]]], // hole under left smd battery
+                         // [[32, 15, 3.0], [0, 47.2, 0]]
+                                                        ], // hole under left smd battery
                                                         [[[25, 14, 3.0], [10, -4, 0]], // upper hole under fuse stack
                                                          [[25, 14, 3.0], [10, -4, 0]], // lower hole under fuse stack
-                                                         [[35, 14, 3.0], [10, -22, 0]]], // hole under right smd battery
+                         // [[35, 14, 3.0], [10, -22, 0]]
+                                                        ], // hole under right smd battery
                                                        ];
 // ─────────────────────────────────────────────────────────────────────────────
 // Rear panel: A vertical rear plate with dimensions including two mounting
@@ -2212,25 +2176,25 @@ power_socket_case_side_panel_slots                   = [["placeholder", "atm_fus
                                                          "x_offset", 30,
                                                          "y_offset", 2,
                                                          "rotation", 0,
-                                                         "slot_size", [atm_fuse_holder_2_mounting_hole_l + 1,
-                                                                       atm_fuse_holder_2_mounting_hole_h + 2],
-                                                         "corner_rad", atm_fuse_holder_2_mounting_hole_r,
-                                                         "placeholder_size", [max(atm_fuse_holder_2_body_top_l,
-                                                                                  atm_fuse_holder_2_body_bottom_l)
+                                                         "slot_size", [atm_fuse_holder_mounting_hole_l + 1,
+                                                                       atm_fuse_holder_mounting_hole_h + 2],
+                                                         "corner_rad", atm_fuse_holder_mounting_hole_r,
+                                                         "placeholder_size", [max(atm_fuse_holder_body_top_l,
+                                                                                  atm_fuse_holder_body_bottom_l)
                                                                               + 40,
-                                                                              atm_fuse_holder_2_body_thickness],
-                                                         "body", ["size", [atm_fuse_holder_2_body_bottom_l,
-                                                                           atm_fuse_holder_2_body_thickness,
-                                                                           atm_fuse_holder_2_body_h,
-                                                                           atm_fuse_holder_2_body_top_l],
+                                                                              atm_fuse_holder_body_thickness],
+                                                         "body", ["size", [atm_fuse_holder_body_bottom_l,
+                                                                           atm_fuse_holder_body_thickness,
+                                                                           atm_fuse_holder_body_h,
+                                                                           atm_fuse_holder_body_top_l],
                                                                   "corner_rad", 2,
                                                                   "round_side", "bottom",
-                                                                  "rib", ["h", atm_fuse_holder_2_body_rib_h,
-                                                                          "l", atm_fuse_holder_2_body_rib_l,
-                                                                          "n", atm_fuse_holder_2_body_rib_n,
-                                                                          "front_thickness", atm_fuse_holder_2_body_rib_thickness,
+                                                                  "rib", ["h", atm_fuse_holder_body_rib_h,
+                                                                          "l", atm_fuse_holder_body_rib_l,
+                                                                          "n", atm_fuse_holder_body_rib_n,
+                                                                          "front_thickness", atm_fuse_holder_body_rib_thickness,
                                                                           "distance_from_top", 0]],
-                                                         "wiring", ["d", atm_fuse_holder_2_body_wiring_d,
+                                                         "wiring", ["d", atm_fuse_holder_body_wiring_d,
                                                                     "socket_type", "cylinder",
                                                                     "socket_type_len", 5,
                                                                     "color", red_1,
@@ -2242,10 +2206,10 @@ power_socket_case_side_panel_slots                   = [["placeholder", "atm_fus
                                                          "color", matte_black_2,
                                                          "show_cap", false,
                                                          "show_body", true,
-                                                         "cap_collar", ["size", [atm_fuse_holder_2_mounting_hole_l - 2,
-                                                                                 atm_fuse_holder_2_mounting_hole_h,
-                                                                                 atm_fuse_holder_2_mounting_hole_depth],
-                                                                        "r", atm_fuse_holder_2_mounting_hole_r,
+                                                         "cap_collar", ["size", [atm_fuse_holder_mounting_hole_l - 2,
+                                                                                 atm_fuse_holder_mounting_hole_h,
+                                                                                 atm_fuse_holder_mounting_hole_depth],
+                                                                        "r", atm_fuse_holder_mounting_hole_r,
                                                                         "fuse_holes_spacing", [8, 4],
                                                                         "fuse_hole_size", [6.0, 1.82],
                                                                         "fuse_holes_pad_x", 4,
@@ -2255,18 +2219,18 @@ power_socket_case_side_panel_slots                   = [["placeholder", "atm_fus
                                                                         "colr", matte_black,
                                                                         "rib_colr", matte_black_2,
                                                                         "rib_positions", [0.5]],
-                                                         "cap", ["size", [atm_fuse_holder_2_lid_top_l,
-                                                                          atm_fuse_holder_2_lid_thickness,
-                                                                          atm_fuse_holder_2_lid_h,
-                                                                          atm_fuse_holder_2_lid_bottom_l,],
+                                                         "cap", ["size", [atm_fuse_holder_cap_top_l,
+                                                                          atm_fuse_holder_cap_thickness,
+                                                                          atm_fuse_holder_cap_h,
+                                                                          atm_fuse_holder_cap_bottom_l,],
                                                                  "corner_rad", 2,
                                                                  "round_side", "top",
                                                                  "color", matte_black_2,
-                                                                 "rib", ["h", atm_fuse_holder_2_lid_rib_h,
-                                                                         "l", atm_fuse_holder_2_lid_rib_l,
-                                                                         "n", atm_fuse_holder_2_lid_rib_n,
-                                                                         "front_thickness", atm_fuse_holder_2_lid_rib_thickness,
-                                                                         "distance_from_top", atm_fuse_holder_2_lid_rib_distance]]]];
+                                                                 "rib", ["h", atm_fuse_holder_cap_rib_h,
+                                                                         "l", atm_fuse_holder_cap_rib_l,
+                                                                         "n", atm_fuse_holder_cap_rib_n,
+                                                                         "front_thickness", atm_fuse_holder_cap_rib_thickness,
+                                                                         "distance_from_top", atm_fuse_holder_cap_rib_distance]]]];
 
 power_socket_case_mounting_panel_size                = plist_get("placeholder_size",
                                                                  power_socket_case_jack_plist,

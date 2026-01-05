@@ -19,7 +19,6 @@ use <../../lib/holes.scad>
 use <../../lib/trapezoids.scad>
 use <../../lib/transforms.scad>
 use <../../lib/placement.scad>
-use <../../placeholders/smd_battery_holder.scad>
 use <../../lib/debug.scad>
 use <../../lib/shapes3d.scad>
 use <../../lib/text.scad>
@@ -32,29 +31,28 @@ use <util.scad>
 use <chassis_connector.scad>
 use <../../lib/slots.scad>
 
-
-
 upper_side_hole_pts            =  scale_upper_trapezoid_pts(x=chassis_trapezoid_hole_width,
                                                             y=chassis_trapezoid_hole_len);
 
 front_panel_chassis_slot_depth = chassis_thickness / 2;
 front_pan_y                    = chassis_upper_len + front_panel_bolt_y_offset();
 effective_front_pan_dia        = max(front_panel_connector_bolt_bore_dia,
-                                  front_panel_connector_bolt_dia) / 2;
+                                     front_panel_connector_bolt_dia) / 2;
 front_pan_end                  = front_pan_y - effective_front_pan_dia;
 top_ribbon_hole_pos            = front_pan_end
-                                  - chassis_pan_servo_top_ribbon_cuttout_h
-                                  - chassis_upper_front_padding_y;
+                                 - chassis_pan_servo_top_ribbon_cuttout_h
+                                 - chassis_upper_front_padding_y;
 
 head_pos                       = -upper_chassis_holes_border_w * 2
-                                  - chassis_pan_servo_recesess_y_len
-                                  - chassis_pan_servo_recesess_thickness / 2
-                                  + top_ribbon_hole_pos
-                                  - upper_chassis_holes_border_w
-                                  - chassis_head_zone_y_offset;
+                                 - chassis_pan_servo_recesess_y_len
+                                 - chassis_pan_servo_recesess_thickness / 2
+                                 + top_ribbon_hole_pos
+                                 - upper_chassis_holes_border_w
+                                 - chassis_head_zone_y_offset;
 
 hole_h                         = chassis_thickness + 1;
-steering_pan_pos               = chassis_upper_len - steering_panel_distance_from_top;
+steering_pan_pos               = chassis_upper_len
+                                 - steering_panel_distance_from_top;
 
 trapezoid_rows_params          = calc_cols_params(gap=chassis_pan_servo_side_trapezoid_gap
                                                   + upper_chassis_holes_border_w,
@@ -67,8 +65,7 @@ top_most_row_params = calc_cols_params(cols=chassis_top_most_holes_rows,
                                        w=chassis_top_most_holes_side_len,
                                        gap=chassis_top_most_holes_gap);
 
-top_most_rects_start           = top_ribbon_hole_pos - top_most_row_params[1]
-                                  - chassis_top_most_holes_side_y_offset;
+top_most_rects_start           = top_ribbon_hole_pos - top_most_row_params[1] - chassis_top_most_holes_side_y_offset;
 
 top_rib_hole_pts               = scale_upper_trapezoid_pts(x=chassis_pan_servo_top_ribbon_cuttout_len / 2,
                                                            y=chassis_pan_servo_top_ribbon_cuttout_h);

@@ -78,7 +78,8 @@ module ups_hat(size=battery_ups_size,
                    (total_w - holder_w) / 2,
                    plate_h]) {
           color(matte_black, alpha=1) {
-            linear_extrude(height=holder_h, center=false,
+            linear_extrude(height=holder_h,
+                           center=false,
                            convexity=2) {
               difference() {
                 square([holder_len, holder_w], center=false);
@@ -108,7 +109,7 @@ module ups_hat(size=battery_ups_size,
           }
         }
       }
-      translate([(total_len - battery_height) / 2 +
+      translate([(total_len - battery_length) / 2 +
                  holder_thickness,
                  battery_dia,
                  battery_dia / 2]) {
