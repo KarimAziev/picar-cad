@@ -15,8 +15,6 @@ use <../lib/functions.scad>
 use <../lib/plist.scad>
 use <../lib/slots.scad>
 
-
-
 function toggle_switch_calc_desired_thickness(extra_thickness, nut_bore_h) =
   extra_thickness + nut_bore_h;
 
@@ -123,7 +121,8 @@ module toggle_switch_counterbore(thread_d                           = toggle_swi
                                  autoscale_step                     = 0.1,
                                  $fn                                = 60,
                                  reverse                            = false,
-                                 total_thickness) {
+                                 total_thickness,
+                                 center) {
 
   total_thickness = is_undef(total_thickness)
     ? extra_thickness + nut_bore_h
@@ -134,7 +133,7 @@ module toggle_switch_counterbore(thread_d                           = toggle_swi
               d=dia,
               bore_d=cbore_d,
               bore_h=nut_bore_h,
-              center=false,
+              center=center,
               sink=sink,
               fn=$fn,
               autoscale_step=autoscale_step,

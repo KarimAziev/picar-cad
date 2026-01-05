@@ -20,8 +20,6 @@ use <../placeholders/bolt.scad>
 use <../lib/plist.scad>
 use <../lib/slots.scad>
 
-
-
 sizes                   = [for (spec = control_panel_switch_button_specs)
     plist_get("size", spec)];
 thread_specs            = [for (spec = control_panel_switch_button_specs)
@@ -136,6 +134,7 @@ module control_panel_slots(specs=control_panel_switch_button_specs,
             }
           } else {
             toggle_switch_counterbore(thread_d=thread_d,
+                                      center=true,
                                       d_tolerance=d_tolerance,
                                       nut_d=nut_d,
                                       nut_bore_h=nut_bore_h,
@@ -175,7 +174,8 @@ module control_panel(specs=control_panel_switch_button_specs,
     union() {
       difference() {
         color(panel_color, alpha=1) {
-          linear_extrude(height=control_panel_thickness, center=false,
+          linear_extrude(height=control_panel_thickness,
+                         center=false,
                          convexity=2) {
             rounded_rect(size=size,
                          center=true,
@@ -190,11 +190,12 @@ module control_panel(specs=control_panel_switch_button_specs,
                       reverse=true,
                       autoscale_step=0.1,
                       bore_d=panel_stack_bolt_cbore_dia,
-                      center=false,
+                      center=true,
                       sink=false);
         }
 
-        control_panel_slots(specs=specs, gap=gap,
+        control_panel_slots(specs=specs,
+                            gap=gap,
                             slot_mode=true,
                             center=true);
       }
@@ -202,10 +203,11 @@ module control_panel(specs=control_panel_switch_button_specs,
         control_panel_slots(slot_mode=false);
       }
       if (show_standoff) {
-        translate([0, 0,
+        translate([0,
+                   0,
                    -standoff_full_h + standoff_bore_h]) {
           four_corner_children(size=bolt_spacing,
-                               center=true,) {
+                               center=true) {
 
             standoffs_stack(d=panel_stack_bolt_dia,
                             min_h=min_standoff_h,
@@ -214,7 +216,7 @@ module control_panel(specs=control_panel_switch_button_specs,
                             show_bolt=show_bolt,
                             bolt_color=bolt_color,
                             bolt_visible_h=bolt_visible_h,
-                            bolt_head_type=bolt_head_type,);
+                            bolt_head_type=bolt_head_type);
           }
         }
       }
