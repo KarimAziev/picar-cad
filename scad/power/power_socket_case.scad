@@ -10,33 +10,35 @@
 include <../parameters.scad>
 include <../colors.scad>
 include <../power_lid_parameters.scad>
+
+use <../core/slot_layout.scad>
+use <../core/slot_layout_components.scad>
+use <../components/closable_box/sliding_box.scad>
+use <../placeholders/standoff.scad>
+use <../placeholders/xt90e-m.scad>
 use <../lib/plist.scad>
 use <../lib/shapes3d.scad>
 use <../lib/shapes2d.scad>
 use <../lib/transforms.scad>
-use <../core/slot_layout_components.scad>
 use <../lib/holes.scad>
-use <../core/slot_layout.scad>
-use <../components/closable_box/sliding_box.scad>
 use <../lib/text.scad>
-use <../placeholders/xt90e-m.scad>
 use <../lib/debug.scad>
-use <power_socket_lid.scad>
-use <../placeholders/standoff.scad>
 use <../lib/slots.scad>
+use <power_socket_lid.scad>
 
+show_atm_fuse_holders      = false;
+show_socket                = false;
+show_bolt                  = false;
+show_lid                   = false;
+show_nut                   = false;
+show_box                   = false;
+assembly                   = false;
+show_standoffs             = false;
+assembly_debug             = true;
+case_color                 = blue_grey_carbon;
 
-
-show_atm_fuse_holders = false;
-show_socket           = false;
-show_bolt             = false;
-show_lid              = false;
-show_nut              = false;
-show_box              = false;
-assembly              = false;
-show_standoffs        = false;
-assembly_debug        = true;
-case_color            = blue_grey_carbon;
+default_bolt_visible_h     = chassis_thickness - chassis_counterbore_h;
+default_rail_top_thickness = power_socket_case_rail_top_thickness;
 
 module power_socket_side_slots(specs=power_socket_case_side_panel_slots,
                                thickness=power_socket_case_side_thickness,
@@ -95,34 +97,33 @@ module power_socket_case(jack_plist=power_socket_case_jack_plist,
                          side_thickness=power_socket_case_side_thickness,
                          bottom_thickness=power_socket_case_bottom_thickness,
                          front_thickness=power_socket_case_front_thickness,
-                         show_atm_fuse_holders=show_atm_fuse_holders,
                          slot_mode=false,
+                         assembly=assembly,
+                         bolt_visible_h=default_bolt_visible_h,
+                         assembly_debug=assembly_debug,
                          standoff_thread_h=power_case_standoff_thread_h,
                          show_standoffs=show_standoffs,
-                         bolt_visible_h=chassis_thickness -
-                         chassis_counterbore_h,
+                         show_atm_fuse_holders=show_atm_fuse_holders,
                          show_socket=show_socket,
                          show_bolt=show_bolt,
                          show_lid=show_lid,
-                         assembly=assembly,
                          show_nut=show_nut,
-                         assembly_debug=assembly_debug,
                          show_box=show_box,
                          fn=power_socket_case_fn,
                          corner_rad=power_socket_case_corner_rad,
                          rim_h=power_socket_case_rim_h,
                          rim_w=power_socket_case_rim_w,
-                         include_rim_sizing=power_socket_case_include_rim_sizing,
+                         include_rim_sizing=power_socket_case_use_rim_sizing,
                          use_inner_round=power_socket_case_use_inner_round,
                          rim_front_w=power_socket_case_rim_front_w,
                          latch_h=power_socket_case_latch_h,
                          latch_l=power_socket_case_latch_l,
                          lid_thickness=power_socket_case_lid_thickness,
                          rail_thickness=power_socket_case_rail_thickness,
+                         rail_top_thickness=default_rail_top_thickness,
                          rail_tolerance=power_socket_case_rail_tolerance,
                          hook_h=power_socket_case_hook_h,
                          hook_l=power_socket_case_hook_l,
-                         rail_top_thickness=power_socket_case_rail_top_thickness,
                          spacing=10) {
   mounting_panel_size = plist_get("placeholder_size",
                                   jack_plist,
@@ -265,7 +266,7 @@ module power_socket_case(jack_plist=power_socket_case_jack_plist,
             translate([0, 0, bottom_thickness]) {
               translate([w / 2 - slot_w, 0, 0]) {
                 rotate([90, 0, 90]) {
-                  power_socket_side_slots(show_atm_fuse_holders=show_atm_fuse_holders,
+                  power_socket_side_slots(show_atm_fuse_holders=true,
                                           thickness=slot_w,
                                           use_children=true);
                 }
@@ -309,7 +310,8 @@ module power_socket_case(jack_plist=power_socket_case_jack_plist,
                                  center=true) {
               translate([0,
                          0,
-                         -(standoff_h + standoff_thread_h) + standoff_thread_h]) {
+                         -(standoff_h + standoff_thread_h)
+                         + standoff_thread_h]) {
                 standoff(body_h=standoff_h,
                          thread_at_top=true,
                          show_bolt=true,
