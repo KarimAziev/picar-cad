@@ -2,7 +2,7 @@
 
 This repository contains the 3D model source files for a four-wheeled robot chassis and steering system, written entirely in [OpenSCAD](https://openscad.org/). The design supports 3D printing and does not rely on external libraries.
 
-![Demo](./demo/picar-cad-demo-view.png)
+![Power case](./demo/front_view.png)
 ![Photo](./demo/picar-cad-live.jpg)
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
@@ -18,6 +18,9 @@ This repository contains the 3D model source files for a four-wheeled robot chas
 >     - [Servos](#servos)
 >     - [Raspberry Pi](#raspberry-pi)
 >     - [Power Supply](#power-supply)
+>       - [A Turnigy Rapid-style hardcase LiPo](#a-turnigy-rapid-style-hardcase-lipo)
+>       - [UPS module S3](#ups-module-s3)
+>       - [Battery holders](#battery-holders)
 >     - [Motors](#motors)
 >     - [Camera Module](#camera-module)
 >     - [Ultrasonic](#ultrasonic)
@@ -29,8 +32,9 @@ This repository contains the 3D model source files for a four-wheeled robot chas
 >         - [Self-tapping bolts for servo arm](#self-tapping-bolts-for-servo-arm)
 >       - [Steering Knuckle](#steering-knuckle)
 >       - [Raspberry Pi](#raspberry-pi-1)
+>       - [Power case (default LiPo setup)](#power-case-default-lipo-setup)
 >       - [Battery holder](#battery-holder)
->       - [UPS module S3](#ups-module-s3)
+>       - [UPS module S3](#ups-module-s3-1)
 >       - [Motor brackets](#motor-brackets)
 >         - [For two N20 motors](#for-two-n20-motors)
 >         - [For two standard (yellow) motors](#for-two-standard-yellow-motors)
@@ -50,7 +54,7 @@ The robot model is designed around the following core elements:
 - **Ackermann Steering**: This design implements Ackermann steering and computes the steering radii from the robot parameters (not just by making the inner wheel turn more). The model calculates the trapezoid geometry automatically so you usually don’t need to tweak Ackermann-specific variables by hand.
 - **Rear-Wheel Drive**: Two individual motors drive the rear wheels. Both standard yellow DC motors and N20-type motors are supported.
 - **Modular Head Mount**: The head mount is designed to accommodate two Raspberry Pi Camera Module 3 or more sensors (e.g., day/night configuration).
-- **Extendable Power Tiers**: Side and center slots allow for independent modules for power management: servo driver HAT, motor driver HAT, UPS for Raspberry Pi 5, etc.
+- **Extendable Power Tiers**: Default power case for high-discharge LiPo packs (e.g., Turnigy Rapid 4S2P) plus battery holders plus slots for servo/motor driver HATs; Waveshare UPS S3 remains optional.
 - **Raspberry Pi**: The chassis includes placements and bolt holes for the Raspberry Pi 5 and multiple 18650 battery holders.
 
 ## Ackermann Geometry
@@ -103,7 +107,73 @@ Raspberry Pi 5 is supported by default. To use a different model, adjust the rel
 
 ### Power Supply
 
-You can use battery holders, a [UPS module S3](https://www.waveshare.com/ups-module-3s.html), or both. The default configuration supports two 18650 battery holders along with an S3 UPS module.
+#### A Turnigy Rapid-style hardcase LiPo
+
+![Power case](./demo/top_view.png)
+
+The default power source is a modular power case sized for a Turnigy Rapid-style hardcase LiPo (see the `lipo_pack_*` and `power_case_*` parameters). The lid supports an XT90E connector, blade fuses, a voltmeter, and a step-down regulator; rails/clamps keep the pack fixed.
+
+#### UPS module S3
+
+The Waveshare UPS module S3 is still supported, but it is no longer the default because it is not reliable enough.
+
+#### Battery holders
+
+Battery holders with different settings are supported. Variables prefixed with `battery_holder*` control the default values, so you can combine different holders and settings by editing `chassis_body_battery_holders_specs`, a property list that takes precedence over the global variables.
+
+**By mount type**
+
+`battery_holder_mount_type` holds the global mount type: either `under_cell` (holes under each cell intercell) or `intercell` (holes between the cells). The default is `intercell`.
+
+![Mount Types](./demo/battery_holder_mount_types.png)
+
+**By terminal type**
+
+`battery_holder_terminal_type` holds the global terminal type: `solder_tab` (rectangular external tabs) or `coil_spring` (circular contact with a helical spring, positive polarity). `solder_tab` (default) will also create additional slots for the contacts in the chassis.
+
+![Terminal Types](./demo/battery_holder_terminal_types.png)
+
+You can create as many battery holders and slots for them as you want. Here is a quick example:
+
+```scad
+chassis_body_battery_holders_specs = ["type", "grid",
+         "size", [chassis_body_w, chassis_body_len],
+         "rows",
+         maybe_add_battery_holders_rows_h([["cells",
+                                            [["w", 0.5,
+                                              "placeholder",
+                                              ["placeholder_type", "battery_holder",
+                                               "mount_type", battery_holder_mount_type,
+                                               "count", 3,
+                                               "show_battery", true,
+                                               "terminal_type", battery_holder_terminal_type,
+                                               "side_wall_cutout_type", battery_holder_side_wall_type,]],
+                                             ["w", 0.5,
+                                              "placeholder",
+                                              ["placeholder_type", "battery_holder",
+                                               "terminal_type", "coil_spring",
+                                               "side_wall_cutout_type", "enclosed",
+                                               "battery_len", 70,
+                                               "battery_dia", 21,
+                                               "show_battery", true,
+                                               "mount_type", "under_cell",
+                                               "battery_color", "pink",
+                                               "color", "black"]]]],
+                                           ["cells",
+                                            [["w", 0.5,
+                                              "spin", 90,
+                                              "placeholder",
+                                              ["placeholder_type", "battery_holder",
+                                               "show_battery", true,
+                                               "count", 1,
+                                               "mount_type", battery_holder_mount_type,
+                                               "terminal_type", battery_holder_terminal_type,
+                                               "side_wall_cutout_type", battery_holder_side_wall_type,]]],]])]
+```
+
+Result:
+
+![Custom battery holders](./demo/battery_holder_plist.png)
 
 ### Motors
 
@@ -116,7 +186,7 @@ Rear wheel shaft size depends on the motor type. Use the variable `motor_type` i
 
 ### Camera Module
 
-The design supports one or two camera modules. The default dimensions are compatible with the Raspberry Pi Camera Module 3.
+The design supports one, two or more camera modules. The default dimensions are compatible with the Raspberry Pi Camera Module 3.
 
 ### Ultrasonic
 
@@ -134,7 +204,7 @@ Nevertheless, this LED board can be used with Camera Module 3 and other Raspberr
 
 Since the default chassis thickness is **4 mm** (changeable via the variable `chassis_thickness`), use bolts at least **8 mm** long for fastenings that go through the chassis, depending on the nuts. I suggest using lock nuts for these bolts, but plain nuts are also acceptable.
 
-The tables below are grouped by component. I haven't combined them into a single table with total quantities because totals depend on which components you use - for example, you may or may not include the UPS Module S3.
+The tables below are grouped by component. Pick only the sections relevant to your build.
 
 Each table includes a "Variable" column that refers to a configurable variable in parameters.scad. You can change it to the bolt diameter you want to use.
 
@@ -182,6 +252,15 @@ The exact bolt length depends on the standoffs you use. Since the default chassi
 | Size | Length (mm) | Amount | Nuts/Standoffs | Variable            |
 | ---- | ----------- | ------ | -------------- | ------------------- |
 | M2   | 6 or higher | 4      | 4              | `rpi_bolt_hole_dia` |
+
+#### Power case (default LiPo setup)
+
+| Size | Length (mm)  | Amount | Nuts/Standoffs         | Variable                     |
+| ---- | ------------ | ------ | ---------------------- | ---------------------------- |
+| M3   | 12 or higher | 4      | 4 standoffs or inserts | `power_case_bottom_bolt_dia` |
+| M2.5 | 6 or higher  | 4      | 0                      | `power_case_rail_bolt_dia`   |
+
+Use the M3 hardware for the case/socket stack into standoffs (default standoff body is 10 mm; adjust length to your stack height). M2.5 bolts clamp the lid rails; keep them short to avoid piercing the thin side walls.
 
 #### Battery holder
 
