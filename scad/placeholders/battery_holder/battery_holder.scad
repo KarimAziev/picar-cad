@@ -118,7 +118,8 @@ module battery_holder(battery_len=battery_length,
                       tab_contact_slot_pad_w=battery_holder_tab_slot_extra_w,
                       color=matte_black,
                       contact_color=metallic_yellow_1,
-                      bolt_head_type="round",
+                      battery_color,
+                      bolt_head_type="pan",
                       bolt_visible_h=2,
                       show_battery=show_battery,
                       show_contact=show_contact,
@@ -126,6 +127,7 @@ module battery_holder(battery_len=battery_length,
                       show_nut=show_nut,
                       lock_nut=lock_nut,
                       slot_thickness=chassis_thickness,
+                      bolt_color,
                       reverse=false,
                       slot_mode=false,
                       center=true) {
@@ -160,7 +162,7 @@ module battery_holder(battery_len=battery_length,
                                        chassis_thickness);
   color = with_default(color, matte_black);
   contact_color = with_default(contact_color, metallic_yellow_1);
-  bolt_head_type = with_default(bolt_head_type, "round");
+  bolt_head_type = with_default(bolt_head_type, "pan");
   bolt_visible_h = with_default(bolt_visible_h, 2);
 
   slot_thickness = with_default(slot_thickness, chassis_thickness);
@@ -374,7 +376,9 @@ module battery_holder(battery_len=battery_length,
                 _with_cell_position(center_x=true, center_y=true) {
                   translate([0, battery_len / 2, battery_dia / 2]) {
                     rotate([90, 0, 0]) {
-                      battery(d=battery_dia, h=battery_len);
+                      battery(d=battery_dia,
+                              h=battery_len,
+                              color=battery_color);
                     }
                   }
                 }
@@ -393,6 +397,7 @@ module battery_holder(battery_len=battery_length,
                                                                  mount_type=mount_type) {
                       bolt(d=bolt_dia,
                            h=bolt_h,
+                           bolt_color=bolt_color,
                            head_type=bolt_head_type,
                            nut_head_distance=through_hole_distance,
                            show_nut=show_nut,
@@ -540,13 +545,15 @@ module battery_holder_cell(plist,
   reverse = plist_get("reverse", plist, false);
   color = plist_get("color", plist, matte_black);
   contact_color = plist_get("contact_color", plist, metallic_yellow_1);
-  bolt_head_type = plist_get("bolt_head_type", plist, "round");
+  bolt_head_type = plist_get("bolt_head_type", plist, "pan");
   bolt_visible_h = plist_get("bolt_visible_h", plist, 2);
   show_battery = plist_get("show_battery", plist, show_battery);
   show_contact = plist_get("show_contact", plist, show_contact);
   show_bolt = plist_get("show_bolt", plist, show_bolt);
   show_nut = plist_get("show_nut", plist, show_nut);
   lock_nut = plist_get("lock_nut", plist, lock_nut);
+  bolt_color = plist_get("bolt_color", plist);
+  battery_color = plist_get("battery_color", plist, undef);
 
   full_size = battery_holder_full_size(inner_thickness=inner_thickness,
                                        side_thickness=side_thickness,
@@ -574,7 +581,9 @@ module battery_holder_cell(plist,
                    side_thickness=side_thickness,
                    inner_cutout_h=inner_cutout_h,
                    front_rear_thickness=front_rear_thickness,
+                   battery_color=battery_color,
                    color=color,
+                   bolt_color=bolt_color,
                    show_battery=show_battery,
                    show_contact=show_contact,
                    show_bolt=show_bolt,
@@ -608,4 +617,4 @@ spin = 0;
 rotate([0, 0, 0]) {
   battery_holder_cell(center=false, spin=spin);
 }
-battery_holder_cell(center=false, spin=spin, slot_mode=true);
+// battery_holder_cell(center=false, spin=spin, slot_mode=true);

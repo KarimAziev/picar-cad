@@ -26,7 +26,7 @@ module battery(d=battery_dia,
 
   union() {
     difference() {
-      color(color) {
+      color(with_default(color, "springgreen")) {
         cylinder(d=d, h=base_len, $fn=fn);
       }
       translate([0, 0, -minus_h]) {
