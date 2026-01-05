@@ -143,7 +143,7 @@ module perf_bord_from_plist(plist,
                             show_bolt = true,
                             show_standoff = true,
                             show_nut=true,
-                            center=false) {
+                            center=true) {
   plist = with_default(plist, []);
   size = plist_get("size", plist, [20, 80, 1.6]);
   corner_r = plist_get("corner_r", plist, 1);
