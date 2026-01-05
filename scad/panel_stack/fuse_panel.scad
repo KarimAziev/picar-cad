@@ -20,8 +20,6 @@ use <../lib/plist.scad>
 use <../core/slot_layout.scad>
 use <../lib/slots.scad>
 
-
-
 max_body_height  = max([for (pl = fuse_panel_plist_specs) let (body = plist_get("body", pl, []),
                                                                size = plist_get("size", body, []),
                                                                height =
@@ -181,7 +179,7 @@ module fuse_panel(show_fusers=false,
                           reverse=true,
                           autoscale_step=0.1,
                           bore_d=panel_stack_bolt_cbore_dia,
-                          center=false,
+                          center=true,
                           sink=false);
             }
 
@@ -234,6 +232,4 @@ module fuse_panel(show_fusers=false,
   }
 }
 
-fuse_panel(center=true, show_fusers=true, show_cap=true) {
-  cube([10, 20, 10]);
-}
+fuse_panel(center=true, show_fusers=true, show_cap=true);
