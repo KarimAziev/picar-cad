@@ -1092,3 +1092,8 @@ function calc_rotated_bbox(w, h, a) =
    -b[0],          // sx
    -b[1]           // sy
   ];
+
+function percent_to_mm(percent, total_val) = percent * total_val / 100;
+
+function to_percent(val, total_val) =
+  (total_val == 0) ? 0 : (val * 100 / total_val);

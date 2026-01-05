@@ -1,22 +1,20 @@
-
 /**
  * Module: Battery holder
  *
- * Supports 2 mount types:
+ * Supports two mount types:
  *
  * - intercell: holes between the cells
  * - under_cell: holes under each cell
  *
- * Supports 2 terminal types:
+ * Supports two terminal types:
  *
  * - coil_spring: a helical spring
- * - solder_tab: the external connection style: tabs meant to be soldered.
+ * - solder_tab: external connection style-tabs meant to be soldered
  *
- * Supports 2 side wall styles:
+ * Supports two side-wall styles:
  *
- * - skeleton (open-frame)
+ * - skeleton (open frame)
  * - enclosed
- *
  *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
@@ -35,34 +33,36 @@ use <../bolt.scad>
 use <contact.scad>
 use <side_wall.scad>
 
-// Either holes between the cells or under each cell
-panel_mount_type      = "intercell"; // [intercell, under_cell]
+// Where mounting holes are placed
+panel_mount_type      = "intercell"; // [under_cell: Under each cell, intercell: Between the cells]
 
-contact_terminal_type = "solder_tab"; // [coil_spring, solder_tab]
+contact_terminal_type = "solder_tab"; // [coil_spring: Circular contact with a helical spring, solder_tab: Squared external connection-style tabs]
 
-side_wall_cutout_type = "skeleton"; // [skeleton, enclosed]
+side_wall_cutout_type = "skeleton"; // [enclosed: Enclosed, skeleton: Skeleton]
 
-batteries_count       = 2; ///[0:1:6]
+// Number of batteries to use
+batteries_count       = 2; // [0:1:6]
 
+/* [Assembly] */
 show_battery          = false;
-
 show_contact          = true;
 
-/* [Mounting bolts] */
-show_nut              = true;
 show_bolt             = true;
+show_nut              = true;
+lock_nut              = false;
 
-function _battery_holder_full_len(front_rear_thickness, battery_len) = battery_len
-  + front_rear_thickness * 2;
+default_battery_dia   = battery_dia;
 
-function _battery_holder_single_width(inner_thickness, battery_dia) = battery_dia
-  + inner_thickness * 2;
+function _battery_holder_full_len(front_rear_thickness, battery_len) =
+  battery_len + front_rear_thickness * 2;
 
-function _battery_holder_full_w(inner_thickness=smd_battery_holder_inner_thickness,
-                                count=smd_battery_holder_batteries_count,
-                                battery_dia) =
-  let (single_width = _battery_holder_single_width(inner_thickness=inner_thickness,
-                                                   battery_dia=battery_dia),
+function _battery_holder_single_width(inner_thickness, battery_dia) =
+  battery_dia + inner_thickness * 2;
+
+function _battery_holder_full_w(inner_thickness, count, battery_dia) =
+  let (single_width =
+       _battery_holder_single_width(inner_thickness=inner_thickness,
+                                    battery_dia=battery_dia),
        total_w = single_width * count)
   total_w;
 
@@ -78,8 +78,9 @@ function battery_holder_full_size(inner_thickness,
         ? solder_tab_outer_len(battery_dia=battery_dia,
                                front_rear_thickness=front_rear_thickness)
         : 0),
-       length = _battery_holder_full_len(front_rear_thickness=front_rear_thickness,
-                                         battery_len=battery_len),
+       length =
+       _battery_holder_full_len(front_rear_thickness=front_rear_thickness,
+                                battery_len=battery_len),
        full_len = length + solder_len * 2,
        base_width = _battery_holder_full_w(inner_thickness=inner_thickness,
                                            count=count,
@@ -88,9 +89,9 @@ function battery_holder_full_size(inner_thickness,
 
   [full_w, full_len];
 
-module battery_holder_with_mounting_holes_positions(count=smd_battery_holder_batteries_count,
-                                                    bolt_spacing=smd_battery_holder_bolt_spacing,
-                                                    inner_thickness=smd_battery_holder_inner_thickness,
+module battery_holder_with_mounting_holes_positions(count,
+                                                    bolt_spacing,
+                                                    inner_thickness,
                                                     battery_dia,
                                                     mount_type) {
   single_width = _battery_holder_single_width(inner_thickness,
@@ -139,58 +140,61 @@ module battery_holder_with_mounting_holes_positions(count=smd_battery_holder_bat
 }
 
 module battery_holder(battery_len=battery_height,
-                      battery_dia=battery_dia,
+                      battery_dia=default_battery_dia,
                       count=batteries_count,
-                      inner_thickness=smd_battery_holder_inner_thickness,
+                      terminal_type=contact_terminal_type,
                       side_wall_type=side_wall_cutout_type,
                       mount_type=panel_mount_type,
-                      terminal_type=contact_terminal_type,
                       bolt_dia=smd_battery_holder_bolt_dia,
                       bolt_spacing=smd_battery_holder_bolt_spacing,
-                      intercell_reces_size=smd_battery_holder_bolt_recess_size,
+                      inner_thickness=smd_battery_holder_inner_thickness,
                       bottom_thickness=smd_battery_holder_bottom_thickness,
                       side_thickness=smd_battery_holder_side_thickness,
-                      inner_cutout_h,
                       front_rear_thickness=smd_battery_holder_front_rear_thickness,
+                      inner_cutout_h=smd_battery_holder_inner_side_h,
+                      intercell_reces_size=smd_battery_holder_bolt_recess_size,
+                      through_hole_distance=chassis_thickness,
                       color=matte_black,
+                      contact_color=metallic_yellow_1,
+                      bolt_head_type="round",
+                      bolt_visible_h=2,
                       show_battery=show_battery,
                       show_contact=show_contact,
                       show_bolt=show_bolt,
                       show_nut=show_nut,
-                      lock_nut=false,
-                      bolt_head_type="round",
-                      bolt_visible_h = 2,
-                      through_hole_distance=chassis_thickness,
-                      slot_mode=false,
+                      lock_nut=lock_nut,
                       slot_thickness=chassis_thickness,
-                      contact_color,
+                      slot_mode=false,
                       center=true) {
-  color = with_default(color, matte_black);
-  mount_type = with_default(mount_type, panel_mount_type);
-  terminal_type = with_default(terminal_type, contact_terminal_type);
-
-  inner_cutout_h = with_default(inner_cutout_h,
-                                smd_battery_holder_inner_side_h);
-
-  side_thickness = with_default(side_thickness,
-                                smd_battery_holder_side_thickness);
-  bottom_thickness = with_default(bottom_thickness,
-                                  smd_battery_holder_bottom_thickness);
   battery_len = with_default(battery_len, battery_height);
-
-  through_hole_distance = with_default(through_hole_distance,
-                                       chassis_thickness);
-
-  intercell_reces_size = with_default(intercell_reces_size,
-                                      smd_battery_holder_bottom_thickness);
+  battery_dia = with_default(battery_dia, default_battery_dia);
+  count = with_default(count, batteries_count);
+  terminal_type = with_default(terminal_type, contact_terminal_type);
   side_wall_type = with_default(side_wall_type, side_wall_cutout_type);
-  front_rear_thickness = with_default(front_rear_thickness,
-                                      smd_battery_holder_front_rear_thickness);
+  mount_type = with_default(mount_type, panel_mount_type);
   bolt_dia = with_default(bolt_dia, smd_battery_holder_bolt_dia);
-  bolt_spacing = with_default(bolt_spacing,
-                              smd_battery_holder_bolt_spacing);
+  bolt_spacing = with_default(bolt_spacing, smd_battery_holder_bolt_spacing);
   inner_thickness = with_default(inner_thickness,
                                  smd_battery_holder_inner_thickness);
+  bottom_thickness = with_default(bottom_thickness,
+                                  smd_battery_holder_bottom_thickness);
+  side_thickness = with_default(side_thickness,
+                                smd_battery_holder_side_thickness);
+  front_rear_thickness = with_default(front_rear_thickness,
+                                      smd_battery_holder_front_rear_thickness);
+  inner_cutout_h = with_default(inner_cutout_h,
+                                smd_battery_holder_inner_side_h);
+  intercell_reces_size = with_default(intercell_reces_size,
+                                      smd_battery_holder_bolt_recess_size);
+  through_hole_distance = with_default(through_hole_distance,
+                                       chassis_thickness);
+  color = with_default(color, matte_black);
+  contact_color = with_default(contact_color, metallic_yellow_1);
+  bolt_head_type = with_default(bolt_head_type, "round");
+  bolt_visible_h = with_default(bolt_visible_h, 2);
+
+  slot_thickness = with_default(slot_thickness, chassis_thickness);
+
   is_skeleton = side_wall_type == "skeleton";
   is_intercell = mount_type == "intercell";
 
@@ -213,20 +217,38 @@ module battery_holder(battery_len=battery_height,
                                        battery_len=battery_len,
                                        terminal_type=terminal_type);
 
+  single_width = _battery_holder_single_width(inner_thickness=inner_thickness,
+                                              battery_dia=battery_dia);
+  total_w = _battery_holder_full_w(inner_thickness=inner_thickness,
+                                   count=count,
+                                   battery_dia=battery_dia);
+  holder_l = battery_len + front_rear_thickness * 2;
+
+  module _with_cell_position(center_x=false, center_y=false) {
+    translate([-total_w / 2, -holder_l / 2, 0]) {
+      for (i = [0 : count - 1]) {
+        $i = i;
+        translate([i * single_width + (center_x ? single_width / 2 : 0),
+                   center_y ? holder_l / 2 : 0,
+                   0]) {
+          children();
+        }
+      }
+    }
+  }
+
+  module terminal_contact(use_spring=false) {
+    battery_holder_contact(terminal_type=terminal_type,
+                           battery_len=battery_len,
+                           battery_dia=battery_dia,
+                           holder_height=height,
+                           bottom_thickness=bottom_thickness,
+                           front_rear_thickness=front_rear_thickness,
+                           use_spring=use_spring,
+                           contact_color=contact_color);
+  }
+
   if (count > 0) {
-    single_width = _battery_holder_single_width(inner_thickness=inner_thickness,
-                                                battery_dia=battery_dia);
-    total_w = _battery_holder_full_w(inner_thickness=inner_thickness,
-                                     count=count,
-                                     battery_dia=battery_dia);
-    holder_l = battery_len + front_rear_thickness * 2;
-
-    echo("total_w", total_w);
-    echo("total_w full",
-         total_w + side_thickness * 2,
-         "full_size[0]",
-         full_size[0]);
-
     translate([center ? 0 : total_w / 2 + side_thickness,
                center ? 0 : full_size[1] / 2,
                0]) {
@@ -248,29 +270,21 @@ module battery_holder(battery_len=battery_height,
       } else {
         union() {
           difference() {
-            translate([-total_w / 2, -holder_l / 2, 0]) {
-              union() {
-                for (i = [0 : count - 1]) {
-                  translate([i * single_width, 0, 0]) {
-                    battery_holder_single_assembly(full_width=single_width,
-                                                   holder_l=holder_l,
-                                                   height=height,
-                                                   battery_dia=battery_dia,
-                                                   battery_len=battery_len,
-                                                   terminal_type=terminal_type,
-                                                   bottom_thickness=bottom_thickness,
-                                                   front_rear_thickness=front_rear_thickness,
-                                                   inner_cutout_size=inner_cutout_size,
-                                                   mount_type=mount_type,
-                                                   contact_color=contact_color,
-                                                   color=color,
-                                                   use_spring=true,
-                                                   sprint_pos=i % 2 == 0 ? "top" : "bottom",
-                                                   show_contact=show_contact,
-                                                   show_battery=show_battery,
-                                                   center=false);
-                  }
-                }
+            union() {
+              _with_cell_position(center_x=false,
+                                  center_y=false) {
+                battery_holder_single_cell(full_width=single_width,
+                                           holder_l=holder_l,
+                                           height=height,
+                                           battery_dia=battery_dia,
+                                           battery_len=battery_len,
+                                           terminal_type=terminal_type,
+                                           bottom_thickness=bottom_thickness,
+                                           front_rear_thickness=front_rear_thickness,
+                                           inner_cutout_size=inner_cutout_size,
+                                           mount_type=mount_type,
+                                           color=color,
+                                           center=false);
               }
             }
 
@@ -312,24 +326,6 @@ module battery_holder(battery_len=battery_height,
               }
             }
           }
-          translate([-total_w / 2, -holder_l / 2, 0]) {
-            for (i = [0 : count - 1]) {
-              translate([i * single_width, 0, 0]) {
-                if (show_battery) {
-                  translate([single_width / 2, holder_l / 2, 0]) {
-                    translate([0,
-                               battery_len / 2,
-                               battery_dia / 2]) {
-                      rotate([90, 0, 0]) {
-                        battery(d=battery_dia,
-                                h=battery_len);
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
 
           mirror_copy([1, 0, 0]) {
             color(color, alpha=1) {
@@ -346,8 +342,40 @@ module battery_holder(battery_len=battery_height,
             }
           }
 
+          if (show_contact) {
+            _with_cell_position(center_x=true, center_y=true) {
+              let (spring_pos = $i % 2 == 0 ? "top" : "bottom") {
+                translate([0,
+                           holder_l / 2 - front_rear_thickness + 0.01,
+                           0.05]) {
+                  terminal_contact(use_spring=spring_pos == "top");
+                }
+
+                translate([0,
+                           -holder_l / 2 + front_rear_thickness + 0.01,
+                           0.05]) {
+                  rotate([0, 0, 180]) {
+                    terminal_contact(use_spring=spring_pos == "bottom");
+                  }
+                }
+              }
+            }
+          }
+
+          if (show_battery) {
+            _with_cell_position(center_x=true, center_y=true) {
+              translate([0, battery_len / 2, battery_dia / 2]) {
+                rotate([90, 0, 0]) {
+                  battery(d=battery_dia, h=battery_len);
+                }
+              }
+            }
+          }
+
           if (show_bolt) {
-            let (blt_h = round(bottom_thickness + chassis_thickness + bolt_visible_h),
+            let (blt_h = round(bottom_thickness
+                               + slot_thickness
+                               + bolt_visible_h),
                  bolt_h = blt_h % 2 == 0 ? blt_h : blt_h + 1) {
               translate([0, 0, -bolt_h + bottom_thickness]) {
                 battery_holder_with_mounting_holes_positions(count=count,
@@ -371,43 +399,23 @@ module battery_holder(battery_len=battery_height,
   }
 }
 
-module battery_holder_single_assembly(full_width,
-                                      holder_l,
-                                      height,
-                                      battery_dia,
-                                      battery_len,
-                                      terminal_type,
-                                      mount_type,
-                                      bottom_thickness=battery_holder_thickness,
-                                      front_rear_thickness,
-                                      sprint_pos,
-                                      center=false,
-                                      inner_cutout_size,
-                                      tolerance=1,
-                                      spring_color,
-                                      contact_hole_d,
-                                      coil_spring_d,
-                                      contact_color,
-                                      color,
-                                      use_spring=true,
-                                      show_contact=true,
-                                      show_battery=true) {
+module battery_holder_single_cell(full_width,
+                                  holder_l,
+                                  height,
+                                  battery_dia,
+                                  battery_len,
+                                  terminal_type,
+                                  mount_type,
+                                  bottom_thickness=battery_holder_thickness,
+                                  front_rear_thickness,
+                                  center=false,
+                                  inner_cutout_size,
+                                  tolerance=1,
+                                  spring_color,
+                                  contact_hole_d,
+                                  color) {
   full_dia = battery_dia + tolerance;
   max_inner_cutout_len = with_default(inner_cutout_size, [0, 0])[1];
-
-  module terminaL_contact(use_spring=false) {
-    battery_holder_contact(terminal_type=terminal_type,
-                           battery_len=battery_len,
-                           battery_dia=battery_dia,
-                           holder_height=height,
-                           bottom_thickness=bottom_thickness,
-                           front_rear_thickness=front_rear_thickness,
-                           use_spring=use_spring,
-                           contact_color=contact_color,
-                           coil_spring_d=coil_spring_d,
-                           spring_color=spring_color,
-                           contact_hole_d=contact_hole_d);
-  }
 
   union() {
     translate([center ? 0 : full_width / 2, center ? 0 : holder_l / 2, 0]) {
@@ -417,11 +425,10 @@ module battery_holder_single_assembly(full_width,
           if (terminal_type == "solder_tab") {
             mirror_copy([0, 1, 0]) {
               translate([0, -holder_l / 2 + front_rear_thickness / 2, 0]) {
-
-                battery_holder_solder_tab_cutout(battery_dia=battery_dia,
-                                                 holder_height=height,
-                                                 front_rear_thickness=front_rear_thickness,
-                                                 contact_hole_d=contact_hole_d);
+                solder_tab_cutout(battery_dia=battery_dia,
+                                  holder_height=height,
+                                  front_rear_thickness=front_rear_thickness,
+                                  contact_hole_d=contact_hole_d);
               }
             }
           }
@@ -459,27 +466,6 @@ module battery_holder_single_assembly(full_width,
                            holder_l - front_rear_thickness * 2) + 0.01,
                        height]);
             }
-          }
-        }
-      }
-
-      if (show_contact) {
-        translate([0, holder_l / 2 - front_rear_thickness + 0.01, 0.05]) {
-          terminaL_contact(use_spring=sprint_pos == "top");
-        }
-
-        translate([0, -holder_l / 2 + front_rear_thickness + 0.01, 0.05]) {
-          rotate([0, 0, 180]) {
-            terminaL_contact(use_spring=sprint_pos == "bottom");
-          }
-        }
-      }
-      if (show_battery) {
-        translate([0,
-                   battery_len / 2,
-                   battery_dia / 2]) {
-          rotate([90, 0, 0]) {
-            battery();
           }
         }
       }
@@ -535,7 +521,6 @@ module battery_holder_cell(plist,
   through_hole_distance = plist_get("through_hole_distance",
                                     plist,
                                     chassis_thickness);
-  slot_thickness = plist_get("slot_thickness", plist, chassis_thickness);
   contact_color = plist_get("contact_color", plist, metallic_yellow_1);
 
   full_size = battery_holder_full_size(inner_thickness=inner_thickness,
@@ -571,7 +556,7 @@ module battery_holder_cell(plist,
                    bolt_visible_h=bolt_visible_h,
                    through_hole_distance=through_hole_distance,
                    slot_mode=slot_mode,
-                   slot_thickness=slot_thickness,
+                   slot_thickness=thickness,
                    contact_color=contact_color,
                    center=center);
   }
@@ -591,6 +576,6 @@ module battery_holder_cell(plist,
   }
 }
 
-spin = 84;
+spin = 0;
 battery_holder_cell(center=false, spin=spin);
 // battery_holder_cell(center=false, spin=spin, slot_mode=true);

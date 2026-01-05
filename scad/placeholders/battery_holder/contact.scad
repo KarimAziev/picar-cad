@@ -10,7 +10,7 @@ use <../spring.scad>
 contact_width_factor = 0.362;
 contact_thickness    = 0.6;
 
-terminal_type        = "solder_tab"; // [coil_spring, solder_tab]
+terminal_type        = "coil_spring"; // [coil_spring, solder_tab]
 
 function solder_tab_contact_mount_w(battery_dia,
                                     contact_hole_d=1)
@@ -31,12 +31,12 @@ function solder_tab_outer_len(battery_dia,
                                                         thickness=thickness))
   outer_size[1] + front_rear_thickness / 2;
 
-module battery_holder_solder_tab_cutout(battery_dia,
-                                        thickness,
-                                        holder_height,
-                                        front_rear_thickness,
-                                        contact_hole_d=1,
-                                        inc_step=4) {
+module solder_tab_cutout(battery_dia,
+                         thickness,
+                         holder_height,
+                         front_rear_thickness,
+                         contact_hole_d=1,
+                         inc_step=4) {
   contact_hole_d = with_default(contact_hole_d, 1);
   thickness = with_default(thickness, contact_thickness);
   inc_step = with_default(inc_step, 4);
@@ -272,12 +272,14 @@ module battery_holder_contact(terminal_type=terminal_type,
           spring_d1 = battery_dia * 0.6;
           spring_d2 = spring_d1 * 0.5;
           color(with_default(spring_color, metallic_silver_1), alpha=1) {
-            rotate([90, 0, 0]) {
-              spring(d1=spring_d1,
-                     d2=spring_d2,
-                     wire=thickness,
-                     turns=spring_len,
-                     pitch=spring_len * 0.3);
+            translate([0, 1, 0]) {
+              rotate([90, 0, 0]) {
+                spring(d1=spring_d1,
+                       d2=spring_d2,
+                       wire=thickness,
+                       turns=spring_len,
+                       pitch=spring_len * 0.3);
+              }
             }
           }
         }

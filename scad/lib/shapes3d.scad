@@ -161,6 +161,12 @@ module cube_center_y(size) {
   }
 }
 
+module cube_center_x(size) {
+  translate([-size[0] / 2, 0, 0]) {
+    cube(size);
+  }
+}
+
 module cube_border(size,
                    h,
                    border_w=0.5,
