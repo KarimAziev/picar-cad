@@ -314,8 +314,6 @@ battery_ups_offset                                   = 2;
 // This forms a square with a bolt hole centered on each corner.
 battery_ups_module_bolt_spacing                      = [86, 46];
 
-battery_ups_module_bolts_enabled                     = false;
-
 // the diameter for fastening bolts
 battery_ups_bolt_dia                                 = m3_hole_dia;
 
@@ -504,11 +502,6 @@ chassis_counterbore_h                                = 2.2; // The amount by whi
 // ─────────────────────────────────────────────────────────────────────────────
 // Chassis shape
 // ─────────────────────────────────────────────────────────────────────────────
-
-// The half of the width is used because the polygon will be mirrored.
-chassis_shape_base_width                             = chassis_body_w / 2;
-
-chassis_shape_rear_panel_base_w                      = 26.0;
 
 chassis_trapezoid_hole_width                         = 7.5;
 chassis_trapezoid_hole_len                           = 11.0;
@@ -1634,7 +1627,6 @@ servo_driver_hat_chip_2_total_w                      = 8;
 servo_driver_hat_chip_2_j_lead_n                     = 4;
 servo_driver_hat_chip_2_j_lead_thickness             = 0.4;
 servo_driver_hat_chip_2_h                            = 1.65;
-servo_driver_hat_chip_2_y_distance                   = 10;
 servo_driver_hat_chip_2_x_distance                   = 46;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1648,7 +1640,6 @@ motor_driver_hat_standoff_color                      = "white";
 motor_driver_hat_mounting_hole_pad_spec              = [[m25_hole_dia + 2.5, "white"]];
 
 motor_driver_hat_header_height                       = 13.15;
-motor_driver_hat_pin_height                          = 8.5;
 
 motor_driver_hat_upper_header_height                 = 9;
 motor_driver_hat_upper_pin_height                    = 5;
@@ -1906,8 +1897,6 @@ voltmeter_display_h                                  = 6.16;
 
 voltmeter_bolt_spacing                               = [0, 27.70];
 voltmeter_bolt_dia                                   = m3_hole_dia;
-voltmeter_standoff_body_d                            = 4.58;
-voltmeter_standoff_thread_h                          = 5;
 
 voltmeter_pin_h                                      = 3.44;
 voltmeter_pins_len                                   = 10.65;
@@ -1915,25 +1904,9 @@ voltmeter_pins_len                                   = 10.65;
 voltmeter_pin_thickness                              = 0.63;
 voltmeter_pins_count                                 = 5;
 
-voltemeter_text_spec                                 = ["8.8.8.",
-                                                        6.15,
-                                                        "DSEG14 Classic:style=Italic",
-                                                        1.0,
-                                                        metallic_silver_1,
-                                                        [0, 0.6]];
-
-voltmeter_display_indicators_len                     = 3;
 voltmeter_wiring_distance                            = 3;
 voltmeter_wiring_gap                                 = 1;
 voltmeter_wiring_d                                   = 1.5;
-
-voltmeter_default_wiring_spec                        = ["d", voltmeter_wiring_d,
-                                                        "distance",
-                                                        voltmeter_wiring_distance,
-                                                        "path", [[-5, -5, -2],
-                                                                 [-15, -10, -1],
-                                                                 [10, -15, -2],
-                                                                 [20, 0, 0]]];
 
 voltmeter_default_pins_spec                          = ["size", [voltmeter_pin_thickness,
                                                                  voltmeter_pin_h],
@@ -1967,8 +1940,6 @@ voltmeter_default_spec                               = ["display", ["size", [vol
                                                                              voltmeter_board_len,
                                                                              voltmeter_board_h]];
 
-voltmeter_chassis_specs                              = [];
-
 // ─────────────────────────────────────────────────────────────────────────────
 // XT90 connector placeholder
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1982,7 +1953,6 @@ xt_90_bolt_spacing                                   = [0, 32.20];
 // ─────────────────────────────────────────────────────────────────────────────
 xt90e_size                                           = [xt_90_size[0], xt_90_size[1], 15.1];
 xt90e_mounting_panel_size                            = [17.4, 42, 3];
-xt90e_shell_h                                        = 15.1;
 xt90e_mount_spacing                                  = 32.4;
 xt90e_mount_dia                                      = m3_hole_dia;
 xt90e_mount_cbore_dia                                = m3_countersunk_head_dia;
@@ -2236,7 +2206,6 @@ power_socket_case_mounting_panel_size                = plist_get("placeholder_si
                                                                  power_socket_case_jack_plist,
                                                                  xt90e_mounting_panel_size);
 power_socket_case_mounting_panel_h                   = power_socket_case_mounting_panel_size[0];
-power_socket_case_mounting_panel_thickness           = power_socket_case_mounting_panel_size[2];
 power_socket_case_size                               = [power_case_width,
                                                         power_case_length,
                                                         power_socket_case_mounting_panel_h
@@ -2299,18 +2268,6 @@ toggle_switch_slot_d_tolerance                       = 1.2;
 toggle_switch_slot_counterbore_tolerance             = 0.5;
 
 toggle_switch_terminal_size                          = [1.2, 6.0, 9.7];
-
-toggle_switch_default_spec                           = ["placeholder_size",  toggle_switch_size,
-                                                        "thread_h",  toggle_switch_thread_h,
-                                                        "thread_d",  toggle_switch_thread_d,
-                                                        "nut_d",  toggle_switch_nut_d,
-                                                        "nut_bore_h",  toggle_switch_nut_out_h,
-                                                        "lever_dia_1",  toggle_switch_lever_dia_1,
-                                                        "lever_dia_2",  toggle_switch_lever_dia_2,
-                                                        "lever_h",  toggle_switch_lever_h,
-                                                        "terminal_size",  toggle_switch_terminal_size,
-                                                        "thread_border_w",  toggle_switch_thread_border_w,
-                                                        "metallic_head_h",  toggle_switch_metallic_head_h,];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Control panel with toggle switches near Raspberry PI
@@ -2386,8 +2343,6 @@ step_down_voltage_regulator_standoff_h               = 2;
 
 step_down_voltage_bolt_hole_dia                      = 2.1;
 
-step_down_voltage_bolt_x_distance                    = 1.5;
-step_down_voltage_bolt_y_distance                    = 2.54;
 step_down_voltage_screw_terminal_holes               = [35.5, 5];
 
 step_down_voltage_power_inductor_size                = [7.15, 7.4, 3.7, 0.8];
@@ -2410,9 +2365,6 @@ step_down_voltage_screw_terminal_pin_thickness       = 0.4;       // lower thin 
 step_down_voltage_screw_terminal_pin_h               = 3.9;               // lower thin pin height
 step_down_voltage_screw_terminal_wall_thickness      = 0.6;  // wall offset from base top
 step_down_voltage_screw_terminal_isosceles_trapezoid = true;
-
-step_down_voltage_can_capacitor_x_offset             = 2.6;
-step_down_voltage_can_capacitor_y_offset             = 2.6;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Servo horn
@@ -2831,7 +2783,7 @@ wheel_tire_groove_thickness                          = 0.4;
 wheel_tire_groove_depth                              = 3.4;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Ackermann geometry
+// Ackermann geometry computed. You're unlikely to need to edit this.
 // ─────────────────────────────────────────────────────────────────────────────
 
 // center of the left wheel
