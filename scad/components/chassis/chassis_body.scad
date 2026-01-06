@@ -329,13 +329,8 @@ module chassis_body_3d(panel_color="white") {
       }
     }
 
-    translate([0, 0, 0]) {
-    }
-
     if (battery_ups_holes_enabled) {
-      #translate([0,
-                  ups_hat_y_pos(),
-                  0]) {
+      translate([0, ups_hat_y_pos(), 0]) {
         four_corner_counterbores(size=battery_ups_module_bolt_spacing,
                                  center=true,
                                  h=chassis_thickness,
