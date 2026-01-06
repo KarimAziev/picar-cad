@@ -197,7 +197,9 @@ module power_socket_case(jack_plist=power_socket_case_jack_plist,
 
           translate([0, -l / 2, h / 2]) {
             rotate([-90, 90, 0]) {
-              xt_90_slot(jack_plist, thickness=front_thickness + rim_front_w);
+              xt_90_slot(jack_plist,
+                         thickness=front_thickness + rim_front_w,
+                         center=true);
             }
           }
 
@@ -216,7 +218,9 @@ module power_socket_case(jack_plist=power_socket_case_jack_plist,
 
           translate([0, l / 2 - front_thickness - rim_front_w, h / 2]) {
             rotate([-90, 90, 0]) {
-              xt_90_slot(jack_plist, thickness=front_thickness + rim_front_w);
+              xt_90_slot(jack_plist,
+                         thickness=front_thickness + rim_front_w,
+                         center=true);
             }
           }
 
@@ -256,7 +260,8 @@ module power_socket_case(jack_plist=power_socket_case_jack_plist,
                                  bolt_visible_h=5,
                                  show_bolt=show_bolt,
                                  bolt_through_h=front_thickness,
-                                 show_nut=show_nut);
+                                 show_nut=show_nut,
+                                 center=true);
             }
           }
         }

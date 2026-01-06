@@ -103,20 +103,6 @@ module pin_header(cols,
   }
 }
 
-module rpi_pin_header(center=false,
-                      z_offset=rpi_thickness / 2 + 0.5,
-                      pin_height=rpi_pin_height,
-                      header_height=rpi_pin_header_height) {
-  pin_header(cols=rpi_pin_headers_cols,
-             rows=rpi_pin_headers_rows,
-             header_width=rpi_pin_header_width,
-             header_height=header_height,
-             pin_height=pin_height,
-             z_offset=z_offset,
-             p=0.65,
-             center=center);
-}
-
 module pin_header_from_plist(plist, center=false) {
   plist = with_default(plist, []);
   cols = plist_get("cols", plist, undef);
@@ -146,12 +132,15 @@ module pin_header_from_plist(plist, center=false) {
 }
 
 rotate([0, 0, 0]) {
+  pin_h = 10;
+  header_height = 2.54;
   pin_header(cols=20,
              rows=2,
              header_width=rpi_pin_header_width,
-             header_height=rpi_pin_header_height,
-             pin_height=rpi_pin_height,
-             z_offset=0.5,
+             header_height=header_height,
+             pin_height=pin_h,
+             z_offset=0.0,
              center=false,
              p=0.65);
+  cube([5, 5, header_height]);
 }

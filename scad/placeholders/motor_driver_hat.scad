@@ -20,7 +20,8 @@ use <pad_hole.scad>
 use <standoff.scad>
 
 module motor_driver_hat(plist=motor_driver_grid,
-                        show_pins=true,
+                        show_upper_pin_header=true,
+                        show_lower_pin_header=true,
                         extra_standoff_h=0,
                         show_standoff=true,
                         center=true,
@@ -51,28 +52,44 @@ module motor_driver_hat(plist=motor_driver_grid,
             }
           }
 
-          translate([-w / 2, -l / 2 + rpi_bolts_offset * 2, 0]) {
-            if (show_pins) {
-              translate([0, 0, h]) {
-                pin_header(cols=rpi_pin_headers_cols,
-                           rows=rpi_pin_headers_rows,
-                           header_width=rpi_pin_header_width,
-                           header_height=motor_driver_hat_upper_header_height,
-                           pin_height=motor_driver_hat_upper_pin_height,
-                           z_offset=-motor_driver_hat_upper_header_height,
-                           p=0.65,
-                           center=false);
+          if (show_upper_pin_header || show_lower_pin_header) {
+            translate([-w / 2, -l / 2 + rpi_bolts_offset * 2, 0]) {
+              if (show_upper_pin_header) {
+                translate([0, 0, h]) {
+                  pin_header(cols=rpi_pin_headers_cols,
+                             rows=rpi_pin_headers_rows,
+                             header_width=rpi_pin_header_width,
+                             header_height=motor_driver_hat_upper_header_height,
+                             pin_height=motor_driver_hat_upper_pin_height,
+                             z_offset=-motor_driver_hat_upper_header_height,
+                             p=0.65,
+                             center=false);
+                }
+              }
+
+              if (show_lower_pin_header) {
+                translate([0, 0, -motor_driver_hat_lower_header_height]) {
+                  pin_header(cols=rpi_pin_headers_cols,
+                             rows=rpi_pin_headers_rows,
+                             header_width=rpi_pin_header_width,
+                             header_height=motor_driver_hat_lower_header_height,
+                             pin_height=motor_driver_hat_lower_header_pin_height,
+                             z_offset=-motor_driver_hat_lower_header_height,
+                             p=0.65,
+                             center=false);
+                }
               }
             }
           }
+
           if (show_standoff) {
             translate([0,
                        0,
-                       -motor_driver_hat_header_height - extra_standoff_h]) {
+                       -motor_driver_hat_lower_header_height - extra_standoff_h]) {
               four_corner_children(rpi_bolt_spacing) {
                 standoffs_stack(d=motor_driver_hat_bolt_dia,
                                 colr=motor_driver_hat_standoff_color,
-                                min_h=motor_driver_hat_header_height
+                                min_h=motor_driver_hat_lower_header_height
                                 + extra_standoff_h);
               }
             }

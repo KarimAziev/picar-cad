@@ -256,11 +256,13 @@ module custom_slot_plist(plist, thickness) {
   if (placeholder == "step_down_voltage_regulator") {
     step_down_voltage_regulator(slot_mode=true,
                                 plist=plist,
+                                center=true,
                                 slot_thickness=thickness);
   } else if (placeholder == "xt90e_m") {
-    xt_90_slot(plist, thickness=thickness);
-  } else if (placeholder == "smd_battery_holder") {
-    smd_battery_holder_slot(plist, thickness=thickness,);
+    echo("placeholder", placeholder);
+    xt_90_slot(plist,
+               thickness=thickness,
+               center=true);
   }
 }
 
@@ -518,8 +520,3 @@ example_panels(thickness=panel_thickness,
 example_panels(thickness=panel_thickness,
                use_children=true,
                bolt_visible_h=panel_thickness);
-
-// example_panel(specs=example_slots,
-//               thickness=panel_thickness,
-//               bolt_visible_h=panel_thickness,
-//               use_children=true);

@@ -31,8 +31,6 @@ use <../lib/plist.scad>
 use <../core/slot_layout_components.scad>
 use <../lib/slots.scad>
 
-
-
 show_xt90e            = false;
 show_dc_regulator     = false;
 show_ato_fuse         = false;
@@ -42,7 +40,7 @@ show_atm_fuse_holders = false;
 show_perf_board       = false;
 
 /* [Power lid switch button] */
-use_toggle_switch     = false;
+
 show_switch_button    = true;
 
 bolt_visible_h        = power_lid_thickness + 4;

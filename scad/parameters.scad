@@ -1524,6 +1524,8 @@ rpi_pci_size                                         = [12.85, 2, 3];
 // 2 x 4-lane MIPI DSI/CSI connectors
 rpi_csi_size                                         = [13.0, 2, 2.5];
 
+rpi_pad_hole_specs                                   = [[4.5, yellow_3]];
+
 // USB-c power jack
 rpi_usb_c_jack_size                                  = [8.2, 7.8, 3];
 
@@ -1639,10 +1641,11 @@ motor_driver_hat_bolt_dia                            = m25_hole_dia;
 motor_driver_hat_standoff_color                      = "white";
 motor_driver_hat_mounting_hole_pad_spec              = [[m25_hole_dia + 2.5, "white"]];
 
-motor_driver_hat_header_height                       = 13.15;
+motor_driver_hat_lower_header_height                 = 13.15;
+motor_driver_hat_lower_header_pin_height             = 8;
 
-motor_driver_hat_upper_header_height                 = 9;
-motor_driver_hat_upper_pin_height                    = 5;
+motor_driver_hat_upper_header_height                 = 13;
+motor_driver_hat_upper_pin_height                    = 8;
 
 motor_driver_grid                                    = ["type","grid",
                                                         "size", [motor_driver_hat_size[0] - 7, motor_driver_hat_size[1]],

@@ -29,8 +29,9 @@ bolt_visible_h                    = chassis_thickness - chassis_counterbore_h;  
 
 /* [Socket case] */
 show_socket_case                  = true;
-show_socket_case_atm_fuse_holders = true;
 show_socket                       = true;
+show_socket_case_lid              = true;
+show_socket_case_atm_fuse_holders = true;
 
 /* [Lipo] */
 show_lipo_pack                    = true;
@@ -212,14 +213,16 @@ module power_case_vent(panel_height,
 }
 
 module power_case_assembly(alpha=1,
+                           slot_mode=slot_mode,
                            standoff_h=power_case_standoff_h,
                            standoff_thread_h=power_case_standoff_thread_h,
+                           case_color=case_color,
+                           bolt_visible_h=bolt_visible_h,
                            show_lipo_pack=show_lipo_pack,
                            show_standoffs=show_standoffs,
                            show_socket_case_atm_fuse_holders=show_socket_case_atm_fuse_holders,
+                           show_socket_case_lid=show_socket_case_lid,
                            show_socket=show_socket,
-                           case_color=case_color,
-                           slot_mode=slot_mode,
                            show_socket_case=show_socket_case,
                            show_lid_xt90e=show_lid_xt90e,
                            show_lid = show_lid,
@@ -228,8 +231,7 @@ module power_case_assembly(alpha=1,
                            show_lid_voltmeter=show_lid_voltmeter,
                            show_lid_bolts=show_lid_bolts,
                            show_atm_fuse_holders=show_atm_fuse_holders,
-                           show_perf_board=show_perf_board,
-                           bolt_visible_h=bolt_visible_h) {
+                           show_perf_board=show_perf_board) {
 
   if (slot_mode) {
     translate([power_case_bolt_spacing_offset_x,
@@ -257,7 +259,7 @@ module power_case_assembly(alpha=1,
                           standoff_h=standoff_h,
                           assembly=true,
                           assembly_debug=false,
-                          show_lid=true,
+                          show_lid=show_socket_case_lid,
                           show_socket=show_socket,
                           show_atm_fuse_holders=show_socket_case_atm_fuse_holders,
                           standoff_thread_h=standoff_thread_h);

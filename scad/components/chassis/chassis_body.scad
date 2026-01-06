@@ -46,45 +46,54 @@ use <../rear_panel.scad>
 use <upper_chassis.scad>
 use <chassis_connector.scad>
 
-show_motor                = false;
-show_motor_brackets       = false;
-show_wheels               = false;
-show_xt90e                = false;
-show_rear_panel           = false;
-show_buttons_panel        = false;
-show_fuse_panel           = false;
-show_buttons              = false;
-show_fusers               = false;
-show_rear_panel_buttons   = false;
-show_battery_holders      = false;
-show_ups_hat              = false;
-show_power_case           = false;
-show_power_case_lid       = false;
-show_lipo_pack            = false;
-show_batteries            = false;
-show_socket_case          = false;
+show_motor                        = false;
+show_motor_brackets               = false;
+show_wheels                       = false;
+show_xt90e                        = false;
+show_rear_panel                   = false;
+show_buttons_panel                = false;
+show_fuse_panel                   = false;
+show_buttons                      = false;
+show_fusers                       = false;
+show_rear_panel_buttons           = false;
+show_battery_holders              = false;
+show_ups_hat                      = false;
+show_power_case                   = false;
+show_power_case_lid               = false;
+show_lid_dc_regulator             = false;
+show_lid_ato_fuse                 = false;
+show_lid_voltmeter                = false;
+show_lid_atm_fuse_holders         = false;
+show_lid_perf_board               = false;
+show_lipo_pack                    = false;
+
+show_batteries                    = false;
+show_socket_case                  = false;
+show_socket_case_atm_fuse_holders = false;
+show_socket_case_lid              = false;
+show_socket                       = false;
 
 /* [Raspberry PI] */
-show_rpi                  = false;
-show_ai_hat               = false;
-show_motor_driver_hat     = false;
-show_servo_driver_hat     = false;
-show_gpio_expansion_board = false;
+show_rpi                          = false;
+show_ai_hat                       = false;
+show_motor_driver_hat             = false;
+show_servo_driver_hat             = false;
+show_gpio_expansion_board         = false;
 
-rpi_position_x            = -rpi_bolt_spacing[0] / 2 + rpi_chassis_x_position;
-rpi_position_y            = -rpi_len - rpi_chassis_y_position;
+rpi_position_x                    = -rpi_bolt_spacing[0] / 2 + rpi_chassis_x_position;
+rpi_position_y                    = -rpi_len - rpi_chassis_y_position;
 
-power_case_position_y     = -power_case_length / 2 - power_case_chassis_y_offset;
-power_case_position_x     = chassis_body_w / 2
+power_case_position_y             = -power_case_length / 2 - power_case_chassis_y_offset;
+power_case_position_x             = chassis_body_w / 2
   - power_case_width / 2
   + power_case_chassis_x_offset;
 
-max_lower_cutout          = max([for (v = chassis_lower_cutout_pts) v[1]]);
+max_lower_cutout                  = max([for (v = chassis_lower_cutout_pts) v[1]]);
 
-body_pts                  = concat(chassis_lower_cutout_pts,
-                                   [[chassis_body_half_w, chassis_body_len +
-                                     max_lower_cutout],
-                                    [0, chassis_body_len  + max_lower_cutout]]);
+body_pts                          = concat(chassis_lower_cutout_pts,
+                                           [[chassis_body_half_w, chassis_body_len +
+                                             max_lower_cutout],
+                                            [0, chassis_body_len  + max_lower_cutout]]);
 
 module chassis_body_2d() {
   offset_vertices_2d(r=chassis_offset_rad) {
@@ -348,8 +357,20 @@ module chassis_body(panel_color="white",
                     show_power_case=show_power_case,
                     show_power_case_lid=show_power_case_lid,
                     show_lipo_pack=show_lipo_pack,
+                    show_socket_case=show_socket_case,
+                    show_socket=show_socket,
+                    show_socket_case_lid=show_socket_case_lid,
+                    show_socket_case_atm_fuse_holders=show_socket_case_atm_fuse_holders,
                     show_rpi=show_rpi,
-                    show_socket_case=show_socket_case) {
+                    show_ai_hat=show_ai_hat,
+                    show_motor_driver_hat=show_motor_driver_hat,
+                    show_servo_driver_hat=show_servo_driver_hat,
+                    show_gpio_expansion_board=show_gpio_expansion_board,
+                    show_lid_dc_regulator=show_lid_dc_regulator,
+                    show_lid_ato_fuse=show_lid_ato_fuse,
+                    show_lid_voltmeter=show_lid_voltmeter,
+                    show_lid_atm_fuse_holders=show_lid_atm_fuse_holders,
+                    show_lid_perf_board=show_lid_perf_board) {
   chassis_body_3d(panel_color=panel_color);
   if (show_buttons_panel || show_fuse_panel) {
     translate([0, 0, chassis_thickness / 2]) {
@@ -366,7 +387,11 @@ module chassis_body(panel_color="white",
     translate([rpi_position_x, rpi_position_y, 0]) {
       rpi_5(slot_mode=false,
             show_standoffs=true,
-            standoff_height=rpi_standoff_height);
+            standoff_height=rpi_standoff_height,
+            show_ai_hat=show_ai_hat,
+            show_motor_driver_hat=show_motor_driver_hat,
+            show_servo_driver_hat=show_servo_driver_hat,
+            show_gpio_expansion_board=show_gpio_expansion_board);
     }
   }
 
@@ -419,7 +444,15 @@ module chassis_body(panel_color="white",
                           show_standoffs=true,
                           show_lid=show_power_case_lid,
                           show_lid_xt90e=show_xt90e,
-                          show_socket_case=show_socket_case);
+                          show_socket_case=show_socket_case,
+                          show_socket_case_atm_fuse_holders=show_socket_case_atm_fuse_holders,
+                          show_socket_case_lid=show_socket_case_lid,
+                          show_socket=show_socket,
+                          show_lid_dc_regulator=show_lid_dc_regulator,
+                          show_lid_ato_fuse=show_lid_ato_fuse,
+                          show_lid_voltmeter=show_lid_voltmeter,
+                          show_atm_fuse_holders=show_lid_atm_fuse_holders,
+                          show_perf_board=show_lid_perf_board);
     }
   }
   if (show_ups_hat) {
