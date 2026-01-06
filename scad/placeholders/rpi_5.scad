@@ -353,7 +353,7 @@ module rpi_5(show_standoffs=show_standoffs,
 
           translate([0, 0, rpi_thickness / 2]) {
             translate([0, rpi_bolts_offset * 2, 0]) {
-              rpi_pin_headers();
+              rpi_pin_header();
               translate([rpi_pin_header_width * 2 + 1,
                          0,
                          rpi_thickness / 2]) {

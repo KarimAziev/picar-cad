@@ -103,10 +103,10 @@ module pin_header(cols,
   }
 }
 
-module rpi_pin_headers(center=false,
-                       z_offset=rpi_thickness / 2 + 0.5,
-                       pin_height=rpi_pin_height,
-                       header_height=rpi_pin_header_height) {
+module rpi_pin_header(center=false,
+                      z_offset=rpi_thickness / 2 + 0.5,
+                      pin_height=rpi_pin_height,
+                      header_height=rpi_pin_header_height) {
   pin_header(cols=rpi_pin_headers_cols,
              rows=rpi_pin_headers_rows,
              header_width=rpi_pin_header_width,
