@@ -46,39 +46,45 @@ use <../rear_panel.scad>
 use <upper_chassis.scad>
 use <chassis_connector.scad>
 
-show_motor              = false;
-show_motor_brackets     = false;
-show_wheels             = false;
-show_xt90e              = false;
-show_rear_panel         = false;
-show_buttons_panel      = false;
-show_fuse_panel         = false;
-show_buttons            = false;
-show_fusers             = false;
-show_rear_panel_buttons = false;
-show_battery_holders    = false;
-show_ups_hat            = false;
-show_power_case         = false;
-show_power_case_lid     = false;
-show_lipo_pack          = false;
-show_batteries          = false;
-show_rpi                = false;
-show_socket_case        = false;
+show_motor                = false;
+show_motor_brackets       = false;
+show_wheels               = false;
+show_xt90e                = false;
+show_rear_panel           = false;
+show_buttons_panel        = false;
+show_fuse_panel           = false;
+show_buttons              = false;
+show_fusers               = false;
+show_rear_panel_buttons   = false;
+show_battery_holders      = false;
+show_ups_hat              = false;
+show_power_case           = false;
+show_power_case_lid       = false;
+show_lipo_pack            = false;
+show_batteries            = false;
+show_socket_case          = false;
 
-rpi_position_x          = -rpi_bolt_spacing[0] / 2 + rpi_chassis_x_position;
-rpi_position_y          = -rpi_len - rpi_chassis_y_position;
+/* [Raspberry PI] */
+show_rpi                  = false;
+show_ai_hat               = false;
+show_motor_driver_hat     = false;
+show_servo_driver_hat     = false;
+show_gpio_expansion_board = false;
 
-power_case_position_y   = -power_case_length / 2 - power_case_chassis_y_offset;
-power_case_position_x   = chassis_body_w / 2
+rpi_position_x            = -rpi_bolt_spacing[0] / 2 + rpi_chassis_x_position;
+rpi_position_y            = -rpi_len - rpi_chassis_y_position;
+
+power_case_position_y     = -power_case_length / 2 - power_case_chassis_y_offset;
+power_case_position_x     = chassis_body_w / 2
   - power_case_width / 2
   + power_case_chassis_x_offset;
 
-max_lower_cutout        = max([for (v = chassis_lower_cutout_pts) v[1]]);
+max_lower_cutout          = max([for (v = chassis_lower_cutout_pts) v[1]]);
 
-body_pts                = concat(chassis_lower_cutout_pts,
-                                 [[chassis_body_half_w, chassis_body_len +
-                                   max_lower_cutout],
-                                  [0, chassis_body_len  + max_lower_cutout]]);
+body_pts                  = concat(chassis_lower_cutout_pts,
+                                   [[chassis_body_half_w, chassis_body_len +
+                                     max_lower_cutout],
+                                    [0, chassis_body_len  + max_lower_cutout]]);
 
 module chassis_body_2d() {
   offset_vertices_2d(r=chassis_offset_rad) {

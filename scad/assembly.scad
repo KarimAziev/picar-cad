@@ -13,73 +13,77 @@ include <parameters.scad>
 
 use <components/chassis/chassis.scad>
 
-panel_color             = "white";
+panel_color               = "white";
 
 /* [Head] */
-show_head_assembly      = false;
-show_head               = false;
-show_pan_servo          = false;
-show_tilt_servo         = false;
-show_ir_case            = false;
-show_camera             = false;
-show_ir_led             = false;
-head_color              = panel_color;
-head_panel_color        = matte_black;
-pan_servo_rotation      = 0; // [-179:179]
-tilt_servo_rotation     = 0; // [-90:90]
+show_head_assembly        = true;
+show_head                 = true;
+show_pan_servo            = true;
+show_tilt_servo           = true;
+show_ir_case              = true;
+show_camera               = true;
+show_ir_led               = true;
+head_color                = panel_color;
+head_panel_color          = matte_black;
+pan_servo_rotation        = 0; // [-179:179]
+tilt_servo_rotation       = 0; // [-90:90]
 
 /* [Front Panel] */
-show_front_panel        = false;
-show_ultrasonic         = false;
-show_front_rear_panel   = false;
+show_front_panel          = true;
+show_ultrasonic           = true;
+show_front_rear_panel     = true;
 
 /* [Steering Panel] */
-show_steering_panel     = false;
-show_bearing            = false;
-show_servo_mount_panel  = false;
-show_brackets           = false;
-show_rack               = false;
-show_kingpin_posts      = false;
-show_pinion             = false;
-show_tie_rod            = false;
-show_servo              = false;
-show_knuckles           = false;
-pinion_color            = matte_black;
-show_front_wheels       = false;
+show_steering_panel       = true;
+show_bearing              = true;
+show_servo_mount_panel    = true;
+show_brackets             = true;
+show_rack                 = true;
+show_kingpin_posts        = true;
+show_pinion               = true;
+show_tie_rod              = true;
+show_servo                = true;
+show_knuckles             = true;
+pinion_color              = matte_black;
+show_front_wheels         = true;
 
 /* [Buttons Fusers Stack] */
-show_buttons_panel      = false;
-show_fuse_panel         = false;
-show_buttons            = false;
-show_fusers             = false;
+show_buttons_panel        = true;
+show_fuse_panel           = true;
+show_buttons              = true;
+show_fusers               = true;
 
 /* [Motors] */
-show_motor              = false;
-show_motor_brackets     = false;
-show_rear_wheels        = false;
+show_motor                = true;
+show_motor_brackets       = true;
+show_rear_wheels          = true;
 
 /* [Rear Panel] */
-show_rear_panel_buttons = false;
-show_rear_panel         = false;
+show_rear_panel_buttons   = true;
+show_rear_panel           = true;
 
 /* [Power Case] */
-show_power_case         = false;
-show_power_case_lid     = false;
-show_lipo_pack          = false;
-power_case_color        = "grey";
-show_socket_case        = true;
+show_power_case           = true;
+show_power_case_lid       = true;
+show_lipo_pack            = true;
+power_case_color          = panel_color;
+show_socket_case          = true;
 
 /* [Batteries] */
-show_battery_holders    = false;
+show_battery_holders      = true;
 
-show_ups_hat            = false;
+show_ups_hat              = true;
 
 /* [Raspberry PI] */
-show_rpi                = true;
+show_rpi                  = true;
+show_ai_hat               = true;
+show_motor_driver_hat     = true;
+show_servo_driver_hat     = true;
+show_gpio_expansion_board = true;
 
 /* [Debug] */
-show_ackermann_triangle = false;
-show_distance           = false;
+show_ackermann_triangle   = false;
+show_distance             = false;
 
 chassis(panel_color=panel_color,
         pinion_color=pinion_color,

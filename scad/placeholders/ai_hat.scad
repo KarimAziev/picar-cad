@@ -10,7 +10,7 @@ include <../colors.scad>
 use <../lib/shapes2d.scad>
 use <../lib/holes.scad>
 use <../lib/transforms.scad>
-use <pin_headers.scad>
+use <pin_header.scad>
 use <../lib/shapes3d.scad>
 use <bcm.scad>
 use <pad_hole.scad>
@@ -51,7 +51,7 @@ module ai_hat(center=true, show_pins=true, show_standoff=true,
       }
       translate([-w / 2, -l / 2 + rpi_bolts_offset * 2, 0]) {
         translate([0, 0, h]) {
-          pin_headers(cols=rpi_pin_headers_cols,
+          pin_header(cols=rpi_pin_headers_cols,
                       rows=rpi_pin_headers_rows,
                       header_width=rpi_pin_header_width,
                       header_height=rpi_pin_header_height,
@@ -62,7 +62,7 @@ module ai_hat(center=true, show_pins=true, show_standoff=true,
         }
         if (show_pins) {
           translate([0, 0, - ai_hat_header_height]) {
-            pin_headers(cols=rpi_pin_headers_cols,
+            pin_header(cols=rpi_pin_headers_cols,
                         rows=rpi_pin_headers_rows,
                         header_width=rpi_pin_header_width,
                         header_height=ai_hat_header_height,

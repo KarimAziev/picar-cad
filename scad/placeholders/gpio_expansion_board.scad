@@ -11,7 +11,7 @@ include <../colors.scad>
 use <../lib/shapes2d.scad>
 use <../lib/holes.scad>
 use <../lib/transforms.scad>
-use <pin_headers.scad>
+use <pin_header.scad>
 use <screw_terminal.scad>
 use <pad_hole.scad>
 use <../lib/placement.scad>
@@ -59,7 +59,7 @@ module gpio_expansion_board(show_standoff=true,
                  + rpi_bolts_offset * 2,
                  -gpio_expansion_header_height]) {
         union() {
-          pin_headers(cols=rpi_pin_headers_cols,
+          pin_header(cols=rpi_pin_headers_cols,
                       rows=rpi_pin_headers_rows,
                       header_width=rpi_pin_header_width,
                       header_height=gpio_expansion_header_height,
@@ -76,7 +76,7 @@ module gpio_expansion_board(show_standoff=true,
                  + rpi_bolts_offset * 2,
                  h]) {
         union() {
-          pin_headers(cols=rpi_pin_headers_cols,
+          pin_header(cols=rpi_pin_headers_cols,
                       rows=rpi_pin_headers_rows,
                       header_width=rpi_pin_header_width,
                       header_height=0,
@@ -86,7 +86,7 @@ module gpio_expansion_board(show_standoff=true,
                       center=true);
           let (total_x = rpi_pin_header_width * rpi_pin_headers_rows,
                total_y = rpi_pin_header_width * rpi_pin_headers_cols) {
-            pin_headers(cols=rpi_pin_headers_cols,
+            pin_header(cols=rpi_pin_headers_cols,
                         rows=rpi_pin_headers_rows,
                         header_width=rpi_pin_header_width,
                         header_height=0,
@@ -113,7 +113,7 @@ module gpio_expansion_board(show_standoff=true,
               translate([0, y, 0]) {
                 rotate([0, 0, 90]) {
                   translate([0, 0, h]) {
-                    pin_headers(cols=gpio_expansion_inner_header_cols,
+                    pin_header(cols=gpio_expansion_inner_header_cols,
                                 rows=gpio_expansion_inner_header_rows,
                                 header_width=rpi_pin_header_width,
                                 header_height=0,

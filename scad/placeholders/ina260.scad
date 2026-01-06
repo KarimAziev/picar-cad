@@ -6,7 +6,7 @@ use <../lib/transforms.scad>
 use <../lib/shapes3d.scad>
 use <../lib/functions.scad>
 
-use <pin_headers.scad>
+use <pin_header.scad>
 use <screw_terminal.scad>
 use <../lib/placement.scad>
 use <pad_hole.scad>
@@ -550,7 +550,7 @@ module ina260(size=ina260_size,
                  - pin_thickness,
                  thickness]) {
         rotate([0, 0, 90]) {
-          pin_headers(cols=8,
+          pin_header(cols=8,
                       rows=1,
                       header_width=pin_header_thickness,
                       header_height=pin_header_height,

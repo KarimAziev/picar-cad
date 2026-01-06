@@ -11,7 +11,7 @@ include <../colors.scad>
 use <../lib/shapes2d.scad>
 use <../lib/holes.scad>
 use <../lib/transforms.scad>
-use <pin_headers.scad>
+use <pin_header.scad>
 use <bcm.scad>
 use <ai_hat.scad>
 use <servo_driver_hat.scad>
@@ -20,9 +20,7 @@ use <gpio_expansion_board.scad>
 use <standoff.scad>
 use <../lib/slots.scad>
 
-
-
-show_standoffs            = false;
+show_standoffs            = true;
 show_ai_hat               = true;
 show_motor_driver_hat     = true;
 show_servo_driver_hat     = true;

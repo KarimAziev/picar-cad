@@ -16,7 +16,7 @@ use <../placeholders/smd/can_capacitor.scad>
 use <../placeholders/smd/schottky_diode.scad>
 use <../placeholders/smd/ceramic_capacitor.scad>
 use <../placeholders/smd/power_inductor.scad>
-use <../placeholders/pin_headers.scad>
+use <../placeholders/pin_header.scad>
 
 module smd_placeholder_renderer(plist,
                                 cell_size,

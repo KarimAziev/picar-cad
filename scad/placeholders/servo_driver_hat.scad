@@ -12,7 +12,7 @@ include <../colors.scad>
 use <../lib/shapes2d.scad>
 use <../lib/holes.scad>
 use <../lib/transforms.scad>
-use <pin_headers.scad>
+use <pin_header.scad>
 use <screw_terminal.scad>
 use <pad_hole.scad>
 use <../lib/placement.scad>
@@ -127,14 +127,14 @@ module servo_driver_hat(show_standoff=true, center=true) {
                  * rpi_pin_headers_cols / 2
                  + rpi_bolts_offset * 2,
                  -servo_driver_hat_header_height]) {
-        pin_headers(cols=rpi_pin_headers_cols,
-                    rows=rpi_pin_headers_rows,
-                    header_width=rpi_pin_header_width,
-                    header_height=servo_driver_hat_header_height,
-                    pin_height=servo_driver_hat_pin_height,
-                    z_offset=-servo_driver_hat_header_height,
-                    p=0.65,
-                    center=true);
+        pin_header(cols=rpi_pin_headers_cols,
+                   rows=rpi_pin_headers_rows,
+                   header_width=rpi_pin_header_width,
+                   header_height=servo_driver_hat_header_height,
+                   pin_height=servo_driver_hat_pin_height,
+                   z_offset=-servo_driver_hat_header_height,
+                   p=0.65,
+                   center=true);
       }
       translate([0,
                  -half_of_l
@@ -174,7 +174,8 @@ module servo_driver_hat(show_standoff=true, center=true) {
           translate([servo_driver_hat_i2c_addr_size[0]
                      + servo_driver_hat_i2c_addr_text_gap * 2
                      + servo_driver_hat_i2c_addr_text_size,
-                     0, 0]) {
+                     0,
+                     0]) {
             let (p = servo_driver_hat_i2c_addr_size[0] * 0.1) {
               translate([0, p, 0]) {
                 union() {
@@ -184,14 +185,20 @@ module servo_driver_hat(show_standoff=true, center=true) {
                       linear_extrude(height=servo_driver_hat_i2c_addr_size[2],
                                      center=false) {
                         intersection() {
-                          square(size=[servo_driver_hat_i2c_addr_size[0] / 2 - p ,
-                                       servo_driver_hat_i2c_addr_size[1] - p * 2]);
+                          square(size=[servo_driver_hat_i2c_addr_size[0]
+                                       / 2 - p ,
+                                       servo_driver_hat_i2c_addr_size[1]
+                                       - p * 2]);
                           translate([p / 2, p / 2, 0]) {
-                            square(size=[servo_driver_hat_i2c_addr_size[0] / 2 - p * 2,
-                                         servo_driver_hat_i2c_addr_size[1] - p * 2]);
+                            square(size=[servo_driver_hat_i2c_addr_size[0]
+                                         / 2 - p * 2,
+                                         servo_driver_hat_i2c_addr_size[1]
+                                         - p * 2]);
                           }
                         }
-                        translate([p + servo_driver_hat_i2c_addr_size[0] / 2, 0, 0]) {
+                        translate([p + servo_driver_hat_i2c_addr_size[0] / 2,
+                                   0,
+                                   0]) {
                           intersection() {
                             square(size=[servo_driver_hat_i2c_addr_size[0] / 2 - p,
                                          servo_driver_hat_i2c_addr_size[1] - p * 2]);
@@ -225,7 +232,9 @@ module servo_driver_hat(show_standoff=true, center=true) {
         }
         translate([servo_driver_hat_i2c_addr_size[0] * 2
                    + servo_driver_hat_i2c_addr_text_gap * 2.5
-                   + servo_driver_hat_i2c_addr_text_size, 0, 0]) {
+                   + servo_driver_hat_i2c_addr_text_size,
+                   0,
+                   0]) {
 
           rotate([0, 0, 90]) {
             color("white", alpha=1) {
@@ -238,7 +247,8 @@ module servo_driver_hat(show_standoff=true, center=true) {
           }
         }
       }
-      translate([0, half_of_l
+      translate([0,
+                 half_of_l
                  - servo_driver_hat_chip_2_total_w / 2
                  - servo_driver_hat_chip_2_x_distance,
                  h]) {
@@ -251,7 +261,8 @@ module servo_driver_hat(show_standoff=true, center=true) {
                  smd_color=black_1,
                  center=true);
       }
-      translate([0, half_of_l
+      translate([0,
+                 half_of_l
                  - servo_driver_hat_chip_total_w / 2
                  - servo_driver_hat_chip_x_distance,
                  h]) {
@@ -288,24 +299,27 @@ module servo_driver_hat(show_standoff=true, center=true) {
                        l_len = (step_z * (r + 1)) + step_z) {
                     translate([0, 0, step_z * r]) {
                       rotate([0, -90, 0]) {
-                        pin_headers(cols=servo_driver_hat_side_pin_cols,
-                                    rows=1,
-                                    pin_colr=metallic_yellow_1,
-                                    header_width=rpi_pin_header_width,
-                                    header_height=servo_driver_hat_side_header_height,
-                                    pin_height=length,
-                                    l_len=l_len,
-                                    z_offset=z_offset,
-                                    p=0.65,
-                                    center=true) {
+                        pin_header(cols=servo_driver_hat_side_pin_cols,
+                                   rows=1,
+                                   pin_colr=metallic_yellow_1,
+                                   header_width=rpi_pin_header_width,
+                                   header_height=servo_driver_hat_side_header_height,
+                                   pin_height=length,
+                                   l_len=l_len,
+                                   z_offset=z_offset,
+                                   p=0.65,
+                                   center=true) {
                           let (idx = $y + (i * servo_driver_hat_side_pins_headers_count),
                                text_h = 0.2) {
                             if (r == 0) {
-                              translate([-servo_driver_hat_side_header_height + text_h, 0, length]) {
+                              translate([-servo_driver_hat_side_header_height + text_h,
+                                         0,
+                                         length]) {
                                 rotate([0, -90, 0]) {
                                   rotate([0, 180, -90]) {
                                     color("white", alpha=1) {
-                                      linear_extrude(height=text_h, center=false) {
+                                      linear_extrude(height=text_h,
+                                                     center=false) {
                                         text(str(idx), size=1);
                                       }
                                     }

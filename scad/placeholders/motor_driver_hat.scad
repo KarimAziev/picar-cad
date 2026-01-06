@@ -15,7 +15,7 @@ use <../lib/shapes3d.scad>
 use <../lib/plist.scad>
 use <../lib/holes.scad>
 use <../lib/transforms.scad>
-use <pin_headers.scad>
+use <pin_header.scad>
 use <pad_hole.scad>
 use <standoff.scad>
 
@@ -54,14 +54,14 @@ module motor_driver_hat(plist=motor_driver_grid,
           translate([-w / 2, -l / 2 + rpi_bolts_offset * 2, 0]) {
             if (show_pins) {
               translate([0, 0, h]) {
-                pin_headers(cols=rpi_pin_headers_cols,
-                            rows=rpi_pin_headers_rows,
-                            header_width=rpi_pin_header_width,
-                            header_height=motor_driver_hat_upper_header_height,
-                            pin_height=motor_driver_hat_upper_pin_height,
-                            z_offset=-motor_driver_hat_upper_header_height,
-                            p=0.65,
-                            center=false);
+                pin_header(cols=rpi_pin_headers_cols,
+                           rows=rpi_pin_headers_rows,
+                           header_width=rpi_pin_header_width,
+                           header_height=motor_driver_hat_upper_header_height,
+                           pin_height=motor_driver_hat_upper_pin_height,
+                           z_offset=-motor_driver_hat_upper_header_height,
+                           p=0.65,
+                           center=false);
               }
             }
           }

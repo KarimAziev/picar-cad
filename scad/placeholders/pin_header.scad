@@ -1,3 +1,10 @@
+/**
+ * Module: Pin header connector
+ *
+ * Author: Karim Aziiev <karim.aziiev@gmail.com>
+ * License: GPL-3.0-or-later
+ */
+
 include <../colors.scad>
 include <../parameters.scad>
 use <../lib/plist.scad>
@@ -52,18 +59,18 @@ module pin_header_item(base_size,
   }
 }
 
-module pin_headers(cols,
-                   rows,
-                   pin_colr=metallic_yellow_1,
-                   base_colr=matte_black,
-                   header_width,
-                   header_height,
-                   header_y_width,
-                   pin_height,
-                   l_len,
-                   p,
-                   z_offset=0,
-                   center=false) {
+module pin_header(cols,
+                  rows,
+                  pin_colr=metallic_yellow_1,
+                  base_colr=matte_black,
+                  header_width,
+                  header_height,
+                  header_y_width,
+                  pin_height,
+                  l_len,
+                  p,
+                  z_offset=0,
+                  center=false) {
 
   header_y_width = is_undef(header_y_width) ? header_width : header_y_width ;
   size = pin_header_size(header_width=header_width,
@@ -100,14 +107,14 @@ module rpi_pin_headers(center=false,
                        z_offset=rpi_thickness / 2 + 0.5,
                        pin_height=rpi_pin_height,
                        header_height=rpi_pin_header_height) {
-  pin_headers(cols=rpi_pin_headers_cols,
-              rows=rpi_pin_headers_rows,
-              header_width=rpi_pin_header_width,
-              header_height=header_height,
-              pin_height=pin_height,
-              z_offset=z_offset,
-              p=0.65,
-              center=center);
+  pin_header(cols=rpi_pin_headers_cols,
+             rows=rpi_pin_headers_rows,
+             header_width=rpi_pin_header_width,
+             header_height=header_height,
+             pin_height=pin_height,
+             z_offset=z_offset,
+             p=0.65,
+             center=center);
 }
 
 module pin_header_from_plist(plist, center=false) {
@@ -124,27 +131,27 @@ module pin_header_from_plist(plist, center=false) {
   p = plist_get("p", plist, undef);
   z_offset = plist_get("z_offset", plist, 0);
 
-  pin_headers(cols=cols,
-              rows=rows,
-              pin_colr=pin_colr,
-              base_colr=base_colr,
-              header_width=header_width,
-              header_height=header_height,
-              header_y_width=header_y_width,
-              pin_height=pin_height,
-              l_len=l_len,
-              p=p,
-              z_offset=z_offset,
-              center=center);
+  pin_header(cols=cols,
+             rows=rows,
+             pin_colr=pin_colr,
+             base_colr=base_colr,
+             header_width=header_width,
+             header_height=header_height,
+             header_y_width=header_y_width,
+             pin_height=pin_height,
+             l_len=l_len,
+             p=p,
+             z_offset=z_offset,
+             center=center);
 }
 
 rotate([0, 0, 0]) {
-  pin_headers(cols=20,
-              rows=2,
-              header_width=rpi_pin_header_width,
-              header_height=rpi_pin_header_height,
-              pin_height=rpi_pin_height,
-              z_offset=0.5,
-              center=false,
-              p=0.65);
+  pin_header(cols=20,
+             rows=2,
+             header_width=rpi_pin_header_width,
+             header_height=rpi_pin_header_height,
+             pin_height=rpi_pin_height,
+             z_offset=0.5,
+             center=false,
+             p=0.65);
 }
