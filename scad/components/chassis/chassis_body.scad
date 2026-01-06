@@ -81,6 +81,7 @@ show_servo_driver_hat             = false;
 show_gpio_expansion_board         = false;
 
 rpi_position_x                    = -rpi_bolt_spacing[0] / 2 + rpi_chassis_x_position;
+
 rpi_position_y                    = -rpi_len - rpi_chassis_y_position;
 
 power_case_position_y             = -power_case_length / 2 - power_case_chassis_y_offset;
@@ -94,6 +95,11 @@ body_pts                          = concat(chassis_lower_cutout_pts,
                                            [[chassis_body_half_w, chassis_body_len +
                                              max_lower_cutout],
                                             [0, chassis_body_len  + max_lower_cutout]]);
+
+function ups_hat_y_pos() = -chassis_body_len
+  + battery_ups_module_bolt_spacing[1] / 2
+  + max_lower_cutout
+  + battery_ups_offset;
 
 module chassis_body_2d() {
   offset_vertices_2d(r=chassis_offset_rad) {
@@ -114,12 +120,6 @@ function motor_bracket_y_pos() =
 
 function motor_bracket_x_pos() =
   (chassis_body_w * 0.5) - (standard_motor_bracket_height * 0.5);
-
-module ups_hat_bolts_2d() {
-  four_corner_holes_2d(size=battery_ups_module_bolt_spacing,
-                       center=true,
-                       hole_dia=battery_ups_bolt_dia);
-}
 
 module chassis_body(size, slots_and_placeholders, assembly) {
   union() {
@@ -151,7 +151,6 @@ module standard_motor_bracket_bolts(extra_x=0, extra_y=0) {
                              d=standard_motor_bracket_chassis_bolt_hole);
   }
 }
-// standard_motor_bracket_bolts(-standard_motor_bracket_thickness * 2);
 
 module n20_bracket_left(show_motor=false, show_wheel=false) {
   x = -(chassis_body_w * 0.5) - n20_motor_chassis_x_distance;
@@ -329,15 +328,25 @@ module chassis_body_3d(panel_color="white") {
         }
       }
     }
+
+    translate([0, 0, 0]) {
+    }
+
+    if (battery_ups_holes_enabled) {
+      #translate([0,
+                  ups_hat_y_pos(),
+                  0]) {
+        four_corner_counterbores(size=battery_ups_module_bolt_spacing,
+                                 center=true,
+                                 h=chassis_thickness,
+                                 d=battery_ups_bolt_dia);
+      }
+    }
     translate([0, -chassis_upper_len, -0.05]) {
       chassis_body_border_slots(groups=chassis_rect_holes_specs);
     }
   }
 }
-function ups_hat_y_pos() = -chassis_len / 2
-  + battery_ups_module_bolt_spacing[1] / 2
-  + max_lower_cutout
-  + m3_hole_dia / 2 + battery_ups_offset;
 
 module chassis_body(panel_color="white",
                     power_case_color="lightgrey",
@@ -456,9 +465,7 @@ module chassis_body(panel_color="white",
     }
   }
   if (show_ups_hat) {
-    translate([-battery_ups_size[0] / 2,
-               ups_hat_y_pos() + -battery_ups_size[1] / 2,
-               0]) {
+    translate([0, ups_hat_y_pos(), 0]) {
       ups_hat();
     }
   }

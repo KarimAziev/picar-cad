@@ -303,12 +303,14 @@ standoff_specs                                       = [["thread_d", 3,
 // (defaults dimensions are for Uninterruptible Power Supply Module 3S
 // https://www.waveshare.com/ups-module-3s.html)
 // ─────────────────────────────────────────────────────────────────────────────
+// whether to make holes for UPS on the chassis
+battery_ups_holes_enabled                            = false;
 battery_ups_size                                     = [93, 60, 1.82];
 battery_ups_holder_size                              = [77.8, 60, 22.0];
 battery_ups_holder_thickness                         = 1.86;
 
 // Y offset for the UPS HAT slot, measured from the end of the chassis
-battery_ups_offset                                   = 2;
+battery_ups_offset                                   = 0;
 
 // The Y and X dimensions of the bolt positions for the UPS HAT slot.
 // This forms a square with a bolt hole centered on each corner.

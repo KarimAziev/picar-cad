@@ -83,7 +83,7 @@ show_socket_case_fusers         = true;
 /* [Batteries] */
 show_battery_holders            = true;
 
-show_ups_hat                    = true;
+show_ups_hat                    = false;
 
 /* [Raspberry PI] */
 show_rpi                        = true;
