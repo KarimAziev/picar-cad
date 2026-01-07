@@ -2,7 +2,7 @@
 
 This repository contains the 3D model source files for a four-wheeled robot chassis and steering system, written entirely in [OpenSCAD](https://openscad.org/). The design supports 3D printing and does not rely on external libraries.
 
-![Power case](./demo/front_view.png)
+![Front View](./demo/front-view.png)
 ![Photo](./demo/picar-cad-live.jpg)
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
@@ -26,6 +26,7 @@ This repository contains the 3D model source files for a four-wheeled robot chas
 >     - [Motors](#motors)
 >     - [Camera Module](#camera-module)
 >     - [Ultrasonic](#ultrasonic)
+>     - [Switch buttons and fusers](#switch-buttons-and-fusers)
 >     - [IR LED](#ir-led)
 >     - [Bolts and Nuts](#bolts-and-nuts)
 >       - [Steering panel](#steering-panel)
@@ -61,9 +62,7 @@ The robot model is designed around the following core elements:
 
 ## Requirements
 
-- Use the latest nightly build of OpenSCAD; textmetrics is required by the project.
-- Enable textmetrics in the OpenSCAD editor via `Preferences -> Features -> textmetrics`.
-- When using the CLI, pass `--enable=textmetrics` (e.g., `openscad --enable=textmetrics --backend=Manifold ...`).
+Since `textmetrics` is used throughout the project, a nightly build of OpenSCAD is required. Also, be sure to enable `textmetrics` in the OpenSCAD editor via `Preferences -> Features -> textmetrics`. When using the CLI, pass `--enable=textmetrics` (e.g., `openscad --enable=textmetrics --backend=Manifold ...`).
 
 ## Ackermann Geometry
 
@@ -78,6 +77,8 @@ Most parameters live in `scad/parameters.scad`, but the actual Ackermann geometr
 
 ## Assembly
 
+![Interactive Assembly](./demo/interactive_assembly.gif)
+
 The interactive guide lives in `scad/assembly_guide.scad`. Open it in OpenSCAD and step through the boolean checkboxes in the built-in Customizer to reveal each assembly step (power case, steering, electronics, and wheels). For a static full build view, use `scad/assembly.scad`.
 
 ## Structure
@@ -88,12 +89,14 @@ The project is organized into several reusable modules under the scad/ directory
 - `printable.scad`: Contains all printable parts in one place. You can print all the parts except the tires using either PETG (recommended) or PLA. For the tires, use TPU (e.g., TPU 95A).
   ![Printable view](./demo/picar-cad-printable.png)
 - `assembly.scad`: Fully assembled view of the robot.
+- `assembly_guide.scad`: Interactive assembly. See [above](#assembly).
   ![Overview](./demo/picar-cad-overview.gif)
 - `steering_system/`: Rack-and-pinion steering system based on Ackermann geometry.
+- `components/chassis/`: Chassis and other components.
 - `head/`: Mounting system for dual Raspberry Pi cameras.
 - `motor_brackets/`: Brackets for both standard (yellow) and N20-style motors.
 - `wheels/`: Components for rear and front wheels, including hubs and tires.
-- `placeholders/`: Placeholder geometry for components such as the Raspberry Pi, servos, DC motors, battery holders, and HATs.
+- `placeholders/`: Placeholder geometry for components such as the Raspberry Pi, servos, DC motors, battery holders, HATs, sensors, step-down voltage converters, INA260, etc. There’s a lot of stuff in there.
 
 ## External Details
 
@@ -121,13 +124,29 @@ Raspberry Pi 5 is supported by default. To use a different model, adjust the rel
 
 #### A Turnigy Rapid-style hardcase LiPo
 
-![Power case](./demo/top_view.png)
+![Power case](./demo/top-view.png)
 
-The default power source is a modular power case sized for a Turnigy Rapid-style hardcase LiPo (see the `lipo_pack_*` and `power_case_*` parameters). The lid supports an XT90E connector, blade fuses, a voltmeter, and a step-down regulator; rails/clamps keep the pack fixed.
+The default power source is a modular power case sized for a Turnigy Rapid-style hardcase LiPo (see the `lipo_pack_*` and `power_case_*` parameters). The lid supports an XT90E connector, blade fuses, a voltmeter, and a step-down regulator. Rails/clamps keep the pack fixed.
 
 #### UPS module S3
 
-The Waveshare UPS module S3 is still supported, but it is no longer the default because it is not reliable enough.
+![UPS module S3](./demo/ups_module_s3.png)
+
+The Waveshare [UPS module S3](https://www.waveshare.com/wiki/UPS_Module_3S) is still supported, but it is no longer the default because it is not reliable enough.
+
+If you want to use it, enable it in `parameters.scad`:
+
+```scad
+battery_ups_holes_enabled = true;
+```
+
+And in `assembly.scad`:
+
+```scad
+show_ups_hat = true;
+```
+
+You will likely also need to adjust the layout parameters for the Raspberry Pi (`rpi_chassis_y_position` and `rpi_chassis_x_position`) and perhaps disable the power case module (see the `power_*` variables).
 
 #### Battery holders
 
@@ -148,39 +167,41 @@ Battery holders with different settings are supported. Variables prefixed with `
 You can create as many battery holders and slots for them as you want. Here is a quick example:
 
 ```scad
-chassis_body_battery_holders_specs = ["type", "grid",
-         "size", [chassis_body_w, chassis_body_len],
-         "rows",
-         maybe_add_battery_holders_rows_h([["cells",
-                                            [["w", 0.5,
-                                              "placeholder",
-                                              ["placeholder_type", "battery_holder",
-                                               "mount_type", battery_holder_mount_type,
-                                               "count", 3,
-                                               "show_battery", true,
-                                               "terminal_type", battery_holder_terminal_type,
-                                               "side_wall_cutout_type", battery_holder_side_wall_type,]],
-                                             ["w", 0.5,
-                                              "placeholder",
-                                              ["placeholder_type", "battery_holder",
-                                               "terminal_type", "coil_spring",
-                                               "side_wall_cutout_type", "enclosed",
-                                               "battery_len", 70,
-                                               "battery_dia", 21,
-                                               "show_battery", true,
-                                               "mount_type", "under_cell",
-                                               "battery_color", "pink",
-                                               "color", "black"]]]],
-                                           ["cells",
-                                            [["w", 0.5,
-                                              "spin", 90,
-                                              "placeholder",
-                                              ["placeholder_type", "battery_holder",
-                                               "show_battery", true,
-                                               "count", 1,
-                                               "mount_type", battery_holder_mount_type,
-                                               "terminal_type", battery_holder_terminal_type,
-                                               "side_wall_cutout_type", battery_holder_side_wall_type,]]],]])]
+chassis_body_battery_holders_specs =
+  ["type", "grid",
+   "size", [chassis_body_w, chassis_body_len],
+   "rows",
+   maybe_add_battery_holders_rows_h(
+      [["cells",
+        [["w", 0.5,
+          "placeholder",
+          ["placeholder_type", "battery_holder",
+           "mount_type", battery_holder_mount_type,
+           "count", 3,
+           "show_battery", true,
+           "terminal_type", battery_holder_terminal_type,
+           "side_wall_cutout_type", battery_holder_side_wall_type]],
+         ["w", 0.5,
+          "placeholder",
+          ["placeholder_type", "battery_holder",
+           "terminal_type", "coil_spring",
+           "side_wall_cutout_type", "enclosed",
+           "battery_len", 70,
+           "battery_dia", 21,
+           "show_battery", true,
+           "mount_type", "under_cell",
+           "battery_color", "pink",
+           "color", "black"]]]],
+       ["cells",
+        [["w", 0.5,
+          "spin", 90,
+          "placeholder",
+          ["placeholder_type", "battery_holder",
+           "show_battery", true,
+           "count", 1,
+           "mount_type", battery_holder_mount_type,
+           "terminal_type", battery_holder_terminal_type,
+           "side_wall_cutout_type", battery_holder_side_wall_type]]]]])];
 ```
 
 Result:
@@ -189,20 +210,32 @@ Result:
 
 ### Motors
 
+![Motors](./demo/motors.png)
+
 Two rear motors are supported-either standard or N20-type:
 
-- The "N20" type refers to motors like the **GA12-N20** with a 3 mm shaft.
+- The "n20" type refers to motors like the **GA12-N20** with a 3 mm shaft.
 - The "standard" type refers to widely available yellow gear motors with a 5 mm shaft.
 
 Rear wheel shaft size depends on the motor type. Use the variable `motor_type` in `parameters.scad` to set the proper shaft diameter.
 
 ### Camera Module
 
+![Camera](./demo/cameras.png)
+
 The design supports one, two or more camera modules. The default dimensions are compatible with the Raspberry Pi Camera Module 3.
 
 ### Ultrasonic
 
-The model supports Ultrasonic HC-SR04.
+![Ultrasonic](./demo/ultrasonic.png)
+
+The model supports the HC-SR04 ultrasonic sensor.
+
+### Switch buttons and fusers
+
+![Ultrasonic](./demo/switch_buttons.png)
+
+Switch buttons with a circular mounting type are supported, as well as two types of fuse holders: ATM and ATC mini.
 
 ### IR LED
 
