@@ -470,7 +470,7 @@ module chassis_body(panel_color="white",
   if (show_power_case || show_socket_case) {
     translate([power_case_position_x,
                power_case_position_y,
-               -chassis_counterbore_h]) {
+               chassis_thickness]) {
       power_case_assembly(case_color=power_case_color,
                           show_lipo_pack=show_lipo_pack,
                           show_power_case=show_power_case,
