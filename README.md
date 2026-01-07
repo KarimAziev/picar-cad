@@ -86,12 +86,13 @@ The interactive guide lives in `scad/assembly_guide.scad`. Open it in OpenSCAD a
 The project is organized into several reusable modules under the scad/ directory:
 
 - `parameters.scad`: Central configuration file containing physical dimensions (units are in millimeters).
-- `printable.scad`: Contains all printable parts in one place. You can print all the parts except the tires using either PETG (recommended) or PLA. For the tires, use TPU (e.g., TPU 95A).
+- `printable.scad`: Contains all printable parts in one place, except the power case modules. You can print all parts except the tires using either PETG (recommended) or PLA. For the tires, use TPU (e.g., TPU 95A). The power case modules live in the `power/` directory.
   ![Printable view](./demo/picar-cad-printable.png)
 - `assembly.scad`: Fully assembled view of the robot.
+  ![Overview](./demo/full_assembly.gif)
 - `assembly_guide.scad`: Interactive assembly. See [above](#assembly).
-  ![Overview](./demo/picar-cad-overview.gif)
 - `steering_system/`: Rack-and-pinion steering system based on Ackermann geometry.
+- `power/`: Power case and related components.
 - `components/chassis/`: Chassis and other components.
 - `head/`: Mounting system for dual Raspberry Pi cameras.
 - `motor_brackets/`: Brackets for both standard (yellow) and N20-style motors.
