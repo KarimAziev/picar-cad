@@ -213,7 +213,7 @@ bolt_specs                                           = [[1,
                                                           "colors", ["hex", matte_black,
                                                                      "pan", metallic_silver_2,
                                                                      "countersunk", metallic_silver_1,
-                                                                     "round", matte_black],
+                                                                     "round", metallic_silver_3],
                                                           "head", ["pan", ["dia", m3_pan_head_dia,
                                                                            "height", m3_pan_head_h],
                                                                    "hex", ["dia", m3_hex_head_dia,
@@ -583,7 +583,6 @@ chassis_body_battery_holders_specs                   = ["type", "grid",
                                                                                               "battery_dia", battery_dia,
                                                                                               "mount_type", battery_holder_mount_type,
                                                                                               "reverse", true,
-                                                                                              "show_bolt", false,
                                                                                               "terminal_type", battery_holder_terminal_type,
                                                                                               "side_wall_cutout_type", battery_holder_side_wall_type]],
                                                                                             ["w", 0.5,
@@ -594,7 +593,6 @@ chassis_body_battery_holders_specs                   = ["type", "grid",
                                                                                               "y_offset", -7.5,
                                                                                               "x_offset", 4.0,
                                                                                               "reverse", true,
-                                                                                              "show_bolt", false,
                                                                                               "battery_len", battery_length,
                                                                                               "battery_dia", battery_dia,
                                                                                               "mount_type", battery_holder_mount_type,
@@ -2067,6 +2065,8 @@ power_case_bottom_bolt_spacing                       = [40, 88];
 // The bolt hole diameter for through holes in the bottom/back wall.
 power_case_bottom_bolt_dia                           = m3_hole_dia;
 
+power_case_bottom_bolt_head_type                     = "round";
+
 // Counterbore diameter for the bolt head recess on the bottom/back wall.
 // This is the larger diameter of the counterbore so the bolt head can sit flush.
 power_case_bottom_cbore_dia                          = 6.0;
@@ -2231,7 +2231,7 @@ power_case_rail_rad                                  = 0.0;
 // Vertical thickness of the rail profile (height of the dovetail section).
 power_case_rail_height                               = 4;
 
-// Diameter of bolt holes that run through the rail for mounting hardware.
+// Diameter of bolt\ holes that run through the rail for mounting hardware.
 power_case_rail_bolt_dia                             = m25_hole_dia + 0.1;
 
 // Distance from the end of the rail and mounting holes

@@ -5,12 +5,15 @@
  * License: GPL-3.0-or-later
  */
 include <../parameters.scad>
+include <../colors.scad>
+
 use <../lib/shapes2d.scad>
 use <../lib/functions.scad>
 use <../lib/shapes3d.scad>
 use <../lib/transforms.scad>
 use <../lib/plist.scad>
 use <nut.scad>
+use <../lib/text.scad>
 
 function default_pitch(d) =
   (d <= 2) ? 0.4 :
@@ -21,6 +24,11 @@ function default_pitch(d) =
   (d <= 8) ? 1.25 :
   (d <= 10) ? 1.5 :
   (d <= 12) ? 1.75 : 2.0;
+
+function snap_bolt_d(d) =
+  d >= 2.5 && d < 3
+  ? 2.5
+  : floor(d);
 
 function find_bolt_nut_spec(inner_d, specs=bolt_specs, default) =
   let (sorted_specs = sort_by_idx(specs, idx=0, asc=true),
@@ -35,6 +43,30 @@ function find_bolt_nut_spec(inner_d, specs=bolt_specs, default) =
                spec],
        found = with_default(candidates[0], [], type="list"))
   with_default(drop(found, 1)[0], []);
+
+function find_bolt_head_h(inner_d, head_type, specs=bolt_specs) =
+  is_undef(head_type) || head_type == "none" ?
+  0
+  : let (bolt_spec = find_bolt_nut_spec(d, specs=bolt_specs, default=[]),
+         head_spec = plist_get(head_type,
+                               plist_get("head", bolt_spec, []),
+                               []),
+         head_h = with_default(head_h,
+                               plist_get("height",
+                                         head_spec,
+                                         with_default(head_h, 0.7 * d))))
+  head_h;
+
+module bolt_info_text(d,
+                      h,
+                      plist) {
+
+  txt = str("M", snap_bolt_d(d), ", ", h, "mm");
+  text_from_plist(txt=txt,
+                  plist=plist,
+                  default_size=d,
+                  default_color=dark_gold_1);
+}
 
 module thread_ridge(major = 6,
                     pitch = 1,
@@ -120,12 +152,18 @@ module bolt_head(type = "hex", head_d = 9, head_h = 4, shaft_r = 2.5, $fn = 64) 
     pts = [for (i=[0:5]) [R*cos(60*i), R*sin(60*i)]];
     difference() {
       linear_extrude(height = head_h) polygon(pts);
-      translate([0, 0,-0.01]) cylinder(h = head_h + 0.02, r = shaft_r + 0.02, $fn = $fn);
+      translate([0, 0,-0.01]) cylinder(h = head_h + 0.02,
+                                       r = shaft_r + 0.02,
+                                       $fn = $fn);
     }
   }
 }
 
-module phillips_recess(arm_w = 0.8, arm_len = 3.0, corner_r = 0.3, depth = 1.0, $fn=24) {
+module phillips_recess(arm_w = 0.8,
+                       arm_len = 3.0,
+                       corner_r = 0.3,
+                       depth = 1.0,
+                       $fn=24) {
   union() {
 
     linear_extrude(height = depth) {
@@ -145,9 +183,14 @@ module phillips_recess(arm_w = 0.8, arm_len = 3.0, corner_r = 0.3, depth = 1.0, 
   }
 }
 
-module bolt_head_pan_phillips(head_d = 4.8, head_h = 1.6, shaft_r = 1.0,
-                              ph_arm_w = 0.8, ph_arm_len = 3.0, ph_depth = 1.0,
-                              dome_scale = 0.45, $fn = 48) {
+module bolt_head_pan_phillips(head_d = 4.8,
+                              head_h = 1.6,
+                              shaft_r = 1.0,
+                              ph_arm_w = 0.8,
+                              ph_arm_len = 3.0,
+                              ph_depth = 1.0,
+                              dome_scale = 0.45,
+                              $fn = 48) {
   rad = head_d / 2;
   dome_scaled_h = dome_scale * rad;
   difference() {
@@ -182,7 +225,11 @@ module bolt_head_pan_phillips(head_d = 4.8, head_h = 1.6, shaft_r = 1.0,
   }
 }
 
-module helical_thread(major_d = 2.5, pitch = 0.45, h = 10, depth = 0.27, slices = 90) {
+module helical_thread(major_d = 2.5,
+                      pitch = 0.45,
+                      h = 10,
+                      depth = 0.27,
+                      slices = 90) {
   turns = h / pitch;
   outer_r = major_d / 2;
   minor_r = outer_r - depth;
@@ -202,11 +249,17 @@ module helical_thread(major_d = 2.5, pitch = 0.45, h = 10, depth = 0.27, slices 
   }
 }
 
-module bolt_m_pan_phillips(d = 2.5, h = 10,
-                           pitch = undef, thread_len = undef,
-                           head_d = 4.8, head_h = 1.6,
-                           ph_arm_w = 0.8, ph_arm_len = 3.0, ph_depth = 1.0,
-                           thread_depth = undef, threaded = true,
+module bolt_m_pan_phillips(d = 2.5,
+                           h = 10,
+                           pitch = undef,
+                           thread_len = undef,
+                           head_d = 4.8,
+                           head_h = 1.6,
+                           ph_arm_w = 0.8,
+                           ph_arm_len = 3.0,
+                           ph_depth = 1.0,
+                           thread_depth = undef,
+                           threaded = true,
                            $fn = 64) {
   let (pitch_v = (pitch != undef) ? pitch : default_pitch(d),
        thread_len_v = (thread_len != undef) ? thread_len : h,
@@ -233,10 +286,12 @@ module bolt_m_pan_phillips(d = 2.5, h = 10,
 
     translate([0, 0, h])
       bolt_head_pan_phillips(head_d = head_d,
-                             head_h = head_h, shaft_r = minor_r,
+                             head_h = head_h,
+                             shaft_r = minor_r,
                              ph_arm_w = ph_arm_w,
                              ph_arm_len = ph_arm_len,
-                             ph_depth = ph_depth, $fn = $fn);
+                             ph_depth = ph_depth,
+                             $fn = $fn);
   }
 }
 
@@ -258,6 +313,8 @@ module bolt(d = 2.5,                 // major diameter (mm)
             bolt_color,
             nut_color,
             $fn = 64) {
+
+  d = snap_bolt_d(d);
 
   nut_type = lock_nut ? "lock_nut" : "nut";
   bolt_spec = find_bolt_nut_spec(d, specs=bolt_specs, default=[]);
@@ -287,7 +344,8 @@ module bolt(d = 2.5,                 // major diameter (mm)
           if (thread_len_v < h) {
             translate([0, 0, thread_len_v]) {
               cylinder(h = h - thread_len_v,
-                       r = minor_r, $fn = $fn);
+                       r = minor_r,
+                       $fn = $fn);
             }
           }
 
@@ -336,8 +394,10 @@ module bolt(d = 2.5,                 // major diameter (mm)
     if (show_nut) {
       effective_h = h - unthreaded - nut_h;
 
-      translate([0, 0, effective_h - min(effective_h + (lock_nut ? nut_h * 0.2 : 0),
-                                         nut_head_distance)]) {
+      translate([0,
+                 0,
+                 effective_h - min(effective_h + (lock_nut ? nut_h * 0.2 : 0),
+                                   nut_head_distance)]) {
         if (nut_type == "nut") {
           nut(d=d,
               outer_d=plist_get("outer_dia", nut_spec),

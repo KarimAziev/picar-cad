@@ -141,8 +141,9 @@ module text_from_plist(txt,
                        default_rotation= [0, 0, 0],
                        default_translation= [0, 0, 0],
                        default_color) {
-  if (!is_undef(plist)) {
-    let (txt_raw = is_undef(txt) ? plist_get("text", plist, txt) : txt,
+  if ((!is_undef(plist) && plist_get("text", plist)) || !is_undef(txt)) {
+    let (plist = with_default(plist, []),
+         txt_raw = is_undef(txt) ? plist_get("text", plist, txt) : txt,
          txt = is_num(txt_raw) ? str(txt_raw) : txt_raw,
          size = plist_get("size", plist, default_size),
          colr = plist_get("color", plist, default_color),

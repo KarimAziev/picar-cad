@@ -25,15 +25,16 @@ use <../lib/text.scad>
 use <../lib/debug.scad>
 use <../lib/slots.scad>
 use <power_socket_lid.scad>
+use <common.scad>
 
 show_atm_fuse_holders      = false;
 show_socket                = false;
 show_bolt                  = false;
 show_lid                   = false;
 show_nut                   = false;
-show_box                   = false;
-assembly                   = false;
-show_standoffs             = false;
+show_box                   = true;
+assembly                   = true;
+show_standoffs             = true;
 assembly_debug             = true;
 case_color                 = blue_grey_carbon;
 
@@ -124,12 +125,18 @@ module power_socket_case(jack_plist=power_socket_case_jack_plist,
                          rail_tolerance=power_socket_case_rail_tolerance,
                          hook_h=power_socket_case_hook_h,
                          hook_l=power_socket_case_hook_l,
+                         slot_thickness=chassis_thickness,
+                         slot_bore_h=chassis_counterbore_h,
                          spacing=10) {
   mounting_panel_size = plist_get("placeholder_size",
                                   jack_plist,
                                   xt90e_mounting_panel_size);
-  mounting_panel_thickness = mounting_panel_size[2];
   mounting_panel_h = mounting_panel_size[0];
+  mounting_panel_thickness = mounting_panel_size[2];
+
+  full_h = sliding_box_full_height(size=size,
+                                   lid_thickness=lid_thickness,
+                                   rim_h=rim_h);
 
   w = size[0];
   l = size[1];
@@ -156,179 +163,178 @@ module power_socket_case(jack_plist=power_socket_case_jack_plist,
                           hook_l=hook_l);
   }
 
-  if (slot_mode) {
-    translate([power_case_bolt_spacing_offset_x,
-               power_case_bolt_spacing_offset_y,
-               0]) {
+  module socket_case() {
+    difference() {
+      color(case_color) {
+        box(size=size,
+            side_thickness=side_thickness,
+            bottom_thickness=bottom_thickness,
+            corner_rad=corner_rad,
+            use_inner_round=use_inner_round,
+            rim_h=rim_h,
+            fn=fn,
+            include_rim_sizing=include_rim_sizing,
+            front_thickness=front_thickness,
+            rim_w=rim_w,
+            rim_front_w=rim_front_w,
+            latch_h=latch_h,
+            latch_l=latch_l);
+      }
 
-      four_corner_children(power_case_bottom_bolt_spacing,
+      translate([0, -l / 2, h / 2]) {
+        rotate([-90, 90, 0]) {
+          xt_90_slot(jack_plist,
+                     thickness=front_thickness + rim_front_w,
+                     center=true);
+        }
+      }
+
+      with_power_case_mounting_holes() {
+        counterbore(d=power_case_bottom_bolt_dia,
+                    h=slot_thickness,
+                    sink=false,
+                    reverse=false);
+      }
+
+      translate([0, l / 2 - front_thickness - rim_front_w, h / 2]) {
+        rotate([-90, 90, 0]) {
+          xt_90_slot(jack_plist,
+                     thickness=front_thickness + rim_front_w,
+                     center=true);
+        }
+      }
+
+      let (slot_w = side_thickness + rim_w) {
+        translate([0, 0, bottom_thickness]) {
+          translate([-w / 2, 0, 0]) {
+            rotate([90, 0, 90]) {
+              power_socket_side_slots(use_children=false,
+                                      thickness=slot_w);
+            }
+          }
+          translate([w / 2 - slot_w, 0, 0]) {
+            rotate([90, 0, 90]) {
+              power_socket_side_slots(use_children=false,
+                                      thickness=slot_w);
+            }
+          }
+        }
+      }
+
+      four_corner_children(power_socket_bolt_lid_mounting_spacing,
                            center=true) {
         counterbore(d=power_case_bottom_bolt_dia,
-                    h=chassis_thickness,
-                    bore_h=chassis_counterbore_h,
-                    bore_d=power_case_bottom_cbore_dia,
-                    autoscale_step=0.1,
+                    h=bottom_thickness,
                     sink=false,
                     reverse=false);
       }
     }
+  }
+
+  if (slot_mode) {
+    with_power_case_mounting_holes() {
+      counterbore(d=power_case_bottom_bolt_dia,
+                  h=slot_thickness,
+                  bore_h=slot_bore_h,
+                  bore_d=power_case_bottom_cbore_dia,
+                  autoscale_step=0.1,
+                  sink=false,
+                  reverse=false);
+    }
   } else {
-    translate([0,
-               0,
-               show_standoffs ? standoff_h + bolt_visible_h
-               + chassis_counterbore_h : 0]) {
-      union() {
-        difference() {
-          color(case_color) {
-            box(size=size,
-                side_thickness=side_thickness,
-                bottom_thickness=bottom_thickness,
-                corner_rad=corner_rad,
-                use_inner_round=use_inner_round,
-                rim_h=rim_h,
-                fn=fn,
-                include_rim_sizing=include_rim_sizing,
-                front_thickness=front_thickness,
-                rim_w=rim_w,
-                rim_front_w=rim_front_w,
-                latch_h=latch_h,
-                latch_l=latch_l);
+    standoff_z = standoff_thread_h + slot_bore_h;
+
+    standoff_full_h = standoff_thread_h + standoff_h;
+
+    translate([0, 0, show_standoffs ? -standoff_z : 0]) {
+      translate([0, 0, show_standoffs ? standoff_full_h : 0]) {
+        union() {
+          if (show_box) {
+            socket_case();
           }
 
-          translate([0, -l / 2, h / 2]) {
-            rotate([-90, 90, 0]) {
-              xt_90_slot(jack_plist,
-                         thickness=front_thickness + rim_front_w,
-                         center=true);
-            }
-          }
-
-          translate([power_case_bolt_spacing_offset_x,
-                     power_case_bolt_spacing_offset_y,
-                     0]) {
-
-            four_corner_children(power_case_bottom_bolt_spacing,
-                                 center=true) {
-              counterbore(d=power_case_bottom_bolt_dia,
-                          h=chassis_thickness,
-                          sink=false,
-                          reverse=false);
-            }
-          }
-
-          translate([0, l / 2 - front_thickness - rim_front_w, h / 2]) {
-            rotate([-90, 90, 0]) {
-              xt_90_slot(jack_plist,
-                         thickness=front_thickness + rim_front_w,
-                         center=true);
-            }
-          }
-
-          let (slot_w = side_thickness + rim_w) {
-            translate([0, 0, bottom_thickness]) {
-              translate([-w / 2, 0, 0]) {
-                rotate([90, 0, 90]) {
-                  power_socket_side_slots(use_children=false,
-                                          thickness=slot_w);
-                }
+          if (show_socket) {
+            translate([0,
+                       -l / 2
+                       - mounting_panel_thickness,
+                       mounting_panel_h / 2]) {
+              rotate([-90, 90, 0]) {
+                xt90e_m_from_plist(jack_plist,
+                                   standup=false,
+                                   bolt_visible_h=5,
+                                   show_bolt=show_bolt,
+                                   bolt_through_h=front_thickness,
+                                   show_nut=show_nut,
+                                   center=true);
               }
-              translate([w / 2 - slot_w, 0, 0]) {
-                rotate([90, 0, 90]) {
-                  power_socket_side_slots(use_children=false,
-                                          thickness=slot_w);
+            }
+          }
+
+          if (show_atm_fuse_holders) {
+            let (slot_w = side_thickness + rim_w) {
+              translate([0, 0, bottom_thickness]) {
+                translate([w / 2 - slot_w, 0, 0]) {
+                  rotate([90, 0, 90]) {
+                    power_socket_side_slots(show_atm_fuse_holders=true,
+                                            thickness=slot_w,
+                                            use_children=true);
+                  }
                 }
               }
             }
           }
 
-          four_corner_children(power_socket_bolt_lid_mounting_spacing,
-                               center=true) {
-            counterbore(d=power_case_bottom_bolt_dia,
-                        h=bottom_thickness,
-                        sink=false,
-                        reverse=false);
-          }
-        }
-        if (show_socket) {
-          translate([0,
-                     -l / 2
-                     - mounting_panel_thickness,
-                     mounting_panel_h / 2]) {
-            rotate([-90, 90, 0]) {
-              xt90e_m_from_plist(jack_plist,
-                                 standup=false,
-                                 bolt_visible_h=5,
-                                 show_bolt=show_bolt,
-                                 bolt_through_h=front_thickness,
-                                 show_nut=show_nut,
-                                 center=true);
-            }
-          }
-        }
-
-        if (show_atm_fuse_holders) {
-          let (slot_w = side_thickness + rim_w) {
-            translate([0, 0, bottom_thickness]) {
-              translate([w / 2 - slot_w, 0, 0]) {
-                rotate([90, 0, 90]) {
-                  power_socket_side_slots(show_atm_fuse_holders=true,
-                                          thickness=slot_w,
-                                          use_children=true);
+          if (assembly && show_lid) {
+            let (t = $t,
+                 pulse = 1 - abs(1 - 2*t),
+                 ax = assembly ? (l < w ? -w : 0) : 0,
+                 ay = assembly ? (l >= w ? -l : 0) : 0,
+                 tx = ax * pulse,
+                 ty = ay * pulse) {
+              translate([$t > 0 ? tx : 0,
+                         $t > 0 ? ty : 0,
+                         h + lid_thickness +
+                         (is_undef(rim_h) ? 0 : rim_h)]) {
+                rotate([0, 180, 0]) {
+                  debug_highlight(debug=assembly_debug) {
+                    lid_box();
+                  }
                 }
               }
             }
-          }
-        }
-
-        if (assembly) {
-          let (t = $t,
-               pulse = 1 - abs(1 - 2*t),
-               ax = assembly ? (l < w ? -w : 0) : 0,
-               ay = assembly ? (l >= w ? -l : 0) : 0,
-               tx = ax * pulse,
-               ty = ay * pulse) {
-            translate([$t > 0 ? tx : 0,
-                       $t > 0 ? ty : 0,
-                       h + lid_thickness +
-                       (is_undef(rim_h) ? 0 : rim_h)]) {
-              rotate([0, 180, 0]) {
-                debug_highlight(debug=assembly_debug) {
-                  lid_box();
-                }
-              }
-            }
-          }
-        } else {
-          if (show_lid) {
+          } else if (show_lid) {
             translate([show_box ? w + spacing : 0, 0, 0]) {
               lid_box();
             }
           }
-        }
 
-        if (show_standoffs) {
-          translate([power_case_bolt_spacing_offset_x,
-                     power_case_bolt_spacing_offset_y,
-                     0]) {
-
-            four_corner_children(size=power_case_bottom_bolt_spacing,
-                                 center=true) {
-              translate([0,
-                         0,
-                         -(standoff_h + standoff_thread_h)
-                         + standoff_thread_h]) {
-                standoff(body_h=standoff_h,
-                         thread_at_top=true,
-                         show_bolt=true,
-                         bolt_visible_h=bolt_visible_h,
-                         thread_h=standoff_thread_h);
-              }
-            }
+          translate([0,
+                     0,
+                     (show_box && show_lid)
+                     ? full_h
+                     : show_box
+                     ? h
+                     : show_lid
+                     ? lid_thickness
+                     : 0]) {
+            children();
           }
+        }
+      }
+      if (show_standoffs) {
+        with_power_case_mounting_holes() {
+          standoff(body_h=standoff_h,
+                   thread_at_top=false,
+                   show_bolt=false,
+                   show_nut=true,
+                   bolt_visible_h=bolt_visible_h,
+                   thread_h=standoff_thread_h);
         }
       }
     }
   }
 }
 
-power_socket_case();
+power_socket_case() {
+  //  cube([10, 20, 5]);
+}

@@ -259,7 +259,6 @@ module custom_slot_plist(plist, thickness) {
                                 center=true,
                                 slot_thickness=thickness);
   } else if (placeholder == "xt90e_m") {
-    echo("placeholder", placeholder);
     xt_90_slot(plist,
                thickness=thickness,
                center=true);
@@ -283,7 +282,8 @@ module slot_placeholders_assembly(plist,
   bolt_visible_h = with_default(bolt_visible_h, 0);
   placeholder = plist_get("placeholder", plist);
   if (show_voltmeter && placeholder == "voltmeter") {
-    voltmeter_from_plist(plist=plist, stand_up=true);
+    voltmeter_from_plist(plist=plist,
+                         stand_up=true);
   } else if (show_dc_regulator && placeholder == "step_down_voltage_regulator") {
 
     step_down_voltage_regulator(slot_mode=false,

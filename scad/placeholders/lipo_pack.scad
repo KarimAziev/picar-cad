@@ -10,8 +10,6 @@ include <../colors.scad>
 
 use <../lib/functions.scad>
 
-;
-
 lipo_power_wiring_size    = [9.6, 8, 16.5];
 lipo_wiring_balancer_size = [8.75, 8, 11.3];
 
@@ -46,7 +44,8 @@ module lipo_text_rows(texts = [["TURNIGY",
         translate([0, offst, 0]) {
           color(colr, alpha=1) {
             linear_extrude(height=0.04, center=false) {
-              text(txt, size=size,
+              text(txt,
+                   size=size,
                    halign="left",
                    spacing=is_undef(spacing) ? 1 : spacing,
                    font=font);
@@ -74,7 +73,8 @@ module lipo_pack_side_text(texts=[["5.5   RAPID", 10,
           rotate([90, 0, 90]) {
             color(colr, alpha=1) {
               linear_extrude(height=0.04, center=false, convexity=2) {
-                text(txt, size=size,
+                text(txt,
+                     size=size,
                      halign="left",
                      direction=direction,
                      spacing=spacing,

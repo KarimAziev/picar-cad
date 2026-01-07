@@ -19,6 +19,10 @@ use <sliding_lid.scad>
 use <rim.scad>
 use <util.scad>
 
+function sliding_box_full_height(size, lid_thickness, rim_h) =
+  let (box_h = size[2])
+  box_h + lid_thickness + rim_h;
+
 module box(size=[86, 90, 35],
            side_thickness=2,
            front_thickness=2,
@@ -253,12 +257,16 @@ module closable_box_and_lid(w=40,
   }
 }
 
+box_size = [25, 40, 10];
+lid_thickness = 2;
+rim_h = 3;
+
 closable_box_and_lid(w=25,
                      l=40,
                      h=10,
                      corner_rad=1.0,
                      use_inner_round=true,
-                     rim_h=3,
+                     rim_h=rim_h,
                      rim_w=2,
                      rim_front_w=1,
                      include_rim_sizing=true,
@@ -266,7 +274,7 @@ closable_box_and_lid(w=25,
                      rail_tolerance=0.4,
                      rail_top_thickness=1,
                      front_thickness=1,
-                     lid_thickness=1,
+                     lid_thickness=lid_thickness,
                      latch_h=1,
                      latch_l=0.5,
                      hook_h=0.32,
@@ -277,11 +285,19 @@ closable_box_and_lid(w=25,
                                  "spacing", 0.9],
                      side_thickness=1,
                      bottom_thickness=1.5,
-                     assembly=false,
-                     assembly_debug=true,
+                     assembly=true,
+                     assembly_debug=false,
                      show_lid=true,
                      show_box=true,
                      grid_spec=[[30, [50, 20]],
                                 [30, [30, 30, 30, 30]],
                                 [50, [80]],
                                 [20, [30, 30]]]);
+
+translate([-box_size[0] / 2, 0, 0]) {
+
+  #cube_3d([box_size[0], box_size[1],
+            sliding_box_full_height(size=box_size,
+                                    rim_h=rim_h,
+                                    lid_thickness=lid_thickness)]);
+}

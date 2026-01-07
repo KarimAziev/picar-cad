@@ -14,12 +14,13 @@
 include <../parameters.scad>
 include <../colors.scad>
 
-use <../lib/l_bracket.scad>
 use <../placeholders/steering_servo.scad>
-use <steering_pinion.scad>
-use <rack_util.scad>
+use <../lib/l_bracket.scad>
 use <../lib/functions.scad>
 use <../lib/transforms.scad>
+use <steering_pinion.scad>
+use <rack_util.scad>
+use <../placeholders/bolt.scad>
 
 module steering_servo_mount_connector(clearance=0.0) {
   thickness = steering_servo_mount_connector_thickness + clearance;
@@ -33,20 +34,29 @@ module steering_servo_mount_connector(clearance=0.0) {
   }
 }
 
-module steering_servo_mount_panel_bolt_holes() {
+module steering_servo_mount_panel_bolt_holes(bolt_mode=false, bolt_h) {
   h = steering_rack_support_width
     + steering_vertical_panel_thickness
     + steering_servo_mount_connector_length
     + 1;
+
+  bolt_h = with_default(bolt_h, h);
 
   r = steering_servo_mount_connector_bolt_dia / 2;
 
   mirror_copy([1, 0, 0]) {
     translate([steering_servo_mount_width / 2
                - r
-               - steering_servo_mount_connector_bolt_x, 0, 0]) {
+               - steering_servo_mount_connector_bolt_x,
+               0,
+               0]) {
       rotate([90, 0, 0]) {
-        cylinder(h=h, r=r, center=false, $fn=150);
+        if (bolt_mode) {
+          bolt(h=bolt_h,
+               d=steering_servo_mount_connector_bolt_dia);
+        } else {
+          cylinder(h=h, r=r, center=false, $fn=150);
+        }
       }
     }
   }
@@ -66,6 +76,7 @@ module steering_servo_mount(show_servo=false,
   union() {
     difference() {
       union() {
+
         translate([-steering_servo_mount_width / 2,
                    - steering_servo_mount_length
                    - steering_rack_support_width / 2
@@ -107,6 +118,7 @@ module steering_servo_mount(show_servo=false,
       }
       steering_servo_mount_panel_bolt_holes();
     }
+
     if (show_servo) {
       servo_dia = steering_servo_bolt_dia + 0.3;
       servo_w = steering_servo_size[1];

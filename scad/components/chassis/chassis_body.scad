@@ -8,6 +8,7 @@
 include <../../parameters.scad>
 include <../../colors.scad>
 
+use <../../core/grid.scad>
 use <../../core/slot_layout.scad>
 use <../../core/slot_layout_components.scad>
 use <../../core/slot_placeholder_grid.scad>
@@ -37,8 +38,7 @@ use <../../panel_stack/control_panel.scad>
 use <../../panel_stack/panel_stack.scad>
 
 use <../../power/power_lid.scad>
-use <../../power/power_case.scad>
-
+use <../../power/power_case_assembly.scad>
 use <../../wheels/rear_wheel.scad>
 
 use <../rear_panel.scad>
@@ -68,6 +68,7 @@ show_lid_perf_board               = false;
 show_lipo_pack                    = false;
 
 show_batteries                    = false;
+
 show_socket_case                  = false;
 show_socket_case_atm_fuse_holders = false;
 show_socket_case_lid              = false;
@@ -79,6 +80,13 @@ show_ai_hat                       = false;
 show_motor_driver_hat             = false;
 show_servo_driver_hat             = false;
 show_gpio_expansion_board         = false;
+
+show_power_case_bottom_bolts      = false;
+
+show_power_case_bottom_bolts_info = false;
+
+power_case_bottom_bolts_down      = true;
+show_power_case_show_standoffs    = true;
 
 rpi_position_x                    = -rpi_bolt_spacing[0] / 2 + rpi_chassis_x_position;
 
@@ -121,17 +129,6 @@ function motor_bracket_y_pos() =
 function motor_bracket_x_pos() =
   (chassis_body_w * 0.5) - (standard_motor_bracket_height * 0.5);
 
-module chassis_body(size, slots_and_placeholders, assembly) {
-  union() {
-    difference() {
-      cube(size=size);
-      make_slots(size=size, slots=slots_and_placeholders, mode="slots");
-    }
-    if (assembly) {
-      make_slots(size=size, slots=slots_and_placeholders, mode="placeholder");
-    }
-  }
-}
 module standard_motor_bracket_wall(show_motor=false, show_wheel=false) {
   translate([motor_bracket_x_pos(),
              motor_bracket_y_pos(),
@@ -225,6 +222,24 @@ module chassis_body_border_slots(groups, center_group=true, center=true) {
   }
 }
 
+module chassis_battery_holders_slots_or_placeholders(mode="slot",
+                                                     specs=chassis_body_battery_holders_specs,
+                                                     debug=false,
+                                                     debug_spec=["gap", 10,
+                                                                 "color", yellow_3,
+                                                                 "text_h", 1,
+                                                                 "border_w", 0.5,
+                                                                 "size", 2]) {
+  translate([-chassis_body_w / 2, 0, 0]) {
+    slot_or_placeholder_grid(mode=mode,
+                             thickness=chassis_thickness,
+                             debug_spec=plist_merge(["border_h",
+                                                     chassis_thickness + 1],
+                                                    debug_spec),
+                             grid=specs,
+                             debug=debug);
+  }
+}
 module chassis_body_3d(panel_color="white") {
   union() {
     difference() {
@@ -265,13 +280,7 @@ module chassis_body_3d(panel_color="white") {
                                == "vertical");
       }
 
-      translate([-chassis_body_w / 2, 0, 0]) {
-        slot_or_placeholder_grid(mode="slot",
-                                 thickness=chassis_thickness,
-                                 debug_spec=["border_h", chassis_thickness + 1],
-                                 grid=chassis_body_battery_holders_specs,
-                                 debug=false);
-      }
+      chassis_battery_holders_slots_or_placeholders(mode="slot");
 
       translate([rpi_position_x, rpi_position_y, 0]) {
         rpi_5(slot_mode=true);
@@ -374,14 +383,29 @@ module chassis_body(panel_color="white",
                     show_lid_ato_fuse=show_lid_ato_fuse,
                     show_lid_voltmeter=show_lid_voltmeter,
                     show_lid_atm_fuse_holders=show_lid_atm_fuse_holders,
-                    show_lid_perf_board=show_lid_perf_board) {
-  chassis_body_3d(panel_color=panel_color);
+                    show_lid_perf_board=show_lid_perf_board,
+                    override_battery_holders_plists=false,
+                    show_batteries=show_batteries,
+                    show_battery_holders_bolts,
+                    show_battery_holders_nuts,
+                    show_power_case_bottom_bolts=show_power_case_bottom_bolts,
+                    show_power_case_bottom_bolts_info=show_power_case_bottom_bolts_info,
+                    power_case_bottom_bolts_down=power_case_bottom_bolts_down,
+                    show_power_case_show_standoffs=show_power_case_show_standoffs,
+                    show_chassis_body=true) {
+
+  if (show_chassis_body) {
+    chassis_body_3d(panel_color=panel_color);
+  }
+
   if (show_buttons_panel || show_fuse_panel) {
     translate([0, 0, chassis_thickness / 2]) {
       chassis_with_panel_stack_position() {
         panel_stack(center=false,
                     y_axle=chassis_panel_stack_orientation == "vertical",
                     show_fusers=show_fusers,
+                    show_fuse_panel=show_fuse_panel,
+                    show_buttons_panel=show_buttons_panel,
                     show_buttons=show_buttons);
       }
     }
@@ -400,12 +424,16 @@ module chassis_body(panel_color="white",
   }
 
   if (show_battery_holders) {
-    translate([-chassis_body_w / 2, 0, 0]) {
-      slot_or_placeholder_grid(mode="placeholder",
-                               thickness=chassis_thickness,
-                               debug_spec=["border_h", chassis_thickness + 1],
-                               grid=chassis_body_battery_holders_specs,
-                               debug=false);
+    let (specs =
+         merge_specs_rows_by_placeholder_types(grid=chassis_body_battery_holders_specs,
+                                               plist=["show_battery", show_batteries,
+                                                      "show_bolt", show_battery_holders_bolts,
+                                                      "show_nut", show_battery_holders_nuts],
+                                               override=override_battery_holders_plists,
+                                               placeholder_types=["battery_holder"])) {
+
+      chassis_battery_holders_slots_or_placeholders(mode="placeholder",
+                                                    specs=specs);
     }
   }
 
@@ -445,7 +473,7 @@ module chassis_body(panel_color="white",
                -chassis_counterbore_h]) {
       power_case_assembly(case_color=power_case_color,
                           show_lipo_pack=show_lipo_pack,
-                          show_standoffs=true,
+                          show_power_case=show_power_case,
                           show_lid=show_power_case_lid,
                           show_lid_xt90e=show_xt90e,
                           show_socket_case=show_socket_case,
@@ -456,7 +484,11 @@ module chassis_body(panel_color="white",
                           show_lid_ato_fuse=show_lid_ato_fuse,
                           show_lid_voltmeter=show_lid_voltmeter,
                           show_atm_fuse_holders=show_lid_atm_fuse_holders,
-                          show_perf_board=show_lid_perf_board);
+                          show_perf_board=show_lid_perf_board,
+                          show_bottom_bolts=show_power_case_bottom_bolts,
+                          show_bottom_bolts_info=show_power_case_bottom_bolts_info,
+                          bottom_bolts_down=power_case_bottom_bolts_down,
+                          show_standoffs=show_power_case_show_standoffs);
     }
   }
   if (show_ups_hat) {
@@ -466,6 +498,4 @@ module chassis_body(panel_color="white",
   }
 }
 
-union() {
-  chassis_body();
-}
+chassis_body();

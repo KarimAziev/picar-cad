@@ -1,5 +1,5 @@
 /**
- * Module: Power Case
+ * Module: Case for lipo packs like Turnigy Rapid
  *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
@@ -7,160 +7,132 @@
 
 include <../parameters.scad>
 include <../colors.scad>
-include <../power_lid_parameters.scad>
 
-use <../placeholders/lipo_pack.scad>
-use <../lib/slider.scad>
-use <power_lid.scad>
-use <power_case_rail.scad>
 use <../lib/shapes3d.scad>
-use <../lib/holes.scad>
 use <../lib/placement.scad>
 use <../lib/transforms.scad>
-use <../placeholders/standoff.scad>
-use <power_socket_case.scad>
 use <../lib/slots.scad>
+use <../lib/functions.scad>
 
-slot_mode                         = false;
+use <power_case_rail.scad>
+use <common.scad>
 
-/* [Mounting] */
-show_standoffs                    = true;
-bolt_visible_h                    = chassis_thickness - chassis_counterbore_h;  // [0:20]
+module power_case(size=[power_case_width,
+                        power_case_length,
+                        power_case_height],
+                  lipo_pack_size=[lipo_pack_width,
+                                  lipo_pack_length,
+                                  lipo_pack_height],
+                  bottom_bolt_d=power_case_bottom_bolt_dia,
+                  bottom_bore_d=power_case_bottom_cbore_dia,
+                  bottom_bore_h=power_case_bottom_cbore_h,
+                  bolt_spacing=power_case_bottom_bolt_spacing,
+                  bolt_offsets=[power_case_bolt_spacing_offset_x,
+                                power_case_bolt_spacing_offset_y],
+                  side_thickness=power_case_side_wall_thickness,
+                  bottom_thickness=power_case_bottom_thickness,
+                  front_thickness=power_case_front_wall_thickness,
+                  front_rear_h=power_case_front_back_wall_h,
+                  corner_rad=power_case_round_rad,
+                  lipo_pack_tolerance=0.8,
+                  case_color=white_snow_1,
+                  side_vent_padding_x=power_case_side_slot_padding_x,
+                  side_vent_padding_z=power_case_side_slot_padding_z,
+                  side_vent_slot_h=power_case_side_slot_h,
+                  side_vent_slot_w=power_case_side_slot_w,
+                  side_vent_gap_x=power_case_side_slot_gap,
+                  side_vent_gap_z=power_case_side_slot_gap_z,
+                  front_vent_padding_x=power_case_front_slot_padding_x,
+                  front_vent_padding_z=power_case_front_slot_padding_z,
+                  front_vent_slot_h=power_case_front_slot_h,
+                  front_vent_slot_w=power_case_front_slot_w,
+                  front_vent_gap_x=power_case_front_slot_gap,
+                  front_vent_gap_z=power_case_front_slot_gap_z,
+                  rail_h=power_case_rail_height,
+                  rail_hole_d=power_case_rail_bolt_dia,
+                  rail_hole_distance=power_case_rail_hole_distance_from_edge,
+                  rail_angle=power_case_rail_angle,
+                  rail_r=power_case_rail_rad,
+                  alpha=1) {
+  w = size[0];
+  l = size[1];
+  h = size[2];
 
-/* [Socket case] */
-show_socket_case                  = true;
-show_socket                       = true;
-show_socket_case_lid              = true;
-show_socket_case_atm_fuse_holders = true;
+  lipo_w = lipo_pack_size[0];
+  lipo_h = lipo_pack_size[2];
 
-/* [Lipo] */
-show_lipo_pack                    = true;
-
-case_color                        = white_snow_1;
-
-/* [Power lid] */
-show_lid                          = true;
-show_lid_xt90e                    = true;
-show_lid_dc_regulator             = true;
-show_lid_ato_fuse                 = true;
-show_lid_voltmeter                = true;
-show_lid_bolts                    = true;
-show_atm_fuse_holders             = true;
-show_perf_board                   = true;
-
-/* [Power lid switch button] */
-use_lid_toggle_switch             = false;
-show_lid_switch_button            = false;
-
-module power_case(case_color=metallic_silver_5, alpha=1) {
-  inner_x_cutout = power_case_width - power_case_side_wall_thickness * 2;
-  inner_y_cutout = power_case_length - power_case_front_wall_thickness * 2;
-  inner_lipo_x_cutout = lipo_pack_width + 0.8;
+  inner_x_cutout = w - side_thickness * 2;
+  inner_y_cutout = l - front_thickness * 2;
+  inner_lipo_x_cutout = lipo_w + lipo_pack_tolerance;
 
   color(case_color, alpha=alpha) {
-    difference() {
-      union() {
-        difference() {
-          // Outer case
-          union() {
-            rounded_cube([power_case_width,
-                          power_case_length,
-                          power_case_height],
-                         center=true,
-                         r=power_case_round_rad);
-            translate([0,
-                       0,
-                       power_case_round_rad / 2 +
-                       power_case_height
-                       - power_case_round_rad]) {
-              cube([power_case_width,
-                    power_case_length,
-                    power_case_round_rad],
-                   center=true);
-            }
+    union() {
+      difference() {
+        // Outer case
+        union() {
+          rounded_cube([w, l, h], r=corner_rad, center=true);
+          translate([0, 0, h - corner_rad / 2]) {
+            cube([w, l, corner_rad], center=true);
           }
-          translate([0,
-                     0,
-                     power_case_bottom_thickness]) {
-            // Cutout for the 4 corner mounting bolt positions
-            rounded_cube([inner_x_cutout,
-                          power_case_bottom_bolt_spacing[1]
-                          + (power_case_bottom_cbore_dia * 2),
-                          power_case_height],
-                         center=true);
-
-            // Cutout for LiPo pack
-            translate([0, 0, power_case_height / 2]) {
-              cube([inner_lipo_x_cutout,
-                    inner_y_cutout,
-                    power_case_height],
-                   center=true);
-            }
-          }
-
-          // Holes for 4 corner mounting bolts
-          translate([power_case_bolt_spacing_offset_x, 0, -0.0]) {
-            translate([0, power_case_bolt_spacing_offset_y, 0]) {
-              four_corner_children(size=power_case_bottom_bolt_spacing,
-                                   center=true) {
-                counterbore(d=power_case_bottom_bolt_dia,
-                            h=power_case_bottom_thickness,
-                            bore_h=power_case_bottom_cbore_h,
-                            bore_d=power_case_bottom_cbore_dia,
-                            center=false,
-                            autoscale_step=0.1,
-                            sink=false);
-              }
-            }
-          }
-
-          // Front and rear panels cutout
-          translate([0,
-                     0,
-                     power_case_front_back_wall_h]) {
-            rounded_cube([inner_x_cutout,
-                          power_case_length + 1,
-                          lipo_pack_height + 1],
-                         center=true);
-          }
-
-          // Front and rear panels vent
-          power_case_vent(panel_height=power_case_front_back_wall_h,
-                          bottom_thickness=power_case_bottom_thickness,
-                          padding_x=power_case_front_slot_padding_x,
-                          padding_z=power_case_front_slot_padding_z,
-                          slot_h=power_case_front_slot_h,
-                          slot_w=power_case_front_slot_w,
-                          slot_depth=power_case_front_wall_thickness,
-                          gap_x=power_case_front_slot_gap,
-                          gap_z=power_case_front_slot_gap_z,
-                          y_axle=false,
-                          x_offset=-power_case_length / 2,
-                          total_width=power_case_width - power_case_side_wall_thickness * 2);
-
-          // Side panels vent
-          power_case_vent(panel_height=power_case_height,
-                          bottom_thickness=power_case_bottom_thickness,
-                          padding_x=power_case_side_slot_padding_x,
-                          padding_z=power_case_side_slot_padding_z,
-                          slot_h=power_case_side_slot_h,
-                          slot_w=power_case_side_slot_w,
-                          slot_depth=(power_case_width - inner_lipo_x_cutout)
-                          / 2,
-                          gap_x=power_case_side_slot_gap,
-                          gap_z=power_case_side_slot_gap_z,
-                          y_axle=true,
-                          x_offset=inner_lipo_x_cutout / 2,
-                          total_width=inner_y_cutout);
         }
-        mirror_copy([1, 0, 0]) {
-          translate([power_case_width / 2
-                     - power_case_side_wall_thickness / 2,
-                     0,
-                     power_case_height]) {
-            power_case_rail(w=power_case_side_wall_thickness,
-                            l=power_case_length);
-          }
+        translate([0, 0, bottom_thickness]) {
+          // Cutout for LiPo pack
+          cube_3d([inner_lipo_x_cutout, inner_y_cutout, h], center=true);
+        }
+
+        // Holes for 4 corner mounting bolts
+        with_power_case_mounting_holes(bolt_spacing=bolt_spacing,
+                                       offsets=bolt_offsets) {
+          counterbore(d=bottom_bolt_d,
+                      h=bottom_thickness,
+                      bore_h=bottom_bore_h,
+                      bore_d=bottom_bore_d,
+                      autoscale_step=0.1,
+                      sink=false);
+        }
+
+        // Front and rear panels upper cutouts
+        translate([0, 0, front_rear_h]) {
+          rounded_cube([inner_x_cutout, l + 1, lipo_h + 1], center=true);
+        }
+
+        // Front and rear panels vent
+        power_case_vent(panel_height=front_rear_h,
+                        bottom_thickness=bottom_thickness,
+                        padding_x=front_vent_padding_x,
+                        padding_z=front_vent_padding_z,
+                        slot_h=front_vent_slot_h,
+                        slot_w=front_vent_slot_w,
+                        slot_depth=front_thickness,
+                        gap_x=front_vent_gap_x,
+                        gap_z=front_vent_gap_z,
+                        y_axle=false,
+                        x_offset=-l / 2,
+                        total_width=w - side_thickness * 2);
+
+        // Side panels vent
+        power_case_vent(panel_height=h,
+                        bottom_thickness=bottom_thickness,
+                        padding_x=side_vent_padding_x,
+                        padding_z=side_vent_padding_z,
+                        slot_depth=(w - inner_lipo_x_cutout) / 2,
+                        slot_h=side_vent_slot_h,
+                        slot_w=side_vent_slot_w,
+                        gap_x=side_vent_gap_x,
+                        gap_z=side_vent_gap_z,
+                        y_axle=true,
+                        x_offset=inner_lipo_x_cutout / 2,
+                        total_width=inner_y_cutout);
+      }
+      mirror_copy([1, 0, 0]) {
+        translate([w / 2 - side_thickness / 2, 0, h]) {
+          power_case_rail(w=side_thickness,
+                          l=l,
+                          h=rail_h,
+                          d=rail_hole_d,
+                          distance=rail_hole_distance,
+                          angle=rail_angle,
+                          r=rail_r);
         }
       }
     }
@@ -212,117 +184,4 @@ module power_case_vent(panel_height,
   }
 }
 
-module power_case_assembly(alpha=1,
-                           slot_mode=slot_mode,
-                           standoff_h=power_case_standoff_h,
-                           standoff_thread_h=power_case_standoff_thread_h,
-                           case_color=case_color,
-                           bolt_visible_h=bolt_visible_h,
-                           show_lipo_pack=show_lipo_pack,
-                           show_standoffs=show_standoffs,
-                           show_socket_case_atm_fuse_holders=show_socket_case_atm_fuse_holders,
-                           show_socket_case_lid=show_socket_case_lid,
-                           show_socket=show_socket,
-                           show_socket_case=show_socket_case,
-                           show_lid_xt90e=show_lid_xt90e,
-                           show_lid = show_lid,
-                           show_lid_dc_regulator=show_lid_dc_regulator,
-                           show_lid_ato_fuse=show_lid_ato_fuse,
-                           show_lid_voltmeter=show_lid_voltmeter,
-                           show_lid_bolts=show_lid_bolts,
-                           show_atm_fuse_holders=show_atm_fuse_holders,
-                           show_perf_board=show_perf_board) {
-
-  if (slot_mode) {
-    translate([power_case_bolt_spacing_offset_x,
-               power_case_bolt_spacing_offset_y,
-               0]) {
-
-      four_corner_children(power_case_bottom_bolt_spacing,
-                           center=true) {
-        counterbore(d=power_case_bottom_bolt_dia,
-                    h=chassis_thickness,
-                    bore_h=chassis_counterbore_h,
-                    bore_d=power_case_bottom_cbore_dia,
-                    autoscale_step=0.1,
-                    sink=false,
-                    reverse=false);
-      }
-    }
-  } else {
-    translate([0,
-               0,
-               0]) {
-      if (show_socket_case) {
-        power_socket_case(show_standoffs=show_standoffs,
-                          case_color=case_color,
-                          standoff_h=standoff_h,
-                          assembly=true,
-                          assembly_debug=false,
-                          show_lid=show_socket_case_lid,
-                          show_socket=show_socket,
-                          show_atm_fuse_holders=show_socket_case_atm_fuse_holders,
-                          standoff_thread_h=standoff_thread_h);
-      };
-
-      translate([0,
-                 0,
-                 show_socket_case ? (power_socket_case_size[2] + power_socket_case_lid_thickness
-                                     +
-                                     (show_standoffs ?
-                                      +(standoff_h + standoff_thread_h)
-                                      + standoff_thread_h : 0)) : 0]) {
-        if (show_lipo_pack) {
-          translate([0, 0, power_case_bottom_thickness + 0.1]) {
-            lipo_pack();
-          }
-        }
-
-        if (show_lid) {
-          translate([0, 0, power_case_height + power_lid_height + 0]) {
-            rotate([180, 0, 0]) {
-
-              power_lid(show_switch_button=show_lid_switch_button,
-                        show_dc_regulator=show_lid_dc_regulator,
-                        lid_color=case_color,
-                        show_ato_fuse=show_lid_ato_fuse,
-                        show_voltmeter=show_lid_voltmeter,
-                        show_bolt=show_lid_bolts,
-                        show_xt90e=show_lid_xt90e,
-                        show_perf_board=show_perf_board,
-                        show_atm_fuse_holders=show_atm_fuse_holders,
-                        left_columns = power_lid_left_slots,
-                        right_columns = power_lid_right_slots);
-            }
-          }
-        }
-
-        union() {
-          // Power case
-          power_case(case_color=case_color, alpha=alpha);
-          if (show_standoffs) {
-            translate([power_case_bolt_spacing_offset_x,
-                       power_case_bolt_spacing_offset_y,
-                       0]) {
-
-              four_corner_children(size=power_case_bottom_bolt_spacing,
-                                   center=true) {
-                translate([0,
-                           0,
-                           -(standoff_h + standoff_thread_h) + standoff_thread_h]) {
-                  standoff(body_h=standoff_h,
-                           thread_at_top=true,
-                           show_bolt=true,
-                           bolt_visible_h=bolt_visible_h,
-                           thread_h=standoff_thread_h);
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-power_case_assembly();
+power_case();

@@ -34,8 +34,8 @@ use <../lib/slots.scad>
 show_xt90e            = false;
 show_dc_regulator     = false;
 show_ato_fuse         = false;
-show_voltmeter        = false;
-show_bolt             = false;
+show_voltmeter        = true;
+show_bolt             = true;
 show_atm_fuse_holders = false;
 show_perf_board       = false;
 

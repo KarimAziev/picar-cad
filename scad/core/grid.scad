@@ -24,6 +24,30 @@ function grid_is(x) = plist_is(x) && plist_get("type", x, "") == "grid";
 function row_is(x)= plist_is(x) && !is_undef(plist_get("cells", x, undef));
 function cell_is(x) = plist_is(x) && !is_undef(plist_get("w", x, undef));
 
+function merge_specs_rows_by_placeholder_types(grid,
+                                               plist,
+                                               override=false,
+                                               placeholder_types) =
+  let (rows = [for (row = plist_get("rows", grid, []))
+           let (mapped_row = grid_is(row)
+                ? merge_specs_rows_by_placeholder_types(row=row,
+                                                        plist=plist,
+                                                        override=override,
+                                                        placeholder_types=placeholder_types)
+                : plist_merge(row, ["cells", [for (cell = plist_get("cells", row, []))
+                                    let (placeholder = plist_get("placeholder", cell, []),
+                                         placeholder_type = plist_get("placeholder_type", placeholder),
+                                         updated_cell =
+                                         member(placeholder_type, placeholder_types)
+                                         ? plist_merge(cell, ["placeholder",
+                                                              (override
+                                                               ? plist_merge(placeholder, plist)
+                                                               : plist_merge(plist, placeholder))])
+                                         : cell)
+                                      updated_cell]]))
+             mapped_row])
+             plist_merge(grid, ["rows", rows]);
+
 module grid_plist_render(size,
                          grid,
                          mode,

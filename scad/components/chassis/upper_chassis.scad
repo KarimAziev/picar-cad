@@ -40,19 +40,19 @@ effective_front_pan_dia        = max(front_panel_connector_bolt_bore_dia,
                                      front_panel_connector_bolt_dia) / 2;
 front_pan_end                  = front_pan_y - effective_front_pan_dia;
 top_ribbon_hole_pos            = front_pan_end
-                                 - chassis_pan_servo_top_ribbon_cuttout_h
-                                 - chassis_upper_front_padding_y;
+  - chassis_pan_servo_top_ribbon_cuttout_h
+  - chassis_upper_front_padding_y;
 
 head_pos                       = -upper_chassis_holes_border_w * 2
-                                 - chassis_pan_servo_recesess_y_len
-                                 - chassis_pan_servo_recesess_thickness / 2
-                                 + top_ribbon_hole_pos
-                                 - upper_chassis_holes_border_w
-                                 - chassis_head_zone_y_offset;
+  - chassis_pan_servo_recesess_y_len
+  - chassis_pan_servo_recesess_thickness / 2
+  + top_ribbon_hole_pos
+  - upper_chassis_holes_border_w
+  - chassis_head_zone_y_offset;
 
 hole_h                         = chassis_thickness + 1;
 steering_pan_pos               = chassis_upper_len
-                                 - steering_panel_distance_from_top;
+  - steering_panel_distance_from_top;
 
 trapezoid_rows_params          = calc_cols_params(gap=chassis_pan_servo_side_trapezoid_gap
                                                   + upper_chassis_holes_border_w,
@@ -514,11 +514,11 @@ module chassis_upper_steering_hinges() {
   }
 }
 
-module chassis_upper_3d(panel_color="white",
+module chassis_upper_3d(panel_color=white_snow_1,
                         bracket_color,
                         head_color,
-                        rack_color="white",
-                        steering_panel_color="grey",
+                        rack_color=white_snow_1,
+                        steering_panel_color=white_snow_1,
                         show_front_panel=false,
                         show_ultrasonic=false,
                         show_front_rear_panel=false,
@@ -543,40 +543,45 @@ module chassis_upper_3d(panel_color="white",
                         show_knuckles=false,
                         pan_servo_rotation=0,
                         tilt_servo_rotation=0,
-                        show_distance=false) {
+                        show_distance=false,
+                        show_upper_chassis=true) {
 
-  difference() {
-    color(panel_color, alpha=1) {
-      union() {
-        linear_extrude(height=chassis_thickness,
-                       center=false) {
-          chassis_upper_2d();
-        }
-        translate([0, steering_pan_pos, 0]) {
-          steering_chassis_bar_3d(center_y=false);
+  if (show_upper_chassis) {
+    difference() {
+      color(panel_color, alpha=1) {
+        union() {
+          linear_extrude(height=chassis_thickness,
+                         center=false) {
+            chassis_upper_2d();
+          }
+          translate([0, steering_pan_pos, 0]) {
+            steering_chassis_bar_3d(center_y=false);
+          }
         }
       }
+
+      chassis_upper_front_panel_slot();
+      head_zone_slot();
+      chassis_upper_steering_hinges();
+
+      chassis_upper_rib_hole_slot(border_mode=false);
+      chassis_top_most_side_holes(border_mode=false);
+      chassis_mid_side_trapezoids(border_mode=false);
+      chassis_bottom_side_holes(border_mode=false);
+      chassis_transition_side_holes(border_mode=false);
+      chassis_upper_transition_rect_slots(border_mode=false);
     }
-
-    chassis_upper_front_panel_slot();
-    head_zone_slot();
-    chassis_upper_steering_hinges();
-
-    chassis_upper_rib_hole_slot(border_mode=false);
-    chassis_top_most_side_holes(border_mode=false);
-    chassis_mid_side_trapezoids(border_mode=false);
-    chassis_bottom_side_holes(border_mode=false);
-    chassis_transition_side_holes(border_mode=false);
-    chassis_upper_transition_rect_slots(border_mode=false);
   }
 
-  // borders
-  chassis_upper_rib_hole_slot(border_mode=true);
-  chassis_top_most_side_holes(border_mode=true);
-  chassis_mid_side_trapezoids(border_mode=true);
-  chassis_bottom_side_holes(border_mode=true);
-  chassis_transition_side_holes(border_mode=true);
-  chassis_upper_transition_rect_slots(border_mode=true);
+  if (show_upper_chassis) {
+    // borders
+    chassis_upper_rib_hole_slot(border_mode=true);
+    chassis_top_most_side_holes(border_mode=true);
+    chassis_mid_side_trapezoids(border_mode=true);
+    chassis_bottom_side_holes(border_mode=true);
+    chassis_transition_side_holes(border_mode=true);
+    chassis_upper_transition_rect_slots(border_mode=true);
+  }
 
   // assembly
   if (show_steering_panel) {
@@ -602,8 +607,7 @@ module chassis_upper_3d(panel_color="white",
   if (show_head_assembly || show_head || show_pan_servo) {
     translate([0,
                head_pos,
-               chassis_thickness
-               - chassis_pan_servo_slot_recess]) {
+               chassis_thickness - chassis_pan_servo_slot_recess]) {
       head_neck(center_pan_servo_slot=true,
                 show_pan_servo=show_pan_servo,
                 show_tilt_servo=show_tilt_servo,
@@ -631,11 +635,11 @@ module chassis_upper_3d(panel_color="white",
   }
 }
 
-module chassis_upper(panel_color="white",
+module chassis_upper(panel_color=white_snow_1,
                      bracket_color,
                      head_color,
-                     rack_color="white",
-                     steering_panel_color="grey",
+                     rack_color=white_snow_1,
+                     steering_panel_color=white_snow_1,
                      show_front_panel=true,
                      show_ultrasonic=true,
                      show_front_rear_panel=true,
@@ -660,6 +664,7 @@ module chassis_upper(panel_color="white",
                      show_knuckles=true,
                      tilt_servo_rotation=0,
                      show_distance=false,
+                     show_upper_chassis=true,
                      pan_servo_rotation=0) {
   union() {
     translate([0, chassis_transition_len, 0]) {
@@ -692,9 +697,10 @@ module chassis_upper(panel_color="white",
                        tilt_servo_rotation=tilt_servo_rotation,
                        pan_servo_rotation=pan_servo_rotation,
                        show_knuckles=show_knuckles,
-                       show_distance=show_distance);
+                       show_distance=show_distance,
+                       show_upper_chassis=show_upper_chassis);
     }
-    if (chassis_use_connector) {
+    if (chassis_use_connector && show_upper_chassis) {
       color(panel_color, alpha=1) {
         chassis_connector_tongue();
       }

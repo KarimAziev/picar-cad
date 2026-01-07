@@ -25,45 +25,49 @@ include <../colors.scad>
 use <bearing_shaft.scad>
 use <../lib/transforms.scad>
 use <../lib/slots.scad>
+use <../placeholders/bolt.scad>
 
 steering_hinge_bolt_rad = steering_panel_hinge_bolt_dia / 2;
 
-module steering_kingpin_post() {
+module steering_kingpin_post(color) {
   border_rad = (knuckle_dia - (steering_kingpin_post_border_w * 2)) / 2
     - 0.1;
   center_hole_extra_h = 1;
 
-  difference() {
-    union() {
-      difference() {
-        cylinder(h=steering_rack_support_thickness,
-                 r=border_rad,
-                 center=false,
-                 $fn=360);
-        steering_kingpin_post_bolt_holes();
+  color(color, alpha=1) {
+    difference() {
+      union() {
+        difference() {
+          cylinder(h=steering_rack_support_thickness,
+                   r=border_rad,
+                   center=false,
+                   $fn=360);
+          steering_kingpin_post_bolt_holes();
+        }
+        translate([0, 0, steering_rack_support_thickness]) {
+          bearing_shaft_connector(lower_d=knuckle_dia,
+                                  lower_h=knuckle_pin_lower_height,
+                                  shaft_h=knuckle_pin_bearing_height,
+                                  shaft_d=knuckle_bearing_inner_dia,
+                                  chamfer_h=knuckle_pin_chamfer_height,
+                                  stopper_h=knuckle_pin_stopper_height);
+        }
       }
-      translate([0, 0, steering_rack_support_thickness]) {
-        bearing_shaft_connector(lower_d=knuckle_dia,
-                                lower_h=knuckle_pin_lower_height,
-                                shaft_h=knuckle_pin_bearing_height,
-                                shaft_d=knuckle_bearing_inner_dia,
-                                chamfer_h=knuckle_pin_chamfer_height,
-                                stopper_h=knuckle_pin_stopper_height);
-      }
-    }
 
-    translate([0, 0, -center_hole_extra_h]) {
-      cylinder(h=knuckle_pin_lower_height
-               + steering_rack_support_thickness
-               + center_hole_extra_h,
-               r=steering_hinge_bolt_rad,
-               center=false,
-               $fn=200);
+      translate([0, 0, -center_hole_extra_h]) {
+        cylinder(h=knuckle_pin_lower_height
+                 + steering_rack_support_thickness
+                 + center_hole_extra_h,
+                 r=steering_hinge_bolt_rad,
+                 center=false,
+                 $fn=200);
+      }
     }
   }
 }
 
-module steering_kingpin_post_bolt_holes() {
+module steering_kingpin_post_bolt_holes(bolt_mode=false,
+                                        bolt_h=knuckle_dia + 2) {
   mirror_copy([1, 0, 0]) {
     translate([steering_hinge_bolt_rad * 2 + 0.1,
                0,
@@ -74,21 +78,30 @@ module steering_kingpin_post_bolt_holes() {
       h = knuckle_dia + extra_h;
       seam_h = 0.4;
       seam_w = 0.4;
-      translate([0, 0, bolt_rad]) {
-        rotate([90, 0, 0]) {
-          cylinder(h=h,
-                   r=bolt_rad,
-                   $fn=360,
-                   center=true);
+
+      if (bolt_mode) {
+        translate([0, 0, bolt_rad]) {
+          rotate([90, 0, 0]) {
+            bolt(d=steering_panel_hinge_bolt_dia, h=bolt_h);
+          }
         }
-      }
+      } else {
+        translate([0, 0, bolt_rad]) {
+          rotate([90, 0, 0]) {
+            cylinder(h=h,
+                     r=bolt_rad,
+                     $fn=360,
+                     center=true);
+          }
+        }
 
-      translate([-seam_w / 2, -h / 2, steering_kingpin_post_bolt_dia - 0.2]) {
-        cube([seam_w, h, seam_h]);
-      }
+        translate([-seam_w / 2, -h / 2, steering_kingpin_post_bolt_dia - 0.2]) {
+          cube([seam_w, h, seam_h]);
+        }
 
-      translate([-seam_w / 2, -h / 2, -seam_h + 0.2]) {
-        cube([seam_w, h, seam_h]);
+        translate([-seam_w / 2, -h / 2, -seam_h + 0.2]) {
+          cube([seam_w, h, seam_h]);
+        }
       }
     }
   }

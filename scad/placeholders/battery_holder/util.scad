@@ -12,6 +12,7 @@ include <../../parameters.scad>
 use <../../lib/functions.scad>
 use <../../lib/plist.scad>
 use <contact.scad>
+use <../../core/grid.scad>
 
 function _battery_holder_full_len(front_rear_thickness, battery_len) =
   battery_len + front_rear_thickness * 2;
@@ -119,25 +120,31 @@ function maybe_add_battery_holders_rows_h(rows) =
            : plist_get(row, "h", 0))
         plist_merge(["h", h], row)];
 
-echo("ROWS",
-     maybe_add_battery_holders_rows_h([["cells",
-                                        [["w", 0.5,
-                                          "align_y", -1,
-                                          "align_x", -1,
-                                          "placeholder",
-                                          ["placeholder_type", "battery_holder",
-                                           "battery_len", battery_length,
-                                           "battery_dia", battery_dia,
-                                           "mount_type", "intercell",
-                                           "terminal_type", "solder_tab",
-                                           "side_wall_cutout_type", "skeleton"]],
-                                         ["w", 0.5,
-                                          "align_y", -1,
-                                          "align_x", -1,
-                                          "placeholder",
-                                          ["placeholder_type", "battery_holder",
-                                           "battery_len", battery_length,
-                                           "battery_dia", battery_dia,
-                                           "mount_type", "intercell",
-                                           "terminal_type", "solder_tab",
-                                           "side_wall_cutout_type", "skeleton"]]]]]));
+echo("MERGED",
+     merge_specs_rows_by_placeholder_types(chassis_body_battery_holders_specs,
+                                           plist=["show_battery", true],
+                                           override=true,
+                                           placeholder_types=["battery_holder"]));
+
+// echo("ROWS",
+//      maybe_add_battery_holders_rows_h([["cells",
+//                                         [["w", 0.5,
+//                                           "align_y", -1,
+//                                           "align_x", -1,
+//                                           "placeholder",
+//                                           ["placeholder_type", "battery_holder",
+//                                            "battery_len", battery_length,
+//                                            "battery_dia", battery_dia,
+//                                            "mount_type", "intercell",
+//                                            "terminal_type", "solder_tab",
+//                                            "side_wall_cutout_type", "skeleton"]],
+//                                          ["w", 0.5,
+//                                           "align_y", -1,
+//                                           "align_x", -1,
+//                                           "placeholder",
+//                                           ["placeholder_type", "battery_holder",
+//                                            "battery_len", battery_length,
+//                                            "battery_dia", battery_dia,
+//                                            "mount_type", "intercell",
+//                                            "terminal_type", "solder_tab",
+//                                            "side_wall_cutout_type", "skeleton"]]]]]));

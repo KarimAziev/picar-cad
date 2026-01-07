@@ -549,9 +549,9 @@ module battery_holder_cell(plist,
   bolt_visible_h = plist_get("bolt_visible_h", plist, 2);
   show_battery = plist_get("show_battery", plist, show_battery);
   show_contact = plist_get("show_contact", plist, show_contact);
-  show_bolt = plist_get("show_bolt", plist, show_bolt);
-  show_nut = plist_get("show_nut", plist, show_nut);
-  lock_nut = plist_get("lock_nut", plist, lock_nut);
+  show_bolt = plist_get("show_bolt", plist);
+  show_nut = plist_get("show_nut", plist);
+  lock_nut = plist_get("lock_nut", plist);
   bolt_color = plist_get("bolt_color", plist);
   battery_color = plist_get("battery_color", plist, undef);
 
@@ -594,6 +594,7 @@ module battery_holder_cell(plist,
                    through_hole_distance=through_hole_distance,
                    slot_mode=slot_mode,
                    slot_thickness=thickness,
+                   tab_contact_slot_pad_w=tab_contact_slot_pad_w,
                    contact_color=contact_color,
                    center=center);
   }
