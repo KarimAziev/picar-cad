@@ -11,7 +11,9 @@ This repository contains the 3D model source files for a four-wheeled robot chas
 
 > - [About](#about)
 >   - [Overview](#overview)
+>   - [Requirements](#requirements)
 >   - [Ackermann Geometry](#ackermann-geometry)
+>   - [Assembly](#assembly)
 >   - [Structure](#structure)
 >   - [External Details](#external-details)
 >     - [Bearings](#bearings)
@@ -57,6 +59,12 @@ The robot model is designed around the following core elements:
 - **Extendable Power Tiers**: Default power case for high-discharge LiPo packs (e.g., Turnigy Rapid 4S2P) plus battery holders plus slots for servo/motor driver HATs; Waveshare UPS S3 remains optional.
 - **Raspberry Pi**: The chassis includes placements and bolt holes for the Raspberry Pi 5 and multiple 18650 battery holders.
 
+## Requirements
+
+- Use the latest nightly build of OpenSCAD; textmetrics is required by the project.
+- Enable textmetrics in the OpenSCAD editor via `Preferences -> Features -> textmetrics`.
+- When using the CLI, pass `--enable=textmetrics` (e.g., `openscad --enable=textmetrics --backend=Manifold ...`).
+
 ## Ackermann Geometry
 
 ![Ackermann steering view](./demo/picar-cad-ackermann.jpg)
@@ -67,6 +75,10 @@ Ackermann steering is implemented with a rack-and-pinion mechanism that drives a
 > Install the `rack_link` on only one side and on only one of the knuckles - it doesn't matter which. Movement of the rack will cause that "leading" knuckle to rotate. The leading knuckle is then connected to the second, "driven" knuckle via a tie rod.
 
 Most parameters live in `scad/parameters.scad`, but the actual Ackermann geometry (angles and the required tie-rod top width) is calculated automatically from core robot dimensions such as chassis length, steering panel placement and knuckle geometry. Because of that, you will rarely need to edit Ackermann-specific variables manually - especially `steering_angle_deg`, which is derived from the layout.
+
+## Assembly
+
+The interactive guide lives in `scad/assembly_guide.scad`. Open it in OpenSCAD and step through the boolean checkboxes in the built-in Customizer to reveal each assembly step (power case, steering, electronics, and wheels). For a static full build view, use `scad/assembly.scad`.
 
 ## Structure
 

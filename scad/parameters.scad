@@ -499,7 +499,7 @@ chassis_transition_pts                               = [[0, 0],
                                                         [chassis_transition_half_w, chassis_transition_len],
                                                         [0, chassis_transition_len]];
 
-chassis_counterbore_h                                = 2.2; // The amount by which to offset the chassis
+chassis_counterbore_h                                = 2.2; // The depth of counterbores on the chassis
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Chassis shape

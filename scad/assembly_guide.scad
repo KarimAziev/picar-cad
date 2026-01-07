@@ -15,6 +15,7 @@ use <components/chassis/chassis.scad>
 show_socket_case                  = true;
 // Insert the socket jack for the XT90E-M male connector and fasten it with bolts.
 show_socket                       = false;
+// Seat the XT90E-M male connector into the fuse holders.
 // Connect the XT90E-M male connector to the fuse holders.
 show_socket_case_fusers           = false;
 
@@ -54,66 +55,105 @@ show_lid_bolts                    = false;
 show_power_lid_ato_fuse           = false;
 // Show XT90E if defined in power_lid_left_slots or power_lid_right_slots.
 show_power_lid_case_xt90e         = false;
-// Show if defined in power_lid_left_slots or power_lid_right_slots.
+// Toggle any extra lid slot fillers defined in power_lid_left_slots or power_lid_right_slots.
 
 /* [Head] */
+// Preview the entire head stack at once.
 show_head_assembly                = false;
+// Drop the tilt servo into the neck tilt bracket.
 show_tilt_servo                   = false;
+// Install the pan servo into the neck base.
 show_pan_servo                    = false;
+// Attach the head shell on top of the tilt bracket.
 show_head                         = false;
+// Insert the camera boards into their holders.
 show_camera                       = false;
+// Fasten the IR LED case onto the head.
 show_ir_case                      = false;
+// Seat the IR LED board inside its case.
 show_ir_led                       = false;
 
 pan_servo_rotation                = 0; // [-179:179]
 tilt_servo_rotation               = 0; // [-90:90]
 
 /* [Chassis] */
+// Add the upper chassis plate.
 show_upper_chassis_body           = false;
+// Show the main chassis body.
 show_chassis_body                 = false;
 
 /* [Batteries] */
+// Place battery holders into the chassis.
 show_battery_holders              = false;
+// Bolt the battery holders from the top.
 show_battery_holders_bolts        = false;
+// Capture nuts underneath the holders.
 show_battery_holders_nuts         = false;
+// Load the cells into the holders.
 show_batteries                    = false;
 
 /* [Motors] */
+// Mount the motor brackets to the chassis sides.
 show_motor_brackets               = false;
+// Slide the motors into the brackets.
 show_motor                        = false;
 
 /* [Buttons Fusers Stack] */
+// Attach the fuse panel to the rear stack.
 show_fuse_panel                   = false;
+// Insert fuses into the panel.
 show_fusers                       = false;
+// Mount the buttons panel.
 show_buttons_panel                = false;
+// Install buttons into their panel cutouts.
 show_buttons                      = false;
 
 /* [Steering Panel] */
+// Fix the steering panel to the chassis.
 show_steering_panel               = false;
+// Drop the rack into its guide.
 show_rack                         = false;
+// Bolt the kingpin posts to the steering panel.
 show_kingpin_posts                = false;
+// Install the steering servo mount.
 show_servo_mount_panel            = false;
+// Mount the steering servo on its panel.
 show_servo                        = false;
+// Press the pinion onto the servo spline.
 show_pinion                       = false;
+// Attach the knuckles to the kingpin posts.
 show_knuckles                     = false;
+// Keep bearings visible for clearance checks.
 show_bearing                      = true;
+// Add the tie-rod brackets to the knuckles.
 show_brackets                     = false;
+// Link the knuckles with the tie rod.
 show_tie_rod                      = false;
 
 /* [Raspberry PI] */
+// Place the Raspberry Pi board on its standoffs.
 show_rpi                          = false;
+// Add the AI hat above the Pi.
 show_ai_hat                       = false;
+// Stack the motor driver hat.
 show_motor_driver_hat             = false;
+// Stack the servo driver hat.
 show_servo_driver_hat             = false;
+// Drop the GPIO expansion board into position.
 show_gpio_expansion_board         = false;
 
 /* [Front Panel] */
+// Mount the front sensor panel.
 show_front_panel                  = false;
+// Insert the HC-SR04 ultrasonic module.
 show_ultrasonic                   = false;
+// Add the rear stiffener for the front panel.
 show_front_rear_panel             = false;
 
 /* [Wheels] */
+// Install the front wheels onto the knuckles.
 show_front_wheels                 = false;
+// Push the rear wheels onto the motor shafts.
 show_rear_wheels                  = false;
 
 /* [Colors] */
