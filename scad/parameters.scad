@@ -372,7 +372,7 @@ battery_holder_terminal_type                         = "solder_tab"; // [coil_sp
 // The additional length to add to the cutout for the external terminal contact.
 battery_holder_tab_slot_extra_len                    = 5;
 // The additional width to add to the cutout for the terminal contact.
-battery_holder_tab_slot_extra_w                      = 5;
+battery_holder_tab_slot_extra_w                      = 4;
 
 // Diameter of the hole on the terminal contact (placeholder setting only).
 battery_holder_tab_hole_d                            = 1;
