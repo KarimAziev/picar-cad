@@ -43,6 +43,7 @@
  * @param y_r                 Optional numeric - Corner radius for the horizontal plate.
  *
  * @param z_r                 Optional numeric - Corner radius for the vertical plate.
+ * @param rotation            Numeric - Rotation angle (in degrees) for the vertical plate around the X-axis.
  *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
@@ -79,14 +80,17 @@ module l_bracket(size,
   horizontal_children_union_outer = children_for("union", "horizontal");
   horizontal_children_union_inner = children_for("union_inner", "horizontal");
   horizontal_children_difference = children_for("difference", "horizontal");
-  horizontal_children_outer_difference = children_for("difference_outer", "horizontal");
+  horizontal_children_outer_difference = children_for("difference_outer",
+                                                      "horizontal");
 
   vertical_children_union_outer = children_for("union", "vertical");
   vertical_children_union_inner = children_for("union_inner", "vertical");
   vertical_children_difference = children_for("difference", "vertical");
-  vertical_children_outer_difference = children_for("difference_outer", "vertical");
+  vertical_children_outer_difference = children_for("difference_outer",
+                                                    "vertical");
 
-  translate([center ? 0 : x / 2, center
+  translate([center ? 0 : x / 2,
+             center
              ? 0
              : y / 2 + vertical_thickness / 2,
              center ? 0 : thickness / 2]) {

@@ -2,6 +2,23 @@
 // Creates an isosceles trapezoid.
 use <transforms.scad>
 
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   trapezoid
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Creates an isosceles trapezoid with rounded corners.
+
+   **Example**:
+   Isosceles trapezoid with a wider bottom:
+   ```scad
+   trapezoid(b=30, t=20, h=20, center=true);
+   ```
+   Inverted isosceles trapezoid:
+   ```scad
+   trapezoid(b=20, t=30, h=20, center=true);
+   ```
+*/
 module trapezoid(b=20, t=10, h=15, center=false) {
   m = (b - t) / 2;
 
@@ -82,8 +99,10 @@ module trapezoid_rounded_top(b=20,
 
    - `size`: the list of `[lower_x, y, z, upper_x]`:
    - `r`: corner radius
-   - `r_factor`: if corner radius is not provided, it will be calculated as `min(lower_x, upper_x, z) * r_factor`
-   - `round_side`: which side should be rounded. One of: "all" (default) | "top" | "bottom"
+   - `r_factor`: if corner radius is not provided,
+                 it will be calculated as
+                 `min(lower_x, upper_x, z) * r_factor`
+   - `round_side`: side to be rounded. One of: "all" (default) | "top" | "bottom"
    - `center`: whether to center trapezoid
 
 

@@ -17,6 +17,43 @@ function slider_calc_trapezoid_top_width(width, height, angle) =
 
 function slider_carriege_full_width(w, wall) = w + (wall * 2);
 
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   slider_carriage
+   ─────────────────────────────────────────────────────────────────────────────
+    Creates a slider carriage with a base and an internal trapezoid or dovetail cutout.
+
+   **Example**:
+   ```scad
+    // Slider carriage with dovetail rib
+    slider_carriage(l=30,
+                     base_h=10,
+                     w=20,
+                     h=15,
+                     wall=4,
+                     angle=10,
+                     r=2,
+                     trapezoid_rad=1,
+                     use_dovetail_rib=true, // false for trapezoid
+                     center_x=true,
+                     center_y=true,
+                     center_z=true);
+     // Slider carriage with trapezoid cutout
+     slider_carriage(l=30,
+                     base_h=10,
+                     w=20,
+                     h=15,
+                     wall=4,
+                     angle=10,
+                     r=2,
+                     trapezoid_rad=1,
+                     use_dovetail_rib=false, // false for trapezoid
+                     center_x=true,
+                     center_y=true,
+                     center_z=true);
+
+   ```
+*/
 module slider_carriage(l=30,
                        base_h=10,
                        h,
@@ -56,6 +93,24 @@ module slider_carriage(l=30,
   }
 }
 
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   slider_dovetail_rail_2d
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Creates a 2D dovetail rail profile with a base.
+
+   **Example**:
+   ```scad
+   slider_dovetail_rail_2d(base_w=20,
+                               base_h=5,
+                               w=15,
+                               h=10,
+                               angle=15,
+                               r=1,
+                               center=true);
+   ```
+*/
 module slider_dovetail_rail_2d(base_w,
                                base_h,
                                base_angle=0,
@@ -88,6 +143,25 @@ module slider_dovetail_rail_2d(base_w,
   }
 }
 
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   slider_dovetail_rail
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Creates a dovetail rail profile with a base.
+
+   **Example**:
+   ```scad
+   slider_dovetail_rail(l=10,
+                           base_w=20,
+                           base_h=5,
+                           w=15,
+                           h=10,
+                           angle=15,
+                           r=1,
+                           center=true);
+   ```
+*/
 module slider_dovetail_rail(l,
                             base_w,
                             base_h,
@@ -112,6 +186,22 @@ module slider_dovetail_rail(l,
   }
 }
 
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   slider_trapezoid
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Creates a trapezoid shape with rounded corners.
+
+   **Example**:
+   ```scad
+   slider_trapezoid(w=20,
+                    h=15,
+                    angle=10,
+                    r=2,
+                    center=false);
+   ```
+*/
 module slider_trapezoid(w,
                         h,
                         r=0,
@@ -125,6 +215,22 @@ module slider_trapezoid(w,
                     center=center);
 }
 
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   dovetail_rib
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Creates a 2D dovetail rib shape with rounded corners.
+
+   **Example**:
+   ```scad
+   dovetail_rib(w=20,
+                h=15,
+                angle=10,
+                r=2,
+                center=false);
+   ```
+*/
 module dovetail_rib(w,
                     h,
                     r=0,
@@ -145,17 +251,5 @@ module dovetail_rib(w,
                             r=r,
                             center=false);
     }
-  }
-}
-
-module slider_rail(l,
-                   w,
-                   h,
-                   r=0,
-                   angle=0,
-                   center=false) {
-
-  linear_extrude(height=l, center=center) {
-    slider_trapezoid(w=w, h=h, angle=angle, r=r, center=center);
   }
 }

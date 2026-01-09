@@ -9,8 +9,6 @@ use <holes.scad>
 use <shapes3d.scad>
 use <slots.scad>
 
-
-
 module row_of_circles(total_width,
                       d,
                       spacing,
@@ -235,10 +233,11 @@ module cube_path(specs) {
    Example:
    ```scad
    rounded_rect_slots(specs=[[[9.5, 30.4, 2.0], [0, -12.0, -10], [20, 38]],  // first hole + counterbore
-   [[9.5, 8.4, 2.0], [26, -2.0, 0]]],  // second hole
-      thickness=4,
-      center=false,
-      default_r_tolerance=0);
+                             [[9.5, 8.4, 2.0], [26, -2.0, 0]]],  // second hole
+                   thickness=4,
+                   center=false,
+                   default_r_tolerance=0);
+
    ```
 */
 

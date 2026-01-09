@@ -17,7 +17,7 @@ use <transforms.scad>
    1. `size`: The size of the text. Default is 4.
    2. `color`: The optional color to use.
    3. `rotation`: Optional value for `rotate`.
-   4. `translation`: Optional value for `translate`. Applies after rotation.a
+   4. `translation`: Optional value for `translate`. Applies after rotation.
    5. `spacing`: Factor to increase or decrease the character spacing. The default value of 1.
    6. `font`: The name of the font that should be used.
    7. `halign`: left, center (default) or right.
@@ -28,17 +28,18 @@ use <transforms.scad>
 
    ```scad
    text_from_spec(["Hello world",
-   8, // size
-   "white", // color
-   [0, 0, 90], // rotation
-   [0, -10, 0], // translation
-   1.1, // spacing
-   undef, // font
-   "center", // halign
-   "center" // valign
-   ]);
+                8, // size
+                "white", // color
+                [0, 0, 90], // rotation
+                [0, -10, 0], // translation
+                1.1, // spacing
+                undef, // font
+                "center", // halign
+                "center" // valign
+               ]);
    ```
 */
+
 module text_from_spec(spec,
                       default_font,
                       default_height = 0.1,
@@ -115,21 +116,22 @@ module text_from_spec(spec,
 
    ```scad
    text_from_plist("My text",
-   ["size", 8,
-   "color", "red",
-   "spacing", 0.9,
-   "height", 6,
-   "rotation", [0, 0, 90],
-   "translation", [10, 0, 0],
-   "valign", "center",
-   "halign", "left",
-   "font", "DSEG14 Classic:style=Italic"]);
+                ["size", 8,
+                 "color", "red",
+                 "spacing", 0.9,
+                 "height", 6,
+                 "rotation", [0, 0, 90],
+                 "translation", [10, 0, 0],
+                 "valign", "center",
+                 "halign", "left",
+                 "font", "DSEG14 Classic:style=Italic"]);
    ```
 
    ```scad
    text_from_plist("Hello world", ["text", "My text"]); // will display "Hello world"
    ```
 */
+
 module text_from_plist(txt,
                        plist = [],
                        default_font,
@@ -268,17 +270,19 @@ function normalize_texts(texts = [],
                                             ? v : plist_get("text", v, ""))
                                          is_num(txt) ? str(txt) : txt],
        text_plists = [for (v = texts) is_string(v) || is_num(v)
-                                        ? plist_merge(default_plist,
-                                                      ["text", is_num(v)
-                                                       ? str(v)
-                                                       : v])
+                                        ?
+                                        plist_merge(default_plist,
+                                                    ["text", is_num(v)
+                                                     ? str(v)
+                                                     : v])
                                         : plist_merge(should_swap_size(v)
                                                       ? plist_merge(default_plist,
                                                                     ["valign", "center",
                                                                      "halign", "center",])
                                                       : default_plist, v)],
 
-       text_sizes = [for (v = text_plists) get_text_size(plist_get("text", v), v)],
+       text_sizes = [for (v = text_plists) get_text_size(plist_get("text", v),
+                                                         v)],
 
        x_sizes = [for (v = text_sizes) v[0]],
        y_sizes = [for (v = text_sizes) v[1]],
@@ -326,21 +330,22 @@ function normalize_texts(texts = [],
 
    ```scad
    text_rows("My text",
-   ["size", 8,
-   "color", "red",
-   "spacing", 0.9,
-   "height", 6,
-   "rotation", [0, 0, 90],
-   "translation", [10, 0, 0],
-   "valign", "center",
-   "halign", "left",
-   "font", "DSEG14 Classic:style=Italic"]);
+          ["size", 8,
+           "color", "red",
+           "spacing", 0.9,
+           "height", 6,
+           "rotation", [0, 0, 90],
+           "translation", [10, 0, 0],
+           "valign", "center",
+           "halign", "left",
+           "font", "DSEG14 Classic:style=Italic"]);
    ```
 
    ```scad
    text_rows("Hello world", ["text", "My text"]); // will display "Hello world"
    ```
 */
+
 module text_rows(texts = [],
                  plist,
                  gap = 0,
@@ -457,11 +462,5 @@ module text_fit(x,
            spacing=spacing,
            font=font);
     }
-  }
-}
-
-rotate([180, 0, 0]) {
-  rotate([0, 0, 90]) {
-    text_rows([["font", undef, "height", 3.1, "size", 8, "spacing", 0.9, "halign", "center", "valign", "center", "rotation", undef, "translation", [0, 0, -3], "color", "red", "text", "M3 Bolts"]]);
   }
 }

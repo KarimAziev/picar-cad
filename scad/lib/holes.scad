@@ -1,9 +1,6 @@
 /**
- * Module: Modules for holes counterbore, countersink,
- * counterbore_single_slots_by_specs, four_corner_children,
- * four_corner_holes_2d, four_corner_hole_rows, notched_circle,
- * two_x_bolts_2d/3d,
- * dotted_bolts_line_y
+ * Module: Modules for holes.
+ * Note, most of 3D holes are in the slots.scad.
  *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
@@ -41,17 +38,6 @@ module dotted_bolts_line_y(x_poses, y, d=1.5) {
   }
 }
 
-module two_x_bolts_3d(x=0, d=2.4, center=true, h=10) {
-  translate([x, 0, 0]) {
-    cylinder(h, r=d / 2, $fn=360, center=center);
-  }
-
-  mirror([1, 0, 0]) {
-    translate([x, 0, 0]) {
-      cylinder(h, r=d / 2, $fn=360, center=center);
-    }
-  }
-}
 module two_x_bolts_2d(x=0, d=2.4, fn=360) {
   mirror_copy([1, 0, 0]) {
     translate([x, 0, 0]) {

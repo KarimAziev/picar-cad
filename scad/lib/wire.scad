@@ -1,7 +1,6 @@
 /**
  * Module: Wire
  *
- *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */
@@ -80,7 +79,20 @@ module wire(p1=[0, 0, 0], p2=[10, 0, 0], d=2, $fn_sph=32) {
 }
 
 /**
- * Returns a 3D object representing a wire that follow a given path
+ Returns a 3D object representing a wire that follow a given path
+  **Example:**
+ ```scad
+ wire_path(points=concat([[0, 0, 0]],
+                        [[0, -5, -2],
+                        [-22, -15, -1],
+                        [-22, 10, -60],
+                        [-70, 10, -60]]),
+                        d=1.5,
+          print_wire_len=true,
+          colr="red",
+          put_joints=true);
+ ```
+
  */
 module wire_path(points,
                  d=2,
@@ -90,12 +102,15 @@ module wire_path(points,
                  cut_len=5,
                  colr) {
   for (i = [0 : len(points) -  2]) {
-    wire_capsule(points[i],
-                 points[i + 1],
-                 colr=colr,
-                 cut_len=((is_num(cut_len) && (len(points) - 1 == i + 1)) ? cut_len : undef),
-                 d=d,
-                 $fn_sph=$fn_sph);
+    let (cut_l = (is_num(cut_len) && (len(points) - 1 == i + 1))
+         ? cut_len : undef) {
+      wire_capsule(points[i],
+                   points[i + 1],
+                   colr=colr,
+                   cut_len=cut_l,
+                   d=d,
+                   $fn_sph=$fn_sph);
+    }
   }
 
   if (print_wire_len) {
@@ -114,10 +129,10 @@ module wire_path(points,
 
 wire_path(points=concat([[0, 0, 0]],
                         [[0, -5, -2],
-                        [-22, -15, -1],
-                        [-22, 10, -60],
-                        [-70, 10, -60]]),
-                        d=1.5,
+                         [-22, -15, -1],
+                         [-22, 10, -60],
+                         [-70, 10, -60]]),
+          d=1.5,
           print_wire_len=true,
           colr="red",
           put_joints=true);

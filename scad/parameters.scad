@@ -707,8 +707,8 @@ head_cameras                                         = [[head_camera_module_3_si
 // If more than one camera is present, a fixed spacing of 2 mm is used.
 // If only one camera is mounted, use half of its height for centering.
 head_cameras_y_distance                              = len(head_cameras) > 1
-                                                     ? 2.0
-                                                     : (head_cameras[0][0][1] / 2);
+                                                        ? 2.0
+                                                        : (head_cameras[0][0][1] / 2);
 
 // Width of the front face plate where the camera modules are mounted.
 head_plate_width                                     = 38;
@@ -972,11 +972,11 @@ ir_led_light_detector_offset_x                       = 1;
 // These precomputed values sum stacked thicknesses so the case clears the side panel.
 // ir_case_head_side_panel_x_2 is further from the panel than x_1.
 ir_case_head_side_panel_x_2                          = + ir_case_thickness
-                                                     + ir_case_led_boss_thickness
-                                                     + ir_led_thickness
-                                                     + ir_led_light_detector_h / 2;
+                                                        + ir_case_led_boss_thickness
+                                                        + ir_led_thickness
+                                                        + ir_led_light_detector_h / 2;
 ir_case_head_side_panel_x_1                          = + ir_led_light_detector_h / 2
-                                                     + ir_led_height;
+                                                        + ir_led_height;
 
 // Y coordinate for the first column of bolt positions (centered on the LED height).
 ir_case_head_side_panel_y_1                          = -ir_led_height / 2;
@@ -1322,9 +1322,9 @@ knuckle_shaft_bolts_distance                         = 3;
 // The length of the vertical part of the (curved) axle shaft that connects the
 // steering knuckle to the wheel hub
 knuckle_shaft_vertical_len                           = knuckle_height +
-                                                     (motor_type == "n20"
-                                                      ? 21.5
-                                                      : 26.5);
+                                                        (motor_type == "n20"
+                                                        ? 21.5
+                                                        : 26.5);
 
 // The additional length of the connector for the shaft in the knuckle and the
 // corresponding curved axle shaft
@@ -1334,10 +1334,10 @@ knuckle_shaft_connector_extra_arm_len                = 1;
 
 // The additional length of the for the shaft itself
 knuckle_shaft_extra_len                              = assembly_shaft_use_front_steering
-                                                     &&
-                                                     assembly_use_front_steering
-                                                     ? 5
-                                                     : 0;
+                                                        &&
+                                                        assembly_use_front_steering
+                                                        ? 5
+                                                        : 0;
 
 // The length of the lower horizontal part of the (curved) axle shaft that is
 // inserted into the wheel hub
@@ -1399,12 +1399,12 @@ n20_motor_chassis_y_distance                         = 0;
 n20_motor_chassis_x_distance                         = -9;
 
 n20_motor_bolts_panel_len                            = n20_can_dia
-                                                     + n20_motor_bracket_thickness
-                                                     * 2
-                                                     + n20_motor_bolt_dia
-                                                     * 2
-                                                     + n20_motor_bolts_panel_length
-                                                     * 2;
+                                                        + n20_motor_bracket_thickness
+                                                        * 2
+                                                        + n20_motor_bolt_dia
+                                                        * 2
+                                                        + n20_motor_bolts_panel_length
+                                                        * 2;
 
 chassis_single_holes_specs                           = [[[8, 0, -5, 0]],
                                                         [[8, 0, 5, 0]],
@@ -1424,7 +1424,7 @@ chassis_single_holes_specs                           = [[[8, 0, -5, 0]],
 chassis_rect_holes_specs                             = [[[[10, 20, 4.0], [10, 0, 40]], // third in the center
                                                          [[10, 20, 4.0], [10, 0, 38]], // second in the center
                                                          [[10, 20, 4.0], [10, 0, 35]]], // first in the center
-                                           // side holes
+                                                        // side holes
                                                         [[[10, 15, 4.0], [10,
                                                                           chassis_body_w / 2 - 6.5,
                                                                           40]],
@@ -1439,13 +1439,13 @@ chassis_rect_holes_specs                             = [[[[10, 20, 4.0], [10, 0,
                                                                           40]]]];
 
 chassis_panel_stack_slot_specs                       = [[[[15, 30, 6.0], [14, 35, 0]],  // side hole near fuse stack
-                         // [[32, 15, 3.0], [0, 47.2, 0]]
+                                                        // [[32, 15, 3.0], [0, 47.2, 0]]
                                                         ], // hole under left smd battery
                                                         [[[25, 14, 3.0], [10, -4, 0]], // upper hole under fuse stack
                                                          [[25, 14, 3.0], [10, -4, 0]], // lower hole under fuse stack
-                         // [[35, 14, 3.0], [10, -22, 0]]
+                                                        // [[35, 14, 3.0], [10, -22, 0]]
                                                         ], // hole under right smd battery
-                                                       ];
+                                                        ];
 // ─────────────────────────────────────────────────────────────────────────────
 // Rear panel: A vertical rear plate with dimensions including two mounting
 // holes for switch buttons.
@@ -2574,7 +2574,7 @@ steering_rack_link_linkage_thickness                 = steering_rack_link_bearin
 
 // The length of the rail in the center of the steering panel that holds the rack
 steering_panel_rail_len                              = steering_panel_length
-                                                     - knuckle_dia * 2;
+                                                        - knuckle_dia * 2;
 
 steering_panel_rail_rad                              = 0.5;
 
@@ -2615,7 +2615,7 @@ steering_servo_mount_connector_bolt_head_type        = "pan";
 
 // Knuckle center along X. Do not edit, used for Ackermann geometry calculations
 steering_x_left_knuckle                              = -steering_panel_length / 2
-                                                     + knuckle_dia / 2;
+                                                        + knuckle_dia / 2;
 
 // Diameter and width of the tie rod
 tie_rod_outer_dia                                    = 14.0;
@@ -2796,13 +2796,13 @@ wheel_tire_groove_depth                              = 3.4;
 
 // center of the left wheel
 wheel_center_offset                                  = wheel_w / 2 +
-                                                     (wheel_rear_shaft_protrusion_height
-                                                      - (knuckle_shaft_dia / 2));
+                                                        (wheel_rear_shaft_protrusion_height
+                                                        - (knuckle_shaft_dia / 2));
 
 // distance between centers of the front wheels
 wheels_track_width                                   = steering_panel_length
-                                                     + (wheel_center_offset * 2)
-                                                     - knuckle_shaft_dia / 2;
+                                                        + (wheel_center_offset * 2)
+                                                        - knuckle_shaft_dia / 2;
 
 // The full lateral length of the knuckle tie-rod arm.
 // This value is used as the side length of the Ackermann trapezoid when computing
@@ -2818,30 +2818,30 @@ steering_arm_full_len = calc_knuckle_connector_full_len(length=knuckle_tie_rod_s
 // Do not edit, used for Ackermann geometry calculations
 steering_rack_link_bearing_border_w                  = (steering_rack_link_bearing_outer_d
                                                         - steering_rack_link_bearing_d)
-                                                     / 2;
+                                                        / 2;
 
 // X-coordinate of the steering-rack bearing connector center
 steering_rack_connector_x_pos                        = -steering_rack_teethed_length
-                                                     / 2
-                                                     - steering_rack_link_bearing_outer_d
-                                                     / 2
-                                                     + steering_rack_link_bearing_border_w;
+                                                        / 2
+                                                        - steering_rack_link_bearing_outer_d
+                                                        / 2
+                                                        + steering_rack_link_bearing_border_w;
 
 // X-axis distance between the kingpin post and the steering-rack bearing connector center
 steering_distance_between_kingpin_and_rack           = abs(steering_x_left_knuckle)
-                                                     - abs(steering_rack_connector_x_pos);
+                                                        - abs(steering_rack_connector_x_pos);
 
 // The length of the L-bracket part that is connected to the rack
 steering_rack_link_rack_side_h_length                = knuckle_shaft_connector_extra_len
-                                                     + knuckle_shaft_connector_dia
-                                                     + knuckle_shaft_connector_extra_arm_len
-                                                     + steering_rack_link_bearing_outer_d / 2
-                                                     + steering_rack_link_bearing_border_w;
+                                                        + knuckle_shaft_connector_dia
+                                                        + knuckle_shaft_connector_extra_arm_len
+                                                        + steering_rack_link_bearing_outer_d / 2
+                                                        + steering_rack_link_bearing_border_w;
 
 // The length of the L-shaped rack link that is connected to the knuckle
 steering_rack_link_rack_side_w_length                = steering_distance_between_kingpin_and_rack
-                                                     - steering_rack_link_bearing_d
-                                                     - steering_rack_link_bearing_border_w;
+                                                        - steering_rack_link_bearing_d
+                                                        - steering_rack_link_bearing_border_w;
 
 // wheelbase, calculated from the center of the rear axle
 steering_wheelbase_effective                         = abs(chassis_len
@@ -2863,8 +2863,8 @@ tie_rod_bearing_center_distance                      = calc_isosceles_trapezoid_
 
 // Overall tie rod length including bearing landings and offsets
 tie_rod_len                                          = tie_rod_bearing_center_distance
-                                                     + tie_rod_bearing_outer_dia
-                                                     + tie_rod_bearing_x_offset * 2;
+                                                        + tie_rod_bearing_outer_dia
+                                                        + tie_rod_bearing_x_offset * 2;
 // Local Variables:
 // c-label-minimum-indentation: 53
 // End:
