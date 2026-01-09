@@ -529,7 +529,7 @@ chassis_pan_servo_top_ribbon_cuttout_len             = min(18,
                                                            chassis_upper_w * 0.8);
 chassis_pan_servo_top_ribbon_cuttout_h               = 2;
 
-upper_chassis_holes_border_w                         = chassis_side_hole_border_w;
+chassis_upper_holes_border_w                         = chassis_side_hole_border_w;
 chassis_upper_front_padding_y                        = 2;
 
 chassis_head_zone_y_offset                           = 0; // position of the head on Y axle

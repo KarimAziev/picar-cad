@@ -43,11 +43,11 @@ top_ribbon_hole_pos            = front_pan_end
   - chassis_pan_servo_top_ribbon_cuttout_h
   - chassis_upper_front_padding_y;
 
-head_pos                       = -upper_chassis_holes_border_w * 2
+head_pos                       = -chassis_upper_holes_border_w * 2
   - chassis_pan_servo_recesess_y_len
   - chassis_pan_servo_recesess_thickness / 2
   + top_ribbon_hole_pos
-  - upper_chassis_holes_border_w
+  - chassis_upper_holes_border_w
   - chassis_head_zone_y_offset;
 
 hole_h                         = chassis_thickness + 1;
@@ -55,7 +55,7 @@ steering_pan_pos               = chassis_upper_len
   - steering_panel_distance_from_top;
 
 trapezoid_rows_params          = calc_cols_params(gap=chassis_pan_servo_side_trapezoid_gap
-                                                  + upper_chassis_holes_border_w,
+                                                  + chassis_upper_holes_border_w,
                                                   cols=chassis_pan_servo_side_trapezoid_rows,
                                                   w=chassis_trapezoid_hole_len);
 trapezoid_step                 = trapezoid_rows_params[0];
@@ -330,9 +330,9 @@ module chassis_upper_rib_hole(border_mode=false) {
                    convexity=2) {
 
       if (border_mode) {
-        translate([0, upper_chassis_holes_border_w, 0]) {
+        translate([0, chassis_upper_holes_border_w, 0]) {
           difference() {
-            offset(delta=upper_chassis_holes_border_w) {
+            offset(delta=chassis_upper_holes_border_w) {
               chassis_upper_rib_hole_base_2d();
             }
             chassis_upper_rib_hole_base_2d();
@@ -348,7 +348,7 @@ module chassis_upper_rib_hole(border_mode=false) {
 module chassis_upper_rib_hole_slot(border_mode=false) {
   translate([0,
              top_ribbon_hole_pos
-             - (border_mode ? upper_chassis_holes_border_w : 0) ,
+             - (border_mode ? chassis_upper_holes_border_w : 0) ,
              0]) {
     chassis_upper_rib_hole(border_mode=border_mode);
   }
@@ -373,7 +373,7 @@ module chassis_mid_side_trapezoids(border_mode=false) {
                                y_target=by + head_pos)) {
             translate([0,
                        by -(border_mode
-                            ? upper_chassis_holes_border_w
+                            ? chassis_upper_holes_border_w
                             : 0),
                        0]) {
 
@@ -382,15 +382,12 @@ module chassis_mid_side_trapezoids(border_mode=false) {
                          -chassis_trapezoid_hole_len / 2,
                          0]) {
                 if (border_mode) {
-                  offset_vertices_2d(r=0.4) {
-                    translate([0, upper_chassis_holes_border_w, 0]) {
-                      difference() {
-
-                        offset(delta=upper_chassis_holes_border_w) {
-                          polygon(upper_side_hole_pts);
-                        }
+                  translate([0, chassis_upper_holes_border_w, 0]) {
+                    difference() {
+                      offset(delta=chassis_upper_holes_border_w) {
                         polygon(upper_side_hole_pts);
                       }
+                      polygon(upper_side_hole_pts);
                     }
                   }
                 } else {
