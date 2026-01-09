@@ -1,22 +1,19 @@
-include <../parameters.scad>
-include <../colors.scad>
-
 include <../colors.scad>
 include <../parameters.scad>
 
-use <../lib/plist.scad>
-use <../lib/functions.scad>
-use <../lib/transforms.scad>
 use <../lib/debug.scad>
+use <../lib/functions.scad>
+use <../lib/plist.scad>
 use <../lib/text.scad>
-use <../placeholders/smd/smd_resistor.scad>
-use <../placeholders/smd/smd_chip.scad>
+use <../lib/transforms.scad>
+use <../placeholders/pin_header.scad>
 use <../placeholders/screw_terminal.scad>
 use <../placeholders/smd/can_capacitor.scad>
-use <../placeholders/smd/schottky_diode.scad>
 use <../placeholders/smd/ceramic_capacitor.scad>
 use <../placeholders/smd/power_inductor.scad>
-use <../placeholders/pin_header.scad>
+use <../placeholders/smd/schottky_diode.scad>
+use <../placeholders/smd/smd_chip.scad>
+use <../placeholders/smd/smd_resistor.scad>
 
 module smd_placeholder_renderer(plist,
                                 cell_size,
@@ -81,7 +78,7 @@ module smd_placeholder_renderer(plist,
                    && placeholder == "unshielded_power_inductor") {
           unshielded_power_inductor_from_plist(plist, center=false);
         } else if (show_shielded_power_inductor
-                   && placeholder == "unshielded_power_inductor") {
+                   && placeholder == "shielded_power_inductor") {
           shielded_power_inductor_from_plist(plist, center=false);
         }
       }
@@ -114,6 +111,38 @@ module smd_placeholder_renderer(plist,
                                  align_y=align_y,
                                  spin=spin) {
           pin_header_from_plist(plist, center=false);
+        }
+      }
+    }
+  }
+}
+
+module smd_placeholder_slot_renderer(plist,
+                                     cell_size,
+                                     align_x = -1,
+                                     align_y = -1,
+                                     thickness,
+                                     spin,
+                                     show_screw_terminal=true) {
+  placeholder = plist_get("type", plist);
+  cell_size = with_default(cell_size, []);
+  placeholder_size = plist_get("placeholder_size", plist);
+  spin = with_default(spin, 0);
+
+  translate([0, 0, 0]) {
+    if (show_screw_terminal && placeholder == "screw_terminal") {
+      let (base_x = screw_terminal_width_from_plist(plist),
+           base_y = plist_get("thickness", plist, 7.6),
+           placeholder_size=[base_x, base_y]) {
+        align_children_with_spin(parent_size=cell_size,
+                                 size=placeholder_size,
+                                 align_x=align_x,
+                                 align_y=align_y,
+                                 spin=spin) {
+          screw_terminal_from_plist(plist,
+                                    center=false,
+                                    slot_mode=true,
+                                    slot_thickness=thickness);
         }
       }
     }

@@ -70,6 +70,17 @@ top_most_rects_start           = top_ribbon_hole_pos - top_most_row_params[1] - 
 top_rib_hole_pts               = scale_upper_trapezoid_pts(x=chassis_pan_servo_top_ribbon_cuttout_len / 2,
                                                            y=chassis_pan_servo_top_ribbon_cuttout_h);
 
+show_knuckle_bolts             = false;
+
+show_bolts_info                = false;
+show_kingpin_bolt              = false;
+show_hinges_bolts              = false;
+show_panel_bolt                = false;
+
+fasten_kingpin_bolt            = false;
+fasten_hinges_bolts            = false;
+fasten_panel_bolt              = false;
+
 module holes_row_along_slanted_side(trapezoid_pts,
                                     rows,
                                     l,
@@ -544,7 +555,15 @@ module chassis_upper_3d(panel_color=white_snow_1,
                         pan_servo_rotation=0,
                         tilt_servo_rotation=0,
                         show_distance=false,
-                        show_upper_chassis=true) {
+                        show_upper_chassis=true,
+                        show_knuckle_bolts=show_knuckle_bolts,
+                        show_bolts_info=show_bolts_info,
+                        show_kingpin_bolt=show_kingpin_bolt,
+                        show_hinges_bolts=show_hinges_bolts,
+                        show_panel_bolt=show_panel_bolt,
+                        fasten_kingpin_bolt=fasten_kingpin_bolt,
+                        fasten_hinges_bolts=fasten_hinges_bolts,
+                        fasten_panel_bolt=fasten_panel_bolt) {
 
   if (show_upper_chassis) {
     difference() {
@@ -600,6 +619,14 @@ module chassis_upper_3d(panel_color=white_snow_1,
                                show_tie_rod=show_tie_rod,
                                show_servo=show_servo,
                                show_knuckles=show_knuckles,
+                               show_knuckle_bolts=show_knuckle_bolts,
+                               show_bolts_info=show_bolts_info,
+                               show_kingpin_bolt=show_kingpin_bolt,
+                               show_hinges_bolts=show_hinges_bolts,
+                               show_panel_bolt=show_panel_bolt,
+                               fasten_kingpin_bolt=fasten_kingpin_bolt,
+                               fasten_hinges_bolts=fasten_hinges_bolts,
+                               fasten_panel_bolt=fasten_panel_bolt,
                                center_y=false);
     }
   }
@@ -665,6 +692,14 @@ module chassis_upper(panel_color=white_snow_1,
                      tilt_servo_rotation=0,
                      show_distance=false,
                      show_upper_chassis=true,
+                     show_knuckle_bolts=show_knuckle_bolts,
+                     show_bolts_info=show_bolts_info,
+                     show_kingpin_bolt=show_kingpin_bolt,
+                     show_hinges_bolts=show_hinges_bolts,
+                     show_panel_bolt=show_panel_bolt,
+                     fasten_kingpin_bolt=fasten_kingpin_bolt,
+                     fasten_hinges_bolts=fasten_hinges_bolts,
+                     fasten_panel_bolt=fasten_panel_bolt,
                      pan_servo_rotation=0) {
   union() {
     translate([0, chassis_transition_len, 0]) {
@@ -698,7 +733,15 @@ module chassis_upper(panel_color=white_snow_1,
                        pan_servo_rotation=pan_servo_rotation,
                        show_knuckles=show_knuckles,
                        show_distance=show_distance,
-                       show_upper_chassis=show_upper_chassis);
+                       show_upper_chassis=show_upper_chassis,
+                       show_knuckle_bolts=show_knuckle_bolts,
+                       show_bolts_info=show_bolts_info,
+                       show_kingpin_bolt=show_kingpin_bolt,
+                       show_hinges_bolts=show_hinges_bolts,
+                       show_panel_bolt=show_panel_bolt,
+                       fasten_kingpin_bolt=fasten_kingpin_bolt,
+                       fasten_hinges_bolts=fasten_hinges_bolts,
+                       fasten_panel_bolt=fasten_panel_bolt);
     }
     if (chassis_use_connector && show_upper_chassis) {
       color(panel_color, alpha=1) {

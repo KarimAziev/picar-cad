@@ -10,6 +10,8 @@ include <../colors.scad>
 
 use <../wheels/rear_wheel.scad>
 use <../lib/shapes3d.scad>
+use <motor.scad>
+use <../lib/text.scad>
 
 module n20_motor_reductor() {
   cylinder(h=n20_reductor_height, r=n20_reductor_dia / 2, center=false);
@@ -33,7 +35,8 @@ module n20_motor_can() {
             notched_circle(h=n20_end_cap_h,
                            d=n20_can_dia,
                            cutout_w=n20_can_cutout_w,
-                           x_cutouts_n=2, $fn=360);
+                           x_cutouts_n=2,
+                           $fn=360);
             translate([0, 0, n20_end_cap_h]) {
               linear_extrude(height=n20_end_circle_h) {
                 circle(d=n20_end_cap_circle_dia, $fn=30);
@@ -97,4 +100,23 @@ module n20_motor() {
   }
 }
 
-n20_motor();
+translate([0, -40, 0]) {
+  translate([-10, 0, 0]) {
+    rotate([180, 0, 0]) {
+      text_from_plist("n20", ["color", "gold"]);
+    }
+  }
+  rotate([0, 90, 0]) {
+    n20_motor();
+  }
+}
+
+translate([40, 0, 0]) {
+  translate([-40, 0, 0]) {
+    rotate([180, 0, 0]) {
+      text_from_plist("Standard", ["color", "gold"]);
+    }
+  }
+
+  motor();
+}

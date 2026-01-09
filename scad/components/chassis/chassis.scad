@@ -77,6 +77,17 @@ show_servo_driver_hat             = true;
 show_gpio_expansion_board         = true;
 show_power_case_bottom_bolts      = false;
 
+show_knuckle_bolts                = false;
+
+show_bolts_info                   = false;
+show_kingpin_bolt                 = false;
+show_hinges_bolts                 = false;
+show_panel_bolt                   = false;
+
+fasten_kingpin_bolt               = false;
+fasten_hinges_bolts               = false;
+fasten_panel_bolt                 = false;
+
 show_power_case_bottom_bolts_info = false;
 
 power_case_bottom_bolts_down      = true;
@@ -149,6 +160,14 @@ module chassis(tilt_servo_rotation=tilt_servo_rotation,
                show_power_case_bottom_bolts_info=show_power_case_bottom_bolts_info,
                power_case_bottom_bolts_down=power_case_bottom_bolts_down,
                show_power_case_show_standoffs=show_power_case_show_standoffs,
+               show_knuckle_bolts=show_knuckle_bolts,
+               show_bolts_info=show_bolts_info,
+               show_kingpin_bolt=show_kingpin_bolt,
+               show_hinges_bolts=show_hinges_bolts,
+               show_panel_bolt=show_panel_bolt,
+               fasten_kingpin_bolt=fasten_kingpin_bolt,
+               fasten_hinges_bolts=fasten_hinges_bolts,
+               fasten_panel_bolt=fasten_panel_bolt,
                show_upper_chassis=true,
                show_chassis_body=true) {
 
@@ -180,7 +199,15 @@ module chassis(tilt_servo_rotation=tilt_servo_rotation,
                   pan_servo_rotation=pan_servo_rotation,
                   tilt_servo_rotation=tilt_servo_rotation,
                   show_distance=show_distance,
-                  show_upper_chassis=show_upper_chassis);
+                  show_upper_chassis=show_upper_chassis,
+                  show_knuckle_bolts=show_knuckle_bolts,
+                  show_bolts_info=show_bolts_info,
+                  show_kingpin_bolt=show_kingpin_bolt,
+                  show_hinges_bolts=show_hinges_bolts,
+                  show_panel_bolt=show_panel_bolt,
+                  fasten_kingpin_bolt=fasten_kingpin_bolt,
+                  fasten_hinges_bolts=fasten_hinges_bolts,
+                  fasten_panel_bolt=fasten_panel_bolt);
 
     chassis_body(motor_type=motor_type,
                  show_motor=show_motor,

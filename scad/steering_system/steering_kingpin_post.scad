@@ -27,7 +27,7 @@ use <../lib/transforms.scad>
 use <../lib/slots.scad>
 use <../placeholders/bolt.scad>
 
-steering_hinge_bolt_rad = steering_panel_hinge_bolt_dia / 2;
+kingpin_bolt_rad = steering_kingpin_post_bolt_dia / 2;
 
 module steering_kingpin_post(color) {
   border_rad = (knuckle_dia - (steering_kingpin_post_border_w * 2)) / 2
@@ -58,7 +58,7 @@ module steering_kingpin_post(color) {
         cylinder(h=knuckle_pin_lower_height
                  + steering_rack_support_thickness
                  + center_hole_extra_h,
-                 r=steering_hinge_bolt_rad,
+                 r=kingpin_bolt_rad,
                  center=false,
                  $fn=200);
       }
@@ -67,22 +67,26 @@ module steering_kingpin_post(color) {
 }
 
 module steering_kingpin_post_bolt_holes(bolt_mode=false,
-                                        bolt_h=knuckle_dia + 2) {
+                                        bolt_h=knuckle_dia + 2,
+                                        bolt_head_type=steering_kingpin_post_bolt_head_type) {
   mirror_copy([1, 0, 0]) {
-    translate([steering_hinge_bolt_rad * 2 + 0.1,
+    translate([kingpin_bolt_rad * 2 + 0.1,
                0,
                steering_rack_support_thickness / 2
-               - steering_hinge_bolt_rad]) {
+               - kingpin_bolt_rad]) {
       extra_h = 1;
       bolt_rad = steering_kingpin_post_bolt_dia / 2;
       h = knuckle_dia + extra_h;
+
       seam_h = 0.4;
       seam_w = 0.4;
 
       if (bolt_mode) {
         translate([0, 0, bolt_rad]) {
-          rotate([90, 0, 0]) {
-            bolt(d=steering_panel_hinge_bolt_dia, h=bolt_h);
+          rotate([-90, 0, 0]) {
+            bolt(d=steering_kingpin_post_bolt_dia,
+                 h=bolt_h,
+                 head_type=bolt_head_type);
           }
         }
       } else {

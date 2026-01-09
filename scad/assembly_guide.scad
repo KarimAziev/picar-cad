@@ -111,12 +111,22 @@ show_buttons                      = false;
 /* [Steering Panel] */
 // Fix the steering panel to the chassis.
 show_steering_panel               = false;
+
 // Drop the rack into its guide.
 show_rack                         = false;
 // Bolt the kingpin posts to the steering panel.
 show_kingpin_posts                = false;
+show_kingpin_bolt                 = false;
+
+show_bolts_info                   = false;
+
+fasten_kingpin_bolt               = false;
+
 // Install the steering servo mount.
 show_servo_mount_panel            = false;
+
+show_panel_bolt                   = false;
+fasten_panel_bolt                 = false;
 // Mount the steering servo on its panel.
 show_servo                        = false;
 // Press the pinion onto the servo spline.
@@ -124,11 +134,17 @@ show_pinion                       = false;
 // Attach the knuckles to the kingpin posts.
 show_knuckles                     = false;
 // Keep bearings visible for clearance checks.
+show_knuckle_bolts                = false;
+
 show_bearing                      = true;
 // Add the tie-rod brackets to the knuckles.
 show_brackets                     = false;
 // Link the knuckles with the tie rod.
 show_tie_rod                      = false;
+
+show_hinges_bolts                 = false;
+
+fasten_hinges_bolts               = false;
 
 /* [Raspberry PI] */
 // Place the Raspberry Pi board on its standoffs.
@@ -231,4 +247,12 @@ chassis(panel_color=panel_color,
         override_battery_holders_plists=true,
         show_chassis_body=show_chassis_body,
         show_front_wheels=show_front_wheels,
-        show_upper_chassis=show_upper_chassis_body);
+        show_upper_chassis=show_upper_chassis_body,
+        show_knuckle_bolts=show_knuckle_bolts,
+        show_bolts_info=show_bolts_info,
+        show_kingpin_bolt=show_kingpin_bolt,
+        show_hinges_bolts=show_hinges_bolts,
+        show_panel_bolt=show_panel_bolt,
+        fasten_kingpin_bolt=fasten_kingpin_bolt,
+        fasten_hinges_bolts=fasten_hinges_bolts,
+        fasten_panel_bolt=fasten_panel_bolt);

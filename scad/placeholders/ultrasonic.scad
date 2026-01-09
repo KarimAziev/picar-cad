@@ -116,7 +116,9 @@ module ultrasonic_transducer() {
                  center=true,
                  $fn=50);
       }
-      translate([0, 0, half_of_h
+      translate([0,
+                 0,
+                 half_of_h
                  - cutout_h / 2 + 0.5]) {
         cylinder(h=cutout_h,
                  r=inner_rad,
@@ -125,7 +127,8 @@ module ultrasonic_transducer() {
       }
     }
     color(matte_black, alpha=0.7) {
-      translate([0, 0,
+      translate([0,
+                 0,
                  ultrasonic_transducer_h / 2
                  - h_upper / 2]) {
         cylinder(h=h_upper,
@@ -136,7 +139,8 @@ module ultrasonic_transducer() {
     }
 
     if (lower_h < ultrasonic_transducer_h) {
-      translate([0, 0,
+      translate([0,
+                 0,
                  -ultrasonic_transducer_h / 2]) {
         color("white") {
           cylinder(h=lower_h,
@@ -313,3 +317,5 @@ module ultrasonic_pins() {
     }
   }
 }
+
+ultrasonic();

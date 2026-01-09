@@ -2485,6 +2485,7 @@ steering_panel_hinge_bolt_dia                        = m25_hole_dia;
 steering_panel_hinge_bore_dia                        = steering_panel_hinge_bolt_dia * 2;
 steering_panel_hinge_chassis_bore_dia                = steering_panel_hinge_bolt_dia * 2.2;
 steering_panel_hinge_bore_h                          = chassis_counterbore_h;
+steering_panel_hinge_bolt_head_type                  = "pan";
 
 steering_panel_hinge_bolt_distance                   = 1;
 steering_panel_hinge_bolt_x_distance                 = 1;
@@ -2600,6 +2601,7 @@ steering_rack_anti_tilt_key_height                   = steering_rack_z_distance_
 
 steering_kingpin_post_bolt_dia                       = m25_hole_dia;
 steering_kingpin_post_border_w                       = 2;
+steering_kingpin_post_bolt_head_type                 = "pan";
 
 steering_servo_bolt_distance_from_top                = 1;
 steering_servo_mount_width                           = 23.5;
@@ -2609,6 +2611,7 @@ steering_servo_mount_connector_length                = 2.5;
 steering_servo_mount_connector_thickness             = steering_rack_support_thickness  * 0.65;
 steering_servo_mount_connector_bolt_dia              = m3_hole_dia;
 steering_servo_mount_connector_bolt_x                = 3;
+steering_servo_mount_connector_bolt_head_type        = "pan";
 
 // Knuckle center along X. Do not edit, used for Ackermann geometry calculations
 steering_x_left_knuckle                              = -steering_panel_length / 2

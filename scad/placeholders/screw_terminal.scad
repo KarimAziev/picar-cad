@@ -11,6 +11,7 @@ use <../lib/trapezoids.scad>
 use <../lib/placement.scad>
 use <../lib/plist.scad>
 use <../lib/functions.scad>
+use <../lib/slots.scad>
 
 function screw_terminal_width(base_w,
                               pitch,
@@ -52,7 +53,10 @@ module screw_terminal(base_w = undef,            // overall base width (optional
                       pin_h = 3.9,               // lower thin pin height
                       wall_thickness = 0.6,  // wall offset from base top
                       center=true,
-                      isosceles_trapezoid=false) {
+                      isosceles_trapezoid=false,
+                      slot_mode=false,
+                      slot_thickness,
+                      slot_d) {
 
   effective_base_w = screw_terminal_width(base_w,
                                           pitch=pitch,
@@ -62,83 +66,97 @@ module screw_terminal(base_w = undef,            // overall base width (optional
 
   x_start = -((contacts_n - 1) * pitch) / 2;
 
+  slot_d = with_default(slot_d, contact_w);
+
   translate([center ? 0 : effective_base_w / 2, center ? 0 : thickness / 2, 0]) {
-    difference() {
-
-      union() {
-        color(colr, alpha=1) {
-          difference() {
-            union() {
-              cube_3d(size = [effective_base_w, thickness, base_h]);
-
-              if (!isosceles_trapezoid) {
-                translate([0, -thickness / 4, 0]) {
-                  cube_3d(size = [effective_base_w, thickness / 2, base_h + top_h]);
-                }
-              }
-
-              translate([-effective_base_w / 2, 0, top_h / 2 + base_h]) {
-                rotate([90, 0, 90]) {
-                  linear_extrude(height = effective_base_w, center = false) {
-                    trapezoid_rounded_top(t = top_l,
-                                          b = thickness,
-                                          h = top_h,
-                                          center = true);
-                  }
-                }
-              }
-            }
-            for (i = [0 : contacts_n - 1]) {
-              cx = x_start + i * pitch;
-
-              translate([cx, 0, wall_thickness]) {
-
-                cylinder(h = base_h + top_h, d = contact_w, $fn = 30);
-              }
-            }
-          }
-        }
-
-        color(metallic_silver_6, alpha = 1) {
-          for (i = [0 : contacts_n - 1]) {
-            cx = x_start + i * pitch;
-
-            translate([cx, 0.01, wall_thickness]) {
-              cube_3d([contact_w, thickness, contact_h]);
-            }
-
-            translate([cx, 0, wall_thickness]) {
-              difference() {
-                cylinder(h = base_h + top_h / 2, d = contact_w, $fn = 30);
-                rotate([0, 0, i * 30]) {
-                  translate([0, 0, base_h + top_h / 2 - top_h + 0.1]) {
-                    cube_3d([0.4, contact_w, top_h]);
-                  }
-                }
-              }
-            }
-
-            translate([cx - pin_thickness / 2,
-                       0 - pin_thickness / 2,
-                       -pin_h + wall_thickness]) {
-              cube_3d([pin_thickness, pin_thickness, pin_h], center = false);
-            }
-          }
-        }
-      }
-
+    if (slot_mode) {
       for (i = [0 : contacts_n - 1]) {
         cx = x_start + i * pitch;
 
-        translate([cx, 0.1, wall_thickness]) {
-          cube_3d([contact_w, thickness, contact_h / 2]);
+        translate([cx - pin_thickness / 2, - pin_thickness / 2, 0]) {
+          counterbore(h=slot_thickness, d=slot_d);
+        }
+      }
+    } else {
+      difference() {
+        union() {
+          color(colr, alpha=1) {
+            difference() {
+              union() {
+                cube_3d(size = [effective_base_w, thickness, base_h]);
+
+                if (!isosceles_trapezoid) {
+                  translate([0, -thickness / 4, 0]) {
+                    cube_3d(size = [effective_base_w, thickness / 2, base_h + top_h]);
+                  }
+                }
+
+                translate([-effective_base_w / 2, 0, top_h / 2 + base_h]) {
+                  rotate([90, 0, 90]) {
+                    linear_extrude(height = effective_base_w, center = false) {
+                      trapezoid_rounded_top(t = top_l,
+                                            b = thickness,
+                                            h = top_h,
+                                            center = true);
+                    }
+                  }
+                }
+              }
+              for (i = [0 : contacts_n - 1]) {
+                cx = x_start + i * pitch;
+                translate([cx, 0, wall_thickness]) {
+                  cylinder(h = base_h + top_h, d = contact_w, $fn = 30);
+                }
+              }
+            }
+          }
+
+          color(metallic_silver_6, alpha = 1) {
+            for (i = [0 : contacts_n - 1]) {
+              cx = x_start + i * pitch;
+
+              translate([cx, 0.01, wall_thickness]) {
+                cube_3d([contact_w, thickness, contact_h]);
+              }
+
+              translate([cx, 0, wall_thickness]) {
+                difference() {
+                  cylinder(h = base_h + top_h / 2, d = contact_w, $fn = 30);
+                  rotate([0, 0, i * 30]) {
+                    translate([0, 0, base_h + top_h / 2 - top_h + 0.1]) {
+                      cube_3d([0.4, contact_w, top_h]);
+                    }
+                  }
+                }
+              }
+
+              translate([cx - pin_thickness / 2,
+                         - pin_thickness / 2,
+                         -pin_h + wall_thickness]) {
+                cylinder(r1=pin_thickness * 0.25,
+                         r2=pin_thickness / 2,
+                         h=pin_h);
+              }
+            }
+          }
+        }
+
+        for (i = [0 : contacts_n - 1]) {
+          cx = x_start + i * pitch;
+
+          translate([cx, 0.1, wall_thickness]) {
+            cube_3d([contact_w, thickness, contact_h / 2]);
+          }
         }
       }
     }
   }
 }
 
-module screw_terminal_from_plist(plist, center=false) {
+module screw_terminal_from_plist(plist,
+                                 center=false,
+                                 slot_thickness=2,
+                                 slot_mode=false) {
   plist = with_default(plist, []);
   thickness = plist_get("thickness", plist, 7.6);
   isosceles_trapezoid = plist_get("isosceles_trapezoid", plist, false);
@@ -170,7 +188,9 @@ module screw_terminal_from_plist(plist, center=false) {
                  pin_thickness=pin_thickness,
                  pin_h=pin_h,
                  wall_thickness=wall_thickness,
-                 center=center);
+                 center=center,
+                 slot_mode=slot_mode,
+                 slot_thickness=slot_thickness);
 }
 
 screw_terminal_from_plist(["placeholder", "screw_terminal",
@@ -188,4 +208,6 @@ screw_terminal_from_plist(["placeholder", "screw_terminal",
                            "pin_h",  3.9,
                            "wall_thickness",  0.6,
                            "isosceles_trapezoid", false,],
-                          center=false);
+                          center=false,
+                          slot_thickness=1,
+                          slot_mode=true);

@@ -44,24 +44,43 @@ function find_bolt_nut_spec(inner_d, specs=bolt_specs, default) =
        found = with_default(candidates[0], [], type="list"))
   with_default(drop(found, 1)[0], []);
 
-function find_bolt_head_h(inner_d, head_type, specs=bolt_specs) =
+function find_bolt_head_prop(prop, inner_d, head_type, specs=bolt_specs) =
   is_undef(head_type) || head_type == "none" ?
   0
-  : let (bolt_spec = find_bolt_nut_spec(d, specs=bolt_specs, default=[]),
+  : let (bolt_spec = find_bolt_nut_spec(d, specs=specs, default=[]),
          head_spec = plist_get(head_type,
                                plist_get("head", bolt_spec, []),
-                               []),
-         head_h = with_default(head_h,
-                               plist_get("height",
-                                         head_spec,
-                                         with_default(head_h, 0.7 * d))))
-  head_h;
+                               []))
+  plist_get(prop,
+            plist_merge(["dia", d * 1.5,
+                         "height", 0.7 * d],
+                        head_spec));
+
+function find_bolt_head_h(inner_d, head_type, specs=bolt_specs) =
+  find_bolt_head_prop(prop="height",
+                      inner_d=inner_d,
+                      head_type=head_type,
+                      specs=specs);
+
+function find_bolt_head_d(inner_d, head_type, specs=bolt_specs) =
+  find_bolt_head_prop(prop="dia",
+                      inner_d=inner_d,
+                      head_type=head_type,
+                      specs=specs);
 
 module bolt_info_text(d,
                       h,
+                      prefix,
+                      suffix,
                       plist) {
 
-  txt = str("M", snap_bolt_d(d), ", ", h, "mm");
+  txt = str(is_undef(prefix) ? "" : prefix,
+            "M",
+            snap_bolt_d(d),
+            " x ",
+            h,
+            "mm",
+            is_undef(suffix) ? "" : suffix);
   text_from_plist(txt=txt,
                   plist=plist,
                   default_size=d,

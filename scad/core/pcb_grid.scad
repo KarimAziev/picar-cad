@@ -6,6 +6,7 @@ use <grid.scad>
 use <smd_placeholder_renderer.scad>
 use <../placeholders/smd/can_capacitor.scad>
 use <../lib/plist.scad>
+use <../lib/transforms.scad>
 
 module pcb_grid(grid,
                 debug=false,
@@ -39,15 +40,29 @@ module pcb_grid(grid,
     spin = plist_get("spin", $cell, 0);
     align_x = plist_get("align_x", $cell, 0);
     align_y = plist_get("align_y", $cell, 0);
-    if (mode == "placeholder" && !is_undef(placeholder_type)
-        && !is_undef(placeholder)) {
+    y_offset = plist_get("y_offset", $cell);
+    x_offset = plist_get("x_offset", $cell);
+    has_offset = (is_num(x_offset) && x_offset != 0) || (is_num(y_offset) && y_offset != 0);
 
-      smd_placeholder_renderer(plist=placeholder,
-                               thickness=thickness,
-                               spin=spin,
-                               align_x=align_x,
-                               align_y=align_y,
-                               cell_size=$cell_size);
+    maybe_translate([has_offset ? with_default(x_offset, 0) : x_offset,
+                     has_offset ? with_default(y_offset, 0) : y_offset, 0]) {
+      if (mode == "placeholder" && !is_undef(placeholder_type)
+          && !is_undef(placeholder)) {
+
+        smd_placeholder_renderer(plist=placeholder,
+                                 thickness=thickness,
+                                 spin=spin,
+                                 align_x=align_x,
+                                 align_y=align_y,
+                                 cell_size=$cell_size);
+      } else if (mode == "slot") {
+        smd_placeholder_slot_renderer(plist=placeholder,
+                                      thickness=thickness,
+                                      spin=spin,
+                                      align_x=align_x,
+                                      align_y=align_y,
+                                      cell_size=$cell_size);
+      }
     }
   }
 }

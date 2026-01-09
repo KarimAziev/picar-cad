@@ -34,12 +34,14 @@ use <../lib/functions.scad>
 use <../lib/shapes2d.scad>
 use <../lib/slots.scad>
 use <../lib/transforms.scad>
+use <../placeholders/bolt.scad>
 
 module knuckle_mount(show_wheel=false,
                      show_bearing=false,
                      show_shaft=false,
                      show_tie_rod=false,
                      show_tie_rod_arm_length=false,
+                     show_bolts=false,
                      knuckle_color="white",
                      knuckle_color_alpha=0.6,
                      knuckle_shaft_color="white") {
@@ -48,7 +50,8 @@ module knuckle_mount(show_wheel=false,
                                      knuckle_shaft_color=knuckle_shaft_color,
                                      show_wheel=show_wheel,
                                      show_shaft=show_shaft,
-                                     border_w=knuckle_border_w);
+                                     border_w=knuckle_border_w,
+                                     show_bolts=show_bolts);
 
     knuckle_kingpin_connector(border_w=knuckle_border_w,
                               knuckle_color=knuckle_color,
@@ -60,7 +63,8 @@ module knuckle_mount(show_wheel=false,
                               show_tie_rod=show_tie_rod,
                               show_length=show_tie_rod_arm_length,
                               show_bearing=show_bearing,
-                              show_shaft=show_shaft);
+                              show_shaft=show_shaft,
+                              show_bolts=show_bolts);
   }
 }
 
@@ -97,6 +101,7 @@ module knuckle_bent_shaft_rack_link_arm(knuckle_color="white",
                                         knuckle_shaft_color="white",
                                         show_shaft=false,
                                         show_wheel=false,
+                                        show_bolts=false,
                                         border_w=border_w) {
 
   notch_width = calc_notch_width(max(knuckle_dia, knuckle_shaft_connector_dia),
@@ -148,19 +153,50 @@ module knuckle_bent_shaft_rack_link_arm(knuckle_color="white",
             }
           }
 
-          translate([knuckle_shaft_connector_extra_len + border_w / 2,
-                     0,
-                     knuckle_height - knuckle_rack_link_arm_height]) {
-            knuckle_connector(parent_dia=knuckle_dia,
-                              outer_d=steering_rack_link_bearing_outer_d,
-                              inner_d=steering_rack_link_bearing_d,
-                              h=knuckle_rack_link_arm_height,
-                              length=knuckle_shaft_connector_extra_len
-                              + knuckle_shaft_connector_extra_arm_len,
-                              border_w=border_w,
-                              children_modes=["union"],
-                              connector_color=knuckle_color,
-                              fn=360);
+          union() {
+            if (show_bolts) {
+              let (h = ceil(knuckle_shaft_connector_dia),
+                   h_offset = -knuckle_shaft_connector_dia / 2 - h / 2
+                   + knuckle_shaft_connector_dia,
+                   d = knuckle_shaft_bolt_dia,
+                   fn = 360) {
+
+                translate([offst,
+                           -h / 2,
+                           knuckle_height - knuckle_shaft_bolts_offset]) {
+                  translate([0, h_offset, -d / 2]) {
+                    rotate([-90, 0, 0]) {
+                      bolt(d=d, h=h);
+                    }
+                  }
+
+                  translate([0,
+                             h_offset,
+                             - knuckle_shaft_bolt_dia
+                             - knuckle_shaft_bolts_distance]) {
+                    translate([0, 0, -d / 2]) {
+                      rotate([-90, 0, 0]) {
+                        bolt(d=d, h=h);
+                      }
+                    };
+                  }
+                }
+              }
+            }
+            translate([knuckle_shaft_connector_extra_len + border_w / 2,
+                       0,
+                       knuckle_height - knuckle_rack_link_arm_height]) {
+              knuckle_connector(parent_dia=knuckle_dia,
+                                outer_d=steering_rack_link_bearing_outer_d,
+                                inner_d=steering_rack_link_bearing_d,
+                                h=knuckle_rack_link_arm_height,
+                                length=knuckle_shaft_connector_extra_len
+                                + knuckle_shaft_connector_extra_arm_len,
+                                border_w=border_w,
+                                children_modes=["union"],
+                                connector_color=knuckle_color,
+                                fn=360);
+            }
           }
         }
       }
@@ -187,7 +223,8 @@ module knuckle_tie_rod_shaft_arm(border_w=knuckle_border_w,
                                  show_length=false,
                                  show_bearing=false,
                                  show_tie_rod=false,
-                                 show_shaft=false) {
+                                 show_shaft=false,
+                                 show_bolts=false) {
   offst = tie_rod_shaft_knuckle_arm_dia / 2;
 
   rotate([0, 0, steering_alpha_deg]) {
@@ -236,11 +273,45 @@ module knuckle_tie_rod_shaft_arm(border_w=knuckle_border_w,
           if (show_shaft) {
             translate([tie_rod_shaft_knuckle_arm_dia / 2,
                        0,
-                       -tie_rod_shaft_full_len()
-                       + tie_rod_shaft_knuckle_arm_height]) {
+                       -tie_rod_shaft_len + tie_rod_shaft_bolt_offset]) {
               tie_rod_shaft(shaft_color=knuckle_shaft_color,
                             show_bearing=show_bearing,
                             show_tie_rod=show_tie_rod);
+            }
+          }
+          if (show_bolts) {
+            let (h = ceil(tie_rod_shaft_knuckle_arm_dia + 1),
+                 d = tie_rod_shaft_bolt_dia,
+                 h_offset = -h + tie_rod_shaft_knuckle_arm_dia / 2,
+                 fn = 360) {
+
+              union() {
+                translate([offst,
+                           0,
+                           tie_rod_shaft_knuckle_arm_height
+                           - tie_rod_shaft_bolt_offset]) {
+                  translate([0, 0, -d / 2]) {
+                    rotate([90, 0, 0]) {
+                      translate([0, 0, h_offset]) {
+                        bolt(d=d, h=h);
+                      }
+                    }
+                  }
+
+                  translate([0,
+                             0,
+                             -d
+                             - tie_rod_shaft_bolt_distance]) {
+                    translate([0, 0, -d / 2]) {
+                      rotate([90, 0, 0]) {
+                        translate([0, 0, h_offset]) {
+                          bolt(d=d, h=h);
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
           if (show_length) {

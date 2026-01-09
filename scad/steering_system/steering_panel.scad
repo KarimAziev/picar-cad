@@ -66,6 +66,25 @@ use <../lib/transforms.scad>
 use <../lib/holes.scad>
 use <../components/chassis/util.scad>
 use <../lib/slots.scad>
+use <../placeholders/bolt.scad>
+use <../lib/plist.scad>
+use <../lib/text.scad>
+
+show_rack               = false;
+show_servo_mount_panel  = false;
+show_servo              = false;
+show_pinion             = false;
+show_brackets           = false;
+show_kingpin_posts      = false;
+
+show_bolts_info         = false;
+show_kingpin_bolt       = false;
+show_hinges_bolts       = false;
+show_panel_bolt         = false;
+
+fasten_kingpin_bolt     = false;
+fasten_hinges_bolts     = false;
+fasten_panel_bolt       = false;
 
 steering_hinge_bolt_rad = steering_panel_hinge_bolt_dia / 2;
 
@@ -76,9 +95,23 @@ hinge_pts = scale_upper_trapezoid_pts(x=steering_panel_hinge_w,
 hinge_h                 = max(steering_rack_support_thickness * 0.8,
                               1);
 
+function steering_panel_hinges_calc_x_distance() =
+  poly_width_at_y(chassis_upper_pts,
+                  chassis_upper_len - steering_panel_distance_from_top)
+  - steering_panel_hinge_w / 2
+  - steering_panel_hinge_x_offset;
+
+function knuckle_connectors_x_offsets() =
+  let (half_of_len=steering_panel_length / 2,
+       knuckle_rad = knuckle_dia / 2)
+  [half_of_len - knuckle_rad,
+   -half_of_len + knuckle_rad];
+
 module steering_panel_kingpin_connector(color,
                                         show_bolt=false,
-                                        bolt_out=false) {
+                                        fasten_bolt=true,
+                                        show_bolts_info=false,
+                                        txt_size=4) {
   knuckle_rad = knuckle_dia / 2;
 
   border_w = steering_kingpin_post_border_w;
@@ -96,64 +129,32 @@ module steering_panel_kingpin_connector(color,
     }
   }
   if (show_bolt) {
-    bolt_h=knuckle_dia + 2;
+    let (bolt_h=knuckle_dia,
+         d=steering_kingpin_post_bolt_dia,
+         bolt_head_type_d =
+         find_bolt_head_d(inner_d=d,
+                          head_type=steering_kingpin_post_bolt_head_type),
 
-    translate([0, bolt_h / 2 - (bolt_out ? 0 : bolt_h), 0]) {
-      rotate([0, 0, 180]) {
+         notch_w = calc_notch_width(knuckle_dia,
+                                    bolt_head_type_d),
+         y = fasten_bolt ? -bolt_h + knuckle_dia / 2 - notch_w : 0,
+         bolt_info_y = bolt_h + txt_size + knuckle_shaft_connector_extra_len
+         + knuckle_shaft_connector_dia) {
+
+      if (show_bolts_info) {
+        translate([0,
+                   bolt_info_y,
+                   steering_rack_support_thickness]) {
+          bolt_info_text(d=d,
+                         h=bolt_h,
+                         prefix="Two ",
+                         plist=["size", txt_size]);
+        }
+      }
+
+      translate([0, y, 0]) {
         steering_kingpin_post_bolt_holes(bolt_mode=true,
                                          bolt_h=bolt_h);
-      }
-    }
-  }
-}
-
-function steering_panel_hinges_calc_x_distance() =
-  poly_width_at_y(chassis_upper_pts,
-                  chassis_upper_len - steering_panel_distance_from_top)
-  - steering_panel_hinge_w / 2
-  - steering_panel_hinge_x_offset;
-
-function knuckle_connectors_x_offsets() =
-  let (half_of_len=steering_panel_length / 2,
-       knuckle_rad = knuckle_dia / 2)
-  [half_of_len - knuckle_rad,
-   -half_of_len + knuckle_rad];
-
-module hinge_3d(slot_mode=false,
-                color,
-                show_bolt=false) {
-  max_d = max(steering_panel_hinge_bolt_dia, steering_panel_hinge_bore_dia);
-  if (slot_mode) {
-    translate([max_d / 2 + steering_panel_hinge_bolt_x_distance,
-               max_d / 2 + steering_panel_hinge_bolt_distance,
-               0]) {
-      counterbore(h=chassis_thickness,
-                  d=steering_panel_hinge_bolt_dia,
-                  bore_d=steering_panel_hinge_chassis_bore_dia,
-                  bore_h=chassis_counterbore_h,
-                  sink=true,
-                  fn=100,
-                  reverse=true);
-    }
-  } else {
-    color(color, alpha=1) {
-      difference() {
-        linear_extrude(height=hinge_h, center=false) {
-          offset_vertices_2d(r=steering_panel_hinge_corner_rad) {
-            polygon(hinge_pts);
-          }
-        }
-        translate([max_d / 2 + steering_panel_hinge_bolt_x_distance,
-                   max_d / 2 + steering_panel_hinge_bolt_distance,
-                   0]) {
-          counterbore(h=hinge_h,
-                      d=steering_panel_hinge_bolt_dia,
-                      bore_d=steering_panel_hinge_bore_dia,
-                      bore_h=hinge_h / 2,
-                      sink=false,
-                      fn=100,
-                      reverse=false);
-        }
       }
     }
   }
@@ -185,27 +186,131 @@ module steering_chassis_bar_3d(length=steering_panel_length,
   }
 }
 
+module hinge_3d(slot_mode=false,
+                color,
+                show_bolt=false,
+                fasten_bolt=false,
+                show_bolts_info=false) {
+  max_d = max(steering_panel_hinge_bolt_dia, steering_panel_hinge_bore_dia);
+  x = max_d / 2 + steering_panel_hinge_bolt_x_distance;
+  y = max_d / 2 + steering_panel_hinge_bolt_distance;
+  if (slot_mode) {
+    translate([x, y, 0]) {
+      counterbore(h=chassis_thickness,
+                  d=steering_panel_hinge_bolt_dia,
+                  bore_d=steering_panel_hinge_chassis_bore_dia,
+                  bore_h=chassis_counterbore_h,
+                  sink=true,
+                  fn=100,
+                  reverse=true);
+    }
+  } else {
+    let (bore_h = hinge_h / 2) {
+      color(color, alpha=1) {
+        difference() {
+          linear_extrude(height=hinge_h, center=false) {
+            offset_vertices_2d(r=steering_panel_hinge_corner_rad) {
+              polygon(hinge_pts);
+            }
+          }
+          translate([x, y, 0]) {
+            counterbore(h=hinge_h,
+                        d=steering_panel_hinge_bolt_dia,
+                        bore_d=steering_panel_hinge_bore_dia,
+                        bore_h=bore_h,
+                        sink=false,
+                        fn=100,
+                        reverse=false);
+          }
+        }
+      }
+      if (show_bolt || show_bolts_info) {
+        let (d=steering_panel_hinge_bolt_dia,
+             bolt_h = hinge_h + chassis_thickness,
+             head_type = steering_panel_hinge_bolt_head_type,
+             bolt_spec = find_bolt_nut_spec(d, default=[]),
+             nut_spec = plist_get("lock_nut", bolt_spec, []),
+             nut_h = plist_get("height", nut_spec, 0),
+             z = fasten_bolt ? -hinge_h - bore_h : 0) {
+
+          if (show_bolt) {
+            translate([x, y, z]) {
+              bolt(d=steering_panel_hinge_bolt_dia,
+                   h=bolt_h,
+                   nut_head_distance=bolt_h - nut_h,
+                   head_type=head_type,
+                   show_nut=nut_spec && fasten_bolt,
+                   lock_nut=true);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 module steering_hinges(slot_mode=false,
                        show_bolt=false,
+                       show_bolts_info=false,
+                       fasten_bolt=false,
+                       txt_size=4,
                        color) {
+  half_of_rack_w = steering_rack_support_width / 2;
   side_connector_offst_x = steering_panel_hinges_calc_x_distance();
   mirror_copy([1, 0, 0]) {
     translate([side_connector_offst_x,
-               -steering_rack_support_width / 2 - steering_panel_hinge_length,
+               -half_of_rack_w - steering_panel_hinge_length,
                slot_mode ? 0 : -steering_rack_support_thickness / 2]) {
       hinge_3d(slot_mode=slot_mode,
                color=color,
-               show_bolt=show_bolt);
+               show_bolt=show_bolt,
+               fasten_bolt=fasten_bolt,
+               show_bolts_info=show_bolts_info);
+    }
+  }
+
+  if (show_bolts_info && !slot_mode) {
+    for (x = [-side_connector_offst_x, side_connector_offst_x]) {
+      translate([x, -half_of_rack_w, 0]) {
+        let (d=steering_panel_hinge_bolt_dia,
+             bolt_h = hinge_h + chassis_thickness,
+             bolt_info_y = steering_panel_hinge_length
+             + steering_panel_hinge_corner_rad
+             + txt_size,
+             snapped_d = snap_bolt_d(d),
+             bolt_txt = str("M",
+                            snapped_d,
+                            " x ",
+                            bolt_h,
+                            "mm,"),
+             nut_txt = str("Lock Nut M", snapped_d)) {
+
+          translate([0,
+                     -bolt_info_y,
+                     steering_rack_support_thickness]) {
+            text_rows([bolt_txt, nut_txt],
+                      plist=["size", txt_size,
+                             "valign", "top",
+                             "color", dark_gold_1,
+                             "halign", x > 0 ? "left" : "right"]);
+          }
+        }
+      }
     }
   }
 }
 
 module steering_rack_support(show_rack=false,
-                             show_brackets=true,
+                             show_brackets=false,
                              show_kingpin_posts=false,
                              show_kingpin_bolt=false,
                              show_hinges_bolts=false,
                              show_panel_bolt=false,
+                             fasten_kingpin_bolt=false,
+                             fasten_hinges_bolts=false,
+                             show_bolts_info=false,
+                             fasten_panel_bolt=false,
+                             show_bolts_info=false,
                              panel_color,
                              rack_color) {
   half_of_len = steering_panel_length / 2;
@@ -245,9 +350,41 @@ module steering_rack_support(show_rack=false,
       }
 
       if (show_panel_bolt) {
-        translate([0, steering_rack_support_width, 0]) {
+        bolt_hole_len = steering_servo_mount_pass_through_len();
+        bolt_h = ceil(bolt_hole_len + 6);
+        d = steering_servo_mount_connector_bolt_dia;
+        unfset_pos = steering_rack_support_width / 2;
+        bolt_head_type_h =
+          find_bolt_head_h(inner_d=d,
+                           head_type=steering_servo_mount_connector_bolt_head_type);
+        if (show_bolts_info) {
+          let (txt_size = 4,
+               text_base_dist = d + bolt_h + bolt_head_type_h + txt_size,
+               text_dist = fasten_panel_bolt
+               ? -text_base_dist - txt_size
+               : text_base_dist) {
+            translate([0,
+                       text_dist,
+                       steering_rack_support_thickness]) {
+              bolt_info_text(d=steering_servo_mount_connector_bolt_dia,
+                             h=bolt_h,
+                             plist=["size", txt_size],
+                             prefix="Two ",
+                             suffix=" and nuts");
+            }
+          }
+        }
+        translate([0, unfset_pos + (fasten_panel_bolt ? -bolt_h : 0), 0]) {
           rotate([0, 0, 180]) {
-            steering_servo_mount_panel_bolt_holes(bolt_mode=true);
+            steering_servo_mount_with_bolt_mirror_x_positions() {
+              rotate([90, 0, 0]) {
+                bolt(d=d,
+                     h=bolt_h,
+                     head_type=steering_servo_mount_connector_bolt_head_type,
+                     show_nut=fasten_panel_bolt,
+                     nut_head_distance=bolt_hole_len + bolt_head_type_h);
+              }
+            }
           }
         }
       }
@@ -258,10 +395,11 @@ module steering_rack_support(show_rack=false,
                    -steering_rack_support_thickness
                    / 2]) {
           steering_panel_kingpin_connector(color=panel_color,
-                                           show_bolt=show_kingpin_bolt);
+                                           show_bolt=show_kingpin_bolt,
+                                           show_bolts_info=show_bolts_info,
+                                           fasten_bolt=fasten_kingpin_bolt);
           if (show_kingpin_posts) {
             translate([0, 0, 0.01]) {
-
               steering_kingpin_post(color=panel_color);
             }
           }
@@ -269,7 +407,9 @@ module steering_rack_support(show_rack=false,
       }
 
       steering_hinges(color=panel_color,
-                      show_bolt=show_hinges_bolts);
+                      show_bolt=show_hinges_bolts,
+                      fasten_bolt=fasten_hinges_bolts,
+                      show_bolts_info=show_bolts_info);
     }
 
     if (show_rack) {
@@ -290,15 +430,19 @@ module steering_rack_support(show_rack=false,
 
 module steering_panel(panel_color,
                       rack_color,
-                      show_rack=false,
-                      show_servo_mount_panel=false,
-                      show_servo=false,
-                      show_pinion=true,
-                      show_brackets=true,
-                      show_kingpin_posts=false,
-                      show_kingpin_bolt=true,
-                      show_hinges_bolts=false,
-                      show_panel_bolt=true,
+                      show_rack=show_rack,
+                      show_servo_mount_panel=show_servo_mount_panel,
+                      show_servo=show_servo,
+                      show_pinion=show_pinion,
+                      show_brackets=show_brackets,
+                      show_kingpin_posts=show_kingpin_posts,
+                      show_kingpin_bolt=show_kingpin_bolt,
+                      show_hinges_bolts=show_hinges_bolts,
+                      show_panel_bolt=show_panel_bolt,
+                      fasten_kingpin_bolt=fasten_kingpin_bolt,
+                      fasten_hinges_bolts=fasten_hinges_bolts,
+                      fasten_panel_bolt=fasten_panel_bolt,
+                      show_bolts_info=show_bolts_info,
                       pinion_color=blue_grey_carbon,
                       center_y=true) {
   translate([0, center_y ? 0 : -steering_rack_support_width / 2, 0]) {
@@ -309,8 +453,12 @@ module steering_panel(panel_color,
                             show_kingpin_posts=show_kingpin_posts,
                             show_panel_bolt=show_panel_bolt,
                             show_hinges_bolts=show_hinges_bolts,
+                            show_bolts_info=show_bolts_info,
                             show_kingpin_bolt=show_kingpin_bolt,
-                            rack_color=rack_color);
+                            rack_color=rack_color,
+                            fasten_kingpin_bolt=fasten_kingpin_bolt,
+                            fasten_hinges_bolts=fasten_hinges_bolts,
+                            fasten_panel_bolt=fasten_panel_bolt);
 
       translate([0, 0, steering_rack_support_thickness / 2]) {
         color(panel_color, alpha=1) {
@@ -330,13 +478,7 @@ module steering_panel(panel_color,
 }
 
 steering_panel(panel_color="white",
-               show_servo=false,
-               show_rack=false,
-               show_brackets=false,
                rack_color=cobalt_blue_metallic,
-               show_kingpin_posts=false,
-               show_servo_mount_panel=false,
-               show_pinion=true,
                center_y=false);
 
 // translate([0, 0, 0]) {
