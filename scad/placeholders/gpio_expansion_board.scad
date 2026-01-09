@@ -5,18 +5,18 @@
  * License: GPL-3.0-or-later
  */
 
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 
-use <../lib/shapes2d.scad>
 use <../lib/holes.scad>
+use <../lib/placement.scad>
+use <../lib/shapes2d.scad>
+use <../lib/shapes3d.scad>
 use <../lib/transforms.scad>
+use <pad_hole.scad>
 use <pin_header.scad>
 use <screw_terminal.scad>
-use <pad_hole.scad>
-use <../lib/placement.scad>
 use <standoff.scad>
-use <../lib/shapes3d.scad>
 
 module gpio_expansion_board(show_standoff=true,
                             center=true,

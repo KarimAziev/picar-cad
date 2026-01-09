@@ -5,14 +5,14 @@
  * License: GPL-3.0-or-later
  */
 
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 
-use <../placeholders/lipo_pack.scad>;
-use <../lib/slider.scad>;
-use <power_lid.scad>
-use <../lib/transforms.scad>
 use <../lib/shapes3d.scad>
+use <../lib/slider.scad>;
+use <../lib/transforms.scad>
+use <../placeholders/lipo_pack.scad>;
+use <power_lid.scad>
 
 module power_case_rail(h=power_case_rail_height,
                        w=power_case_side_wall_thickness,

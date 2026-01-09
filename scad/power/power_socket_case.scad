@@ -7,25 +7,25 @@
  * License: GPL-3.0-or-later
  */
 
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 include <../power_lid_parameters.scad>
 
+use <../components/closable_box/sliding_box.scad>
 use <../core/slot_layout.scad>
 use <../core/slot_layout_components.scad>
-use <../components/closable_box/sliding_box.scad>
+use <../lib/debug.scad>
+use <../lib/holes.scad>
+use <../lib/plist.scad>
+use <../lib/shapes2d.scad>
+use <../lib/shapes3d.scad>
+use <../lib/slots.scad>
+use <../lib/text.scad>
+use <../lib/transforms.scad>
 use <../placeholders/standoff.scad>
 use <../placeholders/xt90e-m.scad>
-use <../lib/plist.scad>
-use <../lib/shapes3d.scad>
-use <../lib/shapes2d.scad>
-use <../lib/transforms.scad>
-use <../lib/holes.scad>
-use <../lib/text.scad>
-use <../lib/debug.scad>
-use <../lib/slots.scad>
-use <power_socket_lid.scad>
 use <common.scad>
+use <power_socket_lid.scad>
 
 show_atm_fuse_holders      = false;
 show_socket                = false;

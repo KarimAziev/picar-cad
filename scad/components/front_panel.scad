@@ -11,24 +11,22 @@
 //  - Sensor: HC-SR04 ultrasonic sensor
 //  - Attachment Hardware: M2.5 bolts
 
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 
-use <../placeholders/ultrasonic.scad>
-use <../placeholders/smd/smd_chip.scad>
-use <../lib/shapes2d.scad>
-use <../lib/holes.scad>
-use <../lib/transforms.scad>
 use <../lib/functions.scad>
+use <../lib/holes.scad>
+use <../lib/shapes2d.scad>
 use <../lib/shapes3d.scad>
 use <../lib/slots.scad>
-
-
+use <../lib/transforms.scad>
+use <../placeholders/smd/smd_chip.scad>
+use <../placeholders/ultrasonic.scad>
 
 rear_panel_z = ultrasonic_pin_len_b
-                - ultrasonic_thickness
-                - ultrasonic_pin_protrusion_h
-                + ultrasonic_pin_thickness;
+  - ultrasonic_thickness
+  - ultrasonic_pin_protrusion_h
+  + ultrasonic_pin_thickness;
 
 module ultrasonic_sensor_mounts_2d(d=front_panel_ultrasonic_sensor_dia) {
   rad = d / 2;

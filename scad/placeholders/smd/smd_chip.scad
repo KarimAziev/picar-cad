@@ -9,16 +9,16 @@
  * License: GPL-3.0-or-later
  */
 
-include <../../parameters.scad>
 include <../../colors.scad>
+include <../../parameters.scad>
 
-use <../../lib/l_bracket.scad>
-use <../pins.scad>
-use <../../lib/shapes2d.scad>
-use <../../lib/transforms.scad>
-use <../../lib/plist.scad>
 use <../../lib/functions.scad>
+use <../../lib/l_bracket.scad>
+use <../../lib/plist.scad>
+use <../../lib/shapes2d.scad>
 use <../../lib/text.scad>
+use <../../lib/transforms.scad>
+use <../pins.scad>
 
 module smd_chip_2d(length,
                    w,

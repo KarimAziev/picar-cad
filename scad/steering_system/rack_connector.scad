@@ -14,13 +14,13 @@
  * License: GPL-3.0-or-later
  */
 
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 
-use <rack_util.scad>
+use <bearing_connector.scad>
 use <rack_connector.scad>
 use <rack_link.scad>
-use <bearing_connector.scad>
+use <rack_util.scad>
 
 function rack_connector_stopper_w() =
   (steering_rack_link_bearing_outer_d - steering_rack_link_linkage_width) / 2;

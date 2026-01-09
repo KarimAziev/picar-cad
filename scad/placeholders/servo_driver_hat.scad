@@ -6,21 +6,21 @@
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 
-use <../lib/shapes2d.scad>
+use <../lib/functions.scad>
 use <../lib/holes.scad>
+use <../lib/placement.scad>
+use <../lib/shapes2d.scad>
+use <../lib/shapes3d.scad>
 use <../lib/transforms.scad>
+use <pad_hole.scad>
 use <pin_header.scad>
 use <screw_terminal.scad>
-use <pad_hole.scad>
-use <../lib/placement.scad>
-use <standoff.scad>
 use <smd/smd_chip.scad>
 use <smd/smd_resistor.scad>
-use <../lib/shapes3d.scad>
-use <../lib/functions.scad>
+use <standoff.scad>
 
 basic_resistor_size              = [1.0, 2.5, 0.5, 0.01, false];
 servo_driver_hat_resistors_specs = [[basic_resistor_size,

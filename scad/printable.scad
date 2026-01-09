@@ -16,32 +16,31 @@
  * License: GPL-3.0-or-later
  */
 
-include <parameters.scad>
 include <colors.scad>
+include <parameters.scad>
 
-use <head/ir_case.scad>
+use <components/chassis/chassis_printable.scad>
 use <components/front_panel.scad>
 use <components/rear_panel.scad>
 use <head/head_mount.scad>
 use <head/head_neck.scad>
+use <head/ir_case.scad>
 use <motor_brackets/n20_motor_bracket.scad>
 use <motor_brackets/standard_motor_bracket.scad>
-use <steering_system/knuckle_shaft.scad>
-use <steering_system/steering_pinion.scad>
-use <steering_system/rack_link.scad>
-use <steering_system/steering_panel.scad>
 use <steering_system/knuckle.scad>
+use <steering_system/knuckle_shaft.scad>
 use <steering_system/rack.scad>
+use <steering_system/rack_link.scad>
 use <steering_system/steering_kingpin_post.scad>
+use <steering_system/steering_panel.scad>
+use <steering_system/steering_pinion.scad>
 use <steering_system/steering_servo_mount.scad>
-use <steering_system/tie_rod_shaft.scad>
 use <steering_system/tie_rod.scad>
-use <wheels/tire.scad>
-use <wheels/rear_wheel.scad>
+use <steering_system/tie_rod_shaft.scad>
 use <wheels/front_wheel.scad>
+use <wheels/rear_wheel.scad>
+use <wheels/tire.scad>
 use <wheels/wheel_hub.scad>
-
-use <components/chassis/chassis_printable.scad>
 
 show_chasssis       = true;
 show_front_panel    = true;

@@ -1,10 +1,10 @@
 include <../../colors.scad>
 
+use <../../lib/functions.scad>
+use <../../lib/plist.scad>
 use <../../lib/shapes2d.scad>
 use <../../lib/shapes3d.scad>
 use <../../lib/transforms.scad>
-use <../../lib/plist.scad>
-use <../../lib/functions.scad>
 
 module smd_resistor(size=[3.2, 1.4, 0.4],
                     border_color="white",

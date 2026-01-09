@@ -5,17 +5,16 @@
  * License: GPL-3.0-or-later
  */
 
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 
-use <../lib/shapes3d.scad>
-use <../lib/placement.scad>
-use <../lib/transforms.scad>
-use <../lib/slots.scad>
 use <../lib/functions.scad>
-
-use <power_case_rail.scad>
+use <../lib/placement.scad>
+use <../lib/shapes3d.scad>
+use <../lib/slots.scad>
+use <../lib/transforms.scad>
 use <common.scad>
+use <power_case_rail.scad>
 
 module power_case(size=[power_case_width,
                         power_case_length,

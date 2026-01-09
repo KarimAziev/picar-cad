@@ -6,27 +6,24 @@
  * License: GPL-3.0-or-later
  */
 
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 include <../power_lid_parameters.scad>
 
 use <../components/closable_box/sliding_box.scad>
-
-use <../placeholders/lipo_pack.scad>
-use <../placeholders/standoff.scad>
-use <../placeholders/bolt.scad>
-
-use <../lib/shapes3d.scad>
 use <../lib/placement.scad>
-use <../lib/transforms.scad>
+use <../lib/shapes3d.scad>
 use <../lib/slots.scad>
 use <../lib/text.scad>
-
-use <power_case.scad>
-use <power_socket_case.scad>
-use <power_lid.scad>
-use <power_case_rail.scad>
+use <../lib/transforms.scad>
+use <../placeholders/bolt.scad>
+use <../placeholders/lipo_pack.scad>
+use <../placeholders/standoff.scad>
 use <common.scad>
+use <power_case.scad>
+use <power_case_rail.scad>
+use <power_lid.scad>
+use <power_socket_case.scad>
 
 show_socket_case                  = true;
 

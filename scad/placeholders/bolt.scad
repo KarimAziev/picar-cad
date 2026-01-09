@@ -4,16 +4,16 @@
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 
-use <../lib/shapes2d.scad>
 use <../lib/functions.scad>
-use <../lib/shapes3d.scad>
-use <../lib/transforms.scad>
 use <../lib/plist.scad>
-use <nut.scad>
+use <../lib/shapes2d.scad>
+use <../lib/shapes3d.scad>
 use <../lib/text.scad>
+use <../lib/transforms.scad>
+use <nut.scad>
 
 function default_pitch(d) =
   (d <= 2) ? 0.4 :

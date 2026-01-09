@@ -9,19 +9,19 @@
  * License: GPL-3.0-or-later
  */
 
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 
 use <../placeholders/servo.scad>
 use <../placeholders/steering_servo.scad>
 use <ackermann_geometry_triangle.scad>
-use <steering_pinion.scad>
-use <rack_link.scad>
-use <steering_panel.scad>
 use <knuckle.scad>
-use <rack_connector.scad>
 use <rack.scad>
+use <rack_connector.scad>
+use <rack_link.scad>
 use <rack_util.scad>
+use <steering_panel.scad>
+use <steering_pinion.scad>
 use <tie_rod.scad>
 
 show_ackermann_triangle = false;

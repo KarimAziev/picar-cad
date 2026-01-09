@@ -4,12 +4,12 @@
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 
 use <../lib/shapes2d.scad>
-use <../lib/trapezoids.scad>
 use <../lib/transforms.scad>
+use <../lib/trapezoids.scad>
 
 module servo_horn_single(arm_len=(servo_horn_len / 2),
                          center_ring_dia=servo_horn_center_ring_outer_dia,

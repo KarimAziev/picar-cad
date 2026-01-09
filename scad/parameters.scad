@@ -10,9 +10,9 @@
 include <colors.scad>
 
 use <lib/functions.scad>
-use <steering_system/knuckle_util.scad>
 use <lib/plist.scad>
 use <placeholders/battery_holder/util.scad>
+use <steering_system/knuckle_util.scad>
 
 assembly_use_front_steering                          = false;
 assembly_shaft_use_front_steering                    = true;

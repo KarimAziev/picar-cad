@@ -10,12 +10,12 @@
  * License: GPL-3.0-or-later
  */
 
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 
 use <../lib/functions.scad>
-use <knuckle_util.scad>
 use <../lib/shapes2d.scad>
+use <knuckle_util.scad>
 
 module knuckle_connector(parent_dia,
                          outer_d,

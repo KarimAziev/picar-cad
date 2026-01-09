@@ -6,9 +6,9 @@
  */
 include <../parameters.scad>
 
-use <wheel.scad>
 use <front_wheel.scad>
 use <rear_wheel.scad>
+use <wheel.scad>
 
 module front_and_rear_wheels(w=wheel_w,
                              d=wheel_dia,

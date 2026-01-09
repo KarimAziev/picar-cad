@@ -5,13 +5,13 @@
  * License: GPL-3.0-or-later
  */
 
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 
-use <../wheels/rear_wheel.scad>
 use <../lib/shapes3d.scad>
-use <motor.scad>
 use <../lib/text.scad>
+use <../wheels/rear_wheel.scad>
+use <motor.scad>
 
 module n20_motor_reductor() {
   cylinder(h=n20_reductor_height, r=n20_reductor_dia / 2, center=false);

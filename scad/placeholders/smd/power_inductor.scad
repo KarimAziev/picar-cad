@@ -6,13 +6,14 @@
  */
 
 include <../../colors.scad>
+
+use <../../lib/debug.scad>
+use <../../lib/functions.scad>
 use <../../lib/plist.scad>
 use <../../lib/shapes2d.scad>
 use <../../lib/shapes3d.scad>
-use <../../lib/transforms.scad>
-use <../../lib/functions.scad>
 use <../../lib/text.scad>
-use <../../lib/debug.scad>
+use <../../lib/transforms.scad>
 
 module shielded_power_inductor(size=[10, 10, 5],
                                r,

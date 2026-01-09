@@ -6,9 +6,10 @@
  */
 
 include <../../parameters.scad>
-use <../../lib/transforms.scad>
+
 use <../../lib/debug.scad>
 use <../../lib/functions.scad>
+use <../../lib/transforms.scad>
 
 side_wall_type = "skeleton"; // [skeleton, enclosed]
 side_wall_len  = 65.0;

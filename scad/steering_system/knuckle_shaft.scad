@@ -35,11 +35,11 @@
  * License: GPL-3.0-or-later
  */
 
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 
-use <../wheels/front_wheel.scad>
 use <../lib/slots.scad>
+use <../wheels/front_wheel.scad>
 
 module knuckle_shaft(show_wheel=false,
                      knuckle_shaft_color="white") {

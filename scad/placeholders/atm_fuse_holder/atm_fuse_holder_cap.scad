@@ -5,14 +5,14 @@
  * License: GPL-3.0-or-later
  */
 
-include <../../parameters.scad>
 include <../../colors.scad>
+include <../../parameters.scad>
 
-use <../../lib/trapezoids.scad>
-use <../../lib/transforms.scad>
 use <../../lib/plist.scad>
-use <../../lib/stairs.scad>
 use <../../lib/slots.scad>
+use <../../lib/stairs.scad>
+use <../../lib/transforms.scad>
+use <../../lib/trapezoids.scad>
 
 module atm_fuse_holder_cap(size=[atm_fuse_holder_cap_top_l,
                                  atm_fuse_holder_cap_thickness,

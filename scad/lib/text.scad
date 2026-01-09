@@ -4,11 +4,11 @@
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */
-use <functions.scad>
-use <transforms.scad>
 use <debug.scad>
-use <plist.scad>
+use <functions.scad>
 use <placement.scad>
+use <plist.scad>
+use <transforms.scad>
 
 /**
    Render text from the given specification or defaults.

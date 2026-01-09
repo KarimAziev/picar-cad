@@ -9,10 +9,10 @@
 include <../../colors.scad>
 include <../../parameters.scad>
 
+use <../../core/grid.scad>
 use <../../lib/functions.scad>
 use <../../lib/plist.scad>
 use <contact.scad>
-use <../../core/grid.scad>
 
 function _battery_holder_full_len(front_rear_thickness, battery_len) =
   battery_len + front_rear_thickness * 2;

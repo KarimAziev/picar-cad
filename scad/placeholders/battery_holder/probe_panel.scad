@@ -1,7 +1,8 @@
 include <../../colors.scad>
 include <../../parameters.scad>
-use <battery_holder.scad>
+
 use <../../lib/shapes3d.scad>
+use <battery_holder.scad>
 
 // Where mounting holes are placed
 panel_mount_type                 = "intercell"; // [under_cell: Under each cell, intercell: Between the cells]

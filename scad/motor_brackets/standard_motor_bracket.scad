@@ -13,11 +13,11 @@
  * License: GPL-3.0-or-later
  */
 
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 
-use <../placeholders/motor.scad>
 use <../lib/shapes2d.scad>
+use <../placeholders/motor.scad>
 
 module standard_motor_bracket_bolts_holes_2d(d) {
   for (y=standard_motor_bracket_bolt_spacing) {

@@ -5,15 +5,15 @@
  * License: GPL-3.0-or-later
  */
 
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 
-use <../lib/shapes3d.scad>
-use <../lib/transforms.scad>
-use <../lib/holes.scad>
 use <../lib/functions.scad>
+use <../lib/holes.scad>
 use <../lib/plist.scad>
+use <../lib/shapes3d.scad>
 use <../lib/slots.scad>
+use <../lib/transforms.scad>
 
 function toggle_switch_calc_desired_thickness(extra_thickness, nut_bore_h) =
   extra_thickness + nut_bore_h;

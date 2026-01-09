@@ -4,12 +4,12 @@
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 
+use <../lib/plist.scad>
 use <../lib/shapes2d.scad>
 use <../lib/transforms.scad>
-use <../lib/plist.scad>
 
 module rpi_rectangle_3d(size, r_factor=0.05, fn=40, center=false) {
   linear_extrude(height=size[2], center=center) {

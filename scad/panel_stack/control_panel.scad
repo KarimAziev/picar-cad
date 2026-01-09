@@ -4,21 +4,20 @@
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 
+use <../lib/functions.scad>
+use <../lib/holes.scad>
+use <../lib/placement.scad>
+use <../lib/plist.scad>
 use <../lib/shapes2d.scad>
 use <../lib/shapes3d.scad>
-
-use <../placeholders/toggle_switch.scad>
-use <../lib/holes.scad>
-use <../placeholders/standoff.scad>
-use <../lib/placement.scad>
-use <../lib/transforms.scad>
-use <../lib/functions.scad>
-use <../placeholders/bolt.scad>
-use <../lib/plist.scad>
 use <../lib/slots.scad>
+use <../lib/transforms.scad>
+use <../placeholders/bolt.scad>
+use <../placeholders/standoff.scad>
+use <../placeholders/toggle_switch.scad>
 
 sizes                   = [for (spec = control_panel_switch_button_specs)
     plist_get("size", spec)];

@@ -47,28 +47,28 @@
  * License: GPL-3.0-or-later
  */
 
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 
-use <../placeholders/steering_servo.scad>
-use <steering_kingpin_post.scad>
-use <rack_util.scad>
-use <steering_pinion.scad>
-use <bearing_shaft.scad>
-use <steering_rail.scad>
-use <rack.scad>
-use <knuckle_connector.scad>
-use <../lib/l_bracket.scad>
-use <steering_servo_mount.scad>
-use <../lib/functions.scad>
-use <../lib/shapes2d.scad>
-use <../lib/transforms.scad>
-use <../lib/holes.scad>
 use <../components/chassis/util.scad>
-use <../lib/slots.scad>
-use <../placeholders/bolt.scad>
+use <../lib/functions.scad>
+use <../lib/holes.scad>
+use <../lib/l_bracket.scad>
 use <../lib/plist.scad>
+use <../lib/shapes2d.scad>
+use <../lib/slots.scad>
 use <../lib/text.scad>
+use <../lib/transforms.scad>
+use <../placeholders/bolt.scad>
+use <../placeholders/steering_servo.scad>
+use <bearing_shaft.scad>
+use <knuckle_connector.scad>
+use <rack.scad>
+use <rack_util.scad>
+use <steering_kingpin_post.scad>
+use <steering_pinion.scad>
+use <steering_rail.scad>
+use <steering_servo_mount.scad>
 
 show_rack               = false;
 show_servo_mount_panel  = false;

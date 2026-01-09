@@ -1,16 +1,16 @@
 include <../parameters.scad>
-use <../lib/shapes2d.scad>
-use <../lib/holes.scad>
-use <smd/smd_chip.scad>
-use <../lib/transforms.scad>
-use <../lib/shapes3d.scad>
-use <../lib/functions.scad>
 
+use <../lib/functions.scad>
+use <../lib/holes.scad>
+use <../lib/placement.scad>
+use <../lib/plist.scad>
+use <../lib/shapes2d.scad>
+use <../lib/shapes3d.scad>
+use <../lib/transforms.scad>
+use <pad_hole.scad>
 use <pin_header.scad>
 use <screw_terminal.scad>
-use <../lib/placement.scad>
-use <pad_hole.scad>
-use <../lib/plist.scad>
+use <smd/smd_chip.scad>
 
 // [...[diameter, color]]
 ina260_mounting_hole_pad_spec             = [[3.4, yellow_3],

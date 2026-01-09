@@ -5,18 +5,19 @@
  * License: GPL-3.0-or-later
  */
 
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
+
+use <../lib/functions.scad>
+use <../lib/plist.scad>
+use <../lib/shapes3d.scad>
+use <../lib/slots.scad>
+use <../lib/text.scad>
+use <../lib/transforms.scad>
+use <../lib/wire.scad>
 use <./pins.scad>
 use <./rpi_5.scad>
-use <../lib/wire.scad>
 use <standoff.scad>
-use <../lib/shapes3d.scad>
-use <../lib/transforms.scad>
-use <../lib/plist.scad>
-use <../lib/text.scad>
-use <../lib/functions.scad>
-use <../lib/slots.scad>
 
 module voltemeter_text(txt, text_props) {
   let (rotation=plist_get("rotation", text_props, [0, 0, 0]),

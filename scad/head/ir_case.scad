@@ -25,13 +25,13 @@
  * License: GPL-3.0-or-later
  */
 
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 
 use <../lib/l_bracket.scad>
 use <../lib/slider.scad>
-use <../placeholders/ir_led.scad>
 use <../lib/transforms.scad>
+use <../placeholders/ir_led.scad>
 
 function is_ir_case_light_detector_enabled(name) =
   ir_light_detector_position == "both"

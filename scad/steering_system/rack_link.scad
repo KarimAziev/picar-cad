@@ -16,15 +16,15 @@
  * License: GPL-3.0-or-later
  */
 
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 
-use <../placeholders/bearing.scad>
-use <rack_connector.scad>
-use <bearing_shaft.scad>
-use <bearing_connector.scad>
 use <../lib/functions.scad>
 use <../lib/shapes2d.scad>
+use <../placeholders/bearing.scad>
+use <bearing_connector.scad>
+use <bearing_shaft.scad>
+use <rack_connector.scad>
 
 module rack_link(a_len=steering_rack_link_rack_side_w_length,
                  b_len=steering_rack_link_rack_side_h_length,
@@ -69,7 +69,8 @@ module rack_link(a_len=steering_rack_link_rack_side_w_length,
           linear_extrude(height=thickness + 2, center=true) {
             translate([-notch_w / 2, 0, 0]) {
               text(str("D: ", a_len),
-                   size=4, halign="center",
+                   size=4,
+                   halign="center",
                    valign="center",
                    font = "Liberation Sans:style=Bold Italic");
             }
@@ -134,7 +135,9 @@ module rack_links_printable() {
       rack_link();
       translate([steering_rack_link_rack_side_w_length
                  + steering_rack_link_bearing_outer_d
-                 + 5, 0, 0]) {
+                 + 5,
+                 0,
+                 0]) {
         mirror([1, 0, 0]) {
           rack_link();
         }

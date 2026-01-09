@@ -5,9 +5,9 @@
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */
+use <functions.scad>
 use <shapes2d.scad>
 use <transforms.scad>
-use <functions.scad>
 
 module rounded_cube(size,
                     r=undef,

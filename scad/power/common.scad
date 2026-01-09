@@ -7,8 +7,8 @@
 
 include <../parameters.scad>
 
-use <../lib/transforms.scad>
 use <../lib/functions.scad>
+use <../lib/transforms.scad>
 
 module with_power_case_mounting_holes(bolt_spacing=power_case_bottom_bolt_spacing,
                                       offsets=[power_case_bolt_spacing_offset_x,

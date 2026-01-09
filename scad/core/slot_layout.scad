@@ -5,15 +5,16 @@
  * License: GPL-3.0-or-later
  */
 include <../parameters.scad>
-use <../lib/shapes3d.scad>
-use <../lib/holes.scad>
-use <../lib/functions.scad>
-use <../lib/plist.scad>
-use <../lib/debug.scad>
-use <../lib/text.scad>
+
 use <../colors.scad>
-use <../lib/transforms.scad>
+use <../lib/debug.scad>
+use <../lib/functions.scad>
+use <../lib/holes.scad>
+use <../lib/plist.scad>
+use <../lib/shapes3d.scad>
 use <../lib/slots.scad>
+use <../lib/text.scad>
+use <../lib/transforms.scad>
 
 
 

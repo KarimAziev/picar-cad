@@ -5,13 +5,13 @@
  * License: GPL-3.0-or-later
  */
 
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 
-use <servo_horn.scad>
 use <../lib/functions.scad>
-use <../lib/shapes2d.scad>
 use <../lib/holes.scad>
+use <../lib/shapes2d.scad>
+use <servo_horn.scad>
 
 function servo_gear_total_height(gear_size) =
   sum([for (i = [0 : len(gear_size) - 1]) gear_size[i][0]]);

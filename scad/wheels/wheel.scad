@@ -4,11 +4,11 @@
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 
-use <tire.scad>
 use <../lib/shapes2d.scad>
+use <tire.scad>
 
 function wheel_inner_d(d, rim_h) =  d - rim_h;
 

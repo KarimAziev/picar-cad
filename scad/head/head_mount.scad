@@ -17,17 +17,17 @@
  * License: GPL-3.0-or-later
  */
 
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 
-use <ir_case.scad>
-use <../placeholders/camera.scad>
 use <../lib/functions.scad>
-use <../lib/shapes2d.scad>
 use <../lib/holes.scad>
+use <../lib/shapes2d.scad>
 use <../lib/transforms.scad>
-use <../placeholders/servo_horn.scad>
 use <../placeholders/bolt.scad>
+use <../placeholders/camera.scad>
+use <../placeholders/servo_horn.scad>
+use <ir_case.scad>
 
 tilt_angle        = atan2((-head_side_panel_curve_end)
                           - (-head_side_panel_bottom),

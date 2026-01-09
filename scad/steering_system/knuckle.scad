@@ -22,19 +22,19 @@
  * License: GPL-3.0-or-later
  */
 
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 
-use <knuckle_shaft.scad>
-use <knuckle_connector.scad>
-use <bearing_connector.scad>
-use <tie_rod_shaft.scad>
-use <../placeholders/bearing.scad>
 use <../lib/functions.scad>
 use <../lib/shapes2d.scad>
 use <../lib/slots.scad>
 use <../lib/transforms.scad>
+use <../placeholders/bearing.scad>
 use <../placeholders/bolt.scad>
+use <bearing_connector.scad>
+use <knuckle_connector.scad>
+use <knuckle_shaft.scad>
+use <tie_rod_shaft.scad>
 
 module knuckle_mount(show_wheel=false,
                      show_bearing=false,

@@ -5,15 +5,15 @@
  * License: GPL-3.0-or-later
  */
 
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 
+use <../lib/holes.scad>
 use <../lib/l_bracket.scad>
+use <../lib/shapes2d.scad>
+use <../lib/transforms.scad>
 use <pins.scad>
 use <smd/smd_chip.scad>
-use <../lib/shapes2d.scad>
-use <../lib/holes.scad>
-use <../lib/transforms.scad>
 
 module ultrasonic(center=true) {
   half_of_board_w = ultrasonic_w / 2;

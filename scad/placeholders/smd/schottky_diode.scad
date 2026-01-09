@@ -7,9 +7,9 @@
 
 include <../../colors.scad>
 
-use <smd_resistor.scad>
-use <../../lib/plist.scad>
 use <../../lib/functions.scad>
+use <../../lib/plist.scad>
+use <smd_resistor.scad>
 
 module shottky_diode(plist, center=false) {
   plist = with_default(plist, []);

@@ -8,10 +8,10 @@
 include <../colors.scad>
 include <../parameters.scad>
 
-use <bolt.scad>
-use <../lib/placement.scad>
 use <../lib/functions.scad>
+use <../lib/placement.scad>
 use <../lib/plist.scad>
+use <bolt.scad>
 
 function standoff_heights(min_h,
                           body_heights = [20, 15, 10, 9, 8, 6, 5]) =

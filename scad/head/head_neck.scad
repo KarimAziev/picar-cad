@@ -39,14 +39,14 @@
  * License: GPL-3.0-or-later
  */
 
-include <../parameters.scad>
 include <../colors.scad>
-use <head_mount.scad>
+include <../parameters.scad>
 
 use <../lib/l_bracket.scad>
-use <../placeholders/servo.scad>
 use <../placeholders/pan_servo.scad>
+use <../placeholders/servo.scad>
 use <../placeholders/tilt_servo.scad>
+use <head_mount.scad>
 
 pan_servo_rotation  = 0; // [-179:179]
 tilt_servo_rotation = 0; // [-90:90]

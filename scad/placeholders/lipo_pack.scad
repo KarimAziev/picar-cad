@@ -5,8 +5,8 @@
  * License: GPL-3.0-or-later
  */
 
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 
 use <../lib/functions.scad>
 

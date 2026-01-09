@@ -7,6 +7,7 @@
  */
 
 include <../colors.scad>
+
 use <functions.scad>
 
 function total_wire_length(points) =

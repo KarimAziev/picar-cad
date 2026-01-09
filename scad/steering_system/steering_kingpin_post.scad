@@ -19,13 +19,13 @@
  * License: GPL-3.0-or-later
  */
 
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 
-use <bearing_shaft.scad>
-use <../lib/transforms.scad>
 use <../lib/slots.scad>
+use <../lib/transforms.scad>
 use <../placeholders/bolt.scad>
+use <bearing_shaft.scad>
 
 kingpin_bolt_rad = steering_kingpin_post_bolt_dia / 2;
 

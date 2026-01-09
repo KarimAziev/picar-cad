@@ -24,15 +24,15 @@ include <../../colors.scad>
 include <../../parameters.scad>
 
 use <../../lib/functions.scad>
-use <../../lib/transforms.scad>
+use <../../lib/plist.scad>
 use <../../lib/shapes2d.scad>
 use <../../lib/shapes3d.scad>
-use <../../lib/plist.scad>
+use <../../lib/slots.scad>
+use <../../lib/transforms.scad>
 use <../battery.scad>
 use <../bolt.scad>
 use <contact.scad>
 use <side_wall.scad>
-use <../../lib/slots.scad>
 use <util.scad>
 
 // Number of batteries to use

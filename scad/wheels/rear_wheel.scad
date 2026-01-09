@@ -4,15 +4,15 @@
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 
-use <wheel.scad>
-use <tire.scad>
 use <../lib/functions.scad>
 use <../lib/shapes2d.scad>
 use <../lib/shapes3d.scad>
 use <../lib/trapezoids.scad>
+use <tire.scad>
+use <wheel.scad>
 
 rear_wheel_hub_rad = wheel_rear_shaft_outer_dia / 2;
 

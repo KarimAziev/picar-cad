@@ -9,14 +9,14 @@
  * License: GPL-3.0-or-later
  */
 
-use <shapes3d.scad>
-use <transforms.scad>
-use <functions.scad>
-use <debug.scad>
-use <text.scad>
 use <../placeholders/bolt.scad>
+use <debug.scad>
+use <functions.scad>
 use <shapes2d.scad>
+use <shapes3d.scad>
 use <slots.scad>
+use <text.scad>
+use <transforms.scad>
 
 module four_corner_holes_2d(size=[10, 10],
                             center=false,

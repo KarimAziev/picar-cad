@@ -5,21 +5,21 @@
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 
-use <../lib/shapes2d.scad>
 use <../lib/holes.scad>
-use <../lib/transforms.scad>
-use <pin_header.scad>
-use <bcm.scad>
-use <ai_hat.scad>
-use <servo_driver_hat.scad>
-use <motor_driver_hat.scad>
-use <gpio_expansion_board.scad>
-use <standoff.scad>
+use <../lib/shapes2d.scad>
 use <../lib/slots.scad>
+use <../lib/transforms.scad>
+use <ai_hat.scad>
+use <bcm.scad>
+use <gpio_expansion_board.scad>
+use <motor_driver_hat.scad>
 use <pad_hole.scad>
+use <pin_header.scad>
+use <servo_driver_hat.scad>
+use <standoff.scad>
 
 show_standoffs            = true;
 show_ai_hat               = true;

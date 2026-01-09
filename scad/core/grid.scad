@@ -6,12 +6,13 @@
  * License: GPL-3.0-or-later
  */
 include <../colors.scad>
-use <../lib/shapes2d.scad>
+
+use <../lib/debug.scad>
 use <../lib/functions.scad>
 use <../lib/plist.scad>
-use <../lib/debug.scad>
-use <../lib/text.scad>
+use <../lib/shapes2d.scad>
 use <../lib/shapes3d.scad>
+use <../lib/text.scad>
 
 function percent_to_mm(percent, total_val) = percent * total_val / 100;
 function maybe_to_mm(val, total_val) = val > 1 ? val : percent_to_mm(val * 100,

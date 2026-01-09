@@ -6,30 +6,30 @@
  * License: GPL-3.0-or-later
  */
 
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 include <../power_lid_parameters.scad>
 
-use <power_case_rail.scad>
-use <../placeholders/lipo_pack.scad>
-use <../lib/slider.scad>
-use <../placeholders/toggle_switch.scad>
-use <../placeholders/atc_ato_blade_fuse_holder.scad>;
-use <../placeholders/step-down-voltage-d24vxf5.scad>
-use <../placeholders/voltmeter.scad>
-use <../lib/wire.scad>
+use <../core/slot_layout.scad>
+use <../core/slot_layout_components.scad>
 use <../lib/functions.scad>
-use <../lib/shapes3d.scad>
 use <../lib/holes.scad>
 use <../lib/placement.scad>
-use <../lib/transforms.scad>
-use <../lib/shapes2d.scad>
-use <../placeholders/bolt.scad>
-use <../placeholders/xt90e-m.scad>
-use <../core/slot_layout.scad>
 use <../lib/plist.scad>
-use <../core/slot_layout_components.scad>
+use <../lib/shapes2d.scad>
+use <../lib/shapes3d.scad>
+use <../lib/slider.scad>
 use <../lib/slots.scad>
+use <../lib/transforms.scad>
+use <../lib/wire.scad>
+use <../placeholders/atc_ato_blade_fuse_holder.scad>;
+use <../placeholders/bolt.scad>
+use <../placeholders/lipo_pack.scad>
+use <../placeholders/step-down-voltage-d24vxf5.scad>
+use <../placeholders/toggle_switch.scad>
+use <../placeholders/voltmeter.scad>
+use <../placeholders/xt90e-m.scad>
+use <power_case_rail.scad>
 
 show_xt90e            = false;
 show_dc_regulator     = false;

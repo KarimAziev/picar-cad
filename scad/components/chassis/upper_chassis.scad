@@ -5,31 +5,31 @@
  * License: GPL-3.0-or-later
  */
 
-include <../../parameters.scad>
 include <../../colors.scad>
-use <../front_panel.scad>
-use <../../placeholders/ups_hat.scad>
-use <../../steering_system/steering_panel.scad>
-use <../../steering_system/rack_and_pinion_assembly.scad>
-use <../../placeholders/motor.scad>
-use <../../steering_system/knuckle_shaft.scad>
-use <../../lib/functions.scad>
-use <../../lib/shapes2d.scad>
-use <../../lib/holes.scad>
-use <../../lib/trapezoids.scad>
-use <../../lib/transforms.scad>
-use <../../lib/placement.scad>
-use <../../lib/debug.scad>
-use <../../lib/shapes3d.scad>
-use <../../lib/text.scad>
-use <../../placeholders/bolt.scad>
+include <../../parameters.scad>
+
 use <../../head/head_mount.scad>
 use <../../head/head_neck.scad>
-use <../../placeholders/pan_servo.scad>
-
-use <util.scad>
-use <chassis_connector.scad>
+use <../../lib/debug.scad>
+use <../../lib/functions.scad>
+use <../../lib/holes.scad>
+use <../../lib/placement.scad>
+use <../../lib/shapes2d.scad>
+use <../../lib/shapes3d.scad>
 use <../../lib/slots.scad>
+use <../../lib/text.scad>
+use <../../lib/transforms.scad>
+use <../../lib/trapezoids.scad>
+use <../../placeholders/bolt.scad>
+use <../../placeholders/motor.scad>
+use <../../placeholders/pan_servo.scad>
+use <../../placeholders/ups_hat.scad>
+use <../../steering_system/knuckle_shaft.scad>
+use <../../steering_system/rack_and_pinion_assembly.scad>
+use <../../steering_system/steering_panel.scad>
+use <../front_panel.scad>
+use <chassis_connector.scad>
+use <util.scad>
 
 upper_side_hole_pts            =  scale_upper_trapezoid_pts(x=chassis_trapezoid_hole_width,
                                                             y=chassis_trapezoid_hole_len);

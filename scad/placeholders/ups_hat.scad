@@ -5,13 +5,13 @@
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 
-use <battery.scad>
-use <../lib/shapes2d.scad>
 use <../lib/holes.scad>
+use <../lib/shapes2d.scad>
 use <../lib/transforms.scad>
+use <battery.scad>
 
 function ups_hat_polygon_cutout_points(max_len, max_height) =
   let (end_x = max_len / 2,

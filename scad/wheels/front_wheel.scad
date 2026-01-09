@@ -4,13 +4,13 @@
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 
 use <../placeholders/bearing.scad>
+use <tire.scad>
 use <wheel.scad>
 use <wheel_hub.scad>
-use <tire.scad>
 
 module front_wheel(w=wheel_w,
                    d=wheel_dia,

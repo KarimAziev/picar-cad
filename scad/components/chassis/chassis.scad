@@ -10,11 +10,12 @@
  * License: GPL-3.0-or-later
  */
 
-include <../../parameters.scad>
 include <../../colors.scad>
+include <../../parameters.scad>
+
+use <../../steering_system/ackermann_geometry_triangle.scad>
 use <chassis_body.scad>
 use <upper_chassis.scad>
-use <../../steering_system/ackermann_geometry_triangle.scad>
 
 pan_servo_rotation                = 0; // [-179:179]
 tilt_servo_rotation               = 0; // [-90:90]

@@ -1,12 +1,11 @@
 include <../colors.scad>
 include <../parameters.scad>
 
-use <grid.scad>
-
-use <smd_placeholder_renderer.scad>
-use <../placeholders/smd/can_capacitor.scad>
 use <../lib/plist.scad>
 use <../lib/transforms.scad>
+use <../placeholders/smd/can_capacitor.scad>
+use <grid.scad>
+use <smd_placeholder_renderer.scad>
 
 module pcb_grid(grid,
                 debug=false,

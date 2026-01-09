@@ -5,14 +5,14 @@
  * License: GPL-3.0-or-later
  */
 
-include <../../parameters.scad>
 include <../../colors.scad>
+include <../../parameters.scad>
 
-use <../../lib/transforms.scad>
 use <../../lib/plist.scad>
 use <../../lib/slots.scad>
-use <atm_fuse_holder_cap.scad>
+use <../../lib/transforms.scad>
 use <atm_fuse_holder_body.scad>
+use <atm_fuse_holder_cap.scad>
 
 module atm_fuse_holder_from_spec(plist,
                                  align_x = -1,

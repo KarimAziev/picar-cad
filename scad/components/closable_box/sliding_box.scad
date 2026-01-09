@@ -7,16 +7,17 @@
  * License: GPL-3.0-or-later
  */
 include <../../colors.scad>
+
+use <../../lib/debug.scad>
 use <../../lib/functions.scad>
+use <../../lib/plist.scad>
 use <../../lib/shapes2d.scad>
 use <../../lib/shapes3d.scad>
-use <../../lib/transforms.scad>
-use <../../lib/debug.scad>
 use <../../lib/text.scad>
-use <../../lib/plist.scad>
+use <../../lib/transforms.scad>
 use <grid.scad>
-use <sliding_lid.scad>
 use <rim.scad>
+use <sliding_lid.scad>
 use <util.scad>
 
 function sliding_box_full_height(size, lid_thickness, rim_h) =

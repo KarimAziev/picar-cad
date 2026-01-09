@@ -5,20 +5,21 @@
  * License: GPL-3.0-or-later
  */
 
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
+
+use <../core/slot_layout.scad>
+use <../lib/holes.scad>
+use <../lib/placement.scad>
+use <../lib/plist.scad>
 use <../lib/shapes2d.scad>
 use <../lib/shapes3d.scad>
-use <../placeholders/toggle_switch.scad>
-use <../lib/holes.scad>
-use <../placeholders/standoff.scad>
-use <../lib/placement.scad>
+use <../lib/slots.scad>
 use <../lib/transforms.scad>
 use <../placeholders/atm_fuse_holder/atm_fuse_holder.scad>
+use <../placeholders/standoff.scad>
+use <../placeholders/toggle_switch.scad>
 use <control_panel.scad>
-use <../lib/plist.scad>
-use <../core/slot_layout.scad>
-use <../lib/slots.scad>
 
 max_body_height  = max([for (pl = fuse_panel_plist_specs) let (body = plist_get("body", pl, []),
                                                                size = plist_get("size", body, []),

@@ -6,12 +6,13 @@
  */
 
 include <../colors.scad>
-use <../lib/shapes3d.scad>
-use <../lib/trapezoids.scad>
+
+use <../lib/functions.scad>
 use <../lib/placement.scad>
 use <../lib/plist.scad>
-use <../lib/functions.scad>
+use <../lib/shapes3d.scad>
 use <../lib/slots.scad>
+use <../lib/trapezoids.scad>
 
 function screw_terminal_width(base_w,
                               pitch,

@@ -4,17 +4,17 @@
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 
-use <../lib/shapes2d.scad>
 use <../lib/holes.scad>
-use <../lib/transforms.scad>
-use <pin_header.scad>
+use <../lib/placement.scad>
+use <../lib/shapes2d.scad>
 use <../lib/shapes3d.scad>
+use <../lib/transforms.scad>
 use <bcm.scad>
 use <pad_hole.scad>
-use <../lib/placement.scad>
+use <pin_header.scad>
 use <standoff.scad>
 
 module ai_hat(center=true, show_pins=true, show_standoff=true,

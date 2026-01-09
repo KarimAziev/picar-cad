@@ -18,11 +18,12 @@
 
 include <../colors.scad>
 include <../parameters.scad>
-use <knuckle_shaft.scad>
-use <bearing_shaft.scad>
-use <tie_rod.scad>
-use <../lib/trapezoids.scad>
+
 use <../lib/transforms.scad>
+use <../lib/trapezoids.scad>
+use <bearing_shaft.scad>
+use <knuckle_shaft.scad>
+use <tie_rod.scad>
 
 function tie_rod_shaft_full_len() =
   tie_rod_shaft_bearing_pin_height
@@ -49,7 +50,8 @@ module tie_rod_shaft(shaft_color="white",
             }
           }
         }
-        translate([0, 0,
+        translate([0,
+                   0,
                    tie_rod_shaft_full_len()
                    - tie_rod_shaft_bolt_offset]) {
           rotate([0, 0, 90]) {
@@ -68,13 +70,16 @@ module tie_rod_shaft(shaft_color="white",
     }
 
     if (show_tie_rod) {
-      translate([0, 0,
+      translate([0,
+                 0,
                  tie_rod_shaft_bearing_pin_height
                  - tie_rod_thickness]) {
         rotate([0, 0, shaft_rotation]) {
           translate([-tie_rod_len / 2
                      + tie_rod_bearing_outer_dia / 2
-                     + tie_rod_bearing_x_offset, 0, 0]) {
+                     + tie_rod_bearing_x_offset,
+                     0,
+                     0]) {
             tie_rod(show_bearing=show_bearing);
           }
         }

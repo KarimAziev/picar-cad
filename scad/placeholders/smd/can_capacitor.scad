@@ -32,12 +32,13 @@
  */
 include <../../colors.scad>
 include <../../lib/shapes2d.scad>
-use <../../lib/shapes3d.scad>
-use <../../lib/plist.scad>
-use <../../lib/trapezoids.scad>
-use <../../lib/text.scad>
-use <../../lib/placement.scad>
+
 use <../../lib/functions.scad>
+use <../../lib/placement.scad>
+use <../../lib/plist.scad>
+use <../../lib/shapes3d.scad>
+use <../../lib/text.scad>
+use <../../lib/trapezoids.scad>
 
 module can_capacitor(d,
                      h,

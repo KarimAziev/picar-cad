@@ -4,21 +4,21 @@
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */
-include <../parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 include <../power_lid_parameters.scad>
 
-use <smd/smd_chip.scad>
+use <../lib/holes.scad>
+use <../lib/plist.scad>
 use <../lib/shapes2d.scad>
 use <../lib/shapes3d.scad>
-use <../lib/holes.scad>
+use <../lib/slots.scad>
 use <../lib/transforms.scad>
 use <screw_terminal.scad>
-use <standoff.scad>
 use <smd/can_capacitor.scad>
-use <../lib/plist.scad>
-use <../lib/slots.scad>
 use <smd/power_inductor.scad>
+use <smd/smd_chip.scad>
+use <standoff.scad>
 
 // [x, y, z, round_radius]
 

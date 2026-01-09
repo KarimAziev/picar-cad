@@ -5,13 +5,13 @@
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */
+use <../../lib/debug.scad>
 use <../../lib/functions.scad>
+use <../../lib/plist.scad>
 use <../../lib/shapes2d.scad>
 use <../../lib/shapes3d.scad>
-use <../../lib/transforms.scad>
-use <../../lib/debug.scad>
 use <../../lib/text.scad>
-use <../../lib/plist.scad>
+use <../../lib/transforms.scad>
 
 function cumsums(a) = [for (i =
                               [0 : len(a) - 1]) sum([for (j = [0 : i]) a[j]])];
