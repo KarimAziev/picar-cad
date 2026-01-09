@@ -104,7 +104,6 @@ module power_case_assembly(slot_mode=slot_mode,
                            bottom_bolts_down=bottom_bolts_down,
                            slot_thickness=chassis_thickness,
                            slot_bore_h=chassis_counterbore_h,
-                           bottom_bolts_up=false,
                            socket_size=power_socket_case_size,
                            socket_lid_thickness=power_socket_case_lid_thickness,
                            socket_rim_h=power_socket_case_rim_h) {
@@ -165,10 +164,6 @@ module power_case_assembly(slot_mode=slot_mode,
       : power_case_bottom_thickness + 2;
 
     d = power_case_bottom_bolt_dia;
-
-    bolt_head_h = find_bolt_head_h(inner_d=d,
-                                   head_type=power_case_bottom_bolt_head_type,
-                                   specs=bolt_specs);
 
     with_power_case_mounting_holes() {
       translate([0, 0, power_case_bottom_thickness]) {
