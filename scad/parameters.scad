@@ -77,7 +77,7 @@ atm_fuse_holder_cap_hole_size                        = [atm_fuse_holder_mounting
                                                         atm_fuse_holder_cap_h * 0.8];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Fusers holder
+// Fuse holder
 // ─────────────────────────────────────────────────────────────────────────────
 fuse_panel_thickness                                 = 3;
 
@@ -105,7 +105,7 @@ atm_fuse_default_plist                               = ["placeholder", "atm_fuse
                                                                    "socket_type", "cylinder",
                                                                    "socket_type_len", 5,
                                                                    "color", red_1,
-                                                                   "cutted_len", 3,
+                                                                   "cut_len", 3,
                                                                    "left_pts", [[25, 0, 0]],
                                                                    "right_pts", [[25, 0, 0]]],
                                                         "color", matte_black_2,
@@ -320,7 +320,7 @@ battery_ups_module_bolt_spacing                      = [86, 46];
 battery_ups_bolt_dia                                 = m3_hole_dia;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 16850 battery dimensions
+// 18650 battery dimensions
 // ─────────────────────────────────────────────────────────────────────────────
 
 battery_18650_dia                                    = 18;
@@ -1105,7 +1105,7 @@ pan_servo_color                                      = jet_black;
  * Length of the chamfered or cutout region at the bottom of the servo body.
  * Used for display detail in component preview.
  */
-pan_servo_cutted_len                                 = 3;
+pan_servo_cut_len                                    = 3;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // HEAD NECK PANEL (Vertical Plate for Tilt Servo Mounting)
@@ -1258,7 +1258,7 @@ tilt_servo_color                                     = jet_black;
  * Length of the angled cut (chamfer) at the servo body base.
  * Used in visual model to distinguish component edges.
  */
-tilt_servo_cutted_len                                = 3;
+tilt_servo_cut_len                                   = 3;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Motor type
@@ -1801,36 +1801,36 @@ motor_driver_grid                                    = ["type","grid",
                                                           "cells", [["w", 0.05],
                                                                     ["w", 0.17,
                                                                      "debug", false,
-                                                                     "placeholder", ["type", "shottky_diode",
+                                                                     "placeholder", ["type", "schottky_diode",
                                                                                      "placeholder_size", [6.8, 2.6, 2]]],
                                                                     ["w", 0.17,
-                                                                     "placeholder", ["type", "shottky_diode",
+                                                                     "placeholder", ["type", "schottky_diode",
                                                                                      "placeholder_size", [6.8, 2.6, 2]]],
                                                                     ["w", 0.17],
                                                                     ["w", 0.17,
-                                                                     "placeholder", ["type", "shottky_diode",
+                                                                     "placeholder", ["type", "schottky_diode",
                                                                                      "placeholder_size", [6.8, 2.6, 2]]],
                                                                     ["w", 0.17,
-                                                                     "placeholder", ["type", "shottky_diode",
+                                                                     "placeholder", ["type", "schottky_diode",
                                                                                      "placeholder_size", [6.8, 2.6, 2]]]]],
                                                          ["h", 2,
                                                           "cells", [["w", 1]]],
                                                          ["h", 2.7,
                                                           "cells", [["w", 0.05],
                                                                     ["w", 0.17,
-                                                                     "placeholder", ["type", "shottky_diode",
+                                                                     "placeholder", ["type", "schottky_diode",
                                                                                      "placeholder_size", [6.8, 2.6, 2]]],
                                                                     ["w", 0.17,
-                                                                     "placeholder", ["type", "shottky_diode",
+                                                                     "placeholder", ["type", "schottky_diode",
                                                                                      "placeholder_size", [6.8, 2.6, 2]]],
                                                                     ["w", 0.17,
-                                                                     "placeholder", ["type", "shottky_diode",
+                                                                     "placeholder", ["type", "schottky_diode",
                                                                                      "placeholder_size", [6.8, 2.6, 2]]],
                                                                     ["w", 0.17,
-                                                                     "placeholder", ["type", "shottky_diode",
+                                                                     "placeholder", ["type", "schottky_diode",
                                                                                      "placeholder_size", [6.8, 2.6, 2]]],
                                                                     ["w", 0.17,
-                                                                     "placeholder", ["type", "shottky_diode",
+                                                                     "placeholder", ["type", "schottky_diode",
                                                                                      "placeholder_size", [6.8, 2.6, 2]]]]],
                                                          ["h", 10.0,
                                                           "cells", [["w", 0.1],
@@ -2173,7 +2173,7 @@ power_socket_case_side_panel_slots                   = [["placeholder", "atm_fus
                                                                     "socket_type", "cylinder",
                                                                     "socket_type_len", 5,
                                                                     "color", red_1,
-                                                                    "cutted_len", 3,
+                                                                    "cut_len", 3,
                                                                     "left_pts", [[20, 0, 0],
                                                                                  [-25, 0, -45]],
                                                                     "right_pts", [[10, 0, 0],
@@ -2448,7 +2448,7 @@ steering_servo_gearbox_d1                            = 8;
 
 steering_servo_gearbox_d2                            = 6;
 steering_servo_color                                 = jet_black;
-steering_servo_cutted_len                            = 3;
+steering_servo_cut_len                               = 3;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Steering panel

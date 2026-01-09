@@ -47,7 +47,7 @@ show_rear_panel                   = false;
 show_buttons_panel                = false;
 show_fuse_panel                   = false;
 show_buttons                      = false;
-show_fusers                       = false;
+show_fuses                        = false;
 show_rear_panel_buttons           = false;
 show_battery_holders              = false;
 show_ups_hat                      = false;
@@ -356,7 +356,7 @@ module chassis_body(panel_color="white",
                     show_buttons_panel=show_buttons_panel,
                     show_fuse_panel=show_fuse_panel,
                     show_buttons=show_buttons,
-                    show_fusers=show_fusers,
+                    show_fuses=show_fuses,
                     show_rear_panel_buttons=show_rear_panel_buttons,
                     show_battery_holders=show_battery_holders,
                     show_ups_hat=show_ups_hat,
@@ -396,7 +396,7 @@ module chassis_body(panel_color="white",
       chassis_with_panel_stack_position() {
         panel_stack(center=false,
                     y_axle=chassis_panel_stack_orientation == "vertical",
-                    show_fusers=show_fusers,
+                    show_fuses=show_fuses,
                     show_fuse_panel=show_fuse_panel,
                     show_buttons_panel=show_buttons_panel,
                     show_buttons=show_buttons);

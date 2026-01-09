@@ -1,5 +1,5 @@
 /**
- * Module: A holder for switch buttons and fusers
+ * Module: A holder for switch buttons and fuses
  *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later

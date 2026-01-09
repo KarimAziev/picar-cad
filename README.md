@@ -26,7 +26,7 @@ This repository contains the 3D model source files for a four-wheeled robot chas
 >     - [Motors](#motors)
 >     - [Camera Module](#camera-module)
 >     - [Ultrasonic](#ultrasonic)
->     - [Switch buttons and fusers](#switch-buttons-and-fusers)
+>     - [Switch buttons and fuses](#switch-buttons-and-fuses)
 >     - [IR LED](#ir-led)
 >     - [Bolts and Nuts](#bolts-and-nuts)
 >       - [Steering panel](#steering-panel)
@@ -232,7 +232,7 @@ The design supports one, two or more camera modules. The default dimensions are 
 
 The model supports the HC-SR04 ultrasonic sensor.
 
-### Switch buttons and fusers
+### Switch buttons and fuses
 
 ![Ultrasonic](./demo/switch_buttons.png)
 

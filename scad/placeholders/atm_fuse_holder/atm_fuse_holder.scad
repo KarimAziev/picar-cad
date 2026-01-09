@@ -46,7 +46,7 @@ module atm_fuse_holder_from_spec(plist,
                       "socket_type", "sphere",
                       "socket_type_len", 4,
                       "color", red_1,
-                      "cutted_len", 3,
+                      "cut_len", 3,
                       "left_pts", [[25, 0, 0]],
                       "right_pts", [[25, 0, 0]]]);
 

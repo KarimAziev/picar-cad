@@ -46,7 +46,7 @@ module servo_body(size,
                   bolts_offset,
                   servo_color=jet_black,
                   alpha=1,
-                  cutted_len=0,
+                  cut_len=0,
                   servo_hat_w,
                   bolts_dia,
                   servo_hat_h,
@@ -64,8 +64,8 @@ module servo_body(size,
       color(servo_color, alpha=alpha) {
         rotate([90, 0, 0]) {
           linear_extrude(height=w, center=false) {
-            polygon([[cutted_len, 0],
-                     [0, cutted_len],
+            polygon([[cut_len, 0],
+                     [0, cut_len],
                      [0, h],
                      [length, h],
                      [length, 0]]);
@@ -194,7 +194,8 @@ module servo_gearbox(h,
           }
         }
         if (show_servo_horn) {
-          translate([0, 0,
+          translate([0,
+                     0,
                      total_gear_h
                      - servo_horn_arm_z_offset]) {
             rotate([0, 0, servo_horn_rotation]) {
@@ -224,7 +225,7 @@ module servo(size,
              font,
              text_size=3,
              tolerance=0.3,
-             cutted_len=3,
+             cut_len=3,
              gearbox_h,
              gearbox_d1,
              gearbox_r1,
@@ -255,7 +256,7 @@ module servo(size,
                  bolts_offset=bolts_offset,
                  servo_color=servo_color,
                  alpha=alpha,
-                 cutted_len=cutted_len,
+                 cut_len=cut_len,
                  servo_hat_w=servo_hat_w,
                  bolts_dia=bolts_dia,
                  servo_hat_h=servo_hat_h,

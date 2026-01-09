@@ -40,15 +40,15 @@ module cube_3d(size, center=true) {
   }
 }
 
-module cylinder_cutted(h=10, r=5, cutted_w=1, center=true, fn) {
+module cylinder_cut(h=10, r=5, cut_w=1, center=true, fn) {
   difference() {
     cylinder(h=h, r=r, center=center, $fn=fn);
 
     d = r * 2;
-    translate([d - cutted_w * 0.5, 0, 0]) {
+    translate([d - cut_w * 0.5, 0, 0]) {
       cube([d, d, h + 1], center=center);
     }
-    translate([-d + cutted_w * 0.5, 0, 0]) {
+    translate([-d + cut_w * 0.5, 0, 0]) {
       cube([d, d, h + 1], center=center);
     }
   }

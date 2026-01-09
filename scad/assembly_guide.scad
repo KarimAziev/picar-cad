@@ -17,7 +17,7 @@ show_socket_case                  = true;
 show_socket                       = false;
 // Seat the XT90E-M male connector into the fuse holders.
 // Connect the XT90E-M male connector to the fuse holders.
-show_socket_case_fusers           = false;
+show_socket_case_fuses            = false;
 
 // Slide the socket case lid into place.
 show_socket_case_lid              = false;
@@ -98,11 +98,11 @@ show_motor_brackets               = false;
 // Slide the motors into the brackets.
 show_motor                        = false;
 
-/* [Buttons Fusers Stack] */
+/* [Buttons and Fuses Stack] */
 // Attach the fuse panel to the rear stack.
 show_fuse_panel                   = false;
 // Insert fuses into the panel.
-show_fusers                       = false;
+show_fuses                        = false;
 // Mount the buttons panel.
 show_buttons_panel                = false;
 // Install buttons into their panel cutouts.
@@ -214,7 +214,7 @@ chassis(panel_color=panel_color,
         show_buttons_panel=show_buttons_panel,
         show_fuse_panel=show_fuse_panel,
         show_buttons=show_buttons,
-        show_fusers=show_fusers,
+        show_fuses=show_fuses,
         show_rear_panel_buttons=false,
         show_rear_panel=false,
         show_battery_holders=show_battery_holders,
@@ -235,7 +235,7 @@ chassis(panel_color=panel_color,
         show_xt90e=show_power_lid_case_xt90e,
         show_socket=show_socket,
         show_socket_case_lid=show_socket_case_lid,
-        show_socket_case_fusers=show_socket_case_fusers,
+        show_socket_case_fuses=show_socket_case_fuses,
         show_battery_holders_bolts=show_battery_holders_bolts,
         show_battery_holders_nuts=show_battery_holders_nuts,
         show_batteries=show_batteries,

@@ -45,7 +45,7 @@ module steering_servo(center=false, servo_color=steering_servo_color, alpha=1) {
         servo_text=steering_servo_text,
         text_size=steering_servo_text_size,
         tolerance=0.3,
-        cutted_len=steering_servo_cutted_len,
+        cut_len=steering_servo_cut_len,
         gearbox_h=steering_servo_gearbox_h,
         gearbox_d1=steering_servo_gearbox_d1,
         servo_horn_rotation=$t * ($t > 0.5 ? -90 : 45),

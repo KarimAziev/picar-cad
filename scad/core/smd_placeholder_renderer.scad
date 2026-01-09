@@ -28,7 +28,7 @@ module smd_placeholder_renderer(plist,
                                 show_unshielded_power_inductor=true,
                                 show_can_capacitor=true,
                                 show_pin_header=true,
-                                show_shottky_diode=true,
+                                show_schottky_diode=true,
                                 show_ceramic_capactior=true) {
   placeholder = plist_get("type", plist);
   cell_size = with_default(cell_size, []);
@@ -65,8 +65,8 @@ module smd_placeholder_renderer(plist,
                                spin=spin) {
         if (show_smd_resistor && placeholder == "smd_resistor") {
           smd_resistor_from_plist(plist, center=false);
-        } else if (show_shottky_diode && placeholder == "shottky_diode") {
-          shottky_diode(plist, center=false); {
+        } else if (show_schottky_diode && placeholder == "schottky_diode") {
+          schottky_diode(plist, center=false); {
           }
         } else if (show_ceramic_capactior
                    && placeholder == "ceramic_capactior") {

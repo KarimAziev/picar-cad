@@ -1,5 +1,5 @@
 /**
- * Module: Fusers holder
+ * Module: Fuse holder
  *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
@@ -134,7 +134,7 @@ module fuse_panel_slots(slot_mode = true,
   }
 }
 
-module fuse_panel(show_fusers=false,
+module fuse_panel(show_fuses=false,
                   show_standoff=true,
                   center=false,
                   show_cap=true,
@@ -186,7 +186,7 @@ module fuse_panel(show_fusers=false,
 
             fuse_panel_slots(slot_mode=true);
           }
-          if (show_fusers) {
+          if (show_fuses) {
             fuse_panel_slots(slot_mode=false,
                              show_cap=show_cap);
           }
@@ -233,4 +233,4 @@ module fuse_panel(show_fusers=false,
   }
 }
 
-fuse_panel(center=true, show_fusers=true, show_cap=true);
+fuse_panel(center=true, show_fuses=true, show_cap=true);

@@ -30,7 +30,7 @@ module atm_fuse_holder_body(size=[atm_fuse_holder_body_bottom_l,
                                     "socket_type", "cylinder",
                                     "socket_type_len", 4,
                                     "color", red_1,
-                                    "cutted_len", 3,
+                                    "cut_len", 3,
                                     "left_pts", [[25, 0, 0]],
                                     "right_pts", [[-25, 0, 0]]],
                             corner_rad,
@@ -64,9 +64,9 @@ module atm_fuse_holder_body(size=[atm_fuse_holder_body_bottom_l,
                                wiring,
                                [[-25, 0, 0]]);
 
-  wiring_cutted_len = plist_get("cutted_len",
-                                wiring,
-                                3);
+  wiring_cut_len = plist_get("cut_len",
+                             wiring,
+                             3);
 
   wiring_base_type_len = plist_get("socket_type_len", wiring, 4);
   wiring_color = plist_get("color", wiring, red_1);
@@ -133,7 +133,7 @@ module atm_fuse_holder_body(size=[atm_fuse_holder_body_bottom_l,
         wire_path(points=concat([[-w / 2, 0, 0]], wiring_left_pts),
                   d=wiring_d,
                   colr=wiring_color,
-                  cut_len=wiring_cutted_len);
+                  cut_len=wiring_cut_len);
       }
     }
     if (!is_undef(wiring_right_pts) && len(wiring_right_pts) > 0) {
@@ -143,7 +143,7 @@ module atm_fuse_holder_body(size=[atm_fuse_holder_body_bottom_l,
                     d=wiring_d,
 
                     colr=wiring_color,
-                    cut_len=wiring_cutted_len);
+                    cut_len=wiring_cut_len);
         }
       }
     }

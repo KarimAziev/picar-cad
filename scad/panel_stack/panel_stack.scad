@@ -1,5 +1,5 @@
 /**
- * Module: Buttons and fusers holder
+ * Module: Buttons and fuses holder
  *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
@@ -17,21 +17,19 @@ use <../placeholders/standoff.scad>
 use <control_panel.scad>
 use <fuse_panel.scad>
 
-
-
 function panel_stack_size() =
-  let (fusers_size = fuse_panel_size(),
+  let (fuses_size = fuse_panel_size(),
        buttons_size = control_panel_size())
-  [max(fusers_size[0], buttons_size[0]),
-   max(fusers_size[1], buttons_size[1])];
+  [max(fuses_size[0], buttons_size[0]),
+   max(fuses_size[1], buttons_size[1])];
 
 function panel_stack_bolt_spacing() =
-  let (fusers_size = fuse_panel_bolt_spacing(),
+  let (fuses_size = fuse_panel_bolt_spacing(),
        buttons_size = control_panel_bolt_size())
-  [max(fusers_size[0], buttons_size[0]),
-   max(fusers_size[1], buttons_size[1])];
+  [max(fuses_size[0], buttons_size[0]),
+   max(fuses_size[1], buttons_size[1])];
 
-module panel_stack(show_fusers=true,
+module panel_stack(show_fuses=true,
                    show_standoff=true,
                    show_buttons=true,
                    show_buttons_panel=true,
@@ -49,7 +47,7 @@ module panel_stack(show_fusers=true,
     maybe_rotate([0, 0, y_axle ? 0 : -90]) {
       if (show_buttons_panel && show_fuse_panel) {
         translate([center ? 0 : w / 2, center ? 0 : l / 2, 0]) {
-          fuse_panel(show_fusers=show_fusers,
+          fuse_panel(show_fuses=show_fuses,
                      show_standoff=true,
                      bolt_spacing=bolt_spacing,
                      size=size,
@@ -68,7 +66,7 @@ module panel_stack(show_fusers=true,
           }
         }
       } else if (show_fuse_panel) {
-        fuse_panel(show_fusers=show_fusers,
+        fuse_panel(show_fuses=show_fuses,
                    show_standoff=show_standoff,
                    bolt_spacing=bolt_spacing,
                    show_cap=show_cap,
@@ -127,7 +125,7 @@ module panel_stack_print_plate(show_buttons_panel=true,
                     size=size);
     }
     translate([-size[0] / 2 - spacing, 0, 0]) {
-      fuse_panel(show_fusers=false,
+      fuse_panel(show_fuses=false,
                  show_standoff=false,
                  bolt_spacing=bolt_spacing,
                  size=size,
@@ -147,8 +145,8 @@ module panel_stack_print_plate(show_buttons_panel=true,
   }
 }
 
-// buttons_fusers_panels(show_buttons_panel=true,
-//                       show_fuse_panel=true);
+// buttons_fuses_panels(show_buttons_panel=true,
+//                      show_fuse_panel=true);
 
 // panel_stack_print_plate(show_buttons_panel=false);
 panel_stack(show_buttons_panel=true,

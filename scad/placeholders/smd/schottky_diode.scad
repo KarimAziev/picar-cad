@@ -11,7 +11,7 @@ use <../../lib/functions.scad>
 use <../../lib/plist.scad>
 use <smd_resistor.scad>
 
-module shottky_diode(plist, center=false) {
+module schottky_diode(plist, center=false) {
   plist = with_default(plist, []);
   size = plist_get("placeholder_size", plist, [3.4, 1.4, 0.4]);
   x = size[0];
@@ -53,4 +53,4 @@ module shottky_diode(plist, center=false) {
                use_inner_round=use_inner_round);
 }
 
-shottky_diode(["type", "shottky_diode", "size", [3, 2, 1]]);
+schottky_diode(["type", "schottky_diode", "size", [3, 2, 1]]);

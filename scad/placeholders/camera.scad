@@ -25,7 +25,7 @@ module camera_module(board_color=green_2,
                      left_text_x_offset=0,
                      right_text_x_offset=1,
                      left_text_spacing=1.3,
-                     right_text_spacing=1.1,) {
+                     right_text_spacing=1.1) {
   max_lens_y = max([for (i = [0 : len(camera_lens_items) - 1])
                        camera_lens_items[i][4] == "circle" ?
                          camera_lens_items[i][0] :
@@ -42,7 +42,8 @@ module camera_module(board_color=green_2,
                        center=true,
                        r=camera_offset_rad,
                        fn=40);
-          translate([0, camera_h / 2
+          translate([0,
+                     camera_h / 2
                      - camera_holes_size[1] / 2
                      - camera_bolt_hole_dia / 2
                      - camera_holes_distance_from_top,
@@ -59,7 +60,8 @@ module camera_module(board_color=green_2,
     color(yellow_2, alpha=1) {
       translate([0, 0, -0.05]) {
         linear_extrude(height=camera_thickness + 0.1, center=false) {
-          translate([0, camera_h / 2
+          translate([0,
+                     camera_h / 2
                      - camera_holes_size[1] / 2
                      - camera_bolt_hole_dia / 2
                      - camera_holes_distance_from_top,
@@ -249,10 +251,10 @@ module camera_ffc_connector(opened=false) {
 
 module camera_module_ffc_latch() {
   length = camera_module_ffc_zif_len / 2;
-  cutted_length = length * 0.16;
+  cut_length = length * 0.16;
   thickness = camera_module_ffc_zif_thickness;
   half_of_thickness = thickness / 2;
-  x2 = length - cutted_length;
+  x2 = length - cut_length;
 
   color(onyx, alpha=1) {
     translate([0, 0, thickness]) {
