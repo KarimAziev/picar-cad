@@ -10,7 +10,9 @@ include <../parameters.scad>
 
 use <../lib/functions.scad>
 use <../lib/holes.scad>
+use <../lib/plist.scad>
 use <../lib/shapes2d.scad>
+use <bolt.scad>
 use <servo_horn.scad>
 
 function servo_gear_total_height(gear_size) =
@@ -288,20 +290,37 @@ module servo(size,
   }
 }
 
+module with_servo_slot_slots(size=[head_neck_tilt_servo_slot_width,
+                                   head_neck_tilt_servo_slot_height],
+                             bolts_dia=head_neck_tilt_servo_bolt_dia,
+                             bolts_offset=head_neck_tilt_servo_bolts_offset,
+                             center=true) {
+  translate([center ? 0 : size[0] / 2, center ? 0 : size[1] / 2, 0]) {
+    if ($children > 1) {
+      children(0);
+    }
+
+    offst_x = bolt_x_offst(size[0], bolts_dia, bolts_offset);
+    for (x = [-offst_x, offst_x]) {
+      translate([x, 0, 0]) {
+        children($children > 1 ? 1 : 0);
+      }
+    }
+  }
+}
+
 module servo_slot_2d(size=[head_neck_tilt_servo_slot_width,
                            head_neck_tilt_servo_slot_height],
                      bolts_dia=head_neck_tilt_servo_bolt_dia,
                      bolts_offset=head_neck_tilt_servo_bolts_offset,
                      center=true) {
 
-  translate([center ? 0 : size[0] / 2, center ? 0 : size[1] / 2, 0]) {
+  with_servo_slot_slots(size=size,
+                        bolts_dia=bolts_dia,
+                        bolts_offset=bolts_offset,
+                        center=center) {
     square([size[0], size[1]], center=true);
-    offst_x = bolt_x_offst(size[0], bolts_dia, bolts_offset);
-    for (x = [-offst_x, offst_x]) {
-      translate([x, 0, 0]) {
-        circle(r=bolts_dia * 0.5, $fn=360);
-      }
-    }
+    circle(r=bolts_dia / 2, $fn=360);
   }
 }
 

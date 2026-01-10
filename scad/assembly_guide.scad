@@ -58,20 +58,32 @@ show_power_lid_case_xt90e         = false;
 // Toggle any extra lid slot fillers defined in power_lid_left_slots or power_lid_right_slots.
 
 /* [Head] */
-// Preview the entire head stack at once.
 show_head_assembly                = false;
 // Drop the tilt servo into the neck tilt bracket.
 show_tilt_servo                   = false;
+show_tilt_servo_bolts             = false;
+show_tilt_servo_nuts              = false;
 // Install the pan servo into the neck base.
 show_pan_servo                    = false;
+show_pan_servo_bolts              = false;
+show_pan_servo_nuts               = false;
 // Attach the head shell on top of the tilt bracket.
 show_head                         = false;
+show_head_servo_horn              = false;
 // Insert the camera boards into their holders.
 show_camera                       = false;
+show_camera_bolts                 = false;
+show_camera_nuts                  = false;
 // Fasten the IR LED case onto the head.
 show_ir_case                      = false;
+show_ir_case_bolts                = false;
+show_ir_case_nuts                 = false;
 // Seat the IR LED board inside its case.
 show_ir_led                       = false;
+
+show_ir_case_rail                 = false;
+show_ir_case_rail_bolts           = false;
+show_ir_case_rail_nuts            = false;
 
 pan_servo_rotation                = 0; // [-179:179]
 tilt_servo_rotation               = 0; // [-90:90]
@@ -188,12 +200,24 @@ chassis(panel_color=panel_color,
         show_ultrasonic=show_ultrasonic,
         show_front_rear_panel=show_front_rear_panel,
         show_head_assembly=show_head_assembly,
-        show_head=show_head,
-        show_pan_servo=show_pan_servo,
         show_tilt_servo=show_tilt_servo,
-        show_ir_case=show_ir_case,
+        show_tilt_servo_bolts=show_tilt_servo_bolts,
+        show_tilt_servo_nuts=show_tilt_servo_nuts,
+        show_pan_servo=show_pan_servo,
+        show_pan_servo_bolts=show_pan_servo_bolts,
+        show_pan_servo_nuts=show_pan_servo_nuts,
+        show_head=show_head,
+        show_head_servo_horn=show_head_servo_horn,
         show_camera=show_camera,
+        show_camera_bolts=show_camera_bolts,
+        show_camera_nuts=show_camera_nuts,
+        show_ir_case=show_ir_case,
+        show_ir_case_bolts=show_ir_case_bolts,
+        show_ir_case_nuts=show_ir_case_nuts,
         show_ir_led=show_ir_led,
+        show_ir_case_rail=show_ir_case_rail,
+        show_ir_case_rail_bolts=show_ir_case_rail_bolts,
+        show_ir_case_rail_nuts=show_ir_case_rail_nuts,
         show_steering_panel=show_steering_panel,
         show_rear_wheels=show_rear_wheels,
         show_bearing=show_bearing,

@@ -345,7 +345,7 @@ You should use either 4 or 8 M3 standoffs. If you use 8 standoffs, the nuts list
 
 | Size | Length (mm) | Amount                | Nuts | Variable               |
 | ---- | ----------- | --------------------- | ---- | ---------------------- |
-| M2   | 4 or higher | 8 (4 for each camera) | 8    | `head_camera_bolt_dia` |
+| M2   | 6 or higher | 8 (4 for each camera) | 8    | `head_camera_bolt_dia` |
 
 As with the steering servo, your servo pack should already include bolts, a servo arm, and self-tapping bolts to secure the servo arm. The diameter of the hole on the head where the tilt-servo gearbox mounts is defined by `head_servo_mount_dia`.
 
@@ -362,8 +362,8 @@ The corresponding hole for the pan servo on the chassis is controlled by `chassi
 
 | Size | Length (mm) | Amount | Nuts | Variable                |
 | ---- | ----------- | ------ | ---- | ----------------------- |
-| M2   | 6 or higher | 2      | 2    | `ir_case_bolt_dia`      |
-| M2   | 6 or higher | 2      | 2    | `ir_case_rail_bolt_dia` |
+| M2   | 8 or higher | 2      | 2    | `ir_case_bolt_dia`      |
+| M2   | 8 or higher | 2      | 2    | `ir_case_rail_bolt_dia` |
 
 Variable `ir_case_bolt_dia` defines the diameter of the bolt holes that attach the case to the head; `ir_case_rail_bolt_dia` defines the diameter of the rail holes that secure the IR LED to the case itself.
 

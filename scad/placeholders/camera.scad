@@ -13,6 +13,18 @@ use <../lib/functions.scad>
 use <../lib/holes.scad>
 use <../lib/shapes2d.scad>
 use <../lib/transforms.scad>
+use <bolt.scad>
+
+module camera_module_with_holes_positions() {
+  translate([0,
+             camera_h / 2
+             - camera_holes_size[1] / 2
+             - camera_bolt_hole_dia / 2
+             - camera_holes_distance_from_top,
+             0]) {
+    children();
+  }
+}
 
 module camera_module(board_color=green_2,
                      opened=true,
@@ -25,7 +37,9 @@ module camera_module(board_color=green_2,
                      left_text_x_offset=0,
                      right_text_x_offset=1,
                      left_text_spacing=1.3,
-                     right_text_spacing=1.1) {
+                     right_text_spacing=1.1,
+                     show_bolt=true,
+                     bolt_h=4) {
   max_lens_y = max([for (i = [0 : len(camera_lens_items) - 1])
                        camera_lens_items[i][4] == "circle" ?
                          camera_lens_items[i][0] :
@@ -42,12 +56,7 @@ module camera_module(board_color=green_2,
                        center=true,
                        r=camera_offset_rad,
                        fn=40);
-          translate([0,
-                     camera_h / 2
-                     - camera_holes_size[1] / 2
-                     - camera_bolt_hole_dia / 2
-                     - camera_holes_distance_from_top,
-                     0]) {
+          camera_module_with_holes_positions() {
             four_corner_holes_2d(size=camera_holes_size,
                                  center=true,
                                  d=camera_bolt_hole_dia,

@@ -49,6 +49,7 @@
  * License: GPL-3.0-or-later
  */
 
+use <debug.scad>
 use <functions.scad>
 use <shapes2d.scad>
 
@@ -57,6 +58,8 @@ module l_bracket(size,
                  vertical_thickness,
                  children_modes=[],
                  bracket_color,
+                 debug_vertical=false,
+                 debug_horizontal=false,
                  center=true,
                  convexity,
                  rotation=90,
@@ -90,34 +93,34 @@ module l_bracket(size,
                                                     "vertical");
 
   translate([center ? 0 : x / 2,
-             center
-             ? 0
-             : y / 2 + vertical_thickness / 2,
+             center ? 0 : y / 2 + vertical_thickness / 2,
              center ? 0 : thickness / 2]) {
     union() {
       // Horizontal plate (extruded in the XY plane)
       difference() {
         union() {
           color(bracket_color, alpha=1) {
-            linear_extrude(height=thickness,
-                           center=true,
-                           convexity=convexity) {
-              difference() {
-                union() {
-                  rounded_rect_two([x, y], center=true, r=ur);
+            debug_highlight(debug=debug_horizontal) {
+              linear_extrude(height=thickness,
+                             center=true,
+                             convexity=convexity) {
+                difference() {
+                  union() {
+                    rounded_rect_two([x, y], center=true, r=ur);
 
-                  if (non_empty(horizontal_children_union_inner)) {
-                    for (i = horizontal_children_union_inner) {
-                      if ($children > i) {
-                        children(i);
+                    if (non_empty(horizontal_children_union_inner)) {
+                      for (i = horizontal_children_union_inner) {
+                        if ($children > i) {
+                          children(i);
+                        }
                       }
                     }
                   }
-                }
-                if (non_empty(horizontal_children_difference)) {
-                  for (i = horizontal_children_difference) {
-                    if ($children > i) {
-                      children(i);
+                  if (non_empty(horizontal_children_difference)) {
+                    for (i = horizontal_children_difference) {
+                      if ($children > i) {
+                        children(i);
+                      }
                     }
                   }
                 }
@@ -148,32 +151,36 @@ module l_bracket(size,
         rotate([rotation, 0, 0]) {
           difference() {
             union() {
-              color(bracket_color, alpha=1) {
-                linear_extrude(height=vertical_thickness,
-                               center=true,
-                               convexity=convexity) {
-                  difference() {
-                    union() {
-                      rounded_rect_two([x, z], center=true, r=lr);
-                      if (non_empty(vertical_children_union_inner)) {
-                        for (i = vertical_children_union_inner) {
+              debug_highlight(debug=debug_vertical) {
+                color(bracket_color, alpha=1) {
+
+                  linear_extrude(height=vertical_thickness,
+                                 center=true,
+                                 convexity=convexity) {
+                    difference() {
+                      union() {
+                        rounded_rect_two([x, z], center=true, r=lr);
+                        if (non_empty(vertical_children_union_inner)) {
+                          for (i = vertical_children_union_inner) {
+                            if ($children > i) {
+                              children(i);
+                            }
+                          }
+                        }
+                      }
+
+                      if (non_empty(vertical_children_difference)) {
+                        for (i = vertical_children_difference) {
                           if ($children > i) {
                             children(i);
                           }
                         }
                       }
                     }
-
-                    if (non_empty(vertical_children_difference)) {
-                      for (i = vertical_children_difference) {
-                        if ($children > i) {
-                          children(i);
-                        }
-                      }
-                    }
                   }
                 }
               }
+
               if (non_empty(vertical_children_union_outer)) {
                 for (i = vertical_children_union_outer) {
                   if ($children > i) {

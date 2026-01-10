@@ -28,11 +28,30 @@ show_ultrasonic                   = true;
 show_front_rear_panel             = true;
 show_head_assembly                = true;
 show_head                         = true;
-show_pan_servo                    = true;
+
 show_tilt_servo                   = true;
-show_ir_case                      = true;
+show_tilt_servo_bolts             = true;
+show_tilt_servo_nuts              = true;
+
+show_pan_servo                    = true;
+show_pan_servo_bolts              = true;
+show_pan_servo_nuts               = true;
+
+show_head_servo_horn              = true;
+
 show_camera                       = true;
+show_camera_bolts                 = true;
+show_camera_nuts                  = true;
+
+show_ir_case                      = true;
+show_ir_case_bolts                = true;
+show_ir_case_nuts                 = true;
 show_ir_led                       = true;
+
+show_ir_case_rail                 = false;
+show_ir_case_rail_bolts           = false;
+show_ir_case_rail_nuts            = false;
+
 show_steering_panel               = true;
 show_rear_wheels                  = true;
 show_front_wheels                 = true;
@@ -104,11 +123,23 @@ module chassis(tilt_servo_rotation=tilt_servo_rotation,
                show_front_rear_panel=show_front_rear_panel,
                show_head_assembly=show_head_assembly,
                show_head=show_head,
-               show_pan_servo=show_pan_servo,
                show_tilt_servo=show_tilt_servo,
-               show_ir_case=show_ir_case,
+               show_tilt_servo_bolts=show_tilt_servo_bolts,
+               show_tilt_servo_nuts=show_tilt_servo_nuts,
+               show_pan_servo=show_pan_servo,
+               show_pan_servo_bolts=show_pan_servo_bolts,
+               show_pan_servo_nuts=show_pan_servo_nuts,
+               show_head_servo_horn=show_head_servo_horn,
                show_camera=show_camera,
+               show_camera_bolts=show_camera_bolts,
+               show_camera_nuts=show_camera_nuts,
+               show_ir_case=show_ir_case,
+               show_ir_case_bolts=show_ir_case_bolts,
+               show_ir_case_nuts=show_ir_case_nuts,
                show_ir_led=show_ir_led,
+               show_ir_case_rail=show_ir_case_rail,
+               show_ir_case_rail_bolts=show_ir_case_rail_bolts,
+               show_ir_case_rail_nuts=show_ir_case_rail_nuts,
                show_steering_panel=show_steering_panel,
                show_rear_wheels=show_rear_wheels,
                show_front_wheels=show_front_wheels,
@@ -180,11 +211,23 @@ module chassis(tilt_servo_rotation=tilt_servo_rotation,
                   show_head_assembly=show_head_assembly
                   || show_head || show_pan_servo || show_camera || show_ir_led,
                   show_head=show_head,
-                  show_pan_servo=show_pan_servo,
                   show_tilt_servo=show_tilt_servo,
-                  show_ir_case=show_ir_case,
-                  show_camera=show_camera,
                   show_ir_led=show_ir_led,
+                  show_ir_case_rail=show_ir_case_rail,
+                  show_ir_case_rail_bolts=show_ir_case_rail_bolts,
+                  show_ir_case_rail_nuts=show_ir_case_rail_nuts,
+                  show_tilt_servo_bolts=show_tilt_servo_bolts,
+                  show_tilt_servo_nuts=show_tilt_servo_nuts,
+                  show_pan_servo=show_pan_servo,
+                  show_pan_servo_bolts=show_pan_servo_bolts,
+                  show_pan_servo_nuts=show_pan_servo_nuts,
+                  show_head_servo_horn=show_head_servo_horn,
+                  show_camera=show_camera,
+                  show_camera_bolts=show_camera_bolts,
+                  show_camera_nuts=show_camera_nuts,
+                  show_ir_case=show_ir_case,
+                  show_ir_case_bolts=show_ir_case_bolts,
+                  show_ir_case_nuts=show_ir_case_nuts,
                   show_steering_panel=show_steering_panel,
                   pinion_color=pinion_color,
                   show_wheels=show_front_wheels,

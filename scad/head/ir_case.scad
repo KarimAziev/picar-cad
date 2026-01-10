@@ -29,8 +29,10 @@ include <../colors.scad>
 include <../parameters.scad>
 
 use <../lib/l_bracket.scad>
+use <../lib/plist.scad>
 use <../lib/slider.scad>
 use <../lib/transforms.scad>
+use <../placeholders/bolt.scad>
 use <../placeholders/ir_led.scad>
 
 function is_ir_case_light_detector_enabled(name) =
@@ -73,7 +75,10 @@ module ir_case_slider_holes_2d() {
   }
 }
 
-module ir_case_rail() {
+module ir_case_rail(color,
+                    show_ir_case_rail_bolts=false,
+                    show_ir_case_rail_nuts=false,
+                    show_bolt_height=false) {
   full_thickness = ir_case_full_thickness()
     + ir_case_carriage_h
     + ir_case_rail_h
@@ -84,32 +89,72 @@ module ir_case_rail() {
 
   base_w = (ir_case_carriage_wall_thickness * 2) + inner_w;
 
-  difference() {
-    translate([ir_case_width,
-               ir_case_rail_y_pos()
-               - ir_case_carriage_wall_thickness,
-               full_thickness]) {
+  union() {
+    difference() {
+      translate([ir_case_width,
+                 ir_case_rail_y_pos()
+                 - ir_case_carriage_wall_thickness,
+                 full_thickness]) {
 
-      rotate([0, 0, 90]) {
-        rotate([-90, 0, 0]) {
-          slider_dovetail_rail(l=ir_case_width,
-                               base_h=ir_case_rail_protrusion_h,
-                               base_w=base_w,
-                               center=false,
-                               base_angle=ir_case_rail_protrusion_angle,
-                               h=ir_case_rail_h,
-                               w=inner_w,
-                               angle=ir_case_rail_angle,
-                               r=ir_case_rail_offset_rad,
-                               base_r=ir_case_rail_protrusion_offset_rad);
+        color(color, alpha=1) {
+          rotate([0, 0, 90]) {
+            rotate([-90, 0, 0]) {
+              slider_dovetail_rail(l=ir_case_width,
+                                   base_h=ir_case_rail_protrusion_h,
+                                   base_w=base_w,
+                                   center=false,
+                                   base_angle=ir_case_rail_protrusion_angle,
+                                   h=ir_case_rail_h,
+                                   w=inner_w,
+                                   angle=ir_case_rail_angle,
+                                   r=ir_case_rail_offset_rad,
+                                   base_r=ir_case_rail_protrusion_offset_rad);
+            }
+          }
         }
       }
+      linear_extrude(height=full_thickness
+                     + slider_holes_extra_h,
+                     center=false,
+                     convexity=2) {
+        ir_case_slider_holes_2d();
+      }
     }
-    linear_extrude(height=full_thickness
-                   + slider_holes_extra_h,
-                   center=false,
-                   convexity=2) {
-      ir_case_slider_holes_2d();
+    if (show_ir_case_rail_bolts) {
+      let (y_pos = ir_case_slider_y_pos(),
+           nut_spec = find_nut_spec(inner_d=ir_case_rail_bolt_dia,
+                                    lock=true),
+           nut_h = plist_get("height", nut_spec, 2),
+           bolt_h = ceil(nut_h + full_thickness)) {
+        if (show_bolt_height) {
+          echo(str("IR case rail bolt length: ", bolt_h, "mm"));
+        }
+
+        translate([ir_case_carriage_len / 2,
+                   y_pos,
+                   bolt_h]) {
+
+          rotate([180, 0, 0]) {
+            bolt(h=bolt_h,
+                 lock_nut=true,
+                 d=ir_case_rail_bolt_dia,
+                 show_nut=show_ir_case_rail_nuts,
+                 nut_head_distance=full_thickness);
+          }
+        }
+        translate([ir_case_width
+                   - ir_case_carriage_len / 2,
+                   y_pos,
+                   bolt_h]) {
+          rotate([180, 0, 0]) {
+            bolt(h=bolt_h,
+                 lock_nut=true,
+                 d=ir_case_rail_bolt_dia,
+                 nut_head_distance=full_thickness,
+                 show_nut=show_ir_case_rail_nuts);
+          }
+        }
+      }
     }
   }
 }
@@ -221,46 +266,81 @@ module ir_case_bolts_pan_holes() {
   }
 }
 
-module ir_case_bracket() {
+module ir_case_bracket(show_bolts=false,
+                       show_nuts=false,
+                       color,
+                       mount_thickness=2,
+                       show_bolt_height=false) {
+  thickness = ir_case_full_thickness();
   l_bracket(size=[ir_case_l_bracket_w,
                   ir_case_l_bracket_h,
                   ir_case_l_bracket_len],
             center=false,
-            thickness=ir_case_full_thickness(),
-            children_modes=[["difference", "horizontal"]],
+            bracket_color=color,
+            thickness=thickness,
+            children_modes=[["difference", "horizontal"],
+                            ["union", "horizontal"]],
             y_r=min(ir_case_l_bracket_h, ir_case_l_bracket_w) * 0.5,
             z_r=0) {
     ir_case_bolts_pan_holes();
+
+    if (show_bolts) {
+      let (nut_spec = find_nut_spec(inner_d=ir_case_bolt_dia,
+                                    lock=false),
+           nut_h = plist_get("height", nut_spec, 2),
+           bolt_h = ceil(nut_h + mount_thickness + thickness)) {
+        union() {
+          if (show_bolt_height) {
+            echo("IR case bracket bolt length: ", bolt_h);
+          }
+          for (x=ir_case_bolt_pan_holes_x_offsets) {
+            translate([0, x, thickness / 2 - bolt_h]) {
+              bolt(d=ir_case_bolt_dia,
+                   h=bolt_h,
+                   nut_head_distance=mount_thickness + thickness,
+                   show_nut=show_nuts);
+            }
+          }
+        }
+      }
+    }
   }
 }
 
-module ir_case() {
+module ir_case(show_bolts=false,
+               show_nuts=false,
+               mount_thickness=2,
+               show_bolt_height=false,
+               color) {
   full_thickness = ir_case_full_thickness();
 
   y_offst = ir_case_height - ir_case_holes_distance_from_top
     - ir_light_detector_dia;
   union() {
-    difference() {
-      ir_case_base_plate(h=full_thickness);
-      translate([0,
-                 y_offst,
-                 ir_case_led_boss_thickness]) {
-        linear_extrude(height=ir_case_thickness + ir_case_led_boss_thickness,
-                       center=false,
-                       convexity=2) {
-          square([ir_case_width + 1, ir_case_height], center=false);
+    color(color, alpha=1) {
+      difference() {
+        ir_case_base_plate(h=full_thickness);
+        translate([0,
+                   y_offst,
+                   ir_case_led_boss_thickness]) {
+          linear_extrude(height=ir_case_thickness + ir_case_led_boss_thickness,
+                         center=false,
+                         convexity=2) {
+            square([ir_case_width + 1, ir_case_height], center=false);
+          }
         }
       }
     }
 
-    ir_case_slider();
+    color(color, alpha=1) {
+      ir_case_slider();
+    }
 
     for (spec = [["right",
                   [ir_case_l_bracket_len + ir_case_width, y_offst, 0],
                   [90, 0, -90]],
                  ["left",
-                  [-ir_case_l_bracket_len, y_offst -
-                   ir_case_l_bracket_w, 0],
+                  [-ir_case_l_bracket_len, y_offst - ir_case_l_bracket_w, 0],
                   [90, 0, 90]]]) {
       let (name = spec[0],
            offst = spec[1],
@@ -268,7 +348,11 @@ module ir_case() {
         if (is_ir_case_bracket_enabled(name)) {
           translate(offst) {
             rotate(rotation) {
-              ir_case_bracket();
+              ir_case_bracket(show_bolts=show_bolts,
+                              show_nuts=show_nuts,
+                              color=color,
+                              mount_thickness=mount_thickness,
+                              show_bolt_height=show_bolt_height);
             }
           }
         }
@@ -280,16 +364,25 @@ module ir_case() {
 
 module ir_case_assembly(show_rail=true,
                         show_ir_led=true,
+                        show_ir_case_bolts=true,
+                        show_ir_case_nuts=true,
+                        show_ir_case_rail_bolts=true,
+                        show_ir_case_rail_nuts=true,
+                        show_bolt_height=true,
+                        mount_thickness=2,
                         case_color="white",
                         rail_color="white") {
   union() {
-    color(case_color, alpha=1) {
-      ir_case();
-    }
+    ir_case(show_bolts=show_ir_case_bolts,
+            show_nuts=show_ir_case_nuts,
+            mount_thickness=mount_thickness,
+            color=case_color,
+            show_bolt_height=show_bolt_height);
     if (show_rail) {
-      color(rail_color, alpha=1) {
-        ir_case_rail();
-      }
+      ir_case_rail(color=rail_color,
+                   show_ir_case_rail_bolts=show_ir_case_rail_bolts,
+                   show_ir_case_rail_nuts=show_ir_case_rail_nuts,
+                   show_bolt_height=show_bolt_height);
     }
     if (show_ir_led) {
       translate([ir_led_board_w +

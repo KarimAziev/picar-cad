@@ -93,6 +93,7 @@ module steering_servo_mount(show_servo=false,
                     convexity=2,
                     bracket_color=panel_color,
                     vertical_thickness=steering_vertical_panel_thickness,
+                    debug_vertical=true,
                     center=false,
                     thickness=steering_rack_support_thickness,
                     children_modes=[["difference", "vertical"],
@@ -158,4 +159,4 @@ module steering_servo_mount(show_servo=false,
   }
 }
 
-steering_servo_mount(show_servo=false);
+steering_servo_mount(show_servo=true);

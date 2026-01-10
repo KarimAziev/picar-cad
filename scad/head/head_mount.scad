@@ -22,6 +22,7 @@ include <../parameters.scad>
 
 use <../lib/functions.scad>
 use <../lib/holes.scad>
+use <../lib/plist.scad>
 use <../lib/shapes2d.scad>
 use <../lib/transforms.scad>
 use <../placeholders/bolt.scad>
@@ -29,19 +30,33 @@ use <../placeholders/camera.scad>
 use <../placeholders/servo_horn.scad>
 use <ir_case.scad>
 
-tilt_angle        = atan2((-head_side_panel_curve_end)
-                          - (-head_side_panel_bottom),
-                          head_side_panel_curve_start
-                          - head_side_panel_width);
+show_camera             = false;
+show_camera_bolts       = false;
+show_camera_nuts        = false;
+show_ir_case            = false;
+show_ir_case_bolts      = false;
+show_ir_case_nuts       = false;
+show_ir_led             = false;
+show_ir_case_rail       = false;
+show_ir_case_rail_bolts = false;
+show_ir_case_rail_nuts  = false;
+show_servo_horn         = false;
 
-side_panel_points = [[0, -head_side_panel_top],
-                     [head_side_panel_curve_start, -
-                      head_side_panel_notch_y],
-                     [head_side_panel_width, -head_side_panel_notch_y],
-                     [head_side_panel_width, -head_side_panel_bottom],
-                     [head_side_panel_curve_start,
-                      -head_side_panel_curve_end],
-                     [0, -head_side_panel_curve_end]];
+show_bolt_height        = true;
+
+tilt_angle              = atan2((-head_side_panel_curve_end)
+                                - (-head_side_panel_bottom),
+                                head_side_panel_curve_start
+                                - head_side_panel_width);
+
+side_panel_points       = [[0, -head_side_panel_top],
+                           [head_side_panel_curve_start, -
+                            head_side_panel_notch_y],
+                           [head_side_panel_width, -head_side_panel_notch_y],
+                           [head_side_panel_width, -head_side_panel_bottom],
+                           [head_side_panel_curve_start,
+                            -head_side_panel_curve_end],
+                           [0, -head_side_panel_curve_end]];
 
 function side_panel_servo_center() =
   [head_side_panel_width / 2.0, -head_side_panel_height / 2.0];
@@ -53,21 +68,28 @@ function camera_final_y(i) =
 module head_front_camera(spec,
                          i,
                          do_cut=true,
-                         do_place_camera=false) {
-  hole_size       = spec[0];
+                         do_place_camera=false,
+                         show_bolt_height=show_bolt_height,
+                         show_bolts=true,
+                         show_nuts=true) {
+  slot_size       = spec[0];
   bolt_hole_y    = spec[1];
-  bolt_hole_size = spec[2];
+  bolt_spacing = spec[2];
   final_y         = camera_final_y(i);
 
-  translate([-hole_size[0] / 2, final_y, 0]) {
-    if (do_cut) {
-      square(hole_size, center=false);
+  hole_r = slot_size[0] / 2;
 
-      translate([hole_size[0] / 2,
-                 bolt_hole_size[1] / 2 + head_camera_bolt_dia / 2
-                 + bolt_hole_y,
+  hole_y_pos = bolt_spacing[1] / 2 + head_camera_bolt_dia / 2
+    + bolt_hole_y;
+
+  translate([-hole_r, final_y, 0]) {
+    if (do_cut) {
+      square(slot_size, center=false);
+
+      translate([hole_r,
+                 hole_y_pos,
                  0]) {
-        four_corner_holes_2d(size = bolt_hole_size,
+        four_corner_holes_2d(size = bolt_spacing,
                              center = true,
                              d = head_camera_bolt_dia,
                              fn = 360);
@@ -76,8 +98,8 @@ module head_front_camera(spec,
 
     if (do_place_camera) {
       board_color = is_undef(spec[3]) ? green_2 : spec[3];
-      translate([hole_size[0] / 2,
-                 bolt_hole_size[1] / 2 + head_camera_bolt_dia / 2
+      translate([slot_size[0] / 2,
+                 bolt_spacing[1] / 2 + head_camera_bolt_dia / 2
                  + bolt_hole_y
                  + camera_h / 2
                  - camera_holes_size[1] / 2
@@ -89,10 +111,37 @@ module head_front_camera(spec,
         }
       }
     }
+
+    if (show_bolts) {
+      let (nut_spec = find_nut_spec(inner_d=head_camera_bolt_dia,
+                                    lock=false),
+           nut_h = plist_get("height", nut_spec, 2),
+           bolt_h = ceil(camera_thickness + head_plate_thickness + nut_h)) {
+        if (show_bolt_height) {
+          echo("Camera module bolt length: ", bolt_h);
+        }
+
+        translate([hole_r,
+                   hole_y_pos,
+                   head_plate_thickness + camera_thickness - bolt_h]) {
+          four_corner_children(size = bolt_spacing,
+                               center = true) {
+            bolt(h=bolt_h,
+                 show_nut=show_nuts,
+                 nut_head_distance=head_plate_thickness
+                 + camera_thickness,
+                 d=head_camera_bolt_dia);
+          }
+        }
+      }
+    }
   }
 }
 
-module head_front_plate(show_camera=false, head_color="white") {
+module head_front_plate(show_camera=false,
+                        head_color="white",
+                        show_nuts=false,
+                        show_bolts=false) {
   cameras_len = len(head_cameras);
   single_camera_y_shift = cameras_len > 1
     ? 0
@@ -110,6 +159,8 @@ module head_front_plate(show_camera=false, head_color="white") {
             for (i = [0 : cameras_len - 1])
               head_front_camera(spec=head_cameras[i],
                                 i=i,
+                                show_bolts=false,
+                                show_nuts=false,
                                 do_cut=true,
                                 do_place_camera=false);
           }
@@ -118,16 +169,17 @@ module head_front_plate(show_camera=false, head_color="white") {
     }
   }
 
-  // optional camera modules below the plate
-  translate([0, 0, -head_plate_thickness - camera_thickness]) {
-    if (show_camera && cameras_len > 0) {
-      translate([0, single_camera_y_shift, 0]) {
-        for (i = [0 : cameras_len - 1])
-          head_front_camera(spec=head_cameras[i],
-                            i=i,
-                            do_cut=false,
-                            do_place_camera=true);
-      }
+  if ((show_camera || show_bolts || show_nuts) && cameras_len > 0) {
+    translate([0,
+               single_camera_y_shift,
+               -head_plate_thickness - camera_thickness]) {
+      for (i = [0 : cameras_len - 1])
+        head_front_camera(spec=head_cameras[i],
+                          i=i,
+                          show_nuts=show_nuts,
+                          show_bolts=show_bolts,
+                          do_cut=false,
+                          do_place_camera=show_camera);
     }
   }
 }
@@ -367,8 +419,13 @@ module head_panel_ir_case_bolt_holes() {
 }
 module head_ir_case(ir_case_color=jet_black,
                     ir_rail_color=cobalt_blue_metallic,
-                    show_ir_led=true,
-                    show_ir_case_rail=true) {
+                    show_ir_led=show_ir_led,
+                    show_ir_case_rail=show_ir_case_rail,
+                    show_ir_case_bolts=show_ir_case_bolts,
+                    show_ir_case_nuts=show_ir_case_nuts,
+                    show_ir_case_rail_bolts=show_ir_case_rail_bolts,
+                    show_ir_case_rail_nuts=show_ir_case_rail_nuts,
+                    show_bolt_height=show_bolt_height) {
   spec = ir_case_head_bolts_side_panel_positions[0];
   bolt_rad = ir_case_bolt_dia / 2;
   ir_case_x = head_plate_width / 2
@@ -385,23 +442,48 @@ module head_ir_case(ir_case_color=jet_black,
     ir_case_assembly(show_rail=show_ir_case_rail,
                      case_color=ir_case_color,
                      rail_color=ir_rail_color,
-                     show_ir_led=show_ir_led);
+                     show_ir_led=show_ir_led,
+                     show_ir_case_nuts=show_ir_case_nuts,
+                     show_ir_case_bolts=show_ir_case_bolts,
+                     show_ir_case_rail_bolts=show_ir_case_rail_bolts,
+                     show_ir_case_rail_nuts=show_ir_case_rail_nuts,
+                     mount_thickness=head_plate_thickness,
+                     show_bolt_height=show_bolt_height);
   }
 }
 module head_mount(head_color="white",
                   ir_case_color=jet_black,
                   ir_rail_color=jet_black,
-                  show_servo_horn=false,
-                  show_ir_case=false,
-                  show_ir_led=true,
-                  show_camera=false,
-                  show_ir_case_rail=true) {
+                  show_camera=show_camera,
+                  show_ir_case=show_ir_case,
+                  show_servo_horn=show_servo_horn,
+                  show_ir_led=show_ir_led,
+                  show_ir_case_rail=show_ir_case_rail,
+                  show_ir_case_bolts=show_ir_case_bolts,
+                  show_ir_case_nuts=show_ir_case_nuts,
+                  show_ir_case_rail_bolts=show_ir_case_rail_bolts,
+                  show_ir_case_rail_nuts=show_ir_case_rail_nuts,
+                  show_camera_nuts=show_camera_nuts,
+                  show_camera_bolts=show_camera_bolts) {
+
+  module _head_ir_case() {
+    head_ir_case(ir_rail_color=ir_rail_color,
+                 ir_case_color=ir_case_color,
+                 show_ir_led=show_ir_led,
+                 show_ir_case_rail=show_ir_case_rail,
+                 show_ir_case_bolts=show_ir_case_bolts,
+                 show_ir_case_nuts=show_ir_case_nuts,
+                 show_ir_case_rail_bolts=show_ir_case_rail_bolts,
+                 show_ir_case_rail_nuts=show_ir_case_rail_nuts);
+  }
   rotate([0, 180, 0]) {
     union() {
       translate([0, head_plate_height / 2, 0]) {
         rotate([0, 0, 180]) {
           head_front_plate(show_camera=show_camera,
-                           head_color=head_color);
+                           head_color=head_color,
+                           show_nuts=show_camera_nuts,
+                           show_bolts=show_camera_bolts);
         }
       }
       color(head_color, alpha=1) {
@@ -416,19 +498,13 @@ module head_mount(head_color="white",
     }
   }
 
-  if (show_ir_case) {
+  if (show_ir_case || show_ir_case_rail || show_ir_led) {
     if (is_ir_case_bracket_enabled("both")) {
       mirror_copy([1, 0, 0]) {
-        head_ir_case(ir_rail_color=ir_rail_color,
-                     ir_case_color=ir_case_color,
-                     show_ir_led=show_ir_led,
-                     show_ir_case_rail=show_ir_case_rail);
+        _head_ir_case();
       }
     } else if (is_ir_case_bracket_enabled("left")) {
-      head_ir_case(ir_rail_color=ir_rail_color,
-                   ir_case_color=ir_case_color,
-                   show_ir_led=show_ir_led,
-                   show_ir_case_rail=show_ir_case_rail);
+      _head_ir_case();
     } else if (is_ir_case_bracket_enabled("right")) {
       ir_case_x = -head_plate_width / 2 - ir_case_width
         - head_plate_thickness - ir_case_l_bracket_len;
@@ -437,15 +513,10 @@ module head_mount(head_color="white",
                  - ir_case_l_bracket_len,
                  0,
                  0]) {
-        head_ir_case(ir_rail_color=ir_rail_color,
-                     ir_case_color=ir_case_color,
-                     show_ir_led=show_ir_led,
-                     show_ir_case_rail=show_ir_case_rail);
+        _head_ir_case();
       }
     }
   }
 }
 
-head_mount(show_ir_case=false,
-           show_camera=false,
-           show_servo_horn=true);
+head_mount();

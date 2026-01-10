@@ -666,6 +666,7 @@ front_panel_rear_panel_ring_width                    = 2;
 // ─────────────────────────────────────────────────────────────────────────────
 
 head_camera_bolt_dia                                 = m2_hole_dia;
+head_camera_bolt_head_type                           = "pan";
 
 head_camera_lens_width                               = 14;
 head_camera_lens_height                              = 23;
