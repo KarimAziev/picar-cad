@@ -366,7 +366,7 @@ module rpi_5(size=[rpi_width, rpi_len, rpi_thickness],
                 translate([bolt_offset, bolt_offset, 0]) {
                   four_corner_holes_2d(size=bolt_spacing,
                                        center=false,
-                                       hole_dia=placeholder_hole_dia);
+                                       d=placeholder_hole_dia);
                 }
               }
             }

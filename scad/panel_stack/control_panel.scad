@@ -20,22 +20,22 @@ use <../placeholders/standoff.scad>
 use <../placeholders/toggle_switch.scad>
 
 sizes                   = [for (spec = control_panel_switch_button_specs)
-    plist_get("size", spec)];
+                           plist_get("size", spec)];
 thread_specs            = [for (spec = control_panel_switch_button_specs)
-    plist_get("thread", spec)];
+                           plist_get("thread", spec)];
 nut_specs               = [for (spec = control_panel_switch_button_specs)
-    plist_get("nut", spec)];
+                           plist_get("nut", spec)];
 terminal_specs          = [for (spec = control_panel_switch_button_specs)
-    plist_get("terminal", spec)];
+                           plist_get("terminal", spec)];
 lever_specs             = [for (spec = control_panel_switch_button_specs)
-    plist_get("lever", spec)];
+                           plist_get("lever", spec)];
 head_specs              = [for (spec = control_panel_switch_button_specs)
-    plist_get("head", spec)];
+                           plist_get("head", spec)];
 lengths                 = [for (size = sizes) size[0]];
 thicknesses             = [for (size = sizes) size[1]];
 body_heights            = [for (size = sizes) size[2]];
 terminal_heights        = [for (terminal_spec = terminal_specs)
-    terminal_spec[2]];
+                           terminal_spec[2]];
 
 slot_dias               = [for (spec=thread_specs) spec[0] +
                                                      with_default(spec[3], 0)];
@@ -43,7 +43,7 @@ slot_cbore_dias         = [for (spec=nut_specs) spec[0] +
                                                   with_default(spec[2], 0)];
 
 heights                 = [for (i = [0 : len(body_heights)-1])
-    body_heights[i] + terminal_heights[i]];
+                           body_heights[i] + terminal_heights[i]];
 
 max_height              = max(heights);
 max_len                 = max(lengths);
@@ -56,10 +56,10 @@ y_sizes                 = [for (i = [0 : len(nut_specs) - 1]) max(thicknesses[i]
 total_len               = sum(y_sizes) + (len(y_sizes) - 1) * control_panel_row_gap;
 
 full_panel_len          = (panel_stack_bolt_cbore_dia + total_len)
-  + panel_stack_padding_y + panel_stack_bolt_padding * 2;
+                           + panel_stack_padding_y + panel_stack_bolt_padding * 2;
 
 full_panel_width        = (panel_stack_bolt_cbore_dia + max_len) +
-  panel_stack_padding_x + panel_stack_bolt_padding * 2;
+                           panel_stack_padding_x + panel_stack_bolt_padding * 2;
 
 panel_bolt_spacing      = [full_panel_width
                            - panel_stack_bolt_cbore_dia
@@ -73,7 +73,7 @@ standoff_params = calc_standoff_params(d=panel_stack_bolt_dia,
                                        min_h=standoff_desired_body_h);
 
 standoff_bore_h         = (is_undef(standoff_params) || is_undef(standoff_params[0])) ? 0 :
-  plist_get("thread_h", standoff_params[0]) / 2;
+                           plist_get("thread_h", standoff_params[0]) / 2;
 
 function control_panel_size() = [full_panel_width, full_panel_len, control_panel_thickness];
 function control_panel_bolt_size() = panel_bolt_spacing;

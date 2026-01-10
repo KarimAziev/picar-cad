@@ -46,7 +46,7 @@ total_len               = total_size[1];
 full_panel_len          = total_len + panel_stack_padding_y + panel_stack_bolt_padding * 2;
 
 full_panel_width        = (panel_stack_bolt_dia + total_size[0]) +
-  panel_stack_padding_x + panel_stack_bolt_padding * 2;
+                           panel_stack_padding_x + panel_stack_bolt_padding * 2;
 
 panel_bolt_spacing      = [full_panel_width
                            - panel_stack_bolt_cbore_dia
@@ -56,16 +56,16 @@ panel_bolt_spacing      = [full_panel_width
                            - panel_stack_bolt_padding];
 
 lower_h                 = is_all_flipped
-  ? max_lid_height
-  : is_flipped
-  ? max(max_body_height, max_lid_height)
-  : max_body_height;
+                           ? max_lid_height
+                           : is_flipped
+                           ? max(max_body_height, max_lid_height)
+                           : max_body_height;
 
 upper_h                 = is_all_flipped
-  ? max_body_height
-  : is_flipped
-  ? max(max_body_height, max_lid_height)
-  : max_body_height;
+                           ? max_body_height
+                           : is_flipped
+                           ? max(max_body_height, max_lid_height)
+                           : max_body_height;
 
 standoff_desired_body_h = lower_h + chassis_thickness + 2;
 standoff_bore_h         = fuse_panel_thickness / 2;

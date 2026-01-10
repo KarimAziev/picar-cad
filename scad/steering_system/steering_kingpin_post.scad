@@ -121,5 +121,4 @@ module steering_kingpin_post_print_plate(space=2, vertical=false) {
   }
 }
 
-// steering_kingpin_post_print_plate();
-steering_kingpin_post();
+steering_kingpin_post_print_plate();

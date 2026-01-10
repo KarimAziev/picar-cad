@@ -251,7 +251,7 @@ module ina260(size=ina260_size,
                          mounting_hole_y_offset,
                          0]) {
                 four_corner_holes_2d(size=bolt_spacing,
-                                     hole_dia=bolt_d,
+                                     d=bolt_d,
                                      center=true);
               }
             }

@@ -67,8 +67,10 @@ module head_front_camera(spec,
                  bolt_hole_size[1] / 2 + head_camera_bolt_dia / 2
                  + bolt_hole_y,
                  0]) {
-        four_corner_holes_2d(size = bolt_hole_size, center = true,
-                             hole_dia = head_camera_bolt_dia, fn = 360);
+        four_corner_holes_2d(size = bolt_hole_size,
+                             center = true,
+                             d = head_camera_bolt_dia,
+                             fn = 360);
       }
     }
 
@@ -109,7 +111,7 @@ module head_front_plate(show_camera=false, head_color="white") {
               head_front_camera(spec=head_cameras[i],
                                 i=i,
                                 do_cut=true,
-                                do_place_camera=false,);
+                                do_place_camera=false);
           }
         }
       }
@@ -152,7 +154,8 @@ module connector_plate_down() {
     linear_extrude(height = head_plate_thickness) {
       difference() {
         rounded_rect([head_lower_connector_width, head_lower_connector_height],
-                     r=head_lower_connector_height / 2, center=true);
+                     r=head_lower_connector_height / 2,
+                     center=true);
         translate([0, (head_lower_connector_height * 0.5)]) {
           square([head_lower_connector_width, head_lower_connector_height],
                  center = true);
@@ -252,7 +255,9 @@ module side_panel_servo_horn() {
 
     side_panel_with_servo_horn_center_position() {
       rotate([0, 0, tilt_angle]) {
-        translate([0, 0, -servo_horn_ring_height
+        translate([0,
+                   0,
+                   -servo_horn_ring_height
                    + servo_horn_arm_z_offset]) {
           servo_horn(center=true);
         }
@@ -349,7 +354,8 @@ module head_panel_ir_case_bolt_holes() {
     translate([spec[0] + ir_case_bolt_dia / 2
                + head_plate_thickness,
                spec[1] +
-               head_side_panel_height, 0]) {
+               head_side_panel_height,
+               0]) {
       circle(r=ir_case_bolt_dia / 2, $fn=360);
       for (x=ir_case_bolt_pan_holes_x_offsets) {
         translate([x, 0, 0]) {
@@ -362,7 +368,7 @@ module head_panel_ir_case_bolt_holes() {
 module head_ir_case(ir_case_color=jet_black,
                     ir_rail_color=cobalt_blue_metallic,
                     show_ir_led=true,
-                    show_ir_case_rail=true,) {
+                    show_ir_case_rail=true) {
   spec = ir_case_head_bolts_side_panel_positions[0];
   bolt_rad = ir_case_bolt_dia / 2;
   ir_case_x = head_plate_width / 2

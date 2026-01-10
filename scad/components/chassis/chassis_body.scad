@@ -86,9 +86,10 @@ rpi_position_x                    = -rpi_bolt_spacing[0] / 2 + rpi_chassis_x_pos
 rpi_position_y                    = -rpi_len - rpi_chassis_y_position;
 
 power_case_position_y             = -power_case_length / 2 - power_case_chassis_y_offset;
+
 power_case_position_x             = chassis_body_w / 2
-  - power_case_width / 2
-  + power_case_chassis_x_offset;
+                                     - power_case_width / 2
+                                     + power_case_chassis_x_offset;
 
 max_lower_cutout                  = max([for (v = chassis_lower_cutout_pts) v[1]]);
 

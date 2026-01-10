@@ -46,8 +46,8 @@ show_switch_button    = true;
 bolt_visible_h        = power_lid_thickness + 4;
 
 side_wall_w           = power_case_side_wall_thickness
-  + power_case_rail_tolerance
-  + power_lid_extra_side_thickness;
+                         + power_case_rail_tolerance
+                         + power_lid_extra_side_thickness;
 
 inner_y_cutout        = power_case_length - side_wall_w * 2;
 inner_x_cutout        = power_lid_width - side_wall_w * 2;
@@ -56,10 +56,9 @@ half_of_inner_y       = inner_y_cutout / 2;
 half_of_inner_x       = inner_x_cutout / 2;
 half_of_side_wall_w   = side_wall_w / 2;
 
-tumbler_side_cutout_h = side_wall_w + 0.2;
 side_bolt_start       = power_case_length / 2
-  - power_case_rail_bolt_dia / 2
-  - power_case_rail_hole_distance_from_edge;
+                         - power_case_rail_bolt_dia / 2
+                         - power_case_rail_hole_distance_from_edge;
 
 module power_lid_side_wall_slots(specs=power_lid_side_slots,
                                  slot_mode=true,

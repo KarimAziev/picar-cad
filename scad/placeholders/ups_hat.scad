@@ -69,7 +69,7 @@ module ups_hat(size=battery_ups_size,
                          0]) {
                 four_corner_holes_2d(size=battery_ups_module_bolt_spacing,
                                      center=false,
-                                     hole_dia=bolt_dia,
+                                     d=bolt_dia,
                                      fn=10);
               }
             }

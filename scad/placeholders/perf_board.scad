@@ -116,7 +116,7 @@ module perf_board(size=[20, 80, 1.6],
         translate([0, 0, -0.1]) {
           linear_extrude(height=z + 0.2, center=false) {
             four_corner_holes_2d(size=bolt_spacing,
-                                 hole_dia=bolt_d,
+                                 d=bolt_d,
                                  center=true);
           }
         }

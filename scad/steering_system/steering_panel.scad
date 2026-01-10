@@ -356,7 +356,8 @@ module steering_rack_support(show_rack=false,
         unfset_pos = steering_rack_support_width / 2;
         bolt_head_type_h =
           find_bolt_head_h(inner_d=d,
-                           head_type=steering_servo_mount_connector_bolt_head_type);
+                           head_type
+                           =steering_servo_mount_connector_bolt_head_type);
         if (show_bolts_info) {
           let (txt_size = 4,
                text_base_dist = d + bolt_h + bolt_head_type_h + txt_size,
@@ -480,7 +481,3 @@ module steering_panel(panel_color,
 steering_panel(panel_color="white",
                rack_color=cobalt_blue_metallic,
                center_y=false);
-
-// translate([0, 0, 0]) {
-//   #cube([steering_panel_hinge_w, steering_panel_hinge_length, 7]);
-// }

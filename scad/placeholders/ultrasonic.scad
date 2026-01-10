@@ -39,7 +39,7 @@ module ultrasonic(center=true) {
                          center=true,
                          r=ultrasonic_offset_rad);
             four_corner_holes_2d(size=ultrasonic_bolt_spacing,
-                                 hole_dia=ultrasonic_bolt_dia,
+                                 d=ultrasonic_bolt_dia,
                                  center=true);
           }
         }

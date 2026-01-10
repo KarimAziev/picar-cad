@@ -15,21 +15,6 @@ use <slots.scad>
 use <text.scad>
 use <transforms.scad>
 
-module four_corner_holes_2d(size=[10, 10],
-                            center=false,
-                            hole_dia=3,
-                            fn=60) {
-  for (x_ind = [0, 1])
-    for (y_ind = [0, 1]) {
-      x_pos = (center ? -size[0] / 2 : 0) + x_ind * size[0];
-      y_pos = (center ? -size[1] / 2 : 0) + y_ind * size[1];
-      translate([x_pos, y_pos]) {
-        circle(r=hole_dia / 2, $fn=fn);
-        children();
-      }
-    }
-}
-
 module dotted_bolts_line_y(x_poses, y, d=1.5) {
   for (x = x_poses) {
     translate([x, y]) {

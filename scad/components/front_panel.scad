@@ -24,9 +24,9 @@ use <../placeholders/smd/smd_chip.scad>
 use <../placeholders/ultrasonic.scad>
 
 rear_panel_z = ultrasonic_pin_len_b
-  - ultrasonic_thickness
-  - ultrasonic_pin_protrusion_h
-  + ultrasonic_pin_thickness;
+                - ultrasonic_thickness
+                - ultrasonic_pin_protrusion_h
+                + ultrasonic_pin_thickness;
 
 module ultrasonic_sensor_mounts_2d(d=front_panel_ultrasonic_sensor_dia) {
   rad = d / 2;
@@ -73,7 +73,7 @@ module ultrasonic_rect_slots_2d(h=front_panel_height,
 module ultrasonic_bolts_2d(size=ultrasonic_bolt_spacing,
                            d=ultrasonic_bolt_dia) {
 
-  four_corner_holes_2d(size=size, center=true, hole_dia=d);
+  four_corner_holes_2d(size=size, center=true, d=d);
 }
 
 module front_panel_connector_bolts(reverse_y=false,
@@ -303,7 +303,7 @@ module front_panel_back_mount(h=front_panel_height,
                      center=true,
                      r=front_panel_offset_rad);
         four_corner_holes_2d(size=ultrasonic_bolt_spacing,
-                             hole_dia=ultrasonic_bolt_dia + 0.2,
+                             d=ultrasonic_bolt_dia + 0.2,
                              center=true);
 
         ultrasonic_smd_slots(half_of_board_w=ultrasonic_w / 2,
@@ -321,7 +321,7 @@ module front_panel_back_mount(h=front_panel_height,
                          d=front_panel_bolt_dia);
         }
         four_corner_holes_2d(size=ultrasonic_solder_blobs_positions,
-                             hole_dia=front_panel_solder_blob_dia,
+                             d=front_panel_solder_blob_dia,
                              center=true);
         ultrasonic_rect_slots_2d(h=ultrasonic_h,
                                  jack_w=ultrasonic_pins_jack_w + 2,
