@@ -27,15 +27,15 @@ use <../placeholders/xt90e-m.scad>
 use <common.scad>
 use <power_socket_lid.scad>
 
+show_box                   = true;
 show_atm_fuse_holders      = false;
 show_socket                = false;
 show_bolt                  = false;
 show_lid                   = false;
 show_nut                   = false;
-show_box                   = true;
-assembly                   = true;
-show_standoffs             = true;
-assembly_debug             = true;
+assembly                   = false;
+show_standoffs             = false;
+assembly_debug             = false;
 case_color                 = blue_grey_carbon;
 
 default_bolt_visible_h     = chassis_thickness - chassis_counterbore_h;
@@ -257,7 +257,7 @@ module power_socket_case(jack_plist=power_socket_case_jack_plist,
             translate([0,
                        -l / 2
                        - mounting_panel_thickness,
-                       mounting_panel_h / 2]) {
+                       h / 2]) {
               rotate([-90, 90, 0]) {
                 xt90e_m_from_plist(jack_plist,
                                    standup=false,
@@ -335,6 +335,4 @@ module power_socket_case(jack_plist=power_socket_case_jack_plist,
   }
 }
 
-power_socket_case() {
-  //  cube([10, 20, 5]);
-}
+power_socket_case();
