@@ -363,16 +363,6 @@ module voltmeter_from_plist(plist,
 voltmeter_from_plist(center=false,
                      debug=false,
                      stand_up=true,
-                     slot_mode=true,
-                     plist=plist_merge(voltmeter_default_spec,
-                                       ["wiring",
-                                        plist_merge(plist_get("wiring",
-                                                              voltmeter_default_spec),
-                                                    ["path", []])],));
-
-voltmeter_from_plist(center=false,
-                     debug=false,
-                     stand_up=true,
                      slot_mode=false,
 
                      plist=plist_merge(voltmeter_default_spec,

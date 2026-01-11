@@ -28,7 +28,7 @@ This repository contains the 3D model source files for a four-wheeled robot chas
 >     - [Ultrasonic](#ultrasonic)
 >     - [Switch buttons and fuses](#switch-buttons-and-fuses)
 >     - [IR LED](#ir-led)
->     - [Bolts and Nuts](#bolts-and-nuts)
+>     - [Bolts, Nuts and Standoffs](#bolts-nuts-and-standoffs)
 >       - [Steering panel](#steering-panel)
 >       - [Steering pinion](#steering-pinion)
 >         - [For Servo gear](#for-servo-gear)
@@ -251,7 +251,7 @@ The original LED board is incompatible with the Raspberry Camera Module 3, and t
 
 Nevertheless, this LED board can be used with Camera Module 3 and other Raspberry Pi cameras. To do so, solder two wires (**GND** and **V+**) to the bolt holes on the LED board (the bolt holes serve both for mechanical attachment and for power). Then connect the positive wire to **3.3V** and the ground wire to **GND**.
 
-### Bolts and Nuts
+### Bolts, Nuts and Standoffs
 
 Since the default chassis thickness is **4 mm** (changeable via the variable `chassis_thickness`), use bolts at least **8 mm** long for fastenings that go through the chassis, depending on the nuts. I suggest using lock nuts for these bolts, but plain nuts are also acceptable.
 
@@ -329,9 +329,29 @@ Power case stack consists of four components:
 
 ##### Power case and lid
 
-| Size | Length (mm) | Amount | Nuts/Standoffs | Variable                   |
-| ---- | ----------- | ------ | -------------- | -------------------------- |
-| M2.5 | 6           | 4      | 0              | `power_case_rail_bolt_dia` |
+**Bolts:**
+
+| Size | Length (mm) | Amount | Nuts | Variable                   |
+| ---- | ----------- | ------ | ---- | -------------------------- |
+| M2.5 | 6           | 4      | 4    | `power_case_rail_bolt_dia` |
+
+**Step-down voltage regulator slot on the lid:**
+
+By default, the slot fits the Pololu D24VXF5 step-down voltage regulator.
+
+| Size | Length (mm) | Amount | Standoffs | Variable                          |
+| ---- | ----------- | ------ | --------- | --------------------------------- |
+| M2   | 4 or higher | 4      | 4         | `step_down_voltage_bolt_hole_dia` |
+
+**Voltmeters:**
+
+By default, there are five slots for voltmeters, with two holes for each. To change the number of bolts to four, edit `power_lid_left_slots` in `scad/power_lid_parameters.scad`. Find the entry with the `"placeholder"` property set to `"voltmeter"`. Change `slot_size` to the desired spacing.
+
+The default `slot_size` is `[0, 27.70]` (the X and Y spacing for the four corner mounting bolt positions). If you change it, for example, to `[10, 27.70]`, four holes will be created.
+
+| Size | Length (mm) | Amount | Standoffs    | Variable             |
+| ---- | ----------- | ------ | ------------ | -------------------- |
+| M3   | 4 or higher | 2      | 2 (per slot) | `voltmeter_bolt_dia` |
 
 #### Battery holder
 

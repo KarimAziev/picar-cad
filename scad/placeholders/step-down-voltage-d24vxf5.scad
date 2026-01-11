@@ -1,5 +1,5 @@
 /**
- * Module: Placeholder for Step Down Voltage Regulator (Polulu D24VXF5)
+ * Module: Placeholder for Step Down Voltage Regulator (Pololu D24VXF5)
  *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
