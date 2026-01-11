@@ -50,6 +50,9 @@ This repository contains the 3D model source files for a four-wheeled robot chas
 >       - [IR Case for the Infrared LED Light Board](#ir-case-for-the-infrared-led-light-board)
 >       - [Ultrasonic case for HC-SR04](#ultrasonic-case-for-hc-sr04)
 >       - [Wheel hubs](#wheel-hubs)
+>     - [Switch buttons and fuses](#switch-buttons-and-fuses-1)
+>   - [Full BOM (default preset)](#full-bom-default-preset)
+>   - [Full BOM (with UPS module S3)](#full-bom-with-ups-module-s3)
 
 <!-- markdown-toc end -->
 
@@ -355,11 +358,9 @@ The default `slot_size` is `[0, 27.70]` (the X and Y spacing for the four corner
 
 #### Battery holder
 
-You can attach one or two battery holders to the bottom of the chassis.
-
-| Size | Length (mm) | Amount | Nuts | Variable                  |
-| ---- | ----------- | ------ | ---- | ------------------------- |
-| M2.5 | 8 or higher | 2      | 1    | `battery_holder_bolt_dia` |
+| Size | Length (mm) | Amount      | Nuts | Variable                  |
+| ---- | ----------- | ----------- | ---- | ------------------------- |
+| M3   | 8 or higher | 2 (per one) | 2    | `battery_holder_bolt_dia` |
 
 #### UPS module S3
 
@@ -416,7 +417,7 @@ Variable `ir_case_bolt_dia` defines the diameter of the bolt holes that attach t
 
 | Size | Length (mm)  | Amount | Nuts | Variable                         |
 | ---- | ------------ | ------ | ---- | -------------------------------- |
-| M2.5 | 6 or higher  | 2 or 3 | 2    | `front_panel_connector_bolt_dia` |
+| M2.5 | 6 or higher  | 2      | 2    | `front_panel_connector_bolt_dia` |
 | M2.5 | 10 or higher | 2      | 2    | `front_panel_bolt_dia`           |
 
 `front_panel_connector_bolt_dia` defines the diameter of the bolt hole on the bracket that connects to the chassis, and `front_panel_bolt_dia` defines the diameter of the bolt hole on the front panel that secures the ultrasonic sensor, which is placed between the front panel and the bracket.
@@ -428,3 +429,87 @@ Each wheel hub requires 6 M2.5 (or M3 for a very tight fit) bolts and nuts.
 | Size                     | Length (mm)  | Amount               | Nuts | Variable             |
 | ------------------------ | ------------ | -------------------- | ---- | -------------------- |
 | M2.5 or M3 for tight fit | 12 or higher | 12 (6 per wheel hub) | 12   | `wheel_hub_bolt_dia` |
+
+### Switch buttons and fuses
+
+**Bolts**
+
+| Size | Length (mm) | Amount | Nuts | Variable               |
+| ---- | ----------- | ------ | ---- | ---------------------- |
+| M3   | 6 or higher | 4      | 4    | `panel_stack_bolt_dia` |
+
+**Standoffs**
+
+Since the two panels are connected with standoffs, the required standoff height depends on the height of the fuse holders and switch buttons. Usually, you should use 6-8 standoffs (12-15 mm) for the button panel and four 12 mm standoffs for the fuse panel.
+
+## Full BOM (default preset)
+
+Assumes two battery holders are installed alongside the default LiPo power case stack. Currently using Waveshare 16-channel Servo Driver HAT and Waveshare RPi Motor Driver Board, but planning/recommending Pololu Dual MC33926 Motor Driver for Raspberry Pi and a Pololu servo driver HAT (model TBD).
+
+**Core components**
+
+- Printed parts from `scad/printable.scad` (PETG/PLA) and TPU tires
+- 1x Raspberry Pi 5
+- 3x EMAX ES08MA II servos (steering + pan + tilt)
+- 2x N20 rear motors (default `motor_type`)
+- 2x Raspberry Pi Camera Module 3
+- 1x HC-SR04 ultrasonic sensor
+- 1x IR Waveshare Infrared LED Light Board Module
+- 1x Servo driver HAT, 1x motor driver HAT (see note above)
+- 4x 685 bearings, 2x 693 bearings, 2x 608 bearings
+- Turnigy Rapid-style 4S2P LiPo + XT90E connector, Pololu D24VXF5 regulator, 5x voltmeters, 4x fuse holders (between LiPo and toggle switch, toggle switch and RPi, one each for motor/servo HATs), 3x toggle switches
+- 2x 18650 battery holders (see `battery_holder*` parameters)
+
+**Hardware summary (see bolt lengths in the section above)**
+
+| Subassembly                                                 | Bolts                                                                    | Nuts | Standoffs/Notes                                                   |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------ | ---- | ----------------------------------------------------------------- |
+| Steering panel                                              | M2.5×8 (4), M2×8 (2), M3×20 (2), M2/M2.5×10 (4)                          | 10   | —                                                                 |
+| Steering pinion                                             | M2×4 (1), M1.5 self-tapping (2)                                          | 0    | Uses servo arm hardware                                           |
+| Steering knuckles                                           | M2.5×10 (4), M2/M2.5×10 (4)                                              | 0    | —                                                                 |
+| Raspberry Pi                                                | M2×6+ (4)                                                                | 0    | 4× standoffs                                                      |
+| Power case stack (LiPo, socket, lid, regulator, voltmeters) | M3×31+ (4), M3×12+ (2), M2.5×6 (4), M2×4+ (4), M3×4+ for voltmeters (10) | 6    | 4× long M3 standoffs, 4× for regulator, 10× for voltmeters        |
+| Battery holders on chassis (2×)                             | M3×8+ (4)                                                                | 4    | —                                                                 |
+| Switch buttons & fuse panels                                | M3×6+ (4)                                                                | 4    | 6–8 standoffs (12–15 mm) for button panel, 4×12 mm for fuse panel |
+| Motor brackets (N20 pair)                                   | M2.5×8+ (4)                                                              | 4    | —                                                                 |
+| Head (2 cameras)                                            | M2×5+ (8)                                                                | 8    | —                                                                 |
+| Head neck                                                   | M2×6+ (4)                                                                | 4    | —                                                                 |
+| IR case                                                     | M2×7+ (2), M2×10+ (2)                                                    | 4    | —                                                                 |
+| Ultrasonic bracket                                          | M2.5×6+ (2), M2.5×10+ (2)                                                | 4    | —                                                                 |
+| Wheel hubs (pair)                                           | M2.5×12+ (12)                                                            | 12   | Use M3 for tighter fit                                            |
+
+## Full BOM (with UPS module S3)
+
+Assumes two battery holders are installed; this variant omits the LiPo power case stack in favor of the UPS module S3. Currently using Waveshare 16-channel Servo Driver HAT and Waveshare RPi Motor Driver Board, but planning/recommending Pololu Dual MC33926 Motor Driver for Raspberry Pi and a Pololu servo driver HAT (model TBD).
+
+**Core components**
+
+- Printed parts from `scad/printable.scad` (PETG/PLA) and TPU tires
+- 1x Raspberry Pi 5
+- 3x EMAX ES08MA II servos (steering + pan + tilt)
+- 2x N20 rear motors (default `motor_type`)
+- 2x Raspberry Pi Camera Module 3
+- 1x HC-SR04 ultrasonic sensor
+- 1x IR Waveshare Infrared LED Light Board Module
+- 1x Servo driver HAT, 1x motor driver HAT (see note above)
+- 4x 685 bearings, 2x 693 bearings, 2x 608 bearings
+- Waveshare UPS module S3 (+ 4 or 8 M3 standoffs), 3x toggle switches, 2x fuse holders (one each for motor/servo HATs), 5x voltmeters
+- 2x 18650 battery holders (see `battery_holder*` parameters)
+
+**Hardware summary (see bolt lengths in the section above)**
+
+| Subassembly                     | Bolts                                           | Nuts | Standoffs/Notes                                                   |
+| ------------------------------- | ----------------------------------------------- | ---- | ----------------------------------------------------------------- |
+| Steering panel                  | M2.5×8 (4), M2×8 (2), M3×20 (2), M2/M2.5×10 (4) | 10   | —                                                                 |
+| Steering pinion                 | M2×4 (1), M1.5 self-tapping (2)                 | 0    | Uses servo arm hardware                                           |
+| Steering knuckles               | M2.5×10 (4), M2/M2.5×10 (4)                     | 0    | —                                                                 |
+| Raspberry Pi                    | M2×6+ (4)                                       | 0    | 4× standoffs                                                      |
+| UPS module S3 mount             | M3×8+ (4)                                       | 4    | Use 4 or 8 M3 standoffs; nuts not needed with 8 standoffs         |
+| Battery holders on chassis (2×) | M3×8+ (4)                                       | 4    | —                                                                 |
+| Switch buttons & fuse panels    | M3×6+ (4)                                       | 4    | 6–8 standoffs (12–15 mm) for button panel, 4×12 mm for fuse panel |
+| Motor brackets (N20 pair)       | M2.5×8+ (4)                                     | 4    | —                                                                 |
+| Head (2 cameras)                | M2×5+ (8)                                       | 8    | —                                                                 |
+| Head neck                       | M2×6+ (4)                                       | 4    | —                                                                 |
+| IR case                         | M2×7+ (2), M2×10+ (2)                           | 4    | —                                                                 |
+| Ultrasonic bracket              | M2.5×6+ (2), M2.5×10+ (2)                       | 4    | —                                                                 |
+| Wheel hubs (pair)               | M2.5×12+ (12)                                   | 12   | Use M3 for tighter fit                                            |
