@@ -72,7 +72,7 @@ show_tilt_servo_nuts    = true;
 show_pan_servo_bolts    = true;
 show_pan_servo_nuts     = true;
 
-show_bolt_length        = true;
+echo_bolts_length       = true;
 
 function head_neck_full_w(base_width=max(head_neck_pan_servo_slot_width,
                                          head_neck_tilt_servo_slot_width),
@@ -118,10 +118,12 @@ module servo_mount_bolts(d=head_neck_pan_servo_bolt_dia,
     translate([0,
                0,
                init_z]) {
-      if (show_bolt_length) {
-        echo(str("Length of the bolt ",
+      if (echo_bolts_length) {
+        echo(str("The bolt ",
                  is_undef(bolt_name) ? "" : bolt_name,
-                 " is " ,
+                 ": M" ,
+                 snap_bolt_d(d),
+                 "x",
                  bolt_h,
                  "mm"));
       }
@@ -373,6 +375,28 @@ module head_neck(center_pan_servo_slot=false,
       }
     }
   }
+}
+
+module head_neck_printable() {
+  head_neck(center_pan_servo_slot=false,
+            show_tilt_servo=false,
+            show_head=false,
+            show_pan_servo=false,
+            show_camera=false,
+            show_camera_bolts=false,
+            show_camera_nuts=false,
+            show_ir_case=false,
+            show_ir_case_bolts=false,
+            show_ir_case_nuts=false,
+            show_ir_led=false,
+            show_ir_case_rail=false,
+            show_ir_case_rail_bolts=false,
+            show_ir_case_rail_nuts=false,
+            show_servo_horn=false,
+            show_tilt_servo_bolts=false,
+            show_tilt_servo_nuts=false,
+            show_pan_servo_bolts=false,
+            show_pan_servo_nuts=false);
 }
 
 head_neck(center_pan_servo_slot=true);

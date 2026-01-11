@@ -27,8 +27,15 @@ use <power_socket_case.scad>
 
 show_socket_case                  = true;
 
-// Insert the socket jack for the XT90E-M male connector and fasten it with bolts.
+// Insert the socket jack for the XT90E-M male connector
 show_socket                       = false;
+// Fasten the XT90E-M male connector with bolts
+show_socket_bolts                 = false;
+
+show_socket_nuts                  = false;
+
+echo_socket_bolts_info            = false;
+
 // Connect the XT90E-M male connector to the fuse holders.
 show_socket_case_atm_fuse_holders = false;
 
@@ -37,8 +44,9 @@ show_socket_case_lid              = false;
 
 // Now mount the power case onto the socket-case lid.
 show_power_case                   = false;
+
 // Insert the bolts.
-show_bottom_bolts                 = false;
+show_bottom_bolts                 = true;
 // Show the required bolt length and diameter.
 show_bottom_bolts_info            = true;
 // Tighten the bolts.
@@ -88,6 +96,9 @@ module power_case_assembly(slot_mode=slot_mode,
                            show_socket_case_lid=show_socket_case_lid,
                            show_socket=show_socket,
                            show_socket_case=show_socket_case,
+                           show_socket_bolts=show_socket_bolts,
+                           show_socket_nuts=show_socket_nuts,
+                           echo_socket_bolts_info=echo_socket_bolts_info,
                            show_lid_xt90e=show_lid_xt90e,
                            show_lid = show_lid,
                            show_lid_dc_regulator=show_lid_dc_regulator,
@@ -179,12 +190,12 @@ module power_case_assembly(slot_mode=slot_mode,
                        0]) {
               bolt_info_text(d=d,
                              h=bolt_h,
-                             ["halign", is_top ? "left" : "right",
-                              "color", red_1,
-                              "size", 2.5,
-                              "font", "Liberation Sans:style=Bold",
-                              "valign", "bottom",
-                              "rotation", [0, 0, 90]]);
+                             plist=["halign", is_top ? "left" : "right",
+                                    "color", red_1,
+                                    "size", 2.5,
+                                    "font", "Liberation Sans:style=Bold",
+                                    "valign", "bottom",
+                                    "rotation", [0, 0, 90]]);
             }
           }
         }
@@ -262,6 +273,9 @@ module power_case_assembly(slot_mode=slot_mode,
                       lid_thickness=socket_lid_thickness,
                       size=socket_size,
                       show_socket=show_socket,
+                      show_socket_bolts=show_socket_bolts,
+                      show_socket_nuts=show_socket_nuts,
+                      echo_socket_bolts_info=echo_socket_bolts_info,
                       show_atm_fuse_holders=show_socket_case_atm_fuse_holders,
                       standoff_thread_h=standoff_thread_h) {
       _stack();

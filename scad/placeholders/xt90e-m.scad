@@ -52,6 +52,7 @@ module xt90e_mounting_panel(size=xt90e_mounting_panel_size,
                             bolt_spacing=xt90e_mount_spacing,
                             center=true,
                             show_bolt=false,
+                            echo_bolts_info=false,
                             bolt_head_type="pan",
                             round_side="top",
                             bolt_visible_h=4,
@@ -86,7 +87,11 @@ module xt90e_mounting_panel(size=xt90e_mounting_panel_size,
                                bore_h=bolt_bore_h);
       }
       if (show_bolt) {
-        let (h = thickness + bolt_visible_h + bolt_through_h) {
+        let (h = ceil(thickness + bolt_visible_h + bolt_through_h),
+             d = snap_bolt_d(bolt_dia)) {
+          if (echo_bolts_info) {
+            echo(str("The XT90E-M bolt: M", d, "x", h, "mm"));
+          }
           translate([0, 0, h]) {
             four_corner_children(size=[0, bolt_spacing], center=true) {
               rotate([180, 0, 0]) {
@@ -131,6 +136,7 @@ module xt90e(shell_size=xt90e_size,
              gnd_wiring,
              vcc_wiring,
              vcc_wiring_color=red_1,
+             echo_bolts_info=false,
              standup=false,
              show_bolt=true,
              show_nut=true,
@@ -165,6 +171,7 @@ module xt90e(shell_size=xt90e_size,
                              bolt_through_h=bolt_through_h,
                              show_bolt=show_bolt,
                              show_nut=show_nut,
+                             echo_bolts_info=echo_bolts_info,
                              center=true);
       };
 
@@ -233,8 +240,9 @@ module xt_90_slot(spec, thickness=power_lid_thickness, center=false) {
 module xt90e_m_from_plist(plist,
                           standup=false,
                           show_bolt=true,
-                          bolt_visible_h = 4,
-                          bolt_through_h = power_lid_thickness,
+                          bolt_visible_h=4,
+                          bolt_through_h=power_lid_thickness,
+                          echo_bolts_info=false,
                           show_nut=true,
                           center=true) {
   plist = with_default(plist,[]);
@@ -295,6 +303,7 @@ module xt90e_m_from_plist(plist,
         gnd_wiring=gnd_wiring,
         vcc_wiring=vcc_wiring,
         vcc_wiring_color=vcc_wiring_color,
+        echo_bolts_info=echo_bolts_info,
         standup=standup,
         show_bolt=show_bolt,
         show_nut=show_nut,

@@ -78,7 +78,7 @@ module ir_case_slider_holes_2d() {
 module ir_case_rail(color,
                     show_ir_case_rail_bolts=false,
                     show_ir_case_rail_nuts=false,
-                    show_bolt_height=false) {
+                    echo_bolts_info=false) {
   full_thickness = ir_case_full_thickness()
     + ir_case_carriage_h
     + ir_case_rail_h
@@ -126,8 +126,10 @@ module ir_case_rail(color,
                                     lock=true),
            nut_h = plist_get("height", nut_spec, 2),
            bolt_h = ceil(nut_h + full_thickness)) {
-        if (show_bolt_height) {
-          echo(str("IR case rail bolt length: ", bolt_h, "mm"));
+        if (echo_bolts_info) {
+          echo(str("IR case rail bolt: M", snap_bolt_d(ir_case_rail_bolt_dia),
+                   "x",
+                   bolt_h, "mm"));
         }
 
         translate([ir_case_carriage_len / 2,
@@ -270,7 +272,7 @@ module ir_case_bracket(show_bolts=false,
                        show_nuts=false,
                        color,
                        mount_thickness=2,
-                       show_bolt_height=false) {
+                       echo_bolts_info=false) {
   thickness = ir_case_full_thickness();
   l_bracket(size=[ir_case_l_bracket_w,
                   ir_case_l_bracket_h,
@@ -290,8 +292,10 @@ module ir_case_bracket(show_bolts=false,
            nut_h = plist_get("height", nut_spec, 2),
            bolt_h = ceil(nut_h + mount_thickness + thickness)) {
         union() {
-          if (show_bolt_height) {
-            echo("IR case bracket bolt length: ", bolt_h);
+          if (echo_bolts_info) {
+            echo(str("IR case bracket bolt: M", snap_bolt_d(ir_case_bolt_dia),
+                     "x",
+                     bolt_h, "mm"));
           }
           for (x=ir_case_bolt_pan_holes_x_offsets) {
             translate([0, x, thickness / 2 - bolt_h]) {
@@ -310,7 +314,7 @@ module ir_case_bracket(show_bolts=false,
 module ir_case(show_bolts=false,
                show_nuts=false,
                mount_thickness=2,
-               show_bolt_height=false,
+               echo_bolts_info=false,
                color) {
   full_thickness = ir_case_full_thickness();
 
@@ -352,7 +356,7 @@ module ir_case(show_bolts=false,
                               show_nuts=show_nuts,
                               color=color,
                               mount_thickness=mount_thickness,
-                              show_bolt_height=show_bolt_height);
+                              echo_bolts_info=echo_bolts_info);
             }
           }
         }
@@ -368,7 +372,7 @@ module ir_case_assembly(show_rail=true,
                         show_ir_case_nuts=true,
                         show_ir_case_rail_bolts=true,
                         show_ir_case_rail_nuts=true,
-                        show_bolt_height=true,
+                        echo_bolts_info=true,
                         mount_thickness=2,
                         case_color="white",
                         rail_color="white") {
@@ -377,12 +381,12 @@ module ir_case_assembly(show_rail=true,
             show_nuts=show_ir_case_nuts,
             mount_thickness=mount_thickness,
             color=case_color,
-            show_bolt_height=show_bolt_height);
+            echo_bolts_info=echo_bolts_info);
     if (show_rail) {
       ir_case_rail(color=rail_color,
                    show_ir_case_rail_bolts=show_ir_case_rail_bolts,
                    show_ir_case_rail_nuts=show_ir_case_rail_nuts,
-                   show_bolt_height=show_bolt_height);
+                   echo_bolts_info=echo_bolts_info);
     }
     if (show_ir_led) {
       translate([ir_led_board_w +

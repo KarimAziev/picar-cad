@@ -21,6 +21,13 @@ power_case_color                  = panel_color;
 /* [Power Case] */
 show_socket_case                  = true;
 // Insert the socket jack for the XT90E-M male connector and fasten it with bolts.
+
+show_socket_bolts                 = true;
+
+show_socket_nuts                  = true;
+
+echo_socket_bolts_info            = true;
+
 show_socket                       = true;
 // Seat the XT90E-M male connector into the fuse holders.
 // Connect the XT90E-M male connector to the fuse holders.
@@ -269,6 +276,9 @@ chassis(panel_color=panel_color,
         show_socket_case=show_socket_case,
         show_xt90e=show_power_lid_case_xt90e,
         show_socket=show_socket,
+        show_socket_bolts=show_socket_bolts,
+        show_socket_nuts=show_socket_nuts,
+        echo_socket_bolts_info=echo_socket_bolts_info,
         show_socket_case_lid=show_socket_case_lid,
         show_socket_case_fuses=show_socket_case_fuses,
         show_chassis_body=show_chassis_body,

@@ -27,6 +27,7 @@ use <head/head_neck.scad>
 use <head/ir_case.scad>
 use <motor_brackets/n20_motor_bracket.scad>
 use <motor_brackets/standard_motor_bracket.scad>
+use <power/printable.scad>
 use <steering_system/knuckle.scad>
 use <steering_system/knuckle_shaft.scad>
 use <steering_system/rack.scad>
@@ -42,25 +43,26 @@ use <wheels/rear_wheel.scad>
 use <wheels/tire.scad>
 use <wheels/wheel_hub.scad>
 
-show_chasssis       = true;
-show_front_panel    = true;
-show_head_neck      = true;
-show_head           = true;
-show_steering_panel = true;
-show_rack           = true;
-show_pinion         = true;
-show_motor_brackets = true;
-show_rear_panel     = true;
-show_front_wheels   = true;
-show_rear_wheels    = true;
-show_wheel_hubs     = true;
-show_tires          = true;
-show_ir_case        = true;
-show_ir_case_rail   = true;
-show_kingpin_posts  = true;
-show_rack_link      = true;
-show_tie_rod        = true;
-show_tie_rod_shafts = true;
+show_chasssis         = true;
+show_power_case_stack = true;
+show_front_panel      = true;
+show_head_neck        = true;
+show_head             = true;
+show_steering_panel   = true;
+show_rack             = true;
+show_pinion           = true;
+show_motor_brackets   = true;
+show_rear_panel       = true;
+show_front_wheels     = true;
+show_rear_wheels      = true;
+show_wheel_hubs       = true;
+show_tires            = true;
+show_ir_case          = true;
+show_ir_case_rail     = true;
+show_kingpin_posts    = true;
+show_rack_link        = true;
+show_tie_rod          = true;
+show_tie_rod_shafts   = true;
 
 module printable(spacing=5) {
   half_of_chassis_len = chassis_len / 2;
@@ -69,19 +71,35 @@ module printable(spacing=5) {
   rack_max_w = max(steering_rack_link_bearing_outer_d,
                    steering_rack_width) / 2;
 
+  initial_x = half_of_chassis_width
+    + head_plate_width / 2
+    + head_plate_thickness / 2
+    + spacing;
+
   if (show_chasssis) {
     translate([0, 0, chassis_thickness / 2]) {
       chassis_printable();
     }
   }
-  translate([half_of_chassis_width
-             + head_plate_width / 2
-             + head_plate_thickness / 2
-             + spacing,
+
+  if (show_power_case_stack) {
+
+    translate([-max(power_case_width, power_socket_case_size[0]) * 2,
+               chassis_body_len
+               + max(power_case_length, power_socket_case_size[1])
+               + ir_case_height
+               + ir_case_rail_h,
+               0]) {
+      power_case_printable_stack();
+    }
+  }
+
+  translate([initial_x,
              0,
              0]) {
+
     if (show_head) {
-      head_mount();
+      head_mount_printable();
     }
     if (show_tie_rod_shafts) {
       translate([0,
@@ -115,7 +133,7 @@ module printable(spacing=5) {
                0]) {
       if (show_head_neck) {
         color("white", alpha=1) {
-          head_neck();
+          head_neck_printable();
         }
       }
 
@@ -146,12 +164,15 @@ module printable(spacing=5) {
   }
 
   translate([-ir_case_width / 2,
-             half_of_chassis_len
-             + ir_case_height,
+             chassis_upper_len
+             + ir_case_height
+             + ir_case_rail_h,
              0]) {
-    ir_case_printable(show_case=show_ir_case,
-                      spacing=-2,
-                      show_rail=show_ir_case_rail);
+    rotate([0, 0, 90]) {
+      ir_case_printable(show_case=show_ir_case,
+                        spacing=-2,
+                        show_rail=show_ir_case_rail);
+    }
   }
 
   translate([-half_of_chassis_width
@@ -173,7 +194,7 @@ module printable(spacing=5) {
       rotate([0, 0, 90]) {
         if (show_steering_panel) {
           color("white", alpha=1) {
-            steering_panel();
+            steering_panel_printable();
           }
         }
         translate([0, -spacing, 0]) {
@@ -237,9 +258,9 @@ module printable(spacing=5) {
   }
 
   translate([0,
-             -half_of_chassis_len - max(rear_panel_size[1]
-                                        + rear_panel_mount_thickness
-                                        * 2, wheel_dia) / 2 - 10,
+             -chassis_body_len - max(rear_panel_size[1]
+                                     + rear_panel_mount_thickness
+                                     * 2, wheel_dia) / 2 - 10,
              0]) {
     front_wheels_x = -rear_panel_size[0] / 2 - rear_panel_mount_thickness
       - wheel_dia / 2 - spacing;

@@ -71,15 +71,15 @@ use <steering_rail.scad>
 use <steering_servo_mount.scad>
 
 show_rack               = false;
-show_servo_mount_panel  = true;
-show_servo              = true;
+show_servo_mount_panel  = false;
+show_servo              = false;
 show_pinion             = false;
 show_brackets           = false;
 show_kingpin_posts      = false;
 
 show_bolts_info         = false;
 show_kingpin_bolt       = false;
-show_hinges_bolts       = true;
+show_hinges_bolts       = false;
 show_panel_bolt         = false;
 
 fasten_kingpin_bolt     = false;
@@ -476,6 +476,22 @@ module steering_panel(panel_color,
       }
     }
   }
+}
+
+module steering_panel_printable() {
+  steering_panel(show_rack=false,
+                 show_servo_mount_panel=false,
+                 show_servo=false,
+                 show_pinion=false,
+                 show_brackets=false,
+                 show_kingpin_posts=false,
+                 show_bolts_info=false,
+                 show_kingpin_bolt=false,
+                 show_hinges_bolts=false,
+                 show_panel_bolt=false,
+                 fasten_kingpin_bolt=false,
+                 fasten_hinges_bolts=false,
+                 fasten_panel_bolt=false);
 }
 
 steering_panel(panel_color="white",

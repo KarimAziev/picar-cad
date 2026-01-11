@@ -87,6 +87,9 @@ show_lid_atm_fuse_holders         = true;
 show_lid_perf_board               = true;
 show_socket_case                  = true;
 show_socket                       = true;
+show_socket_bolts                 = true;
+show_socket_nuts                  = true;
+echo_socket_bolts_info            = true;
 show_socket_case_lid              = true;
 show_socket_case_fuses            = true;
 show_xt90e                        = true;
@@ -200,6 +203,9 @@ module chassis(tilt_servo_rotation=tilt_servo_rotation,
                fasten_kingpin_bolt=fasten_kingpin_bolt,
                fasten_hinges_bolts=fasten_hinges_bolts,
                fasten_panel_bolt=fasten_panel_bolt,
+               show_socket_bolts=show_socket_bolts,
+               show_socket_nuts=show_socket_nuts,
+               echo_socket_bolts_info=echo_socket_bolts_info,
                show_upper_chassis=true,
                show_chassis_body=true) {
 
@@ -292,6 +298,9 @@ module chassis(tilt_servo_rotation=tilt_servo_rotation,
                  show_power_case_bottom_bolts_info=show_power_case_bottom_bolts_info,
                  power_case_bottom_bolts_down=power_case_bottom_bolts_down,
                  show_power_case_show_standoffs=show_power_case_show_standoffs,
+                 show_socket_bolts=show_socket_bolts,
+                 show_socket_nuts=show_socket_nuts,
+                 echo_socket_bolts_info=echo_socket_bolts_info,
                  show_chassis_body=show_chassis_body);
   }
   if (show_ackermann_triangle) {

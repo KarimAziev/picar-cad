@@ -307,17 +307,12 @@ module standoff_grid(sizes=[[3, 5.20, 5, [20, 15, 10, 9, 8, 6, 5], 6],
   }
 }
 
-// standoff_grid();
+standoff_grid();
 
-nut_pos = 0;
-standoff(show_bolt=true,
-         thread_at_top=false,
-         bolt_visible_h=2,
-         nut_pos=nut_pos,
-         body_h=12,
-         show_nut=true);
-translate([0, 0, 5 - nut_pos]) {
-
-  #cube([2, 2, nut_pos]);
-}
-// standoffs_stack(d=3, min_h=10);
+// nut_pos = 0;
+// standoff(show_bolt=true,
+//          thread_at_top=false,
+//          bolt_visible_h=2,
+//          nut_pos=nut_pos,
+//          body_h=12,
+//          show_nut=true);

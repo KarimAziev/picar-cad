@@ -334,7 +334,7 @@ power_lid_right_slots = [["type", "four_corner_holes",
                                           "l", atm_fuse_holder_cap_rib_l,
                                           "n", atm_fuse_holder_cap_rib_n,
                                           "thickness", atm_fuse_holder_cap_rib_thickness,
-                                          "distance_from_top", atm_fuse_holder_cap_rib_distance]]],];
+                                          "distance_from_top", atm_fuse_holder_cap_rib_distance]]]];
 
 power_lid_side_slots  = repeat(["type", "rect",
                                 "gap_before", 0,

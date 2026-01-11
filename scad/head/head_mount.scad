@@ -42,7 +42,7 @@ show_ir_case_rail_bolts = false;
 show_ir_case_rail_nuts  = false;
 show_servo_horn         = false;
 
-show_bolt_height        = true;
+echo_bolts_info         = true;
 
 tilt_angle              = atan2((-head_side_panel_curve_end)
                                 - (-head_side_panel_bottom),
@@ -69,7 +69,7 @@ module head_front_camera(spec,
                          i,
                          do_cut=true,
                          do_place_camera=false,
-                         show_bolt_height=show_bolt_height,
+                         echo_bolts_info=echo_bolts_info,
                          show_bolts=true,
                          show_nuts=true) {
   slot_size       = spec[0];
@@ -112,15 +112,15 @@ module head_front_camera(spec,
       }
     }
 
-    if (show_bolts) {
-      let (nut_spec = find_nut_spec(inner_d=head_camera_bolt_dia,
-                                    lock=false),
-           nut_h = plist_get("height", nut_spec, 2),
-           bolt_h = ceil(camera_thickness + head_plate_thickness + nut_h)) {
-        if (show_bolt_height) {
-          echo("Camera module bolt length: ", bolt_h);
-        }
-
+    let (nut_spec = find_nut_spec(inner_d=head_camera_bolt_dia,
+                                  lock=false),
+         nut_h = plist_get("height", nut_spec, 2),
+         bolt_h = ceil(camera_thickness + head_plate_thickness + nut_h),
+         bolt_d = snap_bolt_d(head_camera_bolt_dia)) {
+      if (echo_bolts_info) {
+        echo(str("Camera bolt: M", bolt_d, "x", bolt_h, "mm"));
+      }
+      if (show_bolts) {
         translate([hole_r,
                    hole_y_pos,
                    head_plate_thickness + camera_thickness - bolt_h]) {
@@ -425,7 +425,7 @@ module head_ir_case(ir_case_color=jet_black,
                     show_ir_case_nuts=show_ir_case_nuts,
                     show_ir_case_rail_bolts=show_ir_case_rail_bolts,
                     show_ir_case_rail_nuts=show_ir_case_rail_nuts,
-                    show_bolt_height=show_bolt_height) {
+                    echo_bolts_info=echo_bolts_info) {
   spec = ir_case_head_bolts_side_panel_positions[0];
   bolt_rad = ir_case_bolt_dia / 2;
   ir_case_x = head_plate_width / 2
@@ -448,7 +448,7 @@ module head_ir_case(ir_case_color=jet_black,
                      show_ir_case_rail_bolts=show_ir_case_rail_bolts,
                      show_ir_case_rail_nuts=show_ir_case_rail_nuts,
                      mount_thickness=head_plate_thickness,
-                     show_bolt_height=show_bolt_height);
+                     echo_bolts_info=echo_bolts_info);
   }
 }
 module head_mount(head_color="white",
@@ -517,6 +517,20 @@ module head_mount(head_color="white",
       }
     }
   }
+}
+
+module head_mount_printable() {
+  head_mount(show_camera=false,
+             show_camera_bolts=false,
+             show_camera_nuts=false,
+             show_ir_case=false,
+             show_ir_case_bolts=false,
+             show_ir_case_nuts=false,
+             show_ir_led=false,
+             show_ir_case_rail=false,
+             show_ir_case_rail_bolts=false,
+             show_ir_case_rail_nuts=false,
+             show_servo_horn=false);
 }
 
 head_mount();

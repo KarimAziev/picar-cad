@@ -41,6 +41,7 @@ module power_socket_case_lid(size=power_socket_case_size,
                              hook_l=power_socket_case_hook_l,
                              rail_top_thickness=power_socket_case_rail_top_thickness,
                              hook_distance=power_socket_case_hook_distance,
+                             center=true,
                              debug=false) {
 
   module lid_box() {
@@ -65,26 +66,28 @@ module power_socket_case_lid(size=power_socket_case_size,
                   hook_distance=hook_distance);
     }
   }
-  difference() {
-    lid_box();
-    translate([power_case_bolt_spacing_offset_x,
-               power_case_bolt_spacing_offset_y,
-               0]) {
+  maybe_translate([center ? 0 : size[0] / 2, center ? 0 : size[1] / 2, 0]) {
+    difference() {
+      lid_box();
+      translate([power_case_bolt_spacing_offset_x,
+                 power_case_bolt_spacing_offset_y,
+                 0]) {
 
-      four_corner_children(power_case_bottom_bolt_spacing,
+        four_corner_children(power_case_bottom_bolt_spacing,
+                             center=true) {
+          counterbore(d=power_case_bottom_bolt_dia,
+                      h=lid_thickness,
+                      sink=false,
+                      reverse=false);
+        }
+      }
+      four_corner_children(power_socket_bolt_lid_mounting_spacing,
                            center=true) {
         counterbore(d=power_case_bottom_bolt_dia,
                     h=lid_thickness,
                     sink=false,
                     reverse=false);
       }
-    }
-    four_corner_children(power_socket_bolt_lid_mounting_spacing,
-                         center=true) {
-      counterbore(d=power_case_bottom_bolt_dia,
-                  h=lid_thickness,
-                  sink=false,
-                  reverse=false);
     }
   }
 }

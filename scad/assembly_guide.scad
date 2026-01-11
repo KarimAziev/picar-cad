@@ -15,6 +15,12 @@ use <components/chassis/chassis.scad>
 show_socket_case                  = true;
 // Insert the socket jack for the XT90E-M male connector and fasten it with bolts.
 show_socket                       = false;
+
+show_socket_bolts                 = false;
+
+show_socket_nuts                  = false;
+
+echo_socket_bolts_info            = false;
 // Seat the XT90E-M male connector into the fuse holders.
 // Connect the XT90E-M male connector to the fuse holders.
 show_socket_case_fuses            = false;

@@ -63,9 +63,12 @@ show_lipo_pack                    = false;
 show_batteries                    = false;
 
 show_socket_case                  = false;
+show_socket                       = false;
+show_socket_bolts                 = false;
+show_socket_nuts                  = false;
+echo_socket_bolts_info            = false;
 show_socket_case_atm_fuse_holders = false;
 show_socket_case_lid              = false;
-show_socket                       = false;
 
 /* [Raspberry PI] */
 show_rpi                          = false;
@@ -320,14 +323,16 @@ module chassis_body_3d(panel_color="white") {
       let (bolt_spacing = panel_stack_bolt_spacing(),
            size_i = chassis_panel_stack_orientation == "vertical" ? 0 : 1) {
 
-        translate([max(panel_stack_bolt_cbore_dia,
-                       panel_stack_bolt_dia)
-                   + bolt_spacing[size_i] / 2,
-                   0,
-                   -0.05]) {
-          chassis_body_border_slots(groups=chassis_panel_stack_slot_specs,
-                                    center_group=false,
-                                    center=false);
+        color(panel_color, alpha=1) {
+          translate([max(panel_stack_bolt_cbore_dia,
+                         panel_stack_bolt_dia)
+                     + bolt_spacing[size_i] / 2,
+                     0,
+                     -0.05]) {
+            chassis_body_border_slots(groups=chassis_panel_stack_slot_specs,
+                                      center_group=false,
+                                      center=false);
+          }
         }
       }
     }
@@ -340,8 +345,10 @@ module chassis_body_3d(panel_color="white") {
                                  d=battery_ups_bolt_dia);
       }
     }
-    translate([0, -chassis_upper_len, -0.05]) {
-      chassis_body_border_slots(groups=chassis_rect_holes_specs);
+    color(panel_color, alpha=1) {
+      translate([0, -chassis_upper_len, -0.05]) {
+        chassis_body_border_slots(groups=chassis_rect_holes_specs);
+      }
     }
   }
 }
@@ -366,6 +373,9 @@ module chassis_body(panel_color="white",
                     show_lipo_pack=show_lipo_pack,
                     show_socket_case=show_socket_case,
                     show_socket=show_socket,
+                    show_socket_bolts=show_socket_bolts,
+                    show_socket_nuts=show_socket_nuts,
+                    echo_socket_bolts_info=echo_socket_bolts_info,
                     show_socket_case_lid=show_socket_case_lid,
                     show_socket_case_atm_fuse_holders=show_socket_case_atm_fuse_holders,
                     show_rpi=show_rpi,
@@ -474,6 +484,9 @@ module chassis_body(panel_color="white",
                           show_socket_case_atm_fuse_holders=show_socket_case_atm_fuse_holders,
                           show_socket_case_lid=show_socket_case_lid,
                           show_socket=show_socket,
+                          show_socket_bolts=show_socket_bolts,
+                          show_socket_nuts=show_socket_nuts,
+                          echo_socket_bolts_info=echo_socket_bolts_info,
                           show_lid_dc_regulator=show_lid_dc_regulator,
                           show_lid_ato_fuse=show_lid_ato_fuse,
                           show_lid_voltmeter=show_lid_voltmeter,

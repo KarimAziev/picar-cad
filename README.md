@@ -35,7 +35,10 @@ This repository contains the 3D model source files for a four-wheeled robot chas
 >         - [Self-tapping bolts for servo arm](#self-tapping-bolts-for-servo-arm)
 >       - [Steering Knuckle](#steering-knuckle)
 >       - [Raspberry Pi](#raspberry-pi-1)
->       - [Power case (default LiPo setup)](#power-case-default-lipo-setup)
+>       - [Power case stack (default LiPo setup)](#power-case-stack-default-lipo-setup)
+>         - [Shared bolts](#shared-bolts)
+>         - [Socket case and lid](#socket-case-and-lid)
+>         - [Power case and lid](#power-case-and-lid)
 >       - [Battery holder](#battery-holder)
 >       - [UPS module S3](#ups-module-s3-1)
 >       - [Motor brackets](#motor-brackets)
@@ -86,8 +89,9 @@ The interactive guide lives in `scad/assembly_guide.scad`. Open it in OpenSCAD a
 The project is organized into several reusable modules under the scad/ directory:
 
 - `parameters.scad`: Central configuration file containing physical dimensions (units are in millimeters).
+- `power_lid_parameters.scad`: Configuration for the power case lid.
 - `printable.scad`: Contains all printable parts in one place, except the power case modules. You can print all parts except the tires using either PETG (recommended) or PLA. For the tires, use TPU (e.g., TPU 95A). The power case modules live in the `power/` directory.
-  ![Printable view](./demo/picar-cad-printable.png)
+  ![Single printable view](./demo/single-printable-plate.png)
 - `assembly.scad`: Fully assembled view of the robot.
   ![Overview](./demo/full_assembly.gif)
 - `assembly_guide.scad`: Interactive assembly. See [above](#assembly).
@@ -98,10 +102,11 @@ The project is organized into several reusable modules under the scad/ directory
 - `motor_brackets/`: Brackets for both standard (yellow) and N20-style motors.
 - `wheels/`: Components for rear and front wheels, including hubs and tires.
 - `placeholders/`: Placeholder geometry for components such as the Raspberry Pi, servos, DC motors, battery holders, HATs, sensors, step-down voltage converters, INA260, etc. There’s a lot of stuff in there.
+- `lib/`: Reusable modules. One important module is `lib/plist`, which provides helpers for working with property lists-a dict-like data structure used throughout the project because OpenSCAD doesn’t support dictionaries.
 
 ## External Details
 
-All these details are just recommendations, you can use any other details, just don't forget to specify corresponding dimensions in `parameters.scad`.
+All these details are just recommendations, you can use any other details, just don't forget to specify corresponding dimensions in `parameters.scad` and `power_lid_parameters.scad`.
 
 ### Bearings
 
@@ -222,7 +227,7 @@ Rear wheel shaft size depends on the motor type. Use the variable `motor_type` i
 
 ### Camera Module
 
-![Camera](./demo/cameras.png)
+![Camera](./demo/head_neck.png)
 
 The design supports one, two or more camera modules. The default dimensions are compatible with the Raspberry Pi Camera Module 3.
 
@@ -299,14 +304,34 @@ The exact bolt length depends on the standoffs you use. Since the default chassi
 | ---- | ----------- | ------ | -------------- | ------------------- |
 | M2   | 6 or higher | 4      | 4              | `rpi_bolt_hole_dia` |
 
-#### Power case (default LiPo setup)
+#### Power case stack (default LiPo setup)
 
-| Size | Length (mm)  | Amount | Nuts/Standoffs         | Variable                     |
-| ---- | ------------ | ------ | ---------------------- | ---------------------------- |
-| M3   | 12 or higher | 4      | 4 standoffs or inserts | `power_case_bottom_bolt_dia` |
-| M2.5 | 6 or higher  | 4      | 0                      | `power_case_rail_bolt_dia`   |
+Power case stack consists of four components:
 
-Use the M3 hardware for the case/socket stack into standoffs (default standoff body is 10 mm; adjust length to your stack height). M2.5 bolts clamp the lid rails; keep them short to avoid piercing the thin side walls.
+- The socket case at the bottom, which holds the XT90E-M male connector and the fuse holder. It has four mounting holes for M3 standoffs that will secure it to the chassis.
+- The socket’s sliding lid, also with four holes of the same spacing and size.
+- The power case for a LiPo pack (e.g., Turnigy Rapid). It also has four holes of the same spacing and size as the socket components. It is mounted above the socket’s sliding lid and secured with four long M3 bolts that thread into the socket’s standoffs.
+- The power case lid, with slots for a DC voltage regulator, voltmeters, a fuse holder, etc. Four M2.5 bolts clamp the lid rails, keep them short to avoid piercing the thin side walls.
+
+##### Shared bolts
+
+| Size | Length (mm)  | Amount | Standoffs | Variable                     |
+| ---- | ------------ | ------ | --------- | ---------------------------- |
+| M3   | 31 or higher | 4      | 4         | `power_case_bottom_bolt_dia` |
+
+##### Socket case and lid
+
+| Size | Length (mm)  | Amount | Nuts | Variable                                                 |
+| ---- | ------------ | ------ | ---- | -------------------------------------------------------- |
+| M3   | 12 or higher | 2      | 2    | `xt90e_mount_dia` or `power_socket_case_jack_plist` [^1] |
+
+[^1]: `xt90e_mount_dia` is a default value used in `power_socket_case_jack_plist`, which is a property list (a dict-like data structure) used throughout the project because OpenSCAD doesn’t support dictionaries. Unlike JSON, it uses a comma (`,`) instead of a colon (`:`). To change the diameter of the mounting holes for the XT90E-M connector only for the socket case, edit the `mount_dia` property in `power_socket_case_jack_plist`.
+
+##### Power case and lid
+
+| Size | Length (mm) | Amount | Nuts/Standoffs | Variable                   |
+| ---- | ----------- | ------ | -------------- | -------------------------- |
+| M2.5 | 6           | 4      | 0              | `power_case_rail_bolt_dia` |
 
 #### Battery holder
 
@@ -345,7 +370,7 @@ You should use either 4 or 8 M3 standoffs. If you use 8 standoffs, the nuts list
 
 | Size | Length (mm) | Amount                | Nuts | Variable               |
 | ---- | ----------- | --------------------- | ---- | ---------------------- |
-| M2   | 6 or higher | 8 (4 for each camera) | 8    | `head_camera_bolt_dia` |
+| M2   | 5 or higher | 8 (4 for each camera) | 8    | `head_camera_bolt_dia` |
 
 As with the steering servo, your servo pack should already include bolts, a servo arm, and self-tapping bolts to secure the servo arm. The diameter of the hole on the head where the tilt-servo gearbox mounts is defined by `head_servo_mount_dia`.
 
@@ -360,10 +385,10 @@ The corresponding hole for the pan servo on the chassis is controlled by `chassi
 
 #### IR Case for the Infrared LED Light Board
 
-| Size | Length (mm) | Amount | Nuts | Variable                |
-| ---- | ----------- | ------ | ---- | ----------------------- |
-| M2   | 8 or higher | 2      | 2    | `ir_case_bolt_dia`      |
-| M2   | 8 or higher | 2      | 2    | `ir_case_rail_bolt_dia` |
+| Size | Length (mm)  | Amount | Nuts | Variable                |
+| ---- | ------------ | ------ | ---- | ----------------------- |
+| M2   | 7 or higher  | 2      | 2    | `ir_case_bolt_dia`      |
+| M2   | 10 or higher | 2      | 2    | `ir_case_rail_bolt_dia` |
 
 Variable `ir_case_bolt_dia` defines the diameter of the bolt holes that attach the case to the head; `ir_case_rail_bolt_dia` defines the diameter of the rail holes that secure the IR LED to the case itself.
 
