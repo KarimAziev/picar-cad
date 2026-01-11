@@ -12,6 +12,8 @@ This repository contains the 3D model source files for a four-wheeled robot chas
 > - [About](#about)
 >   - [Overview](#overview)
 >   - [Requirements](#requirements)
+>     - [Configurations](#configurations)
+>     - [Validation (quick commands)](#validation-quick-commands)
 >   - [Ackermann Geometry](#ackermann-geometry)
 >   - [Assembly](#assembly)
 >   - [Structure](#structure)
@@ -22,6 +24,7 @@ This repository contains the 3D model source files for a four-wheeled robot chas
 >     - [Power Supply](#power-supply)
 >       - [A Turnigy Rapid-style hardcase LiPo](#a-turnigy-rapid-style-hardcase-lipo)
 >       - [UPS module S3](#ups-module-s3)
+>       - [Preset swap checklist](#preset-swap-checklist)
 >       - [Battery holders](#battery-holders)
 >     - [Motors](#motors)
 >     - [Camera Module](#camera-module)
@@ -70,6 +73,23 @@ The robot model is designed around the following core elements:
 
 Since `textmetrics` is used throughout the project, a nightly build of OpenSCAD is required. Also, be sure to enable `textmetrics` in the OpenSCAD editor via `Preferences -> Features -> textmetrics`. When using the CLI, pass `--enable=textmetrics` (e.g., `openscad --enable=textmetrics --backend=Manifold ...`).
 
+### Configurations
+
+Two main presets are supported: the default LiPo power case stack and the UPS S3 option. Both assume two battery holders. Jump to the BOMs for details: [Full BOM (default preset)](#full-bom-default-preset) or [Full BOM (with UPS module S3)](#full-bom-with-ups-module-s3).
+
+### Validation (quick commands)
+
+All commands require `--enable=textmetrics --backend=Manifold`.
+
+```sh
+# Full assembly preview (PNG)
+openscad -o /var/tmp/scad-preview.png --preview --imgsize=754,934 --backend=Manifold --enable=textmetrics --camera=0,0,0,0,0,0,1100 scad/assembly.scad
+
+# Utility tests
+openscad --backend=Manifold --enable=textmetrics -o /tmp/test_functions.stl tests/test_functions.scad
+openscad --backend=Manifold --enable=textmetrics -o /tmp/test_plist.stl tests/test_plist.scad
+```
+
 ## Ackermann Geometry
 
 ![Ackermann steering view](./demo/picar-cad-ackermann.jpg)
@@ -109,7 +129,7 @@ The project is organized into several reusable modules under the scad/ directory
 
 ## External Details
 
-All these details are just recommendations, you can use any other details, just don't forget to specify corresponding dimensions in `parameters.scad` and `power_lid_parameters.scad`.
+All these details are just recommendations, you can use any other details, just don't forget to specify corresponding dimensions in `parameters.scad` and `power_lid_parameters.scad`. Reference renders and photos live in `demo/` (e.g., `demo/top-view.png`, `demo/ups_module_s3.png`, `demo/head_neck.png`, `demo/ultrasonic.png`).
 
 ### Bearings
 
@@ -157,9 +177,16 @@ show_ups_hat = true;
 
 You will likely also need to adjust the layout parameters for the Raspberry Pi (`rpi_chassis_y_position` and `rpi_chassis_x_position`) and perhaps disable the power case module (see the `power_*` variables).
 
+#### Preset swap checklist
+
+- Toggle UPS on/off: set `battery_ups_holes_enabled` in `parameters.scad` and `show_ups_hat` in `assembly.scad`.
+- Enable/disable the power case stack via the `power_*` variables when switching to UPS.
+- Reposition the Raspberry Pi for UPS clearance using `rpi_chassis_y_position` and `rpi_chassis_x_position`.
+- Keep two battery holders enabled by default (adjust `chassis_body_battery_holders_specs` if you change count/placement).
+
 #### Battery holders
 
-Battery holders with different settings are supported. Variables prefixed with `battery_holder*` control the default values, so you can combine different holders and settings by editing `chassis_body_battery_holders_specs`, a property list that takes precedence over the global variables.
+Battery holders with different settings are supported; the presets assume two holders by default. Variables prefixed with `battery_holder*` control the default values, so you can combine different holders and settings by editing `chassis_body_battery_holders_specs`, a property list that takes precedence over the global variables.
 
 **By mount type**
 
@@ -462,6 +489,8 @@ Assumes two battery holders are installed alongside the default LiPo power case 
 
 **Hardware summary (see bolt lengths in the section above)**
 
+Fuse routing: LiPo -> fuse -> toggle -> fuse -> RPi; dedicated fuses feed the motor and servo HATs.
+
 | Subassembly                                                 | Bolts                                                                    | Nuts | Standoffs/Notes                                                   |
 | ----------------------------------------------------------- | ------------------------------------------------------------------------ | ---- | ----------------------------------------------------------------- |
 | Steering panel                                              | M2.5×8 (4), M2×8 (2), M3×20 (2), M2/M2.5×10 (4)                          | 10   | —                                                                 |
@@ -480,7 +509,7 @@ Assumes two battery holders are installed alongside the default LiPo power case 
 
 ## Full BOM (with UPS module S3)
 
-Assumes two battery holders are installed; this variant omits the LiPo power case stack in favor of the UPS module S3. Currently using Waveshare 16-channel Servo Driver HAT and Waveshare RPi Motor Driver Board, but planning/recommending Pololu Dual MC33926 Motor Driver for Raspberry Pi and a Pololu servo driver HAT (model TBD).
+Assumes two battery holders are installed; this variant omits the LiPo power case stack in favor of the UPS module S3. Currently using Waveshare 16-channel Servo Driver HAT and Waveshare RPi Motor Driver Board, but I am planning and recommending Pololu Dual MC33926 Motor Driver for Raspberry Pi and a Pololu servo driver HAT (model TBD).
 
 **Core components**
 
@@ -497,6 +526,8 @@ Assumes two battery holders are installed; this variant omits the LiPo power cas
 - 2x 18650 battery holders (see `battery_holder*` parameters)
 
 **Hardware summary (see bolt lengths in the section above)**
+
+Fuse routing: UPS -> fuse -> RPi; dedicated fuses feed the motor and servo HATs.
 
 | Subassembly                     | Bolts                                           | Nuts | Standoffs/Notes                                                   |
 | ------------------------------- | ----------------------------------------------- | ---- | ----------------------------------------------------------------- |
