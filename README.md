@@ -330,9 +330,9 @@ Self-tapping bolts should also be included in your pack. The diameter may differ
 
 The exact bolt length depends on the standoffs you use. Since the default chassis thickness is 4 mm, you should use bolts that are at least 6 mm long.
 
-| Size | Length (mm) | Amount | Nuts/Standoffs | Variable            |
-| ---- | ----------- | ------ | -------------- | ------------------- |
-| M2   | 6 or higher | 4      | 4              | `rpi_bolt_hole_dia` |
+| Size | Length (mm) | Amount | Nuts/Standoffs              | Variable            |
+| ---- | ----------- | ------ | --------------------------- | ------------------- |
+| M2   | 6 or higher | 4      | 4 (both nuts and standoffs) | `rpi_bolt_hole_dia` |
 
 #### Power case stack (default LiPo setup)
 
@@ -496,7 +496,7 @@ Fuse routing: LiPo -> fuse -> toggle -> fuse -> RPi; dedicated fuses feed the mo
 | Steering panel                                              | M2.5×8 (4), M2×8 (2), M3×20 (2), M2/M2.5×10 (4)                          | 10   | —                                                                 |
 | Steering pinion                                             | M2×4 (1), M1.5 self-tapping (2)                                          | 0    | Uses servo arm hardware                                           |
 | Steering knuckles                                           | M2.5×10 (4), M2/M2.5×10 (4)                                              | 0    | —                                                                 |
-| Raspberry Pi                                                | M2×6+ (4)                                                                | 0    | 4× standoffs                                                      |
+| Raspberry Pi                                                | M2×6+ (4)                                                                | 4    | 4× standoffs                                                      |
 | Power case stack (LiPo, socket, lid, regulator, voltmeters) | M3×31+ (4), M3×12+ (2), M2.5×6 (4), M2×4+ (4), M3×4+ for voltmeters (10) | 6    | 4× long M3 standoffs, 4× for regulator, 10× for voltmeters        |
 | Battery holders on chassis (2×)                             | M3×8+ (4)                                                                | 4    | —                                                                 |
 | Switch buttons & fuse panels                                | M3×6+ (4)                                                                | 4    | 6–8 standoffs (12–15 mm) for button panel, 4×12 mm for fuse panel |
@@ -534,7 +534,7 @@ Fuse routing: UPS -> fuse -> RPi; dedicated fuses feed the motor and servo HATs.
 | Steering panel                  | M2.5×8 (4), M2×8 (2), M3×20 (2), M2/M2.5×10 (4) | 10   | —                                                                 |
 | Steering pinion                 | M2×4 (1), M1.5 self-tapping (2)                 | 0    | Uses servo arm hardware                                           |
 | Steering knuckles               | M2.5×10 (4), M2/M2.5×10 (4)                     | 0    | —                                                                 |
-| Raspberry Pi                    | M2×6+ (4)                                       | 0    | 4× standoffs                                                      |
+| Raspberry Pi                    | M2×6+ (4)                                       | 4    | 4× standoffs                                                      |
 | UPS module S3 mount             | M3×8+ (4)                                       | 4    | Use 4 or 8 M3 standoffs; nuts not needed with 8 standoffs         |
 | Battery holders on chassis (2×) | M3×8+ (4)                                       | 4    | —                                                                 |
 | Switch buttons & fuse panels    | M3×6+ (4)                                       | 4    | 6–8 standoffs (12–15 mm) for button panel, 4×12 mm for fuse panel |
