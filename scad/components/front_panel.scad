@@ -16,17 +16,35 @@ include <../parameters.scad>
 
 use <../lib/functions.scad>
 use <../lib/holes.scad>
+use <../lib/plist.scad>
 use <../lib/shapes2d.scad>
 use <../lib/shapes3d.scad>
 use <../lib/slots.scad>
 use <../lib/transforms.scad>
+use <../placeholders/bolt.scad>
 use <../placeholders/smd/smd_chip.scad>
 use <../placeholders/ultrasonic.scad>
 
-rear_panel_z = ultrasonic_pin_len_b
-                - ultrasonic_thickness
-                - ultrasonic_pin_protrusion_h
-                + ultrasonic_pin_thickness;
+show_front_panel             = true;
+show_ultrasonic              = false;
+show_front_rear_panel        = false;
+show_front_rear_panel_bolts  = false;
+show_front_rear_panel_nuts   = false;
+show_front_panel_mount_bolts = false;
+show_front_panel_mount_nuts  = false;
+echo_front_panel_bolts_info  = false;
+
+rear_panel_z                 = ultrasonic_pin_len_b
+                                - ultrasonic_thickness
+                                - ultrasonic_pin_protrusion_h
+                                + ultrasonic_pin_thickness;
+
+function front_rear_panel_boss_height() = rear_panel_z
+  + front_panel_thickness / 2
+  - front_panel_ultrasonic_cutout_depth;
+
+function front_rear_panel_full_thickness() = front_rear_panel_boss_height()
+  + front_panel_rear_panel_thickness;
 
 module ultrasonic_sensor_mounts_2d(d=front_panel_ultrasonic_sensor_dia) {
   rad = d / 2;
@@ -113,42 +131,75 @@ function front_panel_bolt_y_offset(x, y) =
 
 module front_panel_connector(w=front_panel_connector_width,
                              h=front_panel_connector_len,
-                             thickness=front_panel_thickness) {
-  difference() {
-    linear_extrude(height=thickness,
-                   center=false) {
+                             thickness=front_panel_thickness,
+                             show_bolts=show_front_panel_mount_bolts,
+                             show_nuts=show_front_panel_mount_nuts,
+                             colr="white",
+                             echo_bolts_info=echo_front_panel_bolts_info) {
+  bolt_y = h / 2 + front_panel_bolt_y_offset();
+  union() {
+    color(colr) {
       difference() {
-        rounded_rect_two(size = [w,
-                                 h],
-                         center=true,
-                         r=front_panel_connector_offset_rad);
-        if (front_panel_connector_rect_cutout_size[0] > 0
-            && front_panel_connector_rect_cutout_size[1] > 0) {
-          translate([0,
-                     -h / 2 +
-                     front_panel_connector_rect_cutout_size[1] / 2
-                     + rear_panel_z
-                     + thickness,
-                     0]) {
-            square(front_panel_connector_rect_cutout_size, center=true);
+        linear_extrude(height=thickness,
+                       center=false) {
+          difference() {
+            rounded_rect_two(size = [w,
+                                     h],
+                             center=true,
+                             r=front_panel_connector_offset_rad);
+            if (front_panel_connector_rect_cutout_size[0] > 0
+                && front_panel_connector_rect_cutout_size[1] > 0) {
+              translate([0,
+                         -h / 2 +
+                         front_panel_connector_rect_cutout_size[1] / 2
+                         + rear_panel_z
+                         + thickness,
+                         0]) {
+                square(front_panel_connector_rect_cutout_size, center=true);
+              }
+            }
+          }
+        }
+        translate([0, bolt_y, 0]) {
+          four_corner_children(front_panel_connector_bolt_spacing, center=true) {
+            counterbore(d=front_panel_connector_bolt_dia,
+                        h=front_panel_thickness,
+                        bore_d=front_panel_connector_bolt_bore_dia,
+                        bore_h=front_panel_connector_bolt_bore_h,
+                        autoscale_step=0.1,
+                        reverse=true);
           }
         }
       }
     }
-    translate([0,
-               h / 2
-               + front_panel_bolt_y_offset(),
-               0]) {
-      four_corner_children(front_panel_connector_bolt_spacing, center=true) {
-        counterbore(d=front_panel_connector_bolt_dia,
-                    h=front_panel_thickness,
-                    bore_d=front_panel_connector_bolt_bore_dia,
-                    bore_h=front_panel_connector_bolt_bore_h,
-                    autoscale_step=0.1,
-                    reverse=true);
+
+    if (show_bolts || echo_bolts_info) {
+      let (base_d = front_panel_connector_bolt_dia,
+           d = snap_bolt_d(base_d),
+           nut_h = find_nut_prop(prop="height", inner_d=d, lock=false),
+           bolt_h = ceil(front_panel_thickness
+                         + chassis_thickness
+                         - chassis_upper_front_pan_slot_depth)) {
+        if (echo_bolts_info) {
+          echo(str("Front panel chassis mount bolt: M", d, "x", bolt_h, "mm"));
+        }
+        if (show_bolts) {
+          translate([0, bolt_y, bolt_h + front_panel_connector_bolt_bore_h]) {
+
+            four_corner_children(front_panel_connector_bolt_spacing,
+                                 center=true) {
+              rotate([0, 180, 0]) {
+                bolt(h=bolt_h,
+                     d=d,
+                     nut_head_distance=bolt_h - nut_h,
+                     lock_nut=false,
+                     show_nut=show_nuts);
+              }
+            }
+          }
+        }
       }
     }
-    // front_panel_connector_bolts(use_counterbore=true);
   }
 }
 
@@ -157,8 +208,11 @@ module front_panel_main(w=front_panel_width,
                         bolts_x_offset=front_panel_bolts_x_offset,
                         thickness=front_panel_thickness,
                         angle=front_panel_rotation_angle,
-                        show_front_rear_panel=false,
-                        show_ultrasonic=false,
+                        show_front_rear_panel=show_front_rear_panel,
+                        show_ultrasonic=show_ultrasonic,
+                        show_front_rear_panel_bolts=show_front_rear_panel_bolts,
+                        show_front_rear_panel_nuts=show_front_rear_panel_nuts,
+                        echo_bolts_info=echo_front_panel_bolts_info,
                         colr="white",
                         center=true) {
   ultrasonic_rect_cutout_w = ultrasonic_w + 1;
@@ -178,27 +232,27 @@ module front_panel_main(w=front_panel_width,
       }
     }
 
-    color(colr) {
-      translate([-w / 2, -h / 2, 0]) {
-        rotate([angle, 0, 0]) {
-          translate([w / 2, h / 2, 0]) {
-            if (show_front_rear_panel) {
-              rotate([0, 0, 0]) {
-                translate([0,
-                           0,
-                           front_panel_thickness
-                           + ultrasonic_thickness
-                           + rear_panel_z]) {
-                  rotate([180, 0, 0]) {
-                    color(colr, alpha=1) {
-                      front_panel_back_mount();
-                    }
+    translate([-w / 2, -h / 2, 0]) {
+      rotate([angle, 0, 0]) {
+        translate([w / 2, h / 2, 0]) {
+          if (show_front_rear_panel) {
+            rotate([0, 0, 0]) {
+              translate([0,
+                         0,
+                         front_panel_thickness
+                         + ultrasonic_thickness
+                         + rear_panel_z]) {
+                rotate([180, 0, 0]) {
+                  color(colr, alpha=1) {
+                    front_panel_back_mount();
                   }
                 }
               }
             }
+          }
 
-            difference() {
+          difference() {
+            color(colr) {
               linear_extrude(thickness, convexity=2) {
                 difference() {
                   rounded_rect(size=[w, h],
@@ -207,8 +261,6 @@ module front_panel_main(w=front_panel_width,
                   translate([0, front_panel_bolts_y_offst, 0]) {
                     two_x_bolts_2d(x=bolts_x_offset,
                                    d=front_panel_bolt_dia);
-                  }
-                  translate([0, front_panel_bolts_y_offst, 0]) {
                     ultrasonic_bolts_2d();
                   }
 
@@ -216,26 +268,54 @@ module front_panel_main(w=front_panel_width,
                   ultrasonic_rect_slots_2d(h=ultrasonic_h);
                 }
               }
+            }
 
-              translate([0,
-                         0,
-                         thickness - front_panel_ultrasonic_cutout_depth + 0.1]) {
-                linear_extrude(height=front_panel_ultrasonic_cutout_depth,
-                               center=false) {
-                  rounded_rect([ultrasonic_rect_cutout_w,
-                                ultrasonic_rect_cutout_h],
-                               r=ultrasonic_offset_rad,
-                               center=true);
+            translate([0,
+                       0,
+                       thickness -
+                       front_panel_ultrasonic_cutout_depth + 0.1]) {
+              linear_extrude(height=front_panel_ultrasonic_cutout_depth,
+                             center=false) {
+                rounded_rect([ultrasonic_rect_cutout_w,
+                              ultrasonic_rect_cutout_h],
+                             r=ultrasonic_offset_rad,
+                             center=true);
+              }
+            }
+
+            translate([0, 0, thickness / 2]) {
+              linear_extrude(height=rear_panel_z, center=false) {
+                mirror_copy([1, 0, 0]) {
+                  translate([bolts_x_offset, front_panel_bolts_y_offst, 0]) {
+                    circle(r=front_panel_bolt_dia / 2
+                           + front_panel_rear_panel_ring_width + 0.4,
+                           $fn=100);
+                  }
                 }
               }
-
-              translate([0, 0, thickness / 2]) {
-                linear_extrude(height=rear_panel_z, center=false) {
+            }
+          }
+          if (show_front_rear_panel_bolts || echo_bolts_info) {
+            let (base_d = front_panel_bolt_dia,
+                 d = snap_bolt_d(base_d),
+                 nut_h = find_nut_prop(prop="height", inner_d=d, lock=true),
+                 bolt_h = ceil(ultrasonic_thickness + thickness + rear_panel_z
+                               + front_rear_panel_boss_height())) {
+              if (echo_bolts_info) {
+                echo(str("Front panel ultrasonic bolt: M", d, "x", bolt_h, "mm"));
+              }
+              if (show_front_rear_panel_bolts) {
+                translate([0, front_panel_bolts_y_offst, bolt_h]) {
                   mirror_copy([1, 0, 0]) {
-                    translate([bolts_x_offset, front_panel_bolts_y_offst, 0]) {
-                      circle(r=front_panel_bolt_dia / 2
-                             + front_panel_rear_panel_ring_width + 0.4,
-                             $fn=100);
+                    translate([bolts_x_offset, 0, 0]) {
+
+                      rotate([180, 0, 0]) {
+                        bolt(h=bolt_h,
+                             d=d,
+                             nut_head_distance=bolt_h - nut_h,
+                             lock_nut=true,
+                             show_nut=show_front_rear_panel_nuts);
+                      }
                     }
                   }
                 }
@@ -255,8 +335,13 @@ module front_panel(w=front_panel_width,
                    angle=front_panel_rotation_angle,
                    colr="white",
                    connector_len=front_panel_connector_len,
-                   show_ultrasonic=false,
-                   show_front_rear_panel=false) {
+                   show_ultrasonic=show_ultrasonic,
+                   show_front_rear_panel=show_front_rear_panel,
+                   show_front_rear_panel_bolts=show_front_rear_panel_bolts,
+                   show_front_rear_panel_nuts=show_front_rear_panel_nuts,
+                   show_front_panel_mount_bolts=show_front_panel_mount_bolts,
+                   show_front_panel_mount_nuts=show_front_panel_mount_nuts,
+                   echo_front_panel_bolts_info=echo_front_panel_bolts_info) {
   bbox = rot_x_bbox_align([w, h, thickness], angle=angle);
   bbox_w = bbox[0];
   bbox_h = bbox[1];
@@ -272,6 +357,9 @@ module front_panel(w=front_panel_width,
                        thickness=thickness,
                        show_ultrasonic=show_ultrasonic,
                        show_front_rear_panel=show_front_rear_panel,
+                       show_front_rear_panel_bolts=show_front_rear_panel_bolts,
+                       show_front_rear_panel_nuts=show_front_rear_panel_nuts,
+                       echo_bolts_info=echo_front_panel_bolts_info,
                        colr=colr,
                        center=false);
     }
@@ -280,12 +368,14 @@ module front_panel(w=front_panel_width,
                connector_y,
                connector_z]) {
       rotate([90, 0, 0]) {
-        color(colr, alpha=1) {
-          front_panel_connector(w=front_panel_connector_width,
-                                h=front_panel_connector_len
-                                + front_panel_thickness,
-                                thickness=front_panel_thickness);
-        }
+        front_panel_connector(w=front_panel_connector_width,
+                              h=front_panel_connector_len
+                              + thickness,
+                              thickness=thickness,
+                              colr=colr,
+                              show_bolts=show_front_panel_mount_bolts,
+                              show_nuts=show_front_panel_mount_nuts,
+                              echo_bolts_info=echo_front_panel_bolts_info);
       }
     }
   }
@@ -337,9 +427,7 @@ module front_panel_back_mount(h=front_panel_height,
       }
     }
     translate([0, 0, thickness]) {
-      linear_extrude(height=rear_panel_z
-                     + front_panel_thickness / 2
-                     - front_panel_ultrasonic_cutout_depth,
+      linear_extrude(height=front_rear_panel_boss_height(),
                      center=false,
                      convexity=2) {
         mirror_copy([1, 0, 0]) {
@@ -357,25 +445,40 @@ module front_panel_back_mount(h=front_panel_height,
   }
 }
 
-module front_panel_printable(spacing=2,
+module front_panel_printable(panel_color="white",
+                             spacing=2,
                              show_front_panel=true,
                              show_front_rear_panel=true) {
   if (show_front_panel) {
     rotate([-90 + front_panel_rotation_angle, 0, 0]) {
-      front_panel();
+      front_panel(colr=panel_color,
+                  show_ultrasonic=false,
+                  show_front_rear_panel=false,
+                  show_front_rear_panel_bolts=false,
+                  show_front_rear_panel_nuts=false,
+                  show_front_panel_mount_bolts=false,
+                  show_front_panel_mount_nuts=false,
+                  echo_front_panel_bolts_info=false);
     }
   }
   if (show_front_rear_panel) {
     translate([0, show_front_panel ? front_panel_height + spacing : 0 , 0]) {
-      front_panel_back_mount();
+      color(panel_color, alpha=1) {
+        front_panel_back_mount();
+      }
     }
   }
 }
 
 module front_panel_assembly(panel_color="white",
-                            show_front_panel=true,
-                            show_ultrasonic=false,
-                            show_front_rear_panel=false) {
+                            show_front_panel=show_front_panel,
+                            show_ultrasonic=show_ultrasonic,
+                            show_front_rear_panel=show_front_rear_panel,
+                            show_front_rear_panel_bolts=show_front_rear_panel_bolts,
+                            show_front_rear_panel_nuts=show_front_rear_panel_nuts,
+                            show_front_panel_mount_bolts=show_front_panel_mount_bolts,
+                            show_front_panel_mount_nuts=show_front_panel_mount_nuts,
+                            echo_front_panel_bolts_info=echo_front_panel_bolts_info) {
   bbox = rot_x_bbox_align([front_panel_width,
                            front_panel_height,
                            front_panel_thickness],
@@ -389,18 +492,17 @@ module front_panel_assembly(panel_color="white",
         rotate([0, 0, 0]) {
           front_panel(colr=panel_color,
                       show_ultrasonic=show_ultrasonic,
-                      show_front_rear_panel=show_front_rear_panel);
+                      show_front_rear_panel=show_front_rear_panel,
+                      show_front_rear_panel_bolts=show_front_rear_panel_bolts,
+                      show_front_rear_panel_nuts=show_front_rear_panel_nuts,
+                      show_front_panel_mount_bolts=show_front_panel_mount_bolts,
+                      show_front_panel_mount_nuts=show_front_panel_mount_nuts,
+                      echo_front_panel_bolts_info=echo_front_panel_bolts_info);
         }
       }
     }
   }
 }
 
-// color("white") {
-//   front_panel_printable(show_front_panel=true,
-//                         show_front_rear_panel=false);
-// }
-
 front_panel_assembly();
-
-// front_panel_main(show_ultrasonic=true, center=false);
+// front_panel_printable();

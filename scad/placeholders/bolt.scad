@@ -62,11 +62,8 @@ function find_nut_spec(inner_d, lock = false, specs=bolt_specs) =
        nut_spec = plist_get(nut_type, bolt_spec, []))
   nut_spec;
 
-function find_bolt_nut_prop(prop, inner_d, lock = false, specs=bolt_specs) =
-  let (bolt_spec = find_bolt_nut_spec(d, specs=specs, default=[]),
-       nut_type = lock ? "lock_nut" : "nut",
-       nut_spec = plist_get(nut_type, bolt_spec, []))
-  plist_get(prop, nut_spec);
+function find_nut_prop(prop, inner_d, lock=false, specs=bolt_specs) =
+  plist_get(prop, find_nut_spec(inner_d=inner_d, lock=lock, specs=specs));
 
 function find_bolt_head_h(inner_d, head_type, specs=bolt_specs) =
   find_bolt_head_prop(prop="height",
@@ -463,7 +460,4 @@ rotate([0, 0, 0]) {
        nut_head_distance=nut_distance,
        head_type = "pan",
        head_d = head_d);
-}
-translate([0, 0, nut_distance + 4]) {
-  cube([4, 4, nut_distance]);
 }

@@ -102,11 +102,26 @@ show_ir_case_rail_nuts            = true;
 pan_servo_rotation                = 0; // [-179:179]
 tilt_servo_rotation               = 0; // [-90:90]
 
+/* [Front Panel] */
+// Mount the front sensor panel.
+show_front_panel                  = true;
+// Insert the HC-SR04 ultrasonic module.
+show_ultrasonic                   = true;
+// Add the rear stiffener for the front panel.
+show_front_rear_panel             = true;
+
+show_front_rear_panel_bolts       = true;
+show_front_rear_panel_nuts        = true;
+echo_front_panel_bolts_info       = true;
+
 /* [Chassis] */
 // Add the upper chassis plate.
 show_upper_chassis_body           = true;
 // Show the main chassis body.
 show_chassis_body                 = true;
+
+show_front_panel_mount_bolts      = true;
+show_front_panel_mount_nuts       = true;
 
 /* [Batteries] */
 // Place battery holders into the chassis.
@@ -184,14 +199,6 @@ show_servo_driver_hat             = true;
 // Drop the GPIO expansion board into position.
 show_gpio_expansion_board         = true;
 
-/* [Front Panel] */
-// Mount the front sensor panel.
-show_front_panel                  = true;
-// Insert the HC-SR04 ultrasonic module.
-show_ultrasonic                   = true;
-// Add the rear stiffener for the front panel.
-show_front_rear_panel             = true;
-
 /* [Rear panel] */
 show_rear_panel                   = false;
 show_rear_panel_buttons           = false;
@@ -216,6 +223,11 @@ chassis(panel_color=panel_color,
         show_front_panel=show_front_panel,
         show_ultrasonic=show_ultrasonic,
         show_front_rear_panel=show_front_rear_panel,
+        show_front_rear_panel_bolts=show_front_rear_panel_bolts,
+        show_front_rear_panel_nuts=show_front_rear_panel_nuts,
+        show_front_panel_mount_bolts=show_front_panel_mount_bolts,
+        show_front_panel_mount_nuts=show_front_panel_mount_nuts,
+        echo_front_panel_bolts_info=echo_front_panel_bolts_info,
         show_head_assembly=show_head_assembly,
         show_tilt_servo=show_tilt_servo,
         show_tilt_servo_bolts=show_tilt_servo_bolts,

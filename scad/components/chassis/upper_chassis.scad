@@ -31,57 +31,56 @@ use <../front_panel.scad>
 use <chassis_connector.scad>
 use <util.scad>
 
-upper_side_hole_pts            =  scale_upper_trapezoid_pts(x=chassis_trapezoid_hole_width,
-                                                            y=chassis_trapezoid_hole_len);
+upper_side_hole_pts     =  scale_upper_trapezoid_pts(x=chassis_trapezoid_hole_width,
+                                                     y=chassis_trapezoid_hole_len);
 
-front_panel_chassis_slot_depth = chassis_thickness / 2;
-front_pan_y                    = chassis_upper_len + front_panel_bolt_y_offset();
-effective_front_pan_dia        = max(front_panel_connector_bolt_bore_dia,
-                                     front_panel_connector_bolt_dia) / 2;
-front_pan_end                  = front_pan_y - effective_front_pan_dia;
-top_ribbon_hole_pos            = front_pan_end
-                                  - chassis_pan_servo_top_ribbon_cuttout_h
-                                  - chassis_upper_front_padding_y;
+front_pan_y             = chassis_upper_len + front_panel_bolt_y_offset();
+effective_front_pan_dia = max(front_panel_connector_bolt_bore_dia,
+                              front_panel_connector_bolt_dia) / 2;
+front_pan_end           = front_pan_y - effective_front_pan_dia;
+top_ribbon_hole_pos     = front_pan_end
+                           - chassis_pan_servo_top_ribbon_cuttout_h
+                           - chassis_upper_front_padding_y;
 
-head_pos                       = -chassis_upper_holes_border_w * 2
-                                  - chassis_pan_servo_recesess_y_len
-                                  - chassis_pan_servo_recesess_thickness / 2
-                                  + top_ribbon_hole_pos
-                                  - chassis_upper_holes_border_w
-                                  - chassis_head_zone_y_offset;
+head_pos                = -chassis_upper_holes_border_w * 2
+                           - chassis_pan_servo_recesess_y_len
+                           - chassis_pan_servo_recesess_thickness / 2
+                           + top_ribbon_hole_pos
+                           - chassis_upper_holes_border_w
+                           - chassis_head_zone_y_offset;
 
-hole_h                         = chassis_thickness + 1;
-steering_pan_pos               = chassis_upper_len
-                                  - steering_panel_distance_from_top;
+hole_h                  = chassis_thickness + 1;
+steering_pan_pos        = chassis_upper_len
+                           - steering_panel_distance_from_top;
 
-trapezoid_rows_params          = calc_cols_params(gap=chassis_pan_servo_side_trapezoid_gap
-                                                  + chassis_upper_holes_border_w,
-                                                  cols=chassis_pan_servo_side_trapezoid_rows,
-                                                  w=chassis_trapezoid_hole_len);
-trapezoid_step                 = trapezoid_rows_params[0];
-trapezoid_total_y              = trapezoid_rows_params[1];
+trapezoid_rows_params   = calc_cols_params(gap=chassis_pan_servo_side_trapezoid_gap
+                                           + chassis_upper_holes_border_w,
+                                           cols=chassis_pan_servo_side_trapezoid_rows,
+                                           w=chassis_trapezoid_hole_len);
+trapezoid_step          = trapezoid_rows_params[0];
+trapezoid_total_y       = trapezoid_rows_params[1];
 
 top_most_row_params = calc_cols_params(cols=chassis_top_most_holes_rows,
                                        w=chassis_top_most_holes_side_len,
                                        gap=chassis_top_most_holes_gap);
 
-top_most_rects_start           = top_ribbon_hole_pos
-                                  - top_most_row_params[1]
-                                  - chassis_top_most_holes_side_y_offset;
+top_most_rects_start    = top_ribbon_hole_pos
+                           - top_most_row_params[1]
+                           - chassis_top_most_holes_side_y_offset;
 
-top_rib_hole_pts               = scale_upper_trapezoid_pts(x=chassis_pan_servo_top_ribbon_cuttout_len / 2,
-                                                           y=chassis_pan_servo_top_ribbon_cuttout_h);
+top_rib_hole_pts        = scale_upper_trapezoid_pts(x=chassis_pan_servo_top_ribbon_cuttout_len / 2,
+                                                    y=chassis_pan_servo_top_ribbon_cuttout_h);
 
-show_knuckle_bolts             = false;
+show_knuckle_bolts      = false;
 
-show_bolts_info                = false;
-show_kingpin_bolt              = false;
-show_hinges_bolts              = false;
-show_panel_bolt                = false;
+show_bolts_info         = false;
+show_kingpin_bolt       = false;
+show_hinges_bolts       = false;
+show_panel_bolt         = false;
 
-fasten_kingpin_bolt            = false;
-fasten_hinges_bolts            = false;
-fasten_panel_bolt              = false;
+fasten_kingpin_bolt     = false;
+fasten_hinges_bolts     = false;
+fasten_panel_bolt       = false;
 
 module holes_row_along_slanted_side(trapezoid_pts,
                                     rows,
@@ -486,9 +485,9 @@ module chassis_upper_front_panel_slot() {
     translate([0,
                front_panel_connector_len / 2
                - effective_front_pan_dia,
-               front_panel_chassis_slot_depth + 0.1]) {
+               chassis_upper_front_pan_slot_depth + 0.1]) {
       translate([0, front_panel_connector_offset_rad, 0]) {
-        linear_extrude(height=front_panel_chassis_slot_depth + 0.1,
+        linear_extrude(height=chassis_upper_front_pan_slot_depth + 0.1,
                        center=false) {
           square(size = [front_panel_connector_width + 0.4,
                          front_panel_connector_len + 0.4],
@@ -496,7 +495,7 @@ module chassis_upper_front_panel_slot() {
         }
       }
       rotate([0, 0, 180]) {
-        linear_extrude(height=front_panel_chassis_slot_depth + 0.1,
+        linear_extrude(height=chassis_upper_front_pan_slot_depth + 0.1,
                        center=false) {
           rounded_rect_two(size = [front_panel_connector_width + 0.4,
                                    front_panel_connector_len + 0.4],
@@ -532,6 +531,11 @@ module chassis_upper_3d(panel_color=white_snow_1,
                         show_front_panel=false,
                         show_ultrasonic=false,
                         show_front_rear_panel=false,
+                        show_front_rear_panel_bolts=false,
+                        show_front_rear_panel_nuts=false,
+                        show_front_panel_mount_bolts=false,
+                        show_front_panel_mount_nuts=false,
+                        echo_front_panel_bolts_info=false,
                         show_head_assembly=false,
                         show_head=false,
                         show_tilt_servo_bolts=false,
@@ -678,9 +682,16 @@ module chassis_upper_3d(panel_color=white_snow_1,
                max(front_panel_connector_bolt_bore_dia,
                    front_panel_connector_bolt_dia) / 2,
                chassis_thickness
-               - front_panel_chassis_slot_depth]) {
+               - chassis_upper_front_pan_slot_depth]) {
+
       front_panel_assembly(show_ultrasonic=show_ultrasonic,
-                           show_front_rear_panel=show_front_rear_panel);
+                           show_front_panel=true,
+                           show_front_rear_panel=show_front_rear_panel,
+                           show_front_rear_panel_bolts=show_front_rear_panel_bolts,
+                           show_front_rear_panel_nuts=show_front_rear_panel_nuts,
+                           show_front_panel_mount_bolts=show_front_panel_mount_bolts,
+                           show_front_panel_mount_nuts=show_front_panel_mount_nuts,
+                           echo_front_panel_bolts_info=echo_front_panel_bolts_info);
     }
   }
 }
@@ -692,6 +703,11 @@ module chassis_upper(panel_color=white_snow_1,
                      steering_panel_color=white_snow_1,
                      show_front_panel=true,
                      show_ultrasonic=true,
+                     show_front_rear_panel_bolts=true,
+                     show_front_rear_panel_nuts=true,
+                     show_front_panel_mount_bolts=true,
+                     show_front_panel_mount_nuts=true,
+                     echo_front_panel_bolts_info=true,
                      show_front_rear_panel=true,
                      show_tilt_servo=true,
                      show_head_assembly=true,
@@ -714,7 +730,7 @@ module chassis_upper(panel_color=white_snow_1,
                      show_ir_case_rail_nuts=true,
                      show_steering_panel=true,
                      pinion_color=matte_black,
-                     show_wheels=true,
+                     show_wheels=false,
                      show_bearing=true,
                      show_servo_mount_panel=true,
                      show_brackets=true,
@@ -788,7 +804,12 @@ module chassis_upper(panel_color=white_snow_1,
                        show_panel_bolt=show_panel_bolt,
                        fasten_kingpin_bolt=fasten_kingpin_bolt,
                        fasten_hinges_bolts=fasten_hinges_bolts,
-                       fasten_panel_bolt=fasten_panel_bolt);
+                       fasten_panel_bolt=fasten_panel_bolt,
+                       show_front_rear_panel_bolts=show_front_rear_panel_bolts,
+                       show_front_rear_panel_nuts=show_front_rear_panel_nuts,
+                       show_front_panel_mount_bolts=show_front_panel_mount_bolts,
+                       show_front_panel_mount_nuts=show_front_panel_mount_nuts,
+                       echo_front_panel_bolts_info=echo_front_panel_bolts_info);
     }
     if (chassis_use_connector && show_upper_chassis) {
       color(panel_color, alpha=1) {
@@ -803,14 +824,31 @@ module chassis_upper_printable() {
     chassis_upper(panel_color="white",
                   show_front_panel=false,
                   show_ultrasonic=false,
+                  show_front_rear_panel_bolts=false,
+                  show_front_rear_panel_nuts=false,
+                  show_front_panel_mount_bolts=false,
+                  show_front_panel_mount_nuts=false,
+                  echo_front_panel_bolts_info=false,
                   show_front_rear_panel=false,
+                  show_tilt_servo=false,
                   show_head_assembly=false,
                   show_head=false,
+                  show_tilt_servo_bolts=false,
+                  show_tilt_servo_nuts=false,
                   show_pan_servo=false,
-                  show_tilt_servo=false,
-                  show_ir_case=false,
+                  show_pan_servo_bolts=false,
+                  show_pan_servo_nuts=false,
+                  show_head_servo_horn=false,
                   show_camera=false,
+                  show_camera_bolts=false,
+                  show_camera_nuts=false,
+                  show_ir_case=false,
+                  show_ir_case_bolts=false,
+                  show_ir_case_nuts=false,
                   show_ir_led=false,
+                  show_ir_case_rail=false,
+                  show_ir_case_rail_bolts=false,
+                  show_ir_case_rail_nuts=false,
                   show_steering_panel=false,
                   pinion_color=matte_black,
                   show_wheels=false,
@@ -823,9 +861,17 @@ module chassis_upper_printable() {
                   show_tie_rod=false,
                   show_servo=false,
                   show_knuckles=false,
-                  tilt_servo_rotation=0,
-                  show_distance=false);
+                  show_distance=false,
+                  show_upper_chassis=false,
+                  show_knuckle_bolts=false,
+                  show_bolts_info=false,
+                  show_kingpin_bolt=false,
+                  show_hinges_bolts=false,
+                  show_panel_bolt=false,
+                  fasten_kingpin_bolt=false,
+                  fasten_hinges_bolts=false,
+                  fasten_panel_bolt=false);
   }
 }
 
-chassis_upper_printable();
+chassis_upper();

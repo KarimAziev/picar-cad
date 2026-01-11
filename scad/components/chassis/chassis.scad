@@ -26,6 +26,11 @@ power_case_color                  = panel_color;
 show_front_panel                  = true;
 show_ultrasonic                   = true;
 show_front_rear_panel             = true;
+show_front_rear_panel_bolts       = true;
+show_front_rear_panel_nuts        = true;
+show_front_panel_mount_bolts      = true;
+show_front_panel_mount_nuts       = true;
+echo_front_panel_bolts_info       = true;
 show_head_assembly                = true;
 show_head                         = true;
 
@@ -124,6 +129,11 @@ module chassis(tilt_servo_rotation=tilt_servo_rotation,
                show_front_panel=show_front_panel,
                show_ultrasonic=show_ultrasonic,
                show_front_rear_panel=show_front_rear_panel,
+               show_front_rear_panel_bolts=show_front_rear_panel_bolts,
+               show_front_rear_panel_nuts=show_front_rear_panel_nuts,
+               show_front_panel_mount_bolts=show_front_panel_mount_bolts,
+               show_front_panel_mount_nuts=show_front_panel_mount_nuts,
+               echo_front_panel_bolts_info=echo_front_panel_bolts_info,
                show_head_assembly=show_head_assembly,
                show_head=show_head,
                show_tilt_servo=show_tilt_servo,
@@ -206,6 +216,7 @@ module chassis(tilt_servo_rotation=tilt_servo_rotation,
                show_socket_bolts=show_socket_bolts,
                show_socket_nuts=show_socket_nuts,
                echo_socket_bolts_info=echo_socket_bolts_info,
+
                show_upper_chassis=true,
                show_chassis_body=true) {
 
@@ -214,6 +225,11 @@ module chassis(tilt_servo_rotation=tilt_servo_rotation,
                   show_front_panel=show_front_panel,
                   show_ultrasonic=show_ultrasonic,
                   show_front_rear_panel=show_front_rear_panel,
+                  show_front_rear_panel_bolts=show_front_rear_panel_bolts,
+                  show_front_rear_panel_nuts=show_front_rear_panel_nuts,
+                  show_front_panel_mount_bolts=show_front_panel_mount_bolts,
+                  show_front_panel_mount_nuts=show_front_panel_mount_nuts,
+                  echo_front_panel_bolts_info=echo_front_panel_bolts_info,
                   show_head_assembly=show_head_assembly
                   || show_head || show_pan_servo || show_camera || show_ir_led,
                   show_head=show_head,

@@ -2,7 +2,7 @@
 
 This repository contains the 3D model source files for a four-wheeled robot chassis and steering system, written entirely in [OpenSCAD](https://openscad.org/). The design supports 3D printing and does not rely on external libraries.
 
-![Front View](./demo/front-view.png)
+![Main View](./demo/demo-view.png)
 ![Photo](./demo/picar-cad-live.jpg)
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
@@ -396,7 +396,7 @@ Variable `ir_case_bolt_dia` defines the diameter of the bolt holes that attach t
 
 | Size | Length (mm)  | Amount | Nuts | Variable                         |
 | ---- | ------------ | ------ | ---- | -------------------------------- |
-| M2.5 | 10 or higher | 2 or 3 | 2    | `front_panel_connector_bolt_dia` |
+| M2.5 | 6 or higher  | 2 or 3 | 2    | `front_panel_connector_bolt_dia` |
 | M2.5 | 10 or higher | 2      | 2    | `front_panel_bolt_dia`           |
 
 `front_panel_connector_bolt_dia` defines the diameter of the bolt hole on the bracket that connects to the chassis, and `front_panel_bolt_dia` defines the diameter of the bolt hole on the front panel that secures the ultrasonic sensor, which is placed between the front panel and the bracket.

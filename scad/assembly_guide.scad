@@ -94,11 +94,26 @@ show_ir_case_rail_nuts            = false;
 pan_servo_rotation                = 0; // [-179:179]
 tilt_servo_rotation               = 0; // [-90:90]
 
+/* [Front Panel] */
+// Mount the front sensor panel.
+show_front_panel                  = false;
+// Insert the HC-SR04 ultrasonic module.
+show_ultrasonic                   = false;
+// Add the rear stiffener for the front panel.
+show_front_rear_panel             = false;
+show_front_rear_panel_bolts       = false;
+show_front_rear_panel_nuts        = false;
+echo_front_panel_bolts_info       = false;
+
 /* [Chassis] */
 // Add the upper chassis plate.
 show_upper_chassis_body           = false;
 // Show the main chassis body.
 show_chassis_body                 = false;
+
+/* [Front Panel on the chassis] */
+show_front_panel_mount_bolts      = false;
+show_front_panel_mount_nuts       = false;
 
 /* [Batteries] */
 // Place battery holders into the chassis.
@@ -176,14 +191,6 @@ show_servo_driver_hat             = false;
 // Drop the GPIO expansion board into position.
 show_gpio_expansion_board         = false;
 
-/* [Front Panel] */
-// Mount the front sensor panel.
-show_front_panel                  = false;
-// Insert the HC-SR04 ultrasonic module.
-show_ultrasonic                   = false;
-// Add the rear stiffener for the front panel.
-show_front_rear_panel             = false;
-
 /* [Wheels] */
 // Install the front wheels onto the knuckles.
 show_front_wheels                 = false;
@@ -205,6 +212,11 @@ chassis(panel_color=panel_color,
         show_front_panel=show_front_panel,
         show_ultrasonic=show_ultrasonic,
         show_front_rear_panel=show_front_rear_panel,
+        show_front_rear_panel_bolts=show_front_rear_panel_bolts,
+        show_front_rear_panel_nuts=show_front_rear_panel_nuts,
+        show_front_panel_mount_bolts=show_front_panel_mount_bolts,
+        show_front_panel_mount_nuts=show_front_panel_mount_nuts,
+        echo_front_panel_bolts_info=echo_front_panel_bolts_info,
         show_head_assembly=show_head_assembly,
         show_tilt_servo=show_tilt_servo,
         show_tilt_servo_bolts=show_tilt_servo_bolts,

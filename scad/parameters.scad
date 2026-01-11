@@ -568,6 +568,8 @@ chassis_upper_rect_holes_specs                       = [[[[32, 5, 1.0], [0, -8, 
                                                          [[32, 5, 1.0], [0, -8, 8]],
                                                          [[32, 5, 1.0], [0, -8, 9]]]];
 
+chassis_upper_front_pan_slot_depth                   = chassis_thickness / 2;
+
 chassis_body_battery_holders_specs                   = ["type", "grid",
                                                         "size", [chassis_body_w, chassis_body_len],
                                                         "rows",
@@ -610,7 +612,7 @@ front_panel_height                                   = 22.5;   // panel height
 front_panel_thickness                                = 2.5;   // panel thickness
 // A slight tilt of the panel with the ultrasonic sensor to prevent the sensor's
 // "eyes" from dipping down into the floor.
-front_panel_rotation_angle                           = 5;
+front_panel_rotation_angle                           = 0;
 
 front_panel_rear_panel_thickness                     = 1.5;
 front_panel_connector_bolt_dia                       = m25_hole_dia;
