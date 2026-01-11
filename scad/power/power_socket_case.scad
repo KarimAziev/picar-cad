@@ -131,7 +131,6 @@ module power_socket_case(jack_plist=power_socket_case_jack_plist,
   mounting_panel_size = plist_get("placeholder_size",
                                   jack_plist,
                                   xt90e_mounting_panel_size);
-  mounting_panel_h = mounting_panel_size[0];
   mounting_panel_thickness = mounting_panel_size[2];
 
   full_h = sliding_box_full_height(size=size,
