@@ -90,7 +90,7 @@ The project is organized into several reusable modules under the scad/ directory
 
 - `parameters.scad`: Central configuration file containing physical dimensions (units are in millimeters).
 - `power_lid_parameters.scad`: Configuration for the power case lid.
-- `printable.scad`: Contains all printable parts in one place, except the power case modules. You can print all parts except the tires using either PETG (recommended) or PLA. For the tires, use TPU (e.g., TPU 95A). The power case modules live in the `power/` directory.
+- `printable.scad`: Contains all printable parts in one place. You can print all parts except the tires using either PETG (recommended) or PLA. For the tires, use TPU (e.g., TPU 95A).
   ![Single printable view](./demo/single-printable-plate.png)
 - `assembly.scad`: Fully assembled view of the robot.
   ![Overview](./demo/full_assembly.gif)
