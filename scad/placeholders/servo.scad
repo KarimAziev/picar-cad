@@ -146,6 +146,10 @@ module servo_gearbox(h,
                      max_angle=90,
                      min_angle=-90,
                      servo_horn_rotation=0,
+                     servo_horn_single,
+                     servo_horn_screw_side,
+                     show_servo_horn_screws,
+                     show_servo_horn_bolt,
                      show_servo_horn=true,
                      center=true) {
   r1 = is_undef(r1) ? d1 / 2 : r1;
@@ -201,7 +205,10 @@ module servo_gearbox(h,
                      total_gear_h
                      - servo_horn_arm_z_offset]) {
             rotate([0, 0, servo_horn_rotation]) {
-              servo_horn();
+              servo_horn(single=servo_horn_single,
+                         screw_side=servo_horn_screw_side,
+                         show_bolt=show_servo_horn_bolt,
+                         show_screws=show_servo_horn_screws);
             }
           }
         }
@@ -240,6 +247,10 @@ module servo(size,
              max_angle=45,
              min_angle=-90,
              servo_horn_rotation=45,
+             show_servo_horn_screws,
+             show_servo_horn_bolt,
+             servo_horn_single=false,
+             servo_horn_screw_side,
              show_servo_horn=true,
              center=false) {
   length = size[0];
@@ -281,7 +292,12 @@ module servo(size,
                       max_angle=max_angle,
                       min_angle=min_angle,
                       servo_horn_rotation=servo_horn_rotation,
+                      show_servo_horn_bolt=show_servo_horn_bolt,
+                      servo_horn_single=servo_horn_single,
+                      servo_horn_screw_side=servo_horn_screw_side,
                       show_servo_horn=show_servo_horn,
+                      show_servo_horn_screws=show_servo_horn_screws,
+
                       alpha=alpha) {
           children();
         }
@@ -294,15 +310,16 @@ module with_servo_slot_slots(size=[head_neck_tilt_servo_slot_width,
                                    head_neck_tilt_servo_slot_height],
                              bolts_dia=head_neck_tilt_servo_bolt_dia,
                              bolts_offset=head_neck_tilt_servo_bolts_offset,
-                             center=true) {
+                             center=true,
+                             y_axle=false) {
   translate([center ? 0 : size[0] / 2, center ? 0 : size[1] / 2, 0]) {
     if ($children > 1) {
       children(0);
     }
 
-    offst_x = bolt_x_offst(size[0], bolts_dia, bolts_offset);
-    for (x = [-offst_x, offst_x]) {
-      translate([x, 0, 0]) {
+    offst = bolt_x_offst(size[y_axle ? 1 : 0], bolts_dia, bolts_offset);
+    for (v = [-offst, offst]) {
+      translate([y_axle ? 0 : v, y_axle ? v : 0, 0]) {
         children($children > 1 ? 1 : 0);
       }
     }
@@ -313,12 +330,14 @@ module servo_slot_2d(size=[head_neck_tilt_servo_slot_width,
                            head_neck_tilt_servo_slot_height],
                      bolts_dia=head_neck_tilt_servo_bolt_dia,
                      bolts_offset=head_neck_tilt_servo_bolts_offset,
-                     center=true) {
+                     center=true,
+                     y_axle=false) {
 
   with_servo_slot_slots(size=size,
                         bolts_dia=bolts_dia,
                         bolts_offset=bolts_offset,
-                        center=center) {
+                        center=center,
+                        y_axle=y_axle) {
     square([size[0], size[1]], center=true);
     circle(r=bolts_dia / 2, $fn=360);
   }

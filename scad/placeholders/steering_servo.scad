@@ -28,7 +28,14 @@ function steering_servo_height_before_hat() =
 function steering_servo_gear_height() =
   servo_gear_total_height(steering_servo_gearbox_size);
 
-module steering_servo(center=false, servo_color=steering_servo_color, alpha=1) {
+module steering_servo(center=false,
+                      servo_color=steering_servo_color,
+                      alpha=1,
+                      show_servo_horn=true,
+                      show_servo_horn_screws,
+                      show_servo_horn_bolt,
+                      servo_horn_single,
+                      servo_horn_screw_side) {
   servo(size=[steering_servo_size[0],
               steering_servo_size[1],
               steering_servo_size[2]],
@@ -51,8 +58,13 @@ module steering_servo(center=false, servo_color=steering_servo_color, alpha=1) {
         servo_horn_rotation=$t * ($t > 0.5 ? -90 : 45),
         gearbox_d2=steering_servo_gearbox_d2,
         gearbox_x_offset=steering_servo_gearbox_x_offset,
+        show_servo_horn=show_servo_horn,
         gearbox_mode=steering_servo_gearbox_mode,
-        gearbox_gear_size=steering_servo_gearbox_size) {
+        gearbox_gear_size=steering_servo_gearbox_size,
+        show_servo_horn_screws=show_servo_horn_screws,
+        show_servo_horn_bolt=show_servo_horn_bolt,
+        servo_horn_single=servo_horn_single,
+        servo_horn_screw_side=servo_horn_screw_side) {
     children();
   }
 }

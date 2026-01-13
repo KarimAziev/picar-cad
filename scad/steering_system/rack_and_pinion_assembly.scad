@@ -28,7 +28,7 @@ show_ackermann_triangle = false;
 show_wheels             = false;
 show_bearing            = true;
 show_servo_mount_panel  = true;
-show_brackets           = true;
+show_rack_link          = true;
 show_rack               = true;
 show_kingpin_posts      = true;
 show_pinion             = true;
@@ -47,13 +47,32 @@ fasten_kingpin_bolt     = true;
 fasten_hinges_bolts     = true;
 fasten_panel_bolt       = true;
 
-show_distance           = false;
+show_servo_horn         = true;
+show_servo_horn_bolt    = true;
+show_servo_horn_screws  = true;
+show_knuckle_shaft      = true;
+
+show_distance           = true;
+
+show_servo_bolts        = true;
+show_servo_nuts         = true;
+echo_servo_bolts_info   = true;
+
+show_tie_rod_shaft      = true;
+
+show_tie_rod_bearings   = true;
+show_knuckle_bearings   = true;
+
+knuckle_color_alpha     = 0.6; // [0:0.1:1]
 
 module knuckle_assembly(show_wheel=true,
-                        show_bearing=true,
                         show_shaft=true,
                         show_tie_rod=false,
                         show_knuckle_bolts=true,
+                        show_tie_rod_shaft=show_tie_rod_shaft,
+                        knuckle_color_alpha=knuckle_color_alpha,
+                        show_tie_rod_bearings=show_tie_rod_bearings,
+                        show_knuckle_bearings=show_knuckle_bearings,
                         rotation_dir=1) {
   x_offst = steering_panel_length / 2 - knuckle_dia / 2;
 
@@ -65,10 +84,13 @@ module knuckle_assembly(show_wheel=true,
   translate([x_offst, 0, z_offst]) {
     rotate([0, 0, rotation_dir * angle]) {
       knuckle_mount(show_wheel=show_wheel,
-                    show_bearing=show_bearing,
                     show_tie_rod=show_tie_rod,
                     show_bolts=show_knuckle_bolts,
-                    show_shaft=show_shaft);
+                    show_shaft=show_shaft,
+                    show_tie_rod_shaft=show_tie_rod_shaft,
+                    show_tie_rod_bearings=show_tie_rod_bearings,
+                    show_knuckle_bearings=show_knuckle_bearings,
+                    knuckle_color_alpha=knuckle_color_alpha);
     }
   }
 }
@@ -102,9 +124,8 @@ module steering_system_assembly(rack_color="white",
                                 pinion_color=matte_black,
                                 panel_color="white",
                                 show_wheels=show_wheels,
-                                show_bearing=show_bearing,
                                 show_servo_mount_panel=show_servo_mount_panel,
-                                show_brackets=show_brackets,
+                                show_rack_link=show_rack_link,
                                 show_rack=show_rack,
                                 show_distance=show_distance,
                                 show_kingpin_posts=show_kingpin_posts,
@@ -121,7 +142,29 @@ module steering_system_assembly(rack_color="white",
                                 fasten_panel_bolt=fasten_panel_bolt,
                                 show_knuckle_bolts=show_knuckle_bolts,
                                 show_bolts_info=show_bolts_info,
+                                show_servo_horn=show_servo_horn,
+                                show_servo_horn_bolt=show_servo_horn_bolt,
+                                show_servo_horn_screws=show_servo_horn_screws,
+                                show_servo_bolts=show_servo_bolts,
+                                show_servo_nuts=show_servo_nuts,
+                                echo_servo_bolts_info=echo_servo_bolts_info,
+                                show_knuckle_shaft=show_knuckle_shaft,
+                                show_tie_rod_shaft=show_tie_rod_shaft,
+                                show_tie_rod_bearings=show_tie_rod_bearings,
+                                show_knuckle_bearings=show_knuckle_bearings,
+                                knuckle_color_alpha=knuckle_color_alpha,
                                 center_y=true) {
+
+  module _knuckle() {
+    knuckle_assembly(show_wheel=show_wheels,
+                     show_knuckle_bolts=show_knuckle_bolts,
+                     show_tie_rod_shaft=show_tie_rod_shaft,
+                     show_shaft=show_knuckle_shaft,
+                     show_tie_rod=show_tie_rod,
+                     show_tie_rod_bearings=show_tie_rod_bearings,
+                     show_knuckle_bearings=show_knuckle_bearings,
+                     knuckle_color_alpha=knuckle_color_alpha);
+  }
 
   translate([0,
              center_y ? 0 : -steering_rack_support_width / 2,
@@ -134,7 +177,7 @@ module steering_system_assembly(rack_color="white",
                      show_rack=show_rack,
                      show_servo_mount_panel=show_servo_mount_panel,
                      show_kingpin_posts=show_kingpin_posts,
-                     show_brackets=show_brackets,
+                     show_rack_link=show_rack_link,
                      show_kingpin_bolt=show_kingpin_bolt,
                      show_hinges_bolts=show_hinges_bolts,
                      show_panel_bolt=show_panel_bolt,
@@ -142,6 +185,12 @@ module steering_system_assembly(rack_color="white",
                      fasten_hinges_bolts=fasten_hinges_bolts,
                      fasten_panel_bolt=fasten_panel_bolt,
                      show_bolts_info=show_bolts_info,
+                     show_servo_horn=show_servo_horn,
+                     show_servo_horn_bolt=show_servo_horn_bolt,
+                     show_servo_horn_screws=show_servo_horn_screws,
+                     show_servo_bolts=show_servo_bolts,
+                     show_servo_nuts=show_servo_nuts,
+                     echo_servo_bolts_info=echo_servo_bolts_info,
                      rack_color=rack_color);
 
       knuckle_rotation_angle = assembly_use_front_steering ? 0 : 180;
@@ -151,16 +200,11 @@ module steering_system_assembly(rack_color="white",
       }
       if (show_knuckles) {
         rotate([0, 0, knuckle_rotation_angle]) {
-          knuckle_assembly(show_wheel=show_wheels,
-                           show_bearing=show_bearing,
-                           show_knuckle_bolts=show_knuckle_bolts,
-                           show_tie_rod=show_tie_rod);
+          _knuckle();
         }
         rotate([0, 0, knuckle_rotation_angle]) {
           mirror([1, 0, 0]) {
-            knuckle_assembly(show_wheel=show_wheels,
-                             show_knuckle_bolts=show_knuckle_bolts,
-                             show_bearing=show_bearing);
+            _knuckle();
           }
         }
       }

@@ -142,31 +142,39 @@ m2_hole_dia                                          = 2.4; // M2 bolt hole diam
 m25_hole_dia                                         = 2.6; // M2.5 bolt hole diameter
 m3_hole_dia                                          = 3.2; // M3 bolt hole diameter
 
+m1_pan_head_dia                                      = 1.8;
 m2_pan_head_dia                                      = 3.5;
 m25_pan_head_dia                                     = 4.3;
 m3_pan_head_dia                                      = 4.8;
 
+m1_pan_head_h                                        = 0.8;
 m2_pan_head_h                                        = 1.38;
 m25_pan_head_h                                       = 1.6;
 m3_pan_head_h                                        = 1.5;
 
+m1_round_head_dia                                    = 2.60;
 m2_round_head_dia                                    = 3.5;
 m25_round_head_dia                                   = 5.2;
 m3_round_head_dia                                    = 5.62;
+m1_round_head_h                                      = 0.8;
 m2_round_head_h                                      = 1.38;
 m25_round_head_h                                     = 2.10;
 m3_round_head_h                                      = 2.90;
 
+m1_countersunk_head_dia                              = 2.60;
 m2_countersunk_head_dia                              = 3.5;
 m25_countersunk_head_dia                             = 4.04;
 m3_countersunk_head_dia                              = 6.50;
+m1_countersunk_head_h                                = 0.8;
 m2_countersunk_head_h                                = 1.38;
 m25_countersunk_head_h                               = 1.1;
 m3_countersunk_head_h                                = 1.7;
 
+m1_hex_head_dia                                      = 2.60;
 m2_hex_head_dia                                      = 3.5;
 m25_hex_head_dia                                     = 5.2;
 m3_hex_head_dia                                      = 5.62;
+m1_hex_head_h                                        = 0.8;
 m2_hex_head_h                                        = 1.38;
 m25_hex_head_h                                       = 2.10;
 m3_hex_head_h                                        = 2.90;
@@ -195,14 +203,14 @@ bolt_specs                                           = [[1,
                                                                      "pan", metallic_silver_2,
                                                                      "countersunk", metallic_silver_1,
                                                                      "round", matte_black],
-                                                          "head", ["pan", ["dia", m2_pan_head_dia,
-                                                                           "height", m2_pan_head_h],
-                                                                   "hex", ["dia", m2_hex_head_dia,
-                                                                           "height", m2_hex_head_h],
-                                                                   "round", ["dia", m2_round_head_dia,
-                                                                             "height", m2_round_head_h],
-                                                                   "countersunk", ["dia", m2_countersunk_head_dia,
-                                                                                   "height", m2_countersunk_head_h]],
+                                                          "head", ["pan", ["dia", m1_pan_head_dia,
+                                                                           "height", m1_pan_head_h],
+                                                                   "hex", ["dia", m1_hex_head_dia,
+                                                                           "height", m1_hex_head_h],
+                                                                   "round", ["dia", m1_round_head_dia,
+                                                                             "height", m1_round_head_h],
+                                                                   "countersunk", ["dia", m1_countersunk_head_dia,
+                                                                                   "height", m1_countersunk_head_h]],
                                                           "heights", [2, 4, 6, 10, 12, 14, 16]]] ,
                                                         [3,
                                                          ["nut", ["outer_dia", m3_nut_dia,
@@ -2399,7 +2407,7 @@ servo_horn_arm_thickness                             = 1.5;
 servo_horn_arm_z_offset                              = 2.5;
 
 // This is the through-hole diameter at the center for the servo motor.
-servo_horn_center_hole_dia                           = 1.87;
+servo_horn_center_hole_dia                           = 2.0;
 
 // This is the total length of the horn (two arms + center ring).
 servo_horn_len                                       = 24;

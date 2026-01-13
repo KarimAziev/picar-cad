@@ -15,14 +15,13 @@ use <components/chassis/chassis.scad>
 show_socket_case                  = true;
 // Insert the socket jack for the XT90E-M male connector and fasten it with bolts.
 show_socket                       = false;
-
 show_socket_bolts                 = false;
 
 show_socket_nuts                  = false;
 
 echo_socket_bolts_info            = false;
+
 // Seat the XT90E-M male connector into the fuse holders.
-// Connect the XT90E-M male connector to the fuse holders.
 show_socket_case_fuses            = false;
 
 // Slide the socket case lid into place.
@@ -69,13 +68,18 @@ show_head_assembly                = false;
 show_tilt_servo                   = false;
 show_tilt_servo_bolts             = false;
 show_tilt_servo_nuts              = false;
+
 // Install the pan servo into the neck base.
 show_pan_servo                    = false;
 show_pan_servo_bolts              = false;
 show_pan_servo_nuts               = false;
+show_pan_servo_horn               = false;
 // Attach the head shell on top of the tilt bracket.
 show_head                         = false;
-show_head_servo_horn              = false;
+show_tilt_servo_horn              = false;
+show_tilt_servo_horn_bolt         = false;
+show_tilt_servo_horn_screws       = false;
+
 // Insert the camera boards into their holders.
 show_camera                       = false;
 show_camera_bolts                 = false;
@@ -160,20 +164,38 @@ show_servo_mount_panel            = false;
 
 show_panel_bolt                   = false;
 fasten_panel_bolt                 = false;
+
 // Mount the steering servo on its panel.
 show_servo                        = false;
+show_steering_servo_bolts         = false;
+show_steering_servo_nuts          = false;
+echo_steering_servo_bolts_info    = false;
 // Press the pinion onto the servo spline.
 show_pinion                       = false;
-// Attach the knuckles to the kingpin posts.
+
+show_steering_servo_horn          = false;
+show_steering_servo_horn_bolt     = false;
+show_steering_servo_horn_screws   = false;
+
+// Insert bearings into the knuckles and attach them to the kingpin posts.
 show_knuckles                     = false;
-// Keep bearings visible for clearance checks.
+show_knuckle_bearings             = false;
+
+// Transparency of the knuckle
+knuckle_color_alpha               = 0.6; // [0:0.1:1]
+
+show_knuckle_shaft                = false;
+
+show_tie_rod_shaft                = false;
+
 show_knuckle_bolts                = false;
 
-show_bearing                      = true;
-// Add the tie-rod brackets to the knuckles.
-show_brackets                     = false;
+// Connect only one rack link and only on one of the knuckles
+show_rack_link                    = false;
 // Link the knuckles with the tie rod.
 show_tie_rod                      = false;
+
+show_tie_rod_bearings             = false;
 
 show_hinges_bolts                 = false;
 
@@ -225,7 +247,6 @@ chassis(panel_color=panel_color,
         show_pan_servo_bolts=show_pan_servo_bolts,
         show_pan_servo_nuts=show_pan_servo_nuts,
         show_head=show_head,
-        show_head_servo_horn=show_head_servo_horn,
         show_camera=show_camera,
         show_camera_bolts=show_camera_bolts,
         show_camera_nuts=show_camera_nuts,
@@ -238,9 +259,8 @@ chassis(panel_color=panel_color,
         show_ir_case_rail_nuts=show_ir_case_rail_nuts,
         show_steering_panel=show_steering_panel,
         show_rear_wheels=show_rear_wheels,
-        show_bearing=show_bearing,
         show_servo_mount_panel=show_servo_mount_panel,
-        show_brackets=show_brackets,
+        show_rack_link=show_rack_link,
         show_rack=show_rack,
         show_kingpin_posts=show_kingpin_posts,
         show_pinion=show_pinion,
@@ -259,8 +279,8 @@ chassis(panel_color=panel_color,
         show_fuses=show_fuses,
         show_rear_panel_buttons=false,
         show_rear_panel=false,
-        show_battery_holders=show_battery_holders,
         show_ups_hat=false,
+        show_battery_holders=show_battery_holders,
         show_power_case_lid=show_power_case_lid,
         show_lipo_pack=show_lipo_pack,
         show_rpi=show_rpi,
@@ -297,4 +317,19 @@ chassis(panel_color=panel_color,
         show_panel_bolt=show_panel_bolt,
         fasten_kingpin_bolt=fasten_kingpin_bolt,
         fasten_hinges_bolts=fasten_hinges_bolts,
-        fasten_panel_bolt=fasten_panel_bolt);
+        fasten_panel_bolt=fasten_panel_bolt,
+        show_steering_servo_horn=show_steering_servo_horn,
+        show_steering_servo_horn_bolt=show_steering_servo_horn_bolt,
+        show_steering_servo_horn_screws=show_steering_servo_horn_screws,
+        show_tilt_servo_horn=show_tilt_servo_horn,
+        show_pan_servo_horn=show_pan_servo_horn,
+        show_tilt_servo_horn_screws=show_tilt_servo_horn_screws,
+        show_tilt_servo_horn_bolt=show_tilt_servo_horn_bolt,
+        show_steering_servo_bolts=show_steering_servo_bolts,
+        show_steering_servo_nuts=show_steering_servo_nuts,
+        show_knuckle_shaft=show_knuckle_shaft,
+        echo_steering_servo_bolts_info=echo_steering_servo_bolts_info,
+        show_tie_rod_shaft=show_tie_rod_shaft,
+        show_tie_rod_bearings=show_tie_rod_bearings,
+        show_knuckle_bearings=show_knuckle_bearings,
+        knuckle_color_alpha=knuckle_color_alpha);

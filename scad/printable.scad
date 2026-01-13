@@ -198,7 +198,7 @@ module printable(spacing=5) {
           }
         }
         translate([0, -spacing, 0]) {
-          steering_servo_mount();
+          steering_servo_mount_printable();
         }
 
         translate([0,

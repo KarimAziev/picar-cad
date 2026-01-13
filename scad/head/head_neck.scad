@@ -50,29 +50,34 @@ use <../placeholders/servo.scad>
 use <../placeholders/tilt_servo.scad>
 use <head_mount.scad>
 
-pan_servo_rotation      = 19; // [-179:179]
-tilt_servo_rotation     = 0; // [-90:90]
+pan_servo_rotation          = 19; // [-179:179]
+tilt_servo_rotation         = 0; // [-90:90]
 
-show_camera             = true;
-show_camera_bolts       = true;
-show_camera_nuts        = true;
-show_ir_case            = true;
-show_ir_case_bolts      = true;
-show_ir_case_nuts       = true;
-show_ir_led             = true;
-show_ir_case_rail       = true;
-show_ir_case_rail_bolts = true;
-show_ir_case_rail_nuts  = true;
+show_camera                 = true;
+show_camera_bolts           = true;
+show_camera_nuts            = true;
+show_ir_case                = true;
+show_ir_case_bolts          = true;
+show_ir_case_nuts           = true;
+show_ir_led                 = true;
+show_ir_case_rail           = true;
+show_ir_case_rail_bolts     = true;
+show_ir_case_rail_nuts      = true;
 
-show_servo_horn         = true;
+show_pan_servo_horn         = true;
 
-show_tilt_servo_bolts   = true;
-show_tilt_servo_nuts    = true;
+show_tilt_servo_horn_screws = true;
+show_tilt_servo_horn_bolt   = true;
+head_servo_horn_screw_side  = "horizontal";
 
-show_pan_servo_bolts    = true;
-show_pan_servo_nuts     = true;
+show_tilt_servo_horn        = true;
+show_tilt_servo_bolts       = true;
+show_tilt_servo_nuts        = true;
 
-echo_bolts_length       = true;
+show_pan_servo_bolts        = true;
+show_pan_servo_nuts         = true;
+
+echo_bolts_length           = true;
 
 function head_neck_full_w(base_width=max(head_neck_pan_servo_slot_width,
                                          head_neck_tilt_servo_slot_width),
@@ -146,7 +151,6 @@ module head_neck_base(show_tilt_servo=false,
                       show_camera=true,
                       show_pan_servo=false,
                       show_ir_case=false,
-                      show_servo_horn=true,
                       show_camera_bolts=show_camera_bolts,
                       show_camera_nuts=show_camera_nuts,
                       show_ir_case_bolts=show_ir_case_bolts,
@@ -161,6 +165,11 @@ module head_neck_base(show_tilt_servo=false,
                       show_pan_servo_nuts=show_pan_servo_nuts,
                       tilt_servo_rotation=tilt_servo_rotation,
                       pan_servo_rotation=pan_servo_rotation,
+                      show_tilt_servo_horn_screws=show_tilt_servo_horn_screws,
+                      show_tilt_servo_horn_bolt=show_tilt_servo_horn_bolt,
+                      show_tilt_servo_horn=show_tilt_servo_horn,
+                      show_pan_servo_horn=show_pan_servo_horn,
+                      head_servo_horn_screw_side=head_servo_horn_screw_side,
                       bracket_color=matte_black,
                       head_color="white") {
   pan_servo_h = pan_servo_size[2];
@@ -219,7 +228,8 @@ module head_neck_base(show_tilt_servo=false,
           if (show_pan_servo) {
             rotate([0, 0, 0]) {
               rotate([0, 180, 0]) {
-                pan_servo(show_servo_horn=show_servo_horn,
+                pan_servo(show_servo_horn=show_pan_servo_horn,
+                          show_servo_horn_bolt=true,
                           servo_horn_rotation=pan_servo_rotation);
               }
             }
@@ -273,7 +283,7 @@ module head_neck_base(show_tilt_servo=false,
                   rotate([0, 90, 0]) {
                     head_mount(head_color=head_color,
                                show_ir_case=show_ir_case,
-                               show_servo_horn=show_servo_horn,
+                               show_servo_horn=show_tilt_servo_horn,
                                show_camera=show_camera,
                                show_camera_bolts=show_camera_bolts,
                                show_camera_nuts=show_camera_nuts,
@@ -282,7 +292,10 @@ module head_neck_base(show_tilt_servo=false,
                                show_ir_led=show_ir_led,
                                show_ir_case_rail=show_ir_case_rail,
                                show_ir_case_rail_bolts=show_ir_case_rail_bolts,
-                               show_ir_case_rail_nuts=show_ir_case_rail_nuts);
+                               show_ir_case_rail_nuts=show_ir_case_rail_nuts,
+                               show_servo_horn_screws=show_tilt_servo_horn_screws,
+                               show_servo_horn_bolt=show_tilt_servo_horn_bolt,
+                               servo_horn_screw_side=head_servo_horn_screw_side);
                   }
                 }
               }
@@ -308,12 +321,16 @@ module head_neck(center_pan_servo_slot=false,
                  show_ir_case_rail=show_ir_case_rail,
                  show_ir_case_rail_bolts=show_ir_case_rail_bolts,
                  show_ir_case_rail_nuts=show_ir_case_rail_nuts,
-                 show_servo_horn=show_servo_horn,
+                 show_tilt_servo_horn=show_tilt_servo_horn,
+                 show_pan_servo_horn=show_pan_servo_horn,
                  show_tilt_servo_bolts=show_tilt_servo_bolts,
                  show_tilt_servo_nuts=show_tilt_servo_nuts,
                  show_pan_servo_bolts=show_pan_servo_bolts,
                  show_pan_servo_nuts=show_pan_servo_nuts,
                  bracket_color="white",
+                 show_tilt_servo_horn_screws=show_tilt_servo_horn_screws,
+                 show_tilt_servo_horn_bolt=show_tilt_servo_horn_bolt,
+                 head_servo_horn_screw_side=head_servo_horn_screw_side,
                  tilt_servo_rotation=tilt_servo_rotation,
                  pan_servo_rotation=pan_servo_rotation,
                  head_color="white") {
@@ -325,7 +342,6 @@ module head_neck(center_pan_servo_slot=false,
                    show_pan_servo=show_pan_servo,
                    show_ir_case=show_ir_case,
                    show_ir_led=show_ir_led,
-                   show_servo_horn=show_servo_horn,
                    bracket_color=bracket_color,
                    head_color=head_color,
                    pan_servo_rotation=pan_servo_rotation,
@@ -337,10 +353,15 @@ module head_neck(center_pan_servo_slot=false,
                    show_ir_case_rail=show_ir_case_rail,
                    show_ir_case_rail_bolts=show_ir_case_rail_bolts,
                    show_ir_case_rail_nuts=show_ir_case_rail_nuts,
+                   show_tilt_servo_horn=show_tilt_servo_horn,
+                   show_pan_servo_horn=show_pan_servo_horn,
                    show_tilt_servo_bolts=show_tilt_servo_bolts,
                    show_tilt_servo_nuts=show_tilt_servo_nuts,
                    show_pan_servo_bolts=show_pan_servo_bolts,
-                   show_pan_servo_nuts=show_pan_servo_nuts);
+                   show_pan_servo_nuts=show_pan_servo_nuts,
+                   show_tilt_servo_horn_screws=show_tilt_servo_horn_screws,
+                   show_tilt_servo_horn_bolt=show_tilt_servo_horn_bolt,
+                   head_servo_horn_screw_side=head_servo_horn_screw_side);
   }
 
   if (!center_pan_servo_slot) {
@@ -392,11 +413,14 @@ module head_neck_printable() {
             show_ir_case_rail=false,
             show_ir_case_rail_bolts=false,
             show_ir_case_rail_nuts=false,
-            show_servo_horn=false,
+            show_pan_servo_horn=false,
+            show_tilt_servo_horn=false,
             show_tilt_servo_bolts=false,
             show_tilt_servo_nuts=false,
             show_pan_servo_bolts=false,
-            show_pan_servo_nuts=false);
+            show_pan_servo_nuts=false,
+            show_tilt_servo_horn_screws=false,
+            show_tilt_servo_horn_bolt=false);
 }
 
 head_neck(center_pan_servo_slot=true);

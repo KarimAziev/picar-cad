@@ -34,53 +34,71 @@ use <util.scad>
 upper_side_hole_pts     =  scale_upper_trapezoid_pts(x=chassis_trapezoid_hole_width,
                                                      y=chassis_trapezoid_hole_len);
 
-front_pan_y             = chassis_upper_len + front_panel_bolt_y_offset();
-effective_front_pan_dia = max(front_panel_connector_bolt_bore_dia,
-                              front_panel_connector_bolt_dia) / 2;
-front_pan_end           = front_pan_y - effective_front_pan_dia;
-top_ribbon_hole_pos     = front_pan_end
-                           - chassis_pan_servo_top_ribbon_cuttout_h
-                           - chassis_upper_front_padding_y;
+front_pan_y                     = chassis_upper_len + front_panel_bolt_y_offset();
+effective_front_pan_dia         = max(front_panel_connector_bolt_bore_dia,
+                                      front_panel_connector_bolt_dia) / 2;
+front_pan_end                   = front_pan_y - effective_front_pan_dia;
+top_ribbon_hole_pos             = front_pan_end
+                                   - chassis_pan_servo_top_ribbon_cuttout_h
+                                   - chassis_upper_front_padding_y;
 
-head_pos                = -chassis_upper_holes_border_w * 2
-                           - chassis_pan_servo_recesess_y_len
-                           - chassis_pan_servo_recesess_thickness / 2
-                           + top_ribbon_hole_pos
-                           - chassis_upper_holes_border_w
-                           - chassis_head_zone_y_offset;
+head_pos                        = -chassis_upper_holes_border_w * 2
+                                   - chassis_pan_servo_recesess_y_len
+                                   - chassis_pan_servo_recesess_thickness / 2
+                                   + top_ribbon_hole_pos
+                                   - chassis_upper_holes_border_w
+                                   - chassis_head_zone_y_offset;
 
-hole_h                  = chassis_thickness + 1;
-steering_pan_pos        = chassis_upper_len
-                           - steering_panel_distance_from_top;
+hole_h                          = chassis_thickness + 1;
+steering_pan_pos                = chassis_upper_len
+                                   - steering_panel_distance_from_top;
 
 trapezoid_rows_params   = calc_cols_params(gap=chassis_pan_servo_side_trapezoid_gap
                                            + chassis_upper_holes_border_w,
                                            cols=chassis_pan_servo_side_trapezoid_rows,
                                            w=chassis_trapezoid_hole_len);
-trapezoid_step          = trapezoid_rows_params[0];
-trapezoid_total_y       = trapezoid_rows_params[1];
+trapezoid_step                  = trapezoid_rows_params[0];
+trapezoid_total_y               = trapezoid_rows_params[1];
 
 top_most_row_params = calc_cols_params(cols=chassis_top_most_holes_rows,
                                        w=chassis_top_most_holes_side_len,
                                        gap=chassis_top_most_holes_gap);
 
-top_most_rects_start    = top_ribbon_hole_pos
-                           - top_most_row_params[1]
-                           - chassis_top_most_holes_side_y_offset;
+top_most_rects_start            = top_ribbon_hole_pos
+                                   - top_most_row_params[1]
+                                   - chassis_top_most_holes_side_y_offset;
 
 top_rib_hole_pts        = scale_upper_trapezoid_pts(x=chassis_pan_servo_top_ribbon_cuttout_len / 2,
                                                     y=chassis_pan_servo_top_ribbon_cuttout_h);
 
-show_knuckle_bolts      = false;
+show_knuckle_bolts              = false;
 
-show_bolts_info         = false;
-show_kingpin_bolt       = false;
-show_hinges_bolts       = false;
-show_panel_bolt         = false;
+show_bolts_info                 = false;
+show_kingpin_bolt               = false;
+show_hinges_bolts               = false;
+show_panel_bolt                 = false;
 
-fasten_kingpin_bolt     = false;
-fasten_hinges_bolts     = false;
-fasten_panel_bolt       = false;
+fasten_kingpin_bolt             = false;
+fasten_hinges_bolts             = false;
+fasten_panel_bolt               = false;
+
+show_steering_servo_horn        = false;
+show_steering_servo_horn_bolt   = false;
+show_steering_servo_horn_screws = false;
+show_tilt_servo_horn            = false;
+show_pan_servo_horn             = false;
+
+show_tilt_servo_horn_screws     = false;
+show_tilt_servo_horn_bolt       = false;
+
+show_steering_servo_bolts       = false;
+show_steering_servo_nuts        = false;
+echo_steering_servo_bolts_info  = false;
+show_knuckle_shaft              = false;
+show_tie_rod_shaft              = false;
+show_tie_rod_bearings           = false;
+show_knuckle_bearings           = false;
+knuckle_color_alpha             = 0.6; // [0:0.1:1]
 
 module holes_row_along_slanted_side(trapezoid_pts,
                                     rows,
@@ -543,7 +561,6 @@ module chassis_upper_3d(panel_color=white_snow_1,
                         show_pan_servo=false,
                         show_pan_servo_bolts=false,
                         show_pan_servo_nuts=false,
-                        show_head_servo_horn=false,
                         show_camera=false,
                         show_camera_bolts=false,
                         show_camera_nuts=false,
@@ -558,9 +575,8 @@ module chassis_upper_3d(panel_color=white_snow_1,
                         show_steering_panel=true,
                         pinion_color=matte_black,
                         show_wheels=false,
-                        show_bearing=false,
                         show_servo_mount_panel=false,
-                        show_brackets=false,
+                        show_rack_link=false,
                         show_rack=true,
                         show_kingpin_posts=false,
                         show_pinion=false,
@@ -571,6 +587,15 @@ module chassis_upper_3d(panel_color=white_snow_1,
                         tilt_servo_rotation=0,
                         show_distance=false,
                         show_upper_chassis=true,
+                        show_knuckle_shaft=false,
+                        show_tie_rod_shaft=show_tie_rod_shaft,
+                        show_tilt_servo_horn_screws=show_tilt_servo_horn_screws,
+                        show_tilt_servo_horn_bolt=show_tilt_servo_horn_bolt,
+                        show_steering_servo_horn=show_steering_servo_horn,
+                        show_steering_servo_horn_bolt=show_steering_servo_horn_bolt,
+                        show_steering_servo_horn_screws=show_steering_servo_horn_screws,
+                        show_tilt_servo_horn=show_tilt_servo_horn,
+                        show_pan_servo_horn=show_pan_servo_horn,
                         show_knuckle_bolts=show_knuckle_bolts,
                         show_bolts_info=show_bolts_info,
                         show_kingpin_bolt=show_kingpin_bolt,
@@ -578,7 +603,13 @@ module chassis_upper_3d(panel_color=white_snow_1,
                         show_panel_bolt=show_panel_bolt,
                         fasten_kingpin_bolt=fasten_kingpin_bolt,
                         fasten_hinges_bolts=fasten_hinges_bolts,
-                        fasten_panel_bolt=fasten_panel_bolt) {
+                        fasten_panel_bolt=fasten_panel_bolt,
+                        show_steering_servo_bolts=show_steering_servo_bolts,
+                        show_steering_servo_nuts=show_steering_servo_nuts,
+                        echo_steering_servo_bolts_info=echo_steering_servo_bolts_info,
+                        show_tie_rod_bearings=show_tie_rod_bearings,
+                        show_knuckle_bearings=show_knuckle_bearings,
+                        knuckle_color_alpha=knuckle_color_alpha) {
 
   if (show_upper_chassis) {
     difference() {
@@ -624,9 +655,8 @@ module chassis_upper_3d(panel_color=white_snow_1,
                                pinion_color=pinion_color,
                                panel_color=steering_panel_color,
                                show_wheels=show_wheels,
-                               show_bearing=show_bearing,
                                show_servo_mount_panel=show_servo_mount_panel,
-                               show_brackets=show_brackets,
+                               show_rack_link=show_rack_link,
                                show_rack=show_rack,
                                show_distance=show_distance,
                                show_kingpin_posts=show_kingpin_posts,
@@ -639,9 +669,20 @@ module chassis_upper_3d(panel_color=white_snow_1,
                                show_kingpin_bolt=show_kingpin_bolt,
                                show_hinges_bolts=show_hinges_bolts,
                                show_panel_bolt=show_panel_bolt,
+                               show_servo_horn=show_steering_servo_horn,
+                               show_servo_horn_bolt=show_steering_servo_horn_bolt,
+                               show_servo_horn_screws=show_steering_servo_horn_screws,
                                fasten_kingpin_bolt=fasten_kingpin_bolt,
                                fasten_hinges_bolts=fasten_hinges_bolts,
                                fasten_panel_bolt=fasten_panel_bolt,
+                               show_servo_bolts=show_steering_servo_bolts,
+                               show_servo_nuts=show_steering_servo_nuts,
+                               echo_servo_bolts_info=echo_steering_servo_bolts_info,
+                               show_knuckle_shaft=show_knuckle_shaft,
+                               show_tie_rod_shaft=show_tie_rod_shaft,
+                               show_tie_rod_bearings=show_tie_rod_bearings,
+                               show_knuckle_bearings=show_knuckle_bearings,
+                               knuckle_color_alpha=knuckle_color_alpha,
                                center_y=false);
     }
   }
@@ -665,14 +706,17 @@ module chassis_upper_3d(panel_color=white_snow_1,
                 show_tilt_servo_nuts=show_tilt_servo_nuts,
                 show_pan_servo_bolts=show_pan_servo_bolts,
                 show_pan_servo_nuts=show_pan_servo_nuts,
-                show_servo_horn=show_head_servo_horn,
                 show_camera_bolts=show_camera_bolts,
                 show_camera_nuts=show_camera_nuts,
                 show_ir_case_bolts=show_ir_case_bolts,
                 show_ir_case_nuts=show_ir_case_nuts,
                 show_ir_case_rail=show_ir_case_rail,
                 show_ir_case_rail_bolts=show_ir_case_rail_bolts,
-                show_ir_case_rail_nuts=show_ir_case_rail_nuts);
+                show_ir_case_rail_nuts=show_ir_case_rail_nuts,
+                show_tilt_servo_horn=show_tilt_servo_horn,
+                show_pan_servo_horn=show_pan_servo_horn,
+                show_tilt_servo_horn_screws=show_tilt_servo_horn_screws,
+                show_tilt_servo_horn_bolt=show_tilt_servo_horn_bolt);
     }
   }
 
@@ -717,7 +761,6 @@ module chassis_upper(panel_color=white_snow_1,
                      show_pan_servo=true,
                      show_pan_servo_bolts=true,
                      show_pan_servo_nuts=true,
-                     show_head_servo_horn=true,
                      show_camera=true,
                      show_camera_bolts=true,
                      show_camera_nuts=true,
@@ -729,11 +772,13 @@ module chassis_upper(panel_color=white_snow_1,
                      show_ir_case_rail_bolts=true,
                      show_ir_case_rail_nuts=true,
                      show_steering_panel=true,
+                     show_steering_servo_horn=show_steering_servo_horn,
+                     show_steering_servo_horn_bolt=show_steering_servo_horn_bolt,
+                     show_steering_servo_horn_screws=show_steering_servo_horn_screws,
                      pinion_color=matte_black,
                      show_wheels=false,
-                     show_bearing=true,
                      show_servo_mount_panel=true,
-                     show_brackets=true,
+                     show_rack_link=true,
                      show_rack=true,
                      show_kingpin_posts=true,
                      show_pinion=true,
@@ -751,6 +796,18 @@ module chassis_upper(panel_color=white_snow_1,
                      fasten_kingpin_bolt=fasten_kingpin_bolt,
                      fasten_hinges_bolts=fasten_hinges_bolts,
                      fasten_panel_bolt=fasten_panel_bolt,
+                     show_tilt_servo_horn=show_tilt_servo_horn,
+                     show_pan_servo_horn=show_pan_servo_horn,
+                     show_tilt_servo_horn_screws=show_tilt_servo_horn_screws,
+                     show_tilt_servo_horn_bolt=show_tilt_servo_horn_bolt,
+                     show_steering_servo_bolts=show_steering_servo_bolts,
+                     show_steering_servo_nuts=show_steering_servo_nuts,
+                     echo_steering_servo_bolts_info=echo_steering_servo_bolts_info,
+                     show_knuckle_shaft=show_knuckle_shaft,
+                     show_tie_rod_shaft=show_tie_rod_shaft,
+                     show_tie_rod_bearings=show_tie_rod_bearings,
+                     show_knuckle_bearings=show_knuckle_bearings,
+                     knuckle_color_alpha=knuckle_color_alpha,
                      pan_servo_rotation=0) {
   union() {
     translate([0, chassis_transition_len, 0]) {
@@ -770,7 +827,6 @@ module chassis_upper(panel_color=white_snow_1,
                        show_pan_servo=show_pan_servo,
                        show_pan_servo_bolts=show_pan_servo_bolts,
                        show_pan_servo_nuts=show_pan_servo_nuts,
-                       show_head_servo_horn=show_head_servo_horn,
                        show_camera=show_camera,
                        show_camera_bolts=show_camera_bolts,
                        show_camera_nuts=show_camera_nuts,
@@ -784,9 +840,8 @@ module chassis_upper(panel_color=white_snow_1,
                        show_steering_panel=show_steering_panel,
                        pinion_color=pinion_color,
                        show_wheels=show_wheels,
-                       show_bearing=show_bearing,
                        show_servo_mount_panel=show_servo_mount_panel,
-                       show_brackets=show_brackets,
+                       show_rack_link=show_rack_link,
                        show_rack=show_rack,
                        show_kingpin_posts=show_kingpin_posts,
                        show_pinion=show_pinion,
@@ -809,7 +864,22 @@ module chassis_upper(panel_color=white_snow_1,
                        show_front_rear_panel_nuts=show_front_rear_panel_nuts,
                        show_front_panel_mount_bolts=show_front_panel_mount_bolts,
                        show_front_panel_mount_nuts=show_front_panel_mount_nuts,
-                       echo_front_panel_bolts_info=echo_front_panel_bolts_info);
+                       echo_front_panel_bolts_info=echo_front_panel_bolts_info,
+                       show_steering_servo_horn=show_steering_servo_horn,
+                       show_steering_servo_horn_bolt=show_steering_servo_horn_bolt,
+                       show_steering_servo_horn_screws=show_steering_servo_horn_screws,
+                       show_tilt_servo_horn=show_tilt_servo_horn,
+                       show_tilt_servo_horn_screws=show_tilt_servo_horn_screws,
+                       show_tilt_servo_horn_bolt=show_tilt_servo_horn_bolt,
+                       show_steering_servo_bolts=show_steering_servo_bolts,
+                       show_steering_servo_nuts=show_steering_servo_nuts,
+                       echo_steering_servo_bolts_info=echo_steering_servo_bolts_info,
+                       show_knuckle_shaft=show_knuckle_shaft,
+                       show_tie_rod_shaft=show_tie_rod_shaft,
+                       show_pan_servo_horn=show_pan_servo_horn,
+                       show_tie_rod_bearings=show_tie_rod_bearings,
+                       show_knuckle_bearings=show_knuckle_bearings,
+                       knuckle_color_alpha=knuckle_color_alpha);
     }
     if (chassis_use_connector && show_upper_chassis) {
       color(panel_color, alpha=1) {
@@ -838,7 +908,6 @@ module chassis_upper_printable() {
                   show_pan_servo=false,
                   show_pan_servo_bolts=false,
                   show_pan_servo_nuts=false,
-                  show_head_servo_horn=false,
                   show_camera=false,
                   show_camera_bolts=false,
                   show_camera_nuts=false,
@@ -850,19 +919,23 @@ module chassis_upper_printable() {
                   show_ir_case_rail_bolts=false,
                   show_ir_case_rail_nuts=false,
                   show_steering_panel=false,
-                  pinion_color=matte_black,
+                  show_steering_servo_horn=false,
+                  show_steering_servo_horn_bolt=false,
+                  show_steering_servo_horn_screws=false,
                   show_wheels=false,
-                  show_bearing=false,
+                  show_tie_rod_bearings=false,
+                  show_knuckle_bearings=false,
                   show_servo_mount_panel=false,
-                  show_brackets=false,
+                  show_rack_link=false,
                   show_rack=false,
                   show_kingpin_posts=false,
                   show_pinion=false,
                   show_tie_rod=false,
                   show_servo=false,
                   show_knuckles=false,
+                  tilt_servo_rotation=0,
                   show_distance=false,
-                  show_upper_chassis=false,
+                  show_upper_chassis=true,
                   show_knuckle_bolts=false,
                   show_bolts_info=false,
                   show_kingpin_bolt=false,
@@ -870,7 +943,13 @@ module chassis_upper_printable() {
                   show_panel_bolt=false,
                   fasten_kingpin_bolt=false,
                   fasten_hinges_bolts=false,
-                  fasten_panel_bolt=false);
+                  fasten_panel_bolt=false,
+                  show_tilt_servo_horn=false,
+                  show_pan_servo_horn=false,
+                  show_tilt_servo_horn_screws=false,
+                  show_tilt_servo_horn_bolt=false,
+                  show_knuckle_shaft=false,
+                  show_tie_rod_shaft=false);
   }
 }
 

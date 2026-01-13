@@ -74,7 +74,7 @@ show_rack               = false;
 show_servo_mount_panel  = false;
 show_servo              = false;
 show_pinion             = false;
-show_brackets           = false;
+show_rack_link          = false;
 show_kingpin_posts      = false;
 
 show_bolts_info         = false;
@@ -85,6 +85,14 @@ show_panel_bolt         = false;
 fasten_kingpin_bolt     = false;
 fasten_hinges_bolts     = false;
 fasten_panel_bolt       = false;
+
+show_servo_bolts        = false;
+show_servo_nuts         = false;
+echo_servo_bolts_info   = false;
+
+show_servo_horn         = false;
+show_servo_horn_bolt    = false;
+show_servo_horn_screws  = false;
 
 steering_hinge_bolt_rad = steering_panel_hinge_bolt_dia / 2;
 
@@ -301,7 +309,7 @@ module steering_hinges(slot_mode=false,
 }
 
 module steering_rack_support(show_rack=false,
-                             show_brackets=false,
+                             show_rack_link=false,
                              show_kingpin_posts=false,
                              show_kingpin_bolt=false,
                              show_hinges_bolts=false,
@@ -419,7 +427,7 @@ module steering_rack_support(show_rack=false,
                  steering_rack_support_thickness / 2
                  + steering_rack_z_distance_from_panel]) {
         rotate([0, 0, 180]) {
-          rack_mount(show_brackets=show_brackets,
+          rack_mount(show_rack_link=show_rack_link,
                      rack_color=is_undef(rack_color) ?
                      ppanel_color
                      : rack_color);
@@ -435,7 +443,7 @@ module steering_panel(panel_color,
                       show_servo_mount_panel=show_servo_mount_panel,
                       show_servo=show_servo,
                       show_pinion=show_pinion,
-                      show_brackets=show_brackets,
+                      show_rack_link=show_rack_link,
                       show_kingpin_posts=show_kingpin_posts,
                       show_kingpin_bolt=show_kingpin_bolt,
                       show_hinges_bolts=show_hinges_bolts,
@@ -445,12 +453,18 @@ module steering_panel(panel_color,
                       fasten_panel_bolt=fasten_panel_bolt,
                       show_bolts_info=show_bolts_info,
                       pinion_color=blue_grey_carbon,
+                      show_servo_horn=show_servo_horn,
+                      show_servo_horn_bolt=show_servo_horn_bolt,
+                      show_servo_horn_screws=show_servo_horn_screws,
+                      show_servo_bolts=show_servo_bolts,
+                      show_servo_nuts=show_servo_nuts,
+                      echo_servo_bolts_info=echo_servo_bolts_info,
                       center_y=true) {
   translate([0, center_y ? 0 : -steering_rack_support_width / 2, 0]) {
     union() {
       steering_rack_support(panel_color=panel_color,
                             show_rack=show_rack,
-                            show_brackets=show_brackets,
+                            show_rack_link=show_rack_link,
                             show_kingpin_posts=show_kingpin_posts,
                             show_panel_bolt=show_panel_bolt,
                             show_hinges_bolts=show_hinges_bolts,
@@ -472,7 +486,13 @@ module steering_panel(panel_color,
       if (show_servo_mount_panel) {
         steering_servo_mount(show_pinion=show_pinion,
                              show_servo=show_servo,
-                             pinion_color=pinion_color);
+                             pinion_color=pinion_color,
+                             show_servo_horn=show_servo_horn,
+                             show_servo_horn_bolt=show_servo_horn_bolt,
+                             show_servo_horn_screws=show_servo_horn_screws,
+                             show_bolts=show_servo_bolts,
+                             show_nuts=show_servo_nuts,
+                             echo_bolts_info=echo_servo_bolts_info);
       }
     }
   }
@@ -483,7 +503,7 @@ module steering_panel_printable() {
                  show_servo_mount_panel=false,
                  show_servo=false,
                  show_pinion=false,
-                 show_brackets=false,
+                 show_rack_link=false,
                  show_kingpin_posts=false,
                  show_bolts_info=false,
                  show_kingpin_bolt=false,
@@ -491,7 +511,10 @@ module steering_panel_printable() {
                  show_panel_bolt=false,
                  fasten_kingpin_bolt=false,
                  fasten_hinges_bolts=false,
-                 fasten_panel_bolt=false);
+                 fasten_panel_bolt=false,
+                 show_servo_bolts=false,
+                 show_servo_nuts=false,
+                 echo_servo_bolts_info=false);
 }
 
 steering_panel(panel_color="white",

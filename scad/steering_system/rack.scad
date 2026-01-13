@@ -57,7 +57,7 @@ module steering_rack(length=steering_rack_teethed_length,
                      pressure_angle=steering_pinion_pressure_angle,
                      clearance=steering_pinion_clearance,
                      backlash=steering_pinion_backlash,
-                     show_brackets=false,
+                     show_rack_link=false,
                      bracket_color="white",
                      rack_color="white") {
 
@@ -135,7 +135,7 @@ module steering_rack(length=steering_rack_teethed_length,
       }
       translate(offst) {
 
-        if (show_brackets) {
+        if (show_rack_link) {
           rack_connector_assembly(rack_color=rack_color,
                                   bracket_color=bracket_color,
                                   rotation_dir=-1);
@@ -163,11 +163,11 @@ module steering_rack(length=steering_rack_teethed_length,
   }
 }
 
-module rack_mount(show_brackets=false, rack_color="white") {
+module rack_mount(show_rack_link=false, rack_color="white") {
   translate([rack_offset($t), 0, 0]) {
-    steering_rack(show_brackets=show_brackets,
+    steering_rack(show_rack_link=show_rack_link,
                   rack_color=rack_color);
   }
 }
 
-rack_mount(show_brackets=false);
+rack_mount(show_rack_link=false);

@@ -32,6 +32,10 @@ module tilt_servo(center=false,
                   servo_color=tilt_servo_color,
                   alpha=1,
                   show_servo_horn=false,
+                  show_servo_horn_screws,
+                  show_servo_horn_bolt,
+                  servo_horn_single,
+                  servo_horn_screw_side,
                   rotation_angle) {
   servo(size=[tilt_servo_size[0],
               tilt_servo_size[1],
@@ -59,7 +63,10 @@ module tilt_servo(center=false,
         servo_horn_rotation=is_undef(rotation_angle) ?
         (($t * ($t > 0.5 ? -90 : 45)) + 45) :
         rotation_angle,
-
+        show_servo_horn_screws=show_servo_horn_screws,
+        show_servo_horn_bolt=show_servo_horn_bolt,
+        servo_horn_single=servo_horn_single,
+        servo_horn_screw_side=servo_horn_screw_side,
         gearbox_gear_size=tilt_servo_gearbox_size) {
     children();
   }

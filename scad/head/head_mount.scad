@@ -40,7 +40,12 @@ show_ir_led             = false;
 show_ir_case_rail       = false;
 show_ir_case_rail_bolts = false;
 show_ir_case_rail_nuts  = false;
+
 show_servo_horn         = false;
+show_servo_horn_screws  = false;
+show_servo_horn_bolt    = false;
+servo_horn_single       = false;
+servo_horn_screw_side   = "horizontal";
 
 echo_bolts_info         = true;
 
@@ -302,7 +307,10 @@ module side_panel_with_servo_horn_center_position() {
   }
 }
 
-module side_panel_servo_horn() {
+module side_panel_servo_horn(show_servo_horn_screws=show_servo_horn_screws,
+                             show_servo_horn_bolt=show_servo_horn_bolt,
+                             servo_horn_single=servo_horn_single,
+                             servo_horn_screw_side=servo_horn_screw_side) {
   translate([0, head_side_panel_curve_end, head_plate_thickness]) {
 
     side_panel_with_servo_horn_center_position() {
@@ -311,13 +319,20 @@ module side_panel_servo_horn() {
                    0,
                    -servo_horn_ring_height
                    + servo_horn_arm_z_offset]) {
-          servo_horn(center=true);
+          servo_horn(center=true,
+                     show_screws=show_servo_horn_screws,
+                     single=servo_horn_single,
+                     show_bolt=false,
+                     screw_side=servo_horn_screw_side);
         }
-        translate([0, 0, - servo_horn_ring_height]) {
-          bolt(d=servo_horn_center_hole_dia,
-               head_type="pan",
-               bolt_color=matte_black,
-               h=servo_horn_ring_height + head_plate_thickness);
+
+        if (show_servo_horn_bolt) {
+          translate([0, 0, - servo_horn_ring_height]) {
+            bolt(d=servo_horn_center_hole_dia,
+                 head_type="pan",
+                 bolt_color=matte_black,
+                 h=servo_horn_ring_height + head_plate_thickness);
+          }
         }
       }
     }
@@ -368,6 +383,10 @@ module side_panel_2d() {
 }
 
 module side_panel_3d(show_servo_horn=false,
+                     show_servo_horn_screws=show_servo_horn_screws,
+                     show_servo_horn_bolt=show_servo_horn_bolt,
+                     servo_horn_single=servo_horn_single,
+                     servo_horn_screw_side=servo_horn_screw_side,
                      pan_color="white") {
   color(pan_color, alpha=1) {
     linear_extrude(height=head_plate_thickness) {
@@ -375,12 +394,19 @@ module side_panel_3d(show_servo_horn=false,
     }
   }
   if (show_servo_horn) {
-    side_panel_servo_horn();
+    side_panel_servo_horn(show_servo_horn_screws=show_servo_horn_screws,
+                          show_servo_horn_bolt=show_servo_horn_bolt,
+                          servo_horn_single=servo_horn_single,
+                          servo_horn_screw_side=servo_horn_screw_side);
   }
 }
 
 module side_panel(is_left=true,
-                  show_servo_horn=false,
+                  show_servo_horn=show_servo_horn,
+                  show_servo_horn_screws=show_servo_horn_screws,
+                  show_servo_horn_bolt=show_servo_horn_bolt,
+                  servo_horn_single=servo_horn_single,
+                  servo_horn_screw_side=servo_horn_screw_side,
                   pan_color="white") {
   offsets = [head_plate_width / 2,
              -head_plate_height / 2];
@@ -389,14 +415,24 @@ module side_panel(is_left=true,
     translate([-offsets[0], offsets[1], 0]) {
       mirror([1, 0, 0]) {
         rotate([0, 90, 0]) {
-          side_panel_3d(show_servo_horn=show_servo_horn, pan_color=pan_color);
+          side_panel_3d(show_servo_horn=show_servo_horn,
+                        pan_color=pan_color,
+                        show_servo_horn_screws=show_servo_horn_screws,
+                        show_servo_horn_bolt=show_servo_horn_bolt,
+                        servo_horn_single=servo_horn_single,
+                        servo_horn_screw_side=servo_horn_screw_side);
         }
       }
     }
   } else {
     translate([offsets[0], offsets[1], 0]) {
       rotate([0, 90, 0]) {
-        side_panel_3d(show_servo_horn=show_servo_horn, pan_color=pan_color);
+        side_panel_3d(show_servo_horn=show_servo_horn,
+                      pan_color=pan_color,
+                      show_servo_horn_screws=show_servo_horn_screws,
+                      show_servo_horn_bolt=show_servo_horn_bolt,
+                      servo_horn_single=servo_horn_single,
+                      servo_horn_screw_side=servo_horn_screw_side);
       }
     }
   }
@@ -456,7 +492,6 @@ module head_mount(head_color="white",
                   ir_rail_color=jet_black,
                   show_camera=show_camera,
                   show_ir_case=show_ir_case,
-                  show_servo_horn=show_servo_horn,
                   show_ir_led=show_ir_led,
                   show_ir_case_rail=show_ir_case_rail,
                   show_ir_case_bolts=show_ir_case_bolts,
@@ -464,7 +499,12 @@ module head_mount(head_color="white",
                   show_ir_case_rail_bolts=show_ir_case_rail_bolts,
                   show_ir_case_rail_nuts=show_ir_case_rail_nuts,
                   show_camera_nuts=show_camera_nuts,
-                  show_camera_bolts=show_camera_bolts) {
+                  show_camera_bolts=show_camera_bolts,
+                  show_servo_horn=show_servo_horn,
+                  show_servo_horn_screws=show_servo_horn_screws,
+                  show_servo_horn_bolt=show_servo_horn_bolt,
+                  servo_horn_single=servo_horn_single,
+                  servo_horn_screw_side=servo_horn_screw_side) {
 
   module _head_ir_case() {
     head_ir_case(ir_rail_color=ir_rail_color,
@@ -494,6 +534,10 @@ module head_mount(head_color="white",
       }
       side_panel(is_left=false,
                  show_servo_horn=show_servo_horn,
+                 show_servo_horn_screws=show_servo_horn_screws,
+                 show_servo_horn_bolt=show_servo_horn_bolt,
+                 servo_horn_single=servo_horn_single,
+                 servo_horn_screw_side=servo_horn_screw_side,
                  pan_color=head_color);
     }
   }

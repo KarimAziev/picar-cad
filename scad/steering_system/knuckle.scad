@@ -36,15 +36,28 @@ use <knuckle_connector.scad>
 use <knuckle_shaft.scad>
 use <tie_rod_shaft.scad>
 
-module knuckle_mount(show_wheel=false,
-                     show_bearing=false,
-                     show_shaft=false,
-                     show_tie_rod=false,
-                     show_tie_rod_arm_length=false,
-                     show_bolts=false,
+show_wheel              = false;
+show_knuckle_bearings   = false;
+
+show_shaft              = false;
+show_tie_rod            = false;
+show_tie_rod_bearings   = false;
+show_tie_rod_shaft      = false;
+show_tie_rod_arm_length = false;
+show_bolts              = false;
+knuckle_color_alpha     = 0.6; // [0:0.1:1]
+
+module knuckle_mount(show_wheel=show_wheel,
+                     show_knuckle_bearings=show_knuckle_bearings,
+                     show_tie_rod_bearings=show_tie_rod_bearings,
+                     show_shaft=show_shaft,
+                     show_tie_rod=show_tie_rod,
+                     show_tie_rod_shaft=show_tie_rod_shaft,
+                     show_tie_rod_arm_length=show_tie_rod_arm_length,
+                     show_bolts=show_bolts,
                      knuckle_color="white",
-                     knuckle_color_alpha=0.6,
-                     knuckle_shaft_color="white") {
+                     knuckle_shaft_color="white",
+                     knuckle_color_alpha=knuckle_color_alpha) {
   union() {
     knuckle_bent_shaft_rack_link_arm(knuckle_color=knuckle_color,
                                      knuckle_shaft_color=knuckle_shaft_color,
@@ -56,14 +69,14 @@ module knuckle_mount(show_wheel=false,
     knuckle_kingpin_connector(border_w=knuckle_border_w,
                               knuckle_color=knuckle_color,
                               knuckle_color_alpha=knuckle_color_alpha,
-                              show_bearing=show_bearing);
+                              show_bearing=show_knuckle_bearings);
 
     knuckle_tie_rod_shaft_arm(border_w=knuckle_border_w,
                               knuckle_color=knuckle_color,
                               show_tie_rod=show_tie_rod,
                               show_length=show_tie_rod_arm_length,
-                              show_bearing=show_bearing,
-                              show_shaft=show_shaft,
+                              show_bearing=show_tie_rod_bearings,
+                              show_shaft=show_tie_rod_shaft,
                               show_bolts=show_bolts);
   }
 }
@@ -345,50 +358,51 @@ module knuckle_tie_rod_shaft_arm(border_w=knuckle_border_w,
     }
   }
 }
+module knuckle_printable(use_mirror=false,
+                         knuckle_color="white",
+                         knuckle_shaft_color="white",
+                         knuckle_color_alpha=knuckle_color_alpha) {
 
-module knuckle_print_plate(show_wheel=false,
-                           show_bearing=false,
-                           show_shaft=false,
-                           show_tie_rod=false,
-                           show_tie_rod_arm_length=false,
-                           knuckle_color="white",
-                           knuckle_color_alpha=0.6,
-                           knuckle_shaft_color="white",
-                           spacing=4) {
-  translate([0, 0, knuckle_height]) {
+  module _knuckle() {
     rotate([180, 0, 0]) {
-      knuckle_mount(show_bearing=show_bearing,
-                    show_shaft=show_shaft,
-                    show_wheel=show_wheel,
-                    show_tie_rod=show_tie_rod,
-                    show_tie_rod_arm_length=show_tie_rod_arm_length,
+      knuckle_mount(show_wheel=false,
+                    show_knuckle_bearings=false,
+                    show_tie_rod_bearings=false,
+                    show_shaft=false,
+                    show_tie_rod=false,
+                    show_tie_rod_shaft=false,
+                    show_tie_rod_arm_length=false,
+                    show_bolts=false,
                     knuckle_color=knuckle_color,
-                    knuckle_color_alpha=knuckle_color_alpha,
-                    knuckle_shaft_color=knuckle_shaft_color);
-      translate([knuckle_dia + spacing, 0, 0]) {
-        mirror([1, 0, 0]) {
-          knuckle_mount(show_bearing=show_bearing,
-                        show_shaft=show_shaft,
-                        show_wheel=show_wheel,
-                        show_tie_rod=show_tie_rod,
-                        show_tie_rod_arm_length=show_tie_rod_arm_length,
-                        knuckle_color=knuckle_color,
+                    knuckle_shaft_color=knuckle_shaft_color,
+                    knuckle_color_alpha=knuckle_color_alpha);
+    }
+  }
+  if (use_mirror) {
+    mirror([1, 0, 0]) {
+      _knuckle();
+    }
+  } else {
+    _knuckle();
+  }
+}
+
+module knuckle_print_plate(knuckle_color="white",
+                           knuckle_shaft_color="white",
+                           knuckle_color_alpha=knuckle_color_alpha,
+                           spacing=4) {
+
+  translate([0, 0, knuckle_height]) {
+    knuckle_printable(knuckle_color=knuckle_color,
+                      knuckle_shaft_color=knuckle_shaft_color,
+                      knuckle_color_alpha=knuckle_color_alpha);
+    translate([knuckle_dia + spacing, 0, 0]) {
+      knuckle_printable(knuckle_color=knuckle_color,
+                        knuckle_shaft_color=knuckle_shaft_color,
                         knuckle_color_alpha=knuckle_color_alpha,
-                        knuckle_shaft_color=knuckle_shaft_color);
-        }
-      }
+                        use_mirror=true);
     }
   }
 }
 
-union() {
-  knuckle_print_plate(show_wheel=false,
-                      show_bearing=false,
-                      show_shaft=false,
-                      show_tie_rod=false,
-                      show_tie_rod_arm_length=false,
-                      knuckle_color="white",
-                      knuckle_color_alpha=0.6,
-                      knuckle_shaft_color="white",
-                      spacing=4);
-}
+knuckle_print_plate();
