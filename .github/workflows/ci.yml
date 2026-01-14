@@ -72,11 +72,10 @@ jobs:
         run: CI_PREVIEW_ONLY=1 make all
 
       - name: Prepare export bundle (tags only)
-        if: startsWith(env.TARGET_REF, 'refs/tags/v') || startsWith(github.event.inputs.ref, 'v')
+        if: ${{ startsWith(github.ref, 'refs/tags/v') || startsWith(github.event.inputs.ref || '', 'v') || startsWith(github.event.inputs.ref || '', 'refs/tags/v') }}
         run: |
           set -euo pipefail
-          REF="${TARGET_REF:-${GITHUB_REF}}"
-          if [ -n "${{ github.event.inputs.ref }}" ]; then REF="${{ github.event.inputs.ref }}"; fi
+          REF="${{ github.event.inputs.ref != '' && github.event.inputs.ref || github.ref }}"
           case "$REF" in
             refs/tags/*) VERSION="${REF##*/}" ;;
             v*) VERSION="$REF" ;;
@@ -90,7 +89,7 @@ jobs:
         run: make clean
 
       - name: Upload export artifact
-        if: startsWith(env.TARGET_REF, 'refs/tags/v') || startsWith(github.event.inputs.ref, 'v')
+        if: ${{ startsWith(github.ref, 'refs/tags/v') || startsWith(github.event.inputs.ref || '', 'v') || startsWith(github.event.inputs.ref || '', 'refs/tags/v') }}
         uses: actions/upload-artifact@v4
         with:
           name: picar-cad-${{ env.VERSION }}
@@ -99,7 +98,7 @@ jobs:
 
   release:
     needs: build
-    if: startsWith(env.TARGET_REF, 'refs/tags/v') || startsWith(github.event.inputs.ref, 'v')
+    if: ${{ startsWith(github.ref, 'refs/tags/v') || startsWith(github.event.inputs.ref || '', 'v') || startsWith(github.event.inputs.ref || '', 'refs/tags/v') }}
     runs-on: ubuntu-latest
     steps:
       - name: Set version
