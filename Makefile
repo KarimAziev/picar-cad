@@ -3,6 +3,7 @@ SHELL := /bin/sh
 OPENSCAD ?= openscad
 SCAD_COMMON_ARGS := --backend=Manifold --enable=textmetrics
 HARDWARNINGS := --hardwarnings
+CI_PREVIEW_ONLY ?= 0
 
 DESIGNER := Karim Aziiev
 DESIGNER_CONTACT := Karim Aziiev <karim.aziiev@gmail.com>
@@ -90,10 +91,17 @@ clean-tests:
 
 $(STL_DIR)/%.stl: scad/%.scad
 	@mkdir -p $(dir $@)
+ifneq ($(CI_PREVIEW_ONLY),0)
+	$(OPENSCAD) $(SCAD_COMMON_ARGS) $(HARDWARNINGS) --preview --imgsize=400,400 -o /tmp/preview-$$(@F).png "$<"
+else
 	$(OPENSCAD) $(SCAD_COMMON_ARGS) $(HARDWARNINGS) -o "$@" "$<"
+endif
 
 $(MF3_DIR)/%.3mf: scad/%.scad
 	@mkdir -p $(dir $@)
+ifneq ($(CI_PREVIEW_ONLY),0)
+	$(OPENSCAD) $(SCAD_COMMON_ARGS) $(HARDWARNINGS) --preview --imgsize=400,400 -o /tmp/preview-$$(@F).png "$<"
+else
 	@title=$$(basename "$(@F)" .3mf); \
 	description="Assembly export from $< (units: mm)"; \
 	material="$(DEFAULT_MATERIAL_TYPE)"; \
@@ -102,6 +110,7 @@ $(MF3_DIR)/%.3mf: scad/%.scad
 		-O export-3mf/meta-data-description="$$description" \
 		-O export-3mf/material-type="$$material" \
 		-o "$@" "$<"; then :; else exit $$?; fi
+endif
 
 define GEN_PRINT_RULES
 $(STL_DIR)/$(1).stl: $(2)
