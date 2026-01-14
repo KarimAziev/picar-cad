@@ -7,12 +7,18 @@ on:
   pull_request:
     branches: ["main"]
   workflow_dispatch:
+    inputs:
+      ref:
+        description: "Git ref (branch or tag) to run on"
+        required: false
+        default: ""
 
 permissions:
   contents: write
 
 env:
   EXPORT_DIR: build/export
+  TARGET_REF: ${{ github.event.inputs.ref != '' && github.event.inputs.ref || github.ref }}
 
 jobs:
   build:
@@ -25,6 +31,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.event.inputs.ref || github.ref }}
 
       - name: Add swap (6G) to avoid OOM
         run: |
@@ -65,10 +72,16 @@ jobs:
         run: CI_PREVIEW_ONLY=1 make all
 
       - name: Prepare export bundle (tags only)
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(env.TARGET_REF, 'refs/tags/v') || startsWith(github.event.inputs.ref, 'v')
         run: |
           set -euo pipefail
-          VERSION="${GITHUB_REF##*/}"
+          REF="${TARGET_REF:-${GITHUB_REF}}"
+          if [ -n "${{ github.event.inputs.ref }}" ]; then REF="${{ github.event.inputs.ref }}"; fi
+          case "$REF" in
+            refs/tags/*) VERSION="${REF##*/}" ;;
+            v*) VERSION="$REF" ;;
+            *) echo "Not a tag ref, skipping export bundle."; exit 0 ;;
+          esac
           mkdir -p dist
           zip -r "dist/picar-cad-${VERSION}.zip" "$EXPORT_DIR"
           echo "VERSION=$VERSION" >> $GITHUB_ENV
@@ -77,7 +90,7 @@ jobs:
         run: make clean
 
       - name: Upload export artifact
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(env.TARGET_REF, 'refs/tags/v') || startsWith(github.event.inputs.ref, 'v')
         uses: actions/upload-artifact@v4
         with:
           name: picar-cad-${{ env.VERSION }}
@@ -86,12 +99,20 @@ jobs:
 
   release:
     needs: build
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(env.TARGET_REF, 'refs/tags/v') || startsWith(github.event.inputs.ref, 'v')
     runs-on: ubuntu-latest
     steps:
       - name: Set version
         id: vars
-        run: echo "version=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
+        run: |
+          REF="${TARGET_REF:-${GITHUB_REF}}"
+          if [ -n "${{ github.event.inputs.ref }}" ]; then REF="${{ github.event.inputs.ref }}"; fi
+          case "$REF" in
+            refs/tags/*) VERSION="${REF##*/}" ;;
+            v*) VERSION="$REF" ;;
+            *) echo "No tag ref supplied; exiting."; exit 1 ;;
+          esac
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Download export artifact
         uses: actions/download-artifact@v4
