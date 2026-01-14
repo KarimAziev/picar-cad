@@ -498,7 +498,8 @@ module steering_panel(panel_color,
   }
 }
 
-module steering_panel_printable() {
+module steering_panel_printable(panel_color="white",
+                                rack_color="white") {
   steering_panel(show_rack=false,
                  show_servo_mount_panel=false,
                  show_servo=false,
@@ -514,7 +515,9 @@ module steering_panel_printable() {
                  fasten_panel_bolt=false,
                  show_servo_bolts=false,
                  show_servo_nuts=false,
-                 echo_servo_bolts_info=false);
+                 echo_servo_bolts_info=false,
+                 panel_color=panel_color,
+                 rack_color=rack_color);
 }
 
 steering_panel(panel_color="white",

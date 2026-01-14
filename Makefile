@@ -9,7 +9,7 @@ DESIGNER_CONTACT := Karim Aziiev <karim.aziiev@gmail.com>
 LICENSE_TERMS := GPL-3.0-or-later
 DEFAULT_MATERIAL_TYPE := basematerial
 TIRE_MATERIAL_TYPE := TPU 95A HF
-DEFAULT_COLOR := #f9d72c
+DEFAULT_COLOR := \#f9d72c
 DEFAULT_DECIMAL_PRECISION := 6
 
 ASSEMBLY_SRC := scad/assembly.scad
@@ -110,7 +110,7 @@ $(STL_DIR)/$(1).stl: $(2)
 
 $(MF3_DIR)/$(1).3mf: $(2)
 	@mkdir -p $$(dir $$@)
-	@title=$$(basename "$$(@F)" .3mf); \
+	@title=$$$$(basename "$$(@F)" .3mf); \
 	description="Exported from $$< (units: mm)"; \
 	material="$(DEFAULT_MATERIAL_TYPE)"; \
 	case "$$title" in \
