@@ -9,7 +9,7 @@ DESIGNER_CONTACT := Karim Aziiev <karim.aziiev@gmail.com>
 LICENSE_TERMS := GPL-3.0-or-later
 DEFAULT_MATERIAL_TYPE := basematerial
 TIRE_MATERIAL_TYPE := TPU 95A HF
-DEFAULT_COLOR := \#f9d72c
+DEFAULT_COLOR := white
 DEFAULT_DECIMAL_PRECISION := 6
 
 ASSEMBLY_SRC := scad/assembly.scad
