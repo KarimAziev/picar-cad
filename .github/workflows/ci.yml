@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+    branches: ["*"]
+    tags: ["v*"]
+  pull_request:
+    branches: ["main"]
+
+env:
+  EXPORT_DIR: build/export
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install OpenSCAD nightly (AppImage)
+        run: |
+          set -euo pipefail
+          url="https://files.openscad.org/snapshots/OpenSCAD-2026.01.14-x86_64.AppImage"
+          curl -L "$url" -o /tmp/openscad-nightly.AppImage
+          chmod +x /tmp/openscad-nightly.AppImage
+          /tmp/openscad-nightly.AppImage --appimage-extract
+          sudo mv squashfs-root /opt/openscad-nightly
+          sudo ln -sf /opt/openscad-nightly/AppRun /usr/local/bin/openscad
+          openscad -v
+
+      - name: Run make all
+        run: make all
+
+      - name: Prepare export bundle (tags only)
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          set -euo pipefail
+          VERSION="${GITHUB_REF##*/}"
+          mkdir -p dist
+          zip -r "dist/picar-cad-${VERSION}.zip" "$EXPORT_DIR"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Run make clean
+        run: make clean
+
+      - name: Upload export artifact
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-artifact@v4
+        with:
+          name: picar-cad-${{ env.VERSION }}
+          path: dist/picar-cad-${{ env.VERSION }}.zip
+          if-no-files-found: error
+
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set version
+        id: vars
+        run: echo "version=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
+
+      - name: Download export artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: picar-cad-${{ steps.vars.outputs.version }}
+
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          tag: ${{ steps.vars.outputs.version }}
+          name: picar-cad ${{ steps.vars.outputs.version }}
+          artifacts: picar-cad-${{ steps.vars.outputs.version }}.zip
+          token: ${{ secrets.GITHUB_TOKEN }}
