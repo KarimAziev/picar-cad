@@ -27,7 +27,8 @@ use <../../placeholders/ups_hat.scad>
 use <../../steering_system/knuckle_shaft.scad>
 use <../../steering_system/rack_and_pinion_assembly.scad>
 use <../../steering_system/steering_panel.scad>
-use <../front_panel.scad>
+use <../front_panel/front_panel.scad>
+use <../front_panel/util.scad>
 use <chassis_connector.scad>
 use <util.scad>
 

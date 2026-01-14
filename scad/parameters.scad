@@ -620,7 +620,7 @@ front_panel_height                                   = 22.5;   // panel height
 front_panel_thickness                                = 2.5;   // panel thickness
 // A slight tilt of the panel with the ultrasonic sensor to prevent the sensor's
 // "eyes" from dipping down into the floor.
-front_panel_rotation_angle                           = 0;
+front_panel_rotation_angle                           = 5;
 
 front_panel_rear_panel_thickness                     = 1.5;
 front_panel_connector_bolt_dia                       = m25_hole_dia;

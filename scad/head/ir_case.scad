@@ -1,5 +1,5 @@
 /**
- * Module: Case for IR LED This file contains an enclosure for a modified
+ * Module: Case for IR LED. This file contains an enclosure for a modified
  * Waveshare Infrared LED Light Board Module.
  *
  * The original LED board is incompatible with the Raspberry Camera Module 3,
@@ -315,53 +315,58 @@ module ir_case(show_bolts=false,
                show_nuts=false,
                mount_thickness=2,
                echo_bolts_info=false,
+               center=false,
                color) {
   full_thickness = ir_case_full_thickness();
 
   y_offst = ir_case_height - ir_case_holes_distance_from_top
     - ir_light_detector_dia;
-  union() {
-    color(color, alpha=1) {
-      difference() {
-        ir_case_base_plate(h=full_thickness);
-        translate([0,
-                   y_offst,
-                   ir_case_led_boss_thickness]) {
-          linear_extrude(height=ir_case_thickness + ir_case_led_boss_thickness,
-                         center=false,
-                         convexity=2) {
-            square([ir_case_width + 1, ir_case_height], center=false);
-          }
-        }
-      }
-    }
-
-    color(color, alpha=1) {
-      ir_case_slider();
-    }
-
-    for (spec = [["right",
-                  [ir_case_l_bracket_len + ir_case_width, y_offst, 0],
-                  [90, 0, -90]],
-                 ["left",
-                  [-ir_case_l_bracket_len, y_offst - ir_case_l_bracket_w, 0],
-                  [90, 0, 90]]]) {
-      let (name = spec[0],
-           offst = spec[1],
-           rotation = spec[2]) {
-        if (is_ir_case_bracket_enabled(name)) {
-          translate(offst) {
-            rotate(rotation) {
-              ir_case_bracket(show_bolts=show_bolts,
-                              show_nuts=show_nuts,
-                              color=color,
-                              mount_thickness=mount_thickness,
-                              echo_bolts_info=echo_bolts_info);
+  maybe_translate([center ? -ir_case_width / 2 : 0,
+                   center ? -ir_case_height / 2 : 0,
+                   0]) {
+    union() {
+      color(color, alpha=1) {
+        difference() {
+          ir_case_base_plate(h=full_thickness);
+          translate([0,
+                     y_offst,
+                     ir_case_led_boss_thickness]) {
+            linear_extrude(height=ir_case_thickness
+                           + ir_case_led_boss_thickness,
+                           center=false,
+                           convexity=2) {
+              square([ir_case_width + 1, ir_case_height], center=false);
             }
           }
         }
       }
-      ;
+
+      color(color, alpha=1) {
+        ir_case_slider();
+      }
+
+      for (spec = [["right",
+                    [ir_case_l_bracket_len + ir_case_width, y_offst, 0],
+                    [90, 0, -90]],
+                   ["left",
+                    [-ir_case_l_bracket_len, y_offst - ir_case_l_bracket_w, 0],
+                    [90, 0, 90]]]) {
+        let (name = spec[0],
+             offst = spec[1],
+             rotation = spec[2]) {
+          if (is_ir_case_bracket_enabled(name)) {
+            translate(offst) {
+              rotate(rotation) {
+                ir_case_bracket(show_bolts=show_bolts,
+                                show_nuts=show_nuts,
+                                color=color,
+                                mount_thickness=mount_thickness,
+                                echo_bolts_info=echo_bolts_info);
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

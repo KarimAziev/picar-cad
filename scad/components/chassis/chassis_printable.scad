@@ -17,11 +17,12 @@ panel_color   = "white";
 use_connector = chassis_use_connector;
 
 module chassis_printable(panel_color=panel_color,
-                         chassis_use_connector=use_connector) {
+                         chassis_use_connector=use_connector,
+                         spacing=4) {
   color(panel_color, alpha=1) {
     union() {
       translate([0,
-                 (chassis_use_connector ? chassis_connector_len + 4 : 0),
+                 (chassis_use_connector ? chassis_connector_len + spacing : 0),
                  0]) {
         chassis_upper_printable();
       }

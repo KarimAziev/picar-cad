@@ -11,19 +11,22 @@
 //  - Sensor: HC-SR04 ultrasonic sensor
 //  - Attachment Hardware: M2.5 bolts
 
-include <../colors.scad>
-include <../parameters.scad>
+include <../../colors.scad>
+include <../../parameters.scad>
 
-use <../lib/functions.scad>
-use <../lib/holes.scad>
-use <../lib/plist.scad>
-use <../lib/shapes2d.scad>
-use <../lib/shapes3d.scad>
-use <../lib/slots.scad>
-use <../lib/transforms.scad>
-use <../placeholders/bolt.scad>
-use <../placeholders/smd/smd_chip.scad>
-use <../placeholders/ultrasonic.scad>
+use <../../lib/functions.scad>
+use <../../lib/holes.scad>
+use <../../lib/plist.scad>
+use <../../lib/shapes2d.scad>
+use <../../lib/shapes3d.scad>
+use <../../lib/slots.scad>
+use <../../lib/transforms.scad>
+use <../../placeholders/bolt.scad>
+use <../../placeholders/smd/smd_chip.scad>
+use <../../placeholders/ultrasonic.scad>
+use <front_panel_back_mount.scad>
+use <ultrasonic_rect_slots.scad>
+use <util.scad>
 
 show_front_panel             = true;
 show_ultrasonic              = false;
@@ -34,17 +37,7 @@ show_front_panel_mount_bolts = false;
 show_front_panel_mount_nuts  = false;
 echo_front_panel_bolts_info  = false;
 
-rear_panel_z                 = ultrasonic_pin_len_b
-                                - ultrasonic_thickness
-                                - ultrasonic_pin_protrusion_h
-                                + ultrasonic_pin_thickness;
-
-function front_rear_panel_boss_height() = rear_panel_z
-  + front_panel_thickness / 2
-  - front_panel_ultrasonic_cutout_depth;
-
-function front_rear_panel_full_thickness() = front_rear_panel_boss_height()
-  + front_panel_rear_panel_thickness;
+rear_panel_z                 = front_panel_rear_panel_z();
 
 module ultrasonic_sensor_mounts_2d(d=front_panel_ultrasonic_sensor_dia) {
   rad = d / 2;
@@ -56,78 +49,6 @@ module ultrasonic_sensor_mounts_2d(d=front_panel_ultrasonic_sensor_dia) {
     }
   }
 }
-
-module ultrasonic_rect_slots_2d(h=front_panel_height,
-                                oscilator_w=ultrasonic_oscillator_w + 2,
-                                oscilator_h=ultrasonic_oscillator_h + 2,
-                                jack_w=ultrasonic_pins_jack_w + 2,
-                                jack_h=ultrasonic_pins_jack_h + 2) {
-
-  union() {
-    if (oscilator_h > 0 && oscilator_w > 0) {
-      translate([0,
-                 h / 2 - oscilator_h / 2
-                 - ultrasonic_oscillator_y_offset]) {
-        rounded_rect([oscilator_w, oscilator_h],
-                     center=true,
-                     r=min(2,
-                           min(oscilator_h, oscilator_w) * 0.3),
-                     fn=20);
-      }
-    }
-
-    if (jack_h > 0 && jack_w > 0) {
-      translate([0, -h / 2 + jack_h / 2]) {
-        rounded_rect([jack_w, jack_h],
-                     center=true,
-                     r=min(2,
-                           min(jack_h, jack_w) * 0.3),
-                     fn=20);
-      }
-    }
-  }
-}
-
-module ultrasonic_bolts_2d(size=ultrasonic_bolt_spacing,
-                           d=ultrasonic_bolt_dia) {
-
-  four_corner_holes_2d(size=size, center=true, d=d);
-}
-
-module front_panel_connector_bolts(reverse_y=false,
-                                   use_counterbore=false) {
-  half_len = front_panel_connector_len / 2;
-  half_w   = front_panel_connector_width / 2;
-  bolt_r  = front_panel_connector_bolt_dia / 2;
-
-  s_x = half_w - bolt_r;
-  s_y = half_len - bolt_r;
-
-  function bolt_x(dx) = sign(dx) * s_x - dx;
-  function bolt_y(dy) = s_y - abs(dy);
-
-  for (off = front_panel_connector_bolt_offsets) {
-    x = bolt_x(off[0]);
-    y = bolt_y(off[1]);
-    translate([x, reverse_y ? -y : y, 0]) {
-      if (!use_counterbore) {
-        circle(r = bolt_r, $fn = 360);
-      } else {
-        counterbore(d=front_panel_connector_bolt_dia,
-                    h=front_panel_thickness,
-                    bore_d=front_panel_connector_bolt_bore_dia,
-                    bore_h=front_panel_connector_bolt_bore_h,
-                    autoscale_step=0.1,
-                    reverse=true);
-      }
-    }
-  }
-}
-
-function front_panel_bolt_y_offset(x, y) =
-  - max(front_panel_connector_bolt_bore_dia,
-        front_panel_connector_bolt_dia) / 2
-  - front_panel_connector_bolts_padding_y;
 
 module front_panel_connector(w=front_panel_connector_width,
                              h=front_panel_connector_len,
@@ -261,7 +182,9 @@ module front_panel_main(w=front_panel_width,
                   translate([0, front_panel_bolts_y_offst, 0]) {
                     two_x_bolts_2d(x=bolts_x_offset,
                                    d=front_panel_bolt_dia);
-                    ultrasonic_bolts_2d();
+                    four_corner_holes_2d(size=ultrasonic_bolt_spacing,
+                                         center=true,
+                                         d=ultrasonic_bolt_dia);
                   }
 
                   ultrasonic_sensor_mounts_2d();
@@ -381,70 +304,6 @@ module front_panel(w=front_panel_width,
   }
 }
 
-module front_panel_back_mount(h=front_panel_height,
-                              w=front_panel_width,
-                              bolts_x_offset=front_panel_bolts_x_offset,
-                              thickness=front_panel_rear_panel_thickness) {
-
-  union() {
-    linear_extrude(thickness) {
-      difference() {
-        rounded_rect(size=[w, h],
-                     center=true,
-                     r=front_panel_offset_rad);
-        four_corner_holes_2d(size=ultrasonic_bolt_spacing,
-                             d=ultrasonic_bolt_dia + 0.2,
-                             center=true);
-
-        ultrasonic_smd_slots(half_of_board_w=ultrasonic_w / 2,
-                             length=ultrasonic_smd_len,
-                             w=ultrasonic_smd_w,
-                             thickness=ultrasonic_smd_h,
-                             x_offset=ultrasonic_smd_x_offst) {
-          smd_chip_slot_2d(length=ultrasonic_smd_len,
-                           total_w=ultrasonic_smd_w,
-                           center=true);
-        }
-
-        translate([0, -front_panel_bolts_y_offst, 0]) {
-          two_x_bolts_2d(x=bolts_x_offset,
-                         d=front_panel_bolt_dia);
-        }
-        four_corner_holes_2d(size=ultrasonic_solder_blobs_positions,
-                             d=front_panel_solder_blob_dia,
-                             center=true);
-        ultrasonic_rect_slots_2d(h=ultrasonic_h,
-                                 jack_w=ultrasonic_pins_jack_w + 2,
-                                 jack_h=0,
-                                 oscilator_h=ultrasonic_oscillator_h,
-                                 oscilator_w=ultrasonic_oscillator_w);
-        pw = ultrasonic_pins_jack_w + 2;
-        ph = h - ultrasonic_h + ultrasonic_pins_jack_h;
-
-        translate([0, -h / 2 + ph / 2]) {
-          square([pw, ph], center=true);
-        }
-      }
-    }
-    translate([0, 0, thickness]) {
-      linear_extrude(height=front_rear_panel_boss_height(),
-                     center=false,
-                     convexity=2) {
-        mirror_copy([1, 0, 0]) {
-          translate([bolts_x_offset,
-                     -front_panel_bolts_y_offst,
-                     0]) {
-            ring_2d(r=front_panel_bolt_dia / 2,
-                    fn=100,
-                    w=front_panel_rear_panel_ring_width,
-                    outer=true);
-          }
-        }
-      }
-    }
-  }
-}
-
 module front_panel_printable(panel_color="white",
                              spacing=2,
                              show_front_panel=true,
@@ -505,4 +364,3 @@ module front_panel_assembly(panel_color="white",
 }
 
 front_panel_assembly();
-// front_panel_printable();

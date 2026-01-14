@@ -284,7 +284,7 @@ module power_lid_slots(left_columns,
   }
 }
 
-module power_lid_printable(center=true) {
+module power_lid_printable(center=true, color="white") {
   power_lid(show_xt90e=false,
             show_dc_regulator=false,
             show_ato_fuse=false,
@@ -293,6 +293,7 @@ module power_lid_printable(center=true) {
             show_atm_fuse_holders=false,
             show_perf_board=false,
             show_switch_button=false,
+            lid_color=color,
             center=center);
 }
 

@@ -129,23 +129,8 @@ module rack_link(a_len=steering_rack_link_rack_side_w_length,
   }
 }
 
-module rack_links_printable() {
-  union() {
-    rotate([0, 0, 180]) {
-      rack_link();
-      translate([steering_rack_link_rack_side_w_length
-                 + steering_rack_link_bearing_outer_d
-                 + 5,
-                 0,
-                 0]) {
-        mirror([1, 0, 0]) {
-          rack_link();
-        }
-      }
-    }
-  }
+module rack_link_printable() {
+  rack_link(show_bearing=false, show_text=false);
 }
-
-// steering_rack_links_printable();
 
 rack_link();

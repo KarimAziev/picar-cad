@@ -35,7 +35,7 @@ use <../../placeholders/ups_hat.scad>
 use <../../power/power_case_assembly.scad>
 use <../../power/power_lid.scad>
 use <../../wheels/rear_wheel.scad>
-use <../rear_panel.scad>
+use <../rear_panel/rear_panel.scad>
 use <chassis_connector.scad>
 use <upper_chassis.scad>
 

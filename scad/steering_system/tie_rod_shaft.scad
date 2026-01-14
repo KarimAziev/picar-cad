@@ -88,20 +88,21 @@ module tie_rod_shaft(shaft_color="white",
   }
 }
 
-module tie_rod_shafts_printable(spacing=2) {
+module tie_rod_shaft_printable() {
   translate([0, 0, tie_rod_shaft_full_len()]) {
     rotate([0, 180, 0]) {
-      mirror_copy([1, 0, 0]) {
-        translate([-tie_rod_shaft_dia / 2 - spacing, 0, 0]) {
-          tie_rod_shaft();
-        }
-      }
+      tie_rod_shaft(show_tie_rod=false,
+                    show_bearing=false);
     }
   }
 }
 
-translate([0, 0, tie_rod_shaft_full_len()]) {
-  rotate([0, 180, 0]) {
-    tie_rod_shaft();
+module tie_rod_shafts_printable(spacing=2) {
+  mirror_copy([1, 0, 0]) {
+    translate([-tie_rod_shaft_dia / 2 - spacing, 0, 0]) {
+      tie_rod_shaft_printable();
+    }
   }
 }
+
+tie_rod_shafts_printable();

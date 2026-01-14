@@ -112,47 +112,60 @@ module panel_stack_bolt_holes(y_axle=true, center=false) {
 
 module panel_stack_print_plate(show_buttons_panel=true,
                                show_fuse_panel=true,
+                               align_x=0,
+                               align_y=0,
                                spacing=2) {
   size = panel_stack_size();
   bolt_spacing = panel_stack_bolt_spacing();
 
-  if (show_buttons_panel && show_fuse_panel) {
-    translate([size[0] / 2 + spacing, 0, 0]) {
+  x = ((show_buttons_panel && show_fuse_panel)
+       ? (size[0]) + spacing
+       : size[0] / 2) * align_x;
+
+  y = (size[1] / 2) * align_y;
+
+  translate([x, y, 0]) {
+    if (show_buttons_panel && show_fuse_panel) {
+      translate([size[0] / 2 + spacing, 0, 0]) {
+        control_panel(show_buttons=false,
+                      show_standoff=false,
+                      bolt_spacing=bolt_spacing,
+                      center=true,
+                      size=size);
+      }
+      translate([-size[0] / 2 - spacing, 0, 0]) {
+        fuse_panel(show_fuses=false,
+                   show_standoff=false,
+                   bolt_spacing=bolt_spacing,
+                   size=size,
+                   center=true);
+      }
+    } else if (show_fuse_panel) {
+      fuse_panel(show_standoff=false,
+                 bolt_spacing=bolt_spacing,
+                 center=true,
+                 size=size);
+    } else if (show_buttons_panel) {
       control_panel(show_buttons=false,
                     show_standoff=false,
                     bolt_spacing=bolt_spacing,
                     center=true,
                     size=size);
     }
-    translate([-size[0] / 2 - spacing, 0, 0]) {
-      fuse_panel(show_fuses=false,
-                 show_standoff=false,
-                 bolt_spacing=bolt_spacing,
-                 size=size,
-                 center=true);
-    }
-  } else if (show_fuse_panel) {
-    fuse_panel(show_standoff=false,
-               bolt_spacing=bolt_spacing,
-               center=true,
-               size=size);
-  } else if (show_buttons_panel) {
-    control_panel(show_buttons=show_buttons,
-                  show_standoff=false,
-                  bolt_spacing=bolt_spacing,
-                  center=true,
-                  size=size);
   }
 }
 
 // buttons_fuses_panels(show_buttons_panel=true,
 //                      show_fuse_panel=true);
 
-// panel_stack_print_plate(show_buttons_panel=false);
-panel_stack(show_buttons_panel=true,
-            show_fuse_panel=true,
-            y_axle=false,
-            center=false);
+panel_stack_print_plate(show_buttons_panel=true,
+                        show_fuse_panel=true,
+                        align_x=-1,
+                        align_y=1);
+// panel_stack(show_buttons_panel=true,
+//             show_fuse_panel=true,
+//             y_axle=false,
+//             center=false);
 
 // panel_stack_bolt_holes(y_axle=false,
 //                         center=false);

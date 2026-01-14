@@ -20,14 +20,15 @@ include <colors.scad>
 include <parameters.scad>
 
 use <components/chassis/chassis_printable.scad>
-use <components/front_panel.scad>
-use <components/rear_panel.scad>
+use <components/front_panel/front_panel.scad>
 use <head/head_mount.scad>
 use <head/head_neck.scad>
 use <head/ir_case.scad>
 use <motor_brackets/n20_motor_bracket.scad>
 use <motor_brackets/standard_motor_bracket.scad>
+use <panel_stack/panel_stack.scad>
 use <power/printable.scad>
+use <printable_parts/rear_panel_printable.scad>
 use <steering_system/knuckle.scad>
 use <steering_system/knuckle_shaft.scad>
 use <steering_system/rack.scad>
@@ -63,6 +64,8 @@ show_kingpin_posts    = true;
 show_rack_link        = true;
 show_tie_rod          = true;
 show_tie_rod_shafts   = true;
+show_buttons_panel    = true;
+show_fuse_panel       = true;
 
 module printable(spacing=5) {
   half_of_chassis_len = chassis_len / 2;
@@ -78,7 +81,7 @@ module printable(spacing=5) {
 
   if (show_chasssis) {
     translate([0, 0, chassis_thickness / 2]) {
-      chassis_printable();
+      chassis_printable(spacing=spacing);
     }
   }
 
@@ -165,6 +168,8 @@ module printable(spacing=5) {
 
   translate([-ir_case_width / 2,
              chassis_upper_len
+             + chassis_connector_len
+             + spacing
              + ir_case_height
              + ir_case_rail_h,
              0]) {
@@ -253,14 +258,24 @@ module printable(spacing=5) {
             rack_link();
           }
         }
+        if (show_buttons_panel || show_fuse_panel) {
+          translate([0, -pinion_offst / 2 - spacing * 2 - knuckle_dia / 2, 0]) {
+            panel_stack_print_plate(show_fuse_panel=show_fuse_panel,
+                                    show_buttons_panel=show_buttons_panel,
+                                    align_x=-1,
+                                    align_y=-1);
+          }
+        }
       }
     }
   }
 
   translate([0,
-             -chassis_body_len - max(rear_panel_size[1]
-                                     + rear_panel_mount_thickness
-                                     * 2, wheel_dia) / 2 - 10,
+             -chassis_body_len - chassis_connector_len
+             - max(rear_panel_size[1]
+                   + rear_panel_mount_thickness
+                   * 2,
+                   wheel_dia) / 2 - 10,
              0]) {
     front_wheels_x = -rear_panel_size[0] / 2 - rear_panel_mount_thickness
       - wheel_dia / 2 - spacing;
@@ -272,9 +287,7 @@ module printable(spacing=5) {
       - spacing;
 
     if (show_rear_panel) {
-      color("white") {
-        rear_panel();
-      }
+      rear_panel_printable(colr="white");
     }
     if (show_wheel_hubs) {
       color("white") {

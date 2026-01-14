@@ -83,7 +83,7 @@ All commands require `--enable=textmetrics --backend=Manifold`.
 
 ```sh
 # Full assembly preview (PNG)
-openscad -o /var/tmp/scad-preview.png --preview --imgsize=754,934 --backend=Manifold --enable=textmetrics --camera=0,0,0,0,0,0,1100 scad/assembly.scad
+openscad -o /tmp/scad-preview.png --preview --imgsize=754,934 --backend=Manifold --enable=textmetrics --camera=0,0,0,0,0,0,1100 scad/assembly.scad
 
 # Utility tests
 openscad --backend=Manifold --enable=textmetrics -o /tmp/test_functions.stl tests/test_functions.scad

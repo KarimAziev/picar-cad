@@ -342,7 +342,7 @@ module power_socket_case(jack_plist=power_socket_case_jack_plist,
   }
 }
 
-module power_socket_case_printable(center=true) {
+module power_socket_case_printable(center=true, color="white") {
   power_socket_case(show_box=true,
                     show_socket=false,
                     show_socket_bolts=false,
@@ -353,7 +353,8 @@ module power_socket_case_printable(center=true) {
                     center=center,
                     assembly=false,
                     show_standoffs=false,
-                    assembly_debug=false);
+                    assembly_debug=false,
+                    case_color=color);
 }
 
 power_socket_case_printable();
