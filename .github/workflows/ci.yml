@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Install OpenSCAD nightly (AppImage)
         run: |
@@ -25,7 +27,13 @@ jobs:
           chmod +x /tmp/openscad-nightly.AppImage
           /tmp/openscad-nightly.AppImage --appimage-extract
           sudo mv squashfs-root /opt/openscad-nightly
-          sudo ln -sf /opt/openscad-nightly/AppRun /usr/local/bin/openscad
+          cat <<'EOF' | sudo tee /usr/local/bin/openscad >/dev/null
+          #!/usr/bin/env bash
+          set -euo pipefail
+          export APPDIR="/opt/openscad-nightly"
+          exec "$APPDIR/AppRun" "$@"
+          EOF
+          sudo chmod +x /usr/local/bin/openscad
           openscad -v
 
       - name: Run make all
