@@ -22,6 +22,15 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Install OpenSCAD runtime deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libegl1 \
+            libopengl0 \
+            libxkbcommon0 \
+            libglu1-mesa
+
       - name: Install OpenSCAD nightly (AppImage)
         run: |
           set -euo pipefail
