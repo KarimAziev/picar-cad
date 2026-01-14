@@ -125,6 +125,7 @@ The project is organized into several reusable modules under the scad/ directory
 - `power_lid_parameters.scad`: Configuration for the power case lid.
 - `printable.scad`: Contains all printable parts in one place. You can print all parts except the tires using either PETG (recommended) or PLA. For the tires, use TPU (e.g., TPU 95A).
   ![Single printable view](./demo/single-printable-plate.png)
+- `printable_parts/`: Individual printable part sources (one part per file) used by the Makefile for per-part exports.
 - `assembly.scad`: Fully assembled view of the robot.
   ![Overview](./demo/full_assembly.gif)
 - `assembly_guide.scad`: Interactive assembly. See [above](#assembly).
