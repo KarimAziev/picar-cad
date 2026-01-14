@@ -11,4 +11,4 @@
 
 use <../steering_system/steering_kingpin_post.scad>
 
-steering_kingpin_post();
+steering_kingpin_post(color="white");

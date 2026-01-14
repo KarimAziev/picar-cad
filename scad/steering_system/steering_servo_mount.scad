@@ -146,8 +146,7 @@ module steering_servo_mount(show_servo=show_servo,
                    nut_head_distance=steering_servo_hat_thickness
                    + steering_vertical_panel_thickness) {
                 if (echo_bolts_info) {
-                  echo(str("The steering servo vertical bolt ",
-                           ": M" ,
+                  echo(str("The steering servo vertical bolt: M",
                            snap_bolt_d(d),
                            "x",
                            bolt_h,
