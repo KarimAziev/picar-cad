@@ -11,7 +11,8 @@ This repository contains the 3D model source files for a four-wheeled robot chas
 
 > - [About](#about)
 >   - [Overview](#overview)
->   - [Requirements](#requirements)
+>     - [Requirements](#requirements)
+>     - [CLI workflows (Makefile)](#cli-workflows-makefile)
 >     - [Configurations](#configurations)
 >     - [Validation (quick commands)](#validation-quick-commands)
 >   - [Ackermann Geometry](#ackermann-geometry)
@@ -69,9 +70,18 @@ The robot model is designed around the following core elements:
 - **Extendable Power Tiers**: Default power case for high-discharge LiPo packs (e.g., Turnigy Rapid 4S2P) plus battery holders plus slots for servo/motor driver HATs; Waveshare UPS S3 remains optional.
 - **Raspberry Pi**: The chassis includes placements and bolt holes for the Raspberry Pi 5 and multiple 18650 battery holders.
 
-## Requirements
+### Requirements
 
 Since `textmetrics` is used throughout the project, a nightly build of OpenSCAD is required. Also, be sure to enable `textmetrics` in the OpenSCAD editor via `Preferences -> Features -> textmetrics`. When using the CLI, pass `--enable=textmetrics` (e.g., `openscad --enable=textmetrics --backend=Manifold ...`).
+
+### CLI workflows (Makefile)
+
+- `make help` — list available targets.
+- `make tests` — run all `tests/test_*.scad` suites; tolerates the empty top-level warning used by logic-only tests.
+- `make assembly` — export `scad/assembly.scad` to `build/export/stl/assembly.stl` and `build/export/3mf/assembly.3mf` with `--backend=Manifold --enable=textmetrics --hardwarnings` and 3MF metadata.
+- `make printable` — export `scad/printable.scad` and every file in `scad/printable_parts/` to flattened `build/export/stl/` and `build/export/3mf/` (tires prefer the TPU material hint; falls back if unsupported).
+- `make all` — run tests, then build assembly and all printable exports.
+- `make clean` — remove build outputs and test temp files.
 
 ### Configurations
 
