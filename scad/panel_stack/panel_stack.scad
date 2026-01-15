@@ -155,17 +155,7 @@ module panel_stack_print_plate(show_buttons_panel=true,
   }
 }
 
-// buttons_fuses_panels(show_buttons_panel=true,
-//                      show_fuse_panel=true);
-
-panel_stack_print_plate(show_buttons_panel=true,
-                        show_fuse_panel=true,
-                        align_x=-1,
-                        align_y=1);
-// panel_stack(show_buttons_panel=true,
-//             show_fuse_panel=true,
-//             y_axle=false,
-//             center=false);
-
-// panel_stack_bolt_holes(y_axle=false,
-//                         center=false);
+panel_stack(show_buttons_panel=true,
+            show_fuse_panel=true,
+            y_axle=false,
+            center=true);
