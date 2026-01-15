@@ -15,6 +15,7 @@
  *
  */
 
+include <../colors.scad>
 include <../parameters.scad>
 
 use <../lib/functions.scad>
@@ -102,7 +103,6 @@ module tire() {
              $fn=360);
 
     add_grooves();
-
     tire_arc(outer_r);
     mirror_copy([0, 0, 1]) {
       translate([0, 0, half_width - (half_width / 2)])
@@ -110,6 +110,7 @@ module tire() {
     }
   }
 }
+
 color(matte_black, alpha=1) {
   tire();
 }
