@@ -61,9 +61,10 @@ module bearing(rings = [[0]],
       }
     }
 
-    color(shaft_ring_col)
+    color(shaft_ring_col) {
       linear_extrude(height = h) {
-      ring_2d(w=shaft_ring_w, d=shaft_d, outer = true, fn=fn);
+        ring_2d(w=shaft_ring_w, d=shaft_d, outer = true, fn=fn);
+      }
     }
 
     for (i = [1 : num_rings]) {
@@ -84,4 +85,4 @@ module bearing(rings = [[0]],
   }
 }
 
-bearing();
+bearing(rings=rings);
