@@ -405,4 +405,6 @@ module knuckle_print_plate(knuckle_color="white",
   }
 }
 
-knuckle_print_plate();
+// knuckle_print_plate();
+
+knuckle_tie_rod_shaft_arm();

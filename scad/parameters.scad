@@ -2718,6 +2718,7 @@ ultrasonic_solder_blobs_positions                    = [26, 10];
 // ─────────────────────────────────────────────────────────────────────────────
 // Parameters for wheels, common for front and rear
 // ─────────────────────────────────────────────────────────────────────────────
+
 wheel_dia                                            = 42;
 wheel_w                                              = 20.0;
 wheel_thickness                                      = 2.0;
@@ -2728,16 +2729,40 @@ wheel_rim_bend                                       = 0.8;
 // ─────────────────────────────────────────────────────────────────────────────
 // Front wheels
 // ─────────────────────────────────────────────────────────────────────────────
-wheel_hub_outer_d                                    = wheel_dia - wheel_thickness * 2;
+wheel_shoulder_bolt_d                                = 6;
+wheel_shoulder_bolt_threaded_l                       = 10;
+wheel_shoulder_bolt_unthreaded_l                     = 30;
+wheel_shoulder_bolt_head_h                           = 5.5;
+wheel_shoulder_bolt_head_d                           = 13;
+
+wheel_bearing_bore_d                                 = 8;
+wheel_bearing_shoulder_d                             = 12.15;
+wheel_bearing_outer_recess_d                         = 19.2;
+wheel_bearing_w                                      = 7;
+wheel_bearing_outer_d                                = 22;
+
+wheel_hub_bearing_width                              = 7;
+
+wheel_hub_outer_d                                    = wheel_dia - (wheel_thickness * 2) - 2;
 wheel_hub_outer_ring_d                               = wheel_hub_outer_d;
+
+wheel_hub_bolt_offset                                = 0.7;
 wheel_hub_d                                          = 22;
 wheel_hub_h                                          = 7.2;
+
+wheel_hub_h_tolerance                                = 0.2;
 wheel_hub_inner_rim_h                                = 1.4;
 wheel_hub_inner_rim_w                                = 1.2;
+
 wheel_hub_bolt_dia                                   = m25_hole_dia;
+
 wheel_bolts_n                                        = 6;
+
 wheel_bolt_boss_w                                    = 1;
 wheel_bolt_boss_h                                    = 2;
+
+wheel_hub_bolt_d                                     = m3_hole_dia;
+wheel_hub_bolt_boss_d                                = wheel_hub_bolt_d + 2;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Rear wheels

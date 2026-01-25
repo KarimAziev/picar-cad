@@ -426,18 +426,20 @@ module bolt(d = 2.5,                 // major diameter (mm)
   }
 }
 
-h = 3;
-d = 1.8;
+h = 40;
+d = 6;
+d3 = 13;
 nut_distance = 4;
 
 rotate([0, 0, 0]) {
   bolt(d = d,
        h = h,
+       head_d=d3,
+       head_h=5.5,
        threaded = true,
-       screw_mode=true,
-       unthreaded=0,
+       unthreaded=30,
        show_nut=false,
        lock_nut=false,
        nut_head_distance=nut_distance,
-       head_type = "pan");
+       head_type = "round");
 }

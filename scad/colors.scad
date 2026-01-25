@@ -15,6 +15,8 @@ metallic_silver_5        = "#dfdfdf";
 metallic_silver_6        = "#e7dfd6";
 metallic_silver_7        = "#e5e0d5";
 metallic_silver_8        = "#dbd6cb";
+metallic_silver_9        = "#acacac";
+
 cobalt_blue_metallic     = "#39699E";
 metallic_grey            = "#808080";
 metallic_yellow_silver   = "#D4D4C8";

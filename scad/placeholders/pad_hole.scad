@@ -37,6 +37,7 @@ use <../lib/transforms.scad>
 module pad_hole(bolt_d,
                 specs,
                 thickness,
+                tolerance=0.1,
                 fn=20) {
   sorted_specs = sort_by_idx(elems=specs, idx=0, asc=true);
   union() {
@@ -47,8 +48,8 @@ module pad_hole(bolt_d,
            colr = spec[1],
            w = (dia - prev_spec_dia) / 2) {
         color(colr, alpha=1) {
-          translate([0, 0, -0.05]) {
-            linear_extrude(height=thickness + 0.1,
+          translate([0, 0, -tolerance / 2]) {
+            linear_extrude(height=thickness + tolerance,
                            center=false,
                            convexity=2) {
               ring_2d(w=w, r=dia / 2, fn=fn);

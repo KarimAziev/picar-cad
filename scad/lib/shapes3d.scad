@@ -189,3 +189,36 @@ module cube_border(size,
                 round_side=round_side);
   }
 }
+
+module ring(d,
+            d1,
+            d2,
+            outer_d,
+            outer_d1,
+            outer_d2,
+            h,
+            fn=30,
+            color,
+            whole_color=true) {
+  fn = with_default(fn, 30);
+  module _ring() {
+    difference() {
+      if (!whole_color) {
+        maybe_color(color) {
+          cylinder(d=outer_d, h=h, $fn=fn, outer_d1=d1, outer_d2=d2);
+        }
+      } else {
+        cylinder(d=outer_d, d1=outer_d1, d2=outer_d2, h=h, $fn=fn);
+      }
+
+      translate([0, 0, -0.05]) {
+        cylinder(d=d, h=h + 0.1, $fn=fn, d1=d1, d2=d2);
+      }
+    }
+  }
+  if (whole_color) {
+    maybe_color(color, alpha=1) {
+      _ring();
+    }
+  }
+}

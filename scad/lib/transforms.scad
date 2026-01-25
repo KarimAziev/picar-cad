@@ -202,3 +202,13 @@ module align_children_with_spin(parent_size,
     }
   }
 }
+
+module maybe_color(color, alpha=1) {
+  if (is_undef(color)) {
+    children();
+  } else {
+    color(color, alpha=alpha) {
+      children();
+    }
+  }
+}
