@@ -9,16 +9,6 @@ use <../lib/shapes3d.scad>
 use <../lib/slots.scad>
 use <../lib/transforms.scad>
 
-module bent(angle, d, fn=360) {
-  rotate([0, 90, 0]) {
-    #rotate_extrude(angle=angle) {
-      translate([d / 2, 0, 0]) {
-        circle(r=d / 2, $fn=fn);
-      }
-    }
-  }
-}
-
 function m_id() = [[1, 0, 0, 0],
                    [0, 1, 0, 0],
                    [0, 0, 1, 0],
@@ -31,9 +21,6 @@ function m_t(x, y, z) = [[1, 0, 0, x],
                          [0, 1, 0, y],
                          [0, 0, 1, z],
                          [0, 0, 0, 1]];
-
-// your bbox helper must exist:
-// function rot_x_bbox_align(size, angle, pos=[0,0]) = ...
 
 // compute the same "y" and "z" as old_polyarm did
 function seg_yz(w, l, t, angle) =
@@ -143,7 +130,9 @@ function add_bbox(spec=[], w=0, thickness=0) =
        bbox_h = bbox[1],
        y = is_num(bbox_l) ? bbox_l : l,
        z = is_num(bbox_h) ? bbox_h : 0)
-  echo("angle",
+  echo("w",
+       w,
+       "angle",
        angle,
        "y",
        y,
@@ -158,17 +147,24 @@ function add_bbox(spec=[], w=0, thickness=0) =
   plist_merge(spec,
               ["y", y, "z", z, "bbox", bbox, "w", w, "t", t, "angle", angle]);
 
-module old_polyarm(specs, thickness, w=7, type) {
-  plists = [for (spec = specs) add_bbox(spec,
-                                        thickness=with_default(thickness, w),
-                                        w=w)];
+module old_polyarm(specs,
+                   thickness,
+                   w=7,
+                   type,
+                   debug_hull=false,
+                   debug=false) {
+  plists = [for (spec = specs)
+      add_bbox(spec,
+               thickness=with_default(thickness, w),
+               w=w)];
   y_sizes = [for (v = plists) plist_get("y", v)];
   z_sizes = [for (v = plists) plist_get("z", v)];
   widths = [for (v = plists) plist_get("w", v)];
+  thicknesses = [for (v = plists) plist_get("t", v)];
   max_w = max(widths);
-  max_z = max(z_sizes);
+  max_t = max(thicknesses);
 
-  module _slots_or_cubes(slot_mode=false, offset_mode=false) {
+  module _segments(slot_mode=false, offset_mode=false) {
     for (i = [0 : len(plists) - 1]) {
       let (plist = plists[i],
            item_type = plist_get("type", plist, type),
@@ -196,8 +192,8 @@ module old_polyarm(specs, thickness, w=7, type) {
                                  fn=fn,
                                  slot=slot,
                                  type=item_type);
-              } else {
-                segment_center_x([w, l, t],
+              } else if (slot_mode) {
+                segment_center_x([w, l, max_t + l],
                                  slot_mode=slot_mode,
                                  r_factor=r_factor,
                                  r=r,
@@ -205,39 +201,66 @@ module old_polyarm(specs, thickness, w=7, type) {
                                  fn=fn,
                                  slot=slot,
                                  type=item_type);
+              } else {
+                {
+                  segment_center_x([w, l, t],
+                                   slot_mode=slot_mode,
+                                   r_factor=r_factor,
+                                   r=r,
+                                   side=side,
+                                   fn=fn,
+                                   slot=slot,
+                                   type=item_type);
+                }
               }
-              // if (item_type == "cylinder" && is_num(angle)) {
-              //   translate([0, 0, 0]) {
-              //     bent(angle=angle, d=w);
-              //   }
-              // }
             }
           }
         }
       }
     }
   }
-  // difference() {
-  //   difference() {
-  //     hull() {
-  //       _slots_or_cubes(slot_mode=false);
-  //     }
-  //     hull() {
-  //       _slots_or_cubes(offset_mode=true);
-  //     }
-  //   }
-  //   _slots_or_cubes(slot_mode=true);
-  // }
-
-  _slots_or_cubes(slot_mode=false);
+  if (debug || debug_hull) {
+    if (debug_hull) {
+      hull() {
+        _segments(slot_mode=false);
+      }
+    } else {
+      _segments(slot_mode=false);
+    }
+  } else {
+    difference() {
+      difference() {
+        hull() {
+          _segments(slot_mode=false);
+        }
+        hull() {
+          _segments(offset_mode=true);
+        }
+      }
+      _segments(slot_mode=true);
+    }
+  }
 }
 
-module polyarm(specs, thickness, w=7, type="cube") {
+module polyarm(specs, thickness, w=7, type="cube", debug, debug_hull) {
 
   widths = [for (spec = specs) plist_get("w", spec, w)];
   max_w = max(widths);
 
   tfs = build_tfs_bboxwalk(specs, thickness, w);
+  bboxes = [for (spec = specs)
+      let (ww    = plist_get("w", spec, w),
+           l     = plist_get("l", spec, 0),
+           t     = plist_get("thickness", spec, with_default(thickness, w)),
+           angle = plist_get("angle", spec, 0))
+        is_num(angle)
+        ? rot_x_bbox_align([ww, l, t], angle=angle)
+        : [l, t, 0, 0, l, t]];
+
+  function tf_point(tf, p) =
+    [tf[0][0]*p[0] + tf[0][1]*p[1] + tf[0][2]*p[2] + tf[0][3],
+     tf[1][0]*p[0] + tf[1][1]*p[1] + tf[1][2]*p[2] + tf[1][3],
+     tf[2][0]*p[0] + tf[2][1]*p[1] + tf[2][2]*p[2] + tf[2][3]];
 
   module _segments(slot_mode=false, offset_mode=false) {
     for (i=[0:len(specs)-1]) {
@@ -253,7 +276,6 @@ module polyarm(specs, thickness, w=7, type="cube") {
            fn        = plist_get("fn", spec),
            angle     = plist_get("angle", spec, 0)) {
         multmatrix(tfs[i]) {
-          // identical to old: rotate only affects the segment geometry, not the stepping direction
           maybe_translate([0, offset_mode ? -t : 0, offset_mode ?  t : 0]) {
             maybe_rotate([angle, 0, 0]) {
               segment_center_x(offset_mode ? [max_w + 1, l, t] : [ww, l, t],
@@ -271,51 +293,83 @@ module polyarm(specs, thickness, w=7, type="cube") {
     }
   }
 
-  _segments(slot_mode=false);
+  module _joints() {
+    for (i=[0:len(specs)-2]) {
+      let (spec      = specs[i],
+           next_spec = specs[i + 1],
+           t         = plist_get("thickness", spec, with_default(thickness, w)),
+           next_t    = plist_get("thickness", next_spec, with_default(thickness, w)),
+           ww        = plist_get("w", spec, w),
+           next_w    = plist_get("w", next_spec, w),
+           cap_w     = max([ww, next_w, max_w]),
+           cap_t     = max([t, next_t]),
+           bbox      = bboxes[i],
+           next_bbox = bboxes[i + 1],
+           end_y     = bbox[4],
+           end_z_min = bbox[3],
+           end_z_max = bbox[5],
+           start_y   = next_bbox[2],
+           start_z_min = next_bbox[3],
+           start_z_max = next_bbox[5],
+           end_p_min = tf_point(tfs[i], [0, end_y, end_z_min]),
+           end_p_max = tf_point(tfs[i], [0, end_y, end_z_max]),
+           start_p_min = tf_point(tfs[i + 1], [0, start_y, start_z_min]),
+           start_p_max = tf_point(tfs[i + 1], [0, start_y, start_z_max]),
+           pts = [[end_p_min[1],   end_p_min[2]],
+                  [end_p_max[1],   end_p_max[2]],
+                  [start_p_max[1], start_p_max[2]],
+                  [start_p_min[1], start_p_min[2]]]) {
+        rotate([0, -90, 0]) {
+          linear_extrude(height=cap_w, center=false) {
+            polygon(points=pts);
+          }
+        }
+      }
+    }
+  }
+
+  if (debug || debug_hull) {
+    if (debug_hull) {
+      hull() {
+        _segments(slot_mode=false);
+      }
+    } else {
+      _segments(slot_mode=false);
+    }
+  } else {
+    difference() {
+      difference() {
+        hull() {
+          _segments(slot_mode=false);
+        }
+        hull() {
+          _segments(offset_mode=true);
+        }
+      }
+      _segments(slot_mode=true);
+    }
+  }
 }
 
-polyarm([["l", 10,
-          "w", 10],
-         ["l", 8,
-          "w", 10,
-          "angle", 30],
-         ["l", 20,
-          "angle", 40],
-         ["l", 50,
-          "w", 10,
-          "angle", 90],
-         ["l", 50,
-          "angle", 0,
+items = [["l", 3,
           "w", 10,],
-         ["l", 15,
+         ["l", 5,
+          "angle", 30],
+         ["l", 8,
+          "angle", 50],
+         ["l", 10,
           "r_factor", 0.5,
-          "side", "top",
           "angle", 90,
           "slot", ["type", "counterbore",
                    "d", m3_hole_dia,
-                   "y", 1]],],
-        w=7,
-        thickness=2);
+                   "y", 1]]];
 
-// old_polyarm([["l", 10,
-//                "w", 10],
-//               ["l", 8,
-//                "w", 10,
-//                "angle", 30],
-//               ["l", 20,
-//                "angle", 40],
-//              ["l", 50,
-//               "w", 10,
-//               "angle", 90],
-//   ["l", 50,
-//    "angle", 0,
-//    "w", 10,],
-//   ["l", 15,
-//    "r_factor", 0.5,
-//    "side", "top",
-//    "angle", 90,
-//    "slot", ["type", "counterbore",
-//             "d", m3_hole_dia,
-//             "y", 1]],],
-//   w=7,
-//   thickness=2);
+old_polyarm(items,
+            debug=true,
+            debug_hull=false,
+            w=7,
+            thickness=3);
+
+// polyarm(items,
+//         w=10,
+//         thickness=2);

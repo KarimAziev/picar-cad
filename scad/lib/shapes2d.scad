@@ -34,6 +34,7 @@ module rounded_rect(size, r=undef, center=false, fn, r_factor=0.3, side) {
   } else if (is_string(side) && side != "all") {
     rounded_rect_two(size=size,
                      r=r,
+                     segments=is_undef(fn) ? 10 : fn,
                      r_factor=r_factor,
                      side=side,
                      center=center);
@@ -411,4 +412,10 @@ module rect_border(size,
                    side=round_side);
     }
   }
+}
+
+module triangle_SAS(a, b, ang) {
+  polygon(points=[[0, 0],
+                  [a, 0],
+                  [b*cos(ang), b*sin(ang)]]);
 }

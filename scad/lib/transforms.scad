@@ -170,6 +170,34 @@ module align_children(parent_size,
   }
 }
 
+/**
+ ─────────────────────────────────────────────────────────────────────────────
+ align_children_with_spin
+ ─────────────────────────────────────────────────────────────────────────────
+
+ **Example**:
+ ```scad
+
+ module example(angle=16,
+                l=15,
+                thickness=3,
+                w=3) {
+  bbox = rot_x_bbox_align([thickness, l, w,], angle=angle);
+  bbox_y = bbox[0];
+  bbox_z = bbox[1];
+
+  #cube([bbox_y, bbox_z, thickness]);
+  align_children_with_spin(parent_size=[l, w, thickness],
+                           size=[l, w, thickness],
+                           spin=-angle,
+                           align_x=-1,
+                           align_y=-1) {
+    cube([l, w, thickness]);
+  }
+}
+
+ ```
+*/
 module align_children_with_spin(parent_size,
                                 size,
                                 align_x=-1,

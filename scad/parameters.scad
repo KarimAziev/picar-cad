@@ -1376,7 +1376,7 @@ knuckle_pin_stopper_height                           = 1;
 // is connected to the rack link
 knuckle_rack_link_arm_height                         = 6;
 
-knuckle_tie_rod_shaft_arm_len                        = 9.4;
+knuckle_tie_rod_shaft_arm_len                        = 12.4;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // N20 motor dimensions
@@ -2667,6 +2667,50 @@ tie_rod_shaft_bearing_pin_height                     = 8;
 tie_rod_shaft_bearing_pin_chamfer_height             = 1.5;
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Suspension
+// ─────────────────────────────────────────────────────────────────────────────
+suspension_tie_rod_eye_od                            = 11.2;
+suspension_tie_rod_eye_h                             = 5.10;
+
+suspension_tie_rod_shank_od                          = 6.0;
+suspension_tie_rod_shank_bolt_d                      = m3_hole_dia;
+suspension_tie_rod_neck_len                          = 2.05;
+suspension_tie_rod_shank_len                         = 14 + suspension_tie_rod_neck_len;
+
+suspension_tie_rod_bushing_od                        = 6.95;
+suspension_tie_rod_bushing_d                         = m3_hole_dia;
+suspension_tie_rod_bushing_h                         = 6.65;
+suspension_tie_rod_bushing_flat_d                    = 0;
+suspension_tie_rod_neck_h                            = 4.95;
+
+suspension_tie_rod_bushing_color                     = metallic_silver_9;
+suspension_tie_rod_color                             = cobalt_blue_metallic;
+
+suspension_tie_rod_mount_thickness                   = 2;
+suspension_tie_rod_border_w                          = 2;
+
+knuckle_steering_arm_mount_thickness                 = 3;
+knuckle_steering_arm_mount_len                       = 20;
+knuckle_steering_arm_mount_round_r                   = 1;
+
+knuckle_steering_arm_mount_tie_rod_eye_od            = 11.2;
+knuckle_steering_arm_mount_tie_rod_eye_h             = 5.10;
+
+knuckle_steering_arm_mount_tie_rod_shank_od          = 6.0;
+knuckle_steering_arm_mount_tie_rod_shank_bolt_d      = m3_hole_dia;
+knuckle_steering_arm_mount_tie_rod_neck_len          = 2.05;
+knuckle_steering_arm_mount_tie_rod_shank_len         = 14 + knuckle_steering_arm_mount_tie_rod_neck_len;
+
+knuckle_steering_arm_mount_tie_rod_bushing_od        = 6.95;
+knuckle_steering_arm_mount_tie_rod_bushing_d         = m3_hole_dia;
+knuckle_steering_arm_mount_tie_rod_bushing_h         = 6.65;
+knuckle_steering_arm_mount_tie_rod_bushing_flat_d    = 0;
+knuckle_steering_arm_mount_tie_rod_neck_h            = 4.95;
+
+knuckle_steering_arm_mount_tie_rod_bushing_color     = metallic_silver_9;
+knuckle_steering_arm_mount_tie_rod_color             = cobalt_blue_metallic;
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Ultrasonic placeholder
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -2763,6 +2807,19 @@ wheel_bolt_boss_h                                    = 2;
 
 wheel_hub_bolt_d                                     = m3_hole_dia;
 wheel_hub_bolt_boss_d                                = wheel_hub_bolt_d + 2;
+
+knuckle_bearing_hole_d                               = wheel_bearing_bore_d + 0.40;
+
+knuckle_h                                            = (wheel_hub_inner_rim_h + (wheel_hub_h_tolerance + wheel_bearing_w)) * 2;
+
+knuckle_narrow_h                                     = 2;
+knuckle_base_h                                       = knuckle_h - knuckle_narrow_h;
+
+knuckle_narrow_d                                     = wheel_bearing_shoulder_d;
+knuckle_base_d                                       = knuckle_narrow_d + 2;
+knuckle_max_d                                        = knuckle_base_d + 4;
+
+knuckle_upper_arm_mount_extra_len                    = 5;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Rear wheels

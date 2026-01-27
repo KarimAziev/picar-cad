@@ -291,7 +291,8 @@ module bolt(d = 2.5,                 // major diameter (mm)
             head_type = "pan",       // "pan" | "hex" | "round" | "countersunk" | "none"
             head_d,                  // head diameter
             head_h,                  // head height
-            unthreaded = 0,          // h at top (next to head) that's unthreaded
+            unthreaded_d,
+            unthreaded = 0,
             show_nut=false,
             nut_head_distance=1,
             lock_nut=false,
@@ -323,6 +324,11 @@ module bolt(d = 2.5,                 // major diameter (mm)
     color(bolt_color, alpha=1) {
       union() {
         if (threaded) {
+          if (!is_undef(unthreaded_d)) {
+            translate([0, 0, thread_len_v]) {
+              cylinder(d=unthreaded_d, h=unthreaded);
+            }
+          }
           if (screw_mode) {
             let (end_len = min(1.3, thread_len_v * 0.3),
                  main_len = thread_len_v - end_len) {
@@ -427,7 +433,7 @@ module bolt(d = 2.5,                 // major diameter (mm)
 }
 
 h = 40;
-d = 6;
+d = 3;
 d3 = 13;
 nut_distance = 4;
 
@@ -438,8 +444,9 @@ rotate([0, 0, 0]) {
        head_h=5.5,
        threaded = true,
        unthreaded=30,
-       show_nut=false,
+       show_nut=true,
        lock_nut=false,
+       unthreaded_d=8,
        nut_head_distance=nut_distance,
        head_type = "round");
 }

@@ -348,16 +348,14 @@ module front_panel_assembly(panel_color="white",
                front_panel_connector_len + front_panel_thickness / 2,
                -bbox[0] / 2]) {
       rotate([0, 180, 0]) {
-        rotate([0, 0, 0]) {
-          front_panel(colr=panel_color,
-                      show_ultrasonic=show_ultrasonic,
-                      show_front_rear_panel=show_front_rear_panel,
-                      show_front_rear_panel_bolts=show_front_rear_panel_bolts,
-                      show_front_rear_panel_nuts=show_front_rear_panel_nuts,
-                      show_front_panel_mount_bolts=show_front_panel_mount_bolts,
-                      show_front_panel_mount_nuts=show_front_panel_mount_nuts,
-                      echo_front_panel_bolts_info=echo_front_panel_bolts_info);
-        }
+        front_panel(colr=panel_color,
+                    show_ultrasonic=show_ultrasonic,
+                    show_front_rear_panel=show_front_rear_panel,
+                    show_front_rear_panel_bolts=show_front_rear_panel_bolts,
+                    show_front_rear_panel_nuts=show_front_rear_panel_nuts,
+                    show_front_panel_mount_bolts=show_front_panel_mount_bolts,
+                    show_front_panel_mount_nuts=show_front_panel_mount_nuts,
+                    echo_front_panel_bolts_info=echo_front_panel_bolts_info);
       }
     }
   }

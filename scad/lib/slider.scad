@@ -253,3 +253,9 @@ module dovetail_rib(w,
     }
   }
 }
+
+dovetail_rib(w=20,
+             h=15,
+             angle=10,
+             r=2,
+             center=false);

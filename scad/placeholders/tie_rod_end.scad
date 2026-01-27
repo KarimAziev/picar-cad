@@ -9,11 +9,16 @@
  * License: GPL-3.0-or-later
  */
 include <../colors.scad>
+include <../parameters.scad>
 
 use <../lib/functions.scad>
 use <../lib/shapes3d.scad>
 use <../lib/slots.scad>
 use <../lib/transforms.scad>
+use <bolt.scad>
+
+function holed_sphere_height(od, d) =
+  (d >= od) ? 0 : sqrt(od * od - d * d);
 
 module tie_rod_sherical_bushing(od,
                                 d,
@@ -31,17 +36,20 @@ module tie_rod_sherical_bushing(od,
   }
   if (is_undef(h) || od == h) {
     base_sphere();
-  } else if (h < od) {
+  } else if (h <= od) {
     intersection() {
       base_sphere();
       cube([od, od, h], center=true);
     }
   } else {
-    assert(!is_undef(flat_d), "Flat diameter shouldn't be undef");
+    assert(!is_undef(flat_d),
+           str("Flat diameter shouldn't be undef, when h > od: h: ", h, ", od: ", od));
     union() {
       base_sphere();
-      translate([0, 0, -h / 2]) {
-        ring(d=d, outer_d=flat_d, h=h, fn=$fn, color=metallic_silver_9);
+      if (flat_d > 0 && flat_d > d) {
+        translate([0, 0, -h / 2]) {
+          ring(d=d, outer_d=flat_d, h=h, fn=$fn, color=metallic_silver_9);
+        }
       }
     }
   }
@@ -60,15 +68,22 @@ module tie_rod_end(eye_od=11.2,
                    direction="bottom",
                    shank_len,
                    shank_bolt_d,
-                   neck_flat_len,
+                   neck_len,
                    neck_h,
-                   fn=100) {
+                   fn=100,
+                   show_eye_bolt=false,
+                   eye_bolt_h,
+                   eye_bolt_through_h=2,
+                   show_eye_bolt_nut=true,
+                   eye_bolt_head_type="hex",
+                   center_z=false) {
   eye_h = with_default(eye_h, shank_od);
   shank_od = with_default(shank_od, eye_h);
   bushing_od = with_default(bushing_od, eye_od * 0.6);
   bushing_h = with_default(bushing_h, bushing_od * 0.98);
   bushing_d = with_default(bushing_d, bushing_od * 0.51);
 
+  bushing_real_h = holed_sphere_height(d=bushing_d, od=bushing_od);
   neck_h = with_default(neck_h, eye_h);
 
   notch_w = calc_notch_width(max(eye_od, shank_od),
@@ -90,40 +105,54 @@ module tie_rod_end(eye_od=11.2,
 
   shank_translation_y = is_y_direction ? ratio * base_shank_translation : 0;
   shank_translation_x = is_x_direction ? ratio * base_shank_translation : 0;
+  max_h = max(shank_od, bushing_real_h, eye_h);
 
-  union() {
-    tie_rod_sherical_bushing(h=eye_h,
-                             d=bushing_od,
-                             od=eye_od,
-                             color=color,
-                             flat_d=eye_flat_d,
-                             $fn=fn);
-    tie_rod_sherical_bushing(h=bushing_h,
-                             d=bushing_d,
-                             od=bushing_od,
-                             color=bushing_color,
-                             flat_d=bushing_flat_d,
-                             $fn=fn);
-    if (shank_len > 0) {
-      render() {
-        maybe_color(color) {
-          difference() {
-            translate([shank_translation_x, shank_translation_y, 0]) {
-              rotate([shank_rotation_x, shank_rotation_y, 0]) {
-                translate([0, 0, -shank_len / 2 - notch_w / 2]) {
-                  ring(outer_d=shank_od,
-                       d=shank_bolt_d,
-                       h=shank_len + notch_w,
-                       fn=fn);
+  maybe_translate([0, 0, center_z ? 0 : max_h / 2]) {
+    union() {
+      tie_rod_sherical_bushing(h=eye_h,
+                               d=bushing_od,
+                               od=eye_od,
+                               color=color,
+                               flat_d=eye_flat_d,
+                               $fn=fn);
+      tie_rod_sherical_bushing(h=bushing_h,
+                               d=bushing_d,
+                               od=bushing_od,
+                               color=bushing_color,
+                               flat_d=bushing_flat_d,
+                               $fn=fn);
+
+      if (show_eye_bolt && !is_undef(eye_bolt_h)) {
+        nut_head_distance = max_h + eye_bolt_through_h;
+        translate([0, 0, -eye_bolt_h + max_h / 2]) {
+          bolt(d=bushing_d,
+               h=eye_bolt_h,
+               head_type=eye_bolt_head_type,
+               show_nut=show_eye_bolt_nut,
+               nut_head_distance=nut_head_distance);
+        }
+      }
+      if (shank_len > 0) {
+        render() {
+          maybe_color(color) {
+            difference() {
+              translate([shank_translation_x, shank_translation_y, 0]) {
+                rotate([shank_rotation_x, shank_rotation_y, 0]) {
+                  translate([0, 0, -shank_len / 2 - notch_w / 2]) {
+                    ring(outer_d=shank_od,
+                         d=shank_bolt_d,
+                         h=shank_len + notch_w,
+                         fn=fn);
+                  }
                 }
               }
-            }
-            if (!is_undef(neck_flat_len)) {
-              cube_x = max(eye_od, shank_od) + neck_flat_len + notch_w;
-              cutted_len = (shank_od - neck_h) / 2 + 0.01;
-              mirror_copy([0, 0, 1]) {
-                translate([0, 0, shank_od / 2 - cutted_len / 2]) {
-                  cube([cube_x, cube_x, cutted_len], center=true);
+              if (!is_undef(neck_len)) {
+                cube_x = max(eye_od, shank_od) + neck_len + notch_w;
+                cutted_len = (shank_od - neck_h) / 2 + 0.01;
+                mirror_copy([0, 0, 1]) {
+                  translate([0, 0, shank_od / 2 - cutted_len / 2]) {
+                    cube([cube_x, cube_x, cutted_len], center=true);
+                  }
                 }
               }
             }
@@ -134,4 +163,20 @@ module tie_rod_end(eye_od=11.2,
   }
 }
 
-tie_rod_end(shank_len=15.6, neck_flat_len=3, shank_od=5.96, eye_h=5.03);
+tie_rod_end(eye_od=suspension_tie_rod_eye_od,
+            eye_h=suspension_tie_rod_eye_h,
+            shank_od=suspension_tie_rod_shank_od,
+            shank_bolt_d=suspension_tie_rod_shank_bolt_d,
+            neck_len=suspension_tie_rod_neck_len,
+            shank_len=suspension_tie_rod_shank_len,
+            bushing_od=suspension_tie_rod_bushing_od,
+            bushing_d=suspension_tie_rod_bushing_d,
+            bushing_h=suspension_tie_rod_bushing_h,
+            bushing_flat_d=suspension_tie_rod_bushing_flat_d,
+            neck_h=suspension_tie_rod_neck_h,
+            bushing_color=suspension_tie_rod_bushing_color,
+            show_eye_bolt=true,
+            eye_bolt_through_h=1,
+            eye_bolt_h=20,
+            center_z=true,
+            color=suspension_tie_rod_color);

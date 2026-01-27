@@ -333,6 +333,63 @@ function poly_width_at_y(pts, y_target) =
 
 /**
    ─────────────────────────────────────────────────────────────────────────────
+   poly_width_at_x
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Compute the vertical width of a polygon at a given x (distance between
+   the bottommost and topmost intersections of the polygon with the vertical
+   line x = x_target).
+
+   **Parameters:**
+
+   `pts`: A list of 2D points defining the polygon, each point as `[x, y]`. The polygon is treated as closed (the last point connects to the first).
+   `x_target`: The x coordinate of the vertical scan line.
+
+   **Returns:**
+   The vertical width at `x_target` (max(intersections) - min(intersections)).
+
+   **Behavior and notes:**
+   - The function computes y coordinates where each polygon edge (non-vertical)
+     intersects the vertical line `x = x_target` and returns
+     `max(intersections) - min(intersections)`.
+   - Vertical edges (edges with identical x values) are skipped to avoid
+     division by zero; vertices that lie exactly on `x_target` can produce
+     intersections through adjacent non-vertical edges.
+   - For a simple polygon the vertical line typically produces an even number
+     of intersections; if only one intersection occurs the function returns 0
+     (`max == min`). If there are no intersections the result is undefined
+     (an error occurs since `max/min` are called on an empty list). The caller
+     should ensure the line intersects the polygon (or guard against empty intersections).
+
+   **Examples:**
+
+   ```scad
+   poly_width_at_x([[0, 0], [10, 0], [10, 5], [0, 5]], 2)
+   // returns 5     (rectangle height at x=2)
+
+   poly_width_at_x([[0, 0],[5, 10],[10, 0]], 5);
+   // returns 10    (triangle intersects at y=0 and y=10)
+
+   poly_width_at_x([[0, 0],[10, 0],[10, 5],[0, 5]], 0);
+   // returns 5     (vertical line along left edge: vertical edges are ignored,
+   // intersections come from horizontal edges)
+
+   poly_width_at_x([[0, 0],[5, 10],[10, 0]], 20);
+   // undefined      (no intersections; caller should check / avoid this case)
+   ```
+*/
+function poly_width_at_x(pts, x_target) =
+  let (intersections = [for (i = [0 : len(pts)-1])
+           if (((pts[i][0] - x_target)
+                * (pts[(i + 1) % len(pts)][0] - x_target) <= 0)
+               && (pts[(i + 1) % len(pts)][0] - pts[i][0] != 0))
+             pts[i][1] + ((x_target - pts[i][0])
+                          / (pts[(i + 1) % len(pts)][0] - pts[i][0]))
+               * (pts[(i + 1) % len(pts)][1] - pts[i][1])])
+  (max(intersections) - min(intersections));
+
+/**
+   ─────────────────────────────────────────────────────────────────────────────
    notched_circle_square_center_x
    ─────────────────────────────────────────────────────────────────────────────
 
@@ -1079,7 +1136,6 @@ function rotated_bbox2(w, h, a) =
 
    **Example**:
    ```scad
-
    calc_rotated_bbox(20, 10, 0); // [10, 20, 10, 0]
    calc_rotated_bbox(20, 10, 0); // [20, 10, 0, 0]
    calc_rotated_bbox(20, 10, 45) // [~21.2132, ~21.2132, ~7.07107, 0]
@@ -1097,3 +1153,55 @@ function percent_to_mm(percent, total_val) = percent * total_val / 100;
 
 function to_percent(val, total_val) =
   (total_val == 0) ? 0 : (val * 100 / total_val);
+
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   notch_depth
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Computes the notch depth (sagitta) for a circle of diameter `dia` when a flat
+   cut (chord) of width `chord` is applied.
+
+   In other words, this returns how far the circle extends beyond the chord line:
+   the distance from the chord to the circle arc measured perpendicular to the
+   chord. This is useful for sizing a rectangular “filler”/“notch” block so a
+   flat face of width `chord` can blend into or contact a cylinder of diameter `dia`.
+
+   Parameters:
+   - `dia`: Circle diameter (must be > 0)
+   - `chord`: Chord length / flat width across the circle
+                  (must satisfy `0 <= chord <= dia`)
+
+   Returns:
+   Notch depth (sagitta), in the same units as `dia` and `chord`.
+
+   Notes:
+   - If `chord > dia`, the square root becomes invalid (no real solution).
+   - Result is `0` when `chord == 0`, and `dia/2` when `chord == dia`.
+
+   **Example**:
+   ```scad
+   module notch_depth_example(dia=20, h=5, size=[12, 10, 5]) {
+     notch_d = notch_depth(dia, size[1]);
+
+     union() {
+       cylinder(d=dia, h=h, $fn=150);
+
+       translate([dia / 2 - notch_d / 2, 0, size[2] / 2]) {
+         cube([notch_d, size[1], size[2]], center=true);
+       }
+       translate([dia / 2 + size[0] / 2, 0, size[2] / 2]) {
+         cube(size=size,
+              center=true);
+       }
+     }
+   }
+
+   notch_depth_example();
+
+   ```
+*/
+
+function notch_depth(dia, chord) =
+  let (r = dia / 2)
+  r - sqrt((r * r) - ((chord / 2) * (chord / 2)));
