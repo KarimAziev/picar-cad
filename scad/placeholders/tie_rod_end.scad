@@ -1,13 +1,12 @@
 /**
  * Module: Tie-rod / rod-end (ball-joint style)
  *
- * Renders a common RC-style rod end with a spherical "eye" and a threaded shank
- * Note: Threads are modeled as a simple pilot hole by default (fast + printable).
- * Set thread_mode="cosmetic" to add a crude helical thread (slow).
+ * Renders a common RC-style rod end with a spherical "eye" and a shank
  *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
- * License: GPL-3.0-or-later
+- * License: GPL-3.0-or-later
  */
+
 include <../colors.scad>
 include <../parameters.scad>
 
@@ -20,12 +19,12 @@ use <bolt.scad>
 function holed_sphere_height(od, d) =
   (d >= od) ? 0 : sqrt(od * od - d * d);
 
-module tie_rod_sherical_bushing(od,
-                                d,
-                                h,
-                                flat_d,
-                                $fn=60,
-                                color) {
+module tie_rod_spherical_bushing(od,
+                                 d,
+                                 h,
+                                 flat_d,
+                                 $fn=60,
+                                 color) {
   module base_sphere() {
     maybe_color(color) {
       difference() {
@@ -43,7 +42,11 @@ module tie_rod_sherical_bushing(od,
     }
   } else {
     assert(!is_undef(flat_d),
-           str("Flat diameter shouldn't be undef, when h > od: h: ", h, ", od: ", od));
+           str("Flat diameter shouldn't be undef, when height > outer diameter. ",
+               "Received height: ",
+               h,
+               ", outer diameter: ",
+               od));
     union() {
       base_sphere();
       if (flat_d > 0 && flat_d > d) {
@@ -109,18 +112,18 @@ module tie_rod_end(eye_od=11.2,
 
   maybe_translate([0, 0, center_z ? 0 : max_h / 2]) {
     union() {
-      tie_rod_sherical_bushing(h=eye_h,
-                               d=bushing_od,
-                               od=eye_od,
-                               color=color,
-                               flat_d=eye_flat_d,
-                               $fn=fn);
-      tie_rod_sherical_bushing(h=bushing_h,
-                               d=bushing_d,
-                               od=bushing_od,
-                               color=bushing_color,
-                               flat_d=bushing_flat_d,
-                               $fn=fn);
+      tie_rod_spherical_bushing(h=eye_h,
+                                d=bushing_od,
+                                od=eye_od,
+                                color=color,
+                                flat_d=eye_flat_d,
+                                $fn=fn);
+      tie_rod_spherical_bushing(h=bushing_h,
+                                d=bushing_d,
+                                od=bushing_od,
+                                color=bushing_color,
+                                flat_d=bushing_flat_d,
+                                $fn=fn);
 
       if (show_eye_bolt && !is_undef(eye_bolt_h)) {
         nut_head_distance = max_h + eye_bolt_through_h;
@@ -175,7 +178,7 @@ tie_rod_end(eye_od=suspension_tie_rod_eye_od,
             bushing_flat_d=suspension_tie_rod_bushing_flat_d,
             neck_h=suspension_tie_rod_neck_h,
             bushing_color=suspension_tie_rod_bushing_color,
-            show_eye_bolt=true,
+            show_eye_bolt=false,
             eye_bolt_through_h=1,
             eye_bolt_h=20,
             center_z=true,

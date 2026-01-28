@@ -49,6 +49,7 @@ module ball_joint_mount(thickness=suspension_tie_rod_mount_thickness,
 
   bushing_real_h = holed_sphere_height(d=bushing_d, od=bushing_od);
   tie_rod_h = max(shank_od, bushing_real_h, eye_h);
+  // thickness + recess for ball joint
   full_h = thickness + tie_rod_h;
 
   is_bottom = direction == "bottom";
@@ -148,7 +149,7 @@ module arm_mount(thickness=suspension_tie_rod_mount_thickness,
                  bushing_d=suspension_tie_rod_bushing_d,
                  bushing_h=suspension_tie_rod_bushing_h,
                  bushing_flat_d=suspension_tie_rod_bushing_flat_d,
-                 transition_h=wheel_shoulder_bolt_head_h,
+                 transition_h=0,
                  color=matte_black,
                  show_tie_rod=false,
                  direction="bottom",
@@ -173,65 +174,59 @@ module arm_mount(thickness=suspension_tie_rod_mount_thickness,
 
   housing_d = eye_od + border_w * 2;
 
+  // virtual diameter where two arm mounts can be fitted on each side
   parent_outer_d = parent_d + full_h * 2;
-  translate([0, 0, 0]) {
-    union() {
-      maybe_color(color) {
-        difference() {
-          union() {
-            difference() {
-              hull() {
-                cylinder(d=parent_d, h=parent_h, $fn=fn);
-                translate([0, 0, parent_h]) {
-                  intersection() {
-                    cylinder(d=parent_outer_d, h=transition_h , $fn=fn);
-                    translate([0, parent_outer_d / 2 - full_h / 2, 0]) {
-                      cube_3d([housing_d, full_h, transition_h]);
-                    }
-                  }
-                }
-              }
-              cylinder(d=parent_d + 1, h=parent_h + transition_h + 1, $fn=fn);
-              translate([0, 0, parent_h]) {
-                cube_3d([parent_outer_d, parent_d, transition_h + 1]);
+
+  union() {
+    maybe_color(color) {
+      difference() {
+        hull() {
+          cylinder(d=parent_d, h=parent_h, $fn=fn);
+          translate([0, 0, parent_h]) {
+            intersection() {
+              cylinder(d=parent_outer_d, h=max(transition_h, 0.01) , $fn=fn);
+              translate([0, parent_outer_d / 2 - full_h / 2, 0]) {
+                cube_3d([housing_d, full_h, max(transition_h, 0.01)]);
               }
             }
           }
-          cylinder(d=parent_d, h=parent_h + transition_h, $fn=fn);
-          translate([0, 0, parent_h]) {
-            cube_3d([parent_outer_d, parent_d, transition_h + 1]);
-          }
+        }
+        translate([0, 0, -0.01]) {
+          cylinder(d=parent_d + 0.001,
+                   h=parent_h + transition_h + 1,
+                   $fn=fn);
+        }
+        translate([0, 0, parent_h]) {
+          cube_3d([parent_outer_d, parent_d, transition_h + 1]);
         }
       }
     }
-    translate([0, parent_d / 2, parent_h + transition_h]) {
+  }
+  translate([0, parent_d / 2, parent_h + transition_h]) {
 
-      ball_joint_mount(thickness=thickness,
-                       border_w=border_w,
-                       eye_od=eye_od,
-                       eye_h=eye_h,
-                       shank_od=shank_od,
-                       shank_bolt_d=shank_bolt_d,
-                       neck_len=neck_len,
-                       shank_len=shank_len,
-                       bushing_od=bushing_od,
-                       bushing_d=bushing_d,
-                       bushing_h=bushing_h,
-                       bushing_flat_d=bushing_flat_d,
-                       color=color,
-                       show_tie_rod=show_tie_rod,
-                       parent_d=parent_d + full_h * 2,
-                       direction=direction,
-                       center_y=false,
-                       tolerance=tolerance,
-                       show_eye_bolt=show_eye_bolt,
-                       eye_bolt_h=eye_bolt_h,
-                       eye_bolt_through_h=eye_bolt_through_h,
-                       show_eye_bolt_nut=show_eye_bolt_nut,
-                       eye_bolt_head_type=eye_bolt_head_type,
-                       fn=fn);
-    }
+    ball_joint_mount(thickness=thickness,
+                     border_w=border_w,
+                     eye_od=eye_od,
+                     eye_h=eye_h,
+                     shank_od=shank_od,
+                     shank_bolt_d=shank_bolt_d,
+                     neck_len=neck_len,
+                     shank_len=shank_len,
+                     bushing_od=bushing_od,
+                     bushing_d=bushing_d,
+                     bushing_h=bushing_h,
+                     bushing_flat_d=bushing_flat_d,
+                     color=color,
+                     show_tie_rod=show_tie_rod,
+                     parent_d=parent_d + full_h * 2,
+                     direction=direction,
+                     center_y=false,
+                     tolerance=tolerance,
+                     show_eye_bolt=show_eye_bolt,
+                     eye_bolt_h=eye_bolt_h,
+                     eye_bolt_through_h=eye_bolt_through_h,
+                     show_eye_bolt_nut=show_eye_bolt_nut,
+                     eye_bolt_head_type=eye_bolt_head_type,
+                     fn=fn);
   }
 }
-
-arm_mount(show_tie_rod=true);

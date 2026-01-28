@@ -1,5 +1,5 @@
 /**
- * Module: Steering knuckle
+ * Module: Double-wishbone suspension knuckle
  *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
@@ -29,9 +29,9 @@ module knuckle_base(color=matte_black,
                     show_shoulder_bolt=false,
                     show_eye_bolt=true,
                     show_steering_eye_bolt=true,
-                    show_steering_tie_rod,
+                    show_steering_tie_rod=false,
                     eye_bolt_h=14) {
-  lower_h = knuckle_base_h * 1;
+
   maybe_color(color) {
     difference() {
       cylinder(h=knuckle_base_h, d=knuckle_base_d, $fn=200);
@@ -61,27 +61,24 @@ module knuckle_base(color=matte_black,
 
   knuckle_steering_arm_mount(show_eye_bolt=show_steering_eye_bolt,
                              show_tie_rod=show_steering_tie_rod,
-
                              color=color);
 
-  translate([0, 0, knuckle_base_h - lower_h]) {
-    arm_mount(parent_h=lower_h,
-              show_tie_rod=show_lower_tie_rod,
-              transition_h=wheel_shoulder_bolt_head_h / 2,
+  arm_mount(parent_h=knuckle_base_h,
+            show_tie_rod=show_lower_tie_rod,
+            transition_h=wheel_shoulder_bolt_head_h / 2,
+            show_eye_bolt=show_eye_bolt,
+            eye_bolt_h=eye_bolt_h,
+            color=color);
+  rotate([0, 0, 180]) {
+    arm_mount(parent_h=knuckle_base_h,
+              show_tie_rod=show_upper_tie_rod,
               show_eye_bolt=show_eye_bolt,
+              color=color,
+
               eye_bolt_h=eye_bolt_h,
-              color=color);
-    rotate([0, 0, 180]) {
-      arm_mount(parent_h=lower_h,
-                show_tie_rod=show_upper_tie_rod,
-                show_eye_bolt=show_eye_bolt,
-                color=color,
 
-                eye_bolt_h=eye_bolt_h,
-
-                transition_h=wheel_shoulder_bolt_head_h / 2
-                + knuckle_upper_arm_mount_extra_len);
-    }
+              transition_h=wheel_shoulder_bolt_head_h / 2
+              + knuckle_upper_arm_mount_extra_len);
   }
 }
 
@@ -94,19 +91,19 @@ module knuckle_lower(color) {
        fn=250);
 }
 
-module knuckle(color=matte_black,
-               show_lower_tie_rod=false,
-               show_upper_tie_rod=false,
-               show_shoulder_bolt=false,
-               show_eye_bolt=true,
-               show_steering_eye_bolt=true,
-               show_steering_tie_rod,
+module knuckle(color=color,
+               show_lower_tie_rod=show_lower_tie_rod,
+               show_upper_tie_rod=show_upper_tie_rod,
+               show_steering_tie_rod=show_steering_tie_rod,
+               show_shoulder_bolt=show_shoulder_bolt,
+               show_eye_bolt=show_eye_bolt,
+               show_steering_eye_bolt=show_steering_eye_bolt,
                is_left=false,
                eye_bolt_h=14) {
   module _knuckle() {
     render() {
       union() {
-        knuckle_lower(color=color);
+        // knuckle_lower(color=color);
         translate([0, 0, knuckle_narrow_h]) {
           knuckle_base(color=color,
                        show_lower_tie_rod=show_lower_tie_rod,
@@ -130,12 +127,4 @@ module knuckle(color=matte_black,
   }
 }
 
-knuckle(color=color,
-        show_lower_tie_rod=show_lower_tie_rod,
-        show_upper_tie_rod=show_upper_tie_rod,
-        show_shoulder_bolt=show_shoulder_bolt,
-        show_eye_bolt=show_eye_bolt,
-        show_steering_eye_bolt=show_steering_eye_bolt,
-        show_steering_tie_rod=show_steering_tie_rod,
-        is_left=true,
-        eye_bolt_h=eye_bolt_h);
+knuckle();

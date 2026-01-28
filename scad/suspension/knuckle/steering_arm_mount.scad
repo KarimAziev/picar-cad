@@ -1,3 +1,10 @@
+/**
+ * Module: Steering arm mount
+ *
+ * Author: Karim Aziiev <karim.aziiev@gmail.com>
+ * License: GPL-3.0-or-later
+ */
+
 include <../../colors.scad>
 include <../../parameters.scad>
 
@@ -13,9 +20,6 @@ use <arm_mount.scad>
 
 module steering_arm_mount_base(angle=steering_angle_deg,
                                l=knuckle_steering_arm_mount_len,
-                               eye_od=knuckle_steering_arm_mount_tie_rod_eye_od,
-                               bushing_d=knuckle_steering_arm_mount_tie_rod_bushing_d,
-                               parent_h=knuckle_base_h,
                                thickness=knuckle_steering_arm_mount_thickness,
                                round_r=knuckle_steering_arm_mount_round_r,
                                eye_od=knuckle_steering_arm_mount_tie_rod_eye_od,
@@ -28,7 +32,7 @@ module steering_arm_mount_base(angle=steering_angle_deg,
                                bushing_d=knuckle_steering_arm_mount_tie_rod_bushing_d,
                                bushing_h=knuckle_steering_arm_mount_tie_rod_bushing_h,
                                bushing_flat_d=knuckle_steering_arm_mount_tie_rod_bushing_flat_d,
-                               color=matte_black,
+                               color=cobalt_blue_metallic,
                                parent_h=knuckle_base_h,
                                debug=false,
                                show_tie_rod=false,
@@ -54,10 +58,10 @@ module steering_arm_mount_base(angle=steering_angle_deg,
   pts_main = [[sx + eye_od / 2 - bushing_d / 2, sy],
               [full_l, 0],
               [full_l, parent_h],
-              [full_l - 4, sy + eye_od / 2],
-              [full_l - 6, sy + eye_od * 0.3],
-              [full_l - 10, sy + eye_od * 0.3],
-              [full_l - 13, sy + eye_od / 2],
+              [full_l * 0.87, sy + eye_od / 2],
+              [full_l * 0.8, sy + eye_od * 0.3],
+              [full_l * 0.67, sy + eye_od * 0.3],
+              [full_l * 0.58, sy + eye_od / 2],
               [eye_od, sy + eye_od / 2],
               [eye_od / 2 + bushing_d, sy + eye_od],
               [sx + bushing_d / 2, sy + eye_od],
@@ -133,7 +137,6 @@ module knuckle_steering_arm_mount(is_left=true,
                                   l=knuckle_steering_arm_mount_len,
                                   eye_od=knuckle_steering_arm_mount_tie_rod_eye_od,
                                   bushing_d=knuckle_steering_arm_mount_tie_rod_bushing_d,
-                                  parent_h=knuckle_base_h,
                                   thickness=knuckle_steering_arm_mount_thickness,
                                   round_r=knuckle_steering_arm_mount_round_r,
                                   eye_h=knuckle_steering_arm_mount_tie_rod_eye_h,
@@ -142,11 +145,9 @@ module knuckle_steering_arm_mount(is_left=true,
                                   neck_len=knuckle_steering_arm_mount_tie_rod_neck_len,
                                   shank_len=knuckle_steering_arm_mount_tie_rod_shank_len,
                                   bushing_od=knuckle_steering_arm_mount_tie_rod_bushing_od,
-                                  bushing_d=knuckle_steering_arm_mount_tie_rod_bushing_d,
                                   bushing_h=knuckle_steering_arm_mount_tie_rod_bushing_h,
                                   bushing_flat_d=knuckle_steering_arm_mount_tie_rod_bushing_flat_d,
-                                  color=matte_black,
-                                  parent_h=knuckle_base_h,
+                                  color=cobalt_blue_metallic,
                                   debug=false,
                                   show_tie_rod=false,
                                   show_eye_bolt=true,
@@ -212,13 +213,7 @@ module knuckle_steering_arm_mount(is_left=true,
 
 knuckle_steering_arm_mount(debug=false,
                            round_r=1.5,
-                           is_left=false,
-                           angle=steering_angle_deg,
-                           show_tie_rod=true);
-
-knuckle_steering_arm_mount(debug=false,
-                           round_r=1.5,
                            is_left=true,
                            angle=steering_angle_deg,
-                           tie_rod_reverse=true,
+                           tie_rod_reverse=false,
                            show_tie_rod=true);
