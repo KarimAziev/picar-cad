@@ -1205,3 +1205,89 @@ function to_percent(val, total_val) =
 function notch_depth(dia, chord) =
   let (r = dia / 2)
   r - sqrt((r * r) - ((chord / 2) * (chord / 2)));
+
+/**
+ ─────────────────────────────────────────────────────────────────────────────
+taper_angle_from_axis
+─────────────────────────────────────────────────────────────────────────────
+
+Calculate the taper angle from the axis given two diameters and height.
+
+**Parameters:**
+
+`d1`: Diameter at one end.
+`d2`: Diameter at the other end.
+`h`: Height between the two diameters.
+
+**Returns:**
+The taper angle in radians.
+
+**Behavior:**
+Uses `atan(abs(d2 - d1) / 2 / h)` to compute the angle.
+
+**Examples:**
+
+```scad
+taper_angle_from_axis(d1=10, d2=20, h=5) // 45 degrees
+```
+*/
+function taper_angle_from_axis(d1, d2, h) =
+  atan(abs(d2 - d1) / 2 / h);
+/**
+─────────────────────────────────────────────────────────────────────────────
+diameter_at_z
+─────────────────────────────────────────────────────────────────────────────
+
+Calculate the diameter at a given height `z` for a tapered shape.
+
+**Parameters:**
+
+`d1`: Diameter at the base (z=0).
+`d2`: Diameter at the top (z=h).
+`h`: Height of the taper.
+`z`: Height at which to calculate the diameter (0 <= z <= h).
+
+**Returns:**
+
+The diameter at height `z`.
+
+**Behavior:**
+Linearly interpolates between `d1` and `d2` based on `z`.
+
+**Examples:**
+```scad
+diameter_at_z(d1=10, d2=15, h=5) // 13
+```
+*/
+
+function diameter_at_z(d1, d2, h, z) =
+  d1 + (d2 - d1) * (z / h);
+
+/**
+ ─────────────────────────────────────────────────────────────────────────────
+ diameters_at_z
+ ─────────────────────────────────────────────────────────────────────────────
+
+ Calculate the diameters at heights `z` and `z + t` for a tapered shape
+
+ **Parameters:**
+
+ `d1`: Diameter at the base (z=0).
+ `d2`: Diameter at the top (z=h).
+ `h`: Height of the taper.
+ `z`: Height at which to calculate the first diameter (0 <= z <= h).
+ `t`: Thickness to add to `z` for the second diameter calculation.
+
+ **Returns:**
+ A 2-element list containing the diameters at heights `z` and `z + t`.
+
+ **Examples:**
+ ```scad
+ diameters_at_z(d1=10, d2=15, h=10, z=7, t=3) // [13.5, 15]
+````
+*/
+
+function diameters_at_z(d1, d2, h, z, t) =
+  let (dz1 = diameter_at_z(d1=d1, d2=d2, h=h, z=z),
+       dz2 = diameter_at_z(d1=d1, d2=d2, h=h, z=z + t))
+  [dz1, dz2];
