@@ -40,6 +40,7 @@ module steering_arm_mount_base(angle=steering_angle_deg,
                                eye_bolt_h=12,
                                eye_bolt_through_h,
                                show_eye_bolt_nut=true,
+
                                eye_bolt_head_type="hex",
                                tie_rod_reverse=false) {
   full_l = l + eye_od;
@@ -58,7 +59,7 @@ module steering_arm_mount_base(angle=steering_angle_deg,
   pts_main = [[sx + eye_od / 2 - bushing_d / 2, sy],
               [full_l, 0],
               [full_l, parent_h],
-              [full_l * 0.87, sy + eye_od / 2],
+              [full_l * 0.87, sy + eye_od * 0.4],
               [full_l * 0.8, sy + eye_od * 0.3],
               [full_l * 0.67, sy + eye_od * 0.3],
               [full_l * 0.58, sy + eye_od / 2],
@@ -82,6 +83,7 @@ module steering_arm_mount_base(angle=steering_angle_deg,
           offset_vertices_2d(r=round_r) {
             polygon(points=pts_main);
           }
+
           difference() {
             polygon(points=pts_main);
             translate([full_l - round_r * 2 - full_l, 0, 0]) {
@@ -102,6 +104,7 @@ module steering_arm_mount_base(angle=steering_angle_deg,
     _base();
   } else {
     maybe_color(color) {
+
       linear_extrude(height=thickness, center=true) {
         _base();
       }
@@ -212,8 +215,8 @@ module knuckle_steering_arm_mount(is_left=true,
 }
 
 knuckle_steering_arm_mount(debug=false,
-                           round_r=1.5,
+                           round_r=2.5,
                            is_left=true,
                            angle=steering_angle_deg,
                            tie_rod_reverse=false,
-                           show_tie_rod=true);
+                           show_tie_rod=false);

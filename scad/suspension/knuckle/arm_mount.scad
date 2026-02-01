@@ -39,6 +39,7 @@ module ball_joint_mount(thickness=suspension_tie_rod_mount_thickness,
                         direction="bottom",
                         round_all,
                         center_y=true,
+                        reverse=false,
                         tolerance=0.4,
                         fn=200) {
   eye_h = with_default(eye_h, shank_od);
@@ -68,6 +69,7 @@ module ball_joint_mount(thickness=suspension_tie_rod_mount_thickness,
   base_shank_translation = (housing_d / 2 - shank_recess_w / 2);
   shank_translation_y = is_y_direction ? ratio * base_shank_translation : 0;
   shank_translation_x = is_x_direction ? ratio * base_shank_translation : 0;
+
   module _main() {
     difference() {
       linear_extrude(height=full_h, center=false, convexity=2) {
@@ -93,12 +95,16 @@ module ball_joint_mount(thickness=suspension_tie_rod_mount_thickness,
   }
   translate([0, center_y ? -full_h / 2 : 0, housing_d / 2]) {
     maybe_rotate([0, tie_rod_end_rotation, 0]) {
-      rotate([-90, 0, 0]) {
+      rotate([reverse ? -90 : -90, 0, 0]) {
         union() {
           maybe_color(color, alpha=1) {
             if (!is_undef(parent_d)) {
               intersection() {
-                _main();
+                translate([0, 0, reverse ? full_h : 0]) {
+                  rotate([0, reverse ? 180 : 0, 0]) {
+                    _main();
+                  }
+                }
                 translate([0, 0,  -parent_d / 2 + full_h]) {
                   rotate([90, 0, 0]) {
                     cylinder(d=parent_d, h=housing_d, $fn=fn, center=true);
@@ -111,7 +117,7 @@ module ball_joint_mount(thickness=suspension_tie_rod_mount_thickness,
           }
 
           if (show_tie_rod) {
-            translate([0, 0, thickness]) {
+            translate([0, 0, reverse ? 0 : thickness]) {
               tie_rod_end(eye_od=eye_od,
                           eye_h=eye_h,
                           shank_od=shank_od,
@@ -160,6 +166,7 @@ module arm_mount(thickness=suspension_tie_rod_mount_thickness,
                  eye_bolt_through_h=2,
                  show_eye_bolt_nut=true,
                  eye_bolt_head_type="hex",
+                 reverse=false,
                  tolerance=0.4,
                  fn=200) {
   eye_h = with_default(eye_h, shank_od);
@@ -177,36 +184,78 @@ module arm_mount(thickness=suspension_tie_rod_mount_thickness,
   // virtual diameter where two arm mounts can be fitted on each side
   parent_outer_d = parent_d + full_h * 2;
 
+  transition_h = is_undef(transition_h) || transition_h <= 0 ? 0.01 : transition_h ;
+
+  dimple_h = parent_h * 0.45;
+  dimple_depth = 0.4;
+  dimple_z = parent_h * 0.2;
+
+  dimple_dias = diameters_at_z(d1=parent_d,
+                               d2=parent_outer_d,
+                               h=parent_h,
+                               z=dimple_z,
+                               t=dimple_h);
+
   union() {
-    maybe_color(color) {
+    render() {
+
       difference() {
-        hull() {
-          cylinder(d=parent_d, h=parent_h, $fn=fn);
-          translate([0, 0, parent_h]) {
-            intersection() {
-              cylinder(d=parent_outer_d, h=max(transition_h, 0.01) , $fn=fn);
-              translate([0, parent_outer_d / 2 - full_h / 2, 0]) {
-                cube_3d([housing_d, full_h, max(transition_h, 0.01)]);
+        maybe_color(color) {
+          difference() {
+            hull() {
+              cylinder(d=parent_d, h=parent_h, $fn=fn);
+              translate([0, 0, parent_h]) {
+                intersection() {
+                  cylinder(d=parent_outer_d, h=transition_h , $fn=fn);
+                  translate([0, parent_outer_d / 2 - full_h / 2, 0]) {
+                    cube_3d([housing_d, full_h, transition_h]);
+                  }
+                }
+              }
+            }
+
+            translate([0, 0, -0.01]) {
+              cylinder(d=parent_d + 0.001,
+                       h=parent_h + transition_h + 1,
+                       $fn=fn);
+            }
+            translate([0, 0, parent_h]) {
+
+              cube_3d([parent_outer_d, parent_d, transition_h + 1]);
+
+              translate([0, parent_outer_d / 2, 0]) {
+                rotate([90, 0, 0]) {
+                  roof() {
+                    square([eye_od, tie_rod_h], center=true);
+                  }
+                  translate([0, transition_h / 2, 0]) {
+                    roof() {
+                      square([eye_od, transition_h], center=true);
+                    }
+                  }
+                }
               }
             }
           }
         }
-        translate([0, 0, -0.01]) {
-          cylinder(d=parent_d + 0.001,
-                   h=parent_h + transition_h + 1,
-                   $fn=fn);
-        }
-        translate([0, 0, parent_h]) {
-          cube_3d([parent_outer_d, parent_d, transition_h + 1]);
+        translate([0, 0, dimple_z]) {
+          ring(outer_d1=dimple_dias[0] + 1,
+               outer_d2=dimple_dias[1] + 1,
+               d2=dimple_dias[1] - dimple_depth,
+               d1=dimple_dias[0] - dimple_depth,
+               h=dimple_h,
+               fn=fn);
         }
       }
     }
   }
-  translate([0, parent_d / 2, parent_h + transition_h]) {
+
+  translate([0, parent_d / 2, parent_h + transition_h,]) {
 
     ball_joint_mount(thickness=thickness,
                      border_w=border_w,
                      eye_od=eye_od,
+                     reverse=reverse,
                      eye_h=eye_h,
                      shank_od=shank_od,
                      shank_bolt_d=shank_bolt_d,
@@ -230,3 +279,5 @@ module arm_mount(thickness=suspension_tie_rod_mount_thickness,
                      fn=fn);
   }
 }
+
+arm_mount(show_tie_rod=true, reverse=true);
