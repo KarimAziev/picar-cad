@@ -2810,10 +2810,10 @@ wheel_hub_bolt_boss_d                                = wheel_hub_bolt_d + 2;
 
 knuckle_bearing_hole_d                               = wheel_bearing_bore_d + 0.40;
 
-knuckle_h                                            = (wheel_hub_inner_rim_h + (wheel_hub_h_tolerance + wheel_bearing_w)) * 2;
+knuckle_h                                            = (wheel_hub_inner_rim_h + (wheel_hub_h_tolerance + wheel_bearing_w));
 
-knuckle_narrow_h                                     = 2;
-knuckle_base_h                                       = knuckle_h - knuckle_narrow_h;
+knuckle_narrow_h                                     = 6.5;
+knuckle_base_h                                       = knuckle_h - 2;
 
 knuckle_narrow_d                                     = wheel_bearing_shoulder_d;
 knuckle_base_d                                       = knuckle_narrow_d + 2;

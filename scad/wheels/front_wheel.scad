@@ -104,12 +104,6 @@ module assembled_wheel(show_bearing=true, show_upper_hub=true) {
               show_upper_hub=show_upper_hub);
 }
 
-module knuckle() {
-  ring(d=wheel_shoulder_bolt_d,
-       outer_d=wheel_bearing_shoulder_d,
-       h=knuckle_w - washer_thickness);
-}
-
 union() {
   front_wheel(show_upper_hub=false,
               show_extra_lower_hub=false,
