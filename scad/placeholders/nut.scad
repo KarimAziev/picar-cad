@@ -35,8 +35,10 @@ module nut(d,
                             size=size)) {
 
         color(text_color, alpha=1) {
-          translate([0, outer_d / 2 -
-                     (outer_d * 0.06) - 0.1, size / 2]) {
+          translate([0,
+                     outer_d / 2 -
+                     (outer_d * 0.06) - 0.1,
+                     size / 2]) {
             rotate([90, 0, 180]) {
               linear_extrude(height=0.1, center=false) {
                 text(text=txt,
@@ -83,11 +85,13 @@ module lock_nut(d,
           }
         }
       }
-      color(cobalt_blue_metallic, alpha=1) {
-        difference() {
-          cylinder(d=d + inner_step, h=flanged_h + 0.1, $fn=12);
-          translate([0, 0, -0.1]) {
-            cylinder(d=d, h + 0.2, $fn=10);
+      translate([0, 0, -0.1]) {
+        color(cobalt_blue_metallic, alpha=1) {
+          difference() {
+            cylinder(d=d + inner_step, h=flanged_h + 0.1, $fn=12);
+            translate([0, 0, -0.1]) {
+              cylinder(d=d, h + 0.2, $fn=10);
+            }
           }
         }
       }
@@ -103,5 +107,8 @@ module lock_nut(d,
   }
 }
 
-lock_nut(d=3, h=m3_lock_nut_h, outer_d=m3_lock_nut_dia, flanged_h=m3_lock_nut_h - m3_nut_h,
+lock_nut(d=3,
+         h=m3_lock_nut_h,
+         outer_d=m3_lock_nut_dia,
+         flanged_h=m3_lock_nut_h - m3_nut_h,
          reverse=true);
