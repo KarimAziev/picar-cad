@@ -124,7 +124,11 @@ module thread_ridge(major = 6,
 }
 
 // Head generator - head base is at z=0 (so translate([0,0,h]) above places it flush)
-module bolt_head(type = "hex", head_d = 9, head_h = 4, shaft_r = 2.5, $fn = 64) {
+module bolt_head(type = "hex",
+                 head_d = 9,
+                 head_h = 4,
+                 shaft_r = 2.5,
+                 $fn = 64) {
   if (type == "hex") {
     R = head_d / sqrt(3); // circumradius for given flat-to-flat distance
     points = [for (i=[0:5]) [R*cos(60*i), R*sin(60*i)]];
@@ -144,15 +148,22 @@ module bolt_head(type = "hex", head_d = 9, head_h = 4, shaft_r = 2.5, $fn = 64) 
       linear_extrude(height = head_h) {
         polygon(points);
       }
-      translate([0, 0,-0.01]) {
+      translate([0, 0, -0.01]) {
         cylinder(h = head_h + 0.02, r = shaft_r + 0.02, $fn = $fn);
       }
     }
   } else if (type == "round") {
     difference() {
       cylinder(h = head_h, r = head_d/2, $fn = $fn);
-      translate([0, 0,-0.01]) {
+      translate([0, 0, -0.01]) {
         cylinder(h = head_h + 0.02, r = shaft_r + 0.02, $fn = $fn);
+      }
+    }
+  } else if (type == "socket") {
+    difference() {
+      cylinder(h = head_h, r = head_d/2, $fn = $fn);
+      translate([0, 0, -0.01]) {
+        cylinder(h = head_h + 0.02, r = shaft_r + 0.02, $fn = 6);
       }
     }
   } else if (type == "countersunk") {
@@ -268,14 +279,16 @@ module helical_thread(major_d = 2.5,
   base_half = pitch * 0.45;
   profile_r = minor_r + depth/2;
 
-  pts = [[profile_r, 0],
-         [profile_r - depth,  base_half],
-         [profile_r - depth, -base_half]];
+  flat = pitch * 0.10;
+  pts = [[profile_r,  flat],
+         [profile_r, -flat],
+         [profile_r - depth, -base_half],
+         [profile_r - depth,  base_half]];
 
   linear_extrude(height = h,
                  twist = 360 * turns,
                  slices = slices,
-                 convexity = 10) {
+                 convexity = 2) {
     polygon(points = pts);
   }
 }
@@ -286,12 +299,12 @@ module bolt(d = 2.5,                 // major diameter (mm)
             pitch = undef,           // thread pitch (undef -> default metric)
             threaded = true,         // produce thread ridges
             thread_depth = undef,    // radial thread depth (undef -> 0.6*pitch)
-            thread_segments = 120,   // quality of the linear_extrude twist
-            thread_starts = 2,       // 1 = single-start, 2 = two-start (parallel helices)
-            head_type = "pan",       // "pan" | "hex" | "round" | "countersunk" | "none"
+            thread_starts = 1,       // 1 = single-start, 2 = two-start (parallel helices)
+            head_type = "pan",       // "pan" | "socket" | "hex" | "round" | "countersunk" | "none"
             head_d,                  // head diameter
             head_h,                  // head height
             unthreaded_d,
+            unthreaded_color,
             unthreaded = 0,
             show_nut=false,
             nut_head_distance=1,
@@ -299,6 +312,8 @@ module bolt(d = 2.5,                 // major diameter (mm)
             bolt_color,
             screw_mode=false,
             nut_color,
+            thread_clearance = 0.15,
+            head_color,
             $fn = 64) {
 
   d = snap_bolt_d(d);
@@ -310,6 +325,7 @@ module bolt(d = 2.5,                 // major diameter (mm)
   nut_color=with_default(nut_color, plist_get("color", nut_spec));
   nut_h = plist_get("height", nut_spec, 0);
   standard_nut_h = plist_get("height", plist_get("nut", bolt_spec, []), 0);
+
   bolt_color = with_default(bolt_color,
                             plist_get(head_type,
                                       plist_get("colors", bolt_spec, []),
@@ -317,54 +333,42 @@ module bolt(d = 2.5,                 // major diameter (mm)
 
   let (pitch_v   = pitch != undef ? pitch : default_pitch(d),
        thread_len_v = thread_len != undef ? max(0, thread_len) : max(0, h - unthreaded),
+       turns = thread_len_v / pitch_v,
+       thread_segments = ceil(turns * 30),
        thread_depth_v = thread_depth != undef ? thread_depth : pitch_v * 0.6,
        major_r = d/2,
+       major_r_eff = major_r - thread_clearance,
        minor_r = max(0, major_r - (thread_depth != undef ? thread_depth : pitch_v * 0.6)))
     union() {
-    color(bolt_color, alpha=1) {
-      union() {
-        if (threaded) {
-          if (!is_undef(unthreaded_d)) {
-            translate([0, 0, thread_len_v]) {
-              cylinder(d=unthreaded_d, h=unthreaded);
-            }
+    if (threaded) {
+      if (!is_undef(unthreaded_d)) {
+        color(with_default(unthreaded_color, bolt_color), alpha=1) {
+          translate([0, 0, thread_len_v]) {
+            cylinder(d=unthreaded_d, h=unthreaded);
           }
-          if (screw_mode) {
-            let (end_len = min(1.3, thread_len_v * 0.3),
-                 main_len = thread_len_v - end_len) {
-              union() {
-                translate([0, 0, end_len]) {
-                  cylinder(h = main_len,
-                           r=minor_r,
-                           $fn = $fn);
-                }
-                cylinder(h = end_len,
-                         r1=minor_r * 0.1,
-                         r2 = minor_r,
-                         $fn = $fn);
-
-                for (s = [0:thread_starts-1]) {
-                  phase_deg = 360 * s / thread_starts;
-                  translate([0, 0, end_len]) {
-                    thread_ridge(major = d,
-                                 pitch = pitch_v,
-                                 h = main_len,
-                                 depth = thread_depth_v,
-                                 segments = thread_segments,
-                                 start_phase = phase_deg);
-                  }
-                }
-              }
-            }
-          } else {
+        }
+      }
+      color(bolt_color, alpha=1) {
+        if (screw_mode) {
+          let (end_len = min(1.3, thread_len_v * 0.3),
+               main_len = thread_len_v - end_len) {
             union() {
-              cylinder(h = thread_len_v, r = minor_r, $fn = $fn);
+              translate([0, 0, end_len]) {
+                cylinder(h = main_len,
+                         r=minor_r,
+                         $fn = $fn);
+              }
+              cylinder(h = end_len,
+                       r1=minor_r * 0.1,
+                       r2 = minor_r,
+                       $fn = $fn);
+
               for (s = [0:thread_starts-1]) {
                 phase_deg = 360 * s / thread_starts;
-                translate([0, 0,-0.02]) {
-                  thread_ridge(major = d,
+                translate([0, 0, end_len]) {
+                  thread_ridge(major = (major_r_eff * 2),
                                pitch = pitch_v,
-                               h = thread_len_v + 0.04,
+                               h = main_len,
                                depth = thread_depth_v,
                                segments = thread_segments,
                                start_phase = phase_deg);
@@ -372,38 +376,57 @@ module bolt(d = 2.5,                 // major diameter (mm)
               }
             }
           }
-
-          if (thread_len_v < h) {
-            translate([0, 0, thread_len_v]) {
-              cylinder(h = h - thread_len_v, r = major_r, $fn = $fn);
+        } else {
+          union() {
+            cylinder(h = thread_len_v, r = minor_r, $fn = $fn);
+            for (s = [0:thread_starts-1]) {
+              phase_deg = 360 * s / thread_starts;
+              translate([0, 0,-0.02]) {
+                thread_ridge(major = d,
+                             pitch = pitch_v,
+                             h = thread_len_v + 0.04,
+                             depth = thread_depth_v,
+                             segments = thread_segments,
+                             start_phase = phase_deg);
+              }
             }
           }
-        } else {
-          cylinder(h = h, r = minor_r, $fn = $fn);
         }
 
-        if (head_type != "none") {
+        if (thread_len_v < h) {
+          translate([0, 0, thread_len_v]) {
+            cylinder(h = h - thread_len_v, r = major_r, $fn = $fn);
+          }
+        }
+      }
+    } else {
+      color(bolt_color, alpha=1) {
+        cylinder(h = h, r = minor_r, $fn = $fn);
+      }
+    }
 
-          let (head_spec = plist_get(head_type,
-                                     plist_get("head", bolt_spec, []),
-                                     []),
-               head_d = with_default(head_d,
-                                     plist_get("dia",
-                                               head_spec,
-                                               d * 1.5)),
-               head_h = with_default(head_h,
-                                     plist_get("height",
-                                               head_spec,
-                                               with_default(head_h, 0.7 * d)))) {
+    if (head_type != "none") {
+      let (head_spec = plist_get(head_type,
+                                 plist_get("head", bolt_spec, []),
+                                 []),
+           head_d = with_default(head_d,
+                                 plist_get("dia",
+                                           head_spec,
+                                           d * 1.5)),
+           head_h = with_default(head_h,
+                                 plist_get("height",
+                                           head_spec,
+                                           with_default(head_h, 0.7 * d)))) {
 
-            translate([0, 0, h]) {
-              bolt_head(type = head_type,
-                        head_d = head_d,
-                        head_h = head_h,
-                        shaft_r = minor_r,
-                        $fn=$fn);
-            }
-          };
+        color(with_default(head_color, plist_get("color", head_spec, bolt_color)),
+              alpha=1) {
+          translate([0, 0, h]) {
+            bolt_head(type = head_type,
+                      head_d = head_d,
+                      head_h = head_h,
+                      shaft_r = minor_r,
+                      $fn=$fn);
+          }
         }
       }
     }
@@ -423,7 +446,12 @@ module bolt(d = 2.5,                 // major diameter (mm)
           lock_nut(d=d,
                    h=nut_h,
                    reverse=true,
-                   flanged_h=nut_h - standard_nut_h,
+                   flanged_dia=plist_get("flanged_dia", nut_spec),
+                   nylon_cap_h=plist_get("nylon_cap_h", nut_spec),
+                   nylon_cap_dia=plist_get("nylon_cap_dia", nut_spec),
+                   flanged_h=plist_get("flanged_h", nut_spec, nut_h
+                                       - standard_nut_h),
+                   flanged_fn=plist_get("flanged_fn", nut_spec),
                    outer_d=plist_get("outer_dia", nut_spec),
                    nut_color=with_default(nut_color, bolt_color));
         }
@@ -432,21 +460,21 @@ module bolt(d = 2.5,                 // major diameter (mm)
   }
 }
 
-h = 40;
-d = 3;
+h = 30;
+d = 6;
 d3 = 13;
 nut_distance = 4;
 
-rotate([0, 0, 0]) {
-  bolt(d = d,
-       h = h,
-       head_d=d3,
-       head_h=5.5,
-       threaded = true,
-       unthreaded=30,
-       show_nut=true,
-       lock_nut=false,
-       unthreaded_d=8,
-       nut_head_distance=nut_distance,
-       head_type = "round");
-}
+bolt(d = d,
+     h = h,
+     head_d=d3,
+     head_h=5.5,
+     threaded = true,
+     unthreaded=20,
+     show_nut=false,
+     lock_nut=false,
+     unthreaded_d=8,
+     nut_head_distance=nut_distance,
+     bolt_color=matte_black,
+     unthreaded_color=metallic_silver_2,
+     head_type = "socket");
