@@ -140,7 +140,8 @@ module knuckle_bent_shaft_rack_link_arm(knuckle_color="white",
           let (h = knuckle_shaft_connector_dia,
                d = knuckle_shaft_bolt_dia,
                bore_d = knuckle_shaft_bolt_cbore_dia,
-               wall_thickness = (knuckle_shaft_connector_dia - knuckle_shaft_dia) / 2,
+               wall_thickness = (knuckle_shaft_connector_dia
+                                 - knuckle_shaft_dia) / 2,
                bore_h = wall_thickness / 2,
                fn = 360) {
 
