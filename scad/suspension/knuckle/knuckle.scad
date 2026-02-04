@@ -44,7 +44,7 @@ module knuckle_base(color=matte_black,
                     show_steering_eye_bolt=false,
                     show_steering_tie_rod=false,
                     show_shoulder_bolt_nut=false,
-                    eye_bolt_h=14) {
+                    eye_bolt_h=eye_bolt_h) {
 
   maybe_color(color) {
     difference() {
@@ -115,7 +115,7 @@ module knuckle(color=color,
                show_shoulder_bolt_nut=show_shoulder_bolt_nut,
                show_extra_bearing=show_extra_bearing,
                is_left=false,
-               eye_bolt_h=14) {
+               eye_bolt_h=eye_bolt_h) {
   module _knuckle() {
     render() {
       union() {
