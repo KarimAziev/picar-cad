@@ -15,10 +15,9 @@ use <tire.scad>
 use <wheel.scad>
 use <wheel_hub_new.scad>
 
-assembled_hub_h  = wheel_hub_full_h();
+assembled_hub_h = wheel_hub_full_h();
 
-knuckle_w        = wheel_shoulder_bolt_unthreaded_l - (assembled_hub_h * 2);
-washer_thickness = 1.6;
+knuckle_w       = wheel_shoulder_bolt_unthreaded_l - (assembled_hub_h * 2);
 
 module front_wheel(w=wheel_w,
                    d=wheel_dia,
@@ -34,10 +33,12 @@ module front_wheel(w=wheel_w,
                    bolts_n=wheel_bolts_n,
                    bolt_boss_h=wheel_bolt_boss_h,
                    bolt_boss_w=wheel_bolt_boss_w,
+                   show_tire=false,
                    show_upper_hub=false,
                    show_extra_lower_hub=false,
                    show_extra_upper_hub=false,
                    show_bearing=false,
+                   show_extra_bearing=false,
                    bearing_n=2,
                    wheel_color="white",
                    hub_color="white") {
@@ -46,29 +47,37 @@ module front_wheel(w=wheel_w,
   hub_h = wheel_hub_full_h();
 
   union() {
-    translate([0, 0, w / 2 + rim_w]) {
-      color(wheel_color) {
-        wheel(d=d,
-              w=w,
-              thickness=thickness,
-              rim_h=rim_h,
-              rim_w=rim_w,
-              rim_bend=rim_bend);
+    translate([0, 0, -w / 2 - rim_w]) {
+      translate([0, 0, w / 2 + rim_w]) {
+        color(wheel_color) {
+          wheel(d=d,
+                w=w,
+                thickness=thickness,
+                rim_h=rim_h,
+                rim_w=rim_w,
+                rim_bend=rim_bend);
+        }
+      }
+
+      for (i = [0 : bearing_n - 1]) {
+        translate([0, 0, (hub_h * 2) * i]) {
+          let (lower_d = i == 0 ? inner_d : wheel_hub_outer_d) {
+
+            wheel_hub_assembly(show_lower_hub=i == 0 || show_extra_lower_hub,
+                               lower_d=lower_d,
+                               show_bearing=i == 0 ? show_bearing : show_extra_bearing,
+                               show_upper_hub=i == 0
+                               ? show_upper_hub
+                               : show_extra_upper_hub,
+                               color=hub_color);
+          }
+        }
       }
     }
 
-    for (i = [0 : bearing_n - 1]) {
-      translate([0, 0, (hub_h * 2) * i]) {
-        let (lower_d = i == 0 ? inner_d : wheel_hub_outer_d) {
-          echo(i, "lower_d", lower_d);
-          wheel_hub_assembly(show_lower_hub=i == 0 || show_extra_lower_hub,
-                             lower_d=lower_d,
-                             show_bearing=show_bearing,
-                             show_upper_hub=i == 0
-                             ? show_upper_hub
-                             : show_extra_upper_hub,
-                             color=hub_color);
-        }
+    if (show_tire) {
+      color(black_1) {
+        tire();
       }
     }
   }
@@ -83,30 +92,20 @@ module front_wheel_animated(show_bearing=true) {
   }
 }
 
-module assembled_wheel(show_bearing=true, show_upper_hub=true) {
-  translate([0,
-             0,
-             wheel_shoulder_bolt_threaded_l
-             + wheel_shoulder_bolt_unthreaded_l]) {
-
-    rotate([180, 0, 0]) {
-      bolt(d=wheel_shoulder_bolt_d,
-           h=wheel_shoulder_bolt_threaded_l
-           + wheel_shoulder_bolt_unthreaded_l,
-           thread_len=wheel_shoulder_bolt_threaded_l,
-           unthreaded=wheel_shoulder_bolt_unthreaded_l,
-           head_d=wheel_shoulder_bolt_head_d,
-           head_type="round",
-           head_h=wheel_shoulder_bolt_head_h);
-    }
-  }
+module assembled_wheel(show_bearing=true, show_upper_hub=true, show_tire=false) {
   front_wheel(show_bearing=show_bearing,
               show_upper_hub=show_upper_hub);
+  if (show_tire) {
+    color(black_1) {
+      tire();
+    }
+  }
 }
 
 union() {
   front_wheel(show_upper_hub=false,
               show_extra_lower_hub=false,
+              show_tire=true,
               show_extra_upper_hub=false,
               show_bearing=false);
 }
