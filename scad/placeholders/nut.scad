@@ -36,7 +36,7 @@ module nut(d,
                             halign="center",
                             size=size)) {
 
-        #color(text_color, alpha=1) {
+        color(text_color, alpha=1) {
           translate([0,
                      outer_d / 2 -
                      (outer_d * 0.06) - 0.1,
@@ -73,7 +73,9 @@ module lock_nut(d,
                 nylon_cap_h) {
   base_h = h - flanged_h - with_default(nylon_cap_h, 0);
   flanged_dia = with_default(flanged_dia, outer_d * 0.8);
-  has_cap = !is_undef(nylon_cap_h) && !is_undef(nylon_cap_dia) && nylon_cap_dia > 0 && nylon_cap_h > 0;
+  has_cap = !is_undef(nylon_cap_h) && !is_undef(nylon_cap_dia)
+    && nylon_cap_dia > 0 && nylon_cap_h > 0;
+
   module base_nut() {
     nut(d=d,
         outer_d=outer_d,

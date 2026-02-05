@@ -172,7 +172,7 @@ m6_socket_head_dia                                   = 9.80;
 m1_socket_head_h                                     = 0.8;
 m2_socket_head_h                                     = 1.38;
 m25_socket_head_h                                    = 2.10;
-m3_socket_head_h                                     = 2.90;
+m3_socket_head_h                                     = 3.30;
 m5_socket_head_h                                     = 5.0;
 m6_socket_head_h                                     = 6.0;
 
@@ -2838,7 +2838,7 @@ ultrasonic_solder_blobs_positions                    = [26, 10];
 // ─────────────────────────────────────────────────────────────────────────────
 
 wheel_dia                                            = 42;
-wheel_w                                              = 20.0;
+wheel_w                                              = 22.0;
 wheel_thickness                                      = 2.0;
 wheel_rim_h                                          = 1.2;
 wheel_rim_w                                          = 1;
@@ -2862,10 +2862,9 @@ wheel_bearing_outer_d                                = 22;
 wheel_hub_bearing_width                              = 7;
 
 wheel_hub_outer_d                                    = wheel_dia - (wheel_thickness * 2) - 2;
-wheel_hub_outer_ring_d                               = wheel_hub_outer_d;
 
 wheel_hub_bolt_offset                                = 0.7;
-wheel_hub_d                                          = 22;
+
 wheel_hub_h                                          = 7.2;
 
 wheel_hub_h_tolerance                                = 0.2;
@@ -2874,12 +2873,17 @@ wheel_hub_inner_rim_w                                = 1.2;
 
 wheel_hub_bolt_dia                                   = m25_hole_dia;
 
+wheel_hub_n                                          = 2;
 wheel_bolts_n                                        = 6;
 
-wheel_bolt_boss_w                                    = 1;
 wheel_bolt_boss_h                                    = 2;
 
 wheel_hub_bolt_d                                     = m3_hole_dia;
+
+wheel_hub_wheel_bolt_bore_d                          = m3_socket_head_dia + 0.4;
+wheel_hub_wheel_bolt_bore_h                          = m3_socket_head_h + 0.4;
+wheel_hub_wheel_spacer_h                             = 1.4 + wheel_hub_wheel_bolt_bore_h;
+
 wheel_hub_bolt_boss_d                                = wheel_hub_bolt_d + 2;
 
 knuckle_bearing_hole_d                               = wheel_bearing_bore_d + 0.40;

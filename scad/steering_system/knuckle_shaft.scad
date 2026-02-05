@@ -121,7 +121,14 @@ module knuckle_bent_shaft(show_wheel=false,
 
                 if (show_wheel) {
                   translate([0, 0, wheel_center_offset]) {
-                    front_wheel_animated();
+                    front_wheel_animated(show_bearing = true,
+                                         show_upper_hub = true,
+                                         show_extra_lower_hub = true,
+                                         show_extra_bearing = true,
+                                         show_extra_upper_hub = true,
+                                         show_wheel_hub_bolts = true,
+                                         show_wheel_hub_nuts = true,
+                                         show_tire = true);
                   }
                 }
               }

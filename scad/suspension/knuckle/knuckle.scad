@@ -14,7 +14,7 @@ use <../../lib/shapes3d.scad>
 use <../../lib/transforms.scad>
 use <../../placeholders/bolt.scad>
 use <../../wheels/front_wheel.scad>
-use <../../wheels/wheel_hub_new.scad>
+use <../../wheels/wheel_hub.scad>
 use <arm_mount.scad>
 use <knuckle_lower.scad>
 use <steering_arm_mount.scad>
@@ -32,8 +32,14 @@ show_upper_hub         = false;
 show_extra_lower_hub   = false;
 show_extra_bearing     = false;
 show_extra_upper_hub   = false;
+show_wheel_hub_bolts   = false;
+show_wheel_hub_nuts    = false;
 show_tire              = false;
 show_shoulder_bolt_nut = false;
+
+// Whether to use locking nut
+wheel_hub_lock_nut     = true;
+
 eye_bolt_h             = 14;
 
 module knuckle_base(color=matte_black,
@@ -72,6 +78,8 @@ module knuckle_base(color=matte_black,
            show_nut=show_shoulder_bolt_nut,
            lock_nut=true,
            head_type="socket",
+           bolt_color=matte_black,
+           unthreaded_color=metallic_silver_2,
            head_h=wheel_shoulder_bolt_head_h);
     }
   }
@@ -114,6 +122,9 @@ module knuckle(color=color,
                show_extra_upper_hub=show_extra_upper_hub,
                show_shoulder_bolt_nut=show_shoulder_bolt_nut,
                show_extra_bearing=show_extra_bearing,
+               show_wheel_hub_bolts=show_wheel_hub_bolts,
+               show_wheel_hub_nuts=show_wheel_hub_nuts,
+               wheel_hub_lock_nut=wheel_hub_lock_nut,
                is_left=false,
                eye_bolt_h=eye_bolt_h) {
   module _knuckle() {
@@ -136,14 +147,17 @@ module knuckle(color=color,
   }
 
   if (show_wheel) {
-    translate([0, 0, -wheel_w / 2]) {
+    translate([0, 0, -wheel_w / 2 + wheel_hub_wheel_spacer_h]) {
       rotate([180, 0, 0]) {
         front_wheel(show_bearing=show_bearing,
                     show_tire=show_tire,
                     show_upper_hub=show_upper_hub,
                     show_extra_lower_hub=show_extra_lower_hub,
                     show_extra_bearing=show_extra_bearing,
-                    show_extra_upper_hub=show_extra_upper_hub);
+                    show_extra_upper_hub=show_extra_upper_hub,
+                    show_wheel_hub_bolts=show_wheel_hub_bolts,
+                    show_wheel_hub_nuts=show_wheel_hub_nuts,
+                    wheel_hub_lock_nut=wheel_hub_lock_nut);
       }
     }
   }

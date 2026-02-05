@@ -54,7 +54,7 @@ show_rack             = true;
 show_pinion           = true;
 show_motor_brackets   = true;
 show_rear_panel       = true;
-show_front_wheels     = true;
+show_front_wheels     = false;
 show_rear_wheels      = true;
 show_wheel_hubs       = true;
 show_tires            = true;
@@ -78,6 +78,10 @@ module printable(spacing=5) {
     + head_plate_width / 2
     + head_plate_thickness / 2
     + spacing;
+
+  inner_tire_r = wheel_dia / 2;
+  outer_tire_r = inner_tire_r + wheel_tire_thickness
+    + wheel_rim_h + wheel_tire_fillet_gap;
 
   if (show_chasssis) {
     translate([0, 0, chassis_thickness / 2]) {
@@ -279,36 +283,19 @@ module printable(spacing=5) {
              0]) {
     front_wheels_x = -rear_panel_size[0] / 2 - rear_panel_mount_thickness
       - wheel_dia / 2 - spacing;
-    wheel_hub_x = show_front_wheels
-      ? front_wheels_x - wheel_dia - spacing - wheel_dia
-      : -rear_panel_size[0] / 2
-      - rear_panel_mount_thickness
-      - wheel_hub_outer_d / 2
-      - spacing;
 
     if (show_rear_panel) {
       rear_panel_printable(colr="white");
     }
     if (show_wheel_hubs) {
-      color("white") {
-        translate([wheel_hub_x - spacing,
-                   0,
-                   wheel_hub_h / 2]) {
-          wheel_hub_upper();
-          translate([show_front_wheels ? 0 : -wheel_hub_outer_d - spacing,
-                     show_front_wheels ? -wheel_hub_outer_d - spacing : 0,
-                     0]) {
-            wheel_hub_upper();
-          }
-        }
+      translate([front_wheels_x - outer_tire_r * 2, 0, 0]) {
+        wheel_hub_printable_plate(align=-1);
       }
     }
     translate([0, 0, wheel_w / 2]) {
       if (show_front_wheels) {
         color("white") {
-          translate([front_wheels_x,
-                     0,
-                     0]) {
+          translate([front_wheels_x, 0, 0]) {
             front_wheel();
             translate([-wheel_dia - spacing, 0, 0]) {
               front_wheel();
@@ -333,11 +320,7 @@ module printable(spacing=5) {
     }
 
     if (show_tires) {
-      inner_tire_r = wheel_dia / 2;
-      outer_tire_r = inner_tire_r + wheel_tire_thickness
-        + wheel_rim_h + wheel_tire_fillet_gap;
       translate([0, 0, wheel_tire_width / 2]) {
-
         color(matte_black) {
           translate([0,
                      -max(rear_panel_size[1]

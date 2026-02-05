@@ -24,7 +24,6 @@
 include <../parameters.scad>
 
 use <../lib/shapes2d.scad>
-use <../wheels/wheel_hub.scad>
 use <bearing_shaft.scad>
 
 module bearing_upper_connector(connector_color,

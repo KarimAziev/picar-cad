@@ -1,3 +1,3 @@
 use <../wheels/wheel_hub.scad>
 
-wheel_hub_upper_printable();
+wheel_hub_lower_printable();
