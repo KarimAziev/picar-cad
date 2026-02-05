@@ -33,14 +33,6 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.inputs.ref || github.ref }}
 
-      - name: Add swap (6G) to avoid OOM
-        run: |
-          sudo fallocate -l 6G /swapfile
-          sudo chmod 600 /swapfile
-          sudo mkswap /swapfile
-          sudo swapon /swapfile
-          sudo swapon --show
-
 
       - name: Install OpenSCAD runtime deps
         run: |
