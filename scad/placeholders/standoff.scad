@@ -53,7 +53,6 @@ module standoff(thread_d=3,
                 bolt_pitch = undef,           // thread pitch (undef -> default metric)
                 bolt_threaded = true,         // produce thread ridges
                 bolt_thread_depth = undef,    // radial thread depth (undef -> 0.6*pitch)
-                bolt_thread_segments = 120,   // quality of the linear_extrude twist
                 bolt_thread_starts = 2,       // 1 = single-start, 2 = two-start (parallel helices)
                 bolt_head_type = "pan",       // "pan" | "hex" | "round" | "countersunk" | "none"
                 bolt_head_d,        // across-flats for hex or diameter for round/countersunk
@@ -89,7 +88,6 @@ module standoff(thread_d=3,
            threaded=bolt_threaded,
            bolt_color=bolt_color,
            thread_depth=bolt_thread_depth,
-           thread_segments=bolt_thread_segments,
            thread_starts=bolt_thread_starts,
            head_type=bolt_head_type,
            head_d=bolt_head_d,
@@ -155,7 +153,6 @@ module standoffs_stack(d,
                        bolt_pitch = undef,           // thread pitch (undef -> default metric)
                        bolt_threaded = true,         // produce thread ridges
                        bolt_thread_depth = undef,    // radial thread depth (undef -> 0.6*pitch)
-                       bolt_thread_segments = 120,   // quality of the linear_extrude twist
                        bolt_thread_starts = 2,       // 1 = single-start, 2 = two-start (parallel helices)
                        bolt_head_type = "pan",       // "pan" | "hex" | "round" | "countersunk" | "none"
                        bolt_head_d,        // across-flats for hex or diameter for round/countersunk
@@ -197,7 +194,6 @@ module standoffs_stack(d,
                      bolt_pitch=bolt_pitch,
                      bolt_threaded=bolt_threaded,
                      bolt_thread_depth=bolt_thread_depth,
-                     bolt_thread_segments=bolt_thread_segments,
                      bolt_thread_starts=bolt_thread_starts,
                      bolt_head_type=bolt_head_type,
                      bolt_head_d=bolt_head_d,
@@ -222,7 +218,6 @@ module standoffs_stack(d,
                    bolt_pitch=bolt_pitch,
                    bolt_threaded=bolt_threaded,
                    bolt_thread_depth=bolt_thread_depth,
-                   bolt_thread_segments=bolt_thread_segments,
                    bolt_thread_starts=bolt_thread_starts,
                    bolt_head_type=bolt_head_type,
                    bolt_head_d=bolt_head_d,
