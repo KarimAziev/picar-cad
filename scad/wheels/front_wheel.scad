@@ -186,6 +186,4 @@ module front_wheel_animated(show_bearing=show_bearing,
   }
 }
 
-union() {
-  front_wheel(center_z=false);
-}
+front_wheel(center_z=false);

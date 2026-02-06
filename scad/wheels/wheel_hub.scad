@@ -41,7 +41,7 @@ module wheel_hub_base(d=wheel_hub_outer_d,
                       bolt_boss_h=wheel_bolt_boss_h,
                       bolt_d=wheel_hub_bolt_d,
                       bolts_n=wheel_bolts_n,
-                      fn=100,
+                      fn,
                       spacer_at_top=false,
                       bolt_pocket_mode=false,
                       show_bolts=false,
@@ -54,6 +54,7 @@ module wheel_hub_base(d=wheel_hub_outer_d,
                       bolt_cbore_d,
                       bolt_cbore_h,
                       color) {
+  fn = with_default(fn, $preview ? 100 : 360);
   base_h = (bearing_w  + h_tolerance) / 2;
   spacer_d = bearing_d - spacer_w * 2;
   bolt_y = (bearing_d / 2) + max(bolt_boss_d, bolt_d) / 2 + bolt_offset;
@@ -198,7 +199,8 @@ module wheel_hub_lower(d=wheel_hub_outer_d,
                        lock_nut=false,
                        bolt_h,
                        nut_head_distance=0,
-                       fn=100) {
+                       fn) {
+  fn = with_default(fn, $preview ? 100 : 360);
   wheel_hub_base(d=d,
                  color=color,
                  bearing_d=bearing_d,
@@ -235,7 +237,8 @@ module wheel_hub_upper(color="white",
                        bolt_boss_h=wheel_bolt_boss_h,
                        bolt_d=wheel_hub_bolt_d,
                        bolts_n=wheel_bolts_n,
-                       fn=100) {
+                       fn) {
+  fn = with_default(fn, $preview ? 100 : 360);
   h = wheel_hub_full_h(bearing_w=bearing_w,
                        spacer_h=spacer_h,
                        h_tolerance=h_tolerance);
@@ -278,7 +281,7 @@ module wheel_hub_assembly(upper_color=white_smoke_1,
                           bearing_bore_d=wheel_bearing_bore_d,
                           bearing_shoulder_d=wheel_bearing_shoulder_d,
                           bearing_outer_recess_d=wheel_bearing_outer_recess_d,
-                          fn=100,
+                          fn,
                           bolt_cbore_d,
                           bolt_cbore_h,
                           show_upper_hub=show_upper_hub,
@@ -290,6 +293,7 @@ module wheel_hub_assembly(upper_color=white_smoke_1,
                           bolt_h,
                           nut_head_distance,
                           assembly_clearance=0.1) {
+  fn = with_default(fn, $preview ? 100 : 360);
   lower_h = wheel_hub_full_h(bearing_w=bearing_w,
                              spacer_h=lower_spacer_h,
                              h_tolerance=h_tolerance);
