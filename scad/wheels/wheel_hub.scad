@@ -49,6 +49,7 @@ module wheel_hub_base(d=wheel_hub_outer_d,
                       show_nuts=false,
                       lock_nut=false,
                       bolt_head_type="socket",
+                      bearing_tolerance=0.1,
                       bolt_h,
                       bolt_cbore_d,
                       bolt_cbore_h,
@@ -68,7 +69,7 @@ module wheel_hub_base(d=wheel_hub_outer_d,
         if (!spacer_at_top) {
           ring(outer_d=d, d=spacer_d, h=spacer_h, fn=fn);
           translate([0, 0, spacer_h]) {
-            ring(outer_d=d, d=bearing_d, h=base_h, fn=fn);
+            ring(outer_d=d, d=bearing_d + bearing_tolerance, h=base_h, fn=fn);
           }
         } else {
           ring(outer_d=d, d=bearing_d, h=base_h, fn=fn);

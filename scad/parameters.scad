@@ -2871,8 +2871,6 @@ wheel_hub_h_tolerance                                = 0.2;
 wheel_hub_inner_rim_h                                = 1.4;
 wheel_hub_inner_rim_w                                = 1.2;
 
-wheel_hub_bolt_dia                                   = m25_hole_dia;
-
 wheel_hub_n                                          = 2;
 wheel_bolts_n                                        = 6;
 

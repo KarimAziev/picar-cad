@@ -464,9 +464,9 @@ Variable `ir_case_bolt_dia` defines the diameter of the bolt holes that attach t
 
 Each wheel hub requires 6 M2.5 (or M3 for a very tight fit) bolts and nuts.
 
-| Size                     | Length (mm)  | Amount               | Nuts | Variable             |
-| ------------------------ | ------------ | -------------------- | ---- | -------------------- |
-| M2.5 or M3 for tight fit | 12 or higher | 12 (6 per wheel hub) | 12   | `wheel_hub_bolt_dia` |
+| Size                     | Length (mm)  | Amount               | Nuts | Variable           |
+| ------------------------ | ------------ | -------------------- | ---- | ------------------ |
+| M2.5 or M3 for tight fit | 12 or higher | 12 (6 per wheel hub) | 12   | `wheel_hub_bolt_d` |
 
 ### Switch buttons and fuses
 
