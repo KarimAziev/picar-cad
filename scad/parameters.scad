@@ -179,12 +179,12 @@ m6_socket_head_h                                     = 6.0;
 m1_countersunk_head_dia                              = 2.60;
 m2_countersunk_head_dia                              = 3.5;
 m25_countersunk_head_dia                             = 4.04;
-m3_countersunk_head_dia                              = 6.50;
+m3_countersunk_head_dia                              = 5.8;
 m6_countersunk_head_dia                              = 14.44;
 m1_countersunk_head_h                                = 0.8;
 m2_countersunk_head_h                                = 1.38;
 m25_countersunk_head_h                               = 1.1;
-m3_countersunk_head_h                                = 1.7;
+m3_countersunk_head_h                                = 1.8;
 m6_countersunk_head_h                                = 8.3;
 
 m1_hex_head_dia                                      = 2.60;
@@ -682,6 +682,45 @@ chassis_body_battery_holders_specs                   = ["type", "grid",
                                                                                               "mount_type", battery_holder_mount_type,
                                                                                               "terminal_type", battery_holder_terminal_type,
                                                                                               "side_wall_cutout_type", battery_holder_side_wall_type]]]]])];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Steering servo DSSERVO
+// ─────────────────────────────────────────────────────────────────────────────
+
+dsservo_size                                         = [40.00, 20.0, 40.5];
+dsservo_bolt_dia                                     = 4.05;
+
+dsservo_bolt_spacing                                 = [49.5, 10];
+
+// offset between the servo slot and the fastening bolts
+dsservo_bolts_offset                                 = 3.2;
+
+dsservo_hat_w                                        = 54.5;
+
+dsservo_hat_h                                        = 18.63;
+dsservo_hat_thickness                                = 4.0;
+dsservo_hat_z_offset                                 = 12.8;
+dsservo_gearbox_x_offset                             = 0;
+dsservo_gearbox_mode                                 = "union";
+dsservo_text                                         = [["20KG",
+                                                         9],
+                                                        ["DSSERVO",
+                                                         3, undef, 1],
+                                                        ["DIGITAL SERVO", 3]];
+dsservo_text_size                                    = 2;
+
+dsservo_gearbox_h                                    = 0;
+dsservo_gearbox_size                                 = [[1, 12.95, matte_black, 20],
+                                                        [3.9, 5.9, metallic_gold_2, 25],
+                                                        [0.05, 4.2, dark_gold_2, 25],
+                                                        [0.05, 2.8, licorice, 25]];
+dsservo_gearbox_d1                                   = 12.95 + 3.8;
+
+dsservo_gearbox_d2                                   = 6;
+dsservo_color                                        = jet_black;
+dsservo_cut_len                                      = 0;
+dsservo_cut_len_top                                  = 7.7;
+dsservo_cut_top_depth                                = 3.0;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Front panel dimensions

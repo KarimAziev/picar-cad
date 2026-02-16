@@ -5,6 +5,11 @@
  * License: GPL-3.0-or-later
  */
 
+function calc_corner_rad(size, r, r_factor=0.3) =
+  let (w = size[0],
+       h = size[1],
+       rad = min(is_undef(r) ? (min(h, w)) * r_factor : r, w / 2, h / 2))
+  rad;
 /*
   Create a 2D rounded rectangle by hull-ing four circles placed at the
   rectangle's corners.
@@ -28,7 +33,8 @@
 module rounded_rect(size, r=undef, center=false, fn, r_factor=0.3, side) {
   w = size[0];
   h = size[1];
-  rad = min(is_undef(r) ? (min(h, w)) * r_factor : r, w / 2, h / 2);
+  rad = calc_corner_rad(size=size, r=r, r_factor=r_factor);
+
   if (rad == 0) {
     square(size, center=center);
   } else if (is_string(side) && side != "all") {

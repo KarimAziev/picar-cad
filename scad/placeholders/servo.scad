@@ -12,6 +12,7 @@ use <../lib/functions.scad>
 use <../lib/holes.scad>
 use <../lib/plist.scad>
 use <../lib/shapes2d.scad>
+use <../lib/slots.scad>
 use <bolt.scad>
 use <servo_horn.scad>
 
@@ -33,10 +34,11 @@ module servo_bolts_hat(size,
                        x_offset,
                        d,
                        thickness,
+                       center_z=true,
                        center=true) {
   w = size[0];
   h = size[1];
-  linear_extrude(height=thickness, center=true) {
+  linear_extrude(height=thickness, center=center_z) {
     difference() {
       rounded_rect(size = [w, h], r = h * 0.1, center=center);
       two_x_bolts_2d(x_offset, d=d);
@@ -56,8 +58,14 @@ module servo_body(size,
                   bolts_hat_z_offset,
                   servo_text,
                   text_size,
+                  cut_len_top_depth,
+                  cut_len_top_len,
                   font="Liberation Sans:style=Bold Italic",
+                  bolt_spacing,
+                  center_hat_z=true,
                   tolerance) {
+  cut_len_top_depth = with_default(cut_len_top_depth, 0);
+  cut_len_top_len = with_default(cut_len_top_len, 0);
   length = size[0];
   w = size[1];
   h = size[2];
@@ -68,7 +76,8 @@ module servo_body(size,
           linear_extrude(height=w, center=false) {
             polygon([[cut_len, 0],
                      [0, cut_len],
-                     [0, h],
+                     [0, h - cut_len_top_depth],
+                     [cut_len_top_len, h],
                      [length, h],
                      [length, 0]]);
           }
@@ -94,13 +103,18 @@ module servo_body(size,
                 is_undef(servo_text[i][1])
                   ? text_size
                   : servo_text[i][1]];
+            text_paddings = [for (i = [0 : len(servo_text) - 1])
+                is_undef(servo_text[i][3])
+                  ? 0
+                  : servo_text[i][3]];
             for (i = [0 : len(servo_text) - 1]) {
               item = servo_text[i];
               txt = item[0];
               txt_size = text_sizes[i];
               fnt = is_undef(item[2]) ? font : item[2];
-              z_offst = i > 0 ? sum(text_sizes, i) : 0;
-              translate([0, 0, -z_offst]) {
+              padding =  i > 0 ? sum(text_sizes, i) : 0;
+              z_offst = i > 0 ? sum(text_paddings, i) : 0;
+              translate([0, 0, -z_offst - padding]) {
                 rotate([90, 0, 180]) {
                   linear_extrude(height=0.01,
                                  center=false) {
@@ -117,16 +131,31 @@ module servo_body(size,
         }
       }
     }
-    if (servo_text != undef) {
-    }
-    color(servo_color, alpha=alpha) {
-      translate([0, 0, h - bolts_hat_z_offset]) {
-        offst_x = bolt_x_offst(size[0], bolts_dia, bolts_offset);
 
-        servo_bolts_hat(size=[servo_hat_w, servo_hat_h],
-                        x_offset=offst_x,
-                        d=bolts_dia + tolerance,
-                        thickness=servo_hat_thickness);
+    translate([0, 0, h - bolts_hat_z_offset]) {
+      color(servo_color, alpha=alpha) {
+        if (!is_undef(bolt_spacing)) {
+          translate([0, 0, center_hat_z ? -servo_hat_thickness / 2 : 0]) {
+            difference() {
+              linear_extrude(height=servo_hat_thickness, center=false) {
+                rounded_rect(size = [servo_hat_w, servo_hat_h],
+                             r = servo_hat_h * 0.1,
+                             center=true);
+              }
+              four_corner_counterbores(size=bolt_spacing,
+                                       d=bolts_dia + tolerance,
+                                       h=servo_hat_thickness);
+            }
+          }
+        } else {
+          offst_x = bolt_x_offst(size[0], bolts_dia, bolts_offset);
+
+          servo_bolts_hat(size=[servo_hat_w, servo_hat_h],
+                          x_offset=offst_x,
+                          d=bolts_dia + tolerance,
+                          center_z=center_hat_z,
+                          thickness=servo_hat_thickness);
+        }
       }
     }
   }
@@ -224,6 +253,7 @@ module servo_gearbox(h,
 module servo(size,
              bolts_dia,
              bolts_offset,
+             bolt_spacing,
              servo_hat_w,
              servo_hat_h,
              servo_hat_thickness,
@@ -235,6 +265,8 @@ module servo(size,
              text_size=3,
              tolerance=0.3,
              cut_len=3,
+             cut_len_top_len,
+             cut_len_top_depth,
              gearbox_h,
              gearbox_d1,
              gearbox_r1,
@@ -252,7 +284,9 @@ module servo(size,
              servo_horn_single=false,
              servo_horn_screw_side,
              show_servo_horn=true,
+             center_hat_z=true,
              center=false) {
+  cut_len_top_depth = with_default(cut_len_top_depth, 0);
   length = size[0];
   w = size[1];
 
@@ -270,6 +304,8 @@ module servo(size,
                  servo_color=servo_color,
                  alpha=alpha,
                  cut_len=cut_len,
+                 cut_len_top_depth=cut_len_top_depth,
+                 cut_len_top_len=cut_len_top_len,
                  servo_hat_w=servo_hat_w,
                  bolts_dia=bolts_dia,
                  servo_hat_h=servo_hat_h,
@@ -278,9 +314,11 @@ module servo(size,
                  servo_text=servo_text,
                  text_size=text_size,
                  font=font,
+                 center_hat_z=center_hat_z,
+                 bolt_spacing=bolt_spacing,
                  tolerance=tolerance);
-      translate([-size[0] / 2 + gearbox_r1, 0, size[2]]) {
-        servo_gearbox(h=gearbox_h,
+      translate([-size[0] / 2 + gearbox_r1, 0, size[2] - cut_len_top_depth]) {
+        servo_gearbox(h=gearbox_h + cut_len_top_depth,
                       d1=gearbox_d1,
                       r1=gearbox_r1,
                       r2=gearbox_r2,
@@ -297,7 +335,6 @@ module servo(size,
                       servo_horn_screw_side=servo_horn_screw_side,
                       show_servo_horn=show_servo_horn,
                       show_servo_horn_screws=show_servo_horn_screws,
-
                       alpha=alpha) {
           children();
         }
