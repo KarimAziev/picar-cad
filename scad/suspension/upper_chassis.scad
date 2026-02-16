@@ -113,7 +113,8 @@ module upper_chassis(show_pitman_arm=true,
     + ((steering_servo_tie_rod_shank_len
         + steering_servo_tie_rod_eye_od) * 2);
   extra_len = shaft_len + bellcrank_arm_dia / 2
-    + steering_servo_tie_rod_eye_od / 2 + ((dsservo_hat_w - dsservo_size[0]) / 2);
+    + steering_servo_tie_rod_eye_od / 2
+    + ((dsservo_hat_w - dsservo_size[0]) / 2);
 
   servo_mount_x = -bellcrank_arm_len - bellcrank_arm_dia / 2
     + dsservo_size[2]
