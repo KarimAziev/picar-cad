@@ -100,17 +100,31 @@ steering_servo_arm_center_bolt_bore_d      = 7.8;
 steering_servo_arm_center_bolt_bore_h      = 1.2;
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Knuckle
+// ─────────────────────────────────────────────────────────────────────────────
+
+heat_insert_nut_flange_d                   = 6.95;
+heat_insert_nut_flange_h                   = 5.4;
+heat_insert_nut_outer_d                    = 5.85;
+heat_insert_nut_hole_d                     = 5.2;
+heat_insert_nut_h                          = 4.94;
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Suspension upper arm
 // ─────────────────────────────────────────────────────────────────────────────
 upper_arm_length                           = 41.2;
 upper_arm_h                                = 24;
 upper_arm_hole_corner_r                    = 2.5;
 upper_arm_corner_rad                       = 0.5;
-upper_arm_thickness                        = 6.5;
+upper_arm_thickness                        = max(heat_insert_nut_flange_d,
+                                                 heat_insert_nut_outer_d) + 1.5;
 upper_arm_pin_d                            = 3.4;
+
 upper_arm_pin_mount_w                      = 9;
 upper_arm_pin_mount_h                      = 6.9;
 upper_arm_joint_mount_len                  = 15.19;
 upper_arm_joint_mount_top_offset           = 3.5;
-upper_arm_joint_mount_h                    = 7.5;
+upper_arm_joint_mount_h                    = 9.5;
 upper_arm_side_w                           = 4.5;
+
+upper_arm_ball_stud_hole_depth             = heat_insert_nut_h * 2;
