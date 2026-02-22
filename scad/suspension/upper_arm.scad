@@ -6,99 +6,173 @@ use <../lib/functions.scad>
 use <../lib/shapes2d.scad>
 use <../lib/slots.scad>
 use <../lib/transforms.scad>
+use <../placeholders/ball_stud.scad>
 
-module upper_arm(color=cobalt_blue_metallic) {
-  cut_h = upper_arm_h - upper_arm_pin_mount_h * 2;
+module upper_arm(color=cobalt_blue_metallic,
+                 show_ball_stud=false,
+                 debug=false) {
+  cut_h = upper_arm_h - upper_arm_hinge_barell_h * 2;
   cut_y_offset = upper_arm_h / 2 - cut_h / 2;
-  full_h = upper_arm_h + upper_arm_joint_mount_top_offset;
+  full_h = upper_arm_h + upper_arm_ball_stud_mount_extra_h;
+
+  ball_stud_y = + upper_arm_ball_stud_mount_extra_h
+    + upper_arm_h
+    - upper_arm_joint_mount_h / 2;
+
+  upper_bent_len = upper_arm_length - upper_arm_joint_mount_len;
+  hole_start_x = upper_arm_side_cutout_depth
+    + upper_arm_side_w;
+  hole_start_y = cut_y_offset + upper_arm_ball_stud_mount_extra_h / 2;
+
+  base_shape_pts = [[0, 0],
+                    [0, upper_arm_h],
+                    [upper_arm_side_cutout_depth, upper_arm_h],
+                    [upper_bent_len / 2,
+                     upper_arm_h + upper_arm_ball_stud_mount_extra_h * 0.3],
+                    [upper_bent_len,
+                     upper_arm_h + upper_arm_ball_stud_mount_extra_h],
+                    [upper_arm_length, full_h],
+                    [upper_arm_length, full_h - upper_arm_joint_mount_h],
+                    [upper_arm_side_cutout_depth, 0]];
+
+  hole_pts = [[0, 0],
+              [0, cut_h + upper_arm_ball_stud_mount_extra_h * 0.3],
+              [upper_bent_len / 2,
+               cut_h + upper_arm_ball_stud_mount_extra_h],
+              [upper_arm_length
+               - upper_arm_joint_mount_len
+               - upper_arm_side_cutout_depth
+               - upper_arm_side_w,
+               cut_h],
+              [(upper_arm_length
+                - upper_arm_joint_mount_len
+                - upper_arm_side_cutout_depth
+                - upper_arm_side_w) * 0.8,
+               cut_h - upper_arm_ball_stud_mount_extra_h]];
 
   module upper_arm_hole() {
-
-    polygon([[0, 0],
-             [0, cut_h],
-             [upper_arm_length
-              - upper_arm_joint_mount_len
-              - upper_arm_pin_mount_w
-              - upper_arm_side_w,
-              cut_h + upper_arm_joint_mount_top_offset],
-             [upper_arm_length
-              - upper_arm_joint_mount_len
-              - upper_arm_pin_mount_w,
-              cut_h],
-             [upper_arm_length
-              - upper_arm_joint_mount_len
-              - upper_arm_pin_mount_w,
-              cut_h]]);
+    polygon(hole_pts);
   }
 
   module base_shape() {
-    polygon([[0, 0],
-             [0, upper_arm_h],
-             [upper_arm_length - upper_arm_joint_mount_len,
-              upper_arm_h + upper_arm_joint_mount_top_offset],
-             [upper_arm_length, full_h],
-             [upper_arm_length, full_h - upper_arm_joint_mount_h],
-             [upper_arm_pin_mount_w, 0]]);
+    polygon(base_shape_pts);
   }
 
   module _main() {
-    difference() {
-      offset_vertices_2d(r=upper_arm_corner_rad, $fn=24) {
-        base_shape();
-      }
-
-      translate([upper_arm_pin_mount_w
-                 + upper_arm_side_w,
-                 cut_y_offset
-                 + upper_arm_joint_mount_top_offset / 2,
-                 0]) {
-        offset_vertices_2d(r=upper_arm_hole_corner_r) {
-          upper_arm_hole();
+    union() {
+      difference() {
+        offset_vertices_2d(r=upper_arm_corner_rad, $fn=34) {
+          base_shape();
         }
-      }
 
-      translate([-1, cut_y_offset, 0]) {
-        rounded_rect(size=[upper_arm_pin_mount_w + 1,
-                           cut_h],
-                     fn=$preview ? 20 : 40,
-                     side="right",
-                     center=false);
+        translate([hole_start_x,
+                   hole_start_y,
+                   0]) {
+          offset_vertices_2d(r=upper_arm_hole_corner_r) {
+            upper_arm_hole();
+          }
+        }
+
+        translate([-1, cut_y_offset, 0]) {
+          rounded_rect(size=[upper_arm_side_cutout_depth + 1,
+                             cut_h],
+                       fn=$preview ? 20 : 40,
+                       side="right",
+                       center=false);
+        }
       }
     }
   }
 
-  render() {
-    difference() {
-      maybe_color(color) {
-        linear_extrude(height=upper_arm_thickness, center=false) {
-          _main();
+  union() {
+    if (debug) {
+      translate([0, 0, upper_arm_thickness]) {
+        debug_polygon_text(points=base_shape_pts);
+        translate([hole_start_x,
+                   hole_start_y,
+                   0]) {
+          debug_polygon_text(points=hole_pts, font_color="red");
         }
       }
-      translate([0, 0, upper_arm_thickness / 2]) {
-        translate([upper_arm_pin_mount_w / 2, 0, 0]) {
-          rotate([-90, 0, 0]) {
-            cylinder(d=upper_arm_pin_d, h=upper_arm_h + 1, $fn=40);
+    }
+    render() {
+      difference() {
+        maybe_color(color) {
+          linear_extrude(height=upper_arm_thickness, center=false) {
+            _main();
+          }
+          translate([upper_bent_len,
+                     upper_arm_h + upper_arm_ball_stud_mount_extra_h
+                     - upper_arm_joint_mount_h,
+                     -upper_arm_ball_stud_mount_extra_thickness / 2]) {
+            ball_stud_connector();
           }
         }
-
-        translate([upper_arm_length,
-                   + upper_arm_joint_mount_top_offset
-                   + upper_arm_h
-                   - upper_arm_joint_mount_h / 2,
-                   0]) {
-          rotate([-90, 0, 90]) {
-            counterbore(h=upper_arm_ball_stud_hole_depth,
-                        d=heat_insert_nut_hole_d,
-                        bore_d=heat_insert_nut_flange_d + 0.4,
-                        bore_h= + 1.0,
-                        sink=true,
-                        fn=300,
-                        reverse=true);
+        translate([0, 0, upper_arm_thickness / 2]) {
+          translate([upper_arm_side_cutout_depth / 2, 0, 0]) {
+            rotate([-90, 0, 0]) {
+              cylinder(d=upper_arm_pin_d, h=upper_arm_h + 1, $fn=40);
+            }
           }
+
+          translate([upper_arm_length,
+                     ball_stud_y,
+                     0]) {
+            rotate([-90, 0, 90]) {
+              counterbore(h=upper_arm_ball_stud_hole_depth,
+                          d=heat_insert_nut_hole_d,
+                          sink=true,
+                          fn=300,
+                          reverse=true);
+            }
+          }
+        }
+      }
+    }
+    if (show_ball_stud) {
+      translate([upper_arm_length -
+                 (knuckle_ball_stud_h - knuckle_ball_stud_unthreaded_h),
+                 ball_stud_y,
+                 upper_arm_thickness / 2]) {
+        rotate([90, 0, 90]) {
+          ball_stud(d=knuckle_ball_stud_shank_d,
+                    ball_d=knuckle_ball_stud_ball_d,
+                    ball_hole_d=knuckle_ball_stud_ball_hole_d,
+                    h=knuckle_ball_stud_h,
+                    unthreaded_len=knuckle_ball_stud_unthreaded_h);
         }
       }
     }
   }
 }
 
-upper_arm();
+module ball_stud_connector() {
+  full_h = upper_arm_thickness
+    + upper_arm_ball_stud_mount_extra_thickness;
+  chamfer = upper_arm_ball_stud_mount_extra_thickness / 2;
+  module _base() {
+    rounded_rect([upper_arm_joint_mount_len, upper_arm_joint_mount_h],
+                 side="left",
+                 r_factor=0.0,
+                 center=true);
+  }
+  pts = [[0, chamfer],
+         [0, upper_arm_joint_mount_h - chamfer],
+         [chamfer, upper_arm_joint_mount_h],
+         [full_h - chamfer, upper_arm_joint_mount_h],
+         [full_h, upper_arm_joint_mount_h - chamfer],
+         [full_h, chamfer],
+         [full_h - chamfer, 0],
+         [chamfer, 0]];
+
+  translate([0, 0, full_h]) {
+
+    rotate([0, 90, 0]) {
+      linear_extrude(height=upper_arm_joint_mount_len, center=false) {
+        polygon(pts);
+      }
+    }
+  }
+}
+
+upper_arm(show_ball_stud=false, debug=false);
