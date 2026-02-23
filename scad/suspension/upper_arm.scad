@@ -1,17 +1,31 @@
+/**
+ * Module: Upper Wishbone Arm
+ *
+ * The upper arm is A-shaped control arm connecting the top of the steering
+ * knuckle to the chassis.
+ *
+ * Author: Karim Aziiev <karim.aziiev@gmail.com>
+ * License: GPL-3.0-or-later
+ */
+
 include <../colors.scad>
 include <../steering_params.scad>
 
 use <../lib/debug.scad>
 use <../lib/functions.scad>
 use <../lib/shapes2d.scad>
+use <../lib/shapes3d.scad>
 use <../lib/slots.scad>
 use <../lib/transforms.scad>
 use <../placeholders/ball_stud.scad>
 
+show_ball_stud = false;
+debug          = false;
+
 module upper_arm(color=cobalt_blue_metallic,
-                 show_ball_stud=false,
-                 debug=false) {
-  cut_h = upper_arm_h - upper_arm_hinge_barell_h * 2;
+                 show_ball_stud=show_ball_stud,
+                 debug=debug) {
+  cut_h = upper_arm_h - upper_arm_hinge_barrel_h * 2;
   cut_y_offset = upper_arm_h / 2 - cut_h / 2;
   full_h = upper_arm_h + upper_arm_ball_stud_mount_extra_h;
 
@@ -19,7 +33,7 @@ module upper_arm(color=cobalt_blue_metallic,
     + upper_arm_h
     - upper_arm_joint_mount_h / 2;
 
-  upper_bent_len = upper_arm_length - upper_arm_joint_mount_len;
+  upper_bent_len = upper_arm_len - upper_arm_joint_mount_len;
   hole_start_x = upper_arm_side_cutout_depth
     + upper_arm_side_w;
   hole_start_y = cut_y_offset + upper_arm_ball_stud_mount_extra_h / 2;
@@ -31,20 +45,20 @@ module upper_arm(color=cobalt_blue_metallic,
                      upper_arm_h + upper_arm_ball_stud_mount_extra_h * 0.3],
                     [upper_bent_len,
                      upper_arm_h + upper_arm_ball_stud_mount_extra_h],
-                    [upper_arm_length, full_h],
-                    [upper_arm_length, full_h - upper_arm_joint_mount_h],
+                    [upper_arm_len, full_h],
+                    [upper_arm_len, full_h - upper_arm_joint_mount_h],
                     [upper_arm_side_cutout_depth, 0]];
 
   hole_pts = [[0, 0],
               [0, cut_h + upper_arm_ball_stud_mount_extra_h * 0.3],
               [upper_bent_len / 2,
                cut_h + upper_arm_ball_stud_mount_extra_h],
-              [upper_arm_length
+              [upper_arm_len
                - upper_arm_joint_mount_len
                - upper_arm_side_cutout_depth
                - upper_arm_side_w,
                cut_h],
-              [(upper_arm_length
+              [(upper_arm_len
                 - upper_arm_joint_mount_len
                 - upper_arm_side_cutout_depth
                 - upper_arm_side_w) * 0.8,
@@ -105,7 +119,13 @@ module upper_arm(color=cobalt_blue_metallic,
                      upper_arm_h + upper_arm_ball_stud_mount_extra_h
                      - upper_arm_joint_mount_h,
                      -upper_arm_ball_stud_mount_extra_thickness / 2]) {
-            ball_stud_connector();
+            chamfered_cube(size=[upper_arm_joint_mount_len,
+                                 upper_arm_joint_mount_h,
+                                 upper_arm_thickness
+                                 + upper_arm_ball_stud_mount_extra_thickness],
+                           chamfer=upper_arm_ball_stud_mount_extra_thickness / 2,
+                           ignore_sides=["right"],
+                           lower_chamfer=false);
           }
         }
         translate([0, 0, upper_arm_thickness / 2]) {
@@ -115,7 +135,7 @@ module upper_arm(color=cobalt_blue_metallic,
             }
           }
 
-          translate([upper_arm_length,
+          translate([upper_arm_len,
                      ball_stud_y,
                      0]) {
             rotate([-90, 0, 90]) {
@@ -130,7 +150,7 @@ module upper_arm(color=cobalt_blue_metallic,
       }
     }
     if (show_ball_stud) {
-      translate([upper_arm_length -
+      translate([upper_arm_len -
                  (knuckle_ball_stud_h - knuckle_ball_stud_unthreaded_h),
                  ball_stud_y,
                  upper_arm_thickness / 2]) {
@@ -146,33 +166,4 @@ module upper_arm(color=cobalt_blue_metallic,
   }
 }
 
-module ball_stud_connector() {
-  full_h = upper_arm_thickness
-    + upper_arm_ball_stud_mount_extra_thickness;
-  chamfer = upper_arm_ball_stud_mount_extra_thickness / 2;
-  module _base() {
-    rounded_rect([upper_arm_joint_mount_len, upper_arm_joint_mount_h],
-                 side="left",
-                 r_factor=0.0,
-                 center=true);
-  }
-  pts = [[0, chamfer],
-         [0, upper_arm_joint_mount_h - chamfer],
-         [chamfer, upper_arm_joint_mount_h],
-         [full_h - chamfer, upper_arm_joint_mount_h],
-         [full_h, upper_arm_joint_mount_h - chamfer],
-         [full_h, chamfer],
-         [full_h - chamfer, 0],
-         [chamfer, 0]];
-
-  translate([0, 0, full_h]) {
-
-    rotate([0, 90, 0]) {
-      linear_extrude(height=upper_arm_joint_mount_len, center=false) {
-        polygon(pts);
-      }
-    }
-  }
-}
-
-upper_arm(show_ball_stud=false, debug=false);
+upper_arm();

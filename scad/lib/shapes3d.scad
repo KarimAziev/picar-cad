@@ -222,3 +222,110 @@ module ring(d,
     }
   }
 }
+
+module y_chamfered_cube(size, chamfer, center_x, center_y, lower_chamfer=false) {
+  x_size = size[0];
+  y_size = size[1];
+  z_size = size[2];
+  pts = [[0, chamfer],
+         [0, y_size - chamfer],
+         [chamfer, y_size],
+         [z_size - chamfer, y_size],
+         [z_size, y_size - chamfer],
+         [z_size, chamfer],
+         [z_size - chamfer, 0],
+         [chamfer, 0]];
+
+  translate([center_x ? -x_size / 2 : 0,
+             center_y ? -y_size / 2 : 0,
+             z_size + (lower_chamfer ? -chamfer : 0)]) {
+    rotate([0, 90, 0]) {
+      linear_extrude(height=x_size, center=false) {
+        polygon(pts);
+      }
+    }
+  }
+}
+
+module chamfered_cube(size,
+                      chamfer,
+                      center_x,
+                      center_y,
+                      lower_chamfer=false,
+                      ignore_sides=[]) {
+  x_size = size[0];
+  y_size = size[1];
+  z_size = size[2];
+
+  is_left_non_chamfered = member("left", ignore_sides);
+  is_right_non_chamfered = member("right", ignore_sides);
+
+  translate([center_x ? -x_size / 2 : 0,
+             center_y ? -y_size / 2 : 0,
+             lower_chamfer ? -chamfer : 0]) {
+    intersection() {
+      cube(size=[x_size, y_size, z_size]);
+      union() {
+        translate([x_size, 0, chamfer]) {
+          rotate([0, 180, 0]) {
+            roof() {
+              square(size=[x_size, y_size]);
+            }
+          }
+        }
+
+        for (side = ignore_sides) {
+          if (side == "left") {
+            y_chamfered_cube(size=[x_size / 2, y_size, z_size],
+                             chamfer=chamfer);
+          } else if (side == "right") {
+            translate([x_size / 2, 0, 0]) {
+              y_chamfered_cube(size=[x_size / 2, y_size, z_size],
+                               chamfer=chamfer);
+            }
+          } else if (side == "bottom") {
+            translate([x_size, 0, 0]) {
+              rotate([0, 0, 90]) {
+                y_chamfered_cube(size=[y_size / 2, x_size, z_size],
+                                 chamfer=chamfer);
+              }
+            }
+            if (is_left_non_chamfered) {
+              cube([chamfer, chamfer, z_size]);
+            }
+            if (is_right_non_chamfered) {
+              translate([x_size - chamfer, 0, 0]) {
+                cube([chamfer, chamfer, z_size]);
+              }
+            }
+          } else if (side == "top") {
+            translate([x_size, y_size / 2, 0]) {
+              rotate([0, 0, 90]) {
+                y_chamfered_cube(size=[y_size / 2, x_size, z_size],
+                                 chamfer=chamfer);
+              }
+            }
+            if (is_left_non_chamfered) {
+              translate([0, y_size - chamfer, 0]) {
+                cube([chamfer, chamfer, z_size]);
+              }
+            }
+            if (is_right_non_chamfered) {
+              translate([x_size - chamfer, y_size - chamfer, 0]) {
+                cube([chamfer, chamfer, z_size]);
+              }
+            }
+          }
+        }
+        translate([0, 0, chamfer]) {
+          cube(size=[x_size, y_size, z_size - chamfer * 2]);
+        }
+        translate([0, 0, z_size - chamfer]) {
+          roof() {
+            square(size=[x_size, y_size]);
+          }
+        }
+      }
+    }
+  }
+}
