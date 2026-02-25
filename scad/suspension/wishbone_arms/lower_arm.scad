@@ -8,45 +8,21 @@
  * License: GPL-3.0-or-later
  */
 
-include <../colors.scad>
-include <../steering_params.scad>
+include <../../colors.scad>
+include <../../steering_params.scad>
 
-use <../lib/debug.scad>
-use <../lib/functions.scad>
-use <../lib/shapes2d.scad>
-use <../lib/shapes3d.scad>
-use <../lib/slots.scad>
-use <../lib/transforms.scad>
+use <../../lib/debug.scad>
+use <../../lib/functions.scad>
+use <../../lib/shapes2d.scad>
+use <../../lib/shapes3d.scad>
+use <../../lib/slots.scad>
+use <../../lib/transforms.scad>
+use <barrel_hinge.scad>
 
 default_debug = false;
 
-module hinge_barrel(size, distance, d) {
-  length = size[0];
-  h = size[1];
-  thickness = size[2];
-  hole_r = d / 2;
-  translate([0, h, 0]) {
-    rotate([90, 0, 0]) {
-      linear_extrude(height=h, center=false) {
-        difference() {
-          rounded_rect([length, thickness],
-                       center=false,
-                       r_factor=0.5,
-                       side="left",
-                       fn=$preview ? 20 : 100);
-          translate([hole_r + distance,
-                     thickness / 2,
-                     0]) {
-            circle(r=hole_r, $fn=$preview ? 20 : 360);
-          }
-        }
-      }
-    }
-  }
-}
-
 module lower_arm_hinge() {
-  hinge_barrel(size=[lower_arm_hinge_barrel_len,
+  barrel_hinge(size=[lower_arm_hinge_barrel_len,
                      lower_arm_hinge_barrel_h,
                      lower_arm_thickness],
                d=lower_arm_hinge_barrel_hole_d,

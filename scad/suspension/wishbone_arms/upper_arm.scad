@@ -8,16 +8,16 @@
  * License: GPL-3.0-or-later
  */
 
-include <../colors.scad>
-include <../steering_params.scad>
+include <../../colors.scad>
+include <../../steering_params.scad>
 
-use <../lib/debug.scad>
-use <../lib/functions.scad>
-use <../lib/shapes2d.scad>
-use <../lib/shapes3d.scad>
-use <../lib/slots.scad>
-use <../lib/transforms.scad>
-use <../placeholders/ball_stud.scad>
+use <../../lib/debug.scad>
+use <../../lib/functions.scad>
+use <../../lib/shapes2d.scad>
+use <../../lib/shapes3d.scad>
+use <../../lib/slots.scad>
+use <../../lib/transforms.scad>
+use <../../placeholders/ball_stud.scad>
 
 show_ball_stud = false;
 debug          = false;

@@ -30,7 +30,7 @@ pitman_arm_boss_inner_padding              = 1;
 pitman_arm_bolt_n                          = 3;
 pitman_arm_bolt_d                          = 3;
 
-// chassis_bellcrank_position_y               = chassis_bellcrank_y_base + ((bellcrank_arm_dia - bellcrank_arm_w) / 2);
+chassis_bellcrank_position_y               = chassis_bellcrank_y_base + ((bellcrank_arm_dia - bellcrank_arm_w) / 2);
 chassis_bellcrank_mount_len                = chassis_bellcrank_y_base;
 chassis_bellcrank_link_padding_x           = bellcrank_arm_dia / 2;
 chassis_bellcrank_mount_w                  = bellcrank_link_bolt_spacing[0] + chassis_bellcrank_link_padding_x * 2;
