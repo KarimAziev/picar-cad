@@ -122,30 +122,45 @@ knuckle_ball_stud_unthreaded_h             = 5;
 // ─────────────────────────────────────────────────────────────────────────────
 // Upper wishbone arm
 // ─────────────────────────────────────────────────────────────────────────────
+
+// Overall length of the upper arm (X direction), from hinge end to ball-stud end.
 upper_arm_len                              = 41.8;
-// the height of the arm excluding upper_arm_ball_stud_mount_extra_h
+
+// Overall height/envelope of the arm profile (Y direction) excluding
+// upper_arm_ball_stud_mount_extra_h
 upper_arm_h                                = 24;
+
 // rounding radius of the hole on the arm
 upper_arm_hole_corner_r                    = 2.5;
 
-// rounding radius of the shape
-upper_arm_corner_rad                       = 0.5;
-upper_arm_thickness                        = 6.5;
-upper_arm_pin_d                            = 3.4;
+// Outer fillet radius applied to the arm outline (rounded outer edges).
+upper_arm_corner_r                         = 0.5;
 
-// the length of the side cutout between barrels
-upper_arm_side_cutout_depth                = 9;
-// the height of one hinge barrel
+// Main body thickness of the arm (Z direction) for the extruded profile.
+upper_arm_thickness                        = 6.5;
+
+// Length of a hinge barrel (one of the cylindrical hinge lugs) along X.
+upper_arm_hinge_barrel_len                 = 9;
+
+// Height envelope of the hinge barrel feature (used by the 2D barrel sketch).
 upper_arm_hinge_barrel_h                   = 6.9;
 
-upper_arm_joint_mount_len                  = 15.19;
-upper_arm_joint_mount_h                    = 9.5;
-upper_arm_ball_stud_mount_extra_thickness  = 1.5;
+// Diameter of the hinge pin hole through each hinge barrel.
+upper_arm_hinge_barrel_hole_d              = 3.4;
+
+// Offset from the barrel’s left edge to the hinge hole center (sets hole position).
+upper_arm_hinge_barrel_hole_offset         = 1.7;
+
+// Size of the ball-stud/rod-end mounting block: [length(X), width(Y), thickness(Z)]
+upper_arm_ball_stud_mount_size             = [15.19, 9.5, upper_arm_thickness + 1.5];
+
 // the addional height for ball stud
-upper_arm_ball_stud_mount_extra_h          = upper_arm_joint_mount_h / 2;
+upper_arm_ball_stud_mount_extra_h          = upper_arm_ball_stud_mount_size[1] / 2;
 
-upper_arm_side_w                           = 4.5;
+// Nominal width of each “leg” of the A-arm in the 2D profile.
+upper_arm_leg_width                        = 4.5;
 
+// Depth of the ball-stud mounting hole/counterbore along X.
 upper_arm_ball_stud_hole_depth             = knuckle_ball_stud_h - knuckle_ball_stud_unthreaded_h;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -173,7 +188,7 @@ lower_arm_corner_r                         = 1.5;
 // Length of a hinge barrel (one of the cylindrical hinge lugs) along X.
 lower_arm_hinge_barrel_len                 = 10.3;
 
-// Height/diameter envelope of the hinge barrel feature (used by the 2D barrel sketch).
+// Height envelope of the hinge barrel feature (used by the 2D barrel sketch).
 lower_arm_hinge_barrel_h                   = 7.85;
 
 // Diameter of the hinge pin hole through each hinge barrel.
