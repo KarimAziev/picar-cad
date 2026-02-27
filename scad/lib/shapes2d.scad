@@ -43,7 +43,8 @@ module rounded_rect(size, r=undef, center=false, fn, r_factor=0.3, side) {
                      segments=is_undef(fn) ? 10 : fn,
                      r_factor=r_factor,
                      side=side,
-                     center=center);
+                     center=center,
+                     fn=fn);
   }
   else {
     offst = center ? [-w/2, -h/2] : [0, 0];
@@ -97,6 +98,7 @@ module rounded_rect_two(size,
                         center=false,
                         segments=10,
                         r_factor=0.5,
+                        fn,
                         side = "top" // "top" | "left" | "right" | "bottom"
                        ) {
 
@@ -128,7 +130,7 @@ module rounded_rect_two(size,
            round_bl ? arc(rad, rad, 180, 270) : []);
 
   translate(offst)
-    polygon(points = pts);
+    polygon(points = pts, $fn=fn);
 }
 
 /*

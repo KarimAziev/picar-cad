@@ -55,7 +55,7 @@ module upper_arm_hinge_barrels() {
           translate([-hole_end_x, 0, 0]) {
             rounded_rect([upper_arm_hinge_barrel_len, cut_h],
                          r=wall_len,
-                         fn=$preview ? 16 : 360,
+                         fn=$preview ? 40 : 360,
                          side="right",
                          center=false);
           }
@@ -121,7 +121,7 @@ module upper_arm(color=cobalt_blue_metallic,
                cut_h - upper_arm_ball_stud_mount_extra_h]];
 
   module upper_arm_hole() {
-    polygon(hole_pts);
+    polygon(hole_pts, $fn=$preview ? 30 : 360);
   }
 
   module base_shape() {
@@ -130,7 +130,7 @@ module upper_arm(color=cobalt_blue_metallic,
 
   module _main() {
     difference() {
-      offset_vertices_2d(r=upper_arm_corner_r, $fn=34) {
+      offset_vertices_2d(r=upper_arm_corner_r, $fn=$preview ? 16 : 360) {
         base_shape();
       }
 
