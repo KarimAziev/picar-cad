@@ -20,9 +20,11 @@ use <../../lib/shapes2d.scad>
 use <../../lib/shapes3d.scad>
 use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
+use <../../placeholders/ball_stud.scad>
 use <barrel_hinge.scad>
 
-default_debug = false;
+default_show_ball_stud = true;
+default_debug          = false;
 
 module lower_arm_hinge() {
   barrel_hinge(size=[lower_arm_hinge_barrel_len,
@@ -41,6 +43,7 @@ module damper_boss() {
 
 module lower_arm(color=cobalt_blue_metallic,
                  debug=default_debug,
+                 show_ball_stud=default_show_ball_stud,
                  use_lower_edge_cutout=lower_arm_use_lower_edge_cutout) {
   hole_resolution = $preview ? 16 : 360;
   profile_x0 = lower_arm_hinge_barrel_hole_d / 2
@@ -105,6 +108,8 @@ module lower_arm(color=cobalt_blue_metallic,
                           - lower_arm_leg_width * 5,
                           hinge_cutout_h - cutout_depth
                           - hinge_cutout_corner_r]];
+
+  bolt_stud_y_pos = lower_arm_h - cutout_depth - lower_arm_apex_width / 2;
 
   render() {
     difference() {
@@ -199,26 +204,20 @@ module lower_arm(color=cobalt_blue_metallic,
       }
 
       // The hole on the damper boss
-      translate([lower_arm_len
-                 - boss_rad
-                 - lower_arm_upper_boss_x_offset,
+      translate([lower_arm_len - boss_rad - lower_arm_upper_boss_x_offset,
                  lower_arm_h - cutout_depth + lower_arm_damper_boss_h,
                  boss_rad]) {
 
         rotate([90, 0, 0]) {
           cylinder(d=lower_arm_damper_boss_hole_d,
-                   h=lower_arm_damper_boss_h
-                   + (lower_arm_apex_width / 2)
-                   + 1,
+                   h=lower_arm_damper_boss_h + (lower_arm_apex_width / 2) + 1,
                    $fn=hole_resolution);
         }
       }
 
       // The hole on the apex for screwing ball stud
       translate([lower_arm_len - lower_arm_ball_stud_hole_depth,
-                 lower_arm_h
-                 - cutout_depth
-                 - lower_arm_apex_width / 2,
+                 bolt_stud_y_pos,
                  lower_arm_thickness / 2]) {
         rotate([0, 90, 0]) {
           counterbore(h=lower_arm_ball_stud_hole_depth,
@@ -236,6 +235,21 @@ module lower_arm(color=cobalt_blue_metallic,
       debug_polygon_text(outer_profile_pts);
       translate([hole_start_x, lower_arm_hinge_barrel_h, 0]) {
         debug_polygon_text(triangle_cutout_pts, font_color=metallic_yellow_1);
+      }
+    }
+  }
+
+  if (show_ball_stud) {
+    translate([lower_arm_len -
+               (knuckle_ball_stud_h - knuckle_ball_stud_unthreaded_h),
+               bolt_stud_y_pos,
+               lower_arm_thickness / 2]) {
+      rotate([90, 0, 90]) {
+        ball_stud(d=knuckle_ball_stud_shank_d,
+                  ball_d=knuckle_ball_stud_ball_d,
+                  ball_hole_d=knuckle_ball_stud_ball_hole_d,
+                  h=knuckle_ball_stud_h,
+                  unthreaded_len=knuckle_ball_stud_unthreaded_h);
       }
     }
   }
