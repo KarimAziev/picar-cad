@@ -23,7 +23,7 @@ use <../../lib/transforms.scad>
 use <../../placeholders/ball_stud.scad>
 use <barrel_hinge.scad>
 
-default_show_ball_stud = true;
+default_show_ball_stud = false;
 default_debug          = false;
 
 module lower_arm_hinge() {

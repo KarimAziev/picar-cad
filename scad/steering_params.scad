@@ -30,10 +30,13 @@ pitman_arm_boss_inner_padding              = 1;
 pitman_arm_bolt_n                          = 3;
 pitman_arm_bolt_d                          = 3;
 
-chassis_bellcrank_position_y               = chassis_bellcrank_y_base + ((bellcrank_arm_dia - bellcrank_arm_w) / 2);
+chassis_bellcrank_position_y               = chassis_bellcrank_y_base
+                                              + ((bellcrank_arm_dia
+                                              - bellcrank_arm_w) / 2);
 chassis_bellcrank_mount_len                = chassis_bellcrank_y_base;
 chassis_bellcrank_link_padding_x           = bellcrank_arm_dia / 2;
-chassis_bellcrank_mount_w                  = bellcrank_link_bolt_spacing[0] + chassis_bellcrank_link_padding_x * 2;
+chassis_bellcrank_mount_w                  = bellcrank_link_bolt_spacing[0]
+                                              + chassis_bellcrank_link_padding_x * 2;
 
 upper_chassis_bellcrank_bolt_d             = m3_hole_dia;
 upper_chassis_bellcrank_bolt_bore_d        = m3_countersunk_head_dia + 0.2;
@@ -83,7 +86,8 @@ steering_servo_tie_rod_bushing_color       = metallic_silver_9;
 
 steering_servo_arm_total_l                 = 35.4;
 steering_servo_arm_d                       = 14.75;
-steering_servo_arm_len                     = steering_servo_arm_total_l - steering_servo_arm_d;
+steering_servo_arm_len                     = steering_servo_arm_total_l
+                                              - steering_servo_arm_d;
 steering_servo_arm_w                       = 7.6;
 steering_servo_arm_base_h                  = 6.0;
 
@@ -118,50 +122,6 @@ knuckle_ball_stud_ball_d                   = 8.6;
 knuckle_ball_stud_ball_hole_d              = 3.3;
 knuckle_ball_stud_h                        = 17.8;
 knuckle_ball_stud_unthreaded_h             = 5;
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Upper wishbone arm
-// ─────────────────────────────────────────────────────────────────────────────
-
-// Overall length of the upper arm (X direction), from hinge end to ball-stud end.
-upper_arm_len                              = 41.8;
-
-// Overall height/envelope of the arm profile (Y direction) excluding
-// upper_arm_ball_stud_mount_extra_h
-upper_arm_h                                = 24;
-
-// rounding radius of the hole on the arm
-upper_arm_hole_corner_r                    = 2.5;
-
-// Outer fillet radius applied to the arm outline (rounded outer edges).
-upper_arm_corner_r                         = 0.5;
-
-// Main body thickness of the arm (Z direction) for the extruded profile.
-upper_arm_thickness                        = 6.5;
-
-// Length of a hinge barrel (one of the cylindrical hinge lugs) along X.
-upper_arm_hinge_barrel_len                 = 9;
-
-// Height envelope of the hinge barrel feature (used by the 2D barrel sketch).
-upper_arm_hinge_barrel_h                   = 6.9;
-
-// Diameter of the hinge pin hole through each hinge barrel.
-upper_arm_hinge_barrel_hole_d              = 3.4;
-
-// Offset from the barrel’s left edge to the hinge hole center (sets hole position).
-upper_arm_hinge_barrel_hole_offset         = 1.7;
-
-// Size of the ball-stud/rod-end mounting block: [length(X), width(Y), thickness(Z)]
-upper_arm_ball_stud_mount_size             = [15.19, 9.5, upper_arm_thickness + 1.5];
-
-// the addional height for ball stud
-upper_arm_ball_stud_mount_extra_h          = upper_arm_ball_stud_mount_size[1] / 2;
-
-// Nominal width of each “leg” of the A-arm in the 2D profile.
-upper_arm_leg_width                        = 4.5;
-
-// Depth of the ball-stud mounting hole/counterbore along X.
-upper_arm_ball_stud_hole_depth             = knuckle_ball_stud_h - knuckle_ball_stud_unthreaded_h;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Lower Wishbone Arm
@@ -225,3 +185,47 @@ lower_arm_use_lower_edge_cutout            = true;
 // Depth of the ball-stud mounting hole/counterbore along X.
 lower_arm_ball_stud_hole_depth             = knuckle_ball_stud_h
                                               - knuckle_ball_stud_unthreaded_h;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Upper wishbone arm
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Overall length of the upper arm (X direction), from hinge end to ball-stud end.
+upper_arm_len                              = 41.8;
+
+// Overall height/envelope of the arm profile (Y direction) excluding
+// upper_arm_ball_stud_mount_extra_h
+upper_arm_h                                = 24;
+
+// rounding radius of the hole on the arm
+upper_arm_hole_corner_r                    = 2.5;
+
+// Outer fillet radius applied to the arm outline (rounded outer edges).
+upper_arm_corner_r                         = 0.5;
+
+// Main body thickness of the arm (Z direction) for the extruded profile.
+upper_arm_thickness                        = 6.5;
+
+// Length of a hinge barrel (one of the cylindrical hinge lugs) along X.
+upper_arm_hinge_barrel_len                 = 9;
+
+// Height envelope of the hinge barrel feature (used by the 2D barrel sketch).
+upper_arm_hinge_barrel_h                   = 6.9;
+
+// Diameter of the hinge pin hole through each hinge barrel.
+upper_arm_hinge_barrel_hole_d              = 3.4;
+
+// Offset from the barrel’s left edge to the hinge hole center (sets hole position).
+upper_arm_hinge_barrel_hole_offset         = 1.7;
+
+// Size of the ball-stud/rod-end mounting block: [length(X), width(Y), thickness(Z)]
+upper_arm_ball_stud_mount_size             = [15.19, 9.5, upper_arm_thickness + 1.5];
+
+// the addional height for ball stud
+upper_arm_ball_stud_mount_extra_h          = upper_arm_ball_stud_mount_size[1] / 2;
+
+// Nominal width of each “leg” of the A-arm in the 2D profile.
+upper_arm_leg_width                        = 4.5;
+
+// Depth of the ball-stud mounting hole/counterbore along X.
+upper_arm_ball_stud_hole_depth             = knuckle_ball_stud_h - knuckle_ball_stud_unthreaded_h;
