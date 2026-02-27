@@ -4,6 +4,9 @@
  * The upper arm is A-shaped control arm connecting the top of the steering
  * knuckle to the chassis.
  *
+ * The model is oriented along the x-axis, from the left (where the hinges are)
+ * to the right apex.
+ *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */

@@ -4,6 +4,9 @@
  * The lower wishbone arm is a A-shaped component connecting the chassis to the
  * lower part of the steering knuckle.
  *
+ * The model is oriented along the x-axis, from the left (where the hinges are)
+ * to the right apex.
+ *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */
@@ -32,11 +35,14 @@ module lower_arm_hinge() {
 module damper_boss() {
   cylinder(d1=lower_arm_damper_boss_d,
            d2=max(lower_arm_thickness, lower_arm_damper_boss_d),
-           $fn=300,
+           $fn=$preview ? 16 : 360,
            h=lower_arm_damper_boss_h);
 }
 
-module lower_arm(color=cobalt_blue_metallic, debug=default_debug) {
+module lower_arm(color=cobalt_blue_metallic,
+                 debug=default_debug,
+                 use_lower_edge_cutout=lower_arm_use_lower_edge_cutout) {
+  hole_resolution = $preview ? 16 : 360;
   profile_x0 = lower_arm_hinge_barrel_hole_d / 2
     + lower_arm_hinge_barrel_hole_offset
     + lower_arm_hinge_barrel_hole_d;
@@ -108,14 +114,16 @@ module lower_arm(color=cobalt_blue_metallic, debug=default_debug) {
           translate([0, lower_arm_h - lower_arm_hinge_barrel_h, 0]) {
             lower_arm_hinge();
           }
-          linear_extrude(height=lower_arm_thickness, center=false) {
-            translate([profile_x0, 0, 0]) {
+          translate([profile_x0, 0, 0]) {
+            linear_extrude(height=lower_arm_thickness, center=false) {
               difference() {
                 union() {
                   offset_vertices_2d(r=lower_arm_corner_r) {
                     polygon(outer_profile_pts);
                   }
                 }
+
+                // The cutout for hinges area
                 translate([0, lower_arm_hinge_barrel_h, 0]) {
                   rounded_rect([hinge_cutout_len, hinge_cutout_h],
                                center=false,
@@ -123,21 +131,28 @@ module lower_arm(color=cobalt_blue_metallic, debug=default_debug) {
                                r=hinge_cutout_corner_r);
                 }
 
+                // The cutout in the center
                 translate([hole_start_x, lower_arm_hinge_barrel_h, 0]) {
                   offset_vertices_2d(r=lower_arm_relief_hole_corner_r) {
                     polygon(triangle_cutout_pts);
                   }
                 }
-                translate([hinge_cutout_len,
-                           -lower_arm_h / 2
-                           - lower_arm_leg_width * 2,
-                           0]) {
-                  rounded_rect([profile_length, lower_arm_h],
-                               center=false,
-                               r_factor=0.5,
-                               fn=30,
-                               side="top");
+                // Cutout on the outer bottom edge. If printing is difficult,
+                // you can disable the cutout and print it on that edge.
+                if (use_lower_edge_cutout) {
+                  translate([hinge_cutout_len,
+                             -lower_arm_h / 2
+                             - lower_arm_leg_width * 2,
+                             0]) {
+                    rounded_rect([profile_length, lower_arm_h],
+                                 center=false,
+                                 r_factor=0.5,
+                                 fn=$preview ? 16 : 360,
+                                 side="top");
+                  }
                 }
+
+                // Cutout on the outer upper edge.
                 translate([hinge_cutout_len + lower_arm_leg_width,
                            lower_arm_h / 2 +
                            lower_arm_leg_width * 2,
@@ -145,7 +160,7 @@ module lower_arm(color=cobalt_blue_metallic, debug=default_debug) {
                   rounded_rect([profile_length, lower_arm_h],
                                center=false,
                                r_factor=0.5,
-                               fn=30,
+                               fn=$preview ? 16 : 360,
                                side="left");
                 }
               }
@@ -162,6 +177,7 @@ module lower_arm(color=cobalt_blue_metallic, debug=default_debug) {
               damper_boss();
             }
           }
+          // Thickened section for screwing in a ball stud.
           if (stud_mount_extra_thickness > 0) {
             translate([lower_arm_len - stud_mount_len,
                        lower_arm_h
@@ -182,6 +198,7 @@ module lower_arm(color=cobalt_blue_metallic, debug=default_debug) {
         }
       }
 
+      // The hole on the damper boss
       translate([lower_arm_len
                  - boss_rad
                  - lower_arm_upper_boss_x_offset,
@@ -193,9 +210,11 @@ module lower_arm(color=cobalt_blue_metallic, debug=default_debug) {
                    h=lower_arm_damper_boss_h
                    + (lower_arm_apex_width / 2)
                    + 1,
-                   $fn=360);
+                   $fn=hole_resolution);
         }
       }
+
+      // The hole on the apex for screwing ball stud
       translate([lower_arm_len - lower_arm_ball_stud_hole_depth,
                  lower_arm_h
                  - cutout_depth
@@ -205,7 +224,7 @@ module lower_arm(color=cobalt_blue_metallic, debug=default_debug) {
           counterbore(h=lower_arm_ball_stud_hole_depth,
                       d=heat_insert_nut_hole_d,
                       sink=false,
-                      fn=100,
+                      fn=hole_resolution,
                       reverse=false);
         }
       }

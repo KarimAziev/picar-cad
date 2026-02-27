@@ -203,6 +203,10 @@ lower_arm_upper_boss_y_offset              = 3.7;
 // Size of the ball-stud/rod-end mounting block: [length(X), width(Y), thickness(Z)]
 lower_arm_ball_stud_mount_size             = [14, 5.5, 7.5];
 
+// If printing is difficult, you can disable the cutout on the outer bottom edge
+// and print it on that edge.
+lower_arm_use_lower_edge_cutout            = true;
+
 // Depth of the ball-stud mounting hole/counterbore along X.
 lower_arm_ball_stud_hole_depth             = knuckle_ball_stud_h
                                               - knuckle_ball_stud_unthreaded_h;
