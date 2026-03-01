@@ -77,13 +77,15 @@ heat_insert_nut_h                          = 4.94;
 // Knuckle
 // ─────────────────────────────────────────────────────────────────────────────
 knuckle_total_len                          = 42.7;
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Knuckle's steering arm and it's outer ring
 // ─────────────────────────────────────────────────────────────────────────────
 
 knuckle_outer_wall_thickness               = 1.7;
-knuckle_bearing_inner_h                    = 4;
-knuckle_bearing_inner_od                   = 15;
+
+knuckle_bearing_inner_h                    = 4.1;
+knuckle_bearing_inner_od                   = 15.1;
 knuckle_bearing_inner_shoulder_d           = 13;
 
 knuckle_arm_thickness                      = 4.2;
@@ -121,8 +123,8 @@ knuckle_ball_stud_unthreaded_h             = 5;
 // ─────────────────────────────────────────────────────────────────────────────
 //
 // ─────────────────────────────────────────────────────────────────────────────
-knuckle_bearing_outer_od                   = 11;
-knuckle_bearing_outer_h                    = 4;
+knuckle_bearing_outer_od                   = 10.1;
+knuckle_bearing_outer_h                    = 4.1;
 knuckle_bearing_spacer_h                   = 1.6;
 knuckle_bearing_spacer_ring_d              = 8;
 
