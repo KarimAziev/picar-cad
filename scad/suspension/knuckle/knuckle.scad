@@ -7,66 +7,119 @@
 
 include <../../colors.scad>
 include <../../parameters.scad>
+include <../../steering_params.scad>
 
+use <../../lib/debug.scad>
 use <../../lib/placement.scad>
 use <../../lib/shapes2d.scad>
-use <../../lib/shapes3d.scad>
 use <../../lib/transforms.scad>
 use <../../placeholders/bolt.scad>
-use <../../wheels/front_wheel.scad>
-use <../../wheels/wheel_hub.scad>
-use <arm_mount.scad>
-use <knuckle_lower.scad>
-use <steering_arm_mount.scad>
+use <knuckle_ball_stud_housing.scad>
+use <knuckle_steering_arm.scad>
 
 color                  = cobalt_blue_metallic;
-show_lower_tie_rod     = false;
-show_upper_tie_rod     = false;
-show_steering_tie_rod  = false;
 show_shoulder_bolt     = false;
-show_eye_bolt          = false;
-show_steering_eye_bolt = false;
-show_wheel             = false;
-show_bearing           = false;
-show_upper_hub         = false;
-show_extra_lower_hub   = false;
-show_extra_bearing     = false;
-show_extra_upper_hub   = false;
-show_wheel_hub_bolts   = false;
-show_wheel_hub_nuts    = false;
-show_tire              = false;
 show_shoulder_bolt_nut = false;
 
-// Whether to use locking nut
-wheel_hub_lock_nut     = true;
+module knuckle(color=color,
+               show_shoulder_bolt=show_shoulder_bolt,
+               debug=false) {
+  joint_len  = (knuckle_total_len -
+                (knuckle_ball_stud_mount_outer_d * 2)
+                - knuckle_base_d) / 2;
+  joint_w   = knuckle_ball_stud_mount_outer_d * 0.8;
+  outer_od = knuckle_bearing_outer_od + knuckle_outer_wall_thickness * 2;
+  outer_d = knuckle_bearing_outer_od;
+  notch_a = notch_depth(outer_od, joint_w);
+  notch_b = notch_depth(knuckle_ball_stud_mount_outer_d, joint_w);
 
-eye_bolt_h             = 14;
+  corner_r    = min(0.5, joint_len * 1.0);
 
-module knuckle_base(color=matte_black,
-                    show_lower_tie_rod=false,
-                    show_upper_tie_rod=false,
-                    show_shoulder_bolt=false,
-                    show_eye_bolt=false,
-                    show_steering_eye_bolt=false,
-                    show_steering_tie_rod=false,
-                    show_shoulder_bolt_nut=false,
-                    eye_bolt_h=eye_bolt_h) {
+  joint_pts = [[-notch_a - corner_r, -joint_w / 2],
+               [-notch_a - corner_r, joint_w / 2],
+               [joint_len / 2, (joint_w / 2) * 0.7],
+               [joint_len + notch_b + corner_r, joint_w / 2],
+               [joint_len + notch_b + corner_r, -joint_w / 2],
+               [joint_len / 2, -(joint_w / 2) * 0.7]];
+
+  height = knuckle_bearing_outer_h + knuckle_bearing_spacer_h;
+
+  joint_h = min(height + knuckle_arm_base_w, knuckle_ball_stud_house_h);
 
   maybe_color(color) {
-    difference() {
-      cylinder(h=knuckle_base_h, d=knuckle_base_d, $fn=200);
-      translate([0, 0, -0.5]) {
-        cylinder(d=knuckle_bearing_hole_d, h=knuckle_h + 1, $fn=300);
+    union() {
+      difference() {
+        union() {
+          cylinder(h=height,
+                   d1=outer_od,
+                   d2=knuckle_arm_ring_outer_d,
+
+                   $fn=200);
+          mirror_copy([1, 0, 0]) {
+            translate([outer_od / 2,
+                       0,
+                       0]) {
+
+              linear_extrude(height=joint_h,
+                             center=false) {
+                offset_vertices_2d(r=corner_r) {
+                  polygon(joint_pts, $fs=300);
+                }
+              }
+
+              translate([joint_len + knuckle_ball_stud_mount_outer_d / 2,
+                         0,
+                         0]) {
+                knuckle_ball_stud_housing();
+              }
+            }
+          }
+        }
+        translate([0, 0, -0.5]) {
+          cylinder(d=outer_d, h=knuckle_bearing_outer_h + 0.5, $fn=300);
+          cylinder(d=knuckle_bearing_spacer_ring_d, h=height + 0.51, $fn=300);
+          translate([0, 0, height]) {
+            cylinder(d=knuckle_bearing_inner_shoulder_d,
+                     h=knuckle_arm_base_w + 0.5,
+                     $fn=300);
+            translate([0, 0, knuckle_bearing_inner_h + 1]) {
+              cylinder(d=knuckle_bearing_inner_od,
+                       h=knuckle_bearing_inner_h + 0.8,
+                       $fn=300);
+            }
+          }
+          mirror_copy([1, 0, 0]) {
+            translate([outer_od / 2 + joint_len
+                       + knuckle_ball_stud_mount_outer_d / 2,
+                       0,
+                       0]) {
+              cylinder(d=knuckle_ball_stud_mount_hole_d,
+                       h=joint_h + 0.5,
+                       $fn=200);
+            }
+          }
+        }
+      }
+      translate([0, 0, height - 0.1]) {
+        rotate([90, 0, 0]) {
+          rotate([0, 0, 90]) {
+            knuckle_steering_arm();
+          }
+        }
       }
     }
   }
-
+  if (debug) {
+    translate([outer_od / 2, 0, height]) {
+      debug_polygon_text(joint_pts, font_size=2);
+    }
+  }
   if (show_shoulder_bolt) {
     translate([0,
                0,
                -(wheel_shoulder_bolt_threaded_l
                  + wheel_shoulder_bolt_unthreaded_l)
-               + knuckle_base_h]) {
+               + height]) {
 
       bolt(d=wheel_shoulder_bolt_d,
            thread_starts=1,
@@ -83,105 +136,6 @@ module knuckle_base(color=matte_black,
            head_h=wheel_shoulder_bolt_head_h);
     }
   }
-
-  knuckle_steering_arm_mount(show_eye_bolt=show_steering_eye_bolt,
-                             show_tie_rod=show_steering_tie_rod,
-                             color=color);
-
-  arm_mount(parent_h=knuckle_base_h,
-            show_tie_rod=show_lower_tie_rod,
-            transition_h=wheel_shoulder_bolt_head_h / 2,
-            show_eye_bolt=show_eye_bolt,
-            eye_bolt_h=eye_bolt_h,
-            reverse=true,
-            color=color);
-
-  rotate([0, 0, 180]) {
-    arm_mount(parent_h=knuckle_base_h,
-              show_tie_rod=show_upper_tie_rod,
-              show_eye_bolt=show_eye_bolt,
-              color=color,
-              eye_bolt_h=eye_bolt_h,
-              transition_h=wheel_shoulder_bolt_head_h / 2
-              + knuckle_upper_arm_mount_extra_len);
-  }
 }
 
-module knuckle(color=color,
-               show_lower_tie_rod=show_lower_tie_rod,
-               show_upper_tie_rod=show_upper_tie_rod,
-               show_steering_tie_rod=show_steering_tie_rod,
-               show_shoulder_bolt=show_shoulder_bolt,
-               show_eye_bolt=show_eye_bolt,
-               show_steering_eye_bolt=show_steering_eye_bolt,
-               show_wheel=show_wheel,
-               show_tire=show_tire,
-               show_bearing=show_bearing,
-               show_upper_hub=show_upper_hub,
-               show_extra_lower_hub=show_extra_lower_hub,
-               show_extra_upper_hub=show_extra_upper_hub,
-               show_shoulder_bolt_nut=show_shoulder_bolt_nut,
-               show_extra_bearing=show_extra_bearing,
-               show_wheel_hub_bolts=show_wheel_hub_bolts,
-               show_wheel_hub_nuts=show_wheel_hub_nuts,
-               wheel_hub_lock_nut=wheel_hub_lock_nut,
-               is_left=false,
-               eye_bolt_h=eye_bolt_h) {
-  module _knuckle() {
-    render() {
-      union() {
-        knuckle_lower(color=color);
-        translate([0, 0, knuckle_narrow_h]) {
-          knuckle_base(color=color,
-                       show_lower_tie_rod=show_lower_tie_rod,
-                       show_upper_tie_rod=show_upper_tie_rod,
-                       show_shoulder_bolt=show_shoulder_bolt,
-                       show_eye_bolt=show_eye_bolt,
-                       show_steering_eye_bolt=show_steering_eye_bolt,
-                       show_steering_tie_rod=show_steering_tie_rod,
-                       show_shoulder_bolt_nut=show_shoulder_bolt_nut,
-                       eye_bolt_h=eye_bolt_h);
-        }
-      }
-    }
-  }
-
-  if (show_wheel) {
-    translate([0, 0, -wheel_w / 2 + wheel_hub_wheel_spacer_h]) {
-      rotate([180, 0, 0]) {
-        front_wheel(show_bearing=show_bearing,
-                    show_tire=show_tire,
-                    show_upper_hub=show_upper_hub,
-                    show_extra_lower_hub=show_extra_lower_hub,
-                    show_extra_bearing=show_extra_bearing,
-                    show_extra_upper_hub=show_extra_upper_hub,
-                    show_wheel_hub_bolts=show_wheel_hub_bolts,
-                    show_wheel_hub_nuts=show_wheel_hub_nuts,
-                    wheel_hub_lock_nut=wheel_hub_lock_nut);
-      }
-    }
-  }
-  if (is_left) {
-    mirror([1, 0, 0]) {
-      _knuckle();
-    }
-  } else {
-    _knuckle();
-  }
-}
-
-module knuckles(distance=120) {
-  mirror_copy([1, 0, 0]) {
-    translate([-distance, 0, 0]) {
-      rotate([90, 0, 0]) {
-        rotate([180, 0, 0]) {
-          rotate([0, 90, 0]) {
-            knuckle(is_left=true);
-          }
-        }
-      }
-    }
-  }
-}
-
-knuckles();
+knuckle();

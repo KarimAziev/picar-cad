@@ -174,7 +174,8 @@ module upper_arm(color=cobalt_blue_metallic,
           upper_arm_hinge_barrels();
 
           translate([upper_bent_len,
-                     upper_arm_h + upper_arm_ball_stud_mount_extra_h
+                     upper_arm_h
+                     + upper_arm_ball_stud_mount_extra_h
                      - ball_stud_mount_h,
                      -ball_stud_mount_chamfer_thickness]) {
             chamfered_cube(size=upper_arm_ball_stud_mount_size,

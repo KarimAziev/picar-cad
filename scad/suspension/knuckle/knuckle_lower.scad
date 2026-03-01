@@ -224,10 +224,10 @@ module knuckle_lower(d1=knuckle_narrow_d,
           cylinder(d=d, h=h + 1);
         }
 
-        _recess();
+        // _recess();
 
         rotate([0, 0, 180]) {
-          _recess();
+          // _recess();
         }
       }
     }

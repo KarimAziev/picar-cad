@@ -35,7 +35,7 @@ module lower_arm_hinge() {
 }
 
 module damper_boss() {
-  cylinder(d1=lower_arm_damper_boss_d,
+  cylinder(d1=lower_arm_thickness,
            d2=max(lower_arm_thickness, lower_arm_damper_boss_d),
            $fn=$preview ? 16 : 360,
            h=lower_arm_damper_boss_h);
@@ -177,7 +177,7 @@ module lower_arm(color=cobalt_blue_metallic,
                      lower_arm_h
                      - cutout_depth
                      + lower_arm_damper_boss_h,
-                     boss_rad]) {
+                     lower_arm_thickness / 2]) {
             rotate([90, 0, 0]) {
               damper_boss();
             }
@@ -206,7 +206,7 @@ module lower_arm(color=cobalt_blue_metallic,
       // The hole on the damper boss
       translate([lower_arm_len - boss_rad - lower_arm_upper_boss_x_offset,
                  lower_arm_h - cutout_depth + lower_arm_damper_boss_h,
-                 boss_rad]) {
+                 lower_arm_thickness / 2]) {
 
         rotate([90, 0, 0]) {
           cylinder(d=lower_arm_damper_boss_hole_d,

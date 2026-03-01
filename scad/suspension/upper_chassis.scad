@@ -196,4 +196,4 @@ module upper_chassis_printable() {
   }
 }
 
-upper_chassis_printable();
+upper_chassis();

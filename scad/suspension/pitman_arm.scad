@@ -10,7 +10,8 @@ use <../placeholders/servo_arm.scad>
 module bellcrank_arm(fn=30, h=bellcrank_arm_h, color=cobalt_blue_metallic) {
 
   color(color, alpha=1) {
-    cylinder(d=bellcrank_arm_dia, h=h, $fn=fn);
+
+    ring(outer_d=bellcrank_arm_dia, d=bellcrank_arm_dia -2, h=h, fn=fn);
 
     translate([0, 0, bellcrank_arm_z]) {
 
