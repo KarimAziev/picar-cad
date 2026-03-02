@@ -115,7 +115,7 @@ knuckle_arm_corner_r                       = 1;
 // ─────────────────────────────────────────────────────────────────────────────
 
 knuckle_ball_stud_shank_d                  = 4.8;
-knuckle_ball_stud_ball_d                   = 8.6;
+knuckle_ball_stud_ball_d                   = 8.8;
 knuckle_ball_stud_ball_hole_d              = 3.3;
 knuckle_ball_stud_h                        = 17.8;
 knuckle_ball_stud_unthreaded_h             = 5;

@@ -14,6 +14,7 @@ module knuckle_ball_stud_housing(od=knuckle_ball_stud_mount_outer_d,
                                  ball_stud_d=knuckle_ball_stud_ball_d,
                                  sphere_hole_size=knuckle_ball_stud_sphere_hole_size,
                                  stopper_d=knuckle_ball_stud_stopper_d,
+                                 stopper_offset=2,
                                  color=cobalt_blue_metallic) {
 
   module _cap() {
@@ -44,7 +45,7 @@ module knuckle_ball_stud_housing(od=knuckle_ball_stud_mount_outer_d,
         }
       }
     }
-    translate([0, 0, base_h + stopper_d / 2 - ball_stud_d]) {
+    translate([0, 0, base_h + stopper_d / 2 - ball_stud_d - stopper_offset]) {
       rotate([90, 0, 0]) {
         cylinder(d=stopper_d, h=od + 1, center=true, $fn=300);
       }
