@@ -1,3 +1,19 @@
+/**
+  * Module: Upper and lower knuckle arm mount
+  *
+  * The mounts are cylindrical. Each arm ends with a threaded ball stud,
+  * which is inserted into the arm mount.
+  *
+  * The ball stud is secured either by:
+  * 1. a bushing and a threaded plug with an internal hex (hex socket), or
+  * 2. a simple horizontal stopper bolt threaded through the housing (past the
+  *    bushing) to prevent the ball stud from falling out. To use this option,
+  *    set `knuckle_ball_stud_stopper_d` to the desired bolt diameter.
+  *
+  * Author: Karim Aziiev <karim.aziiev@gmail.com>
+  * License: GPL-3.0-or-later
+  */
+
 include <../../colors.scad>
 include <../../steering_params.scad>
 
@@ -12,9 +28,9 @@ module knuckle_ball_stud_housing(od=knuckle_ball_stud_mount_outer_d,
                                  sphere_h=knuckle_ball_stud_sphere_h,
                                  hole_d=knuckle_ball_stud_mount_hole_d,
                                  ball_stud_d=knuckle_ball_stud_ball_d,
-                                 sphere_hole_size=knuckle_ball_stud_sphere_hole_size,
+                                 sphere_hole_size=knuckle_ball_stud_cap_hole_size,
                                  stopper_d=knuckle_ball_stud_stopper_d,
-                                 stopper_offset=2,
+                                 stopper_offset=knuckle_ball_stud_stopper_offset,
                                  color=cobalt_blue_metallic) {
 
   module _cap() {
@@ -45,11 +61,14 @@ module knuckle_ball_stud_housing(od=knuckle_ball_stud_mount_outer_d,
         }
       }
     }
-    translate([0, 0, base_h + stopper_d / 2 - ball_stud_d - stopper_offset]) {
-      rotate([90, 0, 0]) {
-        cylinder(d=stopper_d, h=od + 1, center=true, $fn=300);
+    if (is_num(stopper_d) && stopper_d > 0) {
+      translate([0, 0, base_h + stopper_d / 2 - ball_stud_d - stopper_offset]) {
+        rotate([90, 0, 0]) {
+          cylinder(d=stopper_d, h=od + 1, center=true, $fn=300);
+        }
       }
     }
+
     translate([0, 0, -0.5]) {
       cylinder(d=hole_d,
                h=base_h + 1,

@@ -137,8 +137,16 @@ knuckle_ball_stud_mount_thickness          = 1.6;
 knuckle_ball_stud_mount_outer_d            = knuckle_ball_stud_mount_hole_d + knuckle_ball_stud_mount_thickness * 2;
 knuckle_ball_stud_house_h                  = 14.5;
 knuckle_ball_stud_sphere_h                 = 2;
-knuckle_ball_stud_sphere_hole_size         = [6.8, knuckle_ball_stud_ball_d];
-knuckle_ball_stud_stopper_d                = 3.2;
+knuckle_ball_stud_cap_hole_size            = [6.8, knuckle_ball_stud_ball_d];
+
+/** The ball stud is secured either by:
+ *   1. a bushing and a threaded plug with an internal hex (hex socket), or
+ *   2. a simple horizontal stopper bolt threaded through the housing (past the
+ *      bushing) to prevent the ball stud from falling out. To use this option,
+ *      set `knuckle_ball_stud_stopper_d` to the desired bolt diameter.
+ */
+knuckle_ball_stud_stopper_d                = 0;
+knuckle_ball_stud_stopper_offset           = 2;
 
 steering_servo_mount_bolt_d                = m3_hole_dia;
 steering_servo_mount_bolt_bore_d           = m3_countersunk_head_dia + 0.2;
