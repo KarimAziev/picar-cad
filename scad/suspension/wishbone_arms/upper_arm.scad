@@ -26,6 +26,11 @@ use <barrel_hinge.scad>
 show_ball_stud = false;
 debug          = false;
 
+function upper_arm_ball_stud_y_pos() =
+  upper_arm_ball_stud_mount_extra_h
+  + upper_arm_h
+  - upper_arm_ball_stud_mount_size[1] / 2;
+
 module upper_arm_barrel() {
   barrel_hinge(size=[upper_arm_hinge_barrel_len,
                      upper_arm_hinge_barrel_h,
@@ -81,9 +86,7 @@ module upper_arm(color=cobalt_blue_metallic,
 
   ball_stud_mount_chamfer_thickness = ball_stud_mount_extra_thickness / 2;
 
-  ball_stud_y = + upper_arm_ball_stud_mount_extra_h
-    + upper_arm_h
-    - ball_stud_mount_h / 2;
+  ball_stud_y = upper_arm_ball_stud_y_pos();
 
   upper_bent_len = upper_arm_len - ball_stud_mount_length;
   hole_start_x = upper_arm_hinge_barrel_len

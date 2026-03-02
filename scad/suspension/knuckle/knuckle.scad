@@ -14,15 +14,29 @@ use <../../lib/placement.scad>
 use <../../lib/shapes2d.scad>
 use <../../lib/transforms.scad>
 use <../../placeholders/bolt.scad>
+use <../wishbone_arms/lower_arm.scad>
+use <../wishbone_arms/upper_arm.scad>
 use <knuckle_ball_stud_housing.scad>
 use <knuckle_steering_arm.scad>
 
 color                  = cobalt_blue_metallic;
 show_shoulder_bolt     = false;
 show_shoulder_bolt_nut = false;
+show_lower_arm         = false;
+show_upper_arm         = false;
+
+function knuckle_assembly_full_len(x, y) =
+  let (arm_len = max(upper_arm_len, lower_arm_len),
+       knuckle_h = max(knuckle_bearing_outer_h
+                       + knuckle_bearing_spacer_h
+                       + knuckle_arm_base_w,
+                       knuckle_ball_stud_house_h))
+  arm_len + knuckle_h + knuckle_ball_stud_unthreaded_h;
 
 module knuckle(color=color,
                show_shoulder_bolt=show_shoulder_bolt,
+               show_upper_arm=show_upper_arm,
+               show_lower_arm=show_lower_arm,
                debug=false) {
   joint_len  = (knuckle_total_len -
                 (knuckle_ball_stud_mount_outer_d * 2)
@@ -46,6 +60,10 @@ module knuckle(color=color,
 
   joint_h = min(height + knuckle_arm_base_w, knuckle_ball_stud_house_h);
 
+  ball_stud_housing_x = joint_len + knuckle_ball_stud_mount_outer_d / 2;
+
+  ball_stud_mount_x = outer_od / 2 + ball_stud_housing_x;
+
   maybe_color(color) {
     union() {
       difference() {
@@ -67,9 +85,7 @@ module knuckle(color=color,
                 }
               }
 
-              translate([joint_len + knuckle_ball_stud_mount_outer_d / 2,
-                         0,
-                         0]) {
+              translate([ball_stud_housing_x, 0, 0]) {
                 knuckle_ball_stud_housing();
               }
             }
@@ -89,10 +105,7 @@ module knuckle(color=color,
             }
           }
           mirror_copy([1, 0, 0]) {
-            translate([outer_od / 2 + joint_len
-                       + knuckle_ball_stud_mount_outer_d / 2,
-                       0,
-                       0]) {
+            translate([ball_stud_mount_x, 0, 0]) {
               cylinder(d=knuckle_ball_stud_mount_hole_d,
                        h=joint_h + 0.5,
                        $fn=200);
@@ -112,6 +125,40 @@ module knuckle(color=color,
   if (debug) {
     translate([outer_od / 2, 0, height]) {
       debug_polygon_text(joint_pts, font_size=2);
+    }
+  }
+
+  if (show_lower_arm) {
+    let (ball_stud_y_pos = lower_arm_ball_stud_y_pos()) {
+      translate([ball_stud_mount_x,
+                 0,
+                 0]) {
+        translate([-lower_arm_thickness / 2,
+                   -ball_stud_y_pos,
+                   lower_arm_len
+                   + knuckle_ball_stud_unthreaded_h
+                   + knuckle_ball_stud_house_h]) {
+          rotate([0, 90, 0]) {
+            lower_arm(show_ball_stud=true);
+          }
+        }
+      }
+    }
+  }
+
+  if (show_upper_arm) {
+    let (ball_stud_y_pos = upper_arm_ball_stud_y_pos()) {
+      translate([-ball_stud_mount_x, 0, 0]) {
+        translate([-upper_arm_thickness / 2,
+                   -ball_stud_y_pos,
+                   upper_arm_len
+                   + knuckle_ball_stud_unthreaded_h
+                   + knuckle_ball_stud_house_h]) {
+          rotate([0, 90, 0]) {
+            upper_arm(show_ball_stud=true);
+          }
+        }
+      }
     }
   }
   if (show_shoulder_bolt) {
@@ -138,4 +185,39 @@ module knuckle(color=color,
   }
 }
 
-knuckle();
+module knuckle_left(color=color,
+                    show_shoulder_bolt=show_shoulder_bolt,
+                    show_upper_arm=show_upper_arm,
+                    show_lower_arm=show_lower_arm) {
+  full_len = knuckle_assembly_full_len();
+  translate([-full_len, 0, 0]) {
+    rotate([0, 90, 0]) {
+      knuckle(color=color,
+              show_shoulder_bolt=show_shoulder_bolt,
+              show_upper_arm=show_upper_arm,
+              show_lower_arm=show_lower_arm);
+    }
+  }
+}
+
+module knuckle_right(color=color,
+                     show_shoulder_bolt=show_shoulder_bolt,
+                     show_upper_arm=show_upper_arm,
+                     show_lower_arm=show_lower_arm) {
+  full_len = knuckle_assembly_full_len();
+  rotate([0, 0, 0]) {
+    translate([full_len, 0, 0]) {
+      rotate([0, -90, 0]) {
+        mirror([1, 0, 0]) {
+          knuckle(color=color,
+                  show_shoulder_bolt=show_shoulder_bolt,
+                  show_upper_arm=show_upper_arm,
+                  show_lower_arm=show_lower_arm);
+        }
+      }
+    }
+  }
+}
+
+knuckle_left();
+knuckle_right();

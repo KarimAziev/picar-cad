@@ -26,6 +26,10 @@ use <barrel_hinge.scad>
 default_show_ball_stud = false;
 default_debug          = false;
 
+function lower_arm_ball_stud_y_pos() =
+  let (cutout_depth = lower_arm_damper_boss_h + lower_arm_upper_boss_y_offset)
+  lower_arm_h - cutout_depth - lower_arm_apex_width / 2;
+
 module lower_arm_hinge() {
   barrel_hinge(size=[lower_arm_hinge_barrel_len,
                      lower_arm_hinge_barrel_h,
@@ -109,7 +113,7 @@ module lower_arm(color=cobalt_blue_metallic,
                           hinge_cutout_h - cutout_depth
                           - hinge_cutout_corner_r]];
 
-  bolt_stud_y_pos = lower_arm_h - cutout_depth - lower_arm_apex_width / 2;
+  bolt_stud_y_pos = lower_arm_ball_stud_y_pos();
 
   render() {
     difference() {
