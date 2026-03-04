@@ -13,7 +13,7 @@
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */
-// Dimensions for inner features
+
 include <../colors.scad>
 
 use <../lib/functions.scad>
