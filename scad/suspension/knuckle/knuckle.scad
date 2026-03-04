@@ -17,13 +17,15 @@ use <../../placeholders/bolt.scad>
 use <../wishbone_arms/lower_arm.scad>
 use <../wishbone_arms/upper_arm.scad>
 use <knuckle_ball_stud_housing.scad>
+use <knuckle_bushing.scad>
 use <knuckle_steering_arm.scad>
 
 color                  = cobalt_blue_metallic;
 show_shoulder_bolt     = false;
 show_shoulder_bolt_nut = false;
-show_lower_arm         = false;
-show_upper_arm         = false;
+show_lower_arm         = true;
+show_upper_arm         = true;
+show_knuckle_bushing   = true;
 
 function knuckle_assembly_full_len(x, y) =
   let (arm_len = max(upper_arm_len, lower_arm_len),
@@ -37,6 +39,7 @@ module knuckle(color=color,
                show_shoulder_bolt=show_shoulder_bolt,
                show_upper_arm=show_upper_arm,
                show_lower_arm=show_lower_arm,
+               show_knuckle_bushing=show_knuckle_bushing,
                debug=false) {
   joint_len  = (knuckle_total_len -
                 (knuckle_ball_stud_mount_outer_d * 2)
@@ -63,6 +66,26 @@ module knuckle(color=color,
   ball_stud_housing_x = joint_len + knuckle_ball_stud_mount_outer_d / 2;
 
   ball_stud_mount_x = outer_od / 2 + ball_stud_housing_x;
+  bushing_z = knuckle_ball_stud_house_h - knuckle_ball_stud_ball_d;
+
+  module _with_arm_pos(mount_x, mount_y) {
+    translate([mount_x, 0, 0]) {
+      if (show_knuckle_bushing) {
+        translate([0, 0, bushing_z]) {
+          knuckle_bushing();
+        }
+      }
+      translate([-upper_arm_thickness / 2,
+                 -mount_y,
+                 upper_arm_len
+                 + knuckle_ball_stud_unthreaded_h
+                 + knuckle_ball_stud_house_h]) {
+        rotate([0, 90, 0]) {
+          children();
+        }
+      }
+    }
+  }
 
   maybe_color(color) {
     union() {
@@ -133,6 +156,11 @@ module knuckle(color=color,
       translate([ball_stud_mount_x,
                  0,
                  0]) {
+        if (show_knuckle_bushing) {
+          translate([0, 0, bushing_z]) {
+            knuckle_bushing();
+          }
+        }
         translate([-lower_arm_thickness / 2,
                    -ball_stud_y_pos,
                    lower_arm_len
@@ -149,6 +177,11 @@ module knuckle(color=color,
   if (show_upper_arm) {
     let (ball_stud_y_pos = upper_arm_ball_stud_y_pos()) {
       translate([-ball_stud_mount_x, 0, 0]) {
+        if (show_knuckle_bushing) {
+          translate([0, 0, bushing_z]) {
+            knuckle_bushing();
+          }
+        }
         translate([-upper_arm_thickness / 2,
                    -ball_stud_y_pos,
                    upper_arm_len
@@ -188,14 +221,16 @@ module knuckle(color=color,
 module knuckle_left(color=color,
                     show_shoulder_bolt=show_shoulder_bolt,
                     show_upper_arm=show_upper_arm,
-                    show_lower_arm=show_lower_arm) {
+                    show_lower_arm=show_lower_arm,
+                    show_knuckle_bushing=show_knuckle_bushing) {
   full_len = knuckle_assembly_full_len();
   translate([-full_len, 0, 0]) {
     rotate([0, 90, 0]) {
       knuckle(color=color,
               show_shoulder_bolt=show_shoulder_bolt,
               show_upper_arm=show_upper_arm,
-              show_lower_arm=show_lower_arm);
+              show_lower_arm=show_lower_arm,
+              show_knuckle_bushing=show_knuckle_bushing);
     }
   }
 }
@@ -203,7 +238,8 @@ module knuckle_left(color=color,
 module knuckle_right(color=color,
                      show_shoulder_bolt=show_shoulder_bolt,
                      show_upper_arm=show_upper_arm,
-                     show_lower_arm=show_lower_arm) {
+                     show_lower_arm=show_lower_arm,
+                     show_knuckle_bushing=show_knuckle_bushing) {
   full_len = knuckle_assembly_full_len();
   rotate([0, 0, 0]) {
     translate([full_len, 0, 0]) {
@@ -212,12 +248,14 @@ module knuckle_right(color=color,
           knuckle(color=color,
                   show_shoulder_bolt=show_shoulder_bolt,
                   show_upper_arm=show_upper_arm,
-                  show_lower_arm=show_lower_arm);
+                  show_lower_arm=show_lower_arm,
+                  show_knuckle_bushing=show_knuckle_bushing);
         }
       }
     }
   }
 }
 
-knuckle_left();
-knuckle_right();
+// knuckle_left();
+// knuckle_right();
+knuckle();

@@ -147,6 +147,14 @@ knuckle_ball_stud_cap_hole_size            = [6.8, knuckle_ball_stud_ball_d];
  */
 knuckle_ball_stud_stopper_d                = 0;
 knuckle_ball_stud_stopper_offset           = 2;
+// ─────────────────────────────────────────────────────────────────────────────
+// Bushing for the ball stud
+// ─────────────────────────────────────────────────────────────────────────────
+knuckle_bushing_d                          = 9;
+knuckle_bushing_hole_d                     = 4;
+knuckle_bushing_h                          = 3;
+knuckle_bushing_thickness                  = 0.6;
+knuckle_bushing_hole_border_w              = 0.8;
 
 steering_servo_mount_bolt_d                = m3_hole_dia;
 steering_servo_mount_bolt_bore_d           = m3_countersunk_head_dia + 0.2;
