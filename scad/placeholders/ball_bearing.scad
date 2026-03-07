@@ -37,6 +37,15 @@ module ball_bearing(bore_d,
                     ball_clearance=0.2,
                     fn=20) {
 
+  diff_w = outer_d - bore_d;
+  shoulder_d = with_default(shoulder_d,
+                            is_undef(outer_recess_d)
+                            ? (bore_d + diff_w * 0.5)
+                            : outer_recess_d - (outer_recess_d - bore_d) / 2);
+
+  outer_recess_d = with_default(outer_recess_d,
+                                outer_d - (outer_d - shoulder_d) / 2);
+
   ball_d = with_default(ball_d, (outer_recess_d - shoulder_d) / 2);
   outer_rad = outer_d / 2;
   ball_rad = ball_d / 2;
