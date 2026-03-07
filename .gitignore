@@ -54,3 +54,6 @@ dkms.conf
 # Artifacts
 /stl/
 /build/
+
+# MacOS
+.DS_Store
