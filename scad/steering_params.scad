@@ -264,8 +264,11 @@ lower_arm_corner_r                         = 1.5;
 // Length of a hinge barrel (one of the cylindrical hinge lugs) along X.
 lower_arm_hinge_barrel_len                 = 10.3;
 
-// Height envelope of the hinge barrel feature (used by the 2D barrel sketch).
-lower_arm_hinge_barrel_h                   = 7.85;
+// Height envelope of the upper hinge barrel feature (used by the 2D barrel sketch).
+lower_arm_upper_hinge_barrel_h             = 7.85;
+
+// Height envelope of the lower hinge barrel feature (used by the 2D barrel sketch).
+lower_arm_lower_hinge_barrel_h             = 6.6;
 
 // Diameter of the hinge pin hole through each hinge barrel.
 lower_arm_hinge_barrel_hole_d              = 3.4;

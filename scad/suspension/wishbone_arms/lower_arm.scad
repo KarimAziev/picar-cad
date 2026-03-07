@@ -30,9 +30,9 @@ function lower_arm_ball_stud_y_pos() =
   let (cutout_depth = lower_arm_damper_boss_h + lower_arm_upper_boss_y_offset)
   lower_arm_h - cutout_depth - lower_arm_apex_width / 2;
 
-module lower_arm_hinge() {
+module lower_arm_hinge(h=lower_arm_upper_hinge_barrel_h) {
   barrel_hinge(size=[lower_arm_hinge_barrel_len,
-                     lower_arm_hinge_barrel_h,
+                     h,
                      lower_arm_thickness],
                d=lower_arm_hinge_barrel_hole_d,
                distance=lower_arm_hinge_barrel_hole_offset);
@@ -57,7 +57,8 @@ module lower_arm(color=cobalt_blue_metallic,
   profile_length = lower_arm_len - profile_x0;
 
   hinge_cutout_len = lower_arm_hinge_barrel_len - profile_x0;
-  hinge_cutout_h = lower_arm_h - lower_arm_hinge_barrel_h * 2;
+  hinge_cutout_h = lower_arm_h - (lower_arm_upper_hinge_barrel_h
+                                  + lower_arm_lower_hinge_barrel_h);
 
   boss_rad = lower_arm_damper_boss_d / 2;
 
@@ -119,9 +120,9 @@ module lower_arm(color=cobalt_blue_metallic,
     difference() {
       maybe_color(color) {
         union() {
-          lower_arm_hinge();
-          translate([0, lower_arm_h - lower_arm_hinge_barrel_h, 0]) {
-            lower_arm_hinge();
+          lower_arm_hinge(h=lower_arm_lower_hinge_barrel_h);
+          translate([0, lower_arm_h - lower_arm_upper_hinge_barrel_h, 0]) {
+            lower_arm_hinge(h=lower_arm_upper_hinge_barrel_h);
           }
           translate([profile_x0, 0, 0]) {
             linear_extrude(height=lower_arm_thickness, center=false) {
@@ -133,7 +134,7 @@ module lower_arm(color=cobalt_blue_metallic,
                 }
 
                 // The cutout for hinges area
-                translate([0, lower_arm_hinge_barrel_h, 0]) {
+                translate([0, lower_arm_lower_hinge_barrel_h, 0]) {
                   rounded_rect([hinge_cutout_len, hinge_cutout_h],
                                center=false,
                                side="right",
@@ -141,7 +142,7 @@ module lower_arm(color=cobalt_blue_metallic,
                 }
 
                 // The cutout in the center
-                translate([hole_start_x, lower_arm_hinge_barrel_h, 0]) {
+                translate([hole_start_x, lower_arm_upper_hinge_barrel_h, 0]) {
                   offset_vertices_2d(r=lower_arm_relief_hole_corner_r) {
                     polygon(triangle_cutout_pts);
                   }
@@ -237,7 +238,7 @@ module lower_arm(color=cobalt_blue_metallic,
   if (debug) {
     translate([profile_x0, 0, lower_arm_thickness]) {
       debug_polygon_text(outer_profile_pts);
-      translate([hole_start_x, lower_arm_hinge_barrel_h, 0]) {
+      translate([hole_start_x, lower_arm_upper_hinge_barrel_h, 0]) {
         debug_polygon_text(triangle_cutout_pts, font_color=metallic_yellow_1);
       }
     }
