@@ -26,6 +26,7 @@ show_upper_arm             = true;
 show_knuckle_bushing       = true;
 show_knuckle_inner_bearing = true;
 show_knuckle_outer_bearing = true;
+show_knuckle_tie_rod       = true;
 
 color                      = cobalt_blue_metallic;
 
@@ -44,6 +45,7 @@ module knuckle(color=color,
                show_knuckle_bushing=show_knuckle_bushing,
                show_knuckle_inner_bearing=show_knuckle_inner_bearing,
                show_knuckle_outer_bearing=show_knuckle_outer_bearing,
+               show_knuckle_tie_rod=show_knuckle_tie_rod,
                debug=false) {
   joint_len  = (knuckle_total_len -
                 (knuckle_ball_stud_mount_outer_d * 2)
@@ -199,6 +201,15 @@ module knuckle(color=color,
                    outer_d=knuckle_inner_bearing_od);
     }
   }
+  if (show_knuckle_tie_rod) {
+    translate([0, 0, height - 0.1]) {
+      rotate([90, 0, 0]) {
+        rotate([0, 0, 90]) {
+          knuckle_tie_rod_end();
+        }
+      }
+    }
+  }
 
   if (show_upper_arm) {
     let (ball_stud_y_pos = upper_arm_ball_stud_y_pos()) {
@@ -227,7 +238,8 @@ module knuckle_left(color=color,
                     show_lower_arm=show_lower_arm,
                     show_knuckle_bushing=show_knuckle_bushing,
                     show_knuckle_inner_bearing=show_knuckle_inner_bearing,
-                    show_knuckle_outer_bearing=show_knuckle_outer_bearing) {
+                    show_knuckle_outer_bearing=show_knuckle_outer_bearing,
+                    show_knuckle_tie_rod=show_knuckle_tie_rod) {
   full_len = knuckle_assembly_full_len();
   translate([-full_len, 0, 0]) {
     rotate([0, 90, 0]) {
@@ -236,7 +248,8 @@ module knuckle_left(color=color,
               show_lower_arm=show_lower_arm,
               show_knuckle_bushing=show_knuckle_bushing,
               show_knuckle_inner_bearing=show_knuckle_inner_bearing,
-              show_knuckle_outer_bearing=show_knuckle_outer_bearing);
+              show_knuckle_outer_bearing=show_knuckle_outer_bearing,
+              show_knuckle_tie_rod=show_knuckle_tie_rod);
     }
   }
 }
@@ -246,7 +259,8 @@ module knuckle_right(color=color,
                      show_lower_arm=show_lower_arm,
                      show_knuckle_bushing=show_knuckle_bushing,
                      show_knuckle_inner_bearing=show_knuckle_inner_bearing,
-                     show_knuckle_outer_bearing=show_knuckle_outer_bearing) {
+                     show_knuckle_outer_bearing=show_knuckle_outer_bearing,
+                     show_knuckle_tie_rod=show_knuckle_tie_rod) {
   full_len = knuckle_assembly_full_len();
   rotate([0, 0, 0]) {
     translate([full_len, 0, 0]) {
@@ -257,7 +271,8 @@ module knuckle_right(color=color,
                   show_lower_arm=show_lower_arm,
                   show_knuckle_bushing=show_knuckle_bushing,
                   show_knuckle_inner_bearing=show_knuckle_inner_bearing,
-                  show_knuckle_outer_bearing=show_knuckle_outer_bearing);
+                  show_knuckle_outer_bearing=show_knuckle_outer_bearing,
+                  show_knuckle_tie_rod=show_knuckle_tie_rod);
         }
       }
     }

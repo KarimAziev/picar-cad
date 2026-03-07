@@ -30,6 +30,15 @@ function lower_arm_ball_stud_y_pos() =
   let (cutout_depth = lower_arm_damper_boss_h + lower_arm_upper_boss_y_offset)
   lower_arm_h - cutout_depth - lower_arm_apex_width / 2;
 
+function lower_arm_mount_cutout_size() =
+  let (profile_x0 = lower_arm_hinge_barrel_hole_d / 2
+       + lower_arm_hinge_barrel_hole_offset
+       + lower_arm_hinge_barrel_hole_d,
+       hinge_cutout_len = lower_arm_hinge_barrel_len - profile_x0,
+       hinge_cutout_h = lower_arm_h - (lower_arm_upper_hinge_barrel_h
+                                       + lower_arm_lower_hinge_barrel_h))
+  [hinge_cutout_len, hinge_cutout_h];
+
 module lower_arm_hinge(h=lower_arm_upper_hinge_barrel_h) {
   barrel_hinge(size=[lower_arm_hinge_barrel_len,
                      h,
@@ -56,9 +65,10 @@ module lower_arm(color=cobalt_blue_metallic,
 
   profile_length = lower_arm_len - profile_x0;
 
-  hinge_cutout_len = lower_arm_hinge_barrel_len - profile_x0;
-  hinge_cutout_h = lower_arm_h - (lower_arm_upper_hinge_barrel_h
-                                  + lower_arm_lower_hinge_barrel_h);
+  hinge_cutout_size = lower_arm_mount_cutout_size();
+
+  hinge_cutout_len = hinge_cutout_size[0];
+  hinge_cutout_h = hinge_cutout_size[1];
 
   boss_rad = lower_arm_damper_boss_d / 2;
 

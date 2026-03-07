@@ -8,48 +8,11 @@ use <../lib/shapes3d.scad>
 use <../lib/slots.scad>
 use <../lib/transforms.scad>
 use <../lib/trapezoids.scad>
-use <lower_arm_mount.scad>
+use <bulkhead/front_bulkhead_chassis.scad>
+use <bulkhead/front_bulkhead_housing.scad>
+use <front_suspension_assembly.scad>
 use <pitman_arm.scad>
 use <servo_mount.scad>
-
-module upper_chassis_lower_arm_mount(outer_spacing=lower_arm_chassis_mount_bolt_spacing_outer,
-                                     d=lower_arm_chassis_mount_bolt_d,
-                                     padding_x=chassis_center_mount_padding_x,
-                                     padding_y=chassis_center_mount_padding_y,
-                                     transition_w=chassis_center_transition_w,
-                                     transition_len=chassis_center_transition_len,
-                                     h=upper_chassis_t) {
-  size = lower_arm_mount_base_size(outer_spacing=outer_spacing,
-                                   d=d,
-                                   padding_x=padding_x,
-                                   padding_y=padding_y);
-  size_x = size[0];
-  size_y = size[1];
-
-  translate([0, size_y / 2 + transition_len, 0]) {
-    union() {
-      difference() {
-        linear_extrude(height=h, center=false) {
-          rounded_rect(size,
-                       r=1,
-                       side="top",
-                       center=true);
-        }
-
-        lower_arm_mount_slots(center_x=true,
-                              center_y=true,
-                              outer_spacing=outer_spacing,
-                              h=h,
-                              d=d);
-      }
-      translate([0, -size_y / 2 - transition_len / 2, 0]) {
-        linear_extrude(height=h, center=false) {
-          trapezoid(b=transition_w, h=transition_len, t=size_x, center=true);
-        }
-      }
-    }
-  }
-}
 
 module bellcrank_mount(h=upper_chassis_t,
                        top_w=chassis_center_transition_w,
@@ -147,7 +110,7 @@ module upper_chassis(show_pitman_arm=true,
 
   difference() {
     union() {
-      upper_chassis_lower_arm_mount();
+      front_bulkhead_chassis();
       bellcrank_mount(show_pitman_arm=show_pitman_arm,
                       show_idle_arm=show_idle_arm);
       translate([0, -extra_len / 2 - chassis_bellcrank_mount_len, 0]) {
@@ -197,3 +160,6 @@ module upper_chassis_printable() {
 }
 
 upper_chassis();
+translate([0, 0, upper_chassis_t]) {
+  front_suspension_assembly();
+}

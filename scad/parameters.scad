@@ -2780,50 +2780,6 @@ tie_rod_shaft_bearing_pin_height                     = 8;
 tie_rod_shaft_bearing_pin_chamfer_height             = 1.5;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Suspension
-// ─────────────────────────────────────────────────────────────────────────────
-suspension_tie_rod_eye_od                            = 11.2;
-suspension_tie_rod_eye_h                             = 5.10;
-
-suspension_tie_rod_shank_od                          = 6.0;
-suspension_tie_rod_shank_bolt_d                      = m3_hole_dia;
-suspension_tie_rod_neck_len                          = 2.05;
-suspension_tie_rod_shank_len                         = 14 + suspension_tie_rod_neck_len;
-
-suspension_tie_rod_bushing_od                        = 6.95;
-suspension_tie_rod_bushing_d                         = m3_hole_dia;
-suspension_tie_rod_bushing_h                         = 6.65;
-suspension_tie_rod_bushing_flat_d                    = 0;
-suspension_tie_rod_neck_h                            = 4.95;
-
-suspension_tie_rod_bushing_color                     = metallic_silver_9;
-suspension_tie_rod_color                             = cobalt_blue_metallic;
-
-suspension_tie_rod_mount_thickness                   = 2;
-suspension_tie_rod_border_w                          = 2;
-
-knuckle_steering_arm_mount_thickness                 = 3;
-knuckle_steering_arm_mount_len                       = 20;
-knuckle_steering_arm_mount_round_r                   = 1;
-
-knuckle_steering_arm_mount_tie_rod_eye_od            = 11.2;
-knuckle_steering_arm_mount_tie_rod_eye_h             = 5.10;
-
-knuckle_steering_arm_mount_tie_rod_shank_od          = 6.0;
-knuckle_steering_arm_mount_tie_rod_shank_bolt_d      = m3_hole_dia;
-knuckle_steering_arm_mount_tie_rod_neck_len          = 2.05;
-knuckle_steering_arm_mount_tie_rod_shank_len         = 14 + knuckle_steering_arm_mount_tie_rod_neck_len;
-
-knuckle_steering_arm_mount_tie_rod_bushing_od        = 6.95;
-knuckle_steering_arm_mount_tie_rod_bushing_d         = m3_hole_dia;
-knuckle_steering_arm_mount_tie_rod_bushing_h         = 6.65;
-knuckle_steering_arm_mount_tie_rod_bushing_flat_d    = 0;
-knuckle_steering_arm_mount_tie_rod_neck_h            = 4.95;
-
-knuckle_steering_arm_mount_tie_rod_bushing_color     = metallic_silver_9;
-knuckle_steering_arm_mount_tie_rod_color             = cobalt_blue_metallic;
-
-// ─────────────────────────────────────────────────────────────────────────────
 // Ultrasonic placeholder
 // ─────────────────────────────────────────────────────────────────────────────
 
