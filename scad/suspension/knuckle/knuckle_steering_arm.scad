@@ -24,9 +24,10 @@ module knuckle_steering_arm(w_base=knuckle_arm_base_w,
                             holes_n=knuckle_arm_holes_n,
                             holes_gap=knuckle_arm_holes_gap,
                             thickness=knuckle_arm_thickness,
-                            bearing_od=knuckle_bearing_inner_od,
-                            bearing_shoulder_d=knuckle_bearing_inner_shoulder_d,
-                            bearing_h=knuckle_bearing_inner_h,
+                            bearing_od=knuckle_inner_bearing_seat_d,
+                            bearing_shoulder_d=knuckle_inner_bearing_shoulder_d,
+                            bearing_h=knuckle_outer_bearing_w
+                            + knuckle_outer_bearing_z_clearance,
                             corner_r=knuckle_arm_corner_r,
                             ear_len=knuckle_arm_ear_len) {
 

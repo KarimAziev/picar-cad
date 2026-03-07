@@ -84,14 +84,56 @@ knuckle_total_len                          = 42.7;
 
 knuckle_outer_wall_thickness               = 1.7;
 
-knuckle_bearing_inner_h                    = 4.1;
-knuckle_bearing_inner_od                   = 15.1;
-knuckle_bearing_inner_shoulder_d           = 13;
+// ─────────────────────────────────────────────────────────────────────────────
+// Knuckle's bearings
+// ─────────────────────────────────────────────────────────────────────────────
+// Knuckle uses two bearings: inner (bigger) and outer (smaller)
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Inner (bigger) bearing
+// ─────────────────────────────────────────────────────────────────────────────
+// outer diameter
+knuckle_inner_bearing_od                   = 15;
+// hole diameter
+knuckle_inner_bearing_bore_d               = 10;
+// width of the bearing
+knuckle_inner_bearing_w                    = 4;
+
+// Clearance between the bearing OD and the knuckle bearing seat diameter.
+knuckle_inner_bearing_clearance            = 0.1;
+// Clearance between the bearing width and the knuckle bearing seat depth
+knuckle_inner_bearing_z_clearance          = 0.1;
+
+// The actual hole diameter in the knuckle for the bearing
+knuckle_inner_bearing_seat_d               = 15.1;
+knuckle_inner_bearing_shoulder_d           = 13;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Outer (smaller) bearing
+// ─────────────────────────────────────────────────────────────────────────────
+
+// outer diameter
+knuckle_outer_bearing_od                   = 10;
+// hole diameter
+knuckle_outer_bearing_bore_d               = 5;
+// width of the bearing
+knuckle_outer_bearing_w                    = 4;
+
+// Clearance between the bearing OD and the knuckle bearing seat diameter.
+knuckle_outer_bearing_clearance            = 0.1;
+// Clearance between the bearing width and the knuckle bearing seat depth
+knuckle_outer_bearing_z_clearance          = 0.1;
+
+knuckle_bearing_spacer_h                   = 1.6;
+knuckle_bearing_spacer_ring_d              = 8;
+// ─────────────────────────────────────────────────────────────────────────────
+// Knuckle's steering arm mount with its ring
+// ─────────────────────────────────────────────────────────────────────────────
 knuckle_arm_thickness                      = 4.2;
 knuckle_arm_bolt_d                         = m3_hole_dia;
 knuckle_arm_bolt_hole_offet                = 2.7;
-knuckle_arm_ring_outer_d                   = knuckle_bearing_inner_od + knuckle_outer_wall_thickness * 2;
+knuckle_arm_ring_outer_d                   = knuckle_inner_bearing_seat_d
+                                              + knuckle_outer_wall_thickness * 2;
 
 knuckle_arm_base_w                         = 9;
 knuckle_arm_narrow_w                       = 6.06;
@@ -119,14 +161,6 @@ knuckle_ball_stud_ball_d                   = 8.8;
 knuckle_ball_stud_ball_hole_d              = 3.3;
 knuckle_ball_stud_h                        = 17.8;
 knuckle_ball_stud_unthreaded_h             = 5;
-
-// ─────────────────────────────────────────────────────────────────────────────
-//
-// ─────────────────────────────────────────────────────────────────────────────
-knuckle_bearing_outer_od                   = 10.1;
-knuckle_bearing_outer_h                    = 4.1;
-knuckle_bearing_spacer_h                   = 1.6;
-knuckle_bearing_spacer_ring_d              = 8;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Knuckle's ball stud housing for lower and upper arms
