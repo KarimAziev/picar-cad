@@ -9,6 +9,7 @@
 
 include <../colors.scad>
 include <../parameters.scad>
+include <../steering_params.scad>
 
 use <../lib/functions.scad>
 use <../lib/shapes3d.scad>
