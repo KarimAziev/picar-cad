@@ -8,6 +8,8 @@ use <../lib/shapes3d.scad>
 use <../lib/slots.scad>
 use <../lib/transforms.scad>
 use <../lib/trapezoids.scad>
+use <../placeholders/rpi_5.scad>
+use <../power/power_case.scad>
 use <bulkhead/front_bulkhead_chassis.scad>
 use <bulkhead/front_bulkhead_housing.scad>
 use <front_suspension_assembly.scad>
@@ -70,6 +72,7 @@ module bellcrank_mount(h=upper_chassis_t,
 }
 
 module upper_chassis(show_pitman_arm=true,
+                     show_steering_assembly=true,
                      show_idle_arm=true,
                      show_servo=true) {
   shaft_len = steering_servo_tie_rod_body_len
@@ -141,6 +144,11 @@ module upper_chassis(show_pitman_arm=true,
       servo_mount(slot_mode=true);
     }
   }
+  translate([0, 0, upper_chassis_t]) {
+    if (show_steering_assembly) {
+      front_suspension_assembly();
+    }
+  }
   if (show_servo) {
     translate([servo_mount_x,
                servo_mount_y,
@@ -160,6 +168,3 @@ module upper_chassis_printable() {
 }
 
 upper_chassis();
-translate([0, 0, upper_chassis_t]) {
-  front_suspension_assembly();
-}

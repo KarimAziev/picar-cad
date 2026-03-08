@@ -5,16 +5,18 @@ use <knuckle/knuckle.scad>
 use <wishbone_arms/lower_arm.scad>
 
 show_lower_arm             = true;
-show_upper_arm             = false;
+show_upper_arm             = true;
 show_knuckle_bushing       = true;
 show_knuckle_inner_bearing = true;
 show_knuckle_outer_bearing = true;
+show_knuckle_tie_rod       = true;
 
 module front_suspension_assembly(show_lower_arm=show_lower_arm,
                                  show_upper_arm=show_upper_arm,
                                  show_knuckle_bushing=show_knuckle_bushing,
                                  show_knuckle_inner_bearing=show_knuckle_inner_bearing,
-                                 show_knuckle_outer_bearing=show_knuckle_outer_bearing) {
+                                 show_knuckle_outer_bearing=show_knuckle_outer_bearing,
+                                 show_knuckle_tie_rod=show_knuckle_tie_rod) {
   barrel_size = lower_arm_mount_cutout_size();
   barrel_y_start = front_bulkhead_len - front_bulkhead_barrel_y_offset
     - barrel_size[1];
@@ -43,7 +45,8 @@ module front_suspension_assembly(show_lower_arm=show_lower_arm,
                      show_upper_arm=show_upper_arm,
                      show_knuckle_bushing=show_knuckle_bushing,
                      show_knuckle_inner_bearing=show_knuckle_inner_bearing,
-                     show_knuckle_outer_bearing=show_knuckle_outer_bearing);
+                     show_knuckle_outer_bearing=show_knuckle_outer_bearing,
+                     show_knuckle_tie_rod=show_knuckle_tie_rod);
       }
       translate([bulkhead_full_w / 2 - lower_arm_offset,
                  0,
@@ -52,7 +55,8 @@ module front_suspension_assembly(show_lower_arm=show_lower_arm,
                       show_upper_arm=show_upper_arm,
                       show_knuckle_bushing=show_knuckle_bushing,
                       show_knuckle_inner_bearing=show_knuckle_inner_bearing,
-                      show_knuckle_outer_bearing=show_knuckle_outer_bearing);
+                      show_knuckle_outer_bearing=show_knuckle_outer_bearing,
+                      show_knuckle_tie_rod=show_knuckle_tie_rod);
       }
     }
   }

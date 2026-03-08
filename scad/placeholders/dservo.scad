@@ -103,6 +103,7 @@ module dsservo(center=false,
                show_servo_horn_bolt,
                servo_horn_single,
                show_tie_rod=true,
+               servo_tie_rod_angle=steering_servo_tie_rod_angle,
                servo_horn_screw_side) {
   servo(size=[dsservo_size[0],
               dsservo_size[1],
@@ -160,7 +161,7 @@ module dsservo(center=false,
                    - steering_servo_arm_len
                    + steering_servo_tie_rod_eye_od / 2,
                    - steering_servo_arm_bolt_boss_h / 2]) {
-          rotate([0, 0, 90]) {
+          rotate([0, 0, 90 + servo_tie_rod_angle]) {
             servo_tie_rod();
           }
         }

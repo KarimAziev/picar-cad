@@ -43,6 +43,7 @@ front_bulkhead_center_hole_len                    = 23.0;
 
 front_bulkhead_barrel_hinge_w                     = 13.15;
 front_bulkhead_barrel_pin_hole_offset             = 2.5;
+front_bulkhead_barrel_hinge_clearance             = 1.0;
 
 front_bulkhead_gearbox_bolt_d                     = m3_hole_dia;
 front_bulkhead_gearbox_bolt_cbore_d               = 6.10;
@@ -52,6 +53,9 @@ front_bulkhead_mount_bolt_spacing_1               = [34.0, 18.45];
 front_bulkhead_mount_bolt_spacing_2               = [34.0, 5.5];
 front_bulkhead_mount_bolt_d                       = m3_hole_dia;
 front_bulkhead_mount_bolt_padding                 = 4.6;
+
+front_bulkhead_hinge_cutout_bolt_offset           = 1;
+front_bulkhead_hinge_cutout_d_factor              = 0.7;
 
 pitman_arm_bolt_boss_spacing                      = 1;
 pitman_arm_h                                      = 24.3;
@@ -210,7 +214,7 @@ steering_servo_mount_bolt_d                       = m3_hole_dia;
 steering_servo_mount_bolt_bore_d                  = m3_countersunk_head_dia + 0.2;
 steering_servo_mount_bolt_bore_h                  = m3_countersunk_head_h + 0.15;
 
-steering_servo_tie_rod_body_total_len             = 73.16;
+steering_servo_tie_rod_body_total_len             = 45.16;
 steering_servo_tie_rod_thread_len                 = 8.8;
 steering_servo_tie_rod_body_len                   = steering_servo_tie_rod_body_total_len
                                                      - steering_servo_tie_rod_thread_len * 2;
@@ -235,6 +239,7 @@ steering_servo_tie_rod_bushing_h                  = 7;
 steering_servo_tie_rod_bushing_flat_d             = 4.4;
 
 steering_servo_tie_rod_bushing_color              = metallic_silver_9;
+steering_servo_tie_rod_angle                      = 15;
 
 steering_servo_arm_total_l                        = 35.4;
 steering_servo_arm_d                              = 14.75;

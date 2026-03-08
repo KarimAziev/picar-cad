@@ -25,10 +25,13 @@ module front_bulkhead_housing(color=cobalt_blue_metallic,
                               barrel_thickness=front_bulkhead_h,
                               barrel_y_offset=front_bulkhead_barrel_y_offset,
                               center_hole_len=front_bulkhead_center_hole_len,
+                              hinge_clearance=front_bulkhead_barrel_hinge_clearance,
                               center_y=false) {
 
   barrel_size = lower_arm_mount_cutout_size();
-  barrel_len = barrel_size[1];
+  barrel_len = barrel_size[1] - hinge_clearance;
+  bolt_spacing_max_x = max(front_bulkhead_mount_bolt_spacing_1[0],
+                           front_bulkhead_mount_bolt_spacing_2[0]);
 
   maybe_translate([0, center_y ? 0 : front_bulkhead_len / 2, 0]) {
     maybe_color(color) {
@@ -53,7 +56,7 @@ module front_bulkhead_housing(color=cobalt_blue_metallic,
                   rounded_rect([front_bulkhead_w + 0.1,
                                 center_hole_len],
                                r_factor=0.15,
-                               fn=$preview ? 10 : 360,
+                               fn=$preview ? 40 : 360,
                                center=true);
                 }
               }
@@ -63,11 +66,13 @@ module front_bulkhead_housing(color=cobalt_blue_metallic,
                          front_bulkhead_len / 2
                          - barrel_len - barrel_y_offset,
                          0]) {
-                barrel_hinge(size=[barrel_w,
-                                   barrel_len,
-                                   barrel_thickness],
-                             d=lower_arm_hinge_barrel_hole_d,
-                             distance=front_bulkhead_barrel_pin_hole_offset);
+                difference() {
+                  barrel_hinge(size=[barrel_w,
+                                     barrel_len,
+                                     barrel_thickness],
+                               d=lower_arm_hinge_barrel_hole_d,
+                               distance=front_bulkhead_barrel_pin_hole_offset);
+                }
               }
             }
             // gearbox_bolt_d
@@ -100,6 +105,20 @@ module front_bulkhead_housing(color=cobalt_blue_metallic,
                         reverse=true);
           }
           front_bulkhead_chassis_mount_slots();
+
+          mirror_copy([1, 0, 0]) {
+            let (dia = barrel_len * front_bulkhead_hinge_cutout_d_factor) {
+              translate([bolt_spacing_max_x / 2 + dia / 2
+                         + front_bulkhead_mount_bolt_d / 2
+                         + front_bulkhead_hinge_cutout_bolt_offset,
+                         front_bulkhead_len / 2
+                         - barrel_len / 2
+                         - barrel_y_offset,
+                         0]) {
+                cylinder(d=dia, h=barrel_w, $fn=$preview ? 40 : 360);
+              }
+            }
+          }
         }
       }
     }
