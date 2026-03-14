@@ -57,6 +57,67 @@ front_bulkhead_mount_bolt_padding                 = 4.6;
 front_bulkhead_hinge_cutout_bolt_offset           = 1;
 front_bulkhead_hinge_cutout_d_factor              = 0.7;
 
+// The overall width on the X-axis
+front_shock_tower_l                               = 68;
+
+// The overall height of the tower on the Y-axis
+front_shock_tower_h                               = 30.5;
+
+// The width of the bridge over the central rectangular cutout
+front_shock_tower_bridge_w                        = 8.5;
+
+// Overall corner radius of the shape
+front_shock_tower_corner_r                        = 4;
+
+// Corner radius for the rectangular cutout
+front_shock_tower_cutout_corner_r                 = 0.5;
+
+// Corner radius for the lower mount panel with bolt holes
+front_shock_tower_mount_corner_r                  = 2;
+
+// The overall thickness of the shock tower
+front_shock_tower_thickness                       = 6.0;
+
+// The thickness of the thinner part near the cutout, with bottom mounting holes
+front_shock_tower_lower_thickness                 = 2.7;
+
+// The diameter of the holes for mounting to the bulkhead
+front_shock_tower_bolt_d                          = m3_hole_dia;
+
+// Bolt spacing for mounting to the bulkhead
+front_shock_tower_bolt_spacing                    = [33.3, 9.6];
+
+// The diameter of the holes for mounting the damper
+front_shock_tower_shock_damper_bolt_d             = m3_hole_dia;
+
+// The X spacing for the damper holes closest to the center.
+// Other holes will be placed at an angle relative to these holes.
+front_shock_tower_damper_spacing_x                = 45;
+
+// The angle of the "ears" that hold the damper holes
+front_shock_tower_damper_holes_angle              = 150;
+
+// Gap between mounting holes for the damper
+front_shock_tower_damper_holes_gap                = 1.7;
+
+// X-padding around the damper holes
+front_shock_tower_damper_holes_pad_x              = 1.8;
+
+// Y-padding around the damper holes
+front_shock_tower_damper_holes_pad_y              = 1.8;
+
+// The number of damper holes
+front_shock_tower_damper_holes_amount             = 3;
+
+// The spacing between the holes for the arm hinges
+front_shock_tower_pin_spacing                     = 55.8;
+
+// The vertical offset of the holes for the arm hinges
+front_shock_tower_pin_y_offset                    = 3;
+
+// Padding for the "ears" that hold the arm-hinge holes
+front_shock_tower_pin_hole_pad                    = 1;
+
 pitman_arm_bolt_boss_spacing                      = 1;
 pitman_arm_h                                      = 24.3;
 pitman_arm_bolt_boss_padding                      = 1.2;
@@ -353,7 +414,7 @@ upper_arm_hinge_barrel_len                        = 9;
 upper_arm_hinge_barrel_h                          = 6.9;
 
 // Diameter of the hinge pin hole through each hinge barrel.
-upper_arm_hinge_barrel_hole_d                     = 3.4;
+upper_arm_hinge_barrel_hole_d                     = 3.6;
 
 // Offset from the barrel’s left edge to the hinge hole center (sets hole position).
 upper_arm_hinge_barrel_hole_offset                = 1.7;
