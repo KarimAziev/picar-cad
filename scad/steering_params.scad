@@ -57,6 +57,9 @@ front_bulkhead_mount_bolt_padding                 = 4.6;
 front_bulkhead_hinge_cutout_bolt_offset           = 1;
 front_bulkhead_hinge_cutout_d_factor              = 0.7;
 
+// The spacing between the holes for the arm hinges
+front_bulkhead_pin_spacing                        = 55.8;
+
 // The overall width on the X-axis
 front_shock_tower_l                               = 68;
 
@@ -108,9 +111,6 @@ front_shock_tower_damper_holes_pad_y              = 1.8;
 
 // The number of damper holes
 front_shock_tower_damper_holes_amount             = 3;
-
-// The spacing between the holes for the arm hinges
-front_shock_tower_pin_spacing                     = 55.8;
 
 // The vertical offset of the holes for the arm hinges
 front_shock_tower_pin_y_offset                    = 3;
