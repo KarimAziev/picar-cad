@@ -26,12 +26,18 @@ module front_bulkhead_housing(color=cobalt_blue_metallic,
                               barrel_y_offset=front_bulkhead_barrel_y_offset,
                               center_hole_len=front_bulkhead_center_hole_len,
                               hinge_clearance=front_bulkhead_barrel_hinge_clearance,
+                              use_gearbox=false,
                               center_y=false) {
 
   barrel_size = lower_arm_mount_cutout_size();
   barrel_len = barrel_size[1] - hinge_clearance;
   bolt_spacing_max_x = max(front_bulkhead_mount_bolt_spacing_1[0],
                            front_bulkhead_mount_bolt_spacing_2[0]);
+
+  bolt_spacing_max_y = max(front_bulkhead_mount_bolt_spacing_1[1],
+                           front_bulkhead_mount_bolt_spacing_2[1]);
+
+  full_bolt_spacing_y = bolt_spacing_max_y + front_bulkhead_mount_bolt_d;
 
   maybe_translate([0, center_y ? 0 : front_bulkhead_len / 2, 0]) {
     maybe_color(color) {
@@ -42,22 +48,24 @@ module front_bulkhead_housing(color=cobalt_blue_metallic,
               cube_3d([front_bulkhead_w,
                        front_bulkhead_len,
                        barrel_thickness]);
-              translate([0, thickness, thickness]) {
-                linear_extrude(height=barrel_thickness + 0.1, center=false) {
-                  rounded_rect([front_bulkhead_w - thickness * 2,
-                                front_bulkhead_len],
-                               side="bottom",
-                               r_factor=0.15,
-                               center=true);
+              if (use_gearbox) {
+                translate([0, thickness, thickness]) {
+                  linear_extrude(height=barrel_thickness + 0.1, center=false) {
+                    rounded_rect([front_bulkhead_w - thickness * 2,
+                                  front_bulkhead_len],
+                                 side="bottom",
+                                 r_factor=0.15,
+                                 center=true);
+                  }
                 }
-              }
-              translate([0, thickness, -thickness]) {
-                linear_extrude(height=barrel_thickness, center=false) {
-                  rounded_rect([front_bulkhead_w + 0.1,
-                                center_hole_len],
-                               r_factor=0.15,
-                               fn=$preview ? 40 : 360,
-                               center=true);
+                translate([0, thickness, -thickness]) {
+                  linear_extrude(height=barrel_thickness, center=false) {
+                    rounded_rect([front_bulkhead_w + 0.1,
+                                  center_hole_len],
+                                 r_factor=0.15,
+                                 fn=$preview ? 40 : 360,
+                                 center=true);
+                  }
                 }
               }
             }
@@ -104,7 +112,15 @@ module front_bulkhead_housing(color=cobalt_blue_metallic,
                         fn=100,
                         reverse=true);
           }
-          front_bulkhead_chassis_mount_slots();
+          translate([0,
+                     front_bulkhead_len / 2
+                     - full_bolt_spacing_y
+                     - barrel_y_offset
+                     - barrel_len / 2 + full_bolt_spacing_y / 2
+                     ,
+                     0]) {
+            front_bulkhead_chassis_mount_slots(center_y=false);
+          }
 
           mirror_copy([1, 0, 0]) {
             let (dia = barrel_len * front_bulkhead_hinge_cutout_d_factor) {
@@ -125,4 +141,4 @@ module front_bulkhead_housing(color=cobalt_blue_metallic,
   }
 }
 
-front_bulkhead_housing();
+front_bulkhead_housing(center_y=true);

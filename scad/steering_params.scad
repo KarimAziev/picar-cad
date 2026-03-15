@@ -33,7 +33,128 @@ bellcrank_arm_bolt_inner_padding                  = 1;
 bellcrank_arm_bolt_d                              = 3;
 bellcrank_arm_bolt_n                              = 2;
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Knuckle's ball stud
+// ─────────────────────────────────────────────────────────────────────────────
+
+knuckle_ball_stud_shank_d                         = 4.8;
+knuckle_ball_stud_ball_d                          = 8.8;
+knuckle_ball_stud_ball_hole_d                     = 3.3;
+knuckle_ball_stud_h                               = 17.8;
+knuckle_ball_stud_unthreaded_h                    = 5;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Lower Wishbone Arm
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Overall length of the lower arm (X direction), from hinge end to ball-stud end.
+lower_arm_len                                     = 48.8;
+
+// Overall height/envelope of the arm profile (Y direction).
+lower_arm_h                                       = 39.25;
+
+// Main body thickness of the arm (Z direction) for the extruded profile.
+lower_arm_thickness                               = 7.5;
+
+// Width of the apex/bridge region near the ball-stud end used in profile shaping/cutouts.
+lower_arm_apex_width                              = 9.1;
+
+// Nominal width of each “leg” of the A-arm in the 2D profile.
+lower_arm_leg_width                               = 4.0;
+
+// Outer fillet radius applied to the arm outline (rounded outer edges).
+lower_arm_corner_r                                = 1.5;
+
+// Length of a hinge barrel (one of the cylindrical hinge lugs) along X.
+lower_arm_hinge_barrel_len                        = 10.3;
+
+// Height envelope of the upper hinge barrel feature (used by the 2D barrel sketch).
+lower_arm_upper_hinge_barrel_h                    = 7.85;
+
+// Height envelope of the lower hinge barrel feature (used by the 2D barrel sketch).
+lower_arm_lower_hinge_barrel_h                    = 6.6;
+
+// Diameter of the hinge pin hole through each hinge barrel.
+lower_arm_hinge_barrel_hole_d                     = 3.4;
+
+// Offset from the barrel’s left edge to the hinge hole center (sets hole position).
+lower_arm_hinge_barrel_hole_offset                = 1.7;
+
+// Height (projection) of the damper mounting boss.
+lower_arm_damper_boss_h                           = 8.2;
+
+// Diameter of the damper mounting boss (outer).
+lower_arm_damper_boss_d                           = 5.6;
+
+// Diameter of the through-hole in the damper boss for the damper fastener.
+lower_arm_damper_boss_hole_d                      = 3;
+
+// Corner radius used for the inner profile hole.
+lower_arm_relief_hole_corner_r                    = 2;
+
+// X-offset used when positioning the damper boss relative to the arm end.
+lower_arm_upper_boss_x_offset                     = 5.9;
+
+// Y-offset used when positioning the damper boss / upper cutout reference.
+lower_arm_upper_boss_y_offset                     = 3.7;
+
+// Size of the ball-stud/rod-end mounting block: [length(X), width(Y), thickness(Z)]
+lower_arm_ball_stud_mount_size                    = [14, 6.5, 7.5];
+
+// If printing is difficult, you can disable the cutout on the outer bottom edge
+// and print it on that edge.
+lower_arm_use_lower_edge_cutout                   = true;
+
+// Depth of the ball-stud mounting hole/counterbore along X.
+lower_arm_ball_stud_hole_depth                    = knuckle_ball_stud_h
+                                                     - knuckle_ball_stud_unthreaded_h;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Upper front wishbone arm
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Overall length of the upper arm (X direction), from hinge end to ball-stud end.
+upper_arm_len                                     = 41.8;
+
+// Overall height/envelope of the arm profile (Y direction) excluding
+// upper_arm_ball_stud_mount_extra_h
+upper_arm_h                                       = 24;
+
+// rounding radius of the hole on the arm
+upper_arm_hole_corner_r                           = 2.5;
+
+// Outer fillet radius applied to the arm outline (rounded outer edges).
+upper_arm_corner_r                                = 0.5;
+
+// Main body thickness of the arm (Z direction) for the extruded profile.
+upper_arm_thickness                               = 6.5;
+
+// Length of a hinge barrel (one of the cylindrical hinge lugs) along X.
+upper_arm_hinge_barrel_len                        = 9;
+
+// Height envelope of the hinge barrel feature (used by the 2D barrel sketch).
+upper_arm_hinge_barrel_h                          = 6.9;
+
+// Diameter of the hinge pin hole through each hinge barrel.
+upper_arm_hinge_barrel_hole_d                     = 3.6;
+
+// Offset from the barrel’s left edge to the hinge hole center (sets hole position).
+upper_arm_hinge_barrel_hole_offset                = 1.7;
+
+// Size of the ball-stud/rod-end mounting block: [length(X), width(Y), thickness(Z)]
+upper_arm_ball_stud_mount_size                    = [15.19, 9.5, upper_arm_thickness + 1.5];
+
+// the addional height for ball stud
+upper_arm_ball_stud_mount_extra_h                 = upper_arm_ball_stud_mount_size[1] / 2;
+
+// Nominal width of each “leg” of the A-arm in the 2D profile.
+upper_arm_leg_width                               = 4.5;
+
+// Depth of the ball-stud mounting hole/counterbore along X.
+upper_arm_ball_stud_hole_depth                    = knuckle_ball_stud_h - knuckle_ball_stud_unthreaded_h;
+
 front_bulkhead_w                                  = 25.9;
+
 front_bulkhead_len                                = 39.5;
 front_bulkhead_h                                  = 7.9;
 front_bulkhead_thickness                          = 1.8;
@@ -56,6 +177,10 @@ front_bulkhead_mount_bolt_padding                 = 4.6;
 
 front_bulkhead_hinge_cutout_bolt_offset           = 1;
 front_bulkhead_hinge_cutout_d_factor              = 0.7;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Front Shock Tower
+// ─────────────────────────────────────────────────────────────────────────────
 
 // The spacing between the holes for the arm hinges
 front_bulkhead_pin_spacing                        = 55.8;
@@ -118,6 +243,55 @@ front_shock_tower_pin_y_offset                    = 3;
 // Padding for the "ears" that hold the arm-hinge holes
 front_shock_tower_pin_hole_pad                    = 1;
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Front Upper suspension holder
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Overall length of the holder body (derived from bulkhead pin spacing plus a fixed margin)
+front_upper_suspension_holder_l                   = front_bulkhead_pin_spacing + 7.7;
+
+// Overall width of the holder body
+front_upper_suspension_w                          = 5.7;
+
+// Base extrusion thickness of the holder
+front_upper_suspension_holder_thickness           = 4.5;
+
+// Diameter of the circular relief cutout on the underside
+front_upper_suspension_holder_round_cutout_d      = 14.0;
+
+// Y-offset of the circular relief cutout center; increasing this shifts it further away and reduces overlap
+front_upper_suspension_holder_round_cutout_offset = 1.5;
+
+// Width of the central rectangular cutout (on the side opposite the round cutout)
+front_upper_suspension_holder_rect_cutout_w       = 30;
+
+// Through-hole diameter for the mounting bolts (M3 clearance)
+front_upper_suspension_holder_bolt_d              = m3_hole_dia;
+
+// Counterbore diameter for the bolt head / washer pocket
+front_upper_suspension_holder_bolt_bore_d         = m3_hole_dia * 2 + 0.1;
+
+// Center-to-center spacing of the mounting bolts
+front_upper_suspension_holder_bolt_spacing        = 14.3;
+
+// Counterbore depth (pocket height), measured from the top face
+front_upper_suspension_holder_bolt_bore_h         = front_upper_suspension_holder_thickness / 2;
+
+// Extra material/padding added below the bolt area (extends the mounting "tab" beyond the holes)
+front_upper_suspension_holder_bolt_pad            = 2;
+
+// Y-offset of the bolt counterbore centerline relative to the main body (from the rectangular cutout side)
+front_upper_suspension_holder_bolt_y_offset       = 0.5;
+
+// Outer diameter of the pin barrel (reinforcement ring) around the arm hinge pin hole
+front_upper_suspension_holder_pin_barrel_d        = upper_arm_hinge_barrel_hole_d + 4.1;
+
+// Height of the pin barrel (reinforcement ring) extrusion
+front_upper_suspension_holder_pin_barrel_h        = 6.6;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Pitman arm
+// ─────────────────────────────────────────────────────────────────────────────
 pitman_arm_bolt_boss_spacing                      = 1;
 pitman_arm_h                                      = 24.3;
 pitman_arm_bolt_boss_padding                      = 1.2;
@@ -233,16 +407,6 @@ knuckle_arm_holes_gap                             = 2;
 knuckle_arm_corner_r                              = 1;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Knuckle's ball stud
-// ─────────────────────────────────────────────────────────────────────────────
-
-knuckle_ball_stud_shank_d                         = 4.8;
-knuckle_ball_stud_ball_d                          = 8.8;
-knuckle_ball_stud_ball_hole_d                     = 3.3;
-knuckle_ball_stud_h                               = 17.8;
-knuckle_ball_stud_unthreaded_h                    = 5;
-
-// ─────────────────────────────────────────────────────────────────────────────
 // Knuckle's ball stud housing for lower and upper arms
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -320,116 +484,6 @@ steering_servo_arm_bolt_d                         = m3_hole_dia;
 steering_servo_arm_center_bolt_d                  = m3_hole_dia;
 steering_servo_arm_center_bolt_bore_d             = 7.8;
 steering_servo_arm_center_bolt_bore_h             = 1.2;
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Lower Wishbone Arm
-// ─────────────────────────────────────────────────────────────────────────────
-
-// Overall length of the lower arm (X direction), from hinge end to ball-stud end.
-lower_arm_len                                     = 48.8;
-
-// Overall height/envelope of the arm profile (Y direction).
-lower_arm_h                                       = 39.25;
-
-// Main body thickness of the arm (Z direction) for the extruded profile.
-lower_arm_thickness                               = 7.5;
-
-// Width of the apex/bridge region near the ball-stud end used in profile shaping/cutouts.
-lower_arm_apex_width                              = 9.1;
-
-// Nominal width of each “leg” of the A-arm in the 2D profile.
-lower_arm_leg_width                               = 4.0;
-
-// Outer fillet radius applied to the arm outline (rounded outer edges).
-lower_arm_corner_r                                = 1.5;
-
-// Length of a hinge barrel (one of the cylindrical hinge lugs) along X.
-lower_arm_hinge_barrel_len                        = 10.3;
-
-// Height envelope of the upper hinge barrel feature (used by the 2D barrel sketch).
-lower_arm_upper_hinge_barrel_h                    = 7.85;
-
-// Height envelope of the lower hinge barrel feature (used by the 2D barrel sketch).
-lower_arm_lower_hinge_barrel_h                    = 6.6;
-
-// Diameter of the hinge pin hole through each hinge barrel.
-lower_arm_hinge_barrel_hole_d                     = 3.4;
-
-// Offset from the barrel’s left edge to the hinge hole center (sets hole position).
-lower_arm_hinge_barrel_hole_offset                = 1.7;
-
-// Height (projection) of the damper mounting boss.
-lower_arm_damper_boss_h                           = 8.2;
-
-// Diameter of the damper mounting boss (outer).
-lower_arm_damper_boss_d                           = 5.6;
-
-// Diameter of the through-hole in the damper boss for the damper fastener.
-lower_arm_damper_boss_hole_d                      = 3;
-
-// Corner radius used for the inner profile hole.
-lower_arm_relief_hole_corner_r                    = 2;
-
-// X-offset used when positioning the damper boss relative to the arm end.
-lower_arm_upper_boss_x_offset                     = 5.9;
-
-// Y-offset used when positioning the damper boss / upper cutout reference.
-lower_arm_upper_boss_y_offset                     = 3.7;
-
-// Size of the ball-stud/rod-end mounting block: [length(X), width(Y), thickness(Z)]
-lower_arm_ball_stud_mount_size                    = [14, 6.5, 7.5];
-
-// If printing is difficult, you can disable the cutout on the outer bottom edge
-// and print it on that edge.
-lower_arm_use_lower_edge_cutout                   = true;
-
-// Depth of the ball-stud mounting hole/counterbore along X.
-lower_arm_ball_stud_hole_depth                    = knuckle_ball_stud_h
-                                                     - knuckle_ball_stud_unthreaded_h;
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Upper wishbone arm
-// ─────────────────────────────────────────────────────────────────────────────
-
-// Overall length of the upper arm (X direction), from hinge end to ball-stud end.
-upper_arm_len                                     = 41.8;
-
-// Overall height/envelope of the arm profile (Y direction) excluding
-// upper_arm_ball_stud_mount_extra_h
-upper_arm_h                                       = 24;
-
-// rounding radius of the hole on the arm
-upper_arm_hole_corner_r                           = 2.5;
-
-// Outer fillet radius applied to the arm outline (rounded outer edges).
-upper_arm_corner_r                                = 0.5;
-
-// Main body thickness of the arm (Z direction) for the extruded profile.
-upper_arm_thickness                               = 6.5;
-
-// Length of a hinge barrel (one of the cylindrical hinge lugs) along X.
-upper_arm_hinge_barrel_len                        = 9;
-
-// Height envelope of the hinge barrel feature (used by the 2D barrel sketch).
-upper_arm_hinge_barrel_h                          = 6.9;
-
-// Diameter of the hinge pin hole through each hinge barrel.
-upper_arm_hinge_barrel_hole_d                     = 3.6;
-
-// Offset from the barrel’s left edge to the hinge hole center (sets hole position).
-upper_arm_hinge_barrel_hole_offset                = 1.7;
-
-// Size of the ball-stud/rod-end mounting block: [length(X), width(Y), thickness(Z)]
-upper_arm_ball_stud_mount_size                    = [15.19, 9.5, upper_arm_thickness + 1.5];
-
-// the addional height for ball stud
-upper_arm_ball_stud_mount_extra_h                 = upper_arm_ball_stud_mount_size[1] / 2;
-
-// Nominal width of each “leg” of the A-arm in the 2D profile.
-upper_arm_leg_width                               = 4.5;
-
-// Depth of the ball-stud mounting hole/counterbore along X.
-upper_arm_ball_stud_hole_depth                    = knuckle_ball_stud_h - knuckle_ball_stud_unthreaded_h;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Suspension
