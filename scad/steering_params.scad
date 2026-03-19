@@ -317,7 +317,6 @@ upper_chassis_t                                   = 4;
 
 chassis_center_mount_padding_y                    = 3;
 chassis_center_mount_padding_x                    = 2;
-chassis_center_transition_len                     = 7.5;
 
 chassis_center_transition_w                       = 27;
 

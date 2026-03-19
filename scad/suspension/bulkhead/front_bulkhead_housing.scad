@@ -27,7 +27,8 @@ module front_bulkhead_housing(color=cobalt_blue_metallic,
                               center_hole_len=front_bulkhead_center_hole_len,
                               hinge_clearance=front_bulkhead_barrel_hinge_clearance,
                               use_gearbox=false,
-                              center_y=false) {
+                              center_y=false,
+                              center_by_hinges=false) {
 
   barrel_size = lower_arm_mount_cutout_size();
   barrel_len = barrel_size[1] - hinge_clearance;
@@ -39,7 +40,15 @@ module front_bulkhead_housing(color=cobalt_blue_metallic,
 
   full_bolt_spacing_y = bolt_spacing_max_y + front_bulkhead_mount_bolt_d;
 
-  maybe_translate([0, center_y ? 0 : front_bulkhead_len / 2, 0]) {
+  maybe_translate([0, center_by_hinges
+                   ? ((front_bulkhead_len / 2)
+                      -
+                      (front_bulkhead_len - barrel_y_offset - barrel_len)
+                      - barrel_len / 2)
+                   : center_y
+                   ? 0
+                   : front_bulkhead_len / 2,
+                   0]) {
     maybe_color(color) {
       render() {
         difference() {
@@ -141,4 +150,4 @@ module front_bulkhead_housing(color=cobalt_blue_metallic,
   }
 }
 
-front_bulkhead_housing(center_y=true);
+front_bulkhead_housing(center_by_hinges=false);

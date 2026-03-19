@@ -136,13 +136,6 @@ module upper_chassis(show_pitman_arm=true,
     }
 
     _servo_hole_probes();
-
-    translate([servo_mount_x,
-               servo_mount_y,
-               0]) {
-
-      servo_mount(slot_mode=true);
-    }
   }
   translate([0, 0, upper_chassis_t]) {
     if (show_steering_assembly) {
