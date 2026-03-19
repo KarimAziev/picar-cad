@@ -189,7 +189,7 @@ front_bulkhead_pin_spacing                        = 55.8;
 front_shock_tower_l                               = 68;
 
 // The overall height of the tower on the Y-axis
-front_shock_tower_h                               = 30.5;
+front_shock_tower_h                               = 28.9;
 
 // The width of the bridge over the central rectangular cutout
 front_shock_tower_bridge_w                        = 8.5;

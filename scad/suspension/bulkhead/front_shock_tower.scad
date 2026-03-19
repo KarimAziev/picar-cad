@@ -129,7 +129,8 @@ module front_shock_tower_holes(total_h=front_shock_tower_h,
                                pin_d=upper_arm_hinge_barrel_hole_d,
                                damper_spacing=front_shock_tower_damper_spacing_x,
                                pad_x=front_shock_tower_damper_holes_pad_x,
-                               pad_y=front_shock_tower_damper_holes_pad_y) {
+                               pad_y=front_shock_tower_damper_holes_pad_y,
+                               pin_y_offset=front_shock_tower_pin_y_offset) {
   bb = bbox_holder_hull_samepads(tilt_angle=tilt_angle,
                                  damper_holes_n=damper_holes_n,
                                  bolt_d=damper_bolt_d,
@@ -139,7 +140,7 @@ module front_shock_tower_holes(total_h=front_shock_tower_h,
   size = size2d_from_bbox(bb);
   size_y = size[1];
 
-  rect_size_y = total_h - size_y;
+  rect_size_y = total_h + bolt_d / 2 - size_y;
 
   translate([0, rect_size_y, 0]) {
     mirror_copy([1, 0, 0]) {
@@ -157,7 +158,7 @@ module front_shock_tower_holes(total_h=front_shock_tower_h,
                            d=bolt_d,
                            center=true);
     }
-    translate([0, front_shock_tower_pin_y_offset, 0]) {
+    translate([0, pin_y_offset, 0]) {
       translate([0, pin_d / 2, 0]) {
         two_x_bolts_2d(x=pin_hole_spacing / 2,
                        d=pin_d);
@@ -209,7 +210,7 @@ module front_shock_tower(color=cobalt_blue_metallic,
 
   size_y = size[1];
 
-  rect_size_y = total_h - size_y;
+  rect_size_y = total_h + bolt_d / 2 - size_y;
 
   start_y = bolt_spacing[1] + bolt_d + pad_y * 2;
 
@@ -320,6 +321,7 @@ module front_shock_tower(color=cobalt_blue_metallic,
                               damper_holes_n=damper_holes_n,
                               gap=gap,
                               pin_hole_spacing=pin_hole_spacing,
+                              pin_y_offset=pin_hole_y_offset,
                               pin_d=pin_d,
                               damper_spacing=damper_spacing,
                               pad_x=pad_x,
