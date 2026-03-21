@@ -213,6 +213,10 @@ module front_shock_tower(color=cobalt_blue_metallic,
 
   damper_ear_size_x = damper_ear_size_2d[0];
   damper_ear_size_y = damper_ear_size_2d[1];
+  half_of_x = bolt_spacing[0] / 2;
+
+  bridge_y_start = bolt_spacing[1] + bolt_d + pad_y * 2;
+  bridge_y_end = total_h - damper_ear_size_y / 2;
 
   // position of the lower hole for the damper on the Y-axle
   lower_damper_hole_y = lower_damper_hole_y_pos(tilt_angle=tilt_angle,
@@ -222,11 +226,6 @@ module front_shock_tower(color=cobalt_blue_metallic,
                                                 gap=gap,
                                                 pad_x=pad_x,
                                                 pad_y=pad_y);
-
-  half_of_x = bolt_spacing[0] / 2;
-
-  bridge_y_start = bolt_spacing[1] + bolt_d + pad_y * 2;
-  bridge_y_end = total_h - damper_ear_size_y / 2;
 
   _pin_hole_y_offset = pin_hole_y_offset + pin_hole_pad;
   pin_hole_x = pin_hole_spacing / 2;
@@ -244,18 +243,18 @@ module front_shock_tower(color=cobalt_blue_metallic,
 
   common_end_pts = [[pin_hole_x + pin_d / 2 + pin_hole_pad / 2,
                      common_pin_y],
-                    [damper_spacing_x / 2 - damper_bolt_d +
-                     pad_x + damper_ear_size_x,
-                     total_h - pad_y],
+                    [damper_spacing_x / 2 - damper_bolt_d + pad_x + damper_ear_size_x,
+                     total_h],
                     [damper_spacing_x / 2, total_h - damper_ear_size_y / 2],
-                    [damper_spacing_x / 2 - pad_x * 2, bridge_y_end],
+                    [damper_spacing_x / 2 - pad_x * 2,
+                     bridge_y_end],
                     [-corner_r, bridge_y_end]];
 
   pts_1 = concat(common_start_pts,
                  [[half_of_x + bolt_r + pad_x * 2,
                    bridge_y_start -
                    ((bridge_y_start - _pin_hole_y_offset) / 2) - pin_hole_pad],
-                  [pin_hole_x + pin_d / 2, common_pin_y]] ,
+                  [pin_hole_x + pin_d / 2, common_pin_y]],
                  common_end_pts);
 
   pin_pts = concat(take(drop(pts_1, 1), 8));
@@ -266,24 +265,29 @@ module front_shock_tower(color=cobalt_blue_metallic,
                         [pin_hole_x, common_pin_y]]);
 
   mount_pts = [[cutout_x,
-                bridge_y_start - pad_y - bolt_d],
+                bridge_y_start - bolt_d],
                [cutout_x + bolt_d / 2, 0],
                [pin_hole_x, common_pin_y]];
 
   pts_2 = concat(pts_2_start,
                  take(common_end_pts, 2));
 
+  pts_bridge = concat(take(common_start_pts, 2),
+                      drop(common_end_pts, 2));
+
   module _shape(points=pts_1, r=corner_r) {
     translate([0, lower_damper_hole_y, 0]) {
       mirror_copy([1, 0, 0]) {
         translate([-damper_spacing_x / 2, pad_y, 0]) {
           difference() {
-            front_shock_holder_2d(tilt_angle=tilt_angle,
-                                  damper_holes_n=damper_holes_n,
-                                  bolt_d=bolt_d,
-                                  gap=gap,
-                                  pad_x=pad_x,
-                                  pad_y=pad_y);
+            union() {
+              front_shock_holder_2d(tilt_angle=tilt_angle,
+                                    damper_holes_n=damper_holes_n,
+                                    bolt_d=bolt_d,
+                                    gap=gap,
+                                    pad_x=pad_x,
+                                    pad_y=pad_y);
+            }
             front_shock_tower_damper_holes_2d(tilt_angle=tilt_angle,
                                               damper_holes_n=damper_holes_n,
                                               bolt_d=bolt_d,
@@ -295,6 +299,10 @@ module front_shock_tower(color=cobalt_blue_metallic,
 
     difference() {
       union() {
+        mirror_copy([1, 0, 0]) {
+          polygon(pts_bridge);
+        }
+
         mirror_copy([1, 0, 0]) {
           let (d = pin_d + pin_hole_pad * 2) {
             difference() {
@@ -356,6 +364,7 @@ module front_shock_tower(color=cobalt_blue_metallic,
       }
     }
   }
+
   if (debug) {
     translate([0, 0, thickness]) {
       debug_polygon_text(pts_1,
