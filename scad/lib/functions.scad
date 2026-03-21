@@ -1291,3 +1291,22 @@ function diameters_at_z(d1, d2, h, z, t) =
   let (dz1 = diameter_at_z(d1=d1, d2=d2, h=h, z=z),
        dz2 = diameter_at_z(d1=d1, d2=d2, h=h, z=z + t))
   [dz1, dz2];
+
+/**
+─────────────────────────────────────────────────────────────────────────────
+last
+─────────────────────────────────────────────────────────────────────────────
+Returns the last element of the given list or string.
+
+**Example**:
+
+```scad
+last(["foo", "bar", "baz"]); // => "baz"
+last("baz"); // => "z"
+last([]); // => undef
+last(""); // => undef
+```
+
+*/
+function last(l) =
+  (len(l) == 0) ? undef : l[len(l) - 1];
