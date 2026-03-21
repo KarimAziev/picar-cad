@@ -249,7 +249,7 @@ module lower_arm(color=cobalt_blue_metallic,
     translate([profile_x0, 0, lower_arm_thickness]) {
       debug_polygon_text(outer_profile_pts);
       translate([hole_start_x, lower_arm_upper_hinge_barrel_h, 0]) {
-        debug_polygon_text(triangle_cutout_pts, font_color=metallic_yellow_1);
+        debug_polygon_text(triangle_cutout_pts, color=metallic_yellow_1);
       }
     }
   }

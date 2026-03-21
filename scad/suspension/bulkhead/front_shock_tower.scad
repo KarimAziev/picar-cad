@@ -13,6 +13,24 @@ use <../../lib/trapezoids.scad>
 function xs(ps) = [for (p = ps) p[0]];
 function ys(ps) = [for (p = ps) p[1]];
 
+function lower_damper_hole_y_pos(tilt_angle,
+                                 damper_holes_n,
+                                 total_h,
+                                 damper_bolt_d,
+                                 gap,
+                                 pad_x,
+                                 pad_y) =
+  let (bb=bbox_holder_hull_samepads(tilt_angle=tilt_angle,
+                                    damper_holes_n=damper_holes_n,
+                                    bolt_d=damper_bolt_d,
+                                    gap=gap,
+                                    pad_x=pad_x,
+                                    pad_y=pad_y),
+       size=size2d_from_bbox(bb),
+       size_y=size[1],
+       lower_damper_hole_y=total_h + damper_bolt_d / 2 - size_y)
+  lower_damper_hole_y;
+
 function front_shock_damper_holes_poses(tilt_angle=front_shock_tower_damper_holes_angle,
                                         damper_holes_n=front_shock_tower_damper_holes_amount,
                                         bolt_d=front_shock_tower_shock_damper_bolt_d,
@@ -131,18 +149,16 @@ module front_shock_tower_holes(total_h=front_shock_tower_h,
                                pad_x=front_shock_tower_damper_holes_pad_x,
                                pad_y=front_shock_tower_damper_holes_pad_y,
                                pin_y_offset=front_shock_tower_pin_y_offset) {
-  bb = bbox_holder_hull_samepads(tilt_angle=tilt_angle,
-                                 damper_holes_n=damper_holes_n,
-                                 bolt_d=damper_bolt_d,
-                                 gap=gap,
-                                 pad_x=pad_x,
-                                 pad_y=pad_y);
-  size = size2d_from_bbox(bb);
-  size_y = size[1];
 
-  rect_size_y = total_h + bolt_d / 2 - size_y;
+  lower_damper_hole_y = lower_damper_hole_y_pos(tilt_angle=tilt_angle,
+                                                damper_holes_n=damper_holes_n,
+                                                total_h=total_h,
+                                                damper_bolt_d=damper_bolt_d,
+                                                gap=gap,
+                                                pad_x=pad_x,
+                                                pad_y=pad_y);
 
-  translate([0, rect_size_y, 0]) {
+  translate([0, lower_damper_hole_y, 0]) {
     mirror_copy([1, 0, 0]) {
       translate([-damper_spacing / 2, pad_y, 0]) {
         front_shock_tower_damper_holes_2d(tilt_angle=tilt_angle,
@@ -186,7 +202,6 @@ module front_shock_tower(color=cobalt_blue_metallic,
                          pin_hole_y_offset=front_shock_tower_pin_y_offset,
                          pin_hole_pad=front_shock_tower_pin_hole_pad,
                          gap=front_shock_tower_damper_holes_gap,
-                         bridge_w=front_shock_tower_bridge_w,
                          pad_x=front_shock_tower_damper_holes_pad_x,
                          pad_y=front_shock_tower_damper_holes_pad_y,
                          debug=false) {
@@ -199,52 +214,47 @@ module front_shock_tower(color=cobalt_blue_metallic,
   damper_ear_size_x = damper_ear_size_2d[0];
   damper_ear_size_y = damper_ear_size_2d[1];
 
+  // position of the lower hole for the damper on the Y-axle
+  lower_damper_hole_y = lower_damper_hole_y_pos(tilt_angle=tilt_angle,
+                                                damper_holes_n=damper_holes_n,
+                                                total_h=total_h,
+                                                damper_bolt_d=damper_bolt_d,
+                                                gap=gap,
+                                                pad_x=pad_x,
+                                                pad_y=pad_y);
+
   half_of_x = bolt_spacing[0] / 2;
-  bb = bbox_holder_hull_samepads(tilt_angle=tilt_angle,
-                                 damper_holes_n=damper_holes_n,
-                                 bolt_d=damper_bolt_d,
-                                 gap=gap,
-                                 pad_x=pad_x,
-                                 pad_y=pad_y);
-  size = size2d_from_bbox(bb);
 
-  size_y = size[1];
-
-  rect_size_y = total_h + bolt_d / 2 - size_y;
-
-  start_y = bolt_spacing[1] + bolt_d + pad_y * 2;
+  bridge_y_start = bolt_spacing[1] + bolt_d + pad_y * 2;
+  bridge_y_end = total_h - damper_ear_size_y / 2;
 
   _pin_hole_y_offset = pin_hole_y_offset + pin_hole_pad;
   pin_hole_x = pin_hole_spacing / 2;
 
-  damper_bolt_r = damper_bolt_d / 2;
   bolt_r = bolt_d / 2;
 
   cutout_x = half_of_x - bolt_r - pad_x;
 
-  common_start_pts = [[-corner_r, start_y],
-                      [cutout_x - cutout_corner_r, start_y],
-                      [cutout_x,
-                       start_y - pad_y - bolt_d]];
-
   common_pin_y = _pin_hole_y_offset + pin_d / 2 - pin_hole_pad;
+
+  common_start_pts = [[-corner_r, bridge_y_start],
+                      [cutout_x - cutout_corner_r, bridge_y_start],
+                      [cutout_x,
+                       bridge_y_start - pad_y - bolt_d]];
 
   common_end_pts = [[pin_hole_x + pin_d / 2 + pin_hole_pad / 2,
                      common_pin_y],
-                    [pin_hole_x - pin_hole_pad,
-                     _pin_hole_y_offset + bridge_w + pad_x],
-                    [damper_spacing_x / 2 + damper_bolt_r + pad_x,
-                     start_y + bridge_w],
-                    [damper_spacing_x / 2 - damper_bolt_d + pad_x
-                     + damper_ear_size_x,
-                     start_y + damper_ear_size_y],
-                    [damper_spacing_x / 2, start_y + damper_ear_size_y + pad_y],
-                    [damper_spacing_x / 2 - pad_x * 2, start_y + bridge_w],
-                    [-corner_r, start_y + bridge_w]];
+                    [damper_spacing_x / 2 - damper_bolt_d +
+                     pad_x + damper_ear_size_x,
+                     total_h - pad_y],
+                    [damper_spacing_x / 2, total_h - damper_ear_size_y / 2],
+                    [damper_spacing_x / 2 - pad_x * 2, bridge_y_end],
+                    [-corner_r, bridge_y_end]];
 
   pts_1 = concat(common_start_pts,
                  [[half_of_x + bolt_r + pad_x * 2,
-                   start_y - ((start_y - _pin_hole_y_offset) / 2) - pin_hole_pad],
+                   bridge_y_start -
+                   ((bridge_y_start - _pin_hole_y_offset) / 2) - pin_hole_pad],
                   [pin_hole_x + pin_d / 2, common_pin_y]] ,
                  common_end_pts);
 
@@ -256,7 +266,7 @@ module front_shock_tower(color=cobalt_blue_metallic,
                         [pin_hole_x, common_pin_y]]);
 
   mount_pts = [[cutout_x,
-                start_y - pad_y - bolt_d],
+                bridge_y_start - pad_y - bolt_d],
                [cutout_x + bolt_d / 2, 0],
                [pin_hole_x, common_pin_y]];
 
@@ -264,21 +274,16 @@ module front_shock_tower(color=cobalt_blue_metallic,
                  take(common_end_pts, 2));
 
   module _shape(points=pts_1, r=corner_r) {
-    translate([0, rect_size_y, 0]) {
+    translate([0, lower_damper_hole_y, 0]) {
       mirror_copy([1, 0, 0]) {
         translate([-damper_spacing_x / 2, pad_y, 0]) {
           difference() {
-            translate([0, 0, 0]) {
-              front_shock_holder_2d(tilt_angle=tilt_angle,
-                                    damper_holes_n=damper_holes_n,
-                                    bolt_d=bolt_d,
-                                    gap=gap,
-                                    pad_x=pad_x,
-                                    pad_y=pad_y);
-              translate([0, -bridge_w / 2, 0]) {
-                square(size=[damper_spacing_x / 2, bridge_w]);
-              }
-            }
+            front_shock_holder_2d(tilt_angle=tilt_angle,
+                                  damper_holes_n=damper_holes_n,
+                                  bolt_d=bolt_d,
+                                  gap=gap,
+                                  pad_x=pad_x,
+                                  pad_y=pad_y);
             front_shock_tower_damper_holes_2d(tilt_angle=tilt_angle,
                                               damper_holes_n=damper_holes_n,
                                               bolt_d=bolt_d,
@@ -325,19 +330,16 @@ module front_shock_tower(color=cobalt_blue_metallic,
                               pin_d=pin_d,
                               damper_spacing=damper_spacing,
                               pad_x=pad_x,
-                              pad_y=pad_y)
-        ;
+                              pad_y=pad_y);
     }
   }
 
   maybe_color(color, alpha=1) {
-
     linear_extrude(height=thickness, center=false) {
       _shape(pts_1);
     }
 
     linear_extrude(height=lower_thickness, center=false) {
-
       _shape(pts_2, r=mount_corner_r) {
         mirror_copy([1, 0, 0]) {
           let (d = bolt_d) {
@@ -356,23 +358,27 @@ module front_shock_tower(color=cobalt_blue_metallic,
   }
   if (debug) {
     translate([0, 0, thickness]) {
-      debug_polygon_text(pts_1, font_color=red_1, circle_r=0.5, font_size=2);
-    }
-    translate([0, 0, thickness]) {
-      debug_polygon_text(pin_pts,
-                         circle_r=0,
-                         font_color="yellow",
+      debug_polygon_text(pts_1,
+                         color=light_grey,
+                         circle_r=0.2,
+                         offset_y=5,
                          font_size=2);
-    }
-
-    translate([0, 0, thickness]) {
-
       debug_polygon_text(mount_pts,
                          circle_r=0,
-                         font_color="green",
+                         offset_y=-3,
+                         color=metallic_silver_9,
                          font_size=2);
       debug_polygon_text(pts_2,
-                         circle_r=0,
+                         offset_y=1,
+                         offset_x=-5,
+                         circle_r=0.2,
+                         font_size=2);
+
+      debug_polygon_text(pin_pts,
+                         circle_r=0.4,
+                         offset_y=4,
+                         offset_x=5,
+                         color="yellow",
                          font_size=2);
     }
   }

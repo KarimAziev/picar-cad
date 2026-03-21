@@ -9,33 +9,57 @@ include <../colors.scad>
 
 module debug_polygon_text(points,
                           font_size=3.0,
-                          font_color=green_1,
+                          color=green_1,
                           circle_color=yellow_3,
                           circle_r=0.3,
+                          offset_x,
+                          offset_y,
                           h=0.5) {
+  offset_x = is_undef(offset_x) ? 0 : offset_x;
+  offset_y = is_undef(offset_y) ? 0 : offset_y;
   has_h = is_num(h);
-  for (i = [0 : len(points) - 1]) {
-    pt = points[i];
 
-    color(font_color)
-      translate([pt[0], pt[1], 0.1]) {
-      if (has_h) {
-        linear_extrude(height = 0.5) {
-          text(str(i), size = font_size, valign="center", halign="center");
-        }
-      } else {
-        text(str(i), size = font_size, valign="center", halign="center");
+  module _circle(r=circle_r) {
+    if (has_h) {
+      linear_extrude(height=h - 0.01, center=false) {
+        circle(r=r, $fn=20);
       }
+    } else {
+      circle(r=r, $fn=20);
     }
-
-    color(circle_color) {
-      translate([pt[0], pt[1]]) {
-        if (has_h) {
-          linear_extrude(height=h - 0.01, center=false) {
-            circle(r=circle_r, $fn=20);
+  }
+  for (i = [0 : len(points) - 1]) {
+    let (pt = points[i],
+         p0 = pt[0] + offset_x,
+         p1 = pt[1] + offset_y) {
+      color(color) {
+        translate([p0, p1, 0.1]) {
+          if (has_h) {
+            linear_extrude(height = 0.5) {
+              text(str(i),
+                   size = font_size,
+                   valign="center",
+                   halign="center");
+            }
+          } else {
+            text(str(i), size = font_size, valign="center", halign="center");
           }
-        } else {
-          circle(r=circle_r, $fn=20);
+        }
+      }
+
+      color(circle_color) {
+        translate([pt[0], pt[1]]) {
+          _circle();
+        }
+        if (p0 != pt[0] || p1 != pt[1]) {
+          hull() {
+            translate([pt[0], pt[1]]) {
+              _circle(r=0.1);
+            }
+            translate([p0, p1]) {
+              _circle(r=0.1);
+            }
+          }
         }
       }
     }
@@ -78,14 +102,14 @@ module debug_polygon(points,
                      debug=true,
                      arrow_size=1,
                      font_size=3.0,
-                     font_color=green_2,
+                     color=green_2,
                      show_arrows=false) {
   polygon(points=points, paths=paths, convexity=convexity);
 
   if (debug) {
     debug_polygon_text(points=points,
                        font_size=font_size,
-                       font_color=font_color);
+                       color=color);
     if (show_arrows) {
       debug_polygon_arrows(points=points,
                            paths=paths,

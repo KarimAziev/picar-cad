@@ -191,9 +191,6 @@ front_shock_tower_l                               = 68;
 // The overall height of the tower on the Y-axis
 front_shock_tower_h                               = 28.9;
 
-// The width of the bridge over the central rectangular cutout
-front_shock_tower_bridge_w                        = 8.5;
-
 // Overall corner radius of the shape
 front_shock_tower_corner_r                        = 4;
 

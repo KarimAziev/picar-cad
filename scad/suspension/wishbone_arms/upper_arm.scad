@@ -154,7 +154,7 @@ module upper_arm(color=cobalt_blue_metallic,
         translate([hole_start_x,
                    hole_start_y,
                    0]) {
-          debug_polygon_text(points=hole_pts, font_color="red");
+          debug_polygon_text(points=hole_pts, color="red");
         }
       }
     }
