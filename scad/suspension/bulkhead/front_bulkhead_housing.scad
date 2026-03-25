@@ -8,6 +8,7 @@ include <../../colors.scad>
 include <../../parameters.scad>
 include <../../steering_params.scad>
 
+use <../../lib/functions.scad>
 use <../../lib/shapes2d.scad>
 use <../../lib/shapes3d.scad>
 use <../../lib/slots.scad>
@@ -22,7 +23,7 @@ module front_bulkhead_housing(color=cobalt_blue_metallic,
                               gearbox_bolt_d=front_bulkhead_gearbox_bolt_d,
                               gearbox_bolt_offset=front_bulkhead_gearbox_bolt_offset,
                               gearbox_bolt_cbore_d=front_bulkhead_gearbox_bolt_cbore_d,
-                              barrel_thickness=front_bulkhead_h,
+                              barrel_thickness=front_bulkhead_mount_h,
                               barrel_y_offset=front_bulkhead_barrel_y_offset,
                               center_hole_len=front_bulkhead_center_hole_len,
                               hinge_clearance=front_bulkhead_barrel_hinge_clearance,
@@ -150,4 +151,4 @@ module front_bulkhead_housing(color=cobalt_blue_metallic,
   }
 }
 
-front_bulkhead_housing(center_by_hinges=false);
+front_bulkhead_housing(center_by_hinges=true);

@@ -22,7 +22,7 @@ bellcrank_arm_w                                   = 6.25;
 bellcrank_link_bolt_spacing                       = [48.0, 0];
 bellcrank_arm_len                                 = 20.8;
 bellcrank_arm_thickness                           = 2.9;
-chassis_bellcrank_y_base                          = 31.75;
+chassis_bellcrank_y_base                          = 24.00;
 
 bellcrank_arm_z                                   = 10.3;
 bellcrank_pitman_arm_z                            = 19.55;
@@ -153,10 +153,13 @@ upper_arm_leg_width                               = 4.5;
 // Depth of the ball-stud mounting hole/counterbore along X.
 upper_arm_ball_stud_hole_depth                    = knuckle_ball_stud_h - knuckle_ball_stud_unthreaded_h;
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Front bulkhead
+// ─────────────────────────────────────────────────────────────────────────────
 front_bulkhead_w                                  = 25.9;
 
 front_bulkhead_len                                = 39.5;
-front_bulkhead_h                                  = 7.9;
+front_bulkhead_mount_h                            = 7.9;
 front_bulkhead_thickness                          = 1.8;
 
 front_bulkhead_barrel_y_offset                    = 8.40;
@@ -172,11 +175,44 @@ front_bulkhead_gearbox_bolt_offset                = 2.20;
 
 front_bulkhead_mount_bolt_spacing_1               = [34.0, 18.45];
 front_bulkhead_mount_bolt_spacing_2               = [34.0, 5.5];
+
+front_bulkhead_mount_bolt_spacing_x               = 34.0;
+front_bulkhead_mount_bolt_spacing_y               = [];
 front_bulkhead_mount_bolt_d                       = m3_hole_dia;
 front_bulkhead_mount_bolt_padding                 = 4.6;
 
 front_bulkhead_hinge_cutout_bolt_offset           = 1;
 front_bulkhead_hinge_cutout_d_factor              = 0.7;
+
+// Shock tower mounting tab thickness (Z height after extrusion)
+front_bulkhead_shock_tower_mount_thickness        = 5.1;
+// X-axis padding around the shock tower bolt pattern on the mounting tab
+front_bulkhead_shock_tower_mount_pad_x            = 2.7;
+// Extra material above the bolt pattern (positive Y direction)
+front_bulkhead_shock_tower_mount_pad_y_top        = 2;
+
+// Fillet radius for the shock tower mounting tab corners
+front_bulkhead_shock_tower_mount_corner_r         = 1.5;
+
+// Vertical offset (Y) from the bulkhead base to the lower shock-tower bolt line
+front_bulkhead_shock_tower_mount_offset           = 19.5;
+
+// Mounting hinge thickness (extrusion height)
+front_bulkhead_hinge_thickness                    = 3;
+
+// Extra length added to the cylindrical support for the front upper suspension holder
+front_bulkhead_support_extra_len                  = 4;
+// Clearance for the cylindrical support (the upper holder has a matching cutout)
+front_bulkhead_support_clearance                  = 0.3;
+
+// Thickness of the bulkhead “retainer walls” around the suspension arm pad recess.
+// The pad sits in a bottom recess to prevent hinge pins from sliding out.
+front_bulkhead_suspension_pad_thickness           = 2;
+// Clearance added around the suspension arm pad recess for easy insertion
+front_bulkhead_suspension_pad_clearance           = 0.6;
+
+// Depth of the upper suspension holder mounting holes into the bulkhead
+front_bulkhead_upper_holder_hole_depth            = 10;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Front Shock Tower
@@ -285,6 +321,39 @@ front_upper_suspension_holder_pin_barrel_d        = upper_arm_hinge_barrel_hole_
 
 // Height of the pin barrel (reinforcement ring) extrusion
 front_upper_suspension_holder_pin_barrel_h        = 6.6;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Front suspension arm pad (geometry parameters)
+//
+// The pad surrounds the hinge-pin holes and provides a center hook that locks
+// the hinge pins in place.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Radial padding around each hinge-pin hole (added to the hole radius)
+suspension_arm_pad_pin_hole_pad_r                 = 2.6;
+
+// Overall pad thickness (Z)
+suspension_arm_pad_thickness                      = 2.5;
+
+// Pad length along the Y axis (up to the start of the center hook)
+suspension_arm_pad_len_y                          = 4.6;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Center hook parameters
+// The hook is part of the bottom recess and keeps hinge pins from backing out.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Lower chamfer/fillet size at the hook corners (in the 2D profile)
+suspension_arm_pad_hook_lower_corner_r            = 1;
+
+// Upper chamfer/fillet size at the hook corners (in the 2D profile)
+suspension_arm_pad_hook_upper_corner_r            = 1;
+
+// Hook height (extends in +Y from the pad end)
+suspension_arm_pad_hook_len_y                     = 4.8;
+
+// Hook width (X)
+suspension_arm_pad_hook_w                         = 5.2;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Pitman arm

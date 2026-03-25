@@ -1308,5 +1308,34 @@ last(""); // => undef
 ```
 
 */
+
 function last(l) =
   (len(l) == 0) ? undef : l[len(l) - 1];
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  qsort
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Quicksort with selectable order.
+
+  **Example**:
+  ```scad
+  nums = [5, 2, 9, 2, 1, 7];
+  echo(qsort(nums, asc=true));   // [1, 2, 2, 5, 7, 9]
+  echo(qsort(nums, asc=false));  // [9, 7, 5, 2, 2, 1]
+
+  ```
+  */
+
+function qsort(v, asc=true) =
+  len(v) <= 1 ? v :
+  let (p = v[0])
+  asc ?
+  concat(qsort([for (x=v) if (x <  p) x], asc),
+         [for (x=v) if (x == p) x],
+         qsort([for (x=v) if (x >  p) x], asc))
+  :
+  concat(qsort([for (x=v) if (x >  p) x], asc),
+         [for (x=v) if (x == p) x],
+         qsort([for (x=v) if (x <  p) x], asc));

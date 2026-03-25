@@ -234,7 +234,7 @@ module front_shock_tower(color=cobalt_blue_metallic,
 
   cutout_x = half_of_x - bolt_r - pad_x;
 
-  common_pin_y = _pin_hole_y_offset + pin_d / 2 - pin_hole_pad;
+  common_pin_y = pin_hole_y_offset + pin_d / 2;
 
   common_start_pts = [[-corner_r, bridge_y_start],
                       [cutout_x - cutout_corner_r, bridge_y_start],
@@ -244,7 +244,7 @@ module front_shock_tower(color=cobalt_blue_metallic,
   common_end_pts = [[pin_hole_x + pin_d / 2 + pin_hole_pad / 2,
                      common_pin_y],
                     [damper_spacing_x / 2 - damper_bolt_d + pad_x + damper_ear_size_x,
-                     total_h],
+                     total_h - pad_y],
                     [damper_spacing_x / 2, total_h - damper_ear_size_y / 2],
                     [damper_spacing_x / 2 - pad_x * 2,
                      bridge_y_end],
@@ -394,5 +394,5 @@ module front_shock_tower(color=cobalt_blue_metallic,
 }
 
 union() {
-  front_shock_tower(debug=false);
+  front_shock_tower(debug=true);
 }

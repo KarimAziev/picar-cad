@@ -18,6 +18,16 @@ metallic_silver_8        = "#dbd6cb";
 metallic_silver_9        = "#acacac";
 
 cobalt_blue_metallic     = "#39699E";
+// Lighter tints (mixed with white)
+cobalt_blue_light_1      = "#5079A8";
+cobalt_blue_light_2      = "#6799C2";
+cobalt_blue_light_3      = "#93B8D6";
+
+// Darker shades (mixed with black)
+cobalt_blue_dark_1       = "#2D547E";
+cobalt_blue_dark_2       = "#223F5F";
+cobalt_blue_dark_3       = "#162A3F";
+
 metallic_grey            = "#808080";
 metallic_yellow_silver   = "#D4D4C8";
 metallic_yellow_silver_2 = "#eee5c7";
