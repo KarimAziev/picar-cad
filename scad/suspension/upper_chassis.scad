@@ -26,8 +26,11 @@ module bellcrank_mount(h=upper_chassis_t,
                        bore_d=upper_chassis_bellcrank_bolt_bore_d,
                        bore_h=upper_chassis_bellcrank_bolt_bore_h,
                        arm_d=bellcrank_arm_dia,
+                       pitman_angle=14,
+                       idle_angle,
                        show_pitman_arm=true,
                        show_idle_arm=true) {
+  idle_angle = with_default(idle_angle, -abs(pitman_angle));
   difference() {
     linear_extrude(height=h, center=false) {
       translate([-bottom_w / 2, -length, 0]) {
@@ -54,8 +57,10 @@ module bellcrank_mount(h=upper_chassis_t,
     translate([-bottom_w / 2 + bellcrank_arm_dia /2,
                -bellcrank_y - bore_d / 2,
                h]) {
-      rotate([0, 0, -90]) {
-        pitman_arm();
+      maybe_rotate([0, 0, pitman_angle]) {
+        rotate([0, 0, -90]) {
+          pitman_arm();
+        }
       }
     }
   }
@@ -63,9 +68,11 @@ module bellcrank_mount(h=upper_chassis_t,
     translate([bottom_w / 2 - bellcrank_arm_dia /2,
                -bellcrank_y - bore_d / 2,
                h]) {
-      rotate([0, 0, -90]) {
+      maybe_rotate([0, 0, idle_angle]) {
+        rotate([0, 0, -90]) {
 
-        bellcrank_arm();
+          bellcrank_arm();
+        }
       }
     }
   }
