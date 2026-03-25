@@ -18,17 +18,17 @@ use <../../lib/shapes2d.scad>
 use <../../lib/trapezoids.scad>
 
 module suspension_arm_pad(color=cobalt_blue_light_3,
-                          pin_d=upper_arm_hinge_barrel_hole_d,
-                          pad=suspension_arm_pad_pin_hole_pad_r,
-                          thickness=suspension_arm_pad_thickness,
+                          pin_d=front_upper_arm_hinge_barrel_hole_d,
+                          pad=front_suspension_arm_pad_pin_hole_pad_r,
+                          thickness=front_suspension_arm_pad_thickness,
                           bulkhead_w=front_bulkhead_w,
                           barrel_pin_hole_offset=front_bulkhead_barrel_pin_hole_offset,
                           barrel_w=front_bulkhead_barrel_hinge_w,
-                          h=suspension_arm_pad_len_y,
-                          hook_lower_corner_r=suspension_arm_pad_hook_lower_corner_r,
-                          hook_upper_corner_r=suspension_arm_pad_hook_upper_corner_r,
-                          hook_h=suspension_arm_pad_hook_len_y,
-                          hook_w=suspension_arm_pad_hook_w,
+                          h=front_suspension_arm_pad_len_y,
+                          hook_lower_corner_r=front_suspension_arm_pad_hook_lower_corner_r,
+                          hook_upper_corner_r=front_suspension_arm_pad_hook_upper_corner_r,
+                          hook_h=front_suspension_arm_pad_hook_len_y,
+                          hook_w=front_suspension_arm_pad_hook_w,
                           debug=false) {
 
   spacing = bulkhead_w + (barrel_w - barrel_pin_hole_offset - pin_d / 2) * 2;

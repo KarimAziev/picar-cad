@@ -32,14 +32,14 @@ module front_suspension_assembly(show_front_lower_arm=show_front_lower_arm,
   bulkhead_full_w = front_bulkhead_w + front_bulkhead_barrel_hinge_w * 2;
   bolt_stud_y_pos = lower_arm_ball_stud_y_pos();
 
-  lower_arm_offset = lower_arm_hinge_barrel_hole_offset
+  lower_arm_offset = front_lower_arm_hinge_barrel_hole_offset
     + front_bulkhead_barrel_pin_hole_offset
-    + lower_arm_hinge_barrel_hole_d;
+    + front_lower_arm_hinge_barrel_hole_d;
 
   union() {
     front_bulkhead_housing(center_y=false);
     if (show_front_bulkhead) {
-      translate([0, front_bulkhead_len / 2, front_bulkhead_mount_h]) {
+      translate([0, front_bulkhead_len / 2, front_bulkhead_housing_h]) {
         front_bulkhead(show_shock_tower=show_front_shock_tower,
                        show_upper_suspension_holder=show_front_bulkhead_upper_suspension_holder,
                        show_suspension_arm_pad=show_front_suspension_arm_pad);
@@ -48,11 +48,11 @@ module front_suspension_assembly(show_front_lower_arm=show_front_lower_arm,
 
     translate([0,
                bolt_stud_y_pos
-               - lower_arm_lower_hinge_barrel_h
+               - front_lower_arm_lower_hinge_barrel_h
                + barrel_y_start,
                knuckle_total_len / 2
                - knuckle_ball_stud_mount_outer_d / 2
-               + front_bulkhead_mount_h / 2]) {
+               + front_bulkhead_housing_h / 2]) {
       translate([-bulkhead_full_w / 2 + lower_arm_offset,
                  0,
                  0]) {

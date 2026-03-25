@@ -22,17 +22,17 @@ module knuckle_tie_rod_end(knuckle_arm_len=knuckle_arm_base_len,
                            bolt_d=knuckle_arm_bolt_d,
                            bolt_edge_offset=knuckle_arm_bolt_hole_offet,
                            thickness=knuckle_arm_thickness,
-                           tie_rod_angle=knuckle_steering_arm_mount_tie_rod_angle,
-                           eye_od=knuckle_steering_arm_mount_tie_rod_eye_od,
-                           eye_h=knuckle_steering_arm_mount_tie_rod_eye_h,
-                           shank_od=knuckle_steering_arm_mount_tie_rod_shank_od,
-                           shank_bolt_d=knuckle_steering_arm_mount_tie_rod_shank_bolt_d,
-                           neck_len=knuckle_steering_arm_mount_tie_rod_neck_len,
-                           shank_len=knuckle_steering_arm_mount_tie_rod_shank_len,
-                           bushing_od=knuckle_steering_arm_mount_tie_rod_bushing_od,
-                           bushing_d=knuckle_steering_arm_mount_tie_rod_bushing_d,
-                           bushing_h=knuckle_steering_arm_mount_tie_rod_bushing_h,
-                           bushing_flat_d=knuckle_steering_arm_mount_tie_rod_bushing_flat_d,
+                           tie_rod_angle=knuckle_tie_rod_angle,
+                           eye_od=knuckle_tie_rod_eye_od,
+                           eye_h=knuckle_tie_rod_eye_h,
+                           shank_od=knuckle_tie_rod_shank_od,
+                           shank_bolt_d=knuckle_tie_rod_shank_bolt_d,
+                           neck_len=knuckle_tie_rod_neck_len,
+                           shank_len=knuckle_tie_rod_shank_len,
+                           bushing_od=knuckle_tie_rod_bushing_od,
+                           bushing_d=knuckle_tie_rod_bushing_d,
+                           bushing_h=knuckle_tie_rod_bushing_h,
+                           bushing_flat_d=knuckle_tie_rod_bushing_flat_d,
                            show_eye_bolt=true,
                            eye_bolt_h=12,
                            eye_bolt_through_h,
@@ -200,8 +200,3 @@ module knuckle_steering_arm(w_base=knuckle_arm_base_w,
 }
 
 knuckle_steering_arm();
-knuckle_tie_rod_end();
-translate([8.15, 0, 25.2]) {
-
-  cube([48.5, 10, 10]);
-}

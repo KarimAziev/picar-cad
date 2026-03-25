@@ -31,13 +31,13 @@ show_knuckle_tie_rod       = true;
 color                      = cobalt_blue_metallic;
 
 function knuckle_assembly_full_len(x, y) =
-  let (arm_len = max(upper_arm_len, lower_arm_len),
+  let (arm_len = max(front_upper_arm_len, front_lower_arm_len),
        knuckle_h = max(knuckle_outer_bearing_w
                        + knuckle_outer_bearing_z_clearance
                        + knuckle_bearing_spacer_h
                        + knuckle_arm_base_w,
                        knuckle_ball_stud_house_h))
-  arm_len + knuckle_h + knuckle_ball_stud_unthreaded_h;
+  arm_len + knuckle_h + front_arm_ball_stud_unthreaded_h;
 
 module knuckle(color=color,
                show_upper_arm=show_upper_arm,
@@ -77,7 +77,7 @@ module knuckle(color=color,
   ball_stud_housing_x = joint_len + knuckle_ball_stud_mount_outer_d / 2;
 
   ball_stud_mount_x = outer_bearing_seat_od / 2 + ball_stud_housing_x;
-  bushing_z = knuckle_ball_stud_house_h - knuckle_ball_stud_ball_d;
+  bushing_z = knuckle_ball_stud_house_h - front_arm_ball_stud_ball_d;
 
   full_main_h = knuckle_arm_base_w + height;
 
@@ -88,10 +88,10 @@ module knuckle(color=color,
           knuckle_bushing();
         }
       }
-      translate([-upper_arm_thickness / 2,
+      translate([-front_upper_arm_thickness / 2,
                  -mount_y,
-                 upper_arm_len
-                 + knuckle_ball_stud_unthreaded_h
+                 front_upper_arm_len
+                 + front_arm_ball_stud_unthreaded_h
                  + knuckle_ball_stud_house_h]) {
         rotate([0, 90, 0]) {
           children();
@@ -176,10 +176,10 @@ module knuckle(color=color,
             knuckle_bushing();
           }
         }
-        translate([-lower_arm_thickness / 2,
+        translate([-front_lower_arm_thickness / 2,
                    -ball_stud_y_pos,
-                   lower_arm_len
-                   + knuckle_ball_stud_unthreaded_h
+                   front_lower_arm_len
+                   + front_arm_ball_stud_unthreaded_h
                    + knuckle_ball_stud_house_h]) {
           rotate([0, 90, 0]) {
             lower_arm(show_ball_stud=true);
@@ -219,10 +219,10 @@ module knuckle(color=color,
             knuckle_bushing();
           }
         }
-        translate([-upper_arm_thickness / 2,
+        translate([-front_upper_arm_thickness / 2,
                    -ball_stud_y_pos,
-                   upper_arm_len
-                   + knuckle_ball_stud_unthreaded_h
+                   front_upper_arm_len
+                   + front_arm_ball_stud_unthreaded_h
                    + knuckle_ball_stud_house_h]) {
           rotate([0, 90, 0]) {
             upper_arm(show_ball_stud=true);
