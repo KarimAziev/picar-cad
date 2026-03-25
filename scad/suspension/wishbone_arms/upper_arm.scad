@@ -1,5 +1,5 @@
 /**
- * Module: Upper Wishbone Arm
+ * Module: Front Upper Wishbone Arm
  *
  * The upper arm is A-shaped control arm connecting the top of the steering
  * knuckle to the chassis.

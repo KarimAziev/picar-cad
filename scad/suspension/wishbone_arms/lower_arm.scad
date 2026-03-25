@@ -1,5 +1,5 @@
 /**
- * Module: Lower Wishbone Arm
+ * Module: Front Lower Wishbone Arm
  *
  * The lower wishbone arm is a A-shaped component connecting the chassis to the
  * lower part of the steering knuckle.
