@@ -1339,3 +1339,224 @@ function qsort(v, asc=true) =
   concat(qsort([for (x=v) if (x >  p) x], asc),
          [for (x=v) if (x == p) x],
          qsort([for (x=v) if (x <  p) x], asc));
+
+/**
+─────────────────────────────────────────────────────────────────────────────
+rotX
+─────────────────────────────────────────────────────────────────────────────
+
+Rotate a 3D point around the X axis.
+
+**Parameters:**
+
+`p`: 3D point `[x, y, z]`.
+`a`: Rotation angle in degrees.
+
+**Returns:**
+
+A new 3D point `[x', y', z']` which is `p` rotated about the X axis by `a`.
+
+**Behavior:**
+Uses the standard right-handed rotation matrix for X-axis rotation.
+
+**Examples:**
+```scad
+rotX([0, 1, 0], 90);  // -> [0, 0, 1]
+```
+*/
+function rotX(p, a) =
+  let (c=cos(a), s=sin(a)) [p[0],  c*p[1]-s*p[2], s*p[1] + c*p[2]];
+
+/**
+─────────────────────────────────────────────────────────────────────────────
+rotY
+─────────────────────────────────────────────────────────────────────────────
+
+Rotate a 3D point around the Y axis.
+
+**Parameters:**
+
+`p`: 3D point `[x, y, z]`.
+`a`: Rotation angle in degrees.
+
+**Returns:**
+
+A new 3D point `[x', y', z']` which is `p` rotated about the Y axis by `a`.
+
+**Behavior:**
+Uses the standard right-handed rotation matrix for Y-axis rotation.
+
+**Examples:**
+```scad
+rotY([1, 0, 0], 90);  // -> [0, 0, -1]
+```
+*/
+function rotY(p, a) =
+  let (c=cos(a), s=sin(a)) [c*p[0] + s*p[2], p[1], -s*p[0] + c*p[2]];
+
+/**
+─────────────────────────────────────────────────────────────────────────────
+rotZ
+─────────────────────────────────────────────────────────────────────────────
+
+Rotate a 3D point around the Z axis.
+
+**Parameters:**
+
+`p`: 3D point `[x, y, z]`.
+`a`: Rotation angle in degrees.
+
+**Returns:**
+
+A new 3D point `[x', y', z']` which is `p` rotated about the Z axis by `a`.
+
+**Behavior:**
+Uses the standard right-handed rotation matrix for Z-axis rotation.
+
+**Examples:**
+```scad
+rotZ([1, 0, 0], 90);  // -> [0, 1, 0]
+```
+*/
+function rotZ(p, a) =
+  let (c=cos(a), s=sin(a)) [c*p[0]-s*p[1], s*p[0] + c*p[1], p[2]];
+
+/**
+─────────────────────────────────────────────────────────────────────────────
+rotate_euler_xyz
+─────────────────────────────────────────────────────────────────────────────
+
+Rotate a 3D point by Euler angles `a=[ax, ay, az]` (degrees), applied in X→Y→Z
+order.
+
+This is a helper used by the bounding-box functions to rotate each corner of a
+box consistently.
+
+**Parameters:**
+
+`p`: 3D point `[x, y, z]`.
+`a`: Rotation angles in degrees: `[ax, ay, az]`.
+
+**Returns:**
+
+The rotated 3D point.
+
+**Behavior:**
+Applies `rotX(p, ax)`, then `rotY(..., ay)`, then `rotZ(..., az)`.
+
+**Examples:**
+```scad
+rotate_euler_xyz([10, 0, 0], [0, 0, 90]); // -> [0, 10, 0]
+```
+*/
+function rotate_euler_xyz(p, a) =  // a = [ax,ay,az] in degrees
+  rotZ(rotY(rotX(p, a[0]), a[1]), a[2]);
+
+/**
+─────────────────────────────────────────────────────────────────────────────
+rotated_aabb_minmax
+─────────────────────────────────────────────────────────────────────────────
+
+Compute the axis-aligned bounding box (AABB) of a rectangular box after it is
+rotated around the origin.
+
+The unrotated box is defined by the 8 corners spanning:
+`x ∈ [0, sx]`, `y ∈ [0, sy]`, `z ∈ [0, sz]`.
+
+**Parameters:**
+
+`sx`: Size along X (box extent in X before rotation).
+`sy`: Size along Y (box extent in Y before rotation).
+`sz`: Size along Z (box extent in Z before rotation).
+`a`: Rotation angles in degrees `[ax, ay, az]` (default `[0,0,0]`).
+
+**Returns:**
+
+`[minx, miny, minz, maxx, maxy, maxz]` - the AABB of the rotated box.
+
+**Behavior:**
+Rotates all 8 corners of the original box by `a` (about the origin), then takes
+component-wise minima and maxima to form the AABB.
+
+**Examples:**
+```scad
+rotated_aabb_minmax(10, 20, 5, [0, 0, 45]);
+```
+*/
+function rotated_aabb_minmax(sx, sy, sz, a=[0, 0, 0]) =
+  let (pts = [rotate_euler_xyz([0 , 0 , 0], a),
+              rotate_euler_xyz([sx, 0 , 0], a),
+              rotate_euler_xyz([0 , sy, 0], a),
+              rotate_euler_xyz([sx, sy, 0], a),
+              rotate_euler_xyz([0 , 0 , sz], a),
+              rotate_euler_xyz([sx, 0 , sz], a),
+              rotate_euler_xyz([0 , sy, sz], a),
+              rotate_euler_xyz([sx, sy, sz], a)],
+       xs = [for (p=pts) p[0]],
+       ys = [for (p=pts) p[1]],
+       zs = [for (p=pts) p[2]],
+       minx = min(xs),
+       maxx = max(xs),
+       miny = min(ys),
+       maxy = max(ys),
+       minz = min(zs),
+       maxz = max(zs))
+  [minx, miny, minz, maxx, maxy, maxz];
+
+/**
+─────────────────────────────────────────────────────────────────────────────
+rotated_bbox
+─────────────────────────────────────────────────────────────────────────────
+
+Compute the full extents of the axis-aligned bounding box (AABB) of a box after
+rotation, plus the translation required to shift that AABB so its minimum corner
+lands at the origin.
+
+This is convenient when you want to:
+1) rotate a shape around the origin, and
+2) then translate it so the resulting rotated AABB starts at `[0,0,0]`.
+
+**Parameters:**
+
+`sx`: Size along X (box extent in X before rotation).
+`sy`: Size along Y (box extent in Y before rotation).
+`sz`: Size along Z (box extent in Z before rotation).
+`a`: Rotation angles in degrees `[ax, ay, az]` (default `[0,0,0]`).
+
+**Returns:**
+
+`[fullx, fully, fullz, tx, ty, tz]`
+
+Where:
+- `fullx, fully, fullz` are the dimensions of the rotated AABB.
+- `tx, ty, tz` is the translation that moves the rotated AABB min corner to
+  `[0,0,0]` (i.e. `t = -[minx, miny, minz]`).
+
+**Behavior:**
+Calls `rotated_aabb_minmax(...)` to get `[min*, max*]`, converts it to extents, and
+returns the translation needed to shift the min corner to the origin.
+
+**Examples:**
+```scad
+dims = [20, 10, 5];
+ang  = [-99, 0, 0];
+
+bb = rotated_bbox(dims[0], dims[1], dims[2], ang);
+
+// Place the rotated cube into the positive octant with its AABB min at [0,0,0]
+translate([bb[3], bb[4], bb[5]]) {
+  rotate(ang) cube(dims);
+}
+
+echo("full extents:", [bb[0], bb[1], bb[2]], "shift:", [bb[3], bb[4], bb[5]]);
+```
+*/
+function rotated_bbox(sx, sy, sz, a=[0, 0, 0]) =
+  let (b = rotated_aabb_minmax(sx, sy, sz, a))
+  [b[3]-b[0],  // fullx
+   b[4]-b[1],  // fully
+   b[5]-b[2],  // fullz
+   -b[0],      // tx
+   -b[1],      // ty
+   -b[2]       // tz
+  ];

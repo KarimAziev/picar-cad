@@ -213,6 +213,22 @@ module test_calc_rotated_bbox() {
             "calc_rotated_bbox(20, 10, 17)");
 }
 
+module test_rotated_bbox() {
+  assert_eq(rotX([0, 1, 0], 90), [0, 0, 1], "rotX([0, 1, 0], 90)");
+  assert_eq(rotY([1, 0, 0], 90), [0, 0, -1], "rotY([1, 0, 0], 90)");
+  assert_eq(rotZ([1, 0, 0], 90), [0, 1, 0], "rotZ([1, 0, 0], 90)");
+  assert_eq(rotate_euler_xyz([10, 0, 0], [0, 0, 90]),
+            [0, 10, 0],
+            "rotate_euler_xyz([10, 0, 0], [0, 0, 90])");
+  assert_eq([for (v = rotated_aabb_minmax(10, 20, 5, [0, 0, 45])) truncate(v, 1)],
+            [-14.1, 0, 0, 7, 21.2, 5],
+            "rotated_aabb_minmax(10, 20, 5, [0, 0, 45])");
+
+  assert_eq([for (v = rotated_bbox(20, 10, 5, [50, 30, 45])) truncate(v, 1)],
+            [17.9, 21, 19.4, 1.8, 1.5, 10],
+            "rotated_bbox(20, 10, 5, [50, 30, 45])");
+}
+
 test_slice();
 test_take();
 test_take_last();
@@ -225,3 +241,4 @@ test_sum();
 test_rot2();
 test_rotated_bbox2();
 test_calc_rotated_bbox();
+test_rotated_bbox();
