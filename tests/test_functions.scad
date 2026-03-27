@@ -224,7 +224,7 @@ module test_rotated_bbox() {
             [-14.1, 0, 0, 7, 21.2, 5],
             "rotated_aabb_minmax(10, 20, 5, [0, 0, 45])");
 
-  assert_eq([for (v = rotated_bbox(20, 10, 5, [50, 30, 45])) truncate(v, 1)],
+  assert_eq([for (v = rotated_bbox(size=[20, 10, 5], a=[50, 30, 45])) truncate(v, 1)],
             [17.9, 21, 19.4, 1.8, 1.5, 10],
             "rotated_bbox(20, 10, 5, [50, 30, 45])");
 }

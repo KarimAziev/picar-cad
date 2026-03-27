@@ -1518,9 +1518,10 @@ This is convenient when you want to:
 
 **Parameters:**
 
-`sx`: Size along X (box extent in X before rotation).
-`sy`: Size along Y (box extent in Y before rotation).
-`sz`: Size along Z (box extent in Z before rotation).
+`size`: [`sx`, `sy`, `sz`]
+         - `sx`: Size along X (box extent in X before rotation).
+         - `sy`: Size along Y (box extent in Y before rotation).
+         - `sz`: Size along Z (box extent in Z before rotation).
 `a`: Rotation angles in degrees `[ax, ay, az]` (default `[0,0,0]`).
 
 **Returns:**
@@ -1551,8 +1552,11 @@ translate([bb[3], bb[4], bb[5]]) {
 echo("full extents:", [bb[0], bb[1], bb[2]], "shift:", [bb[3], bb[4], bb[5]]);
 ```
 */
-function rotated_bbox(sx, sy, sz, a=[0, 0, 0]) =
-  let (b = rotated_aabb_minmax(sx, sy, sz, a))
+function rotated_bbox(size, a=[0, 0, 0]) =
+  let (sx=size[0],
+       sy=size[1],
+       sz=size[2],
+       b = rotated_aabb_minmax(sx, sy, sz, a))
   [b[3]-b[0],  // fullx
    b[4]-b[1],  // fully
    b[5]-b[2],  // fullz

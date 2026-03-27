@@ -47,7 +47,7 @@ function dservo_tie_rod_bbox_for_len(length) =
   let (w=steering_servo_tie_rod_eye_od,
        dims = [w, length, w],
        ang  = [steering_servo_tie_rod_angle, 0, 0],
-       bb = rotated_bbox(dims[0], dims[1], dims[2], ang))
+       bb = rotated_bbox(size=dims, a=ang))
   bb;
 
 function dservo_tie_rod_bbox() =
@@ -149,7 +149,6 @@ module dsservo(center=false,
                show_tie_rod=true,
                servo_tie_rod_angle=steering_servo_tie_rod_angle,
                servo_horn_screw_side) {
-  tie_rod_bb = dservo_tie_rod_bbox();
 
   servo(size=[dsservo_size[0],
               dsservo_size[1],
@@ -224,7 +223,7 @@ let (w=steering_servo_tie_rod_shank_od,
      length = full_dservo_tie_rod_len(),
      dims = [w, length, w],
      ang  = [steering_servo_tie_rod_angle, 0, 0],
-     bb = rotated_bbox(dims[0], dims[1], dims[2], ang)) {
+     bb = rotated_bbox(size=dims, a=ang)) {
   echo("bb", bb);
   translate([bb[3], -bb[4], bb[5]]) {
     #cube([bb[0], bb[1], bb[2]]);
