@@ -136,12 +136,6 @@ module front_bulkhead_chassis(outer_spacing=front_bulkhead_mount_bolt_spacing_1,
                          side="top",
                          center=true);
           }
-
-          // front_bulkhead_chassis_mount_slots(center_x=true,
-          //                                    center_y=true,
-          //                                    outer_spacing=outer_spacing,
-          //                                    h=h,
-          //                                    d=d);
         }
         translate([0, -size_y / 2 - transition_len / 2, 0]) {
           linear_extrude(height=h, center=false) {

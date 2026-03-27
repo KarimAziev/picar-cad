@@ -10,6 +10,7 @@ include <../parameters.scad>
 include <../steering_params.scad>
 
 use <../lib/debug.scad>
+use <../lib/functions.scad>
 use <bolt.scad>
 use <servo.scad>
 use <servo_arm.scad>
@@ -34,7 +35,43 @@ function dsservo_height_before_hat() =
 function dsservo_gear_height() =
   servo_gear_total_height(dsservo_gearbox_size);
 
-module servo_tie_rod_end(direction="bottom") {
+function full_dservo_tie_rod_len() =
+  let (nut_h = find_nut_prop(prop="height",
+                             inner_d=steering_servo_tie_rod_shank_bolt_d,
+                             lock=false),
+       shaft_len = steering_servo_tie_rod_body_len,
+       tie_rod_len = steering_servo_tie_rod_shank_len + steering_servo_tie_rod_eye_od)
+  shaft_len + tie_rod_len * 2;
+
+function dservo_tie_rod_bbox_for_len(length) =
+  let (w=steering_servo_tie_rod_eye_od,
+       dims = [w, length, w],
+       ang  = [steering_servo_tie_rod_angle, 0, 0],
+       bb = rotated_bbox(dims[0], dims[1], dims[2], ang))
+  bb;
+
+function dservo_tie_rod_bbox() =
+  dservo_tie_rod_bbox_for_len(full_dservo_tie_rod_len());
+
+function dservo_tie_rod_shaft_bb() =
+  let (nut_h = find_nut_prop(prop="height",
+                             inner_d=steering_servo_tie_rod_shank_bolt_d,
+                             lock=false),
+       w=steering_servo_tie_rod_bushing_d,
+       length = steering_servo_tie_rod_body_len + nut_h * 2,
+       bb = dservo_tie_rod_bbox_for_len(length))
+  bb;
+
+function dservo_tie_rod_bb() =
+  dservo_tie_rod_bbox_for_len(steering_servo_tie_rod_shank_len +
+                              steering_servo_tie_rod_eye_od);
+
+module servo_tie_rod_end(direction="bottom",
+                         x_angle=0,
+                         y_angle=0,
+                         eye_bolt_h=12,
+                         show_eye_bolt=false,
+                         bushing_rotation) {
   tie_rod_end(eye_od=steering_servo_tie_rod_eye_od,
               eye_h=steering_servo_tie_rod_eye_h,
               shank_od=steering_servo_tie_rod_shank_od,
@@ -47,15 +84,18 @@ module servo_tie_rod_end(direction="bottom") {
               bushing_flat_d=steering_servo_tie_rod_bushing_flat_d,
               neck_h=steering_servo_tie_rod_neck_h,
               bushing_color=steering_servo_tie_rod_bushing_color,
-              show_eye_bolt=false,
+              show_eye_bolt=show_eye_bolt,
               eye_bolt_through_h=1,
-              eye_bolt_h=20,
+              eye_bolt_h=eye_bolt_h,
               center_z=true,
+              x_angle=x_angle,
+              y_angle=y_angle,
               direction=direction,
+              bushing_rotation=bushing_rotation,
               color=steering_servo_tie_rod_color);
 }
 
-module servo_tie_rod() {
+module servo_tie_rod(bushing_rotation, x_angle=0, y_angle=0) {
   nut_h = find_nut_prop(prop="height",
                         inner_d=steering_servo_tie_rod_shank_bolt_d,
                         lock=false);
@@ -78,7 +118,11 @@ module servo_tie_rod() {
                  + steering_servo_tie_rod_thread_len - nut_h,
                  0]) {
         rotate([0, 90, 0]) {
-          servo_tie_rod_end(direction="top");
+          servo_tie_rod_end(direction="top",
+                            show_eye_bolt=true,
+                            bushing_rotation=bushing_rotation,
+                            x_angle=x_angle,
+                            y_angle=y_angle);
         }
       }
 
@@ -105,6 +149,8 @@ module dsservo(center=false,
                show_tie_rod=true,
                servo_tie_rod_angle=steering_servo_tie_rod_angle,
                servo_horn_screw_side) {
+  tie_rod_bb = dservo_tie_rod_bbox();
+
   servo(size=[dsservo_size[0],
               dsservo_size[1],
               dsservo_size[2]],
@@ -161,8 +207,9 @@ module dsservo(center=false,
                    - steering_servo_arm_len
                    + steering_servo_tie_rod_eye_od / 2,
                    - steering_servo_arm_bolt_boss_h / 2]) {
+
           rotate([0, 0, 90 + servo_tie_rod_angle]) {
-            servo_tie_rod();
+            servo_tie_rod(bushing_rotation=[steering_servo_tie_rod_angle, 0, 0]);
           }
         }
       }
@@ -170,6 +217,23 @@ module dsservo(center=false,
   }
 }
 
-dsservo(center=true);
+// dsservo(center=true);
 
 // servo_tie_rod();
+let (w=steering_servo_tie_rod_shank_od,
+     length = full_dservo_tie_rod_len(),
+     dims = [w, length, w],
+     ang  = [steering_servo_tie_rod_angle, 0, 0],
+     bb = rotated_bbox(dims[0], dims[1], dims[2], ang)) {
+  echo("bb", bb);
+  translate([bb[3], -bb[4], bb[5]]) {
+    #cube([bb[0], bb[1], bb[2]]);
+  }
+  translate([0, 0, bb[5]]) {
+    rotate(ang) {
+      translate([0, 0, 0]) {
+        cube(dims);
+      }
+    }
+  }
+}

@@ -10,76 +10,13 @@ include <../../parameters.scad>
 include <../../steering_params.scad>
 
 use <../../lib/placement.scad>
+use <../../lib/plist.scad>
 use <../../lib/shapes2d.scad>
 use <../../lib/transforms.scad>
+use <../../placeholders/bolt.scad>
+use <../../placeholders/nut.scad>
 use <../../placeholders/tie_rod_end.scad>
-
-module knuckle_tie_rod_end(knuckle_arm_len=knuckle_arm_base_len,
-                           knuckle_outer_d=knuckle_arm_ring_outer_d,
-                           knuckle_ear_len=knuckle_arm_ear_len,
-                           w_narrow=knuckle_arm_narrow_w,
-                           knuckle_angle=knuckle_arm_angle,
-                           bolt_d=knuckle_arm_bolt_d,
-                           bolt_edge_offset=knuckle_arm_bolt_hole_offet,
-                           thickness=knuckle_arm_thickness,
-                           tie_rod_angle=knuckle_tie_rod_angle,
-                           eye_od=knuckle_tie_rod_eye_od,
-                           eye_h=knuckle_tie_rod_eye_h,
-                           shank_od=knuckle_tie_rod_shank_od,
-                           shank_bolt_d=knuckle_tie_rod_shank_bolt_d,
-                           neck_len=knuckle_tie_rod_neck_len,
-                           shank_len=knuckle_tie_rod_shank_len,
-                           bushing_od=knuckle_tie_rod_bushing_od,
-                           bushing_d=knuckle_tie_rod_bushing_d,
-                           bushing_h=knuckle_tie_rod_bushing_h,
-                           bushing_flat_d=knuckle_tie_rod_bushing_flat_d,
-                           show_eye_bolt=true,
-                           eye_bolt_h=12,
-                           eye_bolt_through_h,
-                           show_eye_bolt_nut=true,
-                           eye_bolt_head_type="hex",
-                           tie_rod_reverse=true) {
-  x2 = knuckle_arm_len * sin(knuckle_angle);
-  y2 = knuckle_arm_len * cos(knuckle_angle);
-  ear_base_len = knuckle_ear_len - bolt_d - bolt_edge_offset;
-
-  module _tie_rod_end() {
-    tie_rod_end(eye_od=eye_od,
-                eye_h=eye_h,
-                shank_od=shank_od,
-                shank_bolt_d=shank_bolt_d,
-                neck_len=neck_len,
-                shank_len=shank_len,
-                bushing_od=bushing_od,
-                bushing_d=bushing_d,
-                bushing_h=bushing_h,
-                bushing_flat_d=bushing_flat_d,
-                direction="right",
-                show_eye_bolt=show_eye_bolt,
-                eye_bolt_h=eye_bolt_h,
-                eye_bolt_through_h=with_default(eye_bolt_through_h, thickness),
-                show_eye_bolt_nut=show_eye_bolt_nut,
-                eye_bolt_head_type=eye_bolt_head_type);
-  }
-
-  translate([x2 + w_narrow / 2,
-             tie_rod_reverse ? -thickness - eye_h : 0,
-             knuckle_outer_d / 2 + eye_od / 2 + ear_base_len
-             + y2]) {
-    rotate([-90, 0, 0]) {
-      rotate([0, 0, -abs(tie_rod_angle)]) {
-        union() {
-          _tie_rod_end();
-          translate([shank_len * 2 + eye_od, 0, 0]) {
-            mirror([1, 0, 0]) {
-              _tie_rod_end();
-            }
-          }
-        }
-      }
-    }
-  }
-}
+use <../../placeholders/tie_rod_shaft.scad>
 
 module knuckle_steering_arm(w_base=knuckle_arm_base_w,
                             w_narrow=knuckle_arm_narrow_w,
@@ -87,7 +24,7 @@ module knuckle_steering_arm(w_base=knuckle_arm_base_w,
                             l2=knuckle_arm_ring_connector_l,
                             outer_d=knuckle_arm_ring_outer_d,
                             bolt_d=knuckle_arm_bolt_d,
-                            bolt_edge_offset=knuckle_arm_bolt_hole_offet,
+                            bolt_edge_offset=knuckle_arm_bolt_hole_offset,
                             angle=knuckle_arm_angle,
                             holes_n=knuckle_arm_holes_n,
                             holes_gap=knuckle_arm_holes_gap,
@@ -196,7 +133,9 @@ module knuckle_steering_arm(w_base=knuckle_arm_base_w,
       }
     }
   }
-  _main();
+  render() {
+    _main();
+  }
 }
 
 knuckle_steering_arm();

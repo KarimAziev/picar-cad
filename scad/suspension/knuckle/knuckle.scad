@@ -20,13 +20,14 @@ use <../wishbone_arms/upper_arm.scad>
 use <knuckle_ball_stud_housing.scad>
 use <knuckle_bushing.scad>
 use <knuckle_steering_arm.scad>
+use <steering_link.scad>
 
-show_lower_arm             = true;
-show_upper_arm             = true;
-show_knuckle_bushing       = true;
-show_knuckle_inner_bearing = true;
-show_knuckle_outer_bearing = true;
-show_knuckle_tie_rod       = true;
+show_lower_arm             = false;
+show_upper_arm             = false;
+show_knuckle_bushing       = false;
+show_knuckle_inner_bearing = false;
+show_knuckle_outer_bearing = false;
+show_knuckle_tie_rod       = false;
 
 color                      = cobalt_blue_metallic;
 
@@ -46,6 +47,7 @@ module knuckle(color=color,
                show_knuckle_inner_bearing=show_knuckle_inner_bearing,
                show_knuckle_outer_bearing=show_knuckle_outer_bearing,
                show_knuckle_tie_rod=show_knuckle_tie_rod,
+               angle=0,
                debug=false) {
   joint_len  = (knuckle_total_len -
                 (knuckle_ball_stud_mount_outer_d * 2)
@@ -81,6 +83,8 @@ module knuckle(color=color,
 
   full_main_h = knuckle_arm_base_w + height;
 
+  fn = $preview ? 16 : 300;
+
   module _with_arm_pos(mount_x, mount_y) {
     translate([mount_x, 0, 0]) {
       if (show_knuckle_bushing) {
@@ -101,60 +105,64 @@ module knuckle(color=color,
   }
 
   maybe_color(color) {
-    union() {
-      difference() {
-        union() {
-          cylinder(h=height,
-                   d1=outer_bearing_seat_od,
-                   d2=knuckle_arm_ring_outer_d,
-                   $fn=200);
-          mirror_copy([1, 0, 0]) {
-            translate([outer_bearing_seat_od / 2, 0, 0]) {
-              linear_extrude(height=joint_h,
-                             center=false) {
-                offset_vertices_2d(r=corner_r) {
-                  polygon(joint_pts, $fs=300);
+    rotate([0, 0, angle]) {
+      union() {
+        difference() {
+          union() {
+            cylinder(h=height,
+                     d1=outer_bearing_seat_od,
+                     d2=knuckle_arm_ring_outer_d,
+                     $fn=200);
+            mirror_copy([1, 0, 0]) {
+              translate([outer_bearing_seat_od / 2, 0, 0]) {
+                linear_extrude(height=joint_h,
+                               center=false) {
+                  offset_vertices_2d(r=corner_r) {
+                    polygon(joint_pts, $fs=300);
+                  }
+                }
+
+                translate([ball_stud_housing_x, 0, 0]) {
+                  knuckle_ball_stud_housing();
                 }
               }
-
-              translate([ball_stud_housing_x, 0, 0]) {
-                knuckle_ball_stud_housing();
+            }
+          }
+          translate([0, 0, -0.5]) {
+            cylinder(d=outer_bearing_seat_d,
+                     h=outer_bearing_seath_h + 0.5,
+                     $fn=300);
+            cylinder(d=knuckle_bearing_spacer_ring_d,
+                     h=height + 0.5,
+                     $fn=fn);
+            translate([0, 0, height]) {
+              cylinder(d=knuckle_inner_bearing_shoulder_d,
+                       h=knuckle_arm_base_w + 0.5,
+                       $fn=fn);
+              translate([0,
+                         0,
+                         knuckle_inner_bearing_w
+                         + knuckle_inner_bearing_clearance + 1]) {
+                cylinder(d=knuckle_inner_bearing_seat_d,
+                         h=knuckle_inner_bearing_w
+                         + knuckle_inner_bearing_clearance + 1,
+                         $fn=fn);
+              }
+            }
+            mirror_copy([1, 0, 0]) {
+              translate([ball_stud_mount_x, 0, 0]) {
+                cylinder(d=knuckle_ball_stud_mount_hole_d,
+                         h=joint_h + 0.5,
+                         $fn=fn);
               }
             }
           }
         }
-        translate([0, 0, -0.5]) {
-          cylinder(d=outer_bearing_seat_d,
-                   h=outer_bearing_seath_h + 0.5,
-                   $fn=300);
-          cylinder(d=knuckle_bearing_spacer_ring_d, h=height + 0.5, $fn=300);
-          translate([0, 0, height]) {
-            cylinder(d=knuckle_inner_bearing_shoulder_d,
-                     h=knuckle_arm_base_w + 0.5,
-                     $fn=300);
-            translate([0,
-                       0,
-                       knuckle_inner_bearing_w
-                       + knuckle_inner_bearing_clearance + 1]) {
-              cylinder(d=knuckle_inner_bearing_seat_d,
-                       h=knuckle_inner_bearing_w
-                       + knuckle_inner_bearing_clearance + 1,
-                       $fn=300);
+        translate([0, 0, height - 0.1]) {
+          rotate([90, 0, 0]) {
+            rotate([0, 0, 90]) {
+              knuckle_steering_arm();
             }
-          }
-          mirror_copy([1, 0, 0]) {
-            translate([ball_stud_mount_x, 0, 0]) {
-              cylinder(d=knuckle_ball_stud_mount_hole_d,
-                       h=joint_h + 0.5,
-                       $fn=200);
-            }
-          }
-        }
-      }
-      translate([0, 0, height - 0.1]) {
-        rotate([90, 0, 0]) {
-          rotate([0, 0, 90]) {
-            knuckle_steering_arm();
           }
         }
       }
@@ -202,10 +210,12 @@ module knuckle(color=color,
     }
   }
   if (show_knuckle_tie_rod) {
-    translate([0, 0, height - 0.1]) {
+    translate([0,
+               0,
+               height - 0.1]) {
       rotate([90, 0, 0]) {
         rotate([0, 0, 90]) {
-          knuckle_tie_rod_end();
+          steering_link();
         }
       }
     }
@@ -262,21 +272,26 @@ module knuckle_right(color=color,
                      show_knuckle_outer_bearing=show_knuckle_outer_bearing,
                      show_knuckle_tie_rod=show_knuckle_tie_rod) {
   full_len = knuckle_assembly_full_len();
-  rotate([0, 0, 0]) {
-    translate([full_len, 0, 0]) {
-      rotate([0, -90, 0]) {
-        mirror([1, 0, 0]) {
-          knuckle(color=color,
-                  show_upper_arm=show_upper_arm,
-                  show_lower_arm=show_lower_arm,
-                  show_knuckle_bushing=show_knuckle_bushing,
-                  show_knuckle_inner_bearing=show_knuckle_inner_bearing,
-                  show_knuckle_outer_bearing=show_knuckle_outer_bearing,
-                  show_knuckle_tie_rod=show_knuckle_tie_rod);
-        }
-      }
+  translate([full_len, 0, 0]) {
+    rotate([0, -90, 0]) {
+      knuckle(color=color,
+              show_upper_arm=show_upper_arm,
+              show_lower_arm=show_lower_arm,
+              show_knuckle_bushing=show_knuckle_bushing,
+              show_knuckle_inner_bearing=show_knuckle_inner_bearing,
+              show_knuckle_outer_bearing=show_knuckle_outer_bearing,
+              show_knuckle_tie_rod=show_knuckle_tie_rod);
     }
   }
+}
+
+module knuckle_printable() {
+  knuckle(show_lower_arm=false,
+          show_upper_arm=false,
+          show_knuckle_bushing=false,
+          show_knuckle_inner_bearing=false,
+          show_knuckle_outer_bearing=false,
+          show_knuckle_tie_rod=false);
 }
 
 knuckle_left();

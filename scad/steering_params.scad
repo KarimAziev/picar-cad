@@ -31,11 +31,11 @@ bellcrank_arm_bolt_padding                        = 2;
 
 bellcrank_arm_bolt_d                              = 3;
 
-chassis_bellcrank_y_base                          = 24.00;
+chassis_bellcrank_y_base                          = 22.8;
 chassis_bellcrank_position_y                      = chassis_bellcrank_y_base
                                                      + ((bellcrank_arm_dia
                                                      - bellcrank_arm_w) / 2);
-chassis_bellcrank_mount_len                       = chassis_bellcrank_y_base;
+chassis_bellcrank_mount_len                       = chassis_bellcrank_position_y;
 chassis_bellcrank_link_padding_x                  = bellcrank_arm_dia / 2;
 chassis_bellcrank_mount_w                         = bellcrank_link_bolt_spacing[0]
                                                      + chassis_bellcrank_link_padding_x * 2;
@@ -494,7 +494,7 @@ knuckle_arm_corner_r                              = 1;
 knuckle_arm_bolt_d                                = m3_hole_dia;
 
 // Distance from the edge of the steering arm mount to the edge of the bolt hole
-knuckle_arm_bolt_hole_offet                       = 2.7;
+knuckle_arm_bolt_hole_offset                      = 2.7;
 
 // The outer diameter of the ring that reinforces the steering arm mount in the knuckle
 knuckle_arm_ring_outer_d                          = knuckle_inner_bearing_seat_d
@@ -527,13 +527,13 @@ knuckle_arm_holes_gap                             = 2;
 // The tie rod end is the link between the steering arm and the steering servo arm.
 // ─────────────────────────────────────────────────────────────────────────────
 // Outer diameter of the eyelet where the tie rod connects to the steering arm
-knuckle_tie_rod_eye_od                            = 11.2;
+knuckle_tie_rod_eye_od                            = 8.9;
 
 // Height of the eyelet where the tie rod connects to the steering arm
 knuckle_tie_rod_eye_h                             = 5.10;
 
 // Outer diameter of the shank where the tie rod connects to the steering arm
-knuckle_tie_rod_shank_od                          = 6.0;
+knuckle_tie_rod_shank_od                          = 4.6;
 
 // Diameter of the hole in the shank for the bolt that secures the tie rod to the steering arm
 knuckle_tie_rod_shank_bolt_d                      = m3_hole_dia;
@@ -542,7 +542,7 @@ knuckle_tie_rod_shank_bolt_d                      = m3_hole_dia;
 knuckle_tie_rod_neck_len                          = 2.05;
 
 // Height of the neck between the eyelet and the shank where the tie rod connects to the steering arm
-knuckle_tie_rod_shank_len                         = 11.1 + knuckle_tie_rod_neck_len;
+knuckle_tie_rod_shank_len                         = 10.8 + knuckle_tie_rod_neck_len;
 
 // Outer diameter of the bushing that fits into the eyelet of the steering arm
 knuckle_tie_rod_bushing_od                        = 6.95;
@@ -551,13 +551,24 @@ knuckle_tie_rod_bushing_od                        = 6.95;
 knuckle_tie_rod_bushing_d                         = m3_hole_dia;
 
 // Height of the bushing that fits into the eyelet of the steering arm
-knuckle_tie_rod_bushing_h                         = 6.65;
+knuckle_tie_rod_bushing_h                         = 10.4;
+
+knuckle_tie_rod_bushing_bolt_color                = matte_black;
+knuckle_tie_rod_bushing_bolt_head_d               = 6.62;
 
 // Flat diameter of the bushing that fits into the eyelet of the steering arm (used for anti-rotation)
-knuckle_tie_rod_bushing_flat_d                    = 0;
+knuckle_tie_rod_bushing_flat_d                    = 5;
+
+// Addional cylinders diameter for the cylindrical bushing type
+knuckle_tie_rod_bushing_cap_d                     = 7;
+
+// Addional cylinders height for the cylindrical bushing type
+knuckle_tie_rod_bushing_cap_h                     = 5;
 
 // Z-rotation angle of the tie rod placeholder relative to the steering arm (0 means the shank is parallel to the X-axis of the steering arm)
 knuckle_tie_rod_angle                             = 0;
+
+knuckle_tie_tilt_angle                            = 0;
 
 // Height of the tie rod neck
 knuckle_tie_rod_neck_h                            = 4.95;
@@ -567,6 +578,13 @@ knuckle_tie_rod_bushing_color                     = metallic_silver_9;
 
 // Color of the tie rod placeholder
 knuckle_tie_rod_color                             = cobalt_blue_metallic;
+
+knuckle_tie_rod_link_len                          = 5.1;
+knuckle_tie_rod_link_od                           = 5.9;
+knuckle_tie_rod_link_end_len                      = 0.4;
+knuckle_tie_rod_link_thread_len                   = 8.8;
+knuckle_tie_rod_link_thread_d                     = m3_hole_dia;
+knuckle_tie_rod_link_color                        = metallic_silver_2;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Knuckle's ball stud housing for lower and upper arms
@@ -626,6 +644,8 @@ pitman_arm_boss_w                                 = 4.6;
 pitman_arm_boss_inner_padding                     = 1;
 pitman_arm_bolt_n                                 = 3;
 pitman_arm_bolt_d                                 = 3;
+
+pitman_arm_angle                                  = 0;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Pitman arm to steering servo arm tie rod

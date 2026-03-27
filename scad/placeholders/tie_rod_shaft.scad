@@ -51,10 +51,10 @@ module tie_rod_shaft(body_len,
   }
 }
 
-tie_rod_shaft(body_len=steering_servo_tie_rod_body_len,
-              body_d=steering_servo_tie_rod_body_d,
-              body_end_len=steering_servo_tie_rod_body_end_len,
-              thread_len=steering_servo_tie_rod_thread_len,
-              thread_d=steering_servo_tie_rod_thread_d,
-              fn=steering_servo_tie_rod_fn,
-              color=steering_servo_tie_rod_color);
+// tie_rod_shaft(body_len=steering_servo_tie_rod_body_len,
+//               body_d=steering_servo_tie_rod_body_d,
+//               body_end_len=steering_servo_tie_rod_body_end_len,
+//               thread_len=steering_servo_tie_rod_thread_len,
+//               thread_d=steering_servo_tie_rod_thread_d,
+//               fn=steering_servo_tie_rod_fn,
+//               color=steering_servo_tie_rod_color);

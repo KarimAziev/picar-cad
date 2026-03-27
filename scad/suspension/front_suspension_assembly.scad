@@ -1,6 +1,7 @@
 include <../steering_params.scad>
 
 use <bulkhead/front_bulkhead.scad>
+use <bulkhead/front_bulkhead_chassis.scad>
 use <bulkhead/front_bulkhead_housing.scad>
 use <knuckle/knuckle.scad>
 use <wishbone_arms/lower_arm.scad>
@@ -77,4 +78,5 @@ module front_suspension_assembly(show_front_lower_arm=show_front_lower_arm,
   }
 }
 
+front_bulkhead_chassis();
 front_suspension_assembly();
