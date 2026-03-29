@@ -101,13 +101,14 @@ module thread_ridge(major = 6,
                     h = 20,
                     depth = 0.6,
                     segments = 120,
+                    base_half,
                     start_phase = 0) {
   turns = h / pitch;
   outer_r = major / 2;
   minor_r_est = outer_r - depth;
   profile_r = minor_r_est + depth/2;
 
-  base_half = pitch * 0.45;
+  base_half = with_default(base_half, pitch * 0.45);
 
   pts = [[profile_r, 0],
          [profile_r - depth,  base_half],
