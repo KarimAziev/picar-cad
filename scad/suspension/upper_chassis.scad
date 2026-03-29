@@ -21,7 +21,12 @@ use <servo_mount.scad>
 
 show_bellcrank_drive                        = true;
 show_bellcrank_idler                        = true;
+show_idler_insert_bush                      = true;
+show_idler_upper_bearing                    = true;
+show_idler_lower_bearing                    = true;
+
 show_servo                                  = true;
+
 show_steering_assembly                      = true;
 show_front_lower_arm                        = true;
 show_front_upper_arm                        = true;
@@ -48,7 +53,10 @@ module bellcrank_mount(h=upper_chassis_t,
                        pitman_angle=bellcrank_arm_angle,
                        idle_angle,
                        show_bellcrank_drive=true,
-                       show_bellcrank_idler=true) {
+                       show_bellcrank_idler=true,
+                       show_idler_insert_bush=show_idler_insert_bush,
+                       show_idler_upper_bearing=show_idler_upper_bearing,
+                       show_idler_lower_bearing=show_idler_lower_bearing) {
   idle_angle = with_default(idle_angle, -abs(pitman_angle));
 
   effective_len = max(bellcrank_y, length) + max(bore_d, arm_d);
@@ -82,7 +90,9 @@ module bellcrank_mount(h=upper_chassis_t,
                h]) {
       maybe_rotate([0, 0, pitman_angle]) {
         rotate([0, 0, -90]) {
-          bellcrank_drive();
+          bellcrank_drive(show_insert_bush=show_idler_insert_bush,
+                          show_upper_bearing=show_idler_upper_bearing,
+                          show_lower_bearing=show_idler_lower_bearing);
         }
       }
     }
@@ -92,7 +102,10 @@ module bellcrank_mount(h=upper_chassis_t,
                -bellcrank_y - bore_d / 2,
                h]) {
       maybe_rotate([0, 0, idle_angle]) {
-        bellcrank_idler(z_angle=-90);
+        bellcrank_idler(z_angle=-90,
+                        show_insert_bush=show_idler_insert_bush,
+                        show_upper_bearing=show_idler_upper_bearing,
+                        show_lower_bearing=show_idler_lower_bearing);
       }
     }
   }
@@ -111,7 +124,10 @@ module upper_chassis(show_bellcrank_drive=show_bellcrank_drive,
                      show_front_bulkhead=show_front_bulkhead,
                      show_front_bulkhead_upper_suspension_holder=show_front_bulkhead_upper_suspension_holder,
                      show_front_shock_tower=show_front_shock_tower,
-                     show_front_suspension_arm_pad=show_front_suspension_arm_pad) {
+                     show_front_suspension_arm_pad=show_front_suspension_arm_pad,
+                     show_idler_insert_bush=show_idler_insert_bush,
+                     show_idler_upper_bearing=show_idler_upper_bearing,
+                     show_idler_lower_bearing=show_idler_lower_bearing) {
 
   bellcrank_arm_len = bellcrank_arm_l - bellcrank_arm_od;
 
@@ -184,7 +200,10 @@ module upper_chassis(show_bellcrank_drive=show_bellcrank_drive,
     union() {
       front_bulkhead_chassis();
       bellcrank_mount(show_bellcrank_drive=show_bellcrank_drive,
-                      show_bellcrank_idler=show_bellcrank_idler);
+                      show_bellcrank_idler=show_bellcrank_idler,
+                      show_idler_insert_bush=show_idler_insert_bush,
+                      show_idler_upper_bearing=show_idler_upper_bearing,
+                      show_idler_lower_bearing=show_idler_lower_bearing);
       translate([0, -extra_len / 2 - bellcrank_mount_len, 0]) {
         linear_extrude(height=upper_chassis_t, center=false) {
           trapezoid_rounded_top(t=chassis_bellcrank_mount_w + dsservo_size[1],
