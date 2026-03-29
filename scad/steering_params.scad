@@ -51,7 +51,10 @@ bellcrank_arm_bolt_spacing                        = 9.5;
 // Distance from the bottom of the pivot base to the bellcrank arm root
 bellcrank_arm_z                                   = 11.1;
 
-// assembly z angle
+// If true, blend the two upper bosses into a single continuous shape.
+bellcrank_lever_blend_upper_bosses                = false;
+
+// Z-angle in assembly
 bellcrank_arm_angle                               = 1.6;
 
 // ─────────────────────────────────────────────────────────────────────────────

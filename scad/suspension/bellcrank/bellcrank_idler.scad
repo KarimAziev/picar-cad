@@ -19,6 +19,8 @@ show_idler_insert_bush   = false;
 show_idler_upper_bearing = false;
 show_idler_lower_bearing = false;
 
+bellcrank_idler_use_hull = false;
+
 module bellcrank_idler(color=cobalt_blue_light_1,
                        z_angle=0,
                        od=bellcrank_idler_od,
@@ -47,11 +49,14 @@ module bellcrank_idler(color=cobalt_blue_light_1,
                        upper_boss_h=bellcrank_arm_upper_boss_h,
                        upper_boss_d=bellcrank_arm_upper_boss_d,
                        lower_boss_h=bellcrank_arm_lower_boss_h,
-                       lower_boss_d=bellcrank_arm_lower_boss_d) {
+                       lower_boss_d=bellcrank_arm_lower_boss_d,
+                       use_hull=bellcrank_idler_use_hull,
+                       blend_upper_bosses=bellcrank_lever_blend_upper_bosses) {
 
   h = bush_h - shoulder_h + extra_h;
 
   upper_bearing_z = bush_h - shoulder_h - bearing_w;
+  upper_boss_thickness = upper_boss_d - bolt_d;
 
   module _bearing() {
     bellcrank_idler_bearing(w=bearing_w, od=bearing_od, d=bearing_d);
@@ -61,14 +66,75 @@ module bellcrank_idler(color=cobalt_blue_light_1,
     cylinder(h=h, d=bearing_od + bearing_clearance, $fn=$preview ? 16 : 40);
   }
 
+  module _bearing_holes() {
+    translate([0, 0, upper_bearing_z]) {
+      _bearing_hole(h=bearing_w + extra_h + 0.1);
+    }
+    translate([0, 0, -0.1]) {
+      _bearing_hole(h=bearing_w + 0.1);
+    }
+  }
+
   translate([0, 0, shoulder_h]) {
-    difference() {
-      ring(h=h, d=support_d, outer_d=od, color=color, fn=$preview ? 20 : 360);
-      translate([0, 0, upper_bearing_z]) {
-        _bearing_hole(h=bearing_w + extra_h + 0.1);
+    if (use_hull) {
+      upper_h = h - arm_z;
+      lower_h = h - upper_h;
+      bolts_l = bolt_offset + bolt_spacing + bolt_d;
+      arm_partial_len = l - bolts_l - od / 2 - upper_boss_thickness;
+      w_support = w;
+
+      difference() {
+        union() {
+          color(color) {
+            rotate([0, 0, z_angle]) {
+              hull() {
+                translate([-arm_partial_len , -w_support / 2, arm_z]) {
+                  cube([arm_partial_len, w_support, thickness + 1]);
+                }
+
+                translate([0, 0, arm_z]) {
+                  cylinder(h=upper_h, d=od, $fn=$preview ? 25 : 360);
+                }
+              }
+            }
+            translate([0, 0, arm_z]) {
+              translate([0, 0, thickness]) {
+                cylinder(h=upper_h - thickness,
+                         d1=arm_od,
+                         d2=od,
+                         $fn=$preview ? 25 : 360);
+              }
+              translate([0, 0, -lower_h]) {
+                cylinder(h=lower_h,
+                         d1=od,
+                         d2=arm_od,
+                         $fn=$preview ? 25 : 360);
+              }
+            }
+          }
+
+          ring(h=lower_h,
+               d=support_d,
+               outer_d=od,
+               color=color,
+               fn=$preview ? 25 : 360);
+        }
+        translate([0, 0, -0.5]) {
+          cylinder(h=h + 1,
+                   d=support_d,
+                   $fn=$preview ? 25 : 360);
+        }
+        _bearing_holes();
       }
-      translate([0, 0, -0.1]) {
-        _bearing_hole(h=bearing_w + 0.1);
+    } else {
+      difference() {
+        ring(h=h, d=support_d, outer_d=od, color=color, fn=$preview ? 25 : 360);
+        translate([0, 0, upper_bearing_z]) {
+          _bearing_hole(h=bearing_w + extra_h + 0.1);
+        }
+        translate([0, 0, -0.1]) {
+          _bearing_hole(h=bearing_w + 0.1);
+        }
       }
     }
 
@@ -85,7 +151,8 @@ module bellcrank_idler(color=cobalt_blue_light_1,
                         upper_boss_h=upper_boss_h,
                         upper_boss_d=upper_boss_d,
                         lower_boss_h=lower_boss_h,
-                        lower_boss_d=lower_boss_d);
+                        lower_boss_d=lower_boss_d,
+                        blend_upper_bosses=blend_upper_bosses);
       }
     }
 
