@@ -32,7 +32,7 @@ module rounded_cube(size,
 
 module cube_3d(size, center=true) {
   if (center) {
-    translate([0, 0, size[2] / 2]) {
+    translate([0, 0, (is_num(size) ? size : size[2]) / 2]) {
       cube(size, center=center);
     }
   } else {

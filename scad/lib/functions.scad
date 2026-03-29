@@ -1539,17 +1539,30 @@ returns the translation needed to shift the min corner to the origin.
 
 **Examples:**
 ```scad
-dims = [20, 10, 5];
-ang  = [-99, 0, 0];
+w = 10;
+l = 4;
+h = 3;
 
-bb = rotated_bbox(dims[0], dims[1], dims[2], ang);
+x_angle = 0;
+y_angle = 30;
+z_angle = 0;
 
-// Place the rotated cube into the positive octant with its AABB min at [0,0,0]
-translate([bb[3], bb[4], bb[5]]) {
-  rotate(ang) cube(dims);
+bb = rotated_bbox(size=[w, l, h], a=[x_angle, y_angle, z_angle]);
+x_shift = bb[3];
+y_shift = bb[4];
+z_shift = bb[5];;
+
+echo("z_shift", z_shift); // 5
+
+// Place the rotated cube into the positive octant with its AABB min at [0, 0, 0]
+translate([x_shift, y_shift, z_shift]) {
+  rotate([x_angle, y_angle, z_angle]) {
+    cube([w, l, h]);
+  }
 }
 
-echo("full extents:", [bb[0], bb[1], bb[2]], "shift:", [bb[3], bb[4], bb[5]]);
+// show bbox
+#cube([bb[0], bb[1], bb[2]]);
 ```
 */
 function rotated_bbox(size, a=[0, 0, 0]) =
@@ -1564,3 +1577,42 @@ function rotated_bbox(size, a=[0, 0, 0]) =
    -b[1],      // ty
    -b[2]       // tz
   ];
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  y_angle_from_zshift
+  ─────────────────────────────────────────────────────────────────────────────
+
+  **Example**:
+  ```scad
+  w = 10;
+  l = 4;
+  h = 3;
+
+  target_h = 4;
+
+  x_angle = 0;
+  y_angle = y_angle_from_zshift(-target_h, w);
+  z_angle = 0;
+
+  bb = rotated_bbox(size=[w, l, h], a=[x_angle, y_angle, z_angle]);
+  x_shift = bb[3];
+  y_shift = bb[4];
+  z_shift = bb[5];
+
+  echo("y_angle", y_angle);
+
+  echo("x_shift", x_shift); // 1.2
+
+  // Place the rotated cube into the positive octant with its AABB min at [0,0,0]
+  translate([x_shift, y_shift, z_shift]) {
+    rotate([x_angle, y_angle, z_angle]) {
+      cube([w, l, h]);
+    }
+  }
+
+  ```
+  */
+
+function y_angle_from_zshift(target_h, w) =
+  asin(target_h / w);

@@ -11,14 +11,16 @@ use <../lib/trapezoids.scad>
 use <../placeholders/dservo.scad>
 use <../placeholders/rpi_5.scad>
 use <../power/power_case.scad>
+use <bellcrank/ackermann_plate.scad>
+use <bellcrank/bellcrank_drive.scad>
+use <bellcrank/bellcrank_idler.scad>
 use <bulkhead/front_bulkhead_chassis.scad>
 use <bulkhead/front_bulkhead_housing.scad>
 use <front_suspension_assembly.scad>
-use <pitman_arm.scad>
 use <servo_mount.scad>
 
-show_pitman_arm                             = true;
-show_idle_arm                               = true;
+show_bellcrank_drive                        = true;
+show_bellcrank_idler                        = true;
 show_servo                                  = true;
 show_steering_assembly                      = true;
 show_front_lower_arm                        = true;
@@ -31,21 +33,22 @@ show_front_bulkhead                         = true;
 show_front_bulkhead_upper_suspension_holder = true;
 show_front_shock_tower                      = true;
 show_front_suspension_arm_pad               = true;
+show_ackermann_plate                        = true;
 
 module bellcrank_mount(h=upper_chassis_t,
                        top_w=chassis_center_transition_w,
                        bottom_w=chassis_bellcrank_mount_w,
                        length=chassis_bellcrank_mount_len,
                        bellcrank_y=chassis_bellcrank_position_y,
-                       bolt_spacing=bellcrank_link_bolt_spacing,
+                       bolt_spacing=chassis_bellcrank_spacing,
                        d=upper_chassis_bellcrank_bolt_d,
                        bore_d=upper_chassis_bellcrank_bolt_bore_d,
                        bore_h=upper_chassis_bellcrank_bolt_bore_h,
-                       arm_d=bellcrank_arm_dia,
-                       pitman_angle=pitman_arm_angle,
+                       arm_d=bellcrank_arm_od,
+                       pitman_angle=bellcrank_arm_angle,
                        idle_angle,
-                       show_pitman_arm=true,
-                       show_idle_arm=true) {
+                       show_bellcrank_drive=true,
+                       show_bellcrank_idler=true) {
   idle_angle = with_default(idle_angle, -abs(pitman_angle));
 
   effective_len = max(bellcrank_y, length) + max(bore_d, arm_d);
@@ -67,38 +70,36 @@ module bellcrank_mount(h=upper_chassis_t,
                                h=h,
                                bore_d=bore_d,
                                bore_h=bore_h,
-                               size=bolt_spacing,
+                               size=[bolt_spacing, 0],
                                reverse=true,
                                center=true);
     }
   }
 
-  if (show_pitman_arm) {
-    translate([-bottom_w / 2 + bellcrank_arm_dia /2,
+  if (show_bellcrank_drive) {
+    translate([-bottom_w / 2 + bellcrank_arm_od /2,
                -bellcrank_y - bore_d / 2,
                h]) {
       maybe_rotate([0, 0, pitman_angle]) {
         rotate([0, 0, -90]) {
-          pitman_arm();
+          bellcrank_drive();
         }
       }
     }
   }
-  if (show_idle_arm) {
-    translate([bottom_w / 2 - bellcrank_arm_dia /2,
+  if (show_bellcrank_idler) {
+    translate([bottom_w / 2 - bellcrank_arm_od /2,
                -bellcrank_y - bore_d / 2,
                h]) {
       maybe_rotate([0, 0, idle_angle]) {
-        rotate([0, 0, -90]) {
-          bellcrank_arm();
-        }
+        bellcrank_idler(z_angle=-90);
       }
     }
   }
 }
 
-module upper_chassis(show_pitman_arm=show_pitman_arm,
-                     show_idle_arm=show_idle_arm,
+module upper_chassis(show_bellcrank_drive=show_bellcrank_drive,
+                     show_bellcrank_idler=show_bellcrank_idler,
                      show_servo=show_servo,
                      show_steering_assembly=show_steering_assembly,
                      show_front_lower_arm=show_front_lower_arm,
@@ -111,38 +112,45 @@ module upper_chassis(show_pitman_arm=show_pitman_arm,
                      show_front_bulkhead_upper_suspension_holder=show_front_bulkhead_upper_suspension_holder,
                      show_front_shock_tower=show_front_shock_tower,
                      show_front_suspension_arm_pad=show_front_suspension_arm_pad) {
+
+  bellcrank_arm_len = bellcrank_arm_l - bellcrank_arm_od;
+
   dservo_bb = dservo_tie_rod_bbox();
   shaft_len = dservo_bb[1] - dservo_bb[4];
 
-  extra_len = shaft_len + bellcrank_arm_dia / 2
+  extra_len = shaft_len + bellcrank_arm_od / 2
     + steering_servo_tie_rod_eye_od / 2
     + ((dsservo_hat_w - dsservo_size[0]) / 2);
 
-  servo_mount_x = -bellcrank_arm_len - bellcrank_arm_dia / 2
+  servo_mount_x = -bellcrank_arm_len - bellcrank_arm_od / 2
     + dsservo_size[2]
     - steering_servo_tie_rod_eye_od / 2
-    - bellcrank_arm_len / 2;
+    - bellcrank_arm_len;
 
   servo_mount_y = -chassis_bellcrank_position_y
     - shaft_len
-    + bellcrank_arm_dia / 2
+    + bellcrank_arm_od / 2
     + bellcrank_arm_w / 2
     + steering_servo_tie_rod_eye_od / 2;
+
+  echo("servo_mount_y",
+       servo_mount_y,
+       "bellcrank_mount_len",
+       bellcrank_mount_len);
 
   bellcrank_mount_len = max(chassis_bellcrank_position_y,
                             chassis_bellcrank_mount_len)
     + max(upper_chassis_bellcrank_bolt_bore_d,
-          bellcrank_arm_dia);
+          bellcrank_arm_od);
 
   module _servo_hole_probes() {
-    let (// n = ceil(((steering_servo_tie_rod_body_len
-         //            - bellcrank_arm_dia
-         //            - steering_servo_tie_rod_shank_len)
-         //           / (steering_servo_mount_bolt_bore_d + 2))),
-         n = 3) {
+    let (n = ceil(((steering_servo_tie_rod_body_len
+                    - bellcrank_arm_od
+                    - steering_servo_tie_rod_shank_len)
+                   / (steering_servo_mount_bolt_bore_d + 2)))) {
 
       translate([0, servo_mount_y, 0]) {
-        for (i = [0 : 2]) {
+        for (i = [0 : n]) {
           let (step = i * (steering_servo_mount_bolt_bore_d + 2)) {
             translate([servo_mount_x,
                        step,
@@ -156,28 +164,65 @@ module upper_chassis(show_pitman_arm=show_pitman_arm,
     }
   }
 
+  module _x_holes_probes(n=3, direction=1) {
+    let (shift = (steering_servo_mount_bolt_bore_d + 1)) {
+      translate([0, 0, 0]) {
+        translate([0, 0, 0]) {
+          for (i = [1 : n]) {
+            let (step = direction * i * shift) {
+              translate([step, 0, 0]) {
+                _servo_hole_probes();
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
   difference() {
     union() {
       front_bulkhead_chassis();
-      bellcrank_mount(show_pitman_arm=show_pitman_arm,
-                      show_idle_arm=show_idle_arm);
+      bellcrank_mount(show_bellcrank_drive=show_bellcrank_drive,
+                      show_bellcrank_idler=show_bellcrank_idler);
       translate([0, -extra_len / 2 - bellcrank_mount_len, 0]) {
         linear_extrude(height=upper_chassis_t, center=false) {
-          trapezoid(t=chassis_bellcrank_mount_w,
-                    b=chassis_bellcrank_mount_w + dsservo_size[1],
-                    h=extra_len,
-                    center=true);
+          trapezoid_rounded_top(t=chassis_bellcrank_mount_w + dsservo_size[1],
+                                b=chassis_bellcrank_mount_w + dsservo_size[1],
+                                h=extra_len,
+                                center=true,
+                                r=2);
+        }
+      }
+    }
+    mirror_copy([1, 0, 0]) {
+      translate([-(chassis_bellcrank_mount_w + dsservo_size[1]) / 2,
+                 -bellcrank_mount_len - 10,
+                 -0.5]) {
+        rotate([0, 0, 60]) {
+          cube(size=[20, 50, upper_chassis_t + 1],
+               center=false);
         }
       }
     }
 
-    for (i = [1 : 2]) {
-      let (step = i * (steering_servo_mount_bolt_bore_d + 2)) {
-        translate([-step, 0, 0]) {
-          _servo_hole_probes();
-        }
-      }
-    }
+    _x_holes_probes(n=1, direction=-1);
+    _x_holes_probes(n=2, direction=1);
+    // _x_holes_probes(n=3, direction=1);
+    // let (n = 3,
+    //      shift = (steering_servo_mount_bolt_bore_d + 2)) {
+    //   translate([-shift * n, 0, 0]) {
+    //     translate([0, 0, 0]) {
+    //       for (i = [0 : n - 1]) {
+    //         let (step = i * shift) {
+    //           translate([step, 0, 0]) {
+    //             _servo_hole_probes();
+    //           }
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
 
     _servo_hole_probes();
   }
@@ -195,6 +240,27 @@ module upper_chassis(show_pitman_arm=show_pitman_arm,
                                 show_front_suspension_arm_pad=show_front_suspension_arm_pad);
     }
   }
+
+  if (show_ackermann_plate) {
+
+    ackermann_y = -chassis_bellcrank_position_y
+      - upper_chassis_bellcrank_bolt_bore_d / 2
+      + bellcrank_arm_len
+      + bellcrank_arm_od / 2;
+
+    translate([0,
+               ackermann_y
+               - ackermann_plate_boss_od / 2
+               - bellcrank_arm_bolt_edge_offset
+               - bellcrank_arm_bolt_spacing
+               + (ackermann_plate_boss_od - bellcrank_arm_bolt_d)
+               - ackermann_plate_hole_d / 2
+
+               ,
+               upper_chassis_t + bellcrank_arm_z]) {
+      ackermann_plate();
+    }
+  }
   if (show_servo) {
     translate([servo_mount_x,
                servo_mount_y,
@@ -207,8 +273,8 @@ module upper_chassis(show_pitman_arm=show_pitman_arm,
 
 module upper_chassis_printable() {
   rotate([0, 180, 0]) {
-    upper_chassis(show_pitman_arm = false,
-                  show_idle_arm = false,
+    upper_chassis(show_bellcrank_drive = false,
+                  show_bellcrank_idler = false,
                   show_servo = false,
                   show_steering_assembly = false,
                   show_front_lower_arm = false,
@@ -224,12 +290,4 @@ module upper_chassis_printable() {
   }
 }
 
-// upper_chassis();
-// let (dist = 38) {
-//   translate([0, -28, 0]) {
-//     #cube(dist);
-//   }
-// }
-
-// upper_chassis_printable();
 upper_chassis();

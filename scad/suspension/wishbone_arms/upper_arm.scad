@@ -39,6 +39,17 @@ module upper_arm_barrel() {
                distance=front_upper_arm_hinge_barrel_hole_offset);
 }
 
+function upper_arm_full_size(inlcude_ball_stud=true) =
+  let (notch_dep = notch_depth(front_arm_ball_stud_ball_d,
+                               front_arm_ball_stud_ball_hole_d),
+       ball_stud_len = !inlcude_ball_stud
+       ? 0
+       : front_arm_ball_stud_ball_d
+       + front_arm_ball_stud_len
+       - front_upper_arm_ball_stud_hole_depth
+       + front_upper_arm_ball_stud_insert_out_depth)
+  [front_upper_arm_len + ball_stud_len, front_upper_arm_h, front_upper_arm_thickness];
+
 module upper_arm_hinge_barrels() {
   cut_h = front_upper_arm_h - front_upper_arm_hinge_barrel_h * 2;
   hole_end_x = front_upper_arm_hinge_barrel_hole_offset
@@ -126,6 +137,8 @@ module upper_arm(color=cobalt_blue_metallic,
                 - front_upper_arm_leg_width) * 0.8,
                cut_h - front_upper_arm_ball_stud_mount_extra_h]];
 
+  full_size = upper_arm_full_size(inlcude_ball_stud=true);
+
   module upper_arm_hole() {
     polygon(hole_pts, $fn=$preview ? 30 : 360);
   }
@@ -150,7 +163,8 @@ module upper_arm(color=cobalt_blue_metallic,
     }
   }
 
-  maybe_rotate([x_angle, y_angle, z_angle]) {
+  rotate_children_with_shift(size=full_size,
+                             angles=[x_angle, y_angle, z_angle]) {
     union() {
       if (debug) {
         translate([0, 0, front_upper_arm_thickness]) {
@@ -208,7 +222,8 @@ module upper_arm(color=cobalt_blue_metallic,
       }
       if (show_ball_stud) {
         translate([front_upper_arm_len -
-                   (front_arm_ball_stud_len - front_arm_ball_stud_unthreaded_h),
+                   (front_arm_ball_stud_len - front_arm_ball_stud_unthreaded_h)
+                   + front_upper_arm_ball_stud_insert_out_depth,
                    ball_stud_y,
                    front_upper_arm_thickness / 2]) {
           rotate([90, 0, 90]) {

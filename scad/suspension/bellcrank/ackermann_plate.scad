@@ -1,5 +1,5 @@
 /**
-  * Module: Parametric Ackermann Plate (tie-bar) for dual-bellcrank steering.
+  * Module: Ackermann Plate (tie-bar) for dual-bellcrank steering.
   *
   * Creates a flat “dogbone” plate with two boss rings and through-holes.
   *
@@ -51,4 +51,6 @@ module ackermann_plate(length=ackermann_plate_len,
   }
 }
 
-ackermann_plate();
+translate([0, -ackermann_plate_boss_od / 2, 0]) {
+  ackermann_plate();
+}

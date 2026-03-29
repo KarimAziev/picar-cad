@@ -15,29 +15,117 @@ ackermann_plate_boss_od                           = 8;
 // Height of the bosses
 ackermann_plate_boss_h                            = 4.9;
 
-bellcrank_arm_dia                                 = 10.24;
-bellcrank_arm_h                                   = 32;
+// ─────────────────────────────────────────────────────────────────────────────
+// Bellcrank link arm. Part of both the drive and idler arms.
+// It has two bolt holes:
+// - For the Ackermann plate. This hole has both upper and lower bosses.
+//   The lower boss is for the Ackermann plate bushing.
+// - For the knuckle steering link, with an upper boss only.
+// ─────────────────────────────────────────────────────────────────────────────
+bellcrank_arm_bolt_d                              = m3_hole_dia;
+// Outer ring diameter
+bellcrank_arm_od                                  = 11.1;
+// Total length of the arm, including the outer diameter
+bellcrank_arm_l                                   = 31;
 
-bellcrank_arm_w                                   = 6.25;
-bellcrank_link_bolt_spacing                       = [48.0, 0];
-bellcrank_arm_len                                 = 20.8;
-bellcrank_arm_thickness                           = 2.9;
+// Thickness of the arm
+bellcrank_arm_thickness                           = 3;
+// Height of the upper bosses with bolt holes
+bellcrank_arm_upper_boss_h                        = 4;
+// Hole diameter of the upper bosses
+bellcrank_arm_upper_boss_d                        = 4.3;
 
-bellcrank_arm_z                                   = 10.3;
-bellcrank_pitman_arm_z                            = 19.55;
+// Width at the edge of the arm
+bellcrank_arm_w                                   = 6.10;
+// Height of the lower boss
+bellcrank_arm_lower_boss_h                        = 2.4;
+// Outer diameter of the lower boss
+bellcrank_arm_lower_boss_d                        = 6.0;
 
-bellcrank_arm_bolt_gap                            = 4;
-bellcrank_arm_bolt_padding                        = 2;
+// Distance from the edge of the arm to the start of the hole
+bellcrank_arm_bolt_edge_offset                    = 2;
 
-bellcrank_arm_bolt_d                              = 3;
+// Distance between hole centers
+bellcrank_arm_bolt_spacing                        = 9.5;
+
+// Distance from the bottom of the pivot base to the bellcrank arm root
+bellcrank_arm_z                                   = 11.1;
+
+// assembly z angle
+bellcrank_arm_angle                               = 1.6;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Bellcrank idler (shared with the bellcrank drive)
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Outer diameter of the bearing
+bellcrank_idler_bearing_od                        = 8;
+// Inner (bore) diameter of the bearing
+bellcrank_idler_bearing_d                         = 5;
+// Width of the bearing
+bellcrank_idler_bearing_w                         = 3;
+
+// The outer diameter of the bellcrank cylinder
+bellcrank_idler_od                                = bellcrank_idler_bearing_od + 2.1;
+
+// The diameter of the inner hole inside the bellcrank idler, to prevent the
+// bearing from sliding inside
+bellcrank_idler_support_d                         = bellcrank_idler_bearing_od
+                                                     - (bellcrank_idler_bearing_od - bellcrank_idler_bearing_d) * 0.6;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Pivot bush
+// The pivot bush is a cylindrical shaft that is inserted into the bellcrank
+// cylinder. Two bearings are placed on the bush-one at the top and one at the
+// bottom. The bush has a through-hole for a bolt, and at the bottom it has a
+// wider, thin cylinder (shoulder) to prevent the bottom bearing from sliding out.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// The height of the pivot bush where the top and bottom bearings are inserted
+bellcrank_idler_insert_bush_h                     = 32.0;
+
+// The outer diameter of the pivot bush
+bellcrank_idler_insert_bush_od                    = bellcrank_idler_bearing_d - 0.1;
+
+// The hole diameter for the bolt
+bellcrank_idler_insert_bush_d                     = m3_hole_dia;
+
+// The diameter of the bottom flange (shoulder)
+bellcrank_idler_insert_bush_flang_d               = bellcrank_idler_bearing_d + 1.2;
+
+// The height of the bottom flange (shoulder)
+bellcrank_idler_insert_bush_flang_h               = 1.1;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Bellcrank drive (servo lever parameters)
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Distance between the lower bellcrank lever and the upper servo lever
+bellcrank_servo_lever_z_offset                    = 5.6;
+// Distance between the edges of the holes in the servo lever
+bellcrank_servo_lever_holes_gap                   = 1.5;
+// Distance between the edge of the lever and the edge of the holes
+bellcrank_servo_lever_holes_edge_offset           = 1.2;
+// Height of the upper boss
+bellcrank_servo_lever_boss_h                      = 3.5;
+// Number of mounting holes for the servo tie-rod end
+bellcrank_servo_lever_holes_n                     = 3;
+// Padding between the center pivot cylinder and the servo lever holes
+bellcrank_servo_lever_boss_pad_x                  = 2;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Bellcrank positioning on the chassis
+// ─────────────────────────────────────────────────────────────────────────────
+
+chassis_bellcrank_spacing                         = 48.0;
 
 chassis_bellcrank_y_base                          = 22.8;
 chassis_bellcrank_position_y                      = chassis_bellcrank_y_base
-                                                     + ((bellcrank_arm_dia
+                                                     + ((bellcrank_arm_od
                                                      - bellcrank_arm_w) / 2);
 chassis_bellcrank_mount_len                       = chassis_bellcrank_position_y;
-chassis_bellcrank_link_padding_x                  = bellcrank_arm_dia / 2;
-chassis_bellcrank_mount_w                         = bellcrank_link_bolt_spacing[0]
+chassis_bellcrank_link_padding_x                  = bellcrank_arm_od / 2;
+chassis_bellcrank_mount_w                         = chassis_bellcrank_spacing
                                                      + chassis_bellcrank_link_padding_x * 2;
 
 chassis_center_mount_padding_y                    = 3;
@@ -135,9 +223,12 @@ front_lower_arm_ball_stud_mount_size              = [14, 6.5, 7.5];
 // and print it on that edge.
 front_lower_arm_use_lower_edge_cutout             = true;
 
-// Depth of the ball-stud mounting hole/counterbore along X.
+// The depth of the hole for the ball stud
 front_lower_arm_ball_stud_hole_depth              = front_arm_ball_stud_len
                                                      - front_arm_ball_stud_unthreaded_h;
+
+// How far to screw out the ball stud. A higher value means the bolt is screwed in less
+front_lower_arm_ball_stud_insert_out_depth        = 1;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Upper front wishbone arm
@@ -180,8 +271,11 @@ front_upper_arm_ball_stud_mount_extra_h           = front_upper_arm_ball_stud_mo
 // Nominal width of each “leg” of the A-arm in the 2D profile.
 front_upper_arm_leg_width                         = 4.5;
 
-// Depth of the ball-stud mounting hole/counterbore along X.
+// The depth of the hole for the ball stud
 front_upper_arm_ball_stud_hole_depth              = front_arm_ball_stud_len - front_arm_ball_stud_unthreaded_h;
+
+// How far to screw out the ball stud. A higher value means the bolt is screwed in less
+front_upper_arm_ball_stud_insert_out_depth        = 1;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Front bulkhead and it's housing
@@ -494,7 +588,7 @@ knuckle_arm_corner_r                              = 1;
 knuckle_arm_bolt_d                                = m3_hole_dia;
 
 // Distance from the edge of the steering arm mount to the edge of the bolt hole
-knuckle_arm_bolt_hole_offset                      = 2.7;
+knuckle_arm_bolt_hole_offset                      = 2.0;
 
 // The outer diameter of the ring that reinforces the steering arm mount in the knuckle
 knuckle_arm_ring_outer_d                          = knuckle_inner_bearing_seat_d
@@ -506,7 +600,7 @@ knuckle_arm_base_w                                = 9;
 knuckle_arm_narrow_w                              = 6.06;
 
 // The length of the main part
-knuckle_arm_base_len                              = 13.3;
+knuckle_arm_base_len                              = 15.3;
 // The length of the part, that connects arm with knuckle
 knuckle_arm_ring_connector_l                      = 4.5;
 
@@ -568,7 +662,7 @@ knuckle_tie_rod_bushing_cap_h                     = 5;
 // Z-rotation angle of the tie rod placeholder relative to the steering arm (0 means the shank is parallel to the X-axis of the steering arm)
 knuckle_tie_rod_angle                             = 0;
 
-knuckle_tie_tilt_angle                            = 0;
+knuckle_tie_tilt_shift                            = 0;
 
 // Height of the tie rod neck
 knuckle_tie_rod_neck_h                            = 4.95;
@@ -582,7 +676,7 @@ knuckle_tie_rod_color                             = cobalt_blue_metallic;
 knuckle_tie_rod_link_len                          = 5.1;
 knuckle_tie_rod_link_od                           = 5.9;
 knuckle_tie_rod_link_end_len                      = 0.4;
-knuckle_tie_rod_link_thread_len                   = 8.8;
+knuckle_tie_rod_link_thread_l                     = 8.8;
 knuckle_tie_rod_link_thread_d                     = m3_hole_dia;
 knuckle_tie_rod_link_color                        = metallic_silver_2;
 
@@ -633,23 +727,18 @@ knuckle_bushing_thickness                         = 0.6;
 knuckle_bushing_hole_border_w                     = 0.8;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Pitman arm
+// Knuckle assembly parameters
 // ─────────────────────────────────────────────────────────────────────────────
-pitman_arm_bolt_boss_spacing                      = 1;
-pitman_arm_h                                      = 24.3;
-pitman_arm_bolt_boss_padding                      = 1.2;
-pitman_arm_boss_h                                 = 6.5;
-pitman_arm_boss_w                                 = 4.6;
 
-pitman_arm_boss_inner_padding                     = 1;
-pitman_arm_bolt_n                                 = 3;
-pitman_arm_bolt_d                                 = 3;
-
-pitman_arm_angle                                  = 0;
+// [caster_angle, camber_angle, z_angle]
+knuckle_angles                                    = [0, 0, 0];
+// How far to lower the knuckle in the assembly
+knuckle_z_shift                                   = 0;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Pitman arm to steering servo arm tie rod
+// Bellcrank arm to steering servo arm tie rod
 // ─────────────────────────────────────────────────────────────────────────────
+
 steering_servo_mount_bolt_d                       = m3_hole_dia;
 steering_servo_mount_bolt_bore_d                  = m3_countersunk_head_dia + 0.2;
 steering_servo_mount_bolt_bore_h                  = m3_countersunk_head_h + 0.15;

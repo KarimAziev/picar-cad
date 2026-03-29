@@ -23,6 +23,10 @@ use <../../lib/transforms.scad>
 
 color = cobalt_blue_metallic;
 
+function knuckle_ball_stud_housing_h(base_h=knuckle_ball_stud_house_h,
+                                     sphere_h=knuckle_ball_stud_sphere_h) =
+  base_h + sphere_h;
+
 module knuckle_ball_stud_housing(od=knuckle_ball_stud_mount_outer_d,
                                  base_h=knuckle_ball_stud_house_h,
                                  sphere_h=knuckle_ball_stud_sphere_h,
@@ -32,18 +36,19 @@ module knuckle_ball_stud_housing(od=knuckle_ball_stud_mount_outer_d,
                                  stopper_d=knuckle_ball_stud_stopper_d,
                                  stopper_offset=knuckle_ball_stud_stopper_offset,
                                  color=cobalt_blue_metallic) {
+  fn = $preview ? 30 : 360;
 
   module _cap() {
     difference() {
       intersection() {
-        sphere(d=od, $fn=300);
+        sphere(d=od, $fn=fn);
         cube_3d([od, od, sphere_h]);
       }
       translate([0, 0, -0.5]) {
         linear_extrude(height=sphere_h + 1, center=false) {
           rounded_rect(size=sphere_hole_size,
                        center=true,
-                       fn=300,
+                       fn=fn,
                        r_factor=0.5);
         }
       }
@@ -55,7 +60,7 @@ module knuckle_ball_stud_housing(od=knuckle_ball_stud_mount_outer_d,
       union() {
         cylinder(d=od,
                  h=base_h,
-                 $fn=300);
+                 $fn=fn);
         translate([0, 0, base_h]) {
           _cap();
         }
@@ -64,7 +69,7 @@ module knuckle_ball_stud_housing(od=knuckle_ball_stud_mount_outer_d,
     if (is_num(stopper_d) && stopper_d > 0) {
       translate([0, 0, base_h + stopper_d / 2 - ball_stud_d - stopper_offset]) {
         rotate([90, 0, 0]) {
-          cylinder(d=stopper_d, h=od + 1, center=true, $fn=300);
+          cylinder(d=stopper_d, h=od + 1, center=true, $fn=fn);
         }
       }
     }
@@ -72,7 +77,7 @@ module knuckle_ball_stud_housing(od=knuckle_ball_stud_mount_outer_d,
     translate([0, 0, -0.5]) {
       cylinder(d=hole_d,
                h=base_h + 1,
-               $fn=300);
+               $fn=fn);
     }
   }
 }

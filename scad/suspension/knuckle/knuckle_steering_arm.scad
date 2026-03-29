@@ -1,6 +1,8 @@
 /**
   * Module: The ring with steering arm
   *
+  * This is not a separate printable detail.
+  *
   * Author: Karim Aziiev <karim.aziiev@gmail.com>
   * License: GPL-3.0-or-later
   */
@@ -10,13 +12,8 @@ include <../../parameters.scad>
 include <../../steering_params.scad>
 
 use <../../lib/placement.scad>
-use <../../lib/plist.scad>
 use <../../lib/shapes2d.scad>
 use <../../lib/transforms.scad>
-use <../../placeholders/bolt.scad>
-use <../../placeholders/nut.scad>
-use <../../placeholders/tie_rod_end.scad>
-use <../../placeholders/tie_rod_shaft.scad>
 
 module knuckle_steering_arm(w_base=knuckle_arm_base_w,
                             w_narrow=knuckle_arm_narrow_w,
@@ -54,6 +51,8 @@ module knuckle_steering_arm(w_base=knuckle_arm_base_w,
          [w_base, l2],
          [0, l2]];
 
+  fn = $preview ? 30 : 360;
+
   module _base_shape() {
     difference() {
       union() {
@@ -78,7 +77,7 @@ module knuckle_steering_arm(w_base=knuckle_arm_base_w,
                    bolt_edge_offset,
                    0]) {
           rows_children(rows=holes_n, w=bolt_d, gap=holes_gap) {
-            circle(d=bolt_d, $fn=300,);
+            circle(d=bolt_d, $fn=fn);
           }
         }
       }
@@ -123,12 +122,12 @@ module knuckle_steering_arm(w_base=knuckle_arm_base_w,
         translate([0, 0, -1]) {
           cylinder(d=bearing_shoulder_d,
                    h=w_base + 1,
-                   $fn=300);
+                   $fn=fn);
         }
         translate([0, 0, bearing_h + 1]) {
           cylinder(d=bearing_od,
                    h=bearing_h + 0.8,
-                   $fn=300);
+                   $fn=fn);
         }
       }
     }

@@ -14,6 +14,7 @@ show_knuckle_outer_bearing                  = true;
 show_knuckle_tie_rod                        = true;
 show_front_bulkhead                         = true;
 show_front_bulkhead_upper_suspension_holder = true;
+
 show_front_shock_tower                      = true;
 show_front_suspension_arm_pad               = true;
 
@@ -78,5 +79,4 @@ module front_suspension_assembly(show_front_lower_arm=show_front_lower_arm,
   }
 }
 
-front_bulkhead_chassis();
 front_suspension_assembly();

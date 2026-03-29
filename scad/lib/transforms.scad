@@ -240,3 +240,20 @@ module maybe_color(color, alpha=1) {
     }
   }
 }
+
+module rotate_children_with_shift(size=[0, 0, 0],
+                                  angles=[0, 0, 0],
+                                  show_bbox=false) {
+  bb = rotated_bbox(size, angles);
+  x_shift = bb[3];
+  y_shift = bb[4];
+  z_shift = bb[5];
+  translate([x_shift, y_shift, z_shift]) {
+    rotate(angles) {
+      children();
+    }
+  }
+  if (show_bbox) {
+    #cube([bb[0], bb[1], bb[2]]);
+  }
+}
