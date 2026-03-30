@@ -106,7 +106,7 @@ module thread_ridge(major = 6,
   turns = h / pitch;
   outer_r = major / 2;
   minor_r_est = outer_r - depth;
-  profile_r = minor_r_est + depth/2;
+  profile_r = minor_r_est + depth / 2;
 
   base_half = with_default(base_half, pitch * 0.45);
 
