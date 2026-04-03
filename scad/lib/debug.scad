@@ -6,6 +6,7 @@
  */
 include <../colors.scad>
 
+use <transforms.scad>
 
 module debug_polygon_text(points,
                           font_size=3.0,
@@ -14,6 +15,7 @@ module debug_polygon_text(points,
                           circle_r=0.3,
                           offset_x,
                           offset_y,
+                          rotation,
                           h=0.5) {
   offset_x = is_undef(offset_x) ? 0 : offset_x;
   offset_y = is_undef(offset_y) ? 0 : offset_y;
@@ -34,15 +36,17 @@ module debug_polygon_text(points,
          p1 = pt[1] + offset_y) {
       color(color) {
         translate([p0, p1, 0.1]) {
-          if (has_h) {
-            linear_extrude(height = 0.5) {
-              text(str(i),
-                   size = font_size,
-                   valign="center",
-                   halign="center");
+          maybe_rotate(rotation) {
+            if (has_h) {
+              linear_extrude(height = 0.5) {
+                text(str(i),
+                     size = font_size,
+                     valign="center",
+                     halign="center");
+              }
+            } else {
+              text(str(i), size = font_size, valign="center", halign="center");
             }
-          } else {
-            text(str(i), size = font_size, valign="center", halign="center");
           }
         }
       }
