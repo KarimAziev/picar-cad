@@ -19,13 +19,14 @@ include <../../steering_params.scad>
 
 use <../../lib/shapes2d.scad>
 use <../../lib/shapes3d.scad>
+use <../../lib/threading/threaded_plug_hex_socket.scad>
+use <../../lib/threading/threads.scad>
 use <../../lib/transforms.scad>
+use <knuckle_threaded_plug.scad>
+use <util.scad>
 
-color = cobalt_blue_metallic;
-
-function knuckle_ball_stud_housing_h(base_h=knuckle_ball_stud_house_h,
-                                     sphere_h=knuckle_ball_stud_sphere_h) =
-  base_h + sphere_h;
+color              = cobalt_blue_metallic;
+show_threaded_plug = false;
 
 module knuckle_ball_stud_housing(od=knuckle_ball_stud_mount_outer_d,
                                  base_h=knuckle_ball_stud_house_h,
@@ -35,6 +36,7 @@ module knuckle_ball_stud_housing(od=knuckle_ball_stud_mount_outer_d,
                                  sphere_hole_size=knuckle_ball_stud_cap_hole_size,
                                  stopper_d=knuckle_ball_stud_stopper_d,
                                  stopper_offset=knuckle_ball_stud_stopper_offset,
+                                 show_threaded_plug=show_threaded_plug,
                                  color=cobalt_blue_metallic) {
   fn = $preview ? 30 : 360;
 
@@ -66,6 +68,12 @@ module knuckle_ball_stud_housing(od=knuckle_ball_stud_mount_outer_d,
         }
       }
     }
+    translate([0, 0, -1]) {
+      screw_hole_thread(d=knuckle_threaded_plug_d,
+                        h=base_h + 1,
+                        tolerance=knuckle_threaded_plug_tolerance);
+    }
+
     if (is_num(stopper_d) && stopper_d > 0) {
       translate([0, 0, base_h + stopper_d / 2 - ball_stud_d - stopper_offset]) {
         rotate([90, 0, 0]) {
@@ -79,6 +87,10 @@ module knuckle_ball_stud_housing(od=knuckle_ball_stud_mount_outer_d,
                h=base_h + 1,
                $fn=fn);
     }
+  }
+
+  if (show_threaded_plug) {
+    knuckle_threaded_plug();
   }
 }
 

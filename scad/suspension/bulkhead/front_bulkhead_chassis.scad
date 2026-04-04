@@ -106,15 +106,13 @@ module front_bulkhead_chassis_with_slots_positions(outer_spacing=front_bulkhead_
   }
 }
 
-module front_bulkhead_chassis(outer_spacing=front_bulkhead_mount_bolt_spacing_1,
-                              d=front_bulkhead_mount_bolt_d,
-                              padding_x=chassis_center_mount_padding_x,
-                              padding_y=chassis_center_mount_padding_y,
-                              barrel_y_offset=front_bulkhead_barrel_y_offset,
-                              transition_w=chassis_center_transition_w,
-                              hinge_clearance=front_bulkhead_barrel_hinge_clearance,
-                              h=upper_chassis_t) {
-
+module front_bulkhead_chassis_shape_2d(outer_spacing=front_bulkhead_mount_bolt_spacing_1,
+                                       d=front_bulkhead_mount_bolt_d,
+                                       padding_x=chassis_center_mount_padding_x,
+                                       padding_y=chassis_center_mount_padding_y,
+                                       barrel_y_offset=front_bulkhead_barrel_y_offset,
+                                       transition_w=chassis_center_transition_w,
+                                       hinge_clearance=front_bulkhead_barrel_hinge_clearance) {
   barrel_size = lower_arm_mount_cutout_size();
   barrel_len = barrel_size[1] - hinge_clearance;
   transition_len = front_bulkhead_len - barrel_len - barrel_y_offset;
@@ -125,24 +123,37 @@ module front_bulkhead_chassis(outer_spacing=front_bulkhead_mount_bolt_spacing_1,
                                   padding_y=padding_y);
   size_x = size[0];
   size_y = size[1];
+  translate([0, size_y / 2 + transition_len, 0]) {
+    union() {
+      rounded_rect(size,
+                   r=1,
+                   side="top",
+                   center=true);
+      translate([0, -size_y / 2 - transition_len / 2, 0]) {
+        trapezoid(b=transition_w, h=transition_len, t=size_x, center=true);
+      }
+    }
+  }
+}
+
+module front_bulkhead_chassis(outer_spacing=front_bulkhead_mount_bolt_spacing_1,
+                              d=front_bulkhead_mount_bolt_d,
+                              padding_x=chassis_center_mount_padding_x,
+                              padding_y=chassis_center_mount_padding_y,
+                              barrel_y_offset=front_bulkhead_barrel_y_offset,
+                              transition_w=chassis_center_transition_w,
+                              hinge_clearance=front_bulkhead_barrel_hinge_clearance,
+                              h=upper_chassis_t) {
 
   difference() {
-    translate([0, size_y / 2 + transition_len, 0]) {
-      union() {
-        difference() {
-          linear_extrude(height=h, center=false) {
-            rounded_rect(size,
-                         r=1,
-                         side="top",
-                         center=true);
-          }
-        }
-        translate([0, -size_y / 2 - transition_len / 2, 0]) {
-          linear_extrude(height=h, center=false) {
-            trapezoid(b=transition_w, h=transition_len, t=size_x, center=true);
-          }
-        }
-      }
+    linear_extrude(height=h, center=false) {
+      front_bulkhead_chassis_shape_2d(outer_spacing=outer_spacing,
+                                      d=d,
+                                      padding_x=padding_x,
+                                      padding_y=padding_y,
+                                      barrel_y_offset=barrel_y_offset,
+                                      transition_w=transition_w,
+                                      hinge_clearance=hinge_clearance);
     }
     front_bulk_head_housing_slots_non_center_y();
   }

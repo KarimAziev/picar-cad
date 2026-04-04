@@ -120,7 +120,7 @@ bellcrank_servo_lever_boss_pad_x                  = 2;
 // Bellcrank positioning on the chassis
 // ─────────────────────────────────────────────────────────────────────────────
 
-chassis_bellcrank_spacing                         = 48.0;
+chassis_bellcrank_spacing                         = 48.8;
 
 chassis_bellcrank_y_base                          = 22.8;
 chassis_bellcrank_position_y                      = chassis_bellcrank_y_base
@@ -585,7 +585,7 @@ knuckle_bearing_spacer_ring_d                     = 8;
 knuckle_arm_thickness                             = 4.2;
 
 // The chamfer/fillet radius for the corners of the arm ears
-knuckle_arm_corner_r                              = 1;
+knuckle_arm_corner_r                              = 3.02;
 
 // Diameter of the hole for the bolt that secures the steering arm to the tie rod
 knuckle_arm_bolt_d                                = m3_hole_dia;
@@ -719,6 +719,22 @@ knuckle_ball_stud_cap_hole_size                   = [6.8, front_arm_ball_stud_ba
  */
 knuckle_ball_stud_stopper_d                       = 0;
 knuckle_ball_stud_stopper_offset                  = 2;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Hex socket threaded plug for knuckle's ball stud
+// ─────────────────────────────────────────────────────────────────────────────
+
+ // Outer diameter of the threaded plug
+knuckle_threaded_plug_d                           = 10.0;
+
+// Length diameter of the threaded plug
+knuckle_threaded_plug_l                           = 5.8;
+
+// Hex socket size for the Allen key
+knuckle_threaded_plug_hex_key_size                = 4.8;
+
+knuckle_threaded_plug_tolerance                   = 0.4;
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Bushing for the ball stud
 // ─────────────────────────────────────────────────────────────────────────────
@@ -744,14 +760,13 @@ knuckle_z_shift                                   = 0;
 
 steering_servo_mount_bolt_d                       = m3_hole_dia;
 steering_servo_mount_bolt_bore_d                  = m3_countersunk_head_dia + 0.2;
-steering_servo_mount_bolt_bore_h                  = m3_countersunk_head_h + 0.15;
+steering_servo_mount_bolt_bore_h                  = 1;
 
 steering_servo_tie_rod_body_total_len             = 45.16;
 steering_servo_tie_rod_thread_len                 = 8.8;
-steering_servo_tie_rod_body_len                   = steering_servo_tie_rod_body_total_len
-                                                     - steering_servo_tie_rod_thread_len * 2;
+steering_servo_tie_rod_body_len                   = 5.4;
 steering_servo_tie_rod_body_d                     = 5.65;
-steering_servo_tie_rod_body_end_len               = 5;
+steering_servo_tie_rod_body_end_len               = 0.1;
 steering_servo_tie_rod_thread_d                   = m3_hole_dia;
 steering_servo_tie_rod_fn                         = 6;
 steering_servo_tie_rod_color                      = metallic_silver_1;

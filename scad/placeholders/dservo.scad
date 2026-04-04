@@ -184,7 +184,7 @@ module dsservo(center=false,
         servo_horn_single=servo_horn_single,
         servo_horn_screw_side=servo_horn_screw_side) {
     if (show_servo_horn) {
-      rotate([0, 0, 180]) {
+      rotate([0, 0, 0]) {
         servo_arm(arm_d=steering_servo_arm_d,
                   arm_len=steering_servo_arm_len,
                   arm_base_h=steering_servo_arm_base_h,
@@ -201,14 +201,19 @@ module dsservo(center=false,
                   arm_center_bolt_bore_h=steering_servo_arm_center_bolt_bore_h);
       }
       if (show_tie_rod) {
-        translate([-steering_servo_tie_rod_eye_od / 2 ,
-                   -steering_servo_arm_d / 2
-                   - steering_servo_arm_len
-                   + steering_servo_tie_rod_eye_od / 2,
-                   - steering_servo_arm_bolt_boss_h / 2]) {
+        mirror([1, 0, 0]) {
+          translate([-steering_servo_arm_w / 2,
+                     + steering_servo_arm_d / 2
+                     + steering_servo_arm_len
+                     - steering_servo_tie_rod_eye_od / 2
+                     - steering_servo_arm_bolt_boss_inner_padding,
+                     - steering_servo_arm_bolt_boss_h / 2]) {
 
-          rotate([0, 0, 90 + servo_tie_rod_angle]) {
-            servo_tie_rod(bushing_rotation=[steering_servo_tie_rod_angle, 0, 0]);
+            rotate([0, 0, 0]) {
+              rotate([0, 0, 90 + servo_tie_rod_angle]) {
+                servo_tie_rod(bushing_rotation=[steering_servo_tie_rod_angle, 0, 0]);
+              }
+            }
           }
         }
       }
@@ -216,23 +221,23 @@ module dsservo(center=false,
   }
 }
 
-// dsservo(center=true);
+dsservo(center=true);
 
 // servo_tie_rod();
-let (w=steering_servo_tie_rod_shank_od,
-     length = full_dservo_tie_rod_len(),
-     dims = [w, length, w],
-     ang  = [steering_servo_tie_rod_angle, 0, 0],
-     bb = rotated_bbox(size=dims, a=ang)) {
-  echo("bb", bb);
-  translate([bb[3], -bb[4], bb[5]]) {
-    #cube([bb[0], bb[1], bb[2]]);
-  }
-  translate([0, 0, bb[5]]) {
-    rotate(ang) {
-      translate([0, 0, 0]) {
-        cube(dims);
-      }
-    }
-  }
-}
+// let (w=steering_servo_tie_rod_shank_od,
+//      length = full_dservo_tie_rod_len(),
+//      dims = [w, length, w],
+//      ang  = [steering_servo_tie_rod_angle, 0, 0],
+//      bb = rotated_bbox(size=dims, a=ang)) {
+//   echo("bb", bb);
+//   translate([bb[3], -bb[4], bb[5]]) {
+//     #cube([bb[0], bb[1], bb[2]]);
+//   }
+//   translate([0, 0, bb[5]]) {
+//     rotate(ang) {
+//       translate([0, 0, 0]) {
+//         cube(dims);
+//       }
+//     }
+//   }
+// }

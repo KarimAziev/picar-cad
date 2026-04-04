@@ -24,9 +24,7 @@ show_bellcrank_idler                        = true;
 show_idler_insert_bush                      = true;
 show_idler_upper_bearing                    = true;
 show_idler_lower_bearing                    = true;
-
 show_servo                                  = true;
-
 show_steering_assembly                      = true;
 show_front_lower_arm                        = true;
 show_front_upper_arm                        = true;
@@ -39,77 +37,6 @@ show_front_bulkhead_upper_suspension_holder = true;
 show_front_shock_tower                      = true;
 show_front_suspension_arm_pad               = true;
 show_ackermann_plate                        = true;
-
-module bellcrank_mount(h=upper_chassis_t,
-                       top_w=chassis_center_transition_w,
-                       bottom_w=chassis_bellcrank_mount_w,
-                       length=chassis_bellcrank_mount_len,
-                       bellcrank_y=chassis_bellcrank_position_y,
-                       bolt_spacing=chassis_bellcrank_spacing,
-                       d=upper_chassis_bellcrank_bolt_d,
-                       bore_d=upper_chassis_bellcrank_bolt_bore_d,
-                       bore_h=upper_chassis_bellcrank_bolt_bore_h,
-                       arm_d=bellcrank_arm_od,
-                       pitman_angle=bellcrank_arm_angle,
-                       idle_angle,
-                       show_bellcrank_drive=true,
-                       show_bellcrank_idler=true,
-                       show_idler_insert_bush=show_idler_insert_bush,
-                       show_idler_upper_bearing=show_idler_upper_bearing,
-                       show_idler_lower_bearing=show_idler_lower_bearing) {
-  idle_angle = with_default(idle_angle, -abs(pitman_angle));
-
-  effective_len = max(bellcrank_y, length) + max(bore_d, arm_d);
-
-  difference() {
-    linear_extrude(height=h, center=false) {
-      translate([-bottom_w / 2, -effective_len, 0]) {
-        hull() {
-          trapezoid(b=bottom_w, h=effective_len, t=top_w, center=false);
-          rounded_rect([bottom_w, arm_d],
-                       r_factor=0.5,
-                       center=false,
-                       side="top");
-        }
-      }
-    }
-    translate([0, -bellcrank_y - bore_d / 2, 0]) {
-      four_corner_counterbores(d=d,
-                               h=h,
-                               bore_d=bore_d,
-                               bore_h=bore_h,
-                               size=[bolt_spacing, 0],
-                               reverse=true,
-                               center=true);
-    }
-  }
-
-  if (show_bellcrank_drive) {
-    translate([-bottom_w / 2 + bellcrank_arm_od /2,
-               -bellcrank_y - bore_d / 2,
-               h]) {
-      maybe_rotate([0, 0, pitman_angle]) {
-        rotate([0, 0, -90]) {
-          bellcrank_drive(show_insert_bush=show_idler_insert_bush,
-                          show_upper_bearing=show_idler_upper_bearing,
-                          show_lower_bearing=show_idler_lower_bearing);
-        }
-      }
-    }
-  }
-  if (show_bellcrank_idler) {
-    translate([bottom_w / 2 - bellcrank_arm_od /2,
-               -bellcrank_y - bore_d / 2,
-               h]) {
-      maybe_rotate([0, 0, idle_angle]) {
-        bellcrank_idler(z_angle=-90,
-                        show_insert_bush=show_idler_insert_bush,
-                        show_upper_bearing=show_idler_upper_bearing,
-                        show_lower_bearing=show_idler_lower_bearing);
-      }
-    }
-  }
-}
 
 module upper_chassis(show_bellcrank_drive=show_bellcrank_drive,
                      show_bellcrank_idler=show_bellcrank_idler,
@@ -125,11 +52,13 @@ module upper_chassis(show_bellcrank_drive=show_bellcrank_drive,
                      show_front_bulkhead_upper_suspension_holder=show_front_bulkhead_upper_suspension_holder,
                      show_front_shock_tower=show_front_shock_tower,
                      show_front_suspension_arm_pad=show_front_suspension_arm_pad,
+                     show_ackermann_plate=show_ackermann_plate,
                      show_idler_insert_bush=show_idler_insert_bush,
                      show_idler_upper_bearing=show_idler_upper_bearing,
                      show_idler_lower_bearing=show_idler_lower_bearing) {
-
+  idle_angle = -abs(bellcrank_arm_angle);
   bellcrank_arm_len = bellcrank_arm_l - bellcrank_arm_od;
+  bellcrank_y = chassis_bellcrank_position_y;
 
   dservo_bb = dservo_tie_rod_bbox();
   shaft_len = dservo_bb[1] - dservo_bb[4];
@@ -148,11 +77,6 @@ module upper_chassis(show_bellcrank_drive=show_bellcrank_drive,
     + bellcrank_arm_od / 2
     + bellcrank_arm_w / 2
     + steering_servo_tie_rod_eye_od / 2;
-
-  echo("servo_mount_y",
-       servo_mount_y,
-       "bellcrank_mount_len",
-       bellcrank_mount_len);
 
   bellcrank_mount_len = max(chassis_bellcrank_position_y,
                             chassis_bellcrank_mount_len)
@@ -199,50 +123,48 @@ module upper_chassis(show_bellcrank_drive=show_bellcrank_drive,
   difference() {
     union() {
       front_bulkhead_chassis();
-      bellcrank_mount(show_bellcrank_drive=show_bellcrank_drive,
-                      show_bellcrank_idler=show_bellcrank_idler,
-                      show_idler_insert_bush=show_idler_insert_bush,
-                      show_idler_upper_bearing=show_idler_upper_bearing,
-                      show_idler_lower_bearing=show_idler_lower_bearing);
-      translate([0, -extra_len / 2 - bellcrank_mount_len, 0]) {
-        linear_extrude(height=upper_chassis_t, center=false) {
-          trapezoid_rounded_top(t=chassis_bellcrank_mount_w + dsservo_size[1],
-                                b=chassis_bellcrank_mount_w + dsservo_size[1],
-                                h=extra_len,
-                                center=true,
-                                r=2);
+      linear_extrude(height=upper_chassis_t, center=false) {
+        hull() {
+          translate([-chassis_bellcrank_mount_w / 2, -bellcrank_mount_len, 0]) {
+            union() {
+              trapezoid(b=chassis_bellcrank_mount_w,
+                        h=bellcrank_mount_len,
+                        t=chassis_center_transition_w,
+                        center=false);
+            }
+          }
+          translate([0,
+                     -chassis_bellcrank_position_y - upper_chassis_bellcrank_bolt_bore_d / 2,
+                     0]) {
+            four_corner_children(size=[chassis_bellcrank_spacing, 0],
+                                 center=true) {
+              circle(d=bellcrank_arm_od);
+            }
+          }
+          translate([0, -extra_len / 2 - bellcrank_mount_len, 0]) {
+            trapezoid_rounded_top(t=chassis_bellcrank_mount_w,
+                                  b=chassis_bellcrank_mount_w + dsservo_size[1],
+                                  h=extra_len,
+                                  center=true,
+                                  r=2);
+          }
         }
       }
     }
-    mirror_copy([1, 0, 0]) {
-      translate([-(chassis_bellcrank_mount_w + dsservo_size[1]) / 2,
-                 -bellcrank_mount_len - 10,
-                 -0.5]) {
-        rotate([0, 0, 60]) {
-          cube(size=[20, 50, upper_chassis_t + 1],
-               center=false);
-        }
-      }
+    translate([0,
+               -chassis_bellcrank_position_y - upper_chassis_bellcrank_bolt_bore_d / 2,
+               0]) {
+      four_corner_counterbores(d=upper_chassis_bellcrank_bolt_d,
+                               h=upper_chassis_t,
+                               bore_d=upper_chassis_bellcrank_bolt_bore_d,
+                               bore_h=upper_chassis_bellcrank_bolt_bore_h,
+                               size=[chassis_bellcrank_spacing, 0],
+                               reverse=true,
+                               center=true);
     }
 
     _x_holes_probes(n=1, direction=-1);
     _x_holes_probes(n=2, direction=1);
-    // _x_holes_probes(n=3, direction=1);
-    // let (n = 3,
-    //      shift = (steering_servo_mount_bolt_bore_d + 2)) {
-    //   translate([-shift * n, 0, 0]) {
-    //     translate([0, 0, 0]) {
-    //       for (i = [0 : n - 1]) {
-    //         let (step = i * shift) {
-    //           translate([step, 0, 0]) {
-    //             _servo_hole_probes();
-    //           }
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
-
     _servo_hole_probes();
   }
   translate([0, 0, upper_chassis_t]) {
@@ -260,8 +182,33 @@ module upper_chassis(show_bellcrank_drive=show_bellcrank_drive,
     }
   }
 
-  if (show_ackermann_plate) {
+  if (show_bellcrank_drive) {
+    translate([-chassis_bellcrank_mount_w / 2 + bellcrank_arm_od /2,
+               -bellcrank_y - upper_chassis_bellcrank_bolt_bore_d / 2,
+               upper_chassis_t]) {
+      maybe_rotate([0, 0, bellcrank_arm_angle]) {
+        rotate([0, 0, -90]) {
+          bellcrank_drive(show_insert_bush=show_idler_insert_bush,
+                          show_upper_bearing=show_idler_upper_bearing,
+                          show_lower_bearing=show_idler_lower_bearing);
+        }
+      }
+    }
+  }
+  if (show_bellcrank_idler) {
+    translate([chassis_bellcrank_mount_w / 2 - bellcrank_arm_od /2,
+               -bellcrank_y - upper_chassis_bellcrank_bolt_bore_d / 2,
+               upper_chassis_t]) {
+      maybe_rotate([0, 0, idle_angle]) {
+        bellcrank_idler(z_angle=-90,
+                        show_insert_bush=show_idler_insert_bush,
+                        show_upper_bearing=show_idler_upper_bearing,
+                        show_lower_bearing=show_idler_lower_bearing);
+      }
+    }
+  }
 
+  if (show_ackermann_plate) {
     ackermann_y = -chassis_bellcrank_position_y
       - upper_chassis_bellcrank_bolt_bore_d / 2
       + bellcrank_arm_len
@@ -305,8 +252,10 @@ module upper_chassis_printable() {
                   show_front_bulkhead = false,
                   show_front_bulkhead_upper_suspension_holder = false,
                   show_front_shock_tower = false,
-                  show_front_suspension_arm_pad = false);
+                  show_front_suspension_arm_pad = false,
+                  show_ackermann_plate=false);
   }
 }
 
 upper_chassis();
+// upper_chassis_printable();

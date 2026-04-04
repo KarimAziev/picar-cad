@@ -12,18 +12,9 @@ use <../lib/plist.scad>
 use <../lib/shapes2d.scad>
 use <../lib/shapes3d.scad>
 use <../lib/text.scad>
+use <../lib/threading/thread_funcs.scad>
 use <../lib/transforms.scad>
 use <nut.scad>
-
-function default_pitch(d) =
-  (d <= 2) ? 0.4 :
-  (d <= 3) ? 0.65 :
-  (d <= 4) ? 0.7 :
-  (d <= 5) ? 0.8 :
-  (d <= 6) ? 1.0 :
-  (d <= 8) ? 1.25 :
-  (d <= 10) ? 1.5 :
-  (d <= 12) ? 1.75 : 2.0;
 
 function snap_bolt_d(d) =
   d >= 2.5 && d < 3
@@ -332,7 +323,7 @@ module bolt(d = 2.5,                 // major diameter (mm)
                                       plist_get("colors", bolt_spec, []),
                                       nut_color));
 
-  let (pitch_v   = pitch != undef ? pitch : default_pitch(d),
+  let (pitch_v   = pitch != undef ? pitch : thread_pitch(d),
        thread_len_v = thread_len != undef ? max(0, thread_len) : max(0, h - unthreaded),
        turns = thread_len_v / pitch_v,
        thread_segments = ceil(turns * 30),
@@ -466,12 +457,23 @@ d = 6;
 d3 = 13;
 nut_distance = 4;
 
-bolt(d = d,
+// bolt(d = d,
+//      h = h,
+//      head_d=d3,
+//      head_h=5.5,
+//      threaded = true,
+//      unthreaded=20,
+//      show_nut=false,
+//      lock_nut=false,
+//      unthreaded_d=8,
+//      nut_head_distance=nut_distance,
+//      bolt_color=matte_black,
+//      unthreaded_color=metallic_silver_2,
+//      head_type = "socket");
+
+bolt(d = 3,
      h = h,
-     head_d=d3,
-     head_h=5.5,
      threaded = true,
-     unthreaded=20,
      show_nut=false,
      lock_nut=false,
      unthreaded_d=8,
@@ -479,3 +481,5 @@ bolt(d = d,
      bolt_color=matte_black,
      unthreaded_color=metallic_silver_2,
      head_type = "socket");
+
+// echo("thread_pitch(d=5)", thread_pitch(3));
