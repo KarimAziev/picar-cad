@@ -336,57 +336,5 @@ module front_bulkhead_mount_hinges(bolt_d=front_bulkhead_mount_bolt_d,
     }
   }
 }
-// module front_bulkhead_mount_hinges(bolt_d=front_bulkhead_mount_bolt_d,
-//                                    pad_x=2,
-//                                    pad_y=1.5,
-//                                    padding=front_bulkhead_mount_bolt_padding,
-//                                    outer_spacing=front_bulkhead_mount_bolt_spacing_1,
-//                                    inner_spacing=front_bulkhead_mount_bolt_spacing_2,
-//                                    d=front_bulkhead_mount_bolt_d,
-//                                    h=front_bulkhead_hinge_thickness,
-//                                    padding=front_bulkhead_mount_bolt_padding,
-//                                    center_x=true,
-//                                    center_y=true,
-//                                    rear=false) {
-
-//   x = outer_spacing[0] + bolt_d + pad_x * 2;
-
-//   y = bolt_d + pad_y * 2;
-
-//   module _hinge() {
-//     translate([x / 2 - (x - $full_x), 0, 0]) {
-//       rounded_rect([x, y], center=true, r_factor=0.5, fn=$preview ? 30 : 200);
-//     }
-//   }
-
-//   difference() {
-//     linear_extrude(height=h, center=false) {
-//       front_bulkhead_chassis_with_slots_positions(outer_spacing=front_bulkhead_mount_bolt_spacing_1,
-//                                                   inner_spacing=front_bulkhead_mount_bolt_spacing_2,
-//                                                   d=front_bulkhead_mount_bolt_d,
-//                                                   padding=front_bulkhead_mount_bolt_padding,
-//                                                   center_x=center_x,
-//                                                   center_y=center_y) {
-
-//         if ($x_i == 0) {
-//           if (($outer && !rear && $y_i == 1)) {
-//             _hinge();
-//           } else if (rear && !$outer && $y_i == 0) {
-//             _hinge();
-//           }
-//         }
-//       }
-//     }
-
-//     front_bulkhead_chassis_with_slots_positions(outer_spacing=outer_spacing,
-//                                                 inner_spacing=inner_spacing,
-//                                                 d=d,
-//                                                 padding=padding,
-//                                                 center_x=center_x,
-//                                                 center_y=center_y) {
-//       counterbore(d=d, h=h, sink=true);
-//     }
-//   }
-// }
 
 front_bulkhead();
