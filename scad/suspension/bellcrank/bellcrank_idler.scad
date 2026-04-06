@@ -58,12 +58,14 @@ module bellcrank_idler(color=cobalt_blue_light_1,
   upper_bearing_z = bush_h - shoulder_h - bearing_w;
   upper_boss_thickness = upper_boss_d - bolt_d;
 
+  fn = $preview ? 25 : 360;
+
   module _bearing() {
     bellcrank_idler_bearing(w=bearing_w, od=bearing_od, d=bearing_d);
   }
 
   module _bearing_hole(h) {
-    cylinder(h=h, d=bearing_od + bearing_clearance, $fn=$preview ? 16 : 40);
+    cylinder(h=h, d=bearing_od + bearing_clearance, $fn=fn);
   }
 
   module _bearing_holes() {
@@ -93,7 +95,7 @@ module bellcrank_idler(color=cobalt_blue_light_1,
                 }
 
                 translate([0, 0, arm_z]) {
-                  cylinder(h=upper_h, d=od, $fn=$preview ? 25 : 360);
+                  cylinder(h=upper_h, d=od, $fn=fn);
                 }
               }
             }
@@ -102,13 +104,13 @@ module bellcrank_idler(color=cobalt_blue_light_1,
                 cylinder(h=upper_h - thickness,
                          d1=arm_od,
                          d2=od,
-                         $fn=$preview ? 25 : 360);
+                         $fn=fn);
               }
               translate([0, 0, -lower_h]) {
                 cylinder(h=lower_h,
                          d1=od,
                          d2=arm_od,
-                         $fn=$preview ? 25 : 360);
+                         $fn=fn);
               }
             }
           }
@@ -117,18 +119,18 @@ module bellcrank_idler(color=cobalt_blue_light_1,
                d=support_d,
                outer_d=od,
                color=color,
-               fn=$preview ? 25 : 360);
+               fn=fn);
         }
         translate([0, 0, -0.5]) {
           cylinder(h=h + 1,
                    d=support_d,
-                   $fn=$preview ? 25 : 360);
+                   $fn=fn);
         }
         _bearing_holes();
       }
     } else {
       difference() {
-        ring(h=h, d=support_d, outer_d=od, color=color, fn=$preview ? 25 : 360);
+        ring(h=h, d=support_d, outer_d=od, color=color, fn=fn);
         translate([0, 0, upper_bearing_z]) {
           _bearing_hole(h=bearing_w + extra_h + 0.1);
         }
