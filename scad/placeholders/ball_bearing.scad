@@ -32,6 +32,8 @@ module ball_bearing(bore_d,
                     w,
                     rubber_seal_color=metallic_silver_9,
                     ring_color=metallic_silver_3,
+                    rubber_seal_covers_outer_recess=false,
+                    rubber_seal_both_sides=true,
                     ball_d,
                     balls_n=7,
                     ball_clearance=0.2,
@@ -57,6 +59,23 @@ module ball_bearing(bore_d,
       let (angle_deg = i * 360 / fn)
         circle_point(angle_deg, gap_rad, w)];
 
+  ring_h = w / 2;
+
+  module _rubber_seal() {
+    let (h = 0.2,
+         od = rubber_seal_covers_outer_recess
+         ? outer_recess_d
+         : (outer_recess_d - ball_rad)) {
+
+      translate([0, 0, -0.1]) {
+        ring(d=shoulder_d,
+             outer_d=od,
+             h=h,
+             color=rubber_seal_color);
+      }
+    }
+  }
+
   union() {
     render() {
       color(ring_color, alpha=1) {
@@ -78,38 +97,43 @@ module ball_bearing(bore_d,
             }
           }
 
-          let (d = outer_recess_d - ball_rad,
-               h = w / 2) {
-            translate([0, 0, h + 0.1]) {
-              ring(d=d,
-                   outer_d2=outer_recess_d,
-                   outer_d1=outer_recess_d / 2,
-                   h=h);
-            }
-
-            translate([0, 0, h - 0.1]) {
-              rotate([180, 0, 0]) {
+          if (!rubber_seal_both_sides) {
+            let (d = outer_recess_d - ball_rad,
+                 h = ring_h) {
+              translate([0, 0, h + 0.1]) {
                 ring(d=d,
                      outer_d2=outer_recess_d,
-                     outer_d1=0,
+                     outer_d1=outer_recess_d / 2,
                      h=h);
+              }
+
+              translate([0, 0, h - 0.1]) {
+                rotate([180, 0, 0]) {
+                  ring(d=d,
+                       outer_d2=outer_recess_d,
+                       outer_d1=0,
+                       h=h);
+                }
               }
             }
           }
         }
       }
     }
-    translate([0, 0, 0.1]) {
-
-      ring(d=shoulder_d,
-           outer_d=outer_recess_d - ball_rad,
-           h=1,
-           color=rubber_seal_color);
+    if (rubber_seal_both_sides) {
+      _rubber_seal();
+      translate([0, 0, w]) {
+        _rubber_seal();
+      }
+    } else {
+      _rubber_seal();
     }
 
-    for (idx = [0 : len(ball_positions) - 1]) {
-      translate(ball_positions[idx])
-        sphere(r = ball_rad + ball_clearance, $fn=fn);
+    if (!rubber_seal_both_sides) {
+      for (idx = [0 : len(ball_positions) - 1]) {
+        translate(ball_positions[idx])
+          sphere(r = ball_rad + ball_clearance, $fn=fn);
+      }
     }
   }
 }

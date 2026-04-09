@@ -21,8 +21,10 @@ use <../../lib/shapes3d.scad>
 use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
 use <../../lib/trapezoids.scad>
-use <../upper_chassis.scad>
+use <../../placeholders/bolt.scad>
+use <../../placeholders/suspension_arm_pin.scad>
 use <../wishbone_arms/lower_arm.scad>
+use <../wishbone_arms/upper_arm.scad>
 use <front_bulkhead_chassis.scad>
 use <front_bulkhead_housing.scad>
 use <front_shock_tower.scad>
@@ -32,73 +34,9 @@ use <suspension_arm_pad.scad>
 show_front_shock_tower       = false;
 show_upper_suspension_holder = false;
 show_suspension_arm_pad      = false;
-
-module front_bulkhead_shock_tower_mount(color=cobalt_blue_metallic,
-                                        shock_tower_color=cobalt_blue_metallic,
-                                        show_tower=false,
-                                        bulkhead_w=front_bulkhead_w,
-                                        thickness=front_bulkhead_shock_tower_mount_thickness,
-                                        tower_mount_corner_r=front_bulkhead_shock_tower_mount_corner_r,
-                                        shock_tower_bolt_spacing=front_shock_tower_bolt_spacing,
-                                        shock_tower_bolt_d=front_shock_tower_bolt_d,
-                                        mount_offset=front_bulkhead_shock_tower_mount_offset,
-                                        pad_y_top=front_bulkhead_shock_tower_mount_pad_y_top,
-                                        shock_tower_pad_y=front_shock_tower_damper_holes_pad_y,
-                                        pad_x=front_bulkhead_shock_tower_mount_pad_x) {
-
-  shock_mount_size_x = shock_tower_bolt_spacing[0]
-    + shock_tower_bolt_d
-    + pad_x * 2;
-
-  shock_mount_size_y = shock_tower_bolt_spacing[1]
-    + shock_tower_bolt_d
-    + shock_tower_pad_y * 2;
-
-  maybe_color(color) {
-    translate([0,
-               shock_mount_size_y / 2 + mount_offset,
-               0]) {
-      linear_extrude(height=thickness,
-                     center=false) {
-        difference() {
-          union() {
-            rounded_rect([shock_mount_size_x, shock_mount_size_y],
-                         center=true,
-                         side="top",
-                         r=tower_mount_corner_r,
-                         fn=$preview ? 40 : 300);
-            translate([-shock_mount_size_x / 2, -shock_mount_size_y / 2, 0]) {
-              rounded_rect([shock_mount_size_x, shock_mount_size_y + pad_y_top],
-                           center=false,
-                           side="top",
-                           r=tower_mount_corner_r,
-                           fn=$preview ? 40 : 300);
-            }
-            translate([0,
-                       -mount_offset / 2
-                       -shock_mount_size_y / 2,
-                       0]) {
-              trapezoid(b=bulkhead_w,
-                        t=shock_mount_size_x,
-                        h=mount_offset,
-                        center=true);
-            }
-          }
-          four_corner_holes_2d(size=shock_tower_bolt_spacing,
-                               d=shock_tower_bolt_d,
-                               center=true);
-        }
-      }
-    }
-  }
-  if (show_tower) {
-    translate([0, mount_offset, 0]) {
-      rotate([0, 180, 0]) {
-        front_shock_tower(color=shock_tower_color);
-      }
-    }
-  }
-}
+show_front_upper_arm         = false;
+show_upper_arm_ball_stud     = false;
+show_front_upper_arm_pin     = false;
 
 module front_bulkhead(color=cobalt_blue_light_1,
                       shock_tower_color=cobalt_blue_metallic,
@@ -130,7 +68,10 @@ module front_bulkhead(color=cobalt_blue_light_1,
                       support_clearance=front_bulkhead_support_clearance,
                       upper_holder_round_cutout_y_offset=front_upper_suspension_holder_round_cutout_offset,
                       pin_d=front_upper_arm_hinge_barrel_hole_d,
-
+                      show_front_upper_arm=show_front_upper_arm,
+                      show_upper_arm_ball_stud=show_upper_arm_ball_stud,
+                      show_front_upper_arm_pin=show_front_upper_arm_pin,
+                      arm_pin_l=front_upper_arm_pin_len,
                       arm_pad_hook_h=front_suspension_arm_pad_hook_len_y,
                       arm_pad_thickness=front_suspension_arm_pad_thickness,
                       arm_pad_holder_thickness=front_bulkhead_suspension_pad_thickness,
@@ -146,6 +87,10 @@ module front_bulkhead(color=cobalt_blue_light_1,
 
   // Width of the internal support feature, accounting for clearance
   support_w = upper_holder_round_cutout_d - support_clearance;
+
+  arm_pin_d = snap_bolt_d(pin_d);
+
+  upper_suspension_holder_y = -l2 - upper_holder_barrel_h;
 
   union() {
     maybe_color(color) {
@@ -224,8 +169,8 @@ module front_bulkhead(color=cobalt_blue_light_1,
           }
         }
       }
-      translate([0, -l2, 0]) {
 
+      translate([0, -l2, 0]) {
         front_bulkhead_mount_hinges();
         front_bulkhead_mount_hinges(rear=true);
       }
@@ -260,11 +205,104 @@ module front_bulkhead(color=cobalt_blue_light_1,
 
     if (show_upper_suspension_holder) {
       translate([0,
-                 -l2 - upper_holder_barrel_h,
+                 upper_suspension_holder_y,
                  shock_tower_mount_offset + common_pin_y]) {
         rotate([90, 0, 180]) {
           front_upper_suspension_holder();
         }
+      }
+    }
+    if (show_front_upper_arm) {
+      mirror_copy([1, 0, 0]) {
+        translate([front_bulkhead_pin_spacing / 2
+                   - pin_d / 2
+                   - front_upper_arm_hinge_barrel_hole_offset,
+                   shock_tower_mount_thickness - front_upper_arm_h,
+                   shock_tower_mount_offset + front_upper_arm_thickness / 2]) {
+
+          upper_arm(show_ball_stud=show_upper_arm_ball_stud);
+        }
+      }
+    }
+    if (show_front_upper_arm_pin) {
+      mirror_copy([1, 0, 0]) {
+        translate([-front_bulkhead_pin_spacing / 2,
+                   upper_suspension_holder_y,
+                   shock_tower_mount_offset
+                   + common_pin_y
+                   + arm_pin_d / 2
+                   + (pin_d - arm_pin_d) / 2]) {
+          rotate([-90, 0, 0]) {
+            suspension_arm_pin(d=arm_pin_d, l=arm_pin_l);
+          }
+        }
+      }
+    }
+  }
+}
+
+module front_bulkhead_shock_tower_mount(color=cobalt_blue_metallic,
+                                        shock_tower_color=cobalt_blue_metallic,
+                                        show_tower=false,
+                                        bulkhead_w=front_bulkhead_w,
+                                        thickness=front_bulkhead_shock_tower_mount_thickness,
+                                        tower_mount_corner_r=front_bulkhead_shock_tower_mount_corner_r,
+                                        shock_tower_bolt_spacing=front_shock_tower_bolt_spacing,
+                                        shock_tower_bolt_d=front_shock_tower_bolt_d,
+                                        mount_offset=front_bulkhead_shock_tower_mount_offset,
+                                        pad_y_top=front_bulkhead_shock_tower_mount_pad_y_top,
+                                        shock_tower_pad_y=front_shock_tower_damper_holes_pad_y,
+                                        pad_x=front_bulkhead_shock_tower_mount_pad_x) {
+
+  shock_mount_size_x = shock_tower_bolt_spacing[0]
+    + shock_tower_bolt_d
+    + pad_x * 2;
+
+  shock_mount_size_y = shock_tower_bolt_spacing[1]
+    + shock_tower_bolt_d
+    + shock_tower_pad_y * 2;
+
+  maybe_color(color) {
+    translate([0,
+               shock_mount_size_y / 2 + mount_offset,
+               0]) {
+      linear_extrude(height=thickness,
+                     center=false) {
+        difference() {
+          union() {
+            rounded_rect([shock_mount_size_x, shock_mount_size_y],
+                         center=true,
+                         side="top",
+                         r=tower_mount_corner_r,
+                         fn=$preview ? 40 : 300);
+            translate([-shock_mount_size_x / 2, -shock_mount_size_y / 2, 0]) {
+              rounded_rect([shock_mount_size_x, shock_mount_size_y + pad_y_top],
+                           center=false,
+                           side="top",
+                           r=tower_mount_corner_r,
+                           fn=$preview ? 40 : 300);
+            }
+            translate([0,
+                       -mount_offset / 2
+                       -shock_mount_size_y / 2,
+                       0]) {
+              trapezoid(b=bulkhead_w,
+                        t=shock_mount_size_x,
+                        h=mount_offset,
+                        center=true);
+            }
+          }
+          four_corner_holes_2d(size=shock_tower_bolt_spacing,
+                               d=shock_tower_bolt_d,
+                               center=true);
+        }
+      }
+    }
+  }
+  if (show_tower) {
+    translate([0, mount_offset, 0]) {
+      rotate([0, 180, 0]) {
+        front_shock_tower(color=shock_tower_color);
       }
     }
   }

@@ -17,8 +17,6 @@ use <../../lib/debug.scad>
 use <../../lib/shapes2d.scad>
 use <../../lib/trapezoids.scad>
 
-// 38
-
 module suspension_arm_pad(color=cobalt_blue_light_3,
                           pin_d=front_upper_arm_hinge_barrel_hole_d,
                           pad=front_suspension_arm_pad_pin_hole_pad_r,

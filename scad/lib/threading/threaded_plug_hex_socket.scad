@@ -53,3 +53,5 @@ module threaded_plug_hex_socket_slot(d=9.8,
                                      tolerance=0.4) {
   screw_hole_thread(d=d, h=l, tolerance=tolerance);
 }
+
+threaded_plug_hex_socket(d=9.8, l=5.8, hex_size=5);

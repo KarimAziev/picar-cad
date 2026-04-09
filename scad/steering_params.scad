@@ -22,6 +22,7 @@ ackermann_plate_boss_h                            = 4.9;
 //   The lower boss is for the Ackermann plate bushing.
 // - For the knuckle steering link, with an upper boss only.
 // ─────────────────────────────────────────────────────────────────────────────
+
 bellcrank_arm_bolt_d                              = m3_hole_dia;
 // Outer ring diameter
 bellcrank_arm_od                                  = 11.1;
@@ -62,19 +63,29 @@ bellcrank_arm_angle                               = 1.6;
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Outer diameter of the bearing
-bellcrank_idler_bearing_od                        = 8;
+bellcrank_idler_bearing_od                        = 10;
 // Inner (bore) diameter of the bearing
 bellcrank_idler_bearing_d                         = 5;
+
 // Width of the bearing
-bellcrank_idler_bearing_w                         = 3;
+bellcrank_idler_bearing_w                         = 4;
+
+bellcrank_idler_bearing_outer_recess_d            = 9;
+
+bellcrank_idler_bearing_shoulder_d                = 6.5;
+
+// The clearance for the bearing diameter
+bellcrank_bearing_clearance                       = 0.2;
+
+// The clearance for the insert bush hole
+bellcrank_bush_clearance                          = 0.3;
 
 // The outer diameter of the bellcrank cylinder
-bellcrank_idler_od                                = bellcrank_idler_bearing_od + 2.1;
+bellcrank_idler_od                                = bellcrank_idler_bearing_od + 5.0;
 
-// The diameter of the inner hole inside the bellcrank idler, to prevent the
-// bearing from sliding inside
-bellcrank_idler_support_d                         = bellcrank_idler_bearing_od
-                                                     - (bellcrank_idler_bearing_od - bellcrank_idler_bearing_d) * 0.6;
+bellcrank_idler_extra_h                           = 1.9;
+
+bellcrank_idler_support_thickness                 = 2;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Pivot bush
@@ -85,19 +96,34 @@ bellcrank_idler_support_d                         = bellcrank_idler_bearing_od
 // ─────────────────────────────────────────────────────────────────────────────
 
 // The height of the pivot bush where the top and bottom bearings are inserted
-bellcrank_idler_insert_bush_h                     = 32.0;
+bellcrank_post_h                                  = 32.55;
 
 // The outer diameter of the pivot bush
-bellcrank_idler_insert_bush_od                    = bellcrank_idler_bearing_d - 0.1;
+bellcrank_post_od                                 = bellcrank_idler_bearing_d - 0.1;
 
 // The hole diameter for the bolt
-bellcrank_idler_insert_bush_d                     = m3_hole_dia;
+bellcrank_post_bolt_d                             = m3_hole_dia;
 
 // The diameter of the bottom flange (shoulder)
-bellcrank_idler_insert_bush_flang_d               = bellcrank_idler_bearing_d + 1.2;
+bellcrank_post_flang_d                            = bellcrank_idler_bearing_d + 1.2;
 
 // The height of the bottom flange (shoulder)
-bellcrank_idler_insert_bush_flang_h               = 1.1;
+bellcrank_post_flang_h                            = 1.0;
+
+// The depth of the bolt hole at the bottom
+bellcrank_post_lower_hole_depth                   = 8;
+
+// The depth of the bolt hole at the top
+bellcrank_post_upper_hole_depth                   = 8;
+
+bellcrank_lever_border_w                          = 1.5;
+
+// The addional height of the bellcrank for the upper's bearing chamfer
+bellcrank_idler_chamfer_h                         = 0.8;
+
+bellcrank_idler_chamfer_angle                     = 30;
+
+bellcrank_idler_use_hull                          = false;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Bellcrank drive (servo lever parameters)
@@ -279,6 +305,9 @@ front_upper_arm_ball_stud_hole_depth              = front_arm_ball_stud_len - fr
 
 // How far to screw out the ball stud. A higher value means the bolt is screwed in less
 front_upper_arm_ball_stud_insert_out_depth        = 1;
+
+// The length of the pin which inserted into arm hinges
+front_upper_arm_pin_len                           = 32.0;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Front bulkhead and it's housing

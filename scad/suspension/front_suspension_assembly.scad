@@ -14,7 +14,9 @@ show_knuckle_outer_bearing                  = true;
 show_knuckle_tie_rod                        = true;
 show_front_bulkhead                         = true;
 show_front_bulkhead_upper_suspension_holder = true;
-
+show_lower_arm_ball_stud                    = true;
+show_upper_arm_ball_stud                    = true;
+show_front_upper_arm_pin                    = true;
 show_front_shock_tower                      = true;
 show_front_suspension_arm_pad               = true;
 
@@ -27,7 +29,10 @@ module front_suspension_assembly(show_front_lower_arm=show_front_lower_arm,
                                  show_front_bulkhead=show_front_bulkhead,
                                  show_front_shock_tower=show_front_shock_tower,
                                  show_front_bulkhead_upper_suspension_holder=show_front_bulkhead_upper_suspension_holder,
-                                 show_front_suspension_arm_pad=show_front_suspension_arm_pad) {
+                                 show_front_suspension_arm_pad=show_front_suspension_arm_pad,
+                                 show_upper_arm_ball_stud=show_upper_arm_ball_stud,
+                                 show_front_upper_arm_pin=show_front_upper_arm_pin,
+                                 show_lower_arm_ball_stud=show_lower_arm_ball_stud) {
   barrel_size = lower_arm_mount_cutout_size();
   barrel_y_start = front_bulkhead_len - front_bulkhead_barrel_y_offset
     - barrel_size[1];
@@ -44,7 +49,10 @@ module front_suspension_assembly(show_front_lower_arm=show_front_lower_arm,
       translate([0, front_bulkhead_len / 2, front_bulkhead_housing_h]) {
         front_bulkhead(show_shock_tower=show_front_shock_tower,
                        show_upper_suspension_holder=show_front_bulkhead_upper_suspension_holder,
-                       show_suspension_arm_pad=show_front_suspension_arm_pad);
+                       show_suspension_arm_pad=show_front_suspension_arm_pad,
+                       show_upper_arm_ball_stud=show_upper_arm_ball_stud,
+                       show_front_upper_arm_pin=show_front_upper_arm_pin,
+                       show_front_upper_arm=show_front_upper_arm);
       }
     }
 
@@ -59,7 +67,7 @@ module front_suspension_assembly(show_front_lower_arm=show_front_lower_arm,
                  0,
                  0]) {
         knuckle_left(show_lower_arm=show_front_lower_arm,
-                     show_upper_arm=show_front_upper_arm,
+                     show_upper_arm=false,
                      show_knuckle_bushing=show_knuckle_bushing,
                      show_knuckle_inner_bearing=show_knuckle_inner_bearing,
                      show_knuckle_outer_bearing=show_knuckle_outer_bearing,
@@ -69,7 +77,7 @@ module front_suspension_assembly(show_front_lower_arm=show_front_lower_arm,
                  0,
                  0]) {
         knuckle_right(show_lower_arm=show_front_lower_arm,
-                      show_upper_arm=show_front_upper_arm,
+                      show_upper_arm=false,
                       show_knuckle_bushing=show_knuckle_bushing,
                       show_knuckle_inner_bearing=show_knuckle_inner_bearing,
                       show_knuckle_outer_bearing=show_knuckle_outer_bearing,
