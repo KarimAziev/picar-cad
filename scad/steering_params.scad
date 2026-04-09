@@ -103,6 +103,9 @@ bellcrank_post_lower_hole_depth                   = 8;
 // The depth of the bolt hole at the top
 bellcrank_post_upper_hole_depth                   = 8;
 
+// Whether to use threads for the bolt hole
+bellcrank_post_use_threading                      = false;
+
 bellcrank_lever_border_w                          = 1.5;
 
 // The addional height of the bellcrank for the upper's bearing chamfer

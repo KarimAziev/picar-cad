@@ -27,7 +27,8 @@ module bellcrank_post(color=metallic_silver_1,
                       shoulder_h=bellcrank_post_flang_h,
                       bolt_d=bellcrank_post_bolt_d,
                       lower_hole_depth=bellcrank_post_lower_hole_depth,
-                      upper_hole_depth=bellcrank_post_upper_hole_depth) {
+                      upper_hole_depth=bellcrank_post_upper_hole_depth,
+                      use_screw_thread=bellcrank_post_use_threading) {
 
   fn = $preview ? 16 : 360;
 
@@ -36,12 +37,22 @@ module bellcrank_post(color=metallic_silver_1,
       cylinder(d=od, h=h, $fn=fn);
       cylinder(d=shoulder_d, h=shoulder_h, $fn=6);
     }
-    translate([0, 0, -0.01]) {
-      screw_thread(od=bolt_d, height=lower_hole_depth + 0.01);
-    }
+    if (use_screw_thread) {
+      translate([0, 0, -0.01]) {
+        screw_thread(od=bolt_d, height=lower_hole_depth + 0.01);
+      }
 
-    translate([0, 0, h - upper_hole_depth + 0.01]) {
-      screw_thread(od=bolt_d, height=upper_hole_depth + 0.01);
+      translate([0, 0, h - upper_hole_depth + 0.01]) {
+        screw_thread(od=bolt_d, height=upper_hole_depth + 0.01);
+      }
+    } else {
+      translate([0, 0, -0.01]) {
+        cylinder(d=bolt_d, h=lower_hole_depth + 0.01, $fn=fn);
+      }
+
+      translate([0, 0, h - upper_hole_depth + 0.01]) {
+        cylinder(d=bolt_d, h=upper_hole_depth + 0.01, $fn=fn);
+      }
     }
   }
 }
