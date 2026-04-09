@@ -1,5 +1,5 @@
 /**
-  * Module: Ackermann Plate (tie-bar) for dual-bellcrank steering.
+  * Module: Center link (tie-bar) for dual-bellcrank steering.
   *
   * Creates a flat “dogbone” plate with two boss rings and through-holes.
   *
@@ -14,14 +14,14 @@ use <../../lib/functions.scad>
 use <../../lib/shapes3d.scad>
 use <../../lib/transforms.scad>
 
-module ackermann_plate(length=ackermann_plate_len,
-                       width=ackermann_plate_w,
-                       thickness=ackermann_plate_thickness,
-                       hole_d=ackermann_plate_hole_d,
-                       boss_od = ackermann_plate_boss_od,
-                       boss_h=ackermann_plate_boss_h,
-                       color=cobalt_blue_metallic,
-                       center_z_bar=false) {
+module center_link(length=steering_center_link_len,
+                   width=steering_center_link_w,
+                   thickness=steering_center_link_thickness,
+                   hole_d=steering_center_link_hole_d,
+                   boss_od = steering_center_link_boss_od,
+                   boss_h=steering_center_link_boss_h,
+                   color=cobalt_blue_metallic,
+                   center_z_bar=false) {
   assert(boss_od >= width, "Boss outer diameter must be at least plate width");
   assert(boss_od > hole_d,
          "Boss outer diameter must be greater than hole diameter");
@@ -51,6 +51,6 @@ module ackermann_plate(length=ackermann_plate_len,
   }
 }
 
-translate([0, -ackermann_plate_boss_od / 2, 0]) {
-  ackermann_plate();
+translate([0, -steering_center_link_boss_od / 2, 0]) {
+  center_link();
 }

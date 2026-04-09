@@ -2,19 +2,6 @@ include <colors.scad>
 include <parameters.scad>
 
 
-// Total length (bar plus two rings) of the “dogbone” plate
-ackermann_plate_len                               = 56.7;
-// Overall width of the “dogbone” plate
-ackermann_plate_w                                 = 4.8;
-// Overall thickness of the “dogbone” plate
-ackermann_plate_thickness                         = 3.9;
-// Diameter of the holes
-ackermann_plate_hole_d                            = 4.7;
-// Outer diameter of the bosses
-ackermann_plate_boss_od                           = 8;
-// Height of the bosses
-ackermann_plate_boss_h                            = 4.9;
-
 // ─────────────────────────────────────────────────────────────────────────────
 // Bellcrank link arm. Part of both the drive and idler arms.
 // It has two bolt holes:
@@ -782,6 +769,23 @@ knuckle_bushing_hole_border_w                     = 0.8;
 knuckle_angles                                    = [0, 0, 0];
 // How far to lower the knuckle in the assembly
 knuckle_z_shift                                   = 0;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Center link for dual-bellcrank steering
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Total length (bar plus two rings) of the “dogbone” plate
+steering_center_link_len                          = 56.7;
+// Overall width of the “dogbone” plate
+steering_center_link_w                            = 4.8;
+// Overall thickness of the “dogbone” plate
+steering_center_link_thickness                    = 3.9;
+// Diameter of the holes
+steering_center_link_hole_d                       = 4.7;
+// Outer diameter of the bosses
+steering_center_link_boss_od                      = 8;
+// Height of the bosses
+steering_center_link_boss_h                       = 4.9;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Bellcrank arm to steering servo arm tie rod
