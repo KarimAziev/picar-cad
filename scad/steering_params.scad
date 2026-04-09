@@ -64,13 +64,13 @@ bellcrank_idler_bearing_shoulder_d                = 6.5;
 // The clearance for the bearing diameter
 bellcrank_bearing_clearance                       = 0.2;
 
-// The clearance for the insert bush hole
-bellcrank_bush_clearance                          = 0.3;
+// The clearance for the bellcrank post's hole
+bellcrank_post_hole_clearance                     = 0.5;
 
 // The outer diameter of the bellcrank cylinder
 bellcrank_idler_od                                = bellcrank_idler_bearing_od + 5.0;
 
-bellcrank_idler_extra_h                           = 1.9;
+bellcrank_idler_extra_h                           = 0.8;
 
 bellcrank_idler_support_thickness                 = 2;
 

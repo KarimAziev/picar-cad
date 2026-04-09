@@ -40,7 +40,7 @@ module bellcrank_idler(color=cobalt_blue_light_1,
                        bush_od=bellcrank_post_od,
                        bush_d=bellcrank_post_bolt_d,
                        bush_hole_depth=bellcrank_post_lower_hole_depth,
-                       bush_clearance=bellcrank_bush_clearance,
+                       bush_clearance=bellcrank_post_hole_clearance,
                        shoulder_d=bellcrank_post_flang_d,
                        shoulder_h=bellcrank_post_flang_h,
                        show_insert_bush=show_bellcrank_post,
@@ -159,7 +159,7 @@ module bellcrank_idler_bearing_bush_hole(chamfer_h=bellcrank_idler_chamfer_h,
                                          bearing_w=bellcrank_idler_bearing_w,
                                          bush_h=bellcrank_post_h,
                                          bush_od=bellcrank_post_od,
-                                         bush_clearance=bellcrank_bush_clearance,
+                                         bush_clearance=bellcrank_post_hole_clearance,
                                          shoulder_h=bellcrank_post_flang_h) {
   h = bush_h - shoulder_h + chamfer_h + extra_h;
 
