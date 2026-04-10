@@ -152,8 +152,6 @@ module steering_tie_rod_link(eye_od=knuckle_tie_rod_eye_od,
 module steering_link(knuckle_arm_len=knuckle_arm_base_len,
                      knuckle_outer_d=knuckle_arm_ring_outer_d,
                      knuckle_ear_len=knuckle_arm_ear_len,
-                     knuckle_connector_l=knuckle_arm_ring_connector_l,
-                     knuckle_arm_corner_r=knuckle_arm_corner_r,
                      w_narrow=knuckle_arm_narrow_w,
                      knuckle_arm_angle=knuckle_arm_angle,
                      bolt_d=knuckle_arm_bolt_d,
@@ -198,14 +196,14 @@ module steering_link(knuckle_arm_len=knuckle_arm_base_len,
   max_h = max(bushing_h, eye_od, knuckle_tie_rod_link_od);
   x = x2 + w_narrow / 2;
   y = tie_rod_reverse ? -thickness / 2 - max_h : 0;
-  z = knuckle_outer_d / 2
-    + knuckle_connector_l
-    - knuckle_arm_corner_r
-    + y2
-    + knuckle_ear_len
-    + eye_od / 2
-    - bolt_edge_offset
-    - (eye_od - bolt_d);
+
+  ear_base_len = knuckle_ear_len - bolt_d - bolt_edge_offset;
+
+  z = thickness +
+    knuckle_outer_d / 2 + y2
+    + ear_base_len
+    + bolt_d / 2
+    - (bolt_d - snap_bolt_d(bolt_d));
 
   right_end_bushing_angles = [with_default(right_end_bushing_angles[0], 0),
                               with_default(right_end_bushing_angles[1], 0),
@@ -215,7 +213,10 @@ module steering_link(knuckle_arm_len=knuckle_arm_base_len,
                              with_default(left_end_bushing_angles[1], 0),
                              with_default(left_end_bushing_angles[2], 0)];
 
-  translate([x, y, z]) {
+  translate([x,
+             y,
+             z]) {
+
     rotate([-90, 0, 0]) {
       rotate([0, 0, -abs(tie_rod_angle)]) {
         steering_tie_rod_link(eye_od=eye_od,
@@ -256,4 +257,4 @@ module steering_link(knuckle_arm_len=knuckle_arm_base_len,
   }
 }
 
-steering_link(tilt_shift=0, left_end_bushing_angles=[0, 0, 0]);
+steering_link(left_end_bushing_angles=[0, 0, 0]);

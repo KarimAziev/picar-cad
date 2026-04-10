@@ -76,9 +76,9 @@ module upper_chassis(show_bellcrank_drive=show_bellcrank_drive,
 
   servo_mount_y = -bellcrank_y
     - shaft_len
-    + bellcrank_arm_od / 2
-    + bellcrank_arm_w / 2
-    + steering_servo_tie_rod_eye_od / 2;
+    - bellcrank_arm_od / 2
+    - bellcrank_arm_w / 2
+    - steering_servo_tie_rod_eye_od / 2;
 
   bellcrank_mount_len = max(bellcrank_y,
                             chassis_bellcrank_mount_len)

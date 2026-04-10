@@ -178,9 +178,11 @@ module knuckle_steering_arm(w_base=knuckle_arm_base_w,
       }
     }
   }
+
   render() {
     _main();
   }
+
   if (debug) {
     translate([0, -thickness / 2, thickness + l2]) {
       rotate([-90, 0, 0]) {
