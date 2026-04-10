@@ -16,6 +16,7 @@ include <../../colors.scad>
 include <../../parameters.scad>
 include <../../steering_params.scad>
 
+use <../../lib/threading/thread_funcs.scad>
 use <../../lib/threading/threads.scad>
 use <../../lib/transforms.scad>
 use <../../placeholders/bolt.scad>
@@ -39,13 +40,17 @@ module bellcrank_post(color=metallic_silver_1,
       cylinder(d=shoulder_d, h=shoulder_h, $fn=6);
     }
     if (use_screw_thread) {
-      hole_d = snap_bolt_d(bolt_d);
-      translate([0, 0, -0.01]) {
-        screw_thread(od=hole_d, height=lower_hole_depth + 0.01);
+      pitch = thread_pitch(bolt_d);
+      if (lower_hole_depth > 0) {
+        translate([0, 0, -0.01]) {
+          screw_thread(od=bolt_d, height=lower_hole_depth + 0.01, pitch=pitch);
+        }
       }
 
-      translate([0, 0, h - upper_hole_depth + 0.01]) {
-        screw_thread(od=hole_d, height=upper_hole_depth + 0.01);
+      if (upper_hole_depth > 0) {
+        translate([0, 0, h - upper_hole_depth + 0.01]) {
+          screw_thread(od=bolt_d, height=upper_hole_depth + 0.01, pitch=pitch);
+        }
       }
     } else {
       translate([0, 0, -0.01]) {

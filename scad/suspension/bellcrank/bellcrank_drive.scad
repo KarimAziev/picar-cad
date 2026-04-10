@@ -95,7 +95,7 @@ module bellcrank_drive(color=cobalt_blue_light_1,
                     bush_clearance=bush_clearance,
                     shoulder_d=shoulder_d,
                     shoulder_h=shoulder_h,
-                    show_insert_bush=show_insert_bush,
+                    show_bellcrank_post=show_insert_bush,
                     show_lower_bearing=show_lower_bearing,
                     show_upper_bearing=show_upper_bearing,
                     arm_z=arm_z,
@@ -227,4 +227,4 @@ module bellcrank_drive_cap_ring(parent_od=bellcrank_idler_od,
                  border_w=border_w);
 }
 
-bellcrank_drive();
+bellcrank_servo_lever();

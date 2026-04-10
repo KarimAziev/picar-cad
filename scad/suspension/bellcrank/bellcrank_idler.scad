@@ -43,7 +43,7 @@ module bellcrank_idler(color=cobalt_blue_light_1,
                        bush_clearance=bellcrank_post_hole_clearance,
                        shoulder_d=bellcrank_post_flang_d,
                        shoulder_h=bellcrank_post_flang_h,
-                       show_insert_bush=show_bellcrank_post,
+                       show_bellcrank_post=show_bellcrank_post,
                        show_lower_bearing=show_idler_lower_bearing,
                        show_upper_bearing=show_idler_upper_bearing,
                        arm_z=bellcrank_arm_z,
@@ -138,7 +138,7 @@ module bellcrank_idler(color=cobalt_blue_light_1,
       }
     }
   }
-  if (show_insert_bush) {
+  if (show_bellcrank_post) {
     bellcrank_post(od=bush_od,
                    bolt_d=bush_d,
                    h=bush_h,

@@ -21,22 +21,24 @@ use <servo_mount.scad>
 
 show_bellcrank_drive                        = true;
 show_bellcrank_idler                        = true;
-show_bellcrank_post                         = false;
-show_idler_upper_bearing                    = false;
-show_idler_lower_bearing                    = false;
-show_servo                                  = false;
-show_steering_assembly                      = false;
-show_front_lower_arm                        = false;
-show_front_upper_arm                        = false;
-show_knuckle_bushing                        = false;
-show_knuckle_inner_bearing                  = false;
-show_knuckle_outer_bearing                  = false;
-show_knuckle_tie_rod                        = false;
-show_front_bulkhead                         = false;
-show_front_bulkhead_upper_suspension_holder = false;
-show_front_shock_tower                      = false;
-show_front_suspension_arm_pad               = false;
-show_ackermann_plate                        = false;
+show_bellcrank_post                         = true;
+show_bellcrank_idler_lever                  = true;
+
+show_idler_upper_bearing                    = true;
+show_idler_lower_bearing                    = true;
+show_servo                                  = true;
+show_steering_assembly                      = true;
+show_front_lower_arm                        = true;
+show_front_upper_arm                        = true;
+show_knuckle_bushing                        = true;
+show_knuckle_inner_bearing                  = true;
+show_knuckle_outer_bearing                  = true;
+show_knuckle_tie_rod                        = true;
+show_front_bulkhead                         = true;
+show_front_bulkhead_upper_suspension_holder = true;
+show_front_shock_tower                      = true;
+show_front_suspension_arm_pad               = true;
+show_center_link                            = true;
 
 module upper_chassis(show_bellcrank_drive=show_bellcrank_drive,
                      show_bellcrank_idler=show_bellcrank_idler,
@@ -52,7 +54,7 @@ module upper_chassis(show_bellcrank_drive=show_bellcrank_drive,
                      show_front_bulkhead_upper_suspension_holder=show_front_bulkhead_upper_suspension_holder,
                      show_front_shock_tower=show_front_shock_tower,
                      show_front_suspension_arm_pad=show_front_suspension_arm_pad,
-                     show_ackermann_plate=show_ackermann_plate,
+                     show_center_link=show_center_link,
                      show_bellcrank_post=show_bellcrank_post,
                      show_idler_upper_bearing=show_idler_upper_bearing,
                      show_idler_lower_bearing=show_idler_lower_bearing) {
@@ -83,13 +85,11 @@ module upper_chassis(show_bellcrank_drive=show_bellcrank_drive,
     + max(upper_chassis_bellcrank_bolt_bore_d,
           bellcrank_arm_od);
 
-  echo("servo_mount_y", servo_mount_y);
-
-  let (v = bellcrank_mount_len) {
-    translate([-(chassis_bellcrank_mount_w + dsservo_size[1]) / 2, -v, 0]) {
-      #cube([chassis_bellcrank_mount_w + dsservo_size[1], v, v]);
-    }
-  }
+  // let (v = bellcrank_mount_len) {
+  //   translate([-(chassis_bellcrank_mount_w + dsservo_size[1]) / 2, -v, 0]) {
+  //     #cube([chassis_bellcrank_mount_w + dsservo_size[1], v, v]);
+  //   }
+  // }
 
   module _servo_hole_probes() {
 
@@ -97,12 +97,11 @@ module upper_chassis(show_bellcrank_drive=show_bellcrank_drive,
                         - bellcrank_arm_od
                         - steering_servo_tie_rod_shank_len)
                        / (steering_servo_mount_bolt_bore_d + 2))))) {
-      echo("n", n);
+
       translate([0, servo_mount_y, 0]) {
         for (i = [0 : n]) {
           let (step = -i * (steering_servo_mount_bolt_bore_d + 2)) {
 
-            echo("step", step);
             translate([servo_mount_x,
                        step,
                        0]) {
@@ -212,14 +211,15 @@ module upper_chassis(show_bellcrank_drive=show_bellcrank_drive,
                upper_chassis_t]) {
       maybe_rotate([0, 0, idle_angle]) {
         bellcrank_idler(z_angle=-90,
-                        show_insert_bush=show_bellcrank_post,
+                        show_bellcrank_post=show_bellcrank_post,
                         show_upper_bearing=show_idler_upper_bearing,
-                        show_lower_bearing=show_idler_lower_bearing);
+                        show_lower_bearing=show_idler_lower_bearing,
+                        show_idler_lever=show_bellcrank_idler_lever);
       }
     }
   }
 
-  if (show_ackermann_plate) {
+  if (show_center_link) {
     ackermann_y = -bellcrank_y
       - upper_chassis_bellcrank_bolt_bore_d / 2
       + bellcrank_arm_len
@@ -264,7 +264,7 @@ module upper_chassis_printable() {
                   show_front_bulkhead_upper_suspension_holder = false,
                   show_front_shock_tower = false,
                   show_front_suspension_arm_pad = false,
-                  show_ackermann_plate=false);
+                  show_center_link=false);
   }
 }
 

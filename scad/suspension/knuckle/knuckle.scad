@@ -158,7 +158,8 @@ module knuckle_left(color=color,
                     show_knuckle_outer_bearing=show_knuckle_outer_bearing,
                     show_knuckle_tie_rod=show_knuckle_tie_rod,
                     show_lower_arm_ball_stud=show_lower_arm_ball_stud,
-                    show_upper_arm_ball_stud=show_upper_arm_ball_stud) {
+                    show_upper_arm_ball_stud=show_upper_arm_ball_stud,
+                    show_knuckle=true) {
 
   lower_params = knuckle_outer_bearing_params(bearing_od=knuckle_outer_bearing_od,
                                               bearing_w=knuckle_outer_bearing_w,
@@ -208,7 +209,10 @@ module knuckle_left(color=color,
                  -max(front_upper_arm_ball_stud_insert_out_depth,
                       front_lower_arm_ball_stud_insert_out_depth)]) {
         maybe_rotate(shifted_angles) {
-          knuckle(color=color);
+          if (show_knuckle) {
+            knuckle(color=color);
+          }
+
           if (show_knuckle_outer_bearing) {
             ball_bearing(bore_d=knuckle_outer_bearing_bore_d,
                          w=knuckle_outer_bearing_w,
@@ -315,7 +319,8 @@ module knuckle_right(color=color,
                      show_knuckle_socket_plug=show_knuckle_socket_plug,
                      show_knuckle_tie_rod=show_knuckle_tie_rod,
                      show_lower_arm_ball_stud=show_lower_arm_ball_stud,
-                     show_upper_arm_ball_stud=show_upper_arm_ball_stud) {
+                     show_upper_arm_ball_stud=show_upper_arm_ball_stud,
+                     show_knuckle=true) {
 
   mirror([1, 0, 0]) {
     knuckle_left(color=color,
@@ -328,6 +333,7 @@ module knuckle_right(color=color,
                  show_knuckle_socket_plug=show_knuckle_socket_plug,
                  show_lower_arm_ball_stud=show_lower_arm_ball_stud,
                  show_upper_arm_ball_stud=show_upper_arm_ball_stud,
+                 show_knuckle=show_knuckle,
                  angles=[angles[0], angles[1], -angles[2]]);
   }
 }

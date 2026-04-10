@@ -21,13 +21,18 @@ use <../../lib/shapes3d.scad>
 use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
 use <../../placeholders/ball_stud.scad>
+use <../../placeholders/suspension_arm_pin.scad>
 use <barrel_hinge.scad>
 
-default_show_ball_stud = true;
-default_debug          = false;
+default_show_ball_stud      = false;
+default_debug               = false;
+
+show_front_lower_arm_pin    = false;
+show_front_lower_pin_e_clip = false;
 
 function lower_arm_ball_stud_y_pos() =
-  let (cutout_depth = front_lower_arm_damper_boss_h + front_lower_arm_upper_boss_y_offset)
+  let (cutout_depth = front_lower_arm_damper_boss_h
+       + front_lower_arm_upper_boss_y_offset)
   front_lower_arm_h - cutout_depth - front_lower_arm_apex_width / 2;
 
 function lower_arm_mount_cutout_size() =
@@ -64,7 +69,7 @@ module damper_boss() {
            h=front_lower_arm_damper_boss_h);
 }
 
-module lower_arm(color=cobalt_blue_metallic,
+module lower_arm(color=cobalt_blue_dark_1,
                  debug=default_debug,
                  x_angle=0,
                  y_angle=0,
@@ -144,7 +149,6 @@ module lower_arm(color=cobalt_blue_metallic,
   rotate_children_with_shift(size=full_size,
                              angles=[x_angle, y_angle, z_angle]) {
     render() {
-
       difference() {
         maybe_color(color) {
           union() {
@@ -266,6 +270,7 @@ module lower_arm(color=cobalt_blue_metallic,
         }
       }
     }
+
     if (debug) {
       translate([profile_x0, 0, front_lower_arm_thickness]) {
         debug_polygon_text(outer_profile_pts);

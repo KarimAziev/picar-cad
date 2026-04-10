@@ -98,10 +98,10 @@ bellcrank_post_flang_d                            = bellcrank_idler_bearing_d + 
 bellcrank_post_flang_h                            = 1.0;
 
 // The depth of the bolt hole at the bottom
-bellcrank_post_lower_hole_depth                   = 8;
+bellcrank_post_lower_hole_depth                   = 33.55;
 
 // The depth of the bolt hole at the top
-bellcrank_post_upper_hole_depth                   = 8;
+bellcrank_post_upper_hole_depth                   = 0;
 
 // Whether to use threads for the bolt hole
 bellcrank_post_use_threading                      = false;
@@ -151,6 +151,22 @@ chassis_center_mount_padding_y                    = 3;
 chassis_center_mount_padding_x                    = 2;
 
 chassis_center_transition_w                       = 27;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Front suspension arm pad (geometry parameters)
+//
+// The pad surrounds the hinge-pin holes and provides a center hook that locks
+// the hinge pins in place.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Radial padding around each hinge-pin hole (added to the hole radius)
+front_suspension_arm_pad_pin_hole_pad_r           = 2.6;
+
+// Overall pad thickness (Z)
+front_suspension_arm_pad_thickness                = 2.5;
+
+// Pad length along the Y axis (up to the start of the center hook)
+front_suspension_arm_pad_len_y                    = 4.6;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Knuckle's and wishbone arm's ball stud
@@ -214,7 +230,7 @@ front_lower_arm_lower_hinge_barrel_h              = 6.6;
 // Diameter of the hinge pin hole through each hinge barrel.
 front_lower_arm_hinge_barrel_hole_d               = 3.4;
 
-// Offset from the barrel’s left edge to the hinge hole center (sets hole position).
+// Offset from the barrel’s left edge to the hinge hole edge (sets hole position).
 front_lower_arm_hinge_barrel_hole_offset          = 1.7;
 
 // Height (projection) of the damper mounting boss.
@@ -248,6 +264,12 @@ front_lower_arm_ball_stud_hole_depth              = front_arm_ball_stud_len
 
 // How far to screw out the ball stud. A higher value means the bolt is screwed in less
 front_lower_arm_ball_stud_insert_out_depth        = 1;
+
+front_lower_arm_pin_l                             = front_lower_arm_h + front_suspension_arm_pad_thickness + 2.75;
+
+front_lower_arm_pin_groove_offset                 = 0.85;
+
+front_lower_arm_y_offset                          = 0.0;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Upper front wishbone arm
@@ -297,7 +319,13 @@ front_upper_arm_ball_stud_hole_depth              = front_arm_ball_stud_len - fr
 front_upper_arm_ball_stud_insert_out_depth        = 1;
 
 // The length of the pin which inserted into arm hinges
-front_upper_arm_pin_len                           = 32.0;
+front_upper_arm_pin_len                           = 38.6;
+
+front_upper_arm_pin_washer_od                     = 5.5;
+front_upper_arm_pin_washer_thickness              = 0.5;
+front_upper_arm_pin_washer_d                      = 3.1;
+
+front_upper_arm_y_offset                          = -0.0;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Front bulkhead and it's housing
@@ -325,6 +353,9 @@ front_bulkhead_w                                  = 25.9;
 
 // The overall length of the bulkhead housing along the Y-axis,
 front_bulkhead_len                                = 39.5;
+
+// Additional rear length for the upper steering plate
+front_bulkhead_extra_len                          = 4.7;
 
 // The thickness of the bulkhead housing and barrel hinges (Z-axis extrusion height)
 front_bulkhead_housing_h                          = 7.9;
@@ -384,7 +415,7 @@ front_bulkhead_shock_tower_mount_pad_y_top        = 2;
 // Fillet radius for the shock tower mounting tab corners
 front_bulkhead_shock_tower_mount_corner_r         = 1.5;
 
-// Vertical offset (Y) from the bulkhead base to the lower shock-tower bolt line
+// Vertical offset (Z) from the bulkhead base to the lower shock-tower bolt line
 front_bulkhead_shock_tower_mount_offset           = 19.5;
 
 // Mounting hinge thickness (extrusion height)
@@ -406,22 +437,6 @@ front_bulkhead_suspension_pad_clearance           = 0.6;
 
 // Depth of the upper suspension holder mounting holes into the bulkhead
 front_bulkhead_upper_holder_hole_depth            = 10;
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Front suspension arm pad (geometry parameters)
-//
-// The pad surrounds the hinge-pin holes and provides a center hook that locks
-// the hinge pins in place.
-// ─────────────────────────────────────────────────────────────────────────────
-
-// Radial padding around each hinge-pin hole (added to the hole radius)
-front_suspension_arm_pad_pin_hole_pad_r           = 2.6;
-
-// Overall pad thickness (Z)
-front_suspension_arm_pad_thickness                = 2.5;
-
-// Pad length along the Y axis (up to the start of the center hook)
-front_suspension_arm_pad_len_y                    = 4.6;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Center hook parameters
