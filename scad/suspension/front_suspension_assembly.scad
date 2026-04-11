@@ -30,6 +30,8 @@ show_knuckle_inner_bearing                  = true;
 show_knuckle_outer_bearing                  = true;
 show_knuckle_tie_rod                        = true;
 
+show_front_bulkhead_housing                 = true;
+
 module front_suspension_assembly(show_front_lower_arm=show_front_lower_arm,
                                  show_front_upper_arm=show_front_upper_arm,
                                  show_knuckle_bushing=show_knuckle_bushing,
@@ -46,7 +48,8 @@ module front_suspension_assembly(show_front_lower_arm=show_front_lower_arm,
                                  show_front_lower_pin_e_clip=show_front_lower_pin_e_clip,
                                  show_front_lower_arm_ball_stud=show_front_lower_arm_ball_stud,
                                  show_left_knuckle=show_left_knuckle,
-                                 show_right_knuckle=show_right_knuckle) {
+                                 show_right_knuckle=show_right_knuckle,
+                                 show_front_bulkhead_housing=show_front_bulkhead_housing) {
   barrel_size = lower_arm_mount_cutout_size();
   barrel_y_start = front_bulkhead_len - front_bulkhead_barrel_y_offset
     - barrel_size[1];
@@ -58,11 +61,14 @@ module front_suspension_assembly(show_front_lower_arm=show_front_lower_arm,
     + front_lower_arm_hinge_barrel_hole_d;
 
   union() {
-    front_bulkhead_housing(center_y=false,
-                           show_front_lower_arm=show_front_lower_arm,
-                           show_front_lower_arm_pin=show_front_lower_arm_pin,
-                           show_front_lower_pin_e_clip=show_front_lower_pin_e_clip,
-                           show_front_lower_arm_ball_stud=show_front_lower_arm_ball_stud);
+    if (show_front_bulkhead_housing) {
+      front_bulkhead_housing(center_y=false,
+                             show_front_lower_arm=show_front_lower_arm,
+                             show_front_lower_arm_pin=show_front_lower_arm_pin,
+                             show_front_lower_pin_e_clip=show_front_lower_pin_e_clip,
+                             show_front_lower_arm_ball_stud=show_front_lower_arm_ball_stud);
+    }
+
     if (show_front_bulkhead) {
       translate([0, front_bulkhead_len / 2, front_bulkhead_housing_h]) {
         front_bulkhead(show_shock_tower=show_front_shock_tower,

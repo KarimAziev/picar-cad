@@ -26,38 +26,68 @@ show_bellcrank_idler_lever                  = true;
 
 show_idler_upper_bearing                    = true;
 show_idler_lower_bearing                    = true;
-show_servo                                  = true;
+show_servo                                  = false;
 show_steering_assembly                      = true;
-show_front_lower_arm                        = true;
-show_front_upper_arm                        = true;
-show_knuckle_bushing                        = true;
-show_knuckle_inner_bearing                  = true;
-show_knuckle_outer_bearing                  = true;
-show_knuckle_tie_rod                        = true;
-show_front_bulkhead                         = true;
-show_front_bulkhead_upper_suspension_holder = true;
-show_front_shock_tower                      = true;
-show_front_suspension_arm_pad               = true;
+
 show_center_link                            = true;
+
+show_front_lower_arm                        = false;
+show_front_lower_arm_pin                    = false;
+show_front_lower_pin_e_clip                 = false;
+show_front_lower_arm_ball_stud              = false;
+
+show_front_upper_arm                        = false;
+
+show_front_bulkhead                         = true;
+show_front_bulkhead_upper_suspension_holder = false;
+
+show_upper_arm_ball_stud                    = false;
+show_front_upper_arm_pin                    = false;
+
+show_front_shock_tower                      = false;
+show_front_suspension_arm_pad               = false;
+
+show_left_knuckle                           = false;
+show_right_knuckle                          = false;
+show_knuckle_bushing                        = false;
+show_knuckle_inner_bearing                  = false;
+show_knuckle_outer_bearing                  = false;
+show_knuckle_tie_rod                        = false;
+
+show_front_bulkhead_housing                 = true;
+
+show_chassis                                = false;
+
+bellcrank_z_angle                           = 40;
 
 module upper_chassis(show_bellcrank_drive=show_bellcrank_drive,
                      show_bellcrank_idler=show_bellcrank_idler,
+                     show_bellcrank_post=show_bellcrank_post,
+                     show_bellcrank_idler_lever=show_bellcrank_idler_lever,
+                     show_idler_upper_bearing=show_idler_upper_bearing,
+                     show_idler_lower_bearing=show_idler_lower_bearing,
                      show_servo=show_servo,
                      show_steering_assembly=show_steering_assembly,
+                     show_center_link=show_center_link,
                      show_front_lower_arm=show_front_lower_arm,
+                     show_front_lower_arm_pin=show_front_lower_arm_pin,
+                     show_front_lower_pin_e_clip=show_front_lower_pin_e_clip,
+                     show_front_lower_arm_ball_stud=show_front_lower_arm_ball_stud,
                      show_front_upper_arm=show_front_upper_arm,
+                     show_front_bulkhead=show_front_bulkhead,
+                     show_front_bulkhead_upper_suspension_holder=show_front_bulkhead_upper_suspension_holder,
+                     show_upper_arm_ball_stud=show_upper_arm_ball_stud,
+                     show_front_upper_arm_pin=show_front_upper_arm_pin,
+                     show_front_shock_tower=show_front_shock_tower,
+                     show_front_suspension_arm_pad=show_front_suspension_arm_pad,
+                     show_left_knuckle=show_left_knuckle,
+                     show_right_knuckle=show_right_knuckle,
                      show_knuckle_bushing=show_knuckle_bushing,
                      show_knuckle_inner_bearing=show_knuckle_inner_bearing,
                      show_knuckle_outer_bearing=show_knuckle_outer_bearing,
                      show_knuckle_tie_rod=show_knuckle_tie_rod,
-                     show_front_bulkhead=show_front_bulkhead,
-                     show_front_bulkhead_upper_suspension_holder=show_front_bulkhead_upper_suspension_holder,
-                     show_front_shock_tower=show_front_shock_tower,
-                     show_front_suspension_arm_pad=show_front_suspension_arm_pad,
-                     show_center_link=show_center_link,
-                     show_bellcrank_post=show_bellcrank_post,
-                     show_idler_upper_bearing=show_idler_upper_bearing,
-                     show_idler_lower_bearing=show_idler_lower_bearing) {
+                     show_front_bulkhead_housing=show_front_bulkhead_housing,
+                     show_chassis=show_chassis) {
   idle_angle = -abs(bellcrank_arm_angle);
   bellcrank_arm_len = bellcrank_arm_l - bellcrank_arm_od;
   bellcrank_y = chassis_bellcrank_position_y;
@@ -130,53 +160,60 @@ module upper_chassis(show_bellcrank_drive=show_bellcrank_drive,
     }
   }
 
-  difference() {
-    union() {
-      front_bulkhead_chassis();
-      linear_extrude(height=upper_chassis_t, center=false) {
-        hull() {
-          translate([-chassis_bellcrank_mount_w / 2, -bellcrank_mount_len, 0]) {
-            union() {
-              trapezoid(b=chassis_bellcrank_mount_w,
-                        h=bellcrank_mount_len,
-                        t=chassis_center_transition_w,
-                        center=false);
+  module _chassis() {
+    difference() {
+      union() {
+        front_bulkhead_chassis();
+        linear_extrude(height=upper_chassis_t, center=false) {
+          hull() {
+            translate([-chassis_bellcrank_mount_w / 2,
+                       -bellcrank_mount_len,
+                       0]) {
+              union() {
+                trapezoid(b=chassis_bellcrank_mount_w,
+                          h=bellcrank_mount_len,
+                          t=chassis_center_transition_w,
+                          center=false);
+              }
             }
-          }
-          translate([0,
-                     -bellcrank_y - upper_chassis_bellcrank_bolt_bore_d / 2,
-                     0]) {
-            four_corner_children(size=[chassis_bellcrank_spacing, 0],
-                                 center=true) {
-              circle(d=bellcrank_arm_od);
+            translate([0,
+                       -bellcrank_y - upper_chassis_bellcrank_bolt_bore_d / 2,
+                       0]) {
+              four_corner_children(size=[chassis_bellcrank_spacing, 0],
+                                   center=true) {
+                circle(d=bellcrank_arm_od);
+              }
             }
-          }
-          translate([0, -extra_len / 2 - bellcrank_mount_len, 0]) {
-            trapezoid_rounded_top(t=chassis_bellcrank_mount_w,
-                                  b=chassis_bellcrank_mount_w + dsservo_size[1],
-                                  h=extra_len,
-                                  center=true,
-                                  r=2);
+            translate([0, -extra_len / 2 - bellcrank_mount_len, 0]) {
+              trapezoid_rounded_top(t=chassis_bellcrank_mount_w,
+                                    b=chassis_bellcrank_mount_w + dsservo_size[1],
+                                    h=extra_len,
+                                    center=true,
+                                    r=2);
+            }
           }
         }
       }
-    }
-    translate([0,
-               -bellcrank_y - upper_chassis_bellcrank_bolt_bore_d / 2,
-               0]) {
-      four_corner_counterbores(d=upper_chassis_bellcrank_bolt_d,
-                               h=upper_chassis_t,
-                               bore_d=upper_chassis_bellcrank_bolt_bore_d,
-                               bore_h=upper_chassis_bellcrank_bolt_bore_h,
-                               size=[chassis_bellcrank_spacing, 0],
-                               reverse=true,
-                               center=true);
-    }
+      translate([0,
+                 -bellcrank_y - upper_chassis_bellcrank_bolt_bore_d / 2,
+                 0]) {
+        four_corner_counterbores(d=upper_chassis_bellcrank_bolt_d,
+                                 h=upper_chassis_t,
+                                 bore_d=upper_chassis_bellcrank_bolt_bore_d,
+                                 bore_h=upper_chassis_bellcrank_bolt_bore_h,
+                                 size=[chassis_bellcrank_spacing, 0],
+                                 reverse=true,
+                                 center=true);
+      }
 
-    // _x_holes_probes(n=1, direction=-1);
-    // _x_holes_probes(n=2, direction=1);
-    _servo_hole_probes();
+      _servo_hole_probes();
+    }
   }
+
+  if (show_chassis) {
+    _chassis();
+  }
+
   translate([0, 0, upper_chassis_t]) {
     if (show_steering_assembly) {
       front_suspension_assembly(show_front_lower_arm=show_front_lower_arm,
@@ -186,9 +223,17 @@ module upper_chassis(show_bellcrank_drive=show_bellcrank_drive,
                                 show_knuckle_outer_bearing=show_knuckle_outer_bearing,
                                 show_knuckle_tie_rod=show_knuckle_tie_rod,
                                 show_front_bulkhead=show_front_bulkhead,
-                                show_front_bulkhead_upper_suspension_holder=show_front_bulkhead_upper_suspension_holder,
                                 show_front_shock_tower=show_front_shock_tower,
-                                show_front_suspension_arm_pad=show_front_suspension_arm_pad);
+                                show_front_bulkhead_upper_suspension_holder=show_front_bulkhead_upper_suspension_holder,
+                                show_front_suspension_arm_pad=show_front_suspension_arm_pad,
+                                show_upper_arm_ball_stud=show_upper_arm_ball_stud,
+                                show_front_upper_arm_pin=show_front_upper_arm_pin,
+                                show_front_lower_arm_pin=show_front_lower_arm_pin,
+                                show_front_lower_pin_e_clip=show_front_lower_pin_e_clip,
+                                show_front_lower_arm_ball_stud=show_front_lower_arm_ball_stud,
+                                show_left_knuckle=show_left_knuckle,
+                                show_right_knuckle=show_right_knuckle,
+                                show_front_bulkhead_housing=show_front_bulkhead_housing);
     }
   }
 
@@ -197,7 +242,7 @@ module upper_chassis(show_bellcrank_drive=show_bellcrank_drive,
                -bellcrank_y - upper_chassis_bellcrank_bolt_bore_d / 2,
                upper_chassis_t]) {
       maybe_rotate([0, 0, bellcrank_arm_angle]) {
-        rotate([0, 0, -90]) {
+        rotate([0, 0, -90 - bellcrank_z_angle]) {
           bellcrank_drive(show_insert_bush=show_bellcrank_post,
                           show_upper_bearing=show_idler_upper_bearing,
                           show_lower_bearing=show_idler_lower_bearing);
@@ -269,5 +314,3 @@ module upper_chassis_printable() {
 }
 
 upper_chassis();
-// servo_mount(slot_mode=true);
-// upper_chassis_printable();

@@ -436,7 +436,7 @@ front_bulkhead_suspension_pad_thickness           = 2;
 front_bulkhead_suspension_pad_clearance           = 0.6;
 
 // Depth of the upper suspension holder mounting holes into the bulkhead
-front_bulkhead_upper_holder_hole_depth            = 10;
+front_bulkhead_upper_holder_hole_depth            = 14;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Center hook parameters
@@ -559,6 +559,9 @@ front_upper_suspension_holder_pin_barrel_d        = front_upper_arm_hinge_barrel
 
 // Height of the pin barrel (reinforcement ring) extrusion
 front_upper_suspension_holder_pin_barrel_h        = 6.6;
+
+front_bulkhead_counterbore_d                      = 4.6;
+front_bulkhead_counterbore_h                      = 1.7;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Knuckle

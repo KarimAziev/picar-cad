@@ -20,7 +20,14 @@ use <bellcrank_post.scad>
 show_bellcrank_post      = false;
 show_idler_upper_bearing = false;
 show_idler_lower_bearing = false;
-show_idler_lever         = false;
+show_idler_lever         = true;
+
+function bellcrank_idler_arm_z_end(thickness=bellcrank_arm_thickness,
+                                   upper_boss_h=bellcrank_arm_upper_boss_h,
+                                   arm_z=bellcrank_arm_z,
+                                   shoulder_h=bellcrank_post_flang_h) =
+  let (lever_h = thickness + upper_boss_h,)
+  shoulder_h + arm_z + lever_h;
 
 module bellcrank_idler(color=cobalt_blue_light_1,
                        z_angle=0,
