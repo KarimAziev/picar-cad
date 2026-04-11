@@ -156,13 +156,13 @@ module rounded_rect_recess(size,
 }
 
 module cube_center_y(size) {
-  translate([0, -size[1] / 2, 0]) {
+  translate([0, -(is_num(size) ? size : size[1]) / 2, 0]) {
     cube(size);
   }
 }
 
 module cube_center_x(size) {
-  translate([-size[0] / 2, 0, 0]) {
+  translate([-(is_num(size) ? size : size[0]) / 2, 0, 0]) {
     cube(size);
   }
 }
