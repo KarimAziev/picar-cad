@@ -236,18 +236,5 @@ module bellcrank_idler_bearing_bush_hole(chamfer_h=bellcrank_idler_chamfer_h,
 
   _bearing_holes();
 }
-h = bellcrank_idler_full_mount_h();
-arm_z=bellcrank_arm_z;
-upper_h = h - arm_z;
-lower_h = h - upper_h;
-shoulder_h=bellcrank_post_flang_h;
-// #translate([0, 0, shoulder_h]) {
-//   cylinder(h=lower_h, d=20);
-// }
-// translate([0, 0, arm_z + shoulder_h]) {
-
-//   #cylinder(d=20, h=upper_h);
-// }
-#cylinder(h=h + shoulder_h, d=20);
 
 bellcrank_idler();
