@@ -22,12 +22,12 @@ use <bellcrank_idler.scad>
 use <bellcrank_lever.scad>
 use <bellcrank_ring.scad>
 
-show_bellcrank_post      = true;
-show_idler_upper_bearing = true;
-show_idler_lower_bearing = true;
-show_idler_lever         = true;
-show_servo_lever         = true;
-show_upper_cap           = true;
+show_bellcrank_post      = false;
+show_idler_upper_bearing = false;
+show_idler_lower_bearing = false;
+show_idler_lever         = false;
+show_servo_lever         = false;
+show_upper_cap           = false;
 
 module bellcrank_drive(color=cobalt_blue_light_1,
                        z_angle=0,
@@ -48,7 +48,7 @@ module bellcrank_drive(color=cobalt_blue_light_1,
                        bush_clearance=bellcrank_post_hole_clearance,
                        shoulder_d=bellcrank_post_flang_d,
                        shoulder_h=bellcrank_post_flang_h,
-                       show_insert_bush=show_bellcrank_post,
+                       show_insert_post=show_bellcrank_post,
                        show_lower_bearing=show_idler_lower_bearing,
                        show_upper_bearing=show_idler_upper_bearing,
                        arm_z=bellcrank_arm_z,
@@ -95,7 +95,7 @@ module bellcrank_drive(color=cobalt_blue_light_1,
                     bush_clearance=bush_clearance,
                     shoulder_d=shoulder_d,
                     shoulder_h=shoulder_h,
-                    show_bellcrank_post=show_insert_bush,
+                    show_bellcrank_post=show_insert_post,
                     show_lower_bearing=show_lower_bearing,
                     show_upper_bearing=show_upper_bearing,
                     arm_z=arm_z,
@@ -227,4 +227,4 @@ module bellcrank_drive_cap_ring(parent_od=bellcrank_idler_od,
                  border_w=border_w);
 }
 
-bellcrank_servo_lever();
+bellcrank_drive();

@@ -868,3 +868,12 @@ upper_chassis_bellcrank_bolt_d                    = m3_hole_dia;
 upper_chassis_bellcrank_bolt_bore_d               = m3_countersunk_head_dia + 0.2;
 upper_chassis_bellcrank_bolt_bore_h               = m3_countersunk_head_h + 0.15;
 upper_chassis_t                                   = 4;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Upper steering panel
+// ─────────────────────────────────────────────────────────────────────────────
+upper_steering_panel_bolt_d                       = m3_hole_dia;
+upper_steering_panel_boss_od                      = 6;
+upper_steering_panel_bulkhead_bore_d              = 4.6;
+upper_steering_panel_bulkhead_bore_h              = 1;
+upper_steering_panel_bulkhead_spacing             = 21;

@@ -20,7 +20,7 @@ use <bellcrank_post.scad>
 show_bellcrank_post      = false;
 show_idler_upper_bearing = false;
 show_idler_lower_bearing = false;
-show_idler_lever         = true;
+show_idler_lever         = false;
 
 function bellcrank_idler_arm_z_end(thickness=bellcrank_arm_thickness,
                                    upper_boss_h=bellcrank_arm_upper_boss_h,
@@ -28,6 +28,13 @@ function bellcrank_idler_arm_z_end(thickness=bellcrank_arm_thickness,
                                    shoulder_h=bellcrank_post_flang_h) =
   let (lever_h = thickness + upper_boss_h,)
   shoulder_h + arm_z + lever_h;
+
+function bellcrank_idler_full_mount_h(bush_h=bellcrank_post_h,
+                                      shoulder_h=bellcrank_post_flang_h,
+                                      chamfer_h=bellcrank_idler_chamfer_h,
+                                      shoulder_h=bellcrank_post_flang_h,
+                                      extra_h=bellcrank_idler_extra_h) =
+  bush_h - shoulder_h + chamfer_h + extra_h;
 
 module bellcrank_idler(color=cobalt_blue_light_1,
                        z_angle=0,
@@ -229,5 +236,18 @@ module bellcrank_idler_bearing_bush_hole(chamfer_h=bellcrank_idler_chamfer_h,
 
   _bearing_holes();
 }
+h = bellcrank_idler_full_mount_h();
+arm_z=bellcrank_arm_z;
+upper_h = h - arm_z;
+lower_h = h - upper_h;
+shoulder_h=bellcrank_post_flang_h;
+// #translate([0, 0, shoulder_h]) {
+//   cylinder(h=lower_h, d=20);
+// }
+// translate([0, 0, arm_z + shoulder_h]) {
+
+//   #cylinder(d=20, h=upper_h);
+// }
+#cylinder(h=h + shoulder_h, d=20);
 
 bellcrank_idler();

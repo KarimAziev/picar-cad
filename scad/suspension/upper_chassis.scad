@@ -19,7 +19,12 @@ use <bulkhead/front_bulkhead_housing.scad>
 use <front_suspension_assembly.scad>
 use <servo_mount.scad>
 
+show_chassis                                = true;
 show_bellcrank_drive                        = true;
+show_bellcrank_drive_idler_lever            = true;
+show_bellcrank_drive_servo_lever            = true;
+show_bellcrank_drive_upper_cap              = true;
+
 show_bellcrank_idler                        = true;
 show_bellcrank_post                         = true;
 show_bellcrank_idler_lever                  = true;
@@ -56,9 +61,7 @@ show_knuckle_tie_rod                        = false;
 
 show_front_bulkhead_housing                 = true;
 
-show_chassis                                = false;
-
-bellcrank_z_angle                           = 40;
+bellcrank_z_angle                           = 0;
 
 module upper_chassis(show_bellcrank_drive=show_bellcrank_drive,
                      show_bellcrank_idler=show_bellcrank_idler,
@@ -87,6 +90,9 @@ module upper_chassis(show_bellcrank_drive=show_bellcrank_drive,
                      show_knuckle_outer_bearing=show_knuckle_outer_bearing,
                      show_knuckle_tie_rod=show_knuckle_tie_rod,
                      show_front_bulkhead_housing=show_front_bulkhead_housing,
+                     show_bellcrank_drive_idler_lever=show_bellcrank_drive_idler_lever,
+                     show_bellcrank_drive_servo_lever=show_bellcrank_drive_servo_lever,
+                     show_bellcrank_drive_upper_cap=show_bellcrank_drive_upper_cap,
                      show_chassis=show_chassis) {
   idle_angle = -abs(bellcrank_arm_angle);
   bellcrank_arm_len = bellcrank_arm_l - bellcrank_arm_od;
@@ -114,12 +120,6 @@ module upper_chassis(show_bellcrank_drive=show_bellcrank_drive,
                             chassis_bellcrank_mount_len)
     + max(upper_chassis_bellcrank_bolt_bore_d,
           bellcrank_arm_od);
-
-  // let (v = bellcrank_mount_len) {
-  //   translate([-(chassis_bellcrank_mount_w + dsservo_size[1]) / 2, -v, 0]) {
-  //     #cube([chassis_bellcrank_mount_w + dsservo_size[1], v, v]);
-  //   }
-  // }
 
   module _servo_hole_probes() {
 
@@ -243,9 +243,12 @@ module upper_chassis(show_bellcrank_drive=show_bellcrank_drive,
                upper_chassis_t]) {
       maybe_rotate([0, 0, bellcrank_arm_angle]) {
         rotate([0, 0, -90 - bellcrank_z_angle]) {
-          bellcrank_drive(show_insert_bush=show_bellcrank_post,
+          bellcrank_drive(show_insert_post=show_bellcrank_post,
                           show_upper_bearing=show_idler_upper_bearing,
-                          show_lower_bearing=show_idler_lower_bearing);
+                          show_lower_bearing=show_idler_lower_bearing,
+                          show_idler_lever=show_bellcrank_drive_idler_lever,
+                          show_servo_lever=show_bellcrank_drive_servo_lever,
+                          show_upper_cap=show_bellcrank_drive_upper_cap);
         }
       }
     }
@@ -276,9 +279,7 @@ module upper_chassis(show_bellcrank_drive=show_bellcrank_drive,
                - bellcrank_arm_bolt_edge_offset
                - bellcrank_arm_bolt_spacing
                + (steering_center_link_boss_od - bellcrank_arm_bolt_d)
-               - steering_center_link_hole_d / 2
-
-               ,
+               - steering_center_link_hole_d / 2,
                upper_chassis_t + bellcrank_arm_z]) {
       center_link();
     }
