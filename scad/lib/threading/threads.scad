@@ -16,6 +16,13 @@ use <thread_funcs.scad>
 
 screw_resolution = 0.2;  // in mm
 
+function is_valid_num(x) =
+  !is_undef(x) && is_num(x) && (x == x);
+
+function all_finite_points(pointarrays) =
+  min([for (pa = pointarrays, p = pa, c = p)
+          is_valid_num(c) ? 1 : 0]) == 1;
+
 /**
    ─────────────────────────────────────────────────────────────────────────────
    close_points
@@ -63,8 +70,23 @@ screw_resolution = 0.2;  // in mm
 */
 
 module close_points(pointarrays) {
+  assert(!is_undef(pointarrays), "close_points(): pointarrays is undef");
+
   N = len(pointarrays);
   P = len(pointarrays[0]);
+
+  assert(N >= 2, str("close_points(): need at least 2 loops, got ", N));
+
+  assert(min([for (pa = pointarrays) len(pa)]) == P &&
+         max([for (pa = pointarrays) len(pa)]) == P,
+         "close_points(): all loops must have same number of points");
+
+  assert(min([for (pa = pointarrays, p = pa) len(p)]) == 3 &&
+         max([for (pa = pointarrays, p = pa) len(p)]) == 3,
+         "close_points(): every point must be [x,y,z]");
+
+  assert(all_finite_points(pointarrays),
+         "close_points(): pointarrays contains undef/NaN/non-finite coordinates");
 
   NP = N * P;
 
@@ -153,90 +175,157 @@ module screw_thread(od,
                     tooth_height=0,
                     tip_min_fract=0) {
 
-  pitch = (pitch==0) ? thread_pitch(od) : pitch;
+  pitch = (pitch == 0 || is_undef(pitch)) ? thread_pitch(od) : pitch;
+  tip_height = is_undef(tip_height) ? 0 : tip_height;
 
-  tooth_height = (tooth_height==0) ? pitch : tooth_height;
+  assert(is_num(od) && od > 0, str("screw_thread(): od must be > 0, got ", od));
+  assert(is_num(height) && height > 0,
+         str("screw_thread(): height must be > 0, got ", height));
+  assert(is_num(tooth_angle) && tooth_angle > 0 && tooth_angle < 89.9,
+         str("screw_thread(): tooth_angle must be in (0,89.9), got ", tooth_angle));
+  assert(is_num(tolerance), "screw_thread(): tolerance must be numeric");
+  assert(is_num(tip_height) && tip_height >= 0,
+         str("screw_thread(): tip_height must be >= 0, got ", tip_height));
+  assert(is_num(tip_min_fract),
+         str("screw_thread(): tip_min_fract must be numeric, got ", tip_min_fract));
 
-  tip_min_fract = (tip_min_fract<0) ? 0 :
-    ((tip_min_fract>0.9999) ? 0.9999 : tip_min_fract);
+  tooth_angle = !is_num(tooth_angle) ? tooth_angle : 30;
+  tolerance = !is_num(tolerance) ? 0 : tolerance;
+  tooth_height = (!is_num(tooth_height) || tooth_height == 0)
+    ? pitch
+    : tooth_height;
+
+  tip_min_fract = !is_num(tip_min_fract) || tip_min_fract < 0
+    ? 0
+    : ((tip_min_fract > 0.9999)
+       ? 0.9999
+       : tip_min_fract);
 
   outer_diam_cor = od + 0.25 * tolerance; // Plastic shrinkage correction
 
   inner_diam = od - tooth_height / tan(tooth_angle);
 
-  or = (outer_diam_cor < screw_resolution) ?
-    screw_resolution/2 : outer_diam_cor / 2;
-  ir = (inner_diam < screw_resolution) ? screw_resolution / 2 : inner_diam / 2;
-  height = (height < screw_resolution) ? screw_resolution : height;
+  or = (outer_diam_cor < screw_resolution)
+    ? screw_resolution / 2
+    : outer_diam_cor / 2;
+
+  ir = (inner_diam < screw_resolution)
+    ? screw_resolution / 2
+    : inner_diam / 2;
+
+  height = (is_num(height) && height < screw_resolution)
+    ? screw_resolution
+    : is_num(height)
+    ? height : 0;
 
   steps_per_loop_try = ceil(2 * PI * or / screw_resolution);
+
   steps_per_loop = (steps_per_loop_try < 4) ? 4 : steps_per_loop_try;
-  hs_ext = 3;
-  hsteps = ceil(3 * height / pitch) + 2 * hs_ext;
+
+  hs_ext = 3; // extra height-step margin at both ends
+
+  z_slices_per_pitch = 3;
+
+  hsteps = ceil(z_slices_per_pitch * height / pitch) + 2 * hs_ext;
 
   extent = or - ir;
 
-  tip_start = height-tip_height;
-  tip_height_sc = tip_height / (1-tip_min_fract);
+  tip_start = height - tip_height;
+  tip_height_sc = tip_height / (1 - tip_min_fract);
 
-  tip_height_ir = (tip_height_sc > tooth_height/2) ?
-    tip_height_sc - tooth_height/2 : tip_height_sc;
+  tooth_h_half = tooth_height / 2;
+
+  tip_height_ir = (tip_height_sc > tooth_h_half)
+    ? tip_height_sc - tooth_h_half
+    : tip_height_sc;
 
   tip_height_w = (tip_height_sc > tooth_height) ? tooth_height : tip_height_sc;
   tip_wstart = height + tip_height_sc - tip_height - tip_height_w;
 
+  function thread_h_mod(hs,
+                        s,
+                        steps_per_loop,
+                        pitch,
+                        tooth_height,
+                        tooth_h_half,
+                        h_fudge) =
+    (hs % 3 == 2)
+    ? ((s == steps_per_loop - 1)
+       ? tooth_height - h_fudge
+       : ((s == steps_per_loop - 2)
+          ? tooth_h_half
+          : 0))
+    : ((hs % 3 == 0)
+       ? ((s == steps_per_loop - 1)
+          ? pitch - tooth_h_half
+          : ((s == steps_per_loop - 2)
+             ? pitch - tooth_height + h_fudge
+             : 0))
+       : ((s == steps_per_loop - 1)
+          ? pitch - tooth_h_half + h_fudge
+          : ((s == steps_per_loop - 2)
+             ? tooth_h_half
+             : 0)));
+
+  function step_angle_deg(s, steps_per_loop) =
+    let (ang_full = s * 360.0 / steps_per_loop,
+         ang_pn = atan2(sin(ang_full), cos(ang_full)))
+    ang_pn < 0 ? ang_pn + 360 : ang_pn;
+
+  function thread_h_level(hs, tooth_height, h_fudge, tooth_h_half) =
+    (hs % 3 == 2)
+    ? tooth_height - h_fudge
+    : ((hs % 3 == 0) ? 0 : tooth_h_half);
+
   pointarrays = [for (hs=[0:hsteps])
       [for (s=[0:steps_per_loop - 1])
-          let (ang_full = s * 360.0 / steps_per_loop,
-               ang_pn = atan2(sin(ang_full), cos(ang_full)),
-               ang = ang_pn < 0 ? ang_pn + 360 : ang_pn,
+          let (ang = step_angle_deg(s, steps_per_loop),
+               h_fudge = pitch * 0.001,
+               h_mod = thread_h_mod(hs,
+                                    s,
+                                    steps_per_loop,
+                                    pitch,
+                                    tooth_height,
+                                    tooth_h_half,
+                                    h_fudge),
+               h_level = thread_h_level(hs,
+                                        tooth_height,
+                                        h_fudge,
+                                        tooth_h_half),
 
-               h_fudge = pitch*0.001,
-
-               h_mod = (hs%3 == 2)
-               ? ((s == steps_per_loop-1)
-                  ? tooth_height - h_fudge
-                  : ((s == steps_per_loop-2)
-                     ? tooth_height/2
-                     : 0))
-               : ((hs%3 == 0) ?
-                  ((s == steps_per_loop-1)
-                   ? pitch-tooth_height/2
-                   : ((s == steps_per_loop-2)
-                      ? pitch-tooth_height + h_fudge : 0))
-                  : ((s == steps_per_loop-1)
-                     ? pitch-tooth_height/2 + h_fudge :
-                     ((s == steps_per_loop-2)
-                      ? tooth_height/2 : 0))),
-
-               h_level = (hs % 3 == 2)
-               ? tooth_height - h_fudge
-               : ((hs % 3 == 0) ? 0 : tooth_height / 2),
-
-               h_ub = floor((hs-hs_ext)/3) * pitch
-               + h_level + ang * pitch/360.0 - h_mod,
+               h_ub = floor((hs - hs_ext) / 3) * pitch
+               + h_level + ang * pitch / 360.0 - h_mod,
                h_max = height - (hsteps - hs) * h_fudge,
                h_min = hs * h_fudge,
-               h = (h_ub < h_min) ? h_min : ((h_ub > h_max) ? h_max : h_ub),
+               H = (h_ub < h_min) ? h_min : ((h_ub > h_max) ? h_max : h_ub),
 
-               ht = h - tip_start,
-               hf_ir = ht/tip_height_ir,
-               ht_w = h - tip_wstart,
-               hf_w_t = ht_w/tip_height_w,
-               hf_w = (hf_w_t < 0) ? 0 : ((hf_w_t > 1) ? 1 : hf_w_t),
+               ht = H - tip_start,
+               hf_ir = ht / tip_height_ir,
+               ht_w = H - tip_wstart,
+               hf_w_t = ht_w / tip_height_w,
+               hf_w = clamp(hf_w_t, 0, 1),
 
-               ext_tip = (h <= tip_wstart) ? extent : (1-hf_w) * extent,
-               wnormal = tooth_width(ang, h, pitch, tooth_height, ext_tip),
-               w = (h <= tip_wstart) ? wnormal :
-               (1-hf_w) * wnormal +
-               hf_w * (0.1 * screw_resolution
-                       + (wnormal * wnormal * wnormal /
-                          (ext_tip*ext_tip + 0.1 * screw_resolution))),
-               r = (ht <= 0) ? ir + w :
-               ((ht < tip_height_ir ? ((2/(1+(hf_ir*hf_ir))-1) * ir)
-                 : 0) + w))
+               ext_tip = (H <= tip_wstart) ? extent : (1 - hf_w) * extent,
+               wnormal = tooth_width(ang, H, pitch, tooth_height, ext_tip),
+               w = (H <= tip_wstart)
+               ? wnormal
+               : (1 - hf_w)
+               * wnormal
+               + hf_w
+               * (0.1 * screw_resolution
+                  + (wnormal * wnormal * wnormal /
+                     (ext_tip * ext_tip + 0.1 * screw_resolution))),
 
-            [r * cos(ang), r * sin(ang), h]]];
+               r = (ht <= 0)
+               ? ir + w
+               : ((ht < tip_height_ir
+                   ? ((2 / (1 + (hf_ir * hf_ir)) - 1) * ir)
+                   : 0) + w))
+
+            [r * cos(ang), r * sin(ang), H]]];
+
+  assert(all_finite_points(pointarrays),
+         "screw_thread(): generated invalid point coordinates");
 
   close_points(pointarrays);
 }
@@ -491,7 +580,7 @@ module metric_bolt(d, l, tolerance=0.4) {
 module metric_countersunk_bolt(d, l, tolerance=0.4) {
   drive_tolerance = pow(3*tolerance/countersunk_drive_across_corners(d),
                         2)
-    + 0.75*tolerance;
+    + 0.75 * tolerance;
 
   difference() {
     cylinder(h=d/2, r1=d, r2=d/2, $fn=24*d);
@@ -511,7 +600,6 @@ module metric_countersunk_bolt(d, l, tolerance=0.4) {
 // Create a standard sized metric countersunk (flat) bolt with hex key drive.
 // In compliance with convention, the l for this includes the head.
 module metric_wood_screw(d, l, tolerance=0.4) {
-  echo("d", d, "l", l);
   phillips_tip(d - 2) {
     union() {
       cylinder(h=d / 2, r1=d, r2=d / 2, $fn=24 * d);

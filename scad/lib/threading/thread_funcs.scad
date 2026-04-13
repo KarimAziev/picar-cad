@@ -421,3 +421,6 @@ function tooth_width(a, h, pitch, tooth_height, extent) =
   : ((frac <= tfrac_half)
      ? ((frac / tfrac_half) * extent)
      : ((1 - (frac - tfrac_half) / tfrac_half) * extent));
+
+function clamp(x, lo, hi) =
+  x < lo ? lo : (x > hi ? hi : x);
