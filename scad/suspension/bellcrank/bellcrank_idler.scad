@@ -61,7 +61,6 @@ module bellcrank_idler(color=cobalt_blue_light_1,
                        show_lower_bearing=show_idler_lower_bearing,
                        show_upper_bearing=show_idler_upper_bearing,
                        arm_z=bellcrank_arm_z,
-                       arm_od=bellcrank_arm_od,
                        l=bellcrank_arm_l,
                        w=bellcrank_arm_w,
                        thickness=bellcrank_arm_thickness,
@@ -127,7 +126,7 @@ module bellcrank_idler(color=cobalt_blue_light_1,
     if (show_idler_lever) {
       rotate([0, 0, z_angle]) {
         translate([0, 0, arm_z]) {
-          bellcrank_lever(od=arm_od,
+          bellcrank_lever(od=od,
                           l=l,
                           w=w,
                           thickness=thickness,

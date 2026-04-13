@@ -11,10 +11,9 @@ include <parameters.scad>
 // ─────────────────────────────────────────────────────────────────────────────
 
 bellcrank_arm_bolt_d                              = m3_hole_dia;
-// Outer ring diameter
-bellcrank_arm_od                                  = 11.1;
-// Total length of the arm, including the outer diameter
-bellcrank_arm_l                                   = 31;
+
+// Total length of the arm starting from the center of bellcrank
+bellcrank_arm_l                                   = 25.45;
 
 // Thickness of the arm
 bellcrank_arm_thickness                           = 3;
@@ -140,10 +139,10 @@ chassis_bellcrank_spacing                         = 48.8;
 
 chassis_bellcrank_y_base                          = 22.8;
 chassis_bellcrank_position_y                      = chassis_bellcrank_y_base
-                                                     + ((bellcrank_arm_od
+                                                     + ((bellcrank_idler_od
                                                      - bellcrank_arm_w) / 2);
 chassis_bellcrank_mount_len                       = chassis_bellcrank_position_y;
-chassis_bellcrank_link_padding_x                  = bellcrank_arm_od / 2;
+chassis_bellcrank_link_padding_x                  = bellcrank_idler_od / 2;
 chassis_bellcrank_mount_w                         = chassis_bellcrank_spacing
                                                      + chassis_bellcrank_link_padding_x * 2;
 
@@ -152,7 +151,7 @@ chassis_center_mount_padding_x                    = 2;
 
 chassis_center_transition_w                       = 27;
 
-chassis_steering_servo_bellcrank_y_offset         = 21.4 + 6.5;
+chassis_steering_servo_bellcrank_y_offset         = 21.4 + 5.5;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Steering servo DSSERVO
@@ -882,9 +881,9 @@ steering_servo_mount_bolt_d                       = m3_hole_dia;
 steering_servo_mount_bolt_bore_d                  = m3_countersunk_head_dia + 0.2;
 steering_servo_mount_bolt_bore_h                  = 1;
 
-steering_servo_tie_rod_body_total_len             = 69.5;
+steering_servo_tie_rod_body_total_len             = 68.5;
 steering_servo_tie_rod_thread_len                 = 8.8;
-steering_servo_tie_rod_body_len                   = 29;
+steering_servo_tie_rod_body_len                   = 28;
 steering_servo_tie_rod_body_d                     = 5.65;
 steering_servo_tie_rod_body_end_len               = 0.1;
 steering_servo_tie_rod_thread_d                   = m3_hole_dia;
@@ -906,7 +905,7 @@ steering_servo_tie_rod_bushing_h                  = 7;
 steering_servo_tie_rod_bushing_flat_d             = 4.4;
 
 steering_servo_tie_rod_bushing_color              = metallic_silver_9;
-steering_servo_tie_rod_angle                      = -5;
+steering_servo_tie_rod_angle                      = -3;
 
 steering_servo_arm_total_l                        = 35.4;
 steering_servo_arm_d                              = 14.75;

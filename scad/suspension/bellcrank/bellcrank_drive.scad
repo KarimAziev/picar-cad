@@ -52,7 +52,6 @@ module bellcrank_drive(color=cobalt_blue_light_1,
                        show_lower_bearing=show_idler_lower_bearing,
                        show_upper_bearing=show_idler_upper_bearing,
                        arm_z=bellcrank_arm_z,
-                       arm_od=bellcrank_arm_od,
                        l=bellcrank_arm_l,
                        w=bellcrank_arm_w,
                        thickness=bellcrank_arm_thickness,
@@ -99,7 +98,6 @@ module bellcrank_drive(color=cobalt_blue_light_1,
                     show_lower_bearing=show_lower_bearing,
                     show_upper_bearing=show_upper_bearing,
                     arm_z=arm_z,
-                    arm_od=arm_od,
                     l=l,
                     w=w,
                     thickness=thickness,
@@ -116,10 +114,9 @@ module bellcrank_drive(color=cobalt_blue_light_1,
       if (show_idler_lever) {
         rotate([0, 0, z_angle]) {
           translate([0, 0, arm_z]) {
-            bellcrank_lever(od=arm_od,
+            bellcrank_lever(od=od,
                             l=l,
                             w=w,
-                            parent_od=od,
                             thickness=thickness,
                             bolt_d=bolt_d,
                             bolt_spacing=bolt_spacing,
@@ -156,7 +153,6 @@ module bellcrank_servo_lever(color=cobalt_blue_metallic,
                              parent_od=bellcrank_idler_od,
                              border_w=bellcrank_lever_border_w,
                              ring_h,
-                             od=bellcrank_arm_od,
                              l=bellcrank_arm_l,
                              w=bellcrank_arm_w,
                              thickness=bellcrank_arm_thickness,
@@ -166,7 +162,7 @@ module bellcrank_servo_lever(color=cobalt_blue_metallic,
                              boss_pad=bellcrank_servo_lever_boss_pad_x,
                              holes_gap=bellcrank_servo_lever_holes_gap,
                              holes_n=bellcrank_servo_lever_holes_n) {
-  lever_l = l - od / 2;
+  lever_l = l;
 
   bolt_holes_x = -lever_l + bolt_offset;
 
@@ -182,14 +178,11 @@ module bellcrank_servo_lever(color=cobalt_blue_metallic,
                      border_w=border_w);
       linear_extrude(height=thickness, center=false) {
         difference() {
-          hull() {
-            circle(d=od, $fn=$preview ? 20 : 200);
-            translate([-lever_l, -w / 2, 0]) {
-              rounded_rect([lever_l, w],
-                           center=false,
-                           r_factor=0.5,
-                           fn=$preview ? 20 : 200);
-            }
+          translate([-lever_l, -w / 2, 0]) {
+            rounded_rect([lever_l, w],
+                         center=false,
+                         r_factor=0.5,
+                         fn=$preview ? 20 : 200);
           }
           circle(d=parent_od, $fn=fn);
           translate([bolt_holes_x, 0, 0]) {
@@ -227,4 +220,5 @@ module bellcrank_drive_cap_ring(parent_od=bellcrank_idler_od,
                  border_w=border_w);
 }
 
-bellcrank_drive();
+// bellcrank_drive();
+bellcrank_servo_lever();

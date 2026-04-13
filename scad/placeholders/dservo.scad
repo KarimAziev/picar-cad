@@ -40,7 +40,8 @@ function full_dservo_tie_rod_len() =
                              inner_d=steering_servo_tie_rod_shank_bolt_d,
                              lock=false),
        shaft_len = steering_servo_tie_rod_body_len,
-       tie_rod_len = steering_servo_tie_rod_shank_len + steering_servo_tie_rod_eye_od)
+       tie_rod_len = steering_servo_tie_rod_shank_len + steering_servo_tie_rod_eye_od
+       + nut_h)
   shaft_len + tie_rod_len * 2;
 
 function dservo_tie_rod_bbox_for_len(length) =
@@ -52,15 +53,6 @@ function dservo_tie_rod_bbox_for_len(length) =
 
 function dservo_tie_rod_bbox() =
   dservo_tie_rod_bbox_for_len(full_dservo_tie_rod_len());
-
-function dservo_tie_rod_shaft_bb() =
-  let (nut_h = find_nut_prop(prop="height",
-                             inner_d=steering_servo_tie_rod_shank_bolt_d,
-                             lock=false),
-       w=steering_servo_tie_rod_bushing_d,
-       length = steering_servo_tie_rod_body_len + nut_h * 2,
-       bb = dservo_tie_rod_bbox_for_len(length))
-  bb;
 
 function dservo_tie_rod_bb() =
   dservo_tie_rod_bbox_for_len(steering_servo_tie_rod_shank_len +
@@ -228,5 +220,4 @@ module dsservo(center=false,
     }
   }
 }
-
-dsservo(center=false);
+dsservo();

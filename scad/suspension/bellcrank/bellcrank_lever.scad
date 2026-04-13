@@ -26,8 +26,7 @@ bellcrank_lever_through_hole_d   = 2;
 
 module bellcrank_lever(color=cobalt_blue_metallic,
                        alpha=1,
-                       parent_od=bellcrank_idler_od,
-                       od=bellcrank_arm_od,
+                       od=bellcrank_idler_od,
                        l=bellcrank_arm_l,
                        w=bellcrank_arm_w,
                        h,
@@ -44,9 +43,8 @@ module bellcrank_lever(color=cobalt_blue_metallic,
                        add_through_hole=bellcrank_lever_add_through_hole,
                        through_hole_d=bellcrank_lever_through_hole_d) {
   upper_boss_wall_t = bolt_offset > 0 ? 0 : ((upper_boss_d - bolt_d) / 2);
-  lever_l = l - od / 2;
 
-  bolt_holes_x = -lever_l + bolt_d / 2 + bolt_offset;
+  bolt_holes_x = -l + bolt_d / 2 + bolt_offset;
 
   h = is_undef(h) ? thickness + upper_boss_h : h;
 
@@ -54,8 +52,8 @@ module bellcrank_lever(color=cobalt_blue_metallic,
 
   module _base_shape() {
 
-    translate([-lever_l - upper_boss_wall_t, -w / 2, 0]) {
-      rounded_rect([lever_l + upper_boss_wall_t, w],
+    translate([-l - upper_boss_wall_t, -w / 2, 0]) {
+      rounded_rect([l + upper_boss_wall_t, w],
                    center=false,
                    r_factor=0.5,
                    fn=fn);
@@ -67,12 +65,12 @@ module bellcrank_lever(color=cobalt_blue_metallic,
       if (use_hull) {
         hull() {
           _base_shape();
-          circle(d=parent_od + border_w * 2, $fn=$preview ? 40 : 360);
+          circle(d=od + border_w * 2, $fn=$preview ? 40 : 360);
         }
       } else {
         union() {
           _base_shape();
-          circle(d=parent_od + border_w * 2, $fn=$preview ? 40 : 360);
+          circle(d=od + border_w * 2, $fn=$preview ? 40 : 360);
         }
       }
     }
@@ -95,12 +93,12 @@ module bellcrank_lever(color=cobalt_blue_metallic,
               }
             }
             translate([0, 0, -0.1]) {
-              screw_hole_thread(d=parent_od, h=h + 0.2);
+              screw_hole_thread(d=od, h=h + 0.2);
             }
             if (add_through_hole) {
-              translate([0, -parent_od / 4, h / 2]) {
+              translate([0, -od / 4, h / 2]) {
                 rotate([90, 0, 0]) {
-                  cylinder(d=through_hole_d, h=parent_od / 2, $fn=fn);
+                  cylinder(d=through_hole_d, h=od / 2, $fn=fn);
                 }
               }
             }
