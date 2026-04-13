@@ -1616,3 +1616,282 @@ function rotated_bbox(size, a=[0, 0, 0]) =
 
 function y_angle_from_zshift(target_h, w) =
   asin(target_h / w);
+
+/**
+─────────────────────────────────────────────────────────────────────────────
+vlen
+─────────────────────────────────────────────────────────────────────────────
+
+Compute the Euclidean length of a 3D vector.
+
+**Parameters:**
+
+`v`: 3D vector `[x, y, z]`.
+
+**Returns:**
+
+The scalar magnitude of `v`.
+
+**Behavior:**
+Uses the standard formula `sqrt(x^2 + y^2 + z^2)`.
+
+**Examples:**
+```scad
+vlen([3, 4, 0]);     // -> 5
+vlen([1, 2, 2]);     // -> 3
+```
+*/
+function vlen(v) = sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+
+/**
+─────────────────────────────────────────────────────────────────────────────
+vunit
+─────────────────────────────────────────────────────────────────────────────
+
+Normalize a 3D vector to unit length.
+
+**Parameters:**
+
+`v`: 3D vector `[x, y, z]`.
+
+**Returns:**
+
+A normalized vector with length `1`, pointing in the same direction as `v`.
+
+**Behavior:**
+If the input vector is extremely small (`length < 1e-9`), returns `[0, 0, 0]`
+instead of dividing by nearly zero.
+
+**Examples:**
+```scad
+vunit([3, 0, 0]);    // -> [1, 0, 0]
+vunit([0, 0, 0]);    // -> [0, 0, 0]
+```
+*/
+function vunit(v) =
+  let (L = vlen(v))
+  (L < 1e-9 ? [0, 0, 0] : [v[0] / L, v[1] / L, v[2] / L]);
+
+/**
+─────────────────────────────────────────────────────────────────────────────
+vcross
+─────────────────────────────────────────────────────────────────────────────
+
+Compute the cross product of two 3D vectors.
+
+**Parameters:**
+
+`a`: First 3D vector `[ax, ay, az]`.
+`b`: Second 3D vector `[bx, by, bz]`.
+
+**Returns:**
+
+A new 3D vector perpendicular to both `a` and `b`, equal to `a × b`.
+
+**Behavior:**
+Uses the standard right-handed cross product. The result direction follows the
+right-hand rule.
+
+**Examples:**
+```scad
+vcross([1, 0, 0], [0, 1, 0]);   // -> [0, 0, 1]
+vcross([0, 1, 0], [1, 0, 0]);   // -> [0, 0, -1]
+```
+*/
+function vcross(a, b) = [a[1] * b[2] - a[2] * b[1],
+                         a[2] * b[0] - a[0] * b[2],
+                         a[0] * b[1] - a[1] * b[0]];
+
+/**
+─────────────────────────────────────────────────────────────────────────────
+vadd
+─────────────────────────────────────────────────────────────────────────────
+
+Add two 3D vectors component-wise.
+
+**Parameters:**
+
+`a`: First 3D vector `[ax, ay, az]`.
+`b`: Second 3D vector `[bx, by, bz]`.
+
+**Returns:**
+
+A new 3D vector `[ax + bx, ay + by, az + bz]`.
+
+**Behavior:**
+Performs simple component-wise addition.
+
+**Examples:**
+```scad
+vadd([1, 2, 3], [4, 5, 6]);   // -> [5, 7, 9]
+```
+*/
+function vadd(a, b) = [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+
+/**
+─────────────────────────────────────────────────────────────────────────────
+vsub
+─────────────────────────────────────────────────────────────────────────────
+
+Subtract one 3D vector from another component-wise.
+
+**Parameters:**
+
+`a`: First 3D vector `[ax, ay, az]`.
+`b`: Second 3D vector `[bx, by, bz]`.
+
+**Returns:**
+
+A new 3D vector `[ax - bx, ay - by, az - bz]`.
+
+**Behavior:**
+Performs simple component-wise subtraction.
+
+**Examples:**
+```scad
+vsub([5, 7, 9], [1, 2, 3]);   // -> [4, 5, 6]
+```
+*/
+function vsub(a, b) = [a[0]-b[0], a[1]-b[1], a[2]-b[2]];
+
+/**
+─────────────────────────────────────────────────────────────────────────────
+vmul
+─────────────────────────────────────────────────────────────────────────────
+
+Multiply a 3D vector by a scalar.
+
+**Parameters:**
+
+`v`: 3D vector `[x, y, z]`.
+`s`: Scalar multiplier.
+
+**Returns:**
+
+A new 3D vector `[x*s, y*s, z*s]`.
+
+**Behavior:**
+Scales the vector uniformly in all three components.
+
+**Examples:**
+```scad
+vmul([1, 2, 3], 2);     // -> [2, 4, 6]
+vmul([1, -1, 0], 0.5);  // -> [0.5, -0.5, 0]
+```
+*/
+function vmul(v, s) = [v[0]*s, v[1]*s, v[2]*s];
+
+/**
+─────────────────────────────────────────────────────────────────────────────
+point_tangent
+─────────────────────────────────────────────────────────────────────────────
+
+Estimate a tangent direction at a point along a 3D polyline.
+
+**Parameters:**
+
+`points`: List of 3D points `[[x, y, z], ...]`.
+`i`: Index of the point whose tangent should be computed.
+
+**Returns:**
+
+A unit 3D vector representing the tangent direction at `points[i]`.
+
+**Behavior:**
+For the first point, uses the direction from `points[0]` to `points[1]`.
+For the last point, uses the direction from `points[i-1]` to `points[i]`.
+For interior points, averages the normalized incoming and outgoing segment
+directions, then normalizes the result.
+
+**Examples:**
+```scad
+pts = [[0,0,0], [1,0,0], [2,1,0]];
+point_tangent(pts, 0);   // tangent of first segment
+point_tangent(pts, 1);   // averaged corner tangent
+point_tangent(pts, 2);   // tangent of last segment
+```
+*/
+function point_tangent(points, i) =
+  i == 0 ? vunit(vsub(points[1], points[0])) :
+  i == len(points)-1 ? vunit(vsub(points[i], points[i-1])) :
+  vunit(vadd(vunit(vsub(points[i], points[i-1])),
+             vunit(vsub(points[i + 1], points[i]))));
+
+/**
+─────────────────────────────────────────────────────────────────────────────
+safe_perp
+─────────────────────────────────────────────────────────────────────────────
+
+Compute a unit vector perpendicular to a tangent direction.
+
+**Parameters:**
+
+`tangent`: 3D direction vector.
+`up`: Preferred reference up vector. Default: `[0, 0, 1]`.
+
+**Returns:**
+
+A unit 3D vector perpendicular to `tangent`.
+
+**Behavior:**
+First computes `cross(tangent, up)` to get a sideways perpendicular direction.
+If `tangent` is nearly parallel to `up`, that cross product becomes too small,
+so the function falls back to using `[0, 1, 0]` as an alternate reference
+vector. The final result is normalized.
+
+**Examples:**
+```scad
+safe_perp([1, 0, 0]);           // -> typically [0, -1, 0] or equivalent unit perp
+safe_perp([0, 0, 1]);           // uses fallback reference vector
+safe_perp([1, 0, 0], [0, 1, 0]);
+```
+*/
+function safe_perp(tangent, up=[0, 0, 1]) =
+  let (n = vcross(tangent, up))
+  vlen(n) < 1e-6
+  ? vunit(vcross(tangent, [0, 1, 0]))
+  : vunit(n);
+
+/**
+─────────────────────────────────────────────────────────────────────────────
+offset_path
+─────────────────────────────────────────────────────────────────────────────
+
+Create an offset version of a 3D polyline.
+
+**Parameters:**
+
+`points`: List of 3D points `[[x, y, z], ...]`.
+`offset`: Offset distance.
+`up`: Preferred reference up vector used to define the perpendicular offset
+direction. Default: `[0, 0, 1]`.
+
+**Returns:**
+
+A new list of 3D points where each input point has been shifted by `offset`
+along a perpendicular direction derived from the local path tangent.
+
+**Behavior:**
+For each point:
+- Computes the local tangent with `point_tangent()`.
+- Computes a stable perpendicular direction with `safe_perp()`.
+- Moves the point by `offset` along that perpendicular.
+
+This is useful for generating parallel paths relative to a 3D polyline.
+The exact offset direction depends on both the tangent and the chosen `up`
+vector.
+
+**Examples:**
+```scad
+pts = [[0,0,0], [10,0,0], [20,10,0]];
+offset_path(pts, 2);
+
+offset_path([[0,0,0], [0,10,0]], 1, [0,0,1]);
+```
+*/
+
+function offset_path(points, offset, up=[0, 0, 1]) =
+  [for (i = [0:len(points)-1])
+      let (t = point_tangent(points, i),
+           p = safe_perp(t, up))
+        vadd(points[i], vmul(p, offset))];

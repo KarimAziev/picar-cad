@@ -229,6 +229,42 @@ module test_rotated_bbox() {
             "rotated_bbox(20, 10, 5, [50, 30, 45])");
 }
 
+module test_vlen() {
+  assert_eq(vlen([3, 4, 0]), 5, "vlen([3, 4, 0])");
+  assert_eq(vlen([1, 2, 2]), 3, "vlen([1, 2, 2])");
+}
+
+module test_vunit() {
+  assert_eq(vunit([3, 0, 0]), [1, 0, 0], "vunit([3, 0, 0])");
+  assert_eq(vunit([0, 0, 0]), [0, 0, 0], "vunit([0, 0, 0])");
+}
+
+module test_vcross() {
+  assert_eq(vcross([1, 0, 0], [0, 1, 0]),
+            ([0, 0, 1]),
+            "vcross([1, 0, 0], [0, 1, 0])");
+  assert_eq(vcross([0, 1, 0], [1, 0, 0]),
+            ([0, 0, -1]),
+            "vcross([0, 1, 0], [1, 0, 0])");
+}
+
+module test_vadd() {
+  assert_eq(vadd([1, 2, 3], [4, 5, 6]),
+            ([5, 7, 9]),
+            "vadd([1, 2, 3], [4, 5, 6])");
+}
+
+module test_vsub() {
+  assert_eq(vsub([5, 7, 9], [1, 2, 3]),
+            ([4, 5, 6]),
+            "vsub([5, 7, 9], [1, 2, 3])");
+}
+
+module test_vmul() {
+  assert_eq(vmul([1, 2, 3], 2), ([2, 4, 6]), "vmul([1, 2, 3], 2)");
+  assert_eq(vmul([1, -1, 0], 0.5), ([0.5, -0.5, 0]), "vmul([1, -1, 0], 0.5)");
+}
+
 test_slice();
 test_take();
 test_take_last();
@@ -242,3 +278,9 @@ test_rot2();
 test_rotated_bbox2();
 test_calc_rotated_bbox();
 test_rotated_bbox();
+test_vlen();
+test_vunit();
+test_vcross();
+test_vadd();
+test_vsub();
+test_vmul();
