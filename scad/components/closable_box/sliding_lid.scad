@@ -167,7 +167,7 @@ module sliding_lid(size=[86, 90, 35],
         translate([0, 0, 0.01]) {
           rotate([180, 0, 0]) {
             rotate([0, 0, 90]) {
-              text_rows(plists);
+              text_rows(plists, center_x=true);
             }
           }
         }

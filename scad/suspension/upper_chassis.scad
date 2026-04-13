@@ -31,7 +31,7 @@ show_bellcrank_idler_lever                  = true;
 
 show_idler_upper_bearing                    = true;
 show_idler_lower_bearing                    = true;
-show_servo                                  = false;
+show_servo                                  = true;
 show_steering_assembly                      = true;
 
 show_center_link                            = true;
@@ -41,23 +41,23 @@ show_front_lower_arm_pin                    = false;
 show_front_lower_pin_e_clip                 = false;
 show_front_lower_arm_ball_stud              = false;
 
-show_front_upper_arm                        = false;
+show_front_upper_arm                        = true;
 
 show_front_bulkhead                         = true;
-show_front_bulkhead_upper_suspension_holder = false;
+show_front_bulkhead_upper_suspension_holder = true;
 
-show_upper_arm_ball_stud                    = false;
-show_front_upper_arm_pin                    = false;
+show_upper_arm_ball_stud                    = true;
+show_front_upper_arm_pin                    = true;
 
-show_front_shock_tower                      = false;
-show_front_suspension_arm_pad               = false;
+show_front_shock_tower                      = true;
+show_front_suspension_arm_pad               = true;
 
-show_left_knuckle                           = false;
+show_left_knuckle                           = true;
 show_right_knuckle                          = false;
 show_knuckle_bushing                        = false;
 show_knuckle_inner_bearing                  = false;
 show_knuckle_outer_bearing                  = false;
-show_knuckle_tie_rod                        = false;
+show_knuckle_tie_rod                        = true;
 
 show_front_bulkhead_housing                 = true;
 
@@ -105,16 +105,19 @@ module upper_chassis(show_bellcrank_drive=show_bellcrank_drive,
     + steering_servo_tie_rod_eye_od / 2
     + ((dsservo_hat_w - dsservo_size[0]) / 2);
 
+  bellcrank_y_center = -bellcrank_y - upper_chassis_bellcrank_bolt_bore_d / 2;
+
   servo_mount_x = -bellcrank_arm_len - bellcrank_arm_od / 2
     + dsservo_size[2]
     - steering_servo_tie_rod_eye_od / 2
     - bellcrank_arm_len;
 
-  servo_mount_y = -bellcrank_y
-    - shaft_len
-    - bellcrank_arm_od / 2
-    - bellcrank_arm_w / 2
-    - steering_servo_tie_rod_eye_od / 2;
+  servo_slot_w = dsservo_size[0] + steering_servo_clearance;
+  servo_wall_thickness = (steering_servo_mount_len - servo_slot_w) / 2;
+  servo_bolt_spacing_y = (servo_slot_w + steering_servo_mount_bolt_d) + servo_wall_thickness / 2;
+
+  servo_mount_y = bellcrank_y_center - servo_bolt_spacing_y / 2
+    - chassis_steering_servo_bellcrank_y_offset;
 
   bellcrank_mount_len = max(bellcrank_y,
                             chassis_bellcrank_mount_len)
@@ -129,6 +132,7 @@ module upper_chassis(show_bellcrank_drive=show_bellcrank_drive,
                        / (steering_servo_mount_bolt_bore_d + 2))))) {
 
       translate([0, servo_mount_y, 0]) {
+
         for (i = [0 : n]) {
           let (step = -i * (steering_servo_mount_bolt_bore_d + 2)) {
 

@@ -61,7 +61,7 @@ module steering_tie_rod_link(eye_od=knuckle_tie_rod_eye_od,
   full_len = steering_link_full_len(eye_od=eye_od,
                                     shank_len=shank_len,
                                     center_link_len=center_link_len);
-  angles = with_default([]);
+  angles = with_default(angles, []);
   x_angle = with_default(angles[0], 0);
   y_angle = with_default(angles[1], with_default(tilt_shift, 0));
   z_angle = with_default(angles[2], 0);
@@ -139,7 +139,7 @@ module steering_tie_rod_link(eye_od=knuckle_tie_rod_eye_od,
     }
   }
   maybe_translate([x_final, center_y ? -eye_od / 2 : 0, 0]) {
-    maybe_translate([x_shift, y_shift, tilt_shift]) {
+    maybe_translate([0, 0, 0]) {
       maybe_rotate([x_angle, y_angle, z_angle]) {
         translate([eye_od / 2, eye_od / 2, 0]) {
           _main();
@@ -181,7 +181,7 @@ module steering_link(knuckle_arm_len=knuckle_arm_base_len,
                      center_link_thread_d=knuckle_tie_rod_link_thread_d,
                      center_link_color=knuckle_tie_rod_link_color,
                      show_eye_bolt=true,
-                     angles,
+                     angles=[0, 6, 0],
                      tilt_shift=knuckle_tie_tilt_shift,
                      right_end_bushing_angles=[0, 0, 0],
                      left_end_bushing_angles=[0, 0, 0],
@@ -257,4 +257,5 @@ module steering_link(knuckle_arm_len=knuckle_arm_base_len,
   }
 }
 
-steering_link(left_end_bushing_angles=[0, 0, 0]);
+steering_link(left_end_bushing_angles=[0, 0, 0], angles=[0, 10, 0]);
+// steering_tie_rod_link(angles=[0, 30, 0]);

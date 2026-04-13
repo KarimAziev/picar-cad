@@ -21,6 +21,9 @@ use <../../lib/shapes3d.scad>
 use <../../lib/threading/threads.scad>
 use <bellcrank_ring.scad>
 
+bellcrank_lever_add_through_hole = true;
+bellcrank_lever_through_hole_d   = 2;
+
 module bellcrank_lever(color=cobalt_blue_metallic,
                        alpha=1,
                        parent_od=bellcrank_idler_od,
@@ -37,7 +40,9 @@ module bellcrank_lever(color=cobalt_blue_metallic,
                        lower_boss_h=bellcrank_arm_lower_boss_h,
                        lower_boss_d=bellcrank_arm_lower_boss_d,
                        border_w=bellcrank_lever_border_w,
-                       use_hull=bellcrank_idler_use_hull) {
+                       use_hull=bellcrank_idler_use_hull,
+                       add_through_hole=bellcrank_lever_add_through_hole,
+                       through_hole_d=bellcrank_lever_through_hole_d) {
   upper_boss_wall_t = bolt_offset > 0 ? 0 : ((upper_boss_d - bolt_d) / 2);
   lever_l = l - od / 2;
 
@@ -45,15 +50,15 @@ module bellcrank_lever(color=cobalt_blue_metallic,
 
   h = is_undef(h) ? thickness + upper_boss_h : h;
 
-  fn=$preview ? 20 : 100;
+  fn=$preview ? 20 : 360;
 
   module _base_shape() {
-    circle(d=od, $fn=$preview ? 20 : 200);
+
     translate([-lever_l - upper_boss_wall_t, -w / 2, 0]) {
       rounded_rect([lever_l + upper_boss_wall_t, w],
                    center=false,
                    r_factor=0.5,
-                   fn=$preview ? 20 : 200);
+                   fn=fn);
     }
   }
 
@@ -91,6 +96,13 @@ module bellcrank_lever(color=cobalt_blue_metallic,
             }
             translate([0, 0, -0.1]) {
               screw_hole_thread(d=parent_od, h=h + 0.2);
+            }
+            if (add_through_hole) {
+              translate([0, -parent_od / 4, h / 2]) {
+                rotate([90, 0, 0]) {
+                  cylinder(d=through_hole_d, h=parent_od / 2, $fn=fn);
+                }
+              }
             }
           }
         }

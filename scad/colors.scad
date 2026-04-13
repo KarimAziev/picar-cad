@@ -65,3 +65,5 @@ red_2                    = "#D63A20";
 white_smoke_1            = "#f5f5f5";
 white_off_1              = "#F2F0EF";
 white_snow_1             = "#FFFAFA";
+
+pink_1                   = "#b91251";

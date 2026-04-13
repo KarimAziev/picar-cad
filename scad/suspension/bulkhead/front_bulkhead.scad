@@ -34,13 +34,13 @@ use <front_shock_tower.scad>
 use <front_upper_suspension_holder.scad>
 use <suspension_arm_pad.scad>
 
-show_front_shock_tower       = false;
-show_upper_suspension_holder = false;
-show_suspension_arm_pad      = false;
-show_front_upper_arm         = false;
-show_upper_arm_ball_stud     = false;
-show_front_upper_arm_pin     = false;
-show_front_upper_pin_e_clip  = false;
+show_front_shock_tower       = true;
+show_upper_suspension_holder = true;
+show_suspension_arm_pad      = true;
+show_front_upper_arm         = true;
+show_upper_arm_ball_stud     = true;
+show_front_upper_arm_pin     = true;
+show_front_upper_pin_e_clip  = true;
 
 module front_bulkhead(color=cobalt_blue_light_1,
                       shock_tower_color=cobalt_blue_metallic,

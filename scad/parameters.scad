@@ -684,45 +684,6 @@ chassis_body_battery_holders_specs                   = ["type", "grid",
                                                                                               "side_wall_cutout_type", battery_holder_side_wall_type]]]]])];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Steering servo DSSERVO
-// ─────────────────────────────────────────────────────────────────────────────
-
-dsservo_size                                         = [40.00, 20.0, 40.5];
-dsservo_bolt_dia                                     = 4.05;
-
-dsservo_bolt_spacing                                 = [49.5, 10];
-
-// offset between the servo slot and the fastening bolts
-dsservo_bolts_offset                                 = 3.2;
-
-dsservo_hat_w                                        = 54.5;
-
-dsservo_hat_h                                        = 18.63;
-dsservo_hat_thickness                                = 4.0;
-dsservo_hat_z_offset                                 = 12.8;
-dsservo_gearbox_x_offset                             = 0;
-dsservo_gearbox_mode                                 = "union";
-dsservo_text                                         = [["20KG",
-                                                         9],
-                                                        ["DSSERVO",
-                                                         3, undef, 1],
-                                                        ["DIGITAL SERVO", 3]];
-dsservo_text_size                                    = 2;
-
-dsservo_gearbox_h                                    = 0;
-dsservo_gearbox_size                                 = [[1, 12.95, matte_black, 20],
-                                                        [3.9, 5.9, metallic_gold_2, 25],
-                                                        [0.05, 4.2, dark_gold_2, 25],
-                                                        [0.05, 2.8, licorice, 25]];
-dsservo_gearbox_d1                                   = 12.95 + 3.8;
-
-dsservo_gearbox_d2                                   = 6;
-dsservo_color                                        = jet_black;
-dsservo_cut_len                                      = 0;
-dsservo_cut_len_top                                  = 7.7;
-dsservo_cut_top_depth                                = 3.0;
-
-// ─────────────────────────────────────────────────────────────────────────────
 // Front panel dimensions
 // ─────────────────────────────────────────────────────────────────────────────
 // This panel is vertical and includes mounting holes for the ultrasonic sensors.
@@ -1168,10 +1129,23 @@ pan_bolts_hat_z_offset                               = 4;
 
 /**
  * Servo label text for visualization purposes.
- * Each row is formatted as: [text_content, font_size, font_name]
+ * Each row is formatted as plist.
  */
-pan_servo_text                                       = [["EMAX", 4, "Liberation Sans:style=Bold Italic"],
-                                                        ["ES08MA II ANALOG SERVO", 1.2, "Ubuntu:style=Bold"]];
+pan_servo_text                                       = [["EMAX", "size", 4,
+                                                         "font", "Liberation Sans:style=Bold Italic",
+                                                         "height", 0.1,
+                                                         "color", "white",
+                                                         "bg_color", matte_black_2,
+                                                         "bg_pad_left", 3.6,
+                                                         "bg_pad_right", 3.6,
+                                                         "bg_pad_bottom", 0.5,
+                                                         "bg_pad_top", 0.5,],
+                                                        ["ES08MA II ANALOG SERVO",
+                                                         "size", 1.2,
+                                                         "gap_before", 1]];
+
+pan_servo_text_plist                                 = ["background", ["color", yellow_2],
+                                                        "color", "black"];
 
 /**
  * Default size to use for servo label text when specific size is not defined.
@@ -1337,10 +1311,9 @@ tilt_servo_gearbox_mode                              = "hull";
 
 /**
  * Labeling text for the tilt servo used in rendered previews.
- * Format: [["Text Line", font size, font name], ...]
  */
-tilt_servo_text                                      = [["EMAX", 4, "Liberation Sans:style=Bold Italic"],
-                                                        ["ES08MA II ANALOG SERVO", 1.2, "Ubuntu:style=Bold"]];
+tilt_servo_text                                      = pan_servo_text;
+tilt_servo_text_plist                                = pan_servo_text_plist;
 
 /**
  * Default text size for servo labels if none is explicitly specified.
@@ -2555,12 +2528,8 @@ steering_servo_hat_thickness                         = 1.6;
 steering_bolts_hat_z_offset                          = 4;
 steering_servo_gearbox_x_offset                      = 3;
 steering_servo_gearbox_mode                          = "hull";
-steering_servo_text                                  = [["EMAX",
-                                                         4,
-                                                         "Liberation Sans:style=Bold Italic"],
-                                                        ["ES08MA II ANALOG SERVO",
-                                                         1.2,
-                                                         "Ubuntu:style=Bold"]];
+steering_servo_text                                  = pan_servo_text;
+steering_servo_text_plist                            = pan_servo_text_plist;
 steering_servo_text_size                             = 3;
 steering_servo_gearbox_h                             = 4;
 steering_servo_gearbox_size                          = [[0.4, 6.09, matte_black],

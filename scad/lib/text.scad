@@ -4,6 +4,8 @@
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */
+include <../steering_params.scad>
+
 use <debug.scad>
 use <functions.scad>
 use <placement.scad>
@@ -252,9 +254,13 @@ function normalize_texts(texts = [],
        : [for (v = with_default(texts, []))
            if (!is_undef(v) &&
                (is_string(v) || is_num(v) ||
+                is_list(v) && !plist_is(v) && is_string(v[1])
+                || is_num(v[1]) ||
                 (is_list(v) &&
+
                  is_string(plist_get("text", v))
-                 || is_num(plist_get("text", v))))) v],
+                 || is_num(plist_get("text", v)))))
+             (is_list(v) && !plist_is(v)) ? concat(["text"], v) : v],
        gap = with_default(gap, 0),
        default_plist = plist_merge(["font", default_font,
                                     "height",  default_height,
@@ -325,8 +331,11 @@ function normalize_texts(texts = [],
    - `halign`: left, center (default) or right.
    - `valign`: top, center, baseline (default) and bottom.
    - `height`: Factor to increase or decrease the character spacing. The default value of 0.1.
+   - `y_offset`: Custom Y-offset that affects position only of the current row.
+   - `gap_before`: Y-gap before the text row.
+  -  `gap_after`: Y-gap after the text row.
 
-   **Example:**
+   **Examples:**
 
    ```scad
    text_rows("My text",
@@ -360,7 +369,7 @@ module text_rows(texts = [],
                  default_color,
                  center_x=false,
                  center_y=true,
-                 align_to_bottom=true) {
+                 rotation) {
   props = normalize_texts(texts,
                           plist=plist,
                           gap=gap,
@@ -381,11 +390,10 @@ module text_rows(texts = [],
   gaps_after = plist_get("gaps_after", props);
   max_x_size = plist_get("max_x_size", props);
   total_size = plist_get("total_size", props);
+  text_sizes = plist_get("text_sizes", props);
 
-  if (len(text_strings) > 0) {
-    translate([center_x ? -max_x_size / 2 : 0,
-               center_y ? total_size[1] / 2 : align_to_bottom ? total_size[1] : 0,
-               0]) {
+  module _main() {
+    translate([0, total_size[1], 0]) {
       union() {
         for (i = [0 : len(text_plists) - 1]) {
           let (txt = text_strings[i],
@@ -411,9 +419,43 @@ module text_rows(texts = [],
                halign = plist_get("halign", spec),
                colr = plist_get("colr", spec, plist_get("color", spec)),
                y_offset = plist_get("y_offset", spec, 0),
-               final_y = y_acc + ratio * y_offset) {
-            translate([0, final_y, 0]) {
+               final_y = y_acc + ratio * y_offset,
+               bg_color = plist_get("bg_color", spec),
+               bg_pad_left = plist_get("bg_pad_left", spec, 0),
+               bg_pad_right = plist_get("bg_pad_right", spec, 0),
+               bg_pad_top = plist_get("bg_pad_top", spec, 0),
+               bg_pad_bottom = plist_get("bg_pad_bottom", spec, 0),
+               bg_h = plist_get("bg_h", spec, height - 0.01),
+               text_size = text_sizes[i],
+               x_size = text_size[0],
+               y_size = text_size[1],
+               x_offset = halign == "right"
+               ? (max_x_size - x_size)
+               : halign == "left"
+               ? 0
+               : halign == "center"
+               ? (max_x_size / 2) - (x_size / 2)
+               : 0) {
+
+            translate([x_offset, final_y, 0]) {
+              if (!is_undef(bg_color)) {
+                let (h = y_size + bg_pad_top + bg_pad_bottom) {
+                  color(bg_color, alpha=1) {
+                    maybe_translate(translation) {
+                      maybe_rotate(rotation) {
+                        translate([-bg_pad_left,
+                                   (valign == "center" ? -y_size / 2 : 0)
+                                   - bg_pad_bottom,
+                                   0]) {
+                          cube([x_size + bg_pad_left + bg_pad_right, h, bg_h]);
+                        }
+                      }
+                    }
+                  }
+                }
+              }
               color(colr) {
+
                 maybe_translate(translation) {
                   maybe_rotate(rotation) {
                     linear_extrude(height=height, center=false) {
@@ -421,7 +463,6 @@ module text_rows(texts = [],
                            size=size,
                            spacing=spacing,
                            font=font,
-                           halign=halign,
                            valign=valign);
                     }
                   }
@@ -431,6 +472,13 @@ module text_rows(texts = [],
           }
         }
       }
+    }
+  }
+
+  if (len(text_strings) > 0) {
+    translate([center_x ? -max_x_size / 2 : 0,
+               center_y ? -total_size[1] / 2 : 0]) {
+      _main();
     }
   }
 }
@@ -464,3 +512,27 @@ module text_fit(x,
     }
   }
 }
+angles=[90, 0, 180];
+
+rotate(angles) {
+  text_rows(texts=dsservo_text,
+// rotation=angles,
+            default_halign="left",
+            center_x=true,
+            center_y=true);
+}
+
+// text_rows(texts=dsservo_text,
+// // rotation=angles,
+//           default_halign="left",
+//           center_x=true,
+//           center_y=true);
+size = [30.8733, 16.7648, 0.1];
+
+// rotate(angles) {
+//   #cube(size);
+// }
+
+// rotate_children_with_shift(size=size, angles=angles, show_bbox=true) {
+//   cube(size);
+// }

@@ -19,7 +19,7 @@ bellcrank_arm_l                                   = 31;
 // Thickness of the arm
 bellcrank_arm_thickness                           = 3;
 // Height of the upper bosses with bolt holes
-bellcrank_arm_upper_boss_h                        = 4;
+bellcrank_arm_upper_boss_h                        = 1;
 // Hole diameter of the upper bosses
 bellcrank_arm_upper_boss_d                        = 4.3;
 
@@ -89,7 +89,7 @@ bellcrank_post_h                                  = 32.55;
 bellcrank_post_od                                 = bellcrank_idler_bearing_d - 0.1;
 
 // The hole diameter for the bolt
-bellcrank_post_bolt_d                             = m3_hole_dia;
+bellcrank_post_bolt_d                             = 3.1;
 
 // The diameter of the bottom flange (shoulder)
 bellcrank_post_flang_d                            = bellcrank_idler_bearing_d + 1.2;
@@ -98,10 +98,10 @@ bellcrank_post_flang_d                            = bellcrank_idler_bearing_d + 
 bellcrank_post_flang_h                            = 1.0;
 
 // The depth of the bolt hole at the bottom
-bellcrank_post_lower_hole_depth                   = 33.55;
+bellcrank_post_lower_hole_depth                   = 12.0;
 
 // The depth of the bolt hole at the top
-bellcrank_post_upper_hole_depth                   = 0;
+bellcrank_post_upper_hole_depth                   = 12.0;
 
 // Whether to use threads for the bolt hole
 bellcrank_post_use_threading                      = false;
@@ -151,6 +151,72 @@ chassis_center_mount_padding_y                    = 3;
 chassis_center_mount_padding_x                    = 2;
 
 chassis_center_transition_w                       = 27;
+
+chassis_steering_servo_bellcrank_y_offset         = 21.4 + 6.5;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Steering servo DSSERVO
+// ─────────────────────────────────────────────────────────────────────────────
+
+dsservo_size                                      = [40.00, 20.0, 40.5];
+dsservo_bolt_dia                                  = 4.05;
+
+dsservo_bolt_spacing                              = [49.5, 10];
+
+// offset between the servo slot and the fastening bolts
+dsservo_bolts_offset                              = 3.2;
+
+dsservo_hat_w                                     = 54.5;
+
+dsservo_hat_h                                     = 18.63;
+dsservo_hat_thickness                             = 4.0;
+dsservo_hat_z_offset                              = 12.8;
+dsservo_gearbox_x_offset                          = 0;
+dsservo_gearbox_mode                              = "union";
+dsservo_text                                      = [["20KG", "size", 9,
+                                                      "color", "white"],
+                                                     ["__________________________",
+                                                      "size", 2,
+                                                      "halign", "center",
+                                                      "gap_before", 1,
+                                                      "color", "white"],
+                                                     ["DSSERVO",
+                                                      "translation", [2, 0, 0],
+                                                      "gap_before", 2,
+                                                      "halign", "left",
+                                                      "color", "white",
+                                                      "size", 2,],
+                                                     ["(S) DIGITAL SERVO",
+                                                      "size", 2,
+                                                      "translation", [2, 0, 0],
+                                                      "gap_before", 1,
+                                                      "halign", "left",
+                                                      "color", "white"]];
+dsservo_text_size                                 = 2;
+dsservo_text_plist                                = ["font", "Lucida Grande:style=Bold",
+                                                     "text_both_sides", true,
+                                                     "background",
+                                                     ["color",
+                                                      pink_1,
+                                                      "pad_left", -0.1,
+                                                      "pad_right", -0.1,]];
+
+dsservo_gearbox_h                                 = 0;
+dsservo_gearbox_size                              = [[1, 12.95, matte_black, 20],
+                                                     [3.9, 5.9, metallic_gold_2, 25],
+                                                     [0.05, 4.2, dark_gold_2, 25],
+                                                     [0.05, 2.8, licorice, 25]];
+dsservo_gearbox_d1                                = 12.95 + 3.8;
+
+dsservo_gearbox_d2                                = 6;
+dsservo_color                                     = jet_black;
+dsservo_cut_len                                   = 0;
+dsservo_cut_len_top                               = 7.7;
+dsservo_cut_top_depth                             = 3.0;
+
+dsservo_socket_size                               = [5.3, 6.3, 3.4];
+dsservo_socket_z_offset                           = 3.0;
+dsservo_socket_side                               = -1;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Front suspension arm pad (geometry parameters)
@@ -816,9 +882,9 @@ steering_servo_mount_bolt_d                       = m3_hole_dia;
 steering_servo_mount_bolt_bore_d                  = m3_countersunk_head_dia + 0.2;
 steering_servo_mount_bolt_bore_h                  = 1;
 
-steering_servo_tie_rod_body_total_len             = 45.16;
+steering_servo_tie_rod_body_total_len             = 69.5;
 steering_servo_tie_rod_thread_len                 = 8.8;
-steering_servo_tie_rod_body_len                   = 5.4;
+steering_servo_tie_rod_body_len                   = 29;
 steering_servo_tie_rod_body_d                     = 5.65;
 steering_servo_tie_rod_body_end_len               = 0.1;
 steering_servo_tie_rod_thread_d                   = m3_hole_dia;
@@ -840,7 +906,7 @@ steering_servo_tie_rod_bushing_h                  = 7;
 steering_servo_tie_rod_bushing_flat_d             = 4.4;
 
 steering_servo_tie_rod_bushing_color              = metallic_silver_9;
-steering_servo_tie_rod_angle                      = 15;
+steering_servo_tie_rod_angle                      = -5;
 
 steering_servo_arm_total_l                        = 35.4;
 steering_servo_arm_d                              = 14.75;
@@ -877,3 +943,18 @@ upper_steering_panel_boss_od                      = 6;
 upper_steering_panel_bulkhead_bore_d              = 4.6;
 upper_steering_panel_bulkhead_bore_h              = 1;
 upper_steering_panel_bulkhead_spacing             = 21;
+
+steering_servo_mount_bolt_padding                 = 0.7;
+steering_servo_bracket_plate_thickness            = 3;
+steering_servo_mount_hat_thickness                = 2;
+servo_mount_wiring_offset                         = 8.4;
+
+steering_servo_mount_len                          = dsservo_hat_w + steering_servo_mount_bolt_padding * 2;
+steering_servo_mount_bolt_spacing                 = [0, steering_servo_mount_len
+                                                     - steering_servo_mount_bolt_d
+                                                     - steering_servo_mount_bolt_padding];
+steering_servo_mount_h                            = dsservo_size[1] + steering_servo_bracket_plate_thickness;
+
+steering_servo_mount_socket_h                     = 3;
+
+steering_servo_clearance                          = 0.6;

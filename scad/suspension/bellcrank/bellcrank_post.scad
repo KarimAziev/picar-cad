@@ -41,6 +41,7 @@ module bellcrank_post(color=metallic_silver_1,
     }
     if (use_screw_thread) {
       pitch = thread_pitch(bolt_d);
+
       if (lower_hole_depth > 0) {
         translate([0, 0, -0.01]) {
           screw_thread(od=bolt_d, height=lower_hole_depth + 0.01, pitch=pitch);

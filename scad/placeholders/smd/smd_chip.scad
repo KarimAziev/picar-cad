@@ -156,7 +156,7 @@ module smd_chip_from_plist(plist,
 
       if (!is_undef(txt_rows)) {
         translate([0, 0, chip_z]) {
-          text_rows(txt_rows, plist=text_pl, gap=text_gap);
+          text_rows(txt_rows, plist=text_pl, gap=text_gap, center_x=true);
         }
       }
 

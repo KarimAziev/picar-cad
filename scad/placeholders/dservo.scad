@@ -150,68 +150,76 @@ module dsservo(center=false,
                servo_tie_rod_angle=steering_servo_tie_rod_angle,
                servo_horn_screw_side) {
 
-  servo(size=[dsservo_size[0],
-              dsservo_size[1],
-              dsservo_size[2]],
-        bolts_dia=dsservo_bolt_dia,
-        bolt_spacing=dsservo_bolt_spacing,
-        servo_hat_w=dsservo_hat_w,
-        center=center,
-        servo_hat_h=dsservo_hat_h,
-        servo_hat_thickness=dsservo_hat_thickness,
-        center_hat_z=false,
-        bolts_offset=dsservo_bolts_offset,
-        bolts_hat_z_offset=dsservo_hat_z_offset,
-        servo_color=servo_color,
-        alpha=alpha,
-        gearbox_box_color=servo_color,
-        servo_text=dsservo_text,
-        text_size=dsservo_text_size,
-        tolerance=0.3,
-        cut_len=dsservo_cut_len,
-        gearbox_h=dsservo_gearbox_h,
-        gearbox_d1=dsservo_gearbox_d1,
-        servo_horn_rotation=$t * ($t > 0.5 ? -90 : 45),
-        gearbox_d2=dsservo_gearbox_d2,
-        gearbox_x_offset=dsservo_gearbox_x_offset,
-        show_servo_horn=false,
-        gearbox_mode=dsservo_gearbox_mode,
-        gearbox_gear_size=dsservo_gearbox_size,
-        show_servo_horn_screws=show_servo_horn_screws,
-        cut_len_top_len=dsservo_cut_len_top,
-        cut_len_top_depth=dsservo_cut_top_depth,
-        show_servo_horn_bolt=show_servo_horn_bolt,
-        servo_horn_single=servo_horn_single,
-        servo_horn_screw_side=servo_horn_screw_side) {
-    if (show_servo_horn) {
-      rotate([0, 0, 0]) {
-        servo_arm(arm_d=steering_servo_arm_d,
-                  arm_len=steering_servo_arm_len,
-                  arm_base_h=steering_servo_arm_base_h,
-                  arm_bolt_boss_h=steering_servo_arm_bolt_boss_h,
-                  arm_bolt_boss_w=steering_servo_arm_bolt_boss_w,
-                  arm_bolt_boss_spacing=steering_servo_arm_bolt_boss_spacing,
-                  arm_bolt_boss_padding=steering_servo_arm_bolt_boss_padding,
-                  arm_thickness=steering_servo_arm_thickness,
-                  arm_w=steering_servo_arm_w,
-                  bolt_d=steering_servo_arm_bolt_d,
-                  boss_inner_padding=steering_servo_arm_bolt_boss_inner_padding,
-                  arm_center_bolt_d=steering_servo_arm_center_bolt_d,
-                  arm_center_bolt_bore_d=steering_servo_arm_center_bolt_bore_d,
-                  arm_center_bolt_bore_h=steering_servo_arm_center_bolt_bore_h);
-      }
-      if (show_tie_rod) {
-        mirror([1, 0, 0]) {
-          translate([-steering_servo_arm_w / 2,
-                     + steering_servo_arm_d / 2
-                     + steering_servo_arm_len
-                     - steering_servo_tie_rod_eye_od / 2
-                     - steering_servo_arm_bolt_boss_inner_padding,
-                     - steering_servo_arm_bolt_boss_h / 2]) {
+  rotate([0, 0, 180]) {
+    servo(size=[dsservo_size[0],
+                dsservo_size[1],
+                dsservo_size[2]],
+          bolts_dia=dsservo_bolt_dia,
+          bolt_spacing=dsservo_bolt_spacing,
+          servo_hat_w=dsservo_hat_w,
+          center=center,
+          servo_hat_h=dsservo_hat_h,
+          servo_hat_thickness=dsservo_hat_thickness,
+          center_hat_z=false,
+          bolts_offset=dsservo_bolts_offset,
+          bolts_hat_z_offset=dsservo_hat_z_offset,
+          servo_color=servo_color,
+          alpha=alpha,
+          gearbox_box_color=servo_color,
+          servo_text=dsservo_text,
+          text_size=dsservo_text_size,
+          tolerance=0.3,
+          cut_len=dsservo_cut_len,
+          gearbox_h=dsservo_gearbox_h,
+          gearbox_d1=dsservo_gearbox_d1,
+          servo_horn_rotation=$t * ($t > 0.5 ? -90 : 45),
+          gearbox_d2=dsservo_gearbox_d2,
+          gearbox_x_offset=dsservo_gearbox_x_offset,
+          show_servo_horn=false,
+          gearbox_mode=dsservo_gearbox_mode,
+          gearbox_gear_size=dsservo_gearbox_size,
+          show_servo_horn_screws=show_servo_horn_screws,
+          cut_len_top_len=dsservo_cut_len_top,
+          cut_len_top_depth=dsservo_cut_top_depth,
+          show_servo_horn_bolt=show_servo_horn_bolt,
+          servo_horn_single=servo_horn_single,
+          servo_horn_screw_side=servo_horn_screw_side,
+          text_plist=dsservo_text_plist,
+          socket_side=dsservo_socket_side,
+          socket_size=dsservo_socket_size,
+          socket_z_offset=dsservo_socket_z_offset,
+          wiring_path=[[-100, 0, dsservo_socket_z_offset]]) {
 
-            rotate([0, 0, 0]) {
-              rotate([0, 0, 90 + servo_tie_rod_angle]) {
-                servo_tie_rod(bushing_rotation=[steering_servo_tie_rod_angle, 0, 0]);
+      if (show_servo_horn) {
+        rotate([0, 0, 180]) {
+          servo_arm(arm_d=steering_servo_arm_d,
+                    arm_len=steering_servo_arm_len,
+                    arm_base_h=steering_servo_arm_base_h,
+                    arm_bolt_boss_h=steering_servo_arm_bolt_boss_h,
+                    arm_bolt_boss_w=steering_servo_arm_bolt_boss_w,
+                    arm_bolt_boss_spacing=steering_servo_arm_bolt_boss_spacing,
+                    arm_bolt_boss_padding=steering_servo_arm_bolt_boss_padding,
+                    arm_thickness=steering_servo_arm_thickness,
+                    arm_w=steering_servo_arm_w,
+                    bolt_d=steering_servo_arm_bolt_d,
+                    boss_inner_padding=steering_servo_arm_bolt_boss_inner_padding,
+                    arm_center_bolt_d=steering_servo_arm_center_bolt_d,
+                    arm_center_bolt_bore_d=steering_servo_arm_center_bolt_bore_d,
+                    arm_center_bolt_bore_h=steering_servo_arm_center_bolt_bore_h);
+          if (show_tie_rod) {
+            mirror([1, 0, 0]) {
+              translate([-steering_servo_arm_w / 2,
+                         + steering_servo_arm_d / 2
+                         + steering_servo_arm_len
+                         - steering_servo_tie_rod_eye_od / 2
+                         - steering_servo_arm_bolt_boss_inner_padding,
+                         - steering_servo_arm_bolt_boss_h / 2]) {
+
+                rotate([0, 0, 0]) {
+                  rotate([0, 0, 90 + servo_tie_rod_angle]) {
+                    servo_tie_rod(bushing_rotation=[steering_servo_tie_rod_angle, 0, 0]);
+                  }
+                }
               }
             }
           }
@@ -221,23 +229,4 @@ module dsservo(center=false,
   }
 }
 
-dsservo(center=true);
-
-// servo_tie_rod();
-// let (w=steering_servo_tie_rod_shank_od,
-//      length = full_dservo_tie_rod_len(),
-//      dims = [w, length, w],
-//      ang  = [steering_servo_tie_rod_angle, 0, 0],
-//      bb = rotated_bbox(size=dims, a=ang)) {
-//   echo("bb", bb);
-//   translate([bb[3], -bb[4], bb[5]]) {
-//     #cube([bb[0], bb[1], bb[2]]);
-//   }
-//   translate([0, 0, bb[5]]) {
-//     rotate(ang) {
-//       translate([0, 0, 0]) {
-//         cube(dims);
-//       }
-//     }
-//   }
-// }
+dsservo(center=false);

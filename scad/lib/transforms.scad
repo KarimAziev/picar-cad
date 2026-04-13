@@ -248,7 +248,7 @@ module rotate_children_with_shift(size=[0, 0, 0],
   x_shift = bb[3];
   y_shift = bb[4];
   z_shift = bb[5];
-  translate([x_shift, y_shift, z_shift]) {
+  translate([with_default(x_shift, 0), y_shift, z_shift]) {
     rotate(angles) {
       children();
     }

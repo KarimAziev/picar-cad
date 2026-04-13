@@ -7,12 +7,15 @@
 
 include <../colors.scad>
 include <../parameters.scad>
+include <../steering_params.scad>
 
 use <../lib/functions.scad>
 use <../lib/holes.scad>
 use <../lib/plist.scad>
 use <../lib/shapes2d.scad>
 use <../lib/slots.scad>
+use <../lib/text.scad>
+use <../lib/wire.scad>
 use <bolt.scad>
 use <servo_horn.scad>
 
@@ -46,6 +49,15 @@ module servo_bolts_hat(size,
   }
 }
 
+module servo_socket(size, color) {
+  color(color) {
+    translate([0, -size[1] / 2, 0]) {
+      cube(size=size,
+           center=false);
+    }
+  };
+}
+
 module servo_body(size,
                   bolts_offset,
                   servo_color=jet_black,
@@ -57,18 +69,64 @@ module servo_body(size,
                   servo_hat_thickness,
                   bolts_hat_z_offset,
                   servo_text,
+                  text_plist,
                   text_size,
                   cut_len_top_depth,
                   cut_len_top_len,
                   font="Liberation Sans:style=Bold Italic",
                   bolt_spacing,
                   center_hat_z=true,
-                  tolerance) {
+                  tolerance,
+                  socket_size,
+                  socket_z_offset,
+                  socket_side,
+                  wiring_path,
+                  wiring_d=1.5,
+                  wiring_colors=["black", "red", "white"]) {
   cut_len_top_depth = with_default(cut_len_top_depth, 0);
   cut_len_top_len = with_default(cut_len_top_len, 0);
   length = size[0];
   w = size[1];
   h = size[2];
+
+  module _text(bg_pad_top,
+               text_height,
+               total_size,
+               z_offset,
+               bg_t,
+               bg_l,
+               bg_h,
+               bg_w,
+               bg_color,
+               text_pl) {
+    union() {
+      if (!is_undef(bg_color)) {
+        translate([0,
+                   bg_w < w ? (w - bg_w) / 2 + bg_t : 0,
+                   -bg_h / 2 + h - z_offset]) {
+          color(bg_color, alpha=1) {
+            cube([bg_l, bg_w, bg_h],
+                 center=true);
+          }
+        }
+      }
+
+      translate([0,
+                 w / 2,
+                 h - z_offset - total_size[1] - bg_pad_top]) {
+        rotate([90, 0, 180]) {
+          text_rows(texts=servo_text,
+                    plist=text_pl,
+                    default_font=font,
+                    default_size=text_size,
+                    default_height=text_height,
+                    center_x=true,
+                    center_y=false);
+        }
+      }
+    }
+  }
+
   union() {
     translate([-length / 2, w / 2, 0]) {
       color(servo_color, alpha=alpha) {
@@ -83,50 +141,79 @@ module servo_body(size,
           }
         }
       }
-      if (alpha > 0 && servo_text) {
-        if (is_string(servo_text)) {
-          translate([length / 2, 0, h / 2]) {
-            rotate([90, 0, 180]) {
-              linear_extrude(height=0.01,
-                             center=false) {
-                text(servo_text,
-                     font=font,
-                     size=text_size,
-                     halign="center",
-                     valign="bottom");
-              }
-            }
+    }
+
+    if (!is_undef(servo_text)) {
+      let (text_pl = with_default(text_plist, []),
+           text_both_sides=plist_get("text_both_sides", text_pl),
+           bg = plist_get("background", text_pl, with_default(text_pl, [])),
+           bg_color = plist_get("color", bg),
+           default_pad = is_undef(bg_color) ? 0 : 2,
+           bg_pad_top = plist_get("pad_top", bg, default_pad),
+           bg_pad_bottom = plist_get("pad_bottom", bg, default_pad),
+           bg_p_left = plist_get("pad_left", bg, 0),
+           bg_p_right = plist_get("pad_right", bg, 0),
+           bg_pad_left = bg_p_left == 0 ? 0.01 : bg_p_left,
+           bg_pad_right = bg_p_right == 0 ? 0.01 : bg_p_right,
+           bg_t = 0.1,
+           text_height=bg_t * 2,
+           plist=normalize_texts(texts=servo_text,
+                                 plist=text_pl,
+                                 default_font=font,
+                                 default_height=text_height,
+                                 default_size=text_size),
+           total_size=plist_get("total_size", plist),
+           bg_l = length - bg_pad_left - bg_pad_right,
+           bg_h = total_size[1] + bg_pad_top + bg_pad_bottom,
+           bg_w = w + (bg_t * (bg_pad_left > 0 ? -1 : 1)),
+           z_offset = center_hat_z
+           ? bolts_hat_z_offset + servo_hat_thickness
+           : bolts_hat_z_offset) {
+
+        _text(bg_pad_top=bg_pad_top,
+              text_height=text_height,
+              total_size=total_size,
+              z_offset=z_offset,
+              bg_t=bg_t,
+              bg_h=bg_h,
+              bg_w=bg_w,
+              bg_l=bg_l,
+              bg_color=bg_color,
+              text_pl=text_pl);
+        if (text_both_sides) {
+          rotate([0, 0, 180]) {
+            _text(bg_pad_top=bg_pad_top,
+                  text_height=text_height,
+                  total_size=total_size,
+                  z_offset=z_offset,
+                  bg_t=bg_t,
+                  bg_h=bg_h,
+                  bg_w=bg_w,
+                  bg_l=bg_l,
+                  bg_color=bg_color,
+                  text_pl=text_pl);
           }
-        } else {
-          translate([length / 2, 0, h / 2]) {
-            text_sizes = [for (i = [0 : len(servo_text) - 1])
-                is_undef(servo_text[i][1])
-                  ? text_size
-                  : servo_text[i][1]];
-            text_paddings = [for (i = [0 : len(servo_text) - 1])
-                is_undef(servo_text[i][3])
-                  ? 0
-                  : servo_text[i][3]];
-            for (i = [0 : len(servo_text) - 1]) {
-              item = servo_text[i];
-              txt = item[0];
-              txt_size = text_sizes[i];
-              fnt = is_undef(item[2]) ? font : item[2];
-              padding =  i > 0 ? sum(text_sizes, i) : 0;
-              z_offst = i > 0 ? sum(text_paddings, i) : 0;
-              translate([0, 0, -z_offst - padding]) {
-                rotate([90, 0, 180]) {
-                  linear_extrude(height=0.01,
-                                 center=false) {
-                    text(txt,
-                         size=txt_size,
-                         font=fnt,
-                         halign="center",
-                         valign="bottom");
-                  }
-                }
-              }
-            }
+        }
+      }
+    }
+
+    if (!is_undef(socket_size)) {
+      let (x=socket_side == -1 ? (-(length / 2) - socket_size[0]) : length / 2,
+           z_off = is_undef(socket_z_offset) ? 0 : socket_z_offset) {
+        translate([x,
+                   0,
+                   z_off]) {
+          servo_socket(socket_size, color=servo_color);
+        }
+        if (!is_undef(wiring_path)) {
+          let (z = z_off + socket_size[2] / 2,
+               pts = concat([[x, 0, z],
+                             [x + (socket_side * 15), 0, z]],
+                            wiring_path)) {
+
+            wire_bundle(points=pts,
+                        d=wiring_d,
+                        colors=wiring_colors);
           }
         }
       }
@@ -261,6 +348,7 @@ module servo(size,
              servo_color=jet_black,
              alpha=1,
              servo_text=["EMAX", "ES08MA II"],
+             text_plist,
              font,
              text_size=3,
              tolerance=0.3,
@@ -278,6 +366,9 @@ module servo(size,
              gearbox_gear_size=[],
              max_angle=45,
              min_angle=-90,
+             wiring_path,
+             wiring_d=1.5,
+             wiring_colors=["black", "red", "white"],
              servo_horn_rotation=45,
              show_servo_horn_screws,
              show_servo_horn_bolt,
@@ -285,6 +376,9 @@ module servo(size,
              servo_horn_screw_side,
              show_servo_horn=true,
              center_hat_z=true,
+             socket_size,
+             socket_z_offset,
+             socket_side,
              center=false) {
   cut_len_top_depth = with_default(cut_len_top_depth, 0);
   length = size[0];
@@ -314,9 +408,16 @@ module servo(size,
                  servo_text=servo_text,
                  text_size=text_size,
                  font=font,
+                 text_plist=text_plist,
                  center_hat_z=center_hat_z,
                  bolt_spacing=bolt_spacing,
-                 tolerance=tolerance);
+                 tolerance=tolerance,
+                 socket_size=socket_size,
+                 socket_z_offset=socket_z_offset,
+                 socket_side=socket_side,
+                 wiring_path=wiring_path,
+                 wiring_d=wiring_d,
+                 wiring_colors=wiring_colors);
       translate([-size[0] / 2 + gearbox_r1, 0, size[2] - cut_len_top_depth]) {
         servo_gearbox(h=gearbox_h + cut_len_top_depth,
                       d1=gearbox_d1,
@@ -393,3 +494,37 @@ module servo_slot_3d(size=[steering_servo_slot_width,
                   bolts_offset=bolts_offset);
   }
 }
+
+servo(size=[dsservo_size[0],
+            dsservo_size[1],
+            dsservo_size[2]],
+      bolts_dia=dsservo_bolt_dia,
+      bolt_spacing=dsservo_bolt_spacing,
+      servo_hat_w=dsservo_hat_w,
+      center=true,
+      servo_hat_h=dsservo_hat_h,
+      servo_hat_thickness=dsservo_hat_thickness,
+      center_hat_z=false,
+      bolts_offset=dsservo_bolts_offset,
+      bolts_hat_z_offset=dsservo_hat_z_offset,
+      servo_color=dsservo_color,
+      gearbox_box_color=dsservo_color,
+      servo_text=dsservo_text,
+      text_size=dsservo_text_size,
+      text_plist=dsservo_text_plist,
+      tolerance=0.3,
+      cut_len=dsservo_cut_len,
+      gearbox_h=dsservo_gearbox_h,
+      gearbox_d1=dsservo_gearbox_d1,
+      servo_horn_rotation=$t * ($t > 0.5 ? -90 : 45),
+      wiring_path=[[-100, 0, dsservo_socket_z_offset]],
+      gearbox_d2=dsservo_gearbox_d2,
+      gearbox_x_offset=dsservo_gearbox_x_offset,
+      show_servo_horn=false,
+      gearbox_mode=dsservo_gearbox_mode,
+      gearbox_gear_size=dsservo_gearbox_size,
+      cut_len_top_len=dsservo_cut_len_top,
+      cut_len_top_depth=dsservo_cut_top_depth,
+      socket_size=dsservo_socket_size,
+      socket_z_offset=dsservo_socket_z_offset,
+      socket_side=dsservo_socket_side);
