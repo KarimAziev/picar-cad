@@ -61,6 +61,27 @@ function truncate(val, dec=1) =
   : ceil(val * pow(10, dec)) / pow(10, dec);
 
 /**
+  ─────────────────────────────────────────────────────────────────────────────
+  truncate_all_nums
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Recursively truncates all numbers to a specified number of decimal places.
+
+  **Example**:
+  ```scad
+  truncate_all_nums([[0, -2, 0], [10.7654, -1.84776, 0], [21.4142, 8.58579, 0]], 1) // ->
+  [[0, -2, 0], [10.7, -1.8, 0], [21.4, 8.5, 0]]
+
+  ```
+  */
+
+function truncate_all_nums(vals, dec=1) = is_num(vals)
+  ? truncate(vals, dec)
+  : is_list(vals)
+  ? [for (v = vals) truncate_all_nums(v, dec)]
+  : vals;
+
+/**
    ─────────────────────────────────────────────────────────────────────────────
    calc_notch_width
    ─────────────────────────────────────────────────────────────────────────────
@@ -1806,9 +1827,9 @@ directions, then normalizes the result.
 **Examples:**
 ```scad
 pts = [[0,0,0], [1,0,0], [2,1,0]];
-point_tangent(pts, 0);   // tangent of first segment
-point_tangent(pts, 1);   // averaged corner tangent
-point_tangent(pts, 2);   // tangent of last segment
+point_tangent(pts, 0);   // -> [1, 0, 0] - tangent of first segment
+point_tangent(pts, 1);   // -> [~0.9, ~0.3, 0] - averaged corner tangent
+point_tangent(pts, 2);   // -> [~0.7, ~0.7, 0] - tangent of last segment
 ```
 */
 function point_tangent(points, i) =
@@ -1841,9 +1862,9 @@ vector. The final result is normalized.
 
 **Examples:**
 ```scad
-safe_perp([1, 0, 0]);           // -> typically [0, -1, 0] or equivalent unit perp
-safe_perp([0, 0, 1]);           // uses fallback reference vector
-safe_perp([1, 0, 0], [0, 1, 0]);
+safe_perp([1, 0, 0]);            // -> [0, -1, 0]
+safe_perp([0, 0, 1]);            // -> [-1, 0, 0] uses fallback reference vector
+safe_perp([1, 0, 0], [0, 1, 0]); // -> [0, 0, 1]
 ```
 */
 function safe_perp(tangent, up=[0, 0, 1]) =
@@ -1883,10 +1904,9 @@ vector.
 
 **Examples:**
 ```scad
-pts = [[0,0,0], [10,0,0], [20,10,0]];
-offset_path(pts, 2);
+offset_path([[0, 0, 0], [10, 0, 0], [20, 10, 0]], 2); // -> [[0, -2, 0], [10.7, -1.8, 0], [21.4, 8.5, 0]]
 
-offset_path([[0,0,0], [0,10,0]], 1, [0,0,1]);
+offset_path([[0,0,0], [0,10,0]], 1, [0,0,1]); // -> [[1, 0, 0], [1, 10, 0]]
 ```
 */
 

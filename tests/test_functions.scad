@@ -69,6 +69,12 @@ module test_drop_last() {
   assert_eq(drop_last(l, -1), l,               "drop_last -1");
 }
 
+module test_truncate_all_nums() {
+  assert_eq(truncate_all_nums([[0, -2, 0], [10.7654, -1.84776, 0], [21.4142, 8.58579, 0]], 1),
+            [[0, -2, 0], [10.7, -1.8, 0], [21.4, 8.5, 0]],
+            "truncate_all_nums([[0, -2, 0], [10.7654, -1.84776, 0], [21.4142, 8.58579, 0]], 1)");
+}
+
 module test_best_by_lower_sum() {
   assert_eq(best_by_lower_sum([], [1, 2]),
             [1, 2],
@@ -265,7 +271,38 @@ module test_vmul() {
   assert_eq(vmul([1, -1, 0], 0.5), ([0.5, -0.5, 0]), "vmul([1, -1, 0], 0.5)");
 }
 
+module test_safe_perp() {
+  assert_eq(safe_perp([1, 0, 0]), [0, -1, 0], "safe_perp([1, 0, 0])");
+  assert_eq(safe_perp([0, 0, 1]), [-1, 0, 0], "safe_perp([0, 0, 1])");
+  assert_eq(safe_perp([1, 0, 0], [0, 1, 0]),
+            [0, 0, 1],
+            "safe_perp([1, 0, 0], [0, 1, 0])");
+}
+
+module test_point_tangent() {
+  pts = [[0, 0, 0], [1, 0, 0], [2, 1, 0]];
+  assert_eq(truncate_all_nums(point_tangent(pts, 0), 1),
+            [1, 0, 0],
+            "point_tangent(pts, 0)");
+  assert_eq(truncate_all_nums(point_tangent(pts, 1), 1),
+            [0.9, 0.3, 0],
+            "point_tangent(pts, 1)");
+  assert_eq(truncate_all_nums(point_tangent(pts, 2), 2),
+            [0.7, 0.7, 0],
+            "point_tangent(pts, 2)");
+}
+
+module test_offset_path() {
+  assert_eq(truncate_all_nums(offset_path([[0, 0, 0], [10, 0, 0], [20, 10, 0]], 2)),
+            [[0, -2, 0], [10.7, -1.8, 0], [21.4, 8.5, 0]],
+            "offset_path([[0,0,0], [10,0,0], [20,10,0]], 2)");
+  assert_eq(offset_path([[0, 0, 0], [0, 10, 0]], 1, [0, 0, 1]),
+            [[1, 0, 0], [1, 10, 0]],
+            "offset_path([[0,0,0], [0,10,0]], 1, [0,0,1])");
+}
+
 test_slice();
+test_truncate_all_nums();
 test_take();
 test_take_last();
 test_drop();
@@ -284,3 +321,6 @@ test_vcross();
 test_vadd();
 test_vsub();
 test_vmul();
+test_safe_perp();
+test_offset_path();
+test_point_tangent();
