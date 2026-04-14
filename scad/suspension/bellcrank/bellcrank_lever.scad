@@ -21,9 +21,6 @@ use <../../lib/shapes3d.scad>
 use <../../lib/threading/threads.scad>
 use <bellcrank_ring.scad>
 
-bellcrank_lever_add_through_hole = true;
-bellcrank_lever_through_hole_d   = 2;
-
 module bellcrank_lever(color=cobalt_blue_metallic,
                        alpha=1,
                        od=bellcrank_idler_od,
@@ -39,7 +36,7 @@ module bellcrank_lever(color=cobalt_blue_metallic,
                        lower_boss_h=bellcrank_arm_lower_boss_h,
                        lower_boss_d=bellcrank_arm_lower_boss_d,
                        border_w=bellcrank_lever_border_w,
-                       use_hull=bellcrank_idler_use_hull,
+                       use_hull=bellcrank_lever_use_hull,
                        add_through_hole=bellcrank_lever_add_through_hole,
                        through_hole_d=bellcrank_lever_through_hole_d) {
   upper_boss_wall_t = bolt_offset > 0 ? 0 : ((upper_boss_d - bolt_d) / 2);
@@ -65,12 +62,12 @@ module bellcrank_lever(color=cobalt_blue_metallic,
       if (use_hull) {
         hull() {
           _base_shape();
-          circle(d=od + border_w * 2, $fn=$preview ? 40 : 360);
+          circle(d=od + border_w * 2, $fn=fn);
         }
       } else {
         union() {
           _base_shape();
-          circle(d=od + border_w * 2, $fn=$preview ? 40 : 360);
+          circle(d=od + border_w * 2, $fn=fn);
         }
       }
     }

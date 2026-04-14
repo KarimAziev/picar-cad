@@ -65,7 +65,7 @@ module bellcrank_drive(color=cobalt_blue_light_1,
                        show_upper_cap=show_upper_cap,
                        show_servo_lever=show_servo_lever,
                        chamfer_angle=bellcrank_idler_chamfer_angle,
-                       use_hull=bellcrank_idler_use_hull,
+                       use_hull=bellcrank_lever_use_hull,
                        servo_lever_z_offset=bellcrank_servo_lever_z_offset,
                        show_idler_lever=show_idler_lever) {
 

@@ -38,9 +38,6 @@ bellcrank_arm_bolt_spacing                        = 9.5;
 // Distance from the bottom of the pivot base to the bellcrank arm root
 bellcrank_arm_z                                   = 11.1;
 
-// If true, blend the two upper bosses into a single continuous shape.
-bellcrank_lever_blend_upper_bosses                = false;
-
 // Z-angle in assembly
 bellcrank_arm_angle                               = 1.6;
 
@@ -73,6 +70,25 @@ bellcrank_idler_extra_h                           = 0.8;
 
 bellcrank_idler_support_thickness                 = 2;
 
+// The addional height of the bellcrank for the upper's bearing chamfer
+bellcrank_idler_chamfer_h                         = 0.8;
+
+bellcrank_idler_chamfer_angle                     = 30;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Bellcrank lever (used both in bellcrank drive and idler)
+// ─────────────────────────────────────────────────────────────────────────────
+
+// If true, blend the two upper bosses into a single continuous shape.
+bellcrank_lever_blend_upper_bosses                = false;
+
+bellcrank_lever_border_w                          = 1.5;
+
+bellcrank_lever_use_hull                          = false;
+
+bellcrank_lever_add_through_hole                  = true;
+bellcrank_lever_through_hole_d                    = 2;
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Pivot bush
 // The pivot bush is a cylindrical shaft that is inserted into the bellcrank
@@ -104,15 +120,6 @@ bellcrank_post_upper_hole_depth                   = 12.0;
 
 // Whether to use threads for the bolt hole
 bellcrank_post_use_threading                      = false;
-
-bellcrank_lever_border_w                          = 1.5;
-
-// The addional height of the bellcrank for the upper's bearing chamfer
-bellcrank_idler_chamfer_h                         = 0.8;
-
-bellcrank_idler_chamfer_angle                     = 30;
-
-bellcrank_idler_use_hull                          = false;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Bellcrank drive (servo lever parameters)
