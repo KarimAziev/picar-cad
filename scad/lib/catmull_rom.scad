@@ -1,51 +1,29 @@
 /**
-  Module: Catmull–Rom spline utilities
-
-  Usage example with wiring module:
-
-  @example
-  ```scad
-  d=1.5;
-  x_spacing=5;
-  y_spacing=5;
-  step = 2;
-
-  pts=[[0, 0, 0],
-       [0, -5, -2],
-       [-22, -15, -1],
-       [-22, 10, -60],
-       [-70, 10, -60]];
-
-  // [...["centripetal" | "uniform" | "chordal", step, color]]
-  examples = [["uniform", step, "blue"],
-              ["centripetal", step, "green"],
-              ["chordal", step, "red"]];
-
-  union() {
-    for (i = [0 : len(examples) - 1]) {
-      let (mode=examples[i][0],
-           st = examples[i][1],
-           points = smooth_path(pts, mode=mode, step=st),
-           colr = examples[i][2],
-           x = i * x_spacing,
-           y = i * y_spacing) {
-
-        translate([x, y, 0]) {
-          wire_path(points=points,
-                    d=d,
-                    colr=colr,
-                    put_joints=false);
-        }
-      }
-    }
-  }
-  ```
-
-
-
-Author: Karim Aziiev <karim.aziiev@gmail.com>
-License: GPL-3.0-or-later
-  */
+ * Module: Catmull-Rom path smoothing and resampling
+ *
+ * Utilities for turning a polyline (a list of 3D control points) into a smoother
+ * curve and/or a denser set of points suitable for rendering tubes, wires, and
+ * other “follow-path” geometry.
+ *
+ * The main entry point is `smooth_path(points, mode, quality, d, step)`.
+ *
+ * Smoothing is performed with Catmull-Rom splines. You can choose the parameter-
+ * ization via `mode`:
+ * - `"uniform"`      : classic uniform Catmull-Rom
+ * - `"centripetal"`  : reduces overshoot/loops on sharp turns (recommended default)
+ * - `"chordal"`      : follows chord length more strongly
+ *
+ * Resampling is adaptive by default: longer segments get more samples, and sharp
+ * corners may get denser sampling to preserve shape. Use `step` (or `quality`
+ * together with `d`) to control the target sample spacing.
+ *
+ * Notes:
+ * - Endpoints are handled by clamping (repeating the end control points).
+ * - Duplicate consecutive points are removed before processing.
+ *
+ * Author: Karim Aziiev <karim.aziiev@gmail.com>
+ * License: GPL-3.0-or-later
+ */
 
 use <functions.scad>
 
@@ -58,8 +36,12 @@ use <functions.scad>
   **Parameters:**
 
   `points`: Polyline points.
-  `step`: Desired spacing between samples.
   `mode`: "centripetal" (default) | "uniform" | "chordal"
+  `quality`: "low" | "medium" (default) | "high" - affects adaptive step size.
+  `d`: Diameter for quality-based step size default.
+  `step`: Optional desired spacing between samples for adaptive modes, or fixed
+          step for uniform mode. If not specified, it is determined from the bounding
+          box diagonal and quality setting.
 
 
   **Example**:
@@ -73,11 +55,12 @@ use <functions.scad>
 
   ```
   */
-function smooth_path(points, step=2, mode="centripetal") =
-  let (p = drop_consecutive_dups(points))
-  mode=="uniform"      ? cr_resample_adaptive(p, step=step) :
-  mode=="centripetal"  ? cr_c_resample_adaptive(p, step=step, alpha=0.5) :
-  mode=="chordal"      ? cr_c_resample_adaptive(p, step=step, alpha=1.0) :
+function smooth_path(points, mode="centripetal", quality="medium", d, step) =
+  let (p = drop_consecutive_dups(points),
+       base_step = is_num(step) ? step : (d * quality_coeff(quality)))
+  mode=="uniform"      ? cr_resample_adaptive(p, step=base_step) :
+  mode=="centripetal"  ? cr_c_resample_adaptive(p, step=base_step, alpha=0.5) :
+  mode=="chordal"      ? cr_c_resample_adaptive(p, step=base_step, alpha=1.0) :
   p;
 
 /**
@@ -203,10 +186,18 @@ function cr_resample_adaptive(points, step=2) =
   let (st = max(step, 1e-6))
   len(points) < 2 ? points :
   concat([points[0]],
-         [for (i=[0:len(points)-2])
-             let (seglen = vlen(vsub(points[i + 1], points[i])),
-                  s = max(3, ceil(seglen / st)))
-               for (k=[1:s])
+         [for (i = [0 : len(points) - 2])
+             let (seg = vsub(points[i + 1], points[i]),
+                  seglen = vlen(seg),
+
+                  f0 = local_step_factor(points, i),
+                  f1 = local_step_factor(points, i + 1),
+                  f = min(f0, f1),
+
+                  eff_step = max(1e-6, st * clamp(f, 0.2, 1.0)),
+
+                  s = max(3, ceil(seglen / eff_step)))
+               for (k = [1 : s])
                  cr_point(points, i, k / s)]);
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -352,14 +343,99 @@ function cr_c_resample_adaptive(points, step=2, alpha=0.5) =
   let (st = max(step, 1e-6))
   len(points) < 2 ? points :
   concat([points[0]],
-         [for (i=[0:len(points)-2])
-             let (seglen = vlen(vsub(points[i + 1], points[i])),
-                  s = max(3, ceil(seglen/st)))
-               for (k=[1:s])
-                 cr_c_point(points, i, k/s, alpha)]);
+         [for (i = [0 : len(points) - 2])
+             let (seg = vsub(points[i + 1], points[i]),
+                  seglen = vlen(seg),
+
+                  f0 = local_step_factor(points, i),
+                  f1 = local_step_factor(points, i + 1),
+                  f = min(f0, f1),
+
+                  eff_step = max(1e-6, st * clamp(f, 0.2, 1.0)),
+                  s = max(3, ceil(seglen / eff_step)))
+               for (k = [1 : s])
+                 cr_c_point(points, i, k / s, alpha)]);
 
 function drop_consecutive_dups(pts, eps=1e-9) =
   len(pts) <= 1 ? pts :
   concat([pts[0]],
          [for (i=[1:len(pts)-1])
              if (vlen(vsub(pts[i], pts[i-1])) > eps) pts[i]]);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Helper functions
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  rot_from_z
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Rotate from +Z axis to vector v.
+  Cylinder is along +Z by default.
+
+  Returns [rx, ry, rz] usable in rotate(...).
+
+  */
+function rot_from_z(v) =
+  let (len = vlen(v),
+       vx = len > 0 ? v[0] / len : 0,
+       vy = len > 0 ? v[1] / len : 0,
+       vz = len > 0 ? v[2] / len : 1,
+       yaw = atan2(vy, vx),
+       pitch = acos(clamp(vz, -1, 1)))
+  [0, pitch, yaw];
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  turn_angle_deg
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Angle in degrees between two vectors, used for adaptive step sizing.
+  */
+function turn_angle_deg(a, b) =
+  acos(clamp(vdot(vunit(a), vunit(b)), -1, 1));
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  local_step_factor
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Local step size factor based on turn angle at point i.
+  */
+function local_step_factor(points, i) =
+  i <= 0 || i >= len(points) - 2 ? 1 :
+  let (v1 = points[i]   - points[i - 1],
+       v2 = points[i + 1] - points[i],
+       ang = turn_angle_deg(v1, v2))
+  ang > 120 ? 0.35 :
+  ang > 90  ? 0.5  :
+  ang > 45  ? 0.75 :
+  1.0;
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  quality_coeff
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Coefficient for base step size based on quality setting.
+  */
+function quality_coeff(q) =
+  q == "high"   ? 0.6 :
+  q == "medium" ? 1.0 :
+  q == "low"    ? 1.8 : 1.0;
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  vdot
+  ─────────────────────────────────────────────────────────────────────────────
+  Dot product of 3D vectors.
+
+  **Example:**
+    ```scad
+    vdot([1, 2, 3], [4, 5, 6]) // -> 32
+    ```
+  */
+
+function vdot(a, b) =
+  a[0]*b[0] + a[1]*b[1] + a[2]*b[2];
