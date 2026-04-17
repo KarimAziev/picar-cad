@@ -64,15 +64,17 @@ module tie_rod_spherical_bushing(od,
       base_sphere();
       cube([od, od, h], center=true);
     }
-    echo(str("tie_rod_spherical_bushing: intersection clause (h <= od): ",
-             "od=",
-             od,
-             " h=",
-             h,
-             " d=",
-             d,
-             " flat_d(ignored)=",
-             flat_d));
+    if (debug) {
+      echo(str("tie_rod_spherical_bushing: intersection clause (h <= od): ",
+               "od=",
+               od,
+               " h=",
+               h,
+               " d=",
+               d,
+               " flat_d(ignored)=",
+               flat_d));
+    }
   } else {
     assert(!is_undef(flat_d),
            str("Flat diameter shouldn't be undef, when height > outer diameter. ",
