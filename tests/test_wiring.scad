@@ -1,23 +1,23 @@
 use <../scad/lib/wire.scad>
 
-d        = 1.5;
-x_spacing=5;
-y_spacing=5;
-step     = 4;
+d         = 1.5;
+x_spacing = 5;
+y_spacing = 5;
+step      = 4;
 
-quality  = "medium";
+quality   = "medium";
 
-pts      = [[0, 0, 0],
-            [0, -5, -2],
-            [-22, -15, -1],
-            [-22, 10, -60],
-            [-70, 10, -60]];
+pts       = [[0, 0, 0],
+             [0, -5, -2],
+             [-22, -15, -1],
+             [-22, 10, -60],
+             [-70, 10, -60]];
 
 // [...["centripetal" | "uniform" | "chordal", step, color]]
-examples = [["uniform", quality, "blue"],
-            ["centripetal", quality, "green"],
-            ["chordal", quality, "red"],
-            ["none", quality, "yellow"]];
+examples  = [["uniform", quality, "blue"],
+             ["centripetal", quality, "green"],
+             ["chordal", quality, "red"],
+             ["none", quality, "yellow"]];
 
 union() {
   for (i = [0 : len(examples) - 1]) {
