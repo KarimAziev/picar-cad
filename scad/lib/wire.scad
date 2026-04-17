@@ -30,6 +30,13 @@ function total_wire_length(points) =
   len(points) < 2 ? 0 :
   sum([for (i = [0 : len(points) - 2]) vlen(points[i + 1] - points[i])]);
 
+function suffix_lengths(pts) =
+  let (n=len(pts))
+  n < 2 ? [] :
+  let (seg=[for (i=[0:n-2]) vlen(pts[i + 1]-pts[i])])
+  // suf[i] = sum(seg[i..end])
+  [for (i=[0:n-2]) sum([for (k=[i:n-2]) seg[k]])];
+
 /**
   ─────────────────────────────────────────────────────────────────────────────
   wire_path
@@ -108,13 +115,22 @@ module wire_path(points,
                   quality=quality,
                   step=step,
                   d=d);
+  n = len(smooth_points);
+  suf = suffix_lengths(smooth_points);
+
   for (i = [0 : len(smooth_points) -  2]) {
-    let (cut_l = (is_num(cut_len) && (len(smooth_points) - 1 == i + 1))
+    let (remaining_cut =
+         (!is_num(cut_len) || cut_len <= 0) ? 0 :
+// distance that should be cut starting from the very end, measured backward
+// For segment i, the part within cut_len is: clamp(cut_len - length_after_this_segment, 0..seglen)
+         max(0, cut_len - (i + 1 <= n-2 ? suf[i + 1] : 0)),
+
+         cut_l = (is_num(cut_len) && (len(smooth_points) - 1 == i + 1))
          ? cut_len : undef) {
       wire_segment_capsule(smooth_points[i],
                            smooth_points[i + 1],
                            colr=colr,
-                           cut_len=cut_l,
+                           cut_len=(remaining_cut > 0 ? remaining_cut : undef),
                            d=d,
                            $fn_sph=$fn_sph);
     }
