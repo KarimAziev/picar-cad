@@ -10,6 +10,7 @@ include <../colors.scad>
 include <../steering_params.scad>
 
 use <../lib/plist.scad>
+use <../lib/text.scad>
 use <bolt.scad>
 use <tie_rod_end.scad>
 use <tie_rod_shaft.scad>
@@ -217,16 +218,18 @@ module tie_rod(show_tie_rod_a=true,
   y_shift = a_anchor ? -a_centered_y : b_centered_y;
 
   z_rotation_initial = a_anchor ? 0 : 180;
+
   directions = ["left", -90,
                 "right", 90,
                 "top", 180,
                 "bottom", 0];
+
   z_rotation = plist_get(with_default(direction, "bottom"), directions, 0);
+  z = center_z ? 0 : max_h / 2;
 
   rotate([0, 0, z_rotation_initial + z_rotation]) {
-    translate([0, y_shift, center_z ? 0 : max_h / 2]) {
+    translate([0, y_shift, z]) {
       union() {
-
         translate([0, shaft_half_l, 0]) {
           rotate([90, 0, 0]) {
             tie_rod_shaft(body_len=shaft_body_len,
@@ -237,7 +240,9 @@ module tie_rod(show_tie_rod_a=true,
                           fn=shaft_fn,
                           nut_h=shaft_nut_h,
                           color=shaft_color,
-                          show_nuts=show_shaft_nuts);
+                          show_nuts=show_shaft_nuts,
+                          show_len=show_full_len,
+                          extra_text=str("Total: ", full_len, "mm"));
           }
         }
         if (show_tie_rod_a) {

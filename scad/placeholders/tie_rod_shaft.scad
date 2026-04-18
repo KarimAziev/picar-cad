@@ -9,6 +9,7 @@ include <../parameters.scad>
 include <../steering_params.scad>
 
 use <../lib/functions.scad>
+use <../lib/text.scad>
 use <bolt.scad>
 
 /**
@@ -43,8 +44,11 @@ module tie_rod_shaft(body_len,
                      fn=6,
                      nut_h,
                      color=metallic_silver_1,
-                     show_nuts=true) {
-  color(color, alpha=1) {
+                     show_nuts=true,
+                     show_len=true,
+                     extra_text,
+                     text_color=pink_1) {
+  color(color) {
     translate([0, 0, thread_len]) {
       if (!is_undef(body_end_len) && body_end_len > 0) {
         cylinder(d1=thread_d, d2=body_d, h=body_end_len, $fn=fn);
@@ -56,6 +60,37 @@ module tie_rod_shaft(body_len,
         }
       } else {
         cylinder(d=body_d, h=body_len, $fn=fn);
+      }
+    }
+  }
+  if (show_len) {
+    let (body_l_txt = str("Body: ", body_len, "mm"),
+         full_l_txt = is_string(extra_text)
+         ? extra_text
+         : str("Full: ", body_len + thread_len * 2, "mm"),
+         txt_h=0.01,
+         face_w = body_d / 2,
+         texts_1=[full_l_txt, body_l_txt],
+         texts=concat(texts_1, texts_1, texts_1)) {
+      for (i = [0 : len(texts) - 1]) {
+        let (txt = texts[i],
+             z_angle = i * 60) {
+          translate([0, 0, 0]) {
+
+            rotate([0, 0, z_angle]) {
+              translate([0, -body_d / 2, thread_len + body_len / 2]) {
+                rotate([90, 90, 0]) {
+                  color(text_color) {
+                    text_fit(txt,
+                             x=body_len * 0.9,
+                             y=face_w * 0.9,
+                             h=txt_h);
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
   }

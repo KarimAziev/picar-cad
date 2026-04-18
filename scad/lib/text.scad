@@ -483,10 +483,10 @@ module text_rows(texts = [],
   }
 }
 
-module text_fit(x,
+module text_fit(txt="Dynamic Text",
+                x,
                 y,
                 h,
-                txt="Dynamic Text",
                 spacing=1,
                 font) {
 
@@ -500,6 +500,7 @@ module text_fit(x,
 
   scx = x / txs;
   scy = y / tys;
+
   sc = min(scx, scy);
 
   scale([sc, sc, 1]) {
@@ -512,6 +513,7 @@ module text_fit(x,
     }
   }
 }
+
 angles=[90, 0, 180];
 
 rotate(angles) {
