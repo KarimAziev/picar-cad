@@ -251,5 +251,7 @@ module steering_link(knuckle_arm_len=knuckle_arm_base_len,
   }
 }
 
-steering_link(left_end_bushing_angles=[0, 0, 0], angles=[0, 10, 0]);
-knuckle_steering_arm();
+// steering_link(left_end_bushing_angles=[0, 0, 0], angles=[0, 10, 0]);
+// knuckle_steering_arm();
+steering_tie_rod_link(center_x_by_eye=false);
+#cube(steering_link_full_len());

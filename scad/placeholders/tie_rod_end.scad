@@ -20,6 +20,68 @@ use <bolt.scad>
 function holed_sphere_height(od, d) =
   (d >= od) ? 0 : sqrt(od * od - d * d);
 
+function tie_rod_max_h(eye_od,
+                       eye_h,
+                       bushing_od,
+                       bushing_d,
+                       bushing_h,
+                       shank_od) =
+  let (eye_h=with_default(eye_h, shank_od),
+       shank_od=with_default(shank_od, eye_h),
+       bushing_od=with_default(bushing_od, eye_od * 0.6),
+       bushing_h=with_default(bushing_h, bushing_od * 0.98),
+       bushing_d=with_default(bushing_d, bushing_od * 0.51),
+       bushing_real_h=holed_sphere_height(d=bushing_d, od=bushing_od),
+       max_h=max(shank_od, bushing_real_h, eye_h, bushing_h))
+  max_h;
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  tie_rod_spherical_bushing
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Creates a spherical bushing for the tie rod end. The bushing can be a perfect
+  sphere, or it can have a flat surface if the height parameter is provided and
+  less than the outer diameter.
+
+  Additionally, if the height parameter is greater than the outer diameter, a
+  flat surface will be created, and a ring can be added to fill the gap between
+  the flat surface and the outer diameter.
+
+  **Parameters**:
+
+  `od`: Outer diameter.
+  `d`: Inner diameter.
+  `h`: Optional height parameter. If not provided or it is equal to `od`, a perfect sphere will be
+       rendered.
+
+      If provided and less than `od`, the sphere will be cut with a cube to create a
+      flat surface.
+
+      If provided and greater than `od`, the sphere will be cut with a
+      cube to create a flat surface, and then a ring will be added to fill the gap
+      between the flat surface and the outer diameter.
+
+  `flat_d`: The diameter of the flat surface. Only used when `h` is greater than `od`.
+  `cap_d`: The diameter of the cap to cover the flat surface. Only used when `h` is greater than `od`.
+  `cap_h`: The height of the cap to cover the flat surface. Only used when `h` is greater than `od`.
+  `debug`: Whether to echo debug info.
+  `$fn`: The resolution of the sphere.
+  `color`: The color of the bushing.
+
+  **Example**:
+  ```scad
+  // perfect sphere
+  tie_rod_spherical_bushing(od=10, d=5, color="red");
+
+  // sphere with flat surface
+  tie_rod_spherical_bushing(od=10, d=5, h=5, color="green")
+
+  // sphere with flat surface and cap
+  tie_rod_spherical_bushing(od=10, d=5, h=16, flat_d=7, cap_h=3, cap_d=8, color="blue");
+
+  ```
+  */
 module tie_rod_spherical_bushing(od,
                                  d,
                                  h,
@@ -30,6 +92,7 @@ module tie_rod_spherical_bushing(od,
                                  $fn,
                                  color) {
   $fn = with_default($preview ? 30 : 60);
+
   module base_sphere() {
     maybe_color(color) {
       difference() {
@@ -105,7 +168,74 @@ module tie_rod_spherical_bushing(od,
     }
   }
 }
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  tie_rod_end
+  ─────────────────────────────────────────────────────────────────────────────
 
+  Creates a tie rod end with a spherical bushing and a shank. The shank can be
+  oriented in different directions (top, bottom, left, right) and can have a neck
+  to create a stepped profile. Additionally, an eye bolt can be added to the
+  bushing, which can be reversed to go from the bottom to the top of the bushing.
+
+  **Parameters**:
+
+  `eye_od`: Outer diameter of the eye.
+  `eye_h`: Height of the eye. If not provided, it will be set to the same value
+          as `shank_od`.
+  `eye_flat_d`: The diameter of the flat surface on the eye. Only used
+                when `eye_h` is greater than `eye_od`.
+  `bushing_od`: Outer diameter of the bushing. If not provided,
+                it will be set to 60% of `eye_od`.
+  `bushing_d`: Inner diameter of the bushing.
+               If not provided, it will be set to 51% of `bushing_od`.
+  `bushing_h`: Height of the bushing.
+               If not provided, it will be set to 98% of `bushing_od`.
+  `bushing_flat_d`: The diameter of the flat surface on the bushing. Only used
+                    when `bushing_h` is greater than `bushing_od`.
+  `bushing_cap_d`: The diameter of the cap to cover the flat surface on the bushing.
+                   Only used when `bushing_h` is greater than `bushing_od`.
+  `bushing_cap_h`: The height of the cap to cover the flat surface on the bushing.
+                   Only used when `bushing_h` is greater than `bushing_od`.
+  `bushing_color`: The color of the bushing.
+  `color`: The color of the tie rod end.
+  `shank_od`: Outer diameter of the shank. If not provided, it will
+               be set to the same value as `eye_h`.
+  `direction`: The direction of the shank. Can be "top", "bottom",
+                    "left", or "right". Default is "bottom".
+  `shank_len`: The length of the shank. If set to 0, the shank will not be rendered.
+  `shank_bolt_d`: The diameter of the bolt hole in the shank.
+  `neck_len`: The length of the neck. If not provided, the neck will not
+                be rendered.
+  `neck_h`: The height of the neck.
+            If not provided, it will be set to the same value as `eye_h`.
+  `fn`: The resolution of the shank and neck.
+  `show_eye_bolt`: Whether to show the eye bolt. Default is false.
+  `show_eye_bolt_nut`: Whether to show the nut on the eye bolt.
+  `eye_bolt_h`: The height of the eye bolt. If not provided, it will be set
+                to the distance from the top of the bushing to the bottom of
+                the shank plus the height of the nut.
+  `eye_bolt_head_d`: The diameter of the eye bolt head.
+  `eye_bolt_through_h`: The height of the eye bolt through the bushing (from the
+                        bottom of the bushing to the top of the eye bolt head). If not provided, it
+                        will be set to the height of the eye bolt minus the distance from the top of
+                        the bushing to the bottom of the shank.
+  `eye_bolt_head_type`: The type of the eye bolt head.
+                        Can be "pan", "hex", "round", or "countersunk".
+                        Default is "pan".
+  `eye_bolt_lock_nut`: Whether to use a lock nut on the eye bolt. Default is false.
+  `eye_bolt_color`: The color of the eye bolt.
+  `eye_head_color`: The color of the eye bolt head.
+                    If not provided, it will be set to the same color as the eye bolt.
+  `x_angle`: The rotation angle of the tie rod end around the X-axis.
+  `y_angle`: The rotation angle of the tie rod end around the Y-axis.
+  `bushing_rotation`: The rotation of the bushing in the format [x, y, z].
+  `reverse_bolt`: Whether to reverse the eye bolt to go from the bottom to the
+                  top of the bushing.
+                  Default is false.
+  `center_z`: Whether to center the tie rod end on the Z-axis. Default is false.
+
+  */
 module tie_rod_end(eye_od=11.2,
                    eye_h=5.10,
                    eye_flat_d,
@@ -145,6 +275,8 @@ module tie_rod_end(eye_od=11.2,
   bushing_d = with_default(bushing_d, bushing_od * 0.51);
 
   bushing_real_h = holed_sphere_height(d=bushing_d, od=bushing_od);
+  max_h = max(shank_od, bushing_real_h, eye_h, bushing_h);
+
   neck_h = with_default(neck_h, eye_h);
 
   notch_w = calc_notch_width(max(eye_od, shank_od),
@@ -166,7 +298,6 @@ module tie_rod_end(eye_od=11.2,
 
   shank_translation_y = is_y_direction ? ratio * base_shank_translation : 0;
   shank_translation_x = is_x_direction ? ratio * base_shank_translation : 0;
-  max_h = max(shank_od, bushing_real_h, eye_h, bushing_h);
 
   module _bolt() {
     bolt(d=bushing_d,
@@ -220,6 +351,7 @@ module tie_rod_end(eye_od=11.2,
       }
 
       maybe_rotate(bushing_rotation) {
+
         union() {
           tie_rod_spherical_bushing(h=bushing_h,
                                     d=bushing_d,
@@ -283,17 +415,10 @@ tie_rod_end(eye_od=knuckle_tie_rod_eye_od,
             eye_bolt_color=knuckle_tie_rod_bushing_bolt_color,
             bushing_color=knuckle_tie_rod_bushing_color,
             eye_bolt_head_d=knuckle_tie_rod_bushing_bolt_head_d,
-            show_eye_bolt=true,
-            reverse_bolt=true,
-            center_z=true,
+            show_eye_bolt=false,
+            reverse_bolt=false,
             bushing_rotation=[0, 0, 0],
-            y_angle=20,
-            color=knuckle_tie_rod_color);
+            y_angle=0,
 
-// tie_rod_spherical_bushing(od=10,
-//                           d=5,
-//                           h=16,
-//                           flat_d=7,
-//                           cap_h=3,
-//                           color=metallic_silver_9,
-//                           cap_d=10);
+            color=knuckle_tie_rod_color,
+            center_z=true);
