@@ -117,4 +117,3 @@ module servo_mount_printable() {
 
 // servo_mount_printable();
 servo_mount(slot_mode=false, show_servo=true);
-#cube(steering_servo_mount_len, center=true);

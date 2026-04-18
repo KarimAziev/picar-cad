@@ -102,14 +102,14 @@ module upper_chassis(show_bellcrank_drive=show_bellcrank_drive,
   shaft_len = dservo_bb[1] - dservo_bb[4];
 
   extra_len = shaft_len
-    + steering_servo_tie_rod_eye_od / 2
+    + servo_tie_rod_a_eye_od / 2
     + ((dsservo_hat_w - dsservo_size[0]) / 2);
 
   bellcrank_y_center = -bellcrank_y - upper_chassis_bellcrank_bolt_bore_d / 2;
 
   servo_mount_x = dsservo_size[2] / 2
     - bellcrank_arm_l
-    - steering_servo_tie_rod_eye_od / 2;
+    - servo_tie_rod_a_eye_od / 2;
 
   servo_slot_w = dsservo_size[0] + steering_servo_clearance;
   servo_wall_thickness = (steering_servo_mount_len - servo_slot_w) / 2;
@@ -127,7 +127,7 @@ module upper_chassis(show_bellcrank_drive=show_bellcrank_drive,
 
     let (n = ceil(abs(((steering_servo_tie_rod_body_len
                         - bellcrank_idler_od
-                        - steering_servo_tie_rod_shank_len)
+                        - servo_tie_rod_a_shank_len)
                        / (steering_servo_mount_bolt_bore_d + 2))))) {
 
       translate([0, servo_mount_y, 0]) {

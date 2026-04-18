@@ -736,7 +736,7 @@ knuckle_arm_holes_gap                             = 2;
 knuckle_tie_rod_eye_od                            = 8.9;
 
 // Height of the eyelet where the tie rod connects to the steering arm
-knuckle_tie_rod_eye_h                             = 5.10;
+knuckle_tie_rod_eye_h                             = 4.0;
 
 // Outer diameter of the shank where the tie rod connects to the steering arm
 knuckle_tie_rod_shank_od                          = 4.6;
@@ -888,31 +888,70 @@ steering_servo_mount_bolt_d                       = m3_hole_dia;
 steering_servo_mount_bolt_bore_d                  = m3_countersunk_head_dia + 0.2;
 steering_servo_mount_bolt_bore_h                  = 1;
 
+steering_servo_tie_rod_angle                      = 0;
+
 steering_servo_tie_rod_body_total_len             = 68.5;
 steering_servo_tie_rod_thread_len                 = 8.8;
-steering_servo_tie_rod_body_len                   = 28;
+steering_servo_tie_rod_body_len                   = 20;
 steering_servo_tie_rod_body_d                     = 5.65;
 steering_servo_tie_rod_body_end_len               = 0.1;
 steering_servo_tie_rod_thread_d                   = m3_hole_dia;
 steering_servo_tie_rod_fn                         = 6;
 steering_servo_tie_rod_color                      = metallic_silver_1;
 
-steering_servo_tie_rod_eye_od                     = 7.5;
-steering_servo_tie_rod_eye_h                      = 3.20;
+servo_tie_rod_a_eye_od                            = 7.5;
+servo_tie_rod_a_eye_h                             = 3.20;
 
-steering_servo_tie_rod_shank_od                   = 4.4;
-steering_servo_tie_rod_shank_bolt_d               = steering_servo_tie_rod_thread_d;
-steering_servo_tie_rod_neck_len                   = 2.05;
-steering_servo_tie_rod_neck_h                     = 3.22;
-steering_servo_tie_rod_shank_len                  = 10.5;
+servo_tie_rod_a_shank_od                          = 4.4;
+servo_tie_rod_a_shank_bolt_d                      = steering_servo_tie_rod_thread_d;
+servo_tie_rod_a_neck_len                          = 2.05;
+servo_tie_rod_a_neck_h                            = 3.22;
+servo_tie_rod_a_shank_len                         = 10.5;
 
-steering_servo_tie_rod_bushing_od                 = 3.6;
-steering_servo_tie_rod_bushing_d                  = 2.5;
-steering_servo_tie_rod_bushing_h                  = 7;
-steering_servo_tie_rod_bushing_flat_d             = 4.4;
+servo_tie_rod_a_bushing_od                        = 3.6;
+servo_tie_rod_a_bushing_d                         = 2.5;
+servo_tie_rod_a_bushing_h                         = 7;
+servo_tie_rod_a_bushing_flat_d                    = 4.4;
 
-steering_servo_tie_rod_bushing_color              = metallic_silver_9;
-steering_servo_tie_rod_angle                      = -3;
+servo_tie_rod_a_bushing_color                     = metallic_silver_9;
+
+servo_tie_rod_a_show_eye_bolt                     = true;
+servo_tie_rod_a_eye_bolt_through_h                = 1;
+servo_tie_rod_a_eye_bolt_h                        = 17;
+servo_tie_rod_a_y_angle                           = 0;
+servo_tie_rod_a_bushing_rotation                  = [0, 0, 0];
+// servo_tie_rod_a_bushing_rotation                  = [steering_servo_tie_rod_angle, 0, 0];
+servo_tie_rod_a_color                             = steering_servo_tie_rod_color;
+servo_tie_rod_a_screw_out_depth                   = 0;
+
+servo_tie_rod_a_bushing_cap_h                     = undef;
+servo_tie_rod_a_bushing_cap_d                     = undef;
+servo_tie_rod_a_eye_bolt_color                    = undef;
+servo_tie_rod_a_reverse_bolt                      = true;
+servo_tie_rod_a_eye_bolt_head_d                   = undef;
+
+servo_tie_rod_b_eye_od                            = 11.3;
+servo_tie_rod_b_eye_h                             = 5.1;
+servo_tie_rod_b_shank_od                          = 6;
+servo_tie_rod_b_shank_bolt_d                      = m3_hole_dia;
+servo_tie_rod_b_neck_len                          = 2.05;
+servo_tie_rod_b_shank_len                         = 14.6;
+servo_tie_rod_b_bushing_od                        = 6.95;
+servo_tie_rod_b_bushing_d                         = m3_hole_dia;
+servo_tie_rod_b_bushing_h                         = 6.7;
+servo_tie_rod_b_bushing_flat_d                    = 5;
+servo_tie_rod_b_bushing_cap_h                     = 5;
+servo_tie_rod_b_bushing_cap_d                     = 7;
+servo_tie_rod_b_neck_h                            = 5;
+servo_tie_rod_b_eye_bolt_color                    = matte_black;
+servo_tie_rod_b_bushing_color                     = metallic_silver_8;
+servo_tie_rod_b_eye_bolt_head_d                   = 6.62;
+servo_tie_rod_b_show_eye_bolt                     = false;
+servo_tie_rod_b_reverse_bolt                      = false;
+servo_tie_rod_b_bushing_rotation                  = [0, 0, 0];
+servo_tie_rod_b_y_angle                           = 0;
+servo_tie_rod_b_screw_out_depth                   = 0;
+servo_tie_rod_b_color                             = cobalt_blue_metallic;
 
 steering_servo_arm_total_l                        = 35.4;
 steering_servo_arm_d                              = 14.75;

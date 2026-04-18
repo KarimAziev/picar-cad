@@ -54,10 +54,16 @@ module knuckle_steering_arm(w_base=knuckle_arm_base_w,
 
   lower_height = lower_params[3];
 
-  x2 = l1 * sin(angle);   // horizontal component
-  y2 = l1 * cos(angle);   // vertical component (positive magnitude)
+  planar_params = steering_arm_planar_params(arm_len=l1,
+                                             arm_angle=angle,
+                                             ear_len=ear_len,
+                                             bolt_d=bolt_d,
+                                             bolt_edge_offset=bolt_edge_offset);
 
-  ear_base_len = ear_len - bolt_d - bolt_edge_offset;
+  dx = planar_params[0];   // horizontal component
+  dy = planar_params[1];   // vertical component (positive magnitude)
+
+  ear_base_len = planar_params[2];
 
   orig_corner_r = corner_r;
 
@@ -76,10 +82,10 @@ module knuckle_steering_arm(w_base=knuckle_arm_base_w,
   connector_l = l2 - corner_r;
 
   pts = [[0, 0],
-         [x2, -y2 -ear_base_len / 2],
-         [x2, -ear_base_len -y2],
-         [x2 + w_narrow, -ear_base_len -y2],
-         [x2 + w_narrow, -y2],
+         [dx, -dy -ear_base_len / 2],
+         [dx, -ear_base_len -dy],
+         [dx + w_narrow, -ear_base_len -dy],
+         [dx + w_narrow, -dy],
          [w_base, 0],
          [w_base, l2],
          [-lower_height, outer_bearing_seat_od / 2]];
@@ -103,14 +109,14 @@ module knuckle_steering_arm(w_base=knuckle_arm_base_w,
           square([w_base, connector_l], center=false);
         }
 
-        translate([x2, -y2 - ear_len, 0]) {
+        translate([dx, -dy - ear_len, 0]) {
           rounded_rect([w_narrow, ear_len - ear_base_len + corner_r],
                        side="bottom",
                        center=false,
                        r_factor=0.5);
         }
       }
-      translate([x2, -y2 - ear_len, 0]) {
+      translate([dx, -dy - ear_len, 0]) {
         translate([w_narrow / 2,
                    bolt_edge_offset,
                    0]) {

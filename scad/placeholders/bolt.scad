@@ -306,6 +306,7 @@ module bolt(d = 2.5,                 // major diameter (mm)
             nut_color,
             thread_clearance = 0.15,
             head_color,
+            nut_h,
             $fn = 64) {
 
   d = snap_bolt_d(d);
@@ -315,13 +316,25 @@ module bolt(d = 2.5,                 // major diameter (mm)
 
   nut_spec=plist_get(nut_type, bolt_spec, []);
   nut_color=with_default(nut_color, plist_get("color", nut_spec));
-  nut_h = plist_get("height", nut_spec, 0);
+  nut_h = with_default(nut_h, plist_get("height", nut_spec, 0));
   standard_nut_h = plist_get("height", plist_get("nut", bolt_spec, []), 0);
 
   bolt_color = with_default(bolt_color,
                             plist_get(head_type,
                                       plist_get("colors", bolt_spec, []),
                                       nut_color));
+  if (is_undef(bolt_color)) {
+    echo("bolt_color",
+         bolt_color,
+         "bolt_d",
+         d,
+         "head_type",
+         head_type,
+         "bolt_spec",
+         bolt_spec,
+         "Colors",
+         plist_get("colors", bolt_spec, []));
+  }
 
   let (pitch_v   = pitch != undef ? pitch : thread_pitch(d),
        thread_len_v = thread_len != undef ? max(0, thread_len) : max(0, h - unthreaded),

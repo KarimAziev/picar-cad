@@ -1,5 +1,5 @@
 /**
- * Module: Tie rod shaft
+ * Module: Tie rod shaft placeholder
  *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
@@ -11,15 +11,39 @@ include <../steering_params.scad>
 use <../lib/functions.scad>
 use <bolt.scad>
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  tie_rod_shaft
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Creates a tie rod shaft placeholder with a threaded section on each end.
+
+  **Parameters**:
+
+  `body_d`: Outer diameter of the main body.
+  `body_len`: Length of the main body (excluding threaded sections).
+  `body_end_len`: Length of each tapered transition between `thread_d` and `body_d`.
+                If undef or <= 0, the body is a straight cylinder.
+  `thread_len`: Length of each threaded section.
+  `thread_d`: Thread diameter.
+  `fn`: Resolution ($fn) used for cylinders.
+  `color`: Color of the tie rod.
+  `show_nuts`: Whether to show nuts on each threaded section.
+  `nut_h`: Optional length of the nut.
+
+  **Notes**:
+
+  The overall length along Z is: `body_len + 2 * thread_len`.
+  */
 module tie_rod_shaft(body_len,
                      body_d,
                      body_end_len,
                      thread_len,
                      thread_d,
                      fn=6,
+                     nut_h,
                      color=metallic_silver_1,
                      show_nuts=true) {
-
   color(color, alpha=1) {
     translate([0, 0, thread_len]) {
       if (!is_undef(body_end_len) && body_end_len > 0) {
@@ -33,21 +57,24 @@ module tie_rod_shaft(body_len,
       } else {
         cylinder(d=body_d, h=body_len, $fn=fn);
       }
-
-      translate([0, 0, body_len]) {
-        bolt(d=thread_d,
-             h=thread_len,
-             head_type="none",
-             show_nut=show_nuts,
-             nut_head_distance=thread_len);
-      }
     }
+  }
+  translate([0, 0, body_len + thread_len]) {
     bolt(d=thread_d,
          h=thread_len,
+         bolt_color=color,
          head_type="none",
          show_nut=show_nuts,
-         nut_head_distance=0);
+         nut_head_distance=thread_len,
+         nut_h=nut_h);
   }
+  bolt(d=thread_d,
+       h=thread_len,
+       bolt_color=color,
+       head_type="none",
+       show_nut=show_nuts,
+       nut_head_distance=0,
+       nut_h=nut_h);
 }
 
 tie_rod_shaft(body_len=steering_servo_tie_rod_body_len,
