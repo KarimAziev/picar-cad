@@ -14,8 +14,7 @@ module steering_servo_chassis_slots(chassis_thickness=upper_chassis_t,
                     d=steering_servo_mount_bolt_d,
                     bore_d=steering_servo_mount_bolt_bore_d,
                     bore_h=steering_servo_mount_bolt_bore_h,
-                    sink=true,
-                    fn=100,
+                    sink=false,
                     reverse=true);
       }
     }

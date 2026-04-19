@@ -115,7 +115,6 @@ module servo_l_bracket(color=white_smoke_1,
                      0,
                      chassis_thickness
                      + lower_thickness
-                     + steering_servo_mount_bolt_bore_h
                      + steering_servo_mount_bolt_bore_h]) {
             rotate([0, 180, 0]) {
               bolt(d=steering_servo_mount_bolt_d,

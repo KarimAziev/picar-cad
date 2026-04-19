@@ -155,8 +155,8 @@ chassis_bellcrank_link_padding_x                  = bellcrank_idler_od / 2;
 chassis_bellcrank_mount_w                         = chassis_bellcrank_spacing
                                                      + chassis_bellcrank_link_padding_x * 2;
 
-chassis_center_mount_padding_y                    = 3;
-chassis_center_mount_padding_x                    = 2;
+chassis_center_mount_padding_y                    = 4;
+chassis_center_mount_padding_x                    = 6;
 
 chassis_center_transition_w                       = 27;
 
@@ -466,6 +466,9 @@ front_bulkhead_mount_bolt_spacing_2               = [34.0, 5.5];
 
 // The diameter of the holes for mounting the bulkhead housing to the chassis and bulkhead itself.
 front_bulkhead_mount_bolt_d                       = m3_hole_dia;
+
+front_bulkhead_mount_bolt_bore_d                  = m3_countersunk_head_dia + 0.2;
+front_bulkhead_mount_bolt_bore_h                  = m3_countersunk_head_h + 0.15;
 
 // The diameter of the counterbore for the mounting bolt head / washer pocket.
 front_bulkhead_mount_bolt_padding                 = 4.6;
@@ -920,10 +923,10 @@ steering_servo_bracket_lower_thickness_clearance  = 0;
 steering_servo_mount_bolt_d                       = m3_hole_dia;
 
 // Diameter of the countersunk bore in the chassis
-steering_servo_mount_bolt_bore_d                  = m3_countersunk_head_dia + 0.2;
+steering_servo_mount_bolt_bore_d                  = m3_countersunk_head_dia + 0.3;
 
 // Depth of the countersunk hole in the chassis
-steering_servo_mount_bolt_bore_h                  = 1;
+steering_servo_mount_bolt_bore_h                  = m3_countersunk_head_h + 0.15;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Assembly view
