@@ -24,6 +24,22 @@ function dsservo_full_height() =
                     dsservo_gearbox_h,
                     dsservo_gearbox_size);
 
+function dservo_tie_rod_a_max_h() =
+  tie_rod_max_h(eye_od=servo_tie_rod_a_eye_od,
+                eye_h=servo_tie_rod_a_eye_h,
+                bushing_od=servo_tie_rod_a_bushing_od,
+                bushing_d=servo_tie_rod_a_bushing_d,
+                bushing_h=servo_tie_rod_a_bushing_h,
+                shank_od=servo_tie_rod_a_shank_od);
+
+function dservo_tie_rod_b_max_h() =
+  tie_rod_max_h(eye_od=servo_tie_rod_b_eye_od,
+                eye_h=servo_tie_rod_b_eye_h,
+                bushing_od=servo_tie_rod_b_bushing_od,
+                bushing_d=servo_tie_rod_b_bushing_d,
+                bushing_h=servo_tie_rod_b_bushing_h,
+                shank_od=servo_tie_rod_b_shank_od);
+
 function dsservo_height_after_hat() =
   dsservo_size[2] - dsservo_hat_z_offset;
 
@@ -230,10 +246,11 @@ module dsservo(center=false,
                     reverse=true);
 
           if (show_tie_rod) {
+            max_tie_rod_a_h = dservo_tie_rod_a_max_h();
             mirror([1, 0, 0]) {
               translate([-steering_servo_arm_w / 2 + servo_tie_rod_a_eye_od / 2,
                          y_tie_rod,
-                         0]) {
+                         -max_tie_rod_a_h / 2]) {
 
                 rotate([0, 0, 90 + angle]) {
                   servo_tie_rod(tie_rod_b_bushing_rotation=[angle, 0, 0]);
