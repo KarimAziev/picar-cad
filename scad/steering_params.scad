@@ -15,6 +15,8 @@ bellcrank_arm_bolt_d                              = m3_hole_dia;
 // Total length of the arm starting from the center of bellcrank
 bellcrank_arm_l                                   = 25.45;
 
+bellcrank_drive_arm_l                             = 25.45;
+
 // Thickness of the arm
 bellcrank_arm_thickness                           = 3;
 // Height of the upper bosses with bolt holes
@@ -39,7 +41,7 @@ bellcrank_arm_bolt_spacing                        = 9.5;
 bellcrank_arm_z                                   = 11.1;
 
 // Z-angle in assembly
-bellcrank_arm_angle                               = 1.6;
+bellcrank_arm_angle                               = 0;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Bellcrank idler (shared with the bellcrank drive)

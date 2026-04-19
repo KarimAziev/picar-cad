@@ -418,6 +418,7 @@ module servo(size,
                  wiring_path=wiring_path,
                  wiring_d=wiring_d,
                  wiring_colors=wiring_colors);
+
       translate([-size[0] / 2 + gearbox_r1, 0, size[2] - cut_len_top_depth]) {
         servo_gearbox(h=gearbox_h + cut_len_top_depth,
                       d1=gearbox_d1,

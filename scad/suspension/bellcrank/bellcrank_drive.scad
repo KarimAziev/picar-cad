@@ -89,11 +89,9 @@ module bellcrank_drive(color=cobalt_blue_light_1,
                                                         servo_lever_z_offset=servo_lever_z_offset,
                                                         arm_z=arm_z,
                                                         shoulder_h=0,
-
                                                         boss_h=servo_lever_boss_h);
 
   servo_lever_z_start = servo_lever_z_coords[0];
-  servo_lever_z_end = servo_lever_z_coords[1];
 
   rotate([0, 0, z_angle]) {
     bellcrank_idler(color=color,
@@ -175,7 +173,7 @@ module bellcrank_servo_lever(color=cobalt_blue_metallic,
                              parent_od=bellcrank_idler_od,
                              border_w=bellcrank_lever_border_w,
                              ring_h,
-                             l=bellcrank_arm_l,
+                             l=bellcrank_drive_arm_l,
                              w=bellcrank_arm_w,
                              thickness=bellcrank_arm_thickness,
                              bolt_d=bellcrank_arm_bolt_d,

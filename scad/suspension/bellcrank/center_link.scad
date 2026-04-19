@@ -20,7 +20,7 @@ module center_link(length=steering_center_link_len,
                    hole_d=steering_center_link_hole_d,
                    boss_od = steering_center_link_boss_od,
                    boss_h=steering_center_link_boss_h,
-                   color=cobalt_blue_metallic,
+                   color=cobalt_blue_light_2,
                    center_z_bar=false) {
   assert(boss_od >= width, "Boss outer diameter must be at least plate width");
   assert(boss_od > hole_d,

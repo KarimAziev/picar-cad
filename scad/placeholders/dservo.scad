@@ -79,11 +79,52 @@ function dservo_tie_rod_bb() =
   dservo_tie_rod_bbox_for_len(servo_tie_rod_a_shank_len +
                               servo_tie_rod_a_eye_od);
 
+function steering_servo_bellcrank_y(center=false,
+                                    bellcrank_lever_z_end) =
+  let (bellcrank_lever_z_end = is_undef(bellcrank_lever_z_end)
+       ? bellcrank_servo_lever_z_coords()[1]
+       : bellcrank_lever_z_end,
+       dims = tie_rod_full_len(shaft_body_len=steering_servo_tie_rod_body_len,
+                               shaft_thread_len=steering_servo_tie_rod_thread_len,
+                               shaft_thread_d=steering_servo_tie_rod_thread_d,
+                               show_shaft_nuts=true,
+                               tie_rod_a_screw_out_depth=servo_tie_rod_a_screw_out_depth,
+                               tie_rod_a_eye_od=servo_tie_rod_a_eye_od,
+                               tie_rod_a_shank_len=servo_tie_rod_a_shank_len,
+                               tie_rod_b_shank_len=servo_tie_rod_b_shank_len,
+                               tie_rod_b_eye_od=servo_tie_rod_b_eye_od,
+                               tie_rod_b_screw_out_depth=servo_tie_rod_b_screw_out_depth,
+                               limit_max_depth=true),
+       full_l = dims[0],
+       y_tie_rod = + steering_servo_arm_d / 2
+       + steering_servo_arm_len
+       - steering_servo_arm_bolt_boss_padding
+       - steering_servo_arm_bolt_d
+       + (steering_servo_arm_bolt_d - servo_tie_rod_a_bushing_d),
+       y_rod_zh = y_tie_rod + dsservo_size[1] / 2 - min(servo_tie_rod_b_shank_od,
+                                                        servo_tie_rod_a_shank_od,
+                                                        steering_servo_tie_rod_body_d) / 2,
+       bellcrank_lever_z = y_rod_zh - bellcrank_lever_z_end,
+       angle = y_angle_from_zshift(bellcrank_lever_z, full_l),
+       max_tie_rod_a_h = dservo_tie_rod_a_max_h(),
+       eye_center_spacing = full_l
+       - servo_tie_rod_a_eye_od / 2
+       - servo_tie_rod_b_eye_od / 2,
+       eye_center_spacing_x = eye_center_spacing * cos(angle),
+       eye_center_spacing_y = eye_center_spacing * sin(angle),
+       flang_x = -eye_center_spacing_x - dsservo_gearbox_d1 / 2,
+       flang_x_adjusted = center ? flang_x + dsservo_size[0] / 2 : flang_x,
+       hat_flange_w = (dsservo_hat_w - dsservo_size[0]) / 2,
+       bellcrank_distance = flang_x_adjusted + dsservo_size[0] + hat_flange_w)
+       bellcrank_distance;
+
 module servo_tie_rod(bushing_rotation,
                      tie_rod_b_bushing_rotation=[0, 0, 0],
+                     tie_rod_b_eye_bolt_through_h=10,
+                     direction="left",
                      y_angle=0) {
   tie_rod(center_anchor="a",
-          direction="bottom",
+          direction=direction,
           center_z=true,
           shaft_body_len=steering_servo_tie_rod_body_len,
           shaft_body_d=steering_servo_tie_rod_body_d,
@@ -138,10 +179,11 @@ module servo_tie_rod(bushing_rotation,
           tie_rod_b_eye_bolt_color=servo_tie_rod_b_eye_bolt_color,
           tie_rod_b_bushing_color=servo_tie_rod_b_bushing_color,
           tie_rod_b_eye_bolt_head_d=servo_tie_rod_b_eye_bolt_head_d,
-          tie_rod_b_show_eye_bolt=servo_tie_rod_b_show_eye_bolt,
-          tie_rod_b_reverse_bolt=servo_tie_rod_b_reverse_bolt,
+          tie_rod_b_show_eye_bolt=true,
+          tie_rod_b_reverse_bolt=true,
           tie_rod_b_bushing_rotation=tie_rod_b_bushing_rotation,
           tie_rod_b_y_angle=90,
+          tie_rod_b_eye_bolt_through_h=tie_rod_b_eye_bolt_through_h,
           tie_rod_b_screw_out_depth=servo_tie_rod_b_screw_out_depth,
           tie_rod_b_color=servo_tie_rod_b_color);
 }
@@ -156,6 +198,7 @@ module dsservo(center=false,
                show_tie_rod=true,
                bellcrank_lever_z_end,
                servo_horn_screw_side) {
+  // 4.89
   bellcrank_lever_z_end = is_undef(bellcrank_lever_z_end)
     ? bellcrank_servo_lever_z_coords()[1]
     : bellcrank_lever_z_end;
@@ -185,7 +228,18 @@ module dsservo(center=false,
                                                    steering_servo_tie_rod_body_d) / 2;
 
   bellcrank_lever_z = y_rod_zh - bellcrank_lever_z_end;
-  angle = -y_angle_from_zshift(bellcrank_lever_z, full_l);
+  angle = y_angle_from_zshift(bellcrank_lever_z, full_l);
+  max_tie_rod_a_h = dservo_tie_rod_a_max_h();
+  eye_center_spacing = full_l
+    - servo_tie_rod_a_eye_od / 2
+    - servo_tie_rod_b_eye_od / 2;
+  eye_center_spacing_x = eye_center_spacing * cos(angle);
+  eye_center_spacing_y = eye_center_spacing * sin(angle);
+  flang_x = -eye_center_spacing_x - dsservo_gearbox_d1 / 2;
+  flang_x_adjusted = center ? flang_x + dsservo_size[0] / 2 : flang_x;
+  hat_flange_w = (dsservo_hat_w - dsservo_size[0]) / 2;
+  bellcrank_distance = steering_servo_bellcrank_y(center=center,
+                                                  bellcrank_lever_z_end=bellcrank_lever_z_end);
 
   rotate([0, 0, 180]) {
     servo(size=[dsservo_size[0],
@@ -246,15 +300,13 @@ module dsservo(center=false,
                     reverse=true);
 
           if (show_tie_rod) {
-            max_tie_rod_a_h = dservo_tie_rod_a_max_h();
-            mirror([1, 0, 0]) {
-              translate([-steering_servo_arm_w / 2 + servo_tie_rod_a_eye_od / 2,
-                         y_tie_rod,
-                         -max_tie_rod_a_h / 2]) {
+            translate([-steering_servo_arm_w / 2 + servo_tie_rod_a_eye_od / 2,
+                       y_tie_rod,
+                       -max_tie_rod_a_h / 2]) {
 
-                rotate([0, 0, 90 + angle]) {
-                  servo_tie_rod(tie_rod_b_bushing_rotation=[angle, 0, 0]);
-                }
+              rotate([0, 0, angle]) {
+                servo_tie_rod(tie_rod_b_bushing_rotation=[angle, 0, 0],
+                              direction="left");
               }
             }
           }
@@ -262,5 +314,23 @@ module dsservo(center=false,
       }
     }
   }
+  // translate([-dsservo_size[0] - hat_flange_w, 0, 40]) {
+  //   #sphere(d=2);
+  //   translate([bellcrank_distance, 0, 0]) {
+  //     #sphere(d=2);
+
+  //     cube([abs(bellcrank_distance), 10, 10]);
+  //   }
+  // }
+  // translate([0, 0, 0]) {
+
+  //   translate([flang_x_adjusted,
+  //              -eye_center_spacing_y,
+  //              0]) {
+  //     rotate([90, 0, 0]) {
+  //       #cylinder(d=2, h=5, center=false);
+  //     }
+  //   }
+  // }
 }
 dsservo();
