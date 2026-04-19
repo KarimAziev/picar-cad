@@ -25,8 +25,8 @@ function servo_gear_total_height(gear_size) =
 function servo_full_height(height, gearbox_h, gear_size) =
   height + gearbox_h + servo_gear_total_height(gear_size);
 
-function servo_height_after_hat(h, z_offst, hat_thickness) =
-  h - z_offst - (hat_thickness / 2);
+function servo_height_after_hat(h, z_offst, hat_thickness, center_hat=true) =
+  h - z_offst - (center_hat ? (hat_thickness / 2) : hat_thickness);
 
 function servo_height_before_hat(h, z_offst, hat_thickness) =
   h - (h - z_offst + hat_thickness / 2);

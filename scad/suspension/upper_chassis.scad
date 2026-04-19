@@ -17,7 +17,8 @@ use <bellcrank/center_link.scad>
 use <bulkhead/front_bulkhead_chassis.scad>
 use <bulkhead/front_bulkhead_housing.scad>
 use <front_suspension_assembly.scad>
-use <servo_mount.scad>
+use <steering_servo_bracket/steering_servo_bracket_assembly.scad>
+use <steering_servo_bracket/steering_servo_chassis_slots.scad>
 
 show_chassis                                = true;
 show_bellcrank_drive                        = true;
@@ -31,7 +32,14 @@ show_bellcrank_idler_lever                  = true;
 
 show_idler_upper_bearing                    = true;
 show_idler_lower_bearing                    = true;
-show_servo                                  = true;
+
+show_steering_servo                         = true;
+show_steering_servo_bracket_bolt            = true;
+show_steering_servo_chassis_bolt            = true;
+show_steering_servo_chassis_bolt_nut        = true;
+show_steering_servo_bracket_bolt_nut        = true;
+show_steering_servo_brackets                = true;
+
 show_steering_assembly                      = true;
 
 show_center_link                            = true;
@@ -69,7 +77,13 @@ module upper_chassis(show_bellcrank_drive=show_bellcrank_drive,
                      show_bellcrank_idler_lever=show_bellcrank_idler_lever,
                      show_idler_upper_bearing=show_idler_upper_bearing,
                      show_idler_lower_bearing=show_idler_lower_bearing,
-                     show_servo=show_servo,
+                     show_steering_servo=show_steering_servo,
+                     show_steering_servo=show_steering_servo,
+                     show_steering_servo_bracket_bolt=show_steering_servo_bracket_bolt,
+                     show_steering_servo_chassis_bolt=show_steering_servo_chassis_bolt,
+                     show_steering_servo_chassis_bolt_nut=show_steering_servo_chassis_bolt_nut,
+                     show_steering_servo_bracket_bolt_nut=show_steering_servo_bracket_bolt_nut,
+                     show_steering_servo_brackets=show_steering_servo_brackets,
                      show_steering_assembly=show_steering_assembly,
                      show_center_link=show_center_link,
                      show_front_lower_arm=show_front_lower_arm,
@@ -139,7 +153,7 @@ module upper_chassis(show_bellcrank_drive=show_bellcrank_drive,
                        step,
                        0]) {
 
-              servo_mount(slot_mode=true);
+              steering_servo_chassis_slots(chassis_thickness=upper_chassis_t);
             }
           }
         }
@@ -286,33 +300,59 @@ module upper_chassis(show_bellcrank_drive=show_bellcrank_drive,
       center_link();
     }
   }
-  if (show_servo) {
+  if (show_steering_servo || show_servo_brackets) {
     translate([servo_mount_x,
                servo_mount_y,
                upper_chassis_t]) {
 
-      servo_mount(show_servo=show_servo);
+      steering_servo_bracket_assembly(show_servo=show_steering_servo,
+                                      show_servo_brackets=show_steering_servo_brackets,
+                                      show_servo_bolt=show_steering_servo_bracket_bolt,
+                                      show_servo_bolt_nut=show_steering_servo_bracket_bolt_nut,
+                                      show_chassis_bolt=show_steering_servo_chassis_bolt,
+                                      show_chassis_bolt_nut=show_steering_servo_chassis_bolt_nut);
     }
   }
 }
 
 module upper_chassis_printable() {
   rotate([0, 180, 0]) {
-    upper_chassis(show_bellcrank_drive = false,
-                  show_bellcrank_idler = false,
-                  show_servo = false,
-                  show_steering_assembly = false,
-                  show_front_lower_arm = false,
-                  show_front_upper_arm = false,
-                  show_knuckle_bushing = false,
-                  show_knuckle_inner_bearing = false,
-                  show_knuckle_outer_bearing = false,
-                  show_knuckle_tie_rod = false,
-                  show_front_bulkhead = false,
-                  show_front_bulkhead_upper_suspension_holder = false,
-                  show_front_shock_tower = false,
-                  show_front_suspension_arm_pad = false,
-                  show_center_link=false);
+    upper_chassis(show_chassis=false,
+                  show_bellcrank_drive=false,
+                  show_bellcrank_drive_idler_lever=false,
+                  show_bellcrank_drive_servo_lever=false,
+                  show_bellcrank_drive_upper_cap=false,
+                  show_bellcrank_idler=false,
+                  show_bellcrank_post=false,
+                  show_bellcrank_idler_lever=false,
+                  show_idler_upper_bearing=false,
+                  show_idler_lower_bearing=false,
+                  show_steering_servo=false,
+                  show_steering_servo_bracket_bolt=false,
+                  show_steering_servo_chassis_bolt=false,
+                  show_steering_servo_chassis_bolt_nut=false,
+                  show_steering_servo_bracket_bolt_nut=false,
+                  show_steering_servo_brackets=false,
+                  show_steering_assembly=false,
+                  show_center_link=false,
+                  show_front_lower_arm=false,
+                  show_front_lower_arm_pin=false,
+                  show_front_lower_pin_e_clip=false,
+                  show_front_lower_arm_ball_stud=false,
+                  show_front_upper_arm=false,
+                  show_front_bulkhead=false,
+                  show_front_bulkhead_upper_suspension_holder=false,
+                  show_upper_arm_ball_stud=false,
+                  show_front_upper_arm_pin=false,
+                  show_front_shock_tower=false,
+                  show_front_suspension_arm_pad=false,
+                  show_left_knuckle=false,
+                  show_right_knuckle=false,
+                  show_knuckle_bushing=false,
+                  show_knuckle_inner_bearing=false,
+                  show_knuckle_outer_bearing=false,
+                  show_knuckle_tie_rod=false,
+                  show_front_bulkhead_housing=false);
   }
 }
 

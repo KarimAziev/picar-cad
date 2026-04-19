@@ -234,6 +234,8 @@ module tie_rod_spherical_bushing(od,
                   top of the bushing.
                   Default is false.
   `center_z`: Whether to center the tie rod end on the Z-axis. Default is false.
+  `sync_bushing_rotation`: Whether to sync the bushing rotation with the overall
+                           rotation of the tie rod end.
 
   */
 module tie_rod_end(eye_od=11.2,
@@ -267,7 +269,8 @@ module tie_rod_end(eye_od=11.2,
                    bushing_cap_h,
                    reverse_bolt=false,
                    bushing_rotation,
-                   center_z=false) {
+                   center_z=false,
+                   sync_bushing_rotation=true) {
   eye_h = with_default(eye_h, shank_od);
   shank_od = with_default(shank_od, eye_h);
   bushing_od = with_default(bushing_od, eye_od * 0.6);
@@ -350,26 +353,40 @@ module tie_rod_end(eye_od=11.2,
         }
       }
 
-      maybe_rotate(bushing_rotation) {
-
-        union() {
-          tie_rod_spherical_bushing(h=bushing_h,
-                                    d=bushing_d,
-                                    od=bushing_od,
-                                    color=bushing_color,
-                                    flat_d=bushing_flat_d,
-                                    $fn=fn);
-          if (show_eye_bolt) {
-            nut_height = find_nut_prop(inner_d=bushing_d,
-                                       prop="height",
-                                       lock=eye_bolt_lock_nut);
-            eye_bolt_through_h = with_default(eye_bolt_through_h,
-                                              show_eye_bolt_nut ? nut_height : 1);
-            eye_bolt_h = with_default(eye_bolt_h, max_h + eye_bolt_through_h);
-            nut_head_distance = max_h + eye_bolt_through_h;
-            if (reverse_bolt) {
-              translate([0, 0, eye_bolt_h - max_h / 2]) {
-                rotate([0, 180, 0]) {
+      maybe_rotate([sync_bushing_rotation ? x_angle : 0,
+                    sync_bushing_rotation ? y_angle : 0,
+                    0]) {
+        maybe_rotate(bushing_rotation) {
+          union() {
+            tie_rod_spherical_bushing(h=bushing_h,
+                                      d=bushing_d,
+                                      od=bushing_od,
+                                      color=bushing_color,
+                                      flat_d=bushing_flat_d,
+                                      $fn=fn);
+            if (show_eye_bolt) {
+              nut_height = find_nut_prop(inner_d=bushing_d,
+                                         prop="height",
+                                         lock=eye_bolt_lock_nut);
+              eye_bolt_through_h = with_default(eye_bolt_through_h,
+                                                show_eye_bolt_nut ? nut_height : 1);
+              eye_bolt_h = with_default(eye_bolt_h, max_h + eye_bolt_through_h);
+              nut_head_distance = max_h + eye_bolt_through_h;
+              if (reverse_bolt) {
+                translate([0, 0, eye_bolt_h - max_h / 2]) {
+                  rotate([0, 180, 0]) {
+                    bolt(d=bushing_d,
+                         h=eye_bolt_h,
+                         head_d=eye_bolt_head_d,
+                         head_type=eye_bolt_head_type,
+                         show_nut=show_eye_bolt_nut,
+                         bolt_color=eye_bolt_color,
+                         head_color=with_default(eye_head_color, eye_bolt_color),
+                         nut_head_distance=nut_head_distance);
+                  }
+                }
+              } else {
+                translate([0, 0, -eye_bolt_h + max_h / 2]) {
                   bolt(d=bushing_d,
                        h=eye_bolt_h,
                        head_d=eye_bolt_head_d,
@@ -379,17 +396,6 @@ module tie_rod_end(eye_od=11.2,
                        head_color=with_default(eye_head_color, eye_bolt_color),
                        nut_head_distance=nut_head_distance);
                 }
-              }
-            } else {
-              translate([0, 0, -eye_bolt_h + max_h / 2]) {
-                bolt(d=bushing_d,
-                     h=eye_bolt_h,
-                     head_d=eye_bolt_head_d,
-                     head_type=eye_bolt_head_type,
-                     show_nut=show_eye_bolt_nut,
-                     bolt_color=eye_bolt_color,
-                     head_color=with_default(eye_head_color, eye_bolt_color),
-                     nut_head_distance=nut_head_distance);
               }
             }
           }

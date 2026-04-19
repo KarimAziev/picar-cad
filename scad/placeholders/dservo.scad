@@ -11,6 +11,7 @@ include <../steering_params.scad>
 
 use <../lib/debug.scad>
 use <../lib/functions.scad>
+use <../suspension/bellcrank/bellcrank_drive.scad>
 use <bolt.scad>
 use <servo.scad>
 use <servo_arm.scad>
@@ -24,9 +25,12 @@ function dsservo_full_height() =
                     dsservo_gearbox_size);
 
 function dsservo_height_after_hat() =
-  servo_height_after_hat(h=dsservo_size[2],
-                         z_offst=steering_bolts_hat_z_offset,
-                         hat_thickness=dsservo_hat_thickness);
+  dsservo_size[2] - dsservo_hat_z_offset;
+
+function dsservo_height_max_bracket_l() =
+  dsservo_size[2] - dsservo_hat_z_offset
+  - dsservo_socket_z_offset
+  - dsservo_socket_size[2];
 
 function dsservo_height_before_hat() =
   servo_height_before_hat(h=dsservo_size[2],
@@ -59,98 +63,71 @@ function dservo_tie_rod_bb() =
   dservo_tie_rod_bbox_for_len(servo_tie_rod_a_shank_len +
                               servo_tie_rod_a_eye_od);
 
-module servo_tie_rod_end(direction="bottom",
-                         x_angle=0,
-                         y_angle=0,
-                         eye_bolt_h=12,
-                         eye_bolt_through_h=1,
-                         show_eye_bolt=false,
-                         bushing_rotation) {
-  tie_rod_end(eye_od=servo_tie_rod_a_eye_od,
-              eye_h=servo_tie_rod_a_eye_h,
-              shank_od=servo_tie_rod_a_shank_od,
-              shank_bolt_d=servo_tie_rod_a_shank_bolt_d,
-              shank_len=servo_tie_rod_a_shank_len,
-              neck_len=servo_tie_rod_a_neck_len,
-              bushing_od=servo_tie_rod_a_bushing_od,
-              bushing_d=servo_tie_rod_a_bushing_d,
-              bushing_h=servo_tie_rod_a_bushing_h,
-              bushing_flat_d=servo_tie_rod_a_bushing_flat_d,
-              neck_h=servo_tie_rod_a_neck_h,
-              bushing_color=servo_tie_rod_a_bushing_color,
-              show_eye_bolt=show_eye_bolt,
-              eye_bolt_through_h=eye_bolt_through_h,
-              eye_bolt_h=eye_bolt_h,
-              center_z=true,
-              x_angle=x_angle,
-              y_angle=y_angle,
-              direction=direction,
-              bushing_rotation=bushing_rotation,
-              color=steering_servo_tie_rod_color);
-}
+module servo_tie_rod(bushing_rotation,
+                     tie_rod_b_bushing_rotation=[0, 0, 0],
+                     y_angle=0) {
+  tie_rod(center_anchor="a",
+          direction="bottom",
+          center_z=true,
+          shaft_body_len=steering_servo_tie_rod_body_len,
+          shaft_body_d=steering_servo_tie_rod_body_d,
+          shaft_body_end_len=steering_servo_tie_rod_body_end_len,
+          shaft_thread_len=steering_servo_tie_rod_thread_len,
+          shaft_thread_d=steering_servo_tie_rod_thread_d,
+          shaft_fn=steering_servo_tie_rod_fn,
+          shaft_color=steering_servo_tie_rod_color,
+          show_shaft_nuts=true,
 
-module servo_tie_rod(bushing_rotation, x_angle=0, y_angle=0) {
-  translate([0, -servo_tie_rod_a_eye_od / 2, 0]) {
-    tie_rod(center_anchor="a",
-            direction="bottom",
-            center_z=true,
-            shaft_body_len=steering_servo_tie_rod_body_len,
-            shaft_body_d=steering_servo_tie_rod_body_d,
-            shaft_body_end_len=steering_servo_tie_rod_body_end_len,
-            shaft_thread_len=steering_servo_tie_rod_thread_len,
-            shaft_thread_d=steering_servo_tie_rod_thread_d,
-            shaft_fn=steering_servo_tie_rod_fn,
-            shaft_color=steering_servo_tie_rod_color,
+          tie_rod_a_eye_od=servo_tie_rod_a_eye_od,
+          tie_rod_a_eye_h=servo_tie_rod_a_eye_h,
+          tie_rod_a_shank_od=servo_tie_rod_a_shank_od,
+          tie_rod_a_shank_bolt_d=servo_tie_rod_a_shank_bolt_d,
+          tie_rod_a_neck_len=servo_tie_rod_a_neck_len,
+          tie_rod_a_shank_len=servo_tie_rod_a_shank_len,
+          tie_rod_a_bushing_od=servo_tie_rod_a_bushing_od,
+          tie_rod_a_bushing_d=servo_tie_rod_a_bushing_d,
+          tie_rod_a_bushing_h=servo_tie_rod_a_bushing_h,
+          tie_rod_a_bushing_flat_d=servo_tie_rod_a_bushing_flat_d,
+          tie_rod_a_bushing_cap_h=servo_tie_rod_a_bushing_cap_h,
+          tie_rod_a_bushing_cap_d=servo_tie_rod_a_bushing_cap_d,
+          tie_rod_a_neck_h=servo_tie_rod_a_neck_h,
+          tie_rod_a_eye_bolt_color=servo_tie_rod_a_eye_bolt_color,
+          tie_rod_a_bushing_color=servo_tie_rod_a_bushing_color,
+          tie_rod_a_eye_bolt_h=servo_tie_rod_a_eye_bolt_h,
+          tie_rod_a_eye_bolt_head_d=servo_tie_rod_a_eye_bolt_head_d,
+          tie_rod_a_show_eye_bolt=true,
+          tie_rod_a_show_eye_bolt_nut=true,
+          tie_rod_a_eye_bolt_through_h=steering_servo_arm_bolt_boss_h,
 
-            tie_rod_a_eye_od=servo_tie_rod_a_eye_od,
-            tie_rod_a_eye_h=servo_tie_rod_a_eye_h,
-            tie_rod_a_shank_od=servo_tie_rod_a_shank_od,
-            tie_rod_a_shank_bolt_d=servo_tie_rod_a_shank_bolt_d,
-            tie_rod_a_neck_len=servo_tie_rod_a_neck_len,
-            tie_rod_a_shank_len=servo_tie_rod_a_shank_len,
-            tie_rod_a_bushing_od=servo_tie_rod_a_bushing_od,
-            tie_rod_a_bushing_d=servo_tie_rod_a_bushing_d,
-            tie_rod_a_bushing_h=servo_tie_rod_a_bushing_h,
-            tie_rod_a_bushing_flat_d=servo_tie_rod_a_bushing_flat_d,
-            tie_rod_a_bushing_cap_h=servo_tie_rod_a_bushing_cap_h,
-            tie_rod_a_bushing_cap_d=servo_tie_rod_a_bushing_cap_d,
-            tie_rod_a_neck_h=servo_tie_rod_a_neck_h,
-            tie_rod_a_eye_bolt_color=servo_tie_rod_a_eye_bolt_color,
-            tie_rod_a_bushing_color=servo_tie_rod_a_bushing_color,
-            tie_rod_a_eye_bolt_h=servo_tie_rod_a_eye_bolt_h,
-            tie_rod_a_eye_bolt_head_d=servo_tie_rod_a_eye_bolt_head_d,
-            tie_rod_a_show_eye_bolt=servo_tie_rod_a_show_eye_bolt,
-            tie_rod_a_y_angle=y_angle,
+          tie_rod_a_y_angle=y_angle,
 
-            tie_rod_a_reverse_bolt=servo_tie_rod_a_reverse_bolt,
-            tie_rod_a_bushing_rotation=bushing_rotation,
-            tie_rod_a_screw_out_depth=servo_tie_rod_a_screw_out_depth,
-            tie_rod_a_color=servo_tie_rod_a_color,
-// tie_rod_a_bushing_rotation=[steering_servo_tie_rod_angle, 0, 0],
+          tie_rod_a_reverse_bolt=servo_tie_rod_a_reverse_bolt,
+          tie_rod_a_bushing_rotation=bushing_rotation,
+          tie_rod_a_screw_out_depth=servo_tie_rod_a_screw_out_depth,
+          tie_rod_a_color=servo_tie_rod_a_color,
 
-            tie_rod_b_eye_od=servo_tie_rod_b_eye_od,
-            tie_rod_b_eye_h=servo_tie_rod_b_eye_h,
-            tie_rod_b_shank_od=servo_tie_rod_b_shank_od,
-            tie_rod_b_shank_bolt_d=servo_tie_rod_b_shank_bolt_d,
-            tie_rod_b_neck_len=servo_tie_rod_b_neck_len,
-            tie_rod_b_shank_len=servo_tie_rod_b_shank_len,
-            tie_rod_b_bushing_od=servo_tie_rod_b_bushing_od,
-            tie_rod_b_bushing_d=servo_tie_rod_b_bushing_d,
-            tie_rod_b_bushing_h=servo_tie_rod_b_bushing_h,
-            tie_rod_b_bushing_flat_d=servo_tie_rod_b_bushing_flat_d,
-            tie_rod_b_bushing_cap_h=servo_tie_rod_b_bushing_cap_h,
-            tie_rod_b_bushing_cap_d=servo_tie_rod_b_bushing_cap_d,
-            tie_rod_b_neck_h=servo_tie_rod_b_neck_h,
-            tie_rod_b_eye_bolt_color=servo_tie_rod_b_eye_bolt_color,
-            tie_rod_b_bushing_color=servo_tie_rod_b_bushing_color,
-            tie_rod_b_eye_bolt_head_d=servo_tie_rod_b_eye_bolt_head_d,
-            tie_rod_b_show_eye_bolt=servo_tie_rod_b_show_eye_bolt,
-            tie_rod_b_reverse_bolt=servo_tie_rod_b_reverse_bolt,
-            tie_rod_b_bushing_rotation=servo_tie_rod_b_bushing_rotation,
-            tie_rod_b_y_angle=servo_tie_rod_b_y_angle,
-            tie_rod_b_screw_out_depth=servo_tie_rod_b_screw_out_depth,
-            tie_rod_b_color=servo_tie_rod_b_color);
-  }
+          tie_rod_b_eye_od=servo_tie_rod_b_eye_od,
+          tie_rod_b_eye_h=servo_tie_rod_b_eye_h,
+          tie_rod_b_shank_od=servo_tie_rod_b_shank_od,
+          tie_rod_b_shank_bolt_d=servo_tie_rod_b_shank_bolt_d,
+          tie_rod_b_neck_len=servo_tie_rod_b_neck_len,
+          tie_rod_b_shank_len=servo_tie_rod_b_shank_len,
+          tie_rod_b_bushing_od=servo_tie_rod_b_bushing_od,
+          tie_rod_b_bushing_d=servo_tie_rod_b_bushing_d,
+          tie_rod_b_bushing_h=servo_tie_rod_b_bushing_h,
+          tie_rod_b_bushing_flat_d=servo_tie_rod_b_bushing_flat_d,
+          tie_rod_b_bushing_cap_h=servo_tie_rod_b_bushing_cap_h,
+          tie_rod_b_bushing_cap_d=servo_tie_rod_b_bushing_cap_d,
+          tie_rod_b_neck_h=servo_tie_rod_b_neck_h,
+          tie_rod_b_eye_bolt_color=servo_tie_rod_b_eye_bolt_color,
+          tie_rod_b_bushing_color=servo_tie_rod_b_bushing_color,
+          tie_rod_b_eye_bolt_head_d=servo_tie_rod_b_eye_bolt_head_d,
+          tie_rod_b_show_eye_bolt=servo_tie_rod_b_show_eye_bolt,
+          tie_rod_b_reverse_bolt=servo_tie_rod_b_reverse_bolt,
+          tie_rod_b_bushing_rotation=tie_rod_b_bushing_rotation,
+          tie_rod_b_y_angle=90,
+          tie_rod_b_screw_out_depth=servo_tie_rod_b_screw_out_depth,
+          tie_rod_b_color=servo_tie_rod_b_color);
 }
 
 module dsservo(center=false,
@@ -161,8 +138,38 @@ module dsservo(center=false,
                show_servo_horn_bolt,
                servo_horn_single,
                show_tie_rod=true,
-               servo_tie_rod_angle=steering_servo_tie_rod_angle,
+               bellcrank_lever_z_end,
                servo_horn_screw_side) {
+  bellcrank_lever_z_end = is_undef(bellcrank_lever_z_end)
+    ? bellcrank_servo_lever_z_coords()[1]
+    : bellcrank_lever_z_end;
+
+  dims = tie_rod_full_len(shaft_body_len=steering_servo_tie_rod_body_len,
+                          shaft_thread_len=steering_servo_tie_rod_thread_len,
+                          shaft_thread_d=steering_servo_tie_rod_thread_d,
+                          show_shaft_nuts=true,
+                          tie_rod_a_screw_out_depth=servo_tie_rod_a_screw_out_depth,
+                          tie_rod_a_eye_od=servo_tie_rod_a_eye_od,
+                          tie_rod_a_shank_len=servo_tie_rod_a_shank_len,
+                          tie_rod_b_shank_len=servo_tie_rod_b_shank_len,
+                          tie_rod_b_eye_od=servo_tie_rod_b_eye_od,
+                          tie_rod_b_screw_out_depth=servo_tie_rod_b_screw_out_depth,
+                          limit_max_depth=true);
+
+  full_l = dims[0];
+
+  y_tie_rod = + steering_servo_arm_d / 2
+    + steering_servo_arm_len
+    - steering_servo_arm_bolt_boss_padding
+    - steering_servo_arm_bolt_d
+    + (steering_servo_arm_bolt_d - servo_tie_rod_a_bushing_d);
+
+  y_rod_zh = y_tie_rod + dsservo_size[1] / 2 - min(servo_tie_rod_b_shank_od,
+                                                   servo_tie_rod_a_shank_od,
+                                                   steering_servo_tie_rod_body_d) / 2;
+
+  bellcrank_lever_z = y_rod_zh - bellcrank_lever_z_end;
+  angle = -y_angle_from_zshift(bellcrank_lever_z, full_l);
 
   rotate([0, 0, 180]) {
     servo(size=[dsservo_size[0],
@@ -204,12 +211,6 @@ module dsservo(center=false,
           socket_z_offset=dsservo_socket_z_offset,
           wiring_path=[[-100, 0, dsservo_socket_z_offset]]) {
 
-      y_tie_rod = + steering_servo_arm_d / 2
-        + steering_servo_arm_len
-        - steering_servo_arm_bolt_boss_padding
-        - steering_servo_arm_bolt_d
-        + (steering_servo_arm_bolt_d - servo_tie_rod_a_bushing_d);
-
       if (show_servo_horn) {
         rotate([0, 0, 180]) {
           servo_arm(arm_d=steering_servo_arm_d,
@@ -225,17 +226,17 @@ module dsservo(center=false,
                     boss_inner_padding=steering_servo_arm_bolt_boss_inner_padding,
                     arm_center_bolt_d=steering_servo_arm_center_bolt_d,
                     arm_center_bolt_bore_d=steering_servo_arm_center_bolt_bore_d,
-                    arm_center_bolt_bore_h=steering_servo_arm_center_bolt_bore_h);
+                    arm_center_bolt_bore_h=steering_servo_arm_center_bolt_bore_h,
+                    reverse=true);
+
           if (show_tie_rod) {
             mirror([1, 0, 0]) {
-              translate([-steering_servo_arm_w / 2,
+              translate([-steering_servo_arm_w / 2 + servo_tie_rod_a_eye_od / 2,
                          y_tie_rod,
-                         - steering_servo_arm_bolt_boss_h / 2]) {
+                         0]) {
 
-                rotate([0, 0, 0]) {
-                  rotate([0, 0, 90 + servo_tie_rod_angle]) {
-                    servo_tie_rod(bushing_rotation=[steering_servo_tie_rod_angle, 0, 0]);
-                  }
+                rotate([0, 0, 90 + angle]) {
+                  servo_tie_rod(tie_rod_b_bushing_rotation=[angle, 0, 0]);
                 }
               }
             }
@@ -246,69 +247,3 @@ module dsservo(center=false,
   }
 }
 dsservo();
-// translate([20, 0, 0]) {
-
-//   servo_tie_rod();
-// }
-
-// translate([0, -servo_tie_rod_b_eye_od / 2, 0]) {
-//   tie_rod(center_anchor="b",
-//           direction="bottom",
-//           center_z=true,
-//           shaft_body_len=steering_servo_tie_rod_body_len,
-//           shaft_body_d=steering_servo_tie_rod_body_d,
-//           shaft_body_end_len=steering_servo_tie_rod_body_end_len,
-//           shaft_thread_len=steering_servo_tie_rod_thread_len,
-//           shaft_thread_d=steering_servo_tie_rod_thread_d,
-//           shaft_fn=steering_servo_tie_rod_fn,
-//           shaft_color=steering_servo_tie_rod_color,
-
-//           tie_rod_a_eye_od=servo_tie_rod_a_eye_od,
-//           tie_rod_a_eye_h=servo_tie_rod_a_eye_h,
-//           tie_rod_a_shank_od=servo_tie_rod_a_shank_od,
-//           tie_rod_a_shank_bolt_d=servo_tie_rod_a_shank_bolt_d,
-//           tie_rod_a_neck_len=servo_tie_rod_a_neck_len,
-//           tie_rod_a_shank_len=servo_tie_rod_a_shank_len,
-//           tie_rod_a_bushing_od=servo_tie_rod_a_bushing_od,
-//           tie_rod_a_bushing_d=servo_tie_rod_a_bushing_d,
-//           tie_rod_a_bushing_h=servo_tie_rod_a_bushing_h,
-//           tie_rod_a_bushing_flat_d=servo_tie_rod_a_bushing_flat_d,
-//           tie_rod_a_bushing_cap_h=servo_tie_rod_a_bushing_cap_h,
-//           tie_rod_a_bushing_cap_d=servo_tie_rod_a_bushing_cap_d,
-//           tie_rod_a_neck_h=servo_tie_rod_a_neck_h,
-//           tie_rod_a_eye_bolt_color=servo_tie_rod_a_eye_bolt_color,
-//           tie_rod_a_bushing_color=servo_tie_rod_a_bushing_color,
-//           tie_rod_a_eye_bolt_h=servo_tie_rod_a_eye_bolt_h,
-//           tie_rod_a_eye_bolt_head_d=servo_tie_rod_a_eye_bolt_head_d,
-//           tie_rod_a_show_eye_bolt=servo_tie_rod_a_show_eye_bolt,
-
-//           tie_rod_a_reverse_bolt=servo_tie_rod_a_reverse_bolt,
-//           tie_rod_a_bushing_rotation=servo_tie_rod_a_bushing_rotation,
-//           tie_rod_a_y_angle=servo_tie_rod_a_y_angle,
-//           tie_rod_a_screw_out_depth=servo_tie_rod_a_screw_out_depth,
-//           tie_rod_a_color=servo_tie_rod_a_color,
-// // tie_rod_a_bushing_rotation=[steering_servo_tie_rod_angle, 0, 0],
-
-//           tie_rod_b_eye_od=servo_tie_rod_b_eye_od,
-//           tie_rod_b_eye_h=servo_tie_rod_b_eye_h,
-//           tie_rod_b_shank_od=servo_tie_rod_b_shank_od,
-//           tie_rod_b_shank_bolt_d=servo_tie_rod_b_shank_bolt_d,
-//           tie_rod_b_neck_len=servo_tie_rod_b_neck_len,
-//           tie_rod_b_shank_len=servo_tie_rod_b_shank_len,
-//           tie_rod_b_bushing_od=servo_tie_rod_b_bushing_od,
-//           tie_rod_b_bushing_d=servo_tie_rod_b_bushing_d,
-//           tie_rod_b_bushing_h=servo_tie_rod_b_bushing_h,
-//           tie_rod_b_bushing_flat_d=servo_tie_rod_b_bushing_flat_d,
-//           tie_rod_b_bushing_cap_h=servo_tie_rod_b_bushing_cap_h,
-//           tie_rod_b_bushing_cap_d=servo_tie_rod_b_bushing_cap_d,
-//           tie_rod_b_neck_h=servo_tie_rod_b_neck_h,
-//           tie_rod_b_eye_bolt_color=servo_tie_rod_b_eye_bolt_color,
-//           tie_rod_b_bushing_color=servo_tie_rod_b_bushing_color,
-//           tie_rod_b_eye_bolt_head_d=servo_tie_rod_b_eye_bolt_head_d,
-//           tie_rod_b_show_eye_bolt=servo_tie_rod_b_show_eye_bolt,
-//           tie_rod_b_reverse_bolt=servo_tie_rod_b_reverse_bolt,
-//           tie_rod_b_bushing_rotation=servo_tie_rod_b_bushing_rotation,
-//           tie_rod_b_y_angle=servo_tie_rod_b_y_angle,
-//           tie_rod_b_screw_out_depth=servo_tie_rod_b_screw_out_depth,
-//           tie_rod_b_color=servo_tie_rod_b_color);
-// }

@@ -353,6 +353,7 @@ tie_rod(center_anchor="b",
         tie_rod_a_y_angle=servo_tie_rod_a_y_angle,
         tie_rod_a_screw_out_depth=servo_tie_rod_a_screw_out_depth,
         tie_rod_a_color=servo_tie_rod_a_color,
+        tie_rod_a_eye_bolt_lock_nut=servo_tie_rod_a_eye_bolt_lock_nut,
 
         tie_rod_b_eye_od=servo_tie_rod_b_eye_od,
         tie_rod_b_eye_h=servo_tie_rod_b_eye_h,

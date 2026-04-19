@@ -209,7 +209,7 @@ m2_lock_nut_dia                                      = 3.95;
 m2_lock_nut_h                                        = 2.96;
 m25_lock_nut_dia                                     = 4.92;
 m25_lock_nut_h                                       = 3.52;
-m3_lock_nut_dia                                      = 5.5;
+m3_lock_nut_dia                                      = 6.1;
 m3_lock_nut_h                                        = 4.0;
 m6_lock_nut_dia                                      = 13.33;
 m6_lock_nut_h                                        = 8.92;
@@ -244,7 +244,7 @@ bolt_specs                                           = [[1,
                                                                        "color", metallic_silver_2],
                                                           "colors", ["hex", matte_black,
                                                                      "pan", metallic_silver_2,
-                                                                     "countersunk", metallic_silver_1,
+                                                                     "countersunk", matte_black,
                                                                      "round", metallic_silver_3,
                                                                      "socket", matte_black],
                                                           "head", ["pan", ["dia", m3_pan_head_dia,
@@ -311,7 +311,7 @@ bolt_specs                                           = [[1,
                                                                        "flanged_fn", 6],
                                                           "colors", ["hex", matte_black,
                                                                      "pan", metallic_silver_2,
-                                                                     "countersunk", metallic_silver_1,
+                                                                     "countersunk", matte_black,
                                                                      "round", matte_black,
                                                                      "socket", metallic_silver_2],
                                                           "head", ["round", ["dia", m5_socket_head_dia,

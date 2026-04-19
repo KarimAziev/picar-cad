@@ -881,12 +881,62 @@ steering_center_link_boss_od                      = 8;
 steering_center_link_boss_h                       = 4.9;
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Steering servo bracket
+// ─────────────────────────────────────────────────────────────────────────────
+// Hole diameter for mounting the servo to the bracket
+steering_servo_bracket_servo_bolt_d               = m3_hole_dia;
+
+// Thickness of the wall used to mount the steering servo
+steering_servo_bracket_thickness                  = 3;
+
+// Clearance used when calculating the bracket width, which is based on the
+// width of the servo mounting flange. A higher value results in a narrower
+// bracket, while setting it to 0.0 makes the bracket width equal to the flange
+// width.
+steering_servo_bracket_w_clearance                = 0.1;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// The lower wall (for mounting to the chassis)
+// ─────────────────────────────────────────────────────────────────────────────
+// Number of holes for mounting to the chassis
+steering_servo_bracket_chassis_bolt_n             = 2;
+
+// Distance from the edge of the lower wall to the chassis mounting bolt holes
+steering_servo_bracket_lower_wall_bolt_edge_pad   = 2;
+
+// Distance between the edges of the holes
+steering_servo_bracket_chassis_bolt_gap           = 4;
+
+// Additional clearance used when calculating the thickness of the chassis
+// mounting wall
+steering_servo_bracket_lower_thickness_clearance  = 0;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Steering servo mounting slots in the chassis
+// ─────────────────────────────────────────────────────────────────────────────
+// Hole diameter for mounting to the chassis
+steering_servo_mount_bolt_d                       = m3_hole_dia;
+
+// Diameter of the countersunk bore in the chassis
+steering_servo_mount_bolt_bore_d                  = m3_countersunk_head_dia + 0.2;
+
+// Depth of the countersunk hole in the chassis
+steering_servo_mount_bolt_bore_h                  = 1;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Assembly view
+// ─────────────────────────────────────────────────────────────────────────────
+// Bolt head type used for the servo mounting bolts in the assembly view
+servo_l_bracket_bolt_head_type                    = "hex";
+
+// Bolt length for mounting to the chassis, used in the assembly view
+servo_l_bracket_chassis_bolt_h                    = 10;
+
+steering_servo_chassis_mount_bolt_head_type       = "countersunk";
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Bellcrank arm to steering servo arm tie rod
 // ─────────────────────────────────────────────────────────────────────────────
-
-steering_servo_mount_bolt_d                       = m3_hole_dia;
-steering_servo_mount_bolt_bore_d                  = m3_countersunk_head_dia + 0.2;
-steering_servo_mount_bolt_bore_h                  = 1;
 
 steering_servo_tie_rod_angle                      = 0;
 
@@ -920,6 +970,8 @@ servo_tie_rod_a_eye_bolt_through_h                = 1;
 servo_tie_rod_a_eye_bolt_h                        = 17;
 servo_tie_rod_a_y_angle                           = 0;
 servo_tie_rod_a_bushing_rotation                  = [0, 0, 0];
+servo_tie_rod_a_eye_bolt_lock_nut                 = true;
+servo_tie_rod_a_show_eye_bolt_nut                 = true;
 // servo_tie_rod_a_bushing_rotation                  = [steering_servo_tie_rod_angle, 0, 0];
 servo_tie_rod_a_color                             = steering_servo_tie_rod_color;
 servo_tie_rod_a_screw_out_depth                   = 0;
@@ -995,9 +1047,6 @@ steering_servo_mount_hat_thickness                = 2;
 servo_mount_wiring_offset                         = 8.4;
 
 steering_servo_mount_len                          = dsservo_hat_w + steering_servo_mount_bolt_padding * 2;
-steering_servo_mount_bolt_spacing                 = [0, steering_servo_mount_len
-                                                     - steering_servo_mount_bolt_d
-                                                     - steering_servo_mount_bolt_padding];
 steering_servo_mount_h                            = dsservo_size[1] + steering_servo_bracket_plate_thickness;
 
 steering_servo_mount_socket_h                     = 3;

@@ -22,12 +22,21 @@ use <bellcrank_idler.scad>
 use <bellcrank_lever.scad>
 use <bellcrank_ring.scad>
 
-show_bellcrank_post      = false;
+show_bellcrank_post      = true;
 show_idler_upper_bearing = false;
 show_idler_lower_bearing = false;
 show_idler_lever         = false;
-show_servo_lever         = false;
+show_servo_lever         = true;
 show_upper_cap           = false;
+
+function bellcrank_servo_lever_z_coords(thickness=bellcrank_arm_thickness,
+                                        servo_lever_z_offset=bellcrank_servo_lever_z_offset,
+                                        arm_z=bellcrank_arm_z,
+                                        shoulder_h=bellcrank_post_flang_h,
+                                        boss_h=bellcrank_servo_lever_boss_h) =
+  let (servo_lever_z_start = thickness + servo_lever_z_offset + arm_z + shoulder_h,
+       servo_lever_z_boss_end = thickness + servo_lever_z_start + boss_h)
+  [servo_lever_z_start, servo_lever_z_boss_end];
 
 module bellcrank_drive(color=cobalt_blue_light_1,
                        z_angle=0,
@@ -67,12 +76,24 @@ module bellcrank_drive(color=cobalt_blue_light_1,
                        chamfer_angle=bellcrank_idler_chamfer_angle,
                        use_hull=bellcrank_lever_use_hull,
                        servo_lever_z_offset=bellcrank_servo_lever_z_offset,
+                       servo_lever_boss_h=bellcrank_servo_lever_boss_h,
                        show_idler_lever=show_idler_lever) {
 
   total_h = bush_h - shoulder_h + chamfer_h + extra_h;
   lever_h = thickness + upper_boss_h;
+
   drive_ring_h = thickness + upper_boss_h;
   cap_h = total_h - servo_lever_z_offset - arm_z - thickness - lever_h;
+
+  servo_lever_z_coords = bellcrank_servo_lever_z_coords(thickness=thickness,
+                                                        servo_lever_z_offset=servo_lever_z_offset,
+                                                        arm_z=arm_z,
+                                                        shoulder_h=0,
+
+                                                        boss_h=servo_lever_boss_h);
+
+  servo_lever_z_start = servo_lever_z_coords[0];
+  servo_lever_z_end = servo_lever_z_coords[1];
 
   rotate([0, 0, z_angle]) {
     bellcrank_idler(color=color,
@@ -129,11 +150,12 @@ module bellcrank_drive(color=cobalt_blue_light_1,
           }
         }
       }
+
       if (show_servo_lever || show_upper_cap) {
-        translate([0, 0, thickness + servo_lever_z_offset + arm_z]) {
+        translate([0, 0, servo_lever_z_start]) {
           if (show_servo_lever) {
             rotate([0, 0, 90]) {
-              bellcrank_servo_lever();
+              bellcrank_servo_lever(boss_h=servo_lever_boss_h);
             }
           }
 
@@ -220,5 +242,8 @@ module bellcrank_drive_cap_ring(parent_od=bellcrank_idler_od,
                  border_w=border_w);
 }
 
-// bellcrank_drive();
-bellcrank_servo_lever();
+z_dims = bellcrank_servo_lever_z_coords();
+z_end = z_dims[1];
+// #cube(z_end);
+bellcrank_drive();
+// bellcrank_servo_lever();
