@@ -198,7 +198,7 @@ module dsservo(center=false,
                show_tie_rod=true,
                bellcrank_lever_z_end,
                servo_horn_screw_side) {
-  // 4.89
+
   bellcrank_lever_z_end = is_undef(bellcrank_lever_z_end)
     ? bellcrank_servo_lever_z_coords()[1]
     : bellcrank_lever_z_end;
@@ -230,16 +230,6 @@ module dsservo(center=false,
   bellcrank_lever_z = y_rod_zh - bellcrank_lever_z_end;
   angle = y_angle_from_zshift(bellcrank_lever_z, full_l);
   max_tie_rod_a_h = dservo_tie_rod_a_max_h();
-  eye_center_spacing = full_l
-    - servo_tie_rod_a_eye_od / 2
-    - servo_tie_rod_b_eye_od / 2;
-  eye_center_spacing_x = eye_center_spacing * cos(angle);
-  eye_center_spacing_y = eye_center_spacing * sin(angle);
-  flang_x = -eye_center_spacing_x - dsservo_gearbox_d1 / 2;
-  flang_x_adjusted = center ? flang_x + dsservo_size[0] / 2 : flang_x;
-  hat_flange_w = (dsservo_hat_w - dsservo_size[0]) / 2;
-  bellcrank_distance = steering_servo_bellcrank_y(center=center,
-                                                  bellcrank_lever_z_end=bellcrank_lever_z_end);
 
   rotate([0, 0, 180]) {
     servo(size=[dsservo_size[0],
@@ -314,23 +304,5 @@ module dsservo(center=false,
       }
     }
   }
-  // translate([-dsservo_size[0] - hat_flange_w, 0, 40]) {
-  //   #sphere(d=2);
-  //   translate([bellcrank_distance, 0, 0]) {
-  //     #sphere(d=2);
-
-  //     cube([abs(bellcrank_distance), 10, 10]);
-  //   }
-  // }
-  // translate([0, 0, 0]) {
-
-  //   translate([flang_x_adjusted,
-  //              -eye_center_spacing_y,
-  //              0]) {
-  //     rotate([90, 0, 0]) {
-  //       #cylinder(d=2, h=5, center=false);
-  //     }
-  //   }
-  // }
 }
 dsservo();
