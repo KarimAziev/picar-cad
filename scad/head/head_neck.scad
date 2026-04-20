@@ -98,12 +98,12 @@ function head_neck_full_pan_panel_h() =
 function head_neck_full_tilt_panel_h() =
   head_neck_tilt_servo_slot_height
   + head_neck_pan_servo_slot_thickness
-  + pan_servo_height_after_hat()
+  + pan_servo_height_after_flange()
   + head_neck_tilt_servo_extra_lower_h
   + head_neck_tilt_servo_extra_top_h;
 
 module servo_mount_bolts(d=head_neck_pan_servo_bolt_dia,
-                         flang_thickness=pan_servo_hat_thickness,
+                         flang_thickness=pan_servo_flange_thickness,
                          slot_thickness=head_neck_pan_servo_slot_thickness,
                          slot_size=[head_neck_pan_servo_slot_width,
                                     head_neck_pan_servo_slot_height],
@@ -210,7 +210,7 @@ module head_neck_base(show_tilt_servo=false,
     union() {
       if (show_pan_servo_bolts) {
         servo_mount_bolts(d=head_neck_pan_servo_bolt_dia,
-                          flang_thickness=pan_servo_hat_thickness,
+                          flang_thickness=pan_servo_flange_thickness,
                           slot_thickness=head_neck_pan_servo_slot_thickness,
                           slot_size=[head_neck_pan_servo_slot_width,
                                      head_neck_pan_servo_slot_height],
@@ -223,8 +223,8 @@ module head_neck_base(show_tilt_servo=false,
                    -pan_servo_size[1] / 2 ,
                    pan_servo_h
                    + head_neck_pan_servo_slot_thickness / 2
-                   - pan_bolts_hat_z_offset
-                   + pan_servo_hat_thickness / 2]) {
+                   - pan_servo_flange_z_offset
+                   + pan_servo_flange_thickness / 2]) {
           if (show_pan_servo) {
             rotate([0, 0, 0]) {
               rotate([0, 180, 0]) {
@@ -251,7 +251,7 @@ module head_neck_base(show_tilt_servo=false,
       if (show_tilt_servo_bolts) {
         translate([0, tilt_servo_y, 0]) {
           servo_mount_bolts(d=head_neck_tilt_servo_bolt_dia,
-                            flang_thickness=tilt_servo_hat_thickness,
+                            flang_thickness=tilt_servo_flange_thickness,
                             slot_thickness=head_neck_tilt_servo_slot_thickness,
                             slot_size=[head_neck_tilt_servo_slot_width,
                                        head_neck_tilt_servo_slot_height],
@@ -264,9 +264,9 @@ module head_neck_base(show_tilt_servo=false,
 
       translate([0,
                  tilt_servo_y,
-                 -tilt_servo_height_after_hat()
+                 -tilt_servo_height_after_flange()
                  - head_neck_tilt_servo_slot_thickness / 2
-                 - tilt_servo_hat_thickness]) {
+                 - tilt_servo_flange_thickness]) {
 
         if (show_tilt_servo || show_head) {
 
@@ -381,8 +381,8 @@ module head_neck(center_pan_servo_slot=false,
       + head_full_w - slot_w + extra_head_y;
 
     gear_h = pan_servo_gear_height();
-    h_before_hat = pan_servo_height_before_hat();
-    head_z = pan_servo_gearbox_h + (h_before_hat
+    h_before_flange = pan_servo_height_before_flange();
+    head_z = pan_servo_gearbox_h + (h_before_flange
                                     - head_neck_pan_servo_slot_thickness)
       + gear_h + (servo_horn_ring_height - servo_horn_arm_z_offset);
 

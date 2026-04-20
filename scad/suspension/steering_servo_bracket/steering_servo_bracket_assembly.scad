@@ -45,7 +45,7 @@ module steering_servo_bracket_assembly(color=white_smoke_1,
   bellcrank_z_coords = bellcrank_servo_lever_z_coords();
   bellcrank_lever_z_end = bellcrank_z_coords[1];
 
-  maybe_translate([0, center_y ? 0 : -dsservo_hat_w / 2, 0]) {
+  maybe_translate([0, center_y ? 0 : -dsservo_flange_w / 2, 0]) {
 
     if (show_servo_brackets) {
       servo_l_bracket_slots_children() {

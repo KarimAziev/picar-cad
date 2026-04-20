@@ -15,15 +15,15 @@ function pan_servo_full_height() =
                     pan_servo_gearbox_h,
                     pan_servo_gearbox_size);
 
-function pan_servo_height_after_hat() =
-  servo_height_after_hat(h=pan_servo_size[2],
-                         z_offst=pan_bolts_hat_z_offset,
-                         hat_thickness=pan_servo_hat_thickness);
+function pan_servo_height_after_flange() =
+  servo_height_after_flange(h=pan_servo_size[2],
+                            z_offst=pan_servo_flange_z_offset,
+                            flange_thickness=pan_servo_flange_thickness);
 
-function pan_servo_height_before_hat() =
-  servo_height_before_hat(h=pan_servo_size[2],
-                          z_offst=pan_bolts_hat_z_offset,
-                          hat_thickness=pan_servo_hat_thickness);
+function pan_servo_height_before_flange() =
+  servo_height_before_flange(h=pan_servo_size[2],
+                             z_offst=pan_servo_flange_z_offset,
+                             flange_thickness=pan_servo_flange_thickness);
 
 function pan_servo_gear_height() =
   servo_gear_total_height(pan_servo_gearbox_size);
@@ -44,12 +44,12 @@ module pan_servo(center=false,
               pan_servo_size[1],
               pan_servo_size[2]],
         bolts_dia=head_neck_tilt_servo_bolt_dia,
-        servo_hat_w=pan_servo_hat_w,
+        servo_flange_w=pan_servo_flange_w,
         center=center,
-        servo_hat_h=pan_servo_hat_h,
-        servo_hat_thickness=pan_servo_hat_thickness,
+        servo_flange_h=pan_servo_flange_h,
+        servo_flange_thickness=pan_servo_flange_thickness,
         bolts_offset=pan_servo_bolts_offset,
-        bolts_hat_z_offset=pan_bolts_hat_z_offset,
+        servo_flange_z_offset=pan_servo_flange_z_offset,
         alpha=alpha,
         servo_color=servo_color,
         gearbox_box_color=pan_servo_color,

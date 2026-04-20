@@ -15,15 +15,15 @@ function tilt_servo_full_height() =
                     tilt_servo_gearbox_h,
                     tilt_servo_gearbox_size);
 
-function tilt_servo_height_after_hat() =
-  servo_height_after_hat(h=tilt_servo_size[2],
-                         z_offst=tilt_bolts_hat_z_offset,
-                         hat_thickness=tilt_servo_hat_thickness);
+function tilt_servo_height_after_flange() =
+  servo_height_after_flange(h=tilt_servo_size[2],
+                            z_offst=tilt_servo_flange_z_offset,
+                            flange_thickness=tilt_servo_flange_thickness);
 
-function tilt_servo_height_before_hat() =
-  servo_height_before_hat(h=tilt_servo_size[2],
-                          z_offst=tilt_bolts_hat_z_offset,
-                          hat_thickness=tilt_servo_hat_thickness);
+function tilt_servo_height_before_flange() =
+  servo_height_before_flange(h=tilt_servo_size[2],
+                             z_offst=tilt_servo_flange_z_offset,
+                             flange_thickness=tilt_servo_flange_thickness);
 
 function tilt_servo_gear_height() =
   servo_gear_total_height(tilt_servo_gearbox_size);
@@ -41,12 +41,12 @@ module tilt_servo(center=false,
               tilt_servo_size[1],
               tilt_servo_size[2]],
         bolts_dia=head_neck_tilt_servo_bolt_dia,
-        servo_hat_w=tilt_servo_hat_w,
+        servo_flange_w=tilt_servo_flange_w,
         center=center,
-        servo_hat_h=tilt_servo_hat_h,
-        servo_hat_thickness=tilt_servo_hat_thickness,
+        servo_flange_h=tilt_servo_flange_h,
+        servo_flange_thickness=tilt_servo_flange_thickness,
         bolts_offset=tilt_servo_bolts_offset,
-        bolts_hat_z_offset=tilt_bolts_hat_z_offset,
+        servo_flange_z_offset=tilt_servo_flange_z_offset,
         servo_color=servo_color,
         gearbox_box_color=servo_color,
         alpha=alpha,

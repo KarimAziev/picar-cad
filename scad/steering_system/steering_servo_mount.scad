@@ -141,9 +141,9 @@ module steering_servo_mount(show_servo=show_servo,
                                             lock=false),
                    nut_h = plist_get("height", nut_spec, 2),
                    bolt_h = ceil(nut_h
-                                 + steering_servo_hat_thickness
+                                 + steering_servo_flange_thickness
                                  + steering_vertical_panel_thickness),
-                   nut_head_distance=steering_servo_hat_thickness
+                   nut_head_distance=steering_servo_flange_thickness
                    + steering_vertical_panel_thickness) {
                 if (echo_bolts_info) {
                   echo(str("The steering servo vertical bolt: M",
@@ -186,8 +186,8 @@ module steering_servo_mount(show_servo=show_servo,
       servo_dia = servo_bolt_dia + 0.3;
       servo_w = steering_servo_size[1];
 
-      servo_y = -steering_servo_height_after_hat()
-        - steering_servo_hat_thickness
+      servo_y = -steering_servo_height_after_flange()
+        - steering_servo_flange_thickness
         - steering_servo_mount_length
         - steering_vertical_panel_thickness / 2
         - steering_rack_support_width / 2;

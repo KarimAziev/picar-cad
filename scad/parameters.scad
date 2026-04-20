@@ -1108,24 +1108,24 @@ pan_servo_bolts_offset                               = 1;
  * Width of the "hat" (top flange) on the servo.
  * This includes mounting holes and is typically wider than the body.
  */
-pan_servo_hat_w                                      = 32.11;
+pan_servo_flange_w                                   = 32.11;
 
 /**
  * Height (Y) dimension of the servo's "hat" section.
  * Equal to servo width unless asymmetrically hatched.
  */
-pan_servo_hat_h                                      = pan_servo_size[1];
+pan_servo_flange_h                                   = pan_servo_size[1];
 
 /**
  * Vertical thickness of the servo hat, i.e., how thick the extension flange is.
  */
-pan_servo_hat_thickness                              = 1.7;
+pan_servo_flange_thickness                           = 1.7;
 
 /**
  * Distance from the top of the servo body to the bottom of the hat.
  * Accounts for mechanical separation between body and hat.
  */
-pan_bolts_hat_z_offset                               = 4;
+pan_servo_flange_z_offset                            = 4;
 
 /**
  * Servo label text for visualization purposes.
@@ -1276,25 +1276,25 @@ tilt_servo_bolts_offset                              = 1;
  * Width of the mounting flange ("hat") for the tilt servo.
  * Usually wider than the central body to allow secure fastening.
  */
-tilt_servo_hat_w                                     = 32.11;
+tilt_servo_flange_w                                  = 32.11;
 
 /**
  * Height of the servo hat (Y axis).
  * Should match the width of the servo body.
  */
-tilt_servo_hat_h                                     = tilt_servo_size[1];
+tilt_servo_flange_h                                  = tilt_servo_size[1];
 
 /**
  * Thickness of the tilt servo's mounting flange ("hat").
  * Used to offset and extrude bolt holders in 3D view.
  */
-tilt_servo_hat_thickness                             = 1.6;
+tilt_servo_flange_thickness                          = 1.6;
 
 /**
  * Distance from the top of the servo body to bolt-holding surface (flange).
  * Used to vertically position the hat relative to the main body.
  */
-tilt_bolts_hat_z_offset                              = 4;
+tilt_servo_flange_z_offset                           = 4;
 
 /**
  * Horizontal offset between the two gearbox shaft diameters
@@ -2522,10 +2522,10 @@ steering_servo_size                                  = [23.48, 11.7, 20.3];
 // offset between the servo slot and the fastening bolts
 steering_servo_bolts_offset                          = 1;
 
-steering_servo_hat_w                                 = 33;
-steering_servo_hat_h                                 = steering_servo_size[1];
-steering_servo_hat_thickness                         = 1.6;
-steering_bolts_hat_z_offset                          = 4;
+steering_servo_flange_w                              = 33;
+steering_servo_flange_h                              = steering_servo_size[1];
+steering_servo_flange_thickness                      = 1.6;
+steering_servo_flange_z_offset                       = 4;
 steering_servo_gearbox_x_offset                      = 3;
 steering_servo_gearbox_mode                          = "hull";
 steering_servo_text                                  = pan_servo_text;

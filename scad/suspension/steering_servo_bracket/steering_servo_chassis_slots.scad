@@ -6,7 +6,7 @@ use <helpers.scad>
 
 module steering_servo_chassis_slots(chassis_thickness=upper_chassis_t,
                                     center_y=false) {
-  maybe_translate([0, center_y ? 0 : -dsservo_hat_w / 2, 0]) {
+  maybe_translate([0, center_y ? 0 : -dsservo_flange_w / 2, 0]) {
 
     servo_l_bracket_slots_children() {
       servo_l_bracket_chasis_slot_child() {

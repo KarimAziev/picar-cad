@@ -25,20 +25,23 @@ function servo_gear_total_height(gear_size) =
 function servo_full_height(height, gearbox_h, gear_size) =
   height + gearbox_h + servo_gear_total_height(gear_size);
 
-function servo_height_after_hat(h, z_offst, hat_thickness, center_hat=true) =
-  h - z_offst - (center_hat ? (hat_thickness / 2) : hat_thickness);
+function servo_height_after_flange(h,
+                                   z_offst,
+                                   flange_thickness,
+                                   center_flange=true) =
+  h - z_offst - (center_flange ? (flange_thickness / 2) : flange_thickness);
 
-function servo_height_before_hat(h, z_offst, hat_thickness) =
-  h - (h - z_offst + hat_thickness / 2);
+function servo_height_before_flange(h, z_offst, flange_thickness) =
+  h - (h - z_offst + flange_thickness / 2);
 
 function servo_gear_center_x(length, d1) = length - d1;
 
-module servo_bolts_hat(size,
-                       x_offset,
-                       d,
-                       thickness,
-                       center_z=true,
-                       center=true) {
+module servo_flange(size,
+                    x_offset,
+                    d,
+                    thickness,
+                    center_z=true,
+                    center=true) {
   w = size[0];
   h = size[1];
   linear_extrude(height=thickness, center=center_z) {
@@ -63,11 +66,11 @@ module servo_body(size,
                   servo_color=jet_black,
                   alpha=1,
                   cut_len=0,
-                  servo_hat_w,
+                  servo_flange_w,
                   bolts_dia,
-                  servo_hat_h,
-                  servo_hat_thickness,
-                  bolts_hat_z_offset,
+                  servo_flange_h,
+                  servo_flange_thickness,
+                  servo_flange_z_offset,
                   servo_text,
                   text_plist,
                   text_size,
@@ -75,7 +78,7 @@ module servo_body(size,
                   cut_len_top_len,
                   font="Liberation Sans:style=Bold Italic",
                   bolt_spacing,
-                  center_hat_z=true,
+                  center_flange_z=true,
                   tolerance,
                   socket_size,
                   socket_z_offset,
@@ -166,9 +169,9 @@ module servo_body(size,
            bg_l = length - bg_pad_left - bg_pad_right,
            bg_h = total_size[1] + bg_pad_top + bg_pad_bottom,
            bg_w = w + (bg_t * (bg_pad_left > 0 ? -1 : 1)),
-           z_offset = center_hat_z
-           ? bolts_hat_z_offset + servo_hat_thickness
-           : bolts_hat_z_offset) {
+           z_offset = center_flange_z
+           ? servo_flange_z_offset + servo_flange_thickness
+           : servo_flange_z_offset) {
 
         _text(bg_pad_top=bg_pad_top,
               text_height=text_height,
@@ -219,29 +222,29 @@ module servo_body(size,
       }
     }
 
-    translate([0, 0, h - bolts_hat_z_offset]) {
+    translate([0, 0, h - servo_flange_z_offset]) {
       color(servo_color, alpha=alpha) {
         if (!is_undef(bolt_spacing)) {
-          translate([0, 0, center_hat_z ? -servo_hat_thickness / 2 : 0]) {
+          translate([0, 0, center_flange_z ? -servo_flange_thickness / 2 : 0]) {
             difference() {
-              linear_extrude(height=servo_hat_thickness, center=false) {
-                rounded_rect(size = [servo_hat_w, servo_hat_h],
-                             r = servo_hat_h * 0.1,
+              linear_extrude(height=servo_flange_thickness, center=false) {
+                rounded_rect(size = [servo_flange_w, servo_flange_h],
+                             r = servo_flange_h * 0.1,
                              center=true);
               }
               four_corner_counterbores(size=bolt_spacing,
                                        d=bolts_dia + tolerance,
-                                       h=servo_hat_thickness);
+                                       h=servo_flange_thickness);
             }
           }
         } else {
           offst_x = bolt_x_offst(size[0], bolts_dia, bolts_offset);
 
-          servo_bolts_hat(size=[servo_hat_w, servo_hat_h],
-                          x_offset=offst_x,
-                          d=bolts_dia + tolerance,
-                          center_z=center_hat_z,
-                          thickness=servo_hat_thickness);
+          servo_flange(size=[servo_flange_w, servo_flange_h],
+                       x_offset=offst_x,
+                       d=bolts_dia + tolerance,
+                       center_z=center_flange_z,
+                       thickness=servo_flange_thickness);
         }
       }
     }
@@ -341,10 +344,10 @@ module servo(size,
              bolts_dia,
              bolts_offset,
              bolt_spacing,
-             servo_hat_w,
-             servo_hat_h,
-             servo_hat_thickness,
-             bolts_hat_z_offset,
+             servo_flange_w,
+             servo_flange_h,
+             servo_flange_thickness,
+             servo_flange_z_offset,
              servo_color=jet_black,
              alpha=1,
              servo_text=["EMAX", "ES08MA II"],
@@ -375,7 +378,7 @@ module servo(size,
              servo_horn_single=false,
              servo_horn_screw_side,
              show_servo_horn=true,
-             center_hat_z=true,
+             center_flange_z=true,
              socket_size,
              socket_z_offset,
              socket_side,
@@ -400,16 +403,16 @@ module servo(size,
                  cut_len=cut_len,
                  cut_len_top_depth=cut_len_top_depth,
                  cut_len_top_len=cut_len_top_len,
-                 servo_hat_w=servo_hat_w,
+                 servo_flange_w=servo_flange_w,
                  bolts_dia=bolts_dia,
-                 servo_hat_h=servo_hat_h,
-                 servo_hat_thickness=servo_hat_thickness,
-                 bolts_hat_z_offset=bolts_hat_z_offset,
+                 servo_flange_h=servo_flange_h,
+                 servo_flange_thickness=servo_flange_thickness,
+                 servo_flange_z_offset=servo_flange_z_offset,
                  servo_text=servo_text,
                  text_size=text_size,
                  font=font,
                  text_plist=text_plist,
-                 center_hat_z=center_hat_z,
+                 center_flange_z=center_flange_z,
                  bolt_spacing=bolt_spacing,
                  tolerance=tolerance,
                  socket_size=socket_size,
@@ -501,13 +504,13 @@ servo(size=[dsservo_size[0],
             dsservo_size[2]],
       bolts_dia=dsservo_bolt_dia,
       bolt_spacing=dsservo_bolt_spacing,
-      servo_hat_w=dsservo_hat_w,
+      servo_flange_w=dsservo_flange_w,
       center=true,
-      servo_hat_h=dsservo_hat_h,
-      servo_hat_thickness=dsservo_hat_thickness,
-      center_hat_z=false,
+      center_flange_z=false,
+      servo_flange_h=dsservo_flange_h,
+      servo_flange_thickness=dsservo_flange_thickness,
       bolts_offset=dsservo_bolts_offset,
-      bolts_hat_z_offset=dsservo_hat_z_offset,
+      servo_flange_z_offset=dsservo_flange_z_offset,
       servo_color=dsservo_color,
       gearbox_box_color=dsservo_color,
       servo_text=dsservo_text,

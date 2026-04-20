@@ -174,11 +174,11 @@ dsservo_bolt_spacing                              = [49.5, 10];
 // offset between the servo slot and the fastening bolts
 dsservo_bolts_offset                              = 3.2;
 
-dsservo_hat_w                                     = 54.5;
+dsservo_flange_w                                  = 54.5;
 
-dsservo_hat_h                                     = 18.63;
-dsservo_hat_thickness                             = 4.0;
-dsservo_hat_z_offset                              = 12.8;
+dsservo_flange_h                                  = 18.63;
+dsservo_flange_thickness                          = 4.0;
+dsservo_flange_z_offset                           = 12.8;
 dsservo_gearbox_x_offset                          = 0;
 dsservo_gearbox_mode                              = "union";
 dsservo_text                                      = [["20KG", "size", 9,
@@ -1048,10 +1048,9 @@ upper_steering_panel_bulkhead_spacing             = 21;
 
 steering_servo_mount_bolt_padding                 = 0.7;
 steering_servo_bracket_plate_thickness            = 3;
-steering_servo_mount_hat_thickness                = 2;
 servo_mount_wiring_offset                         = 8.4;
 
-steering_servo_mount_len                          = dsservo_hat_w + steering_servo_mount_bolt_padding * 2;
+steering_servo_mount_len                          = dsservo_flange_w + steering_servo_mount_bolt_padding * 2;
 steering_servo_mount_h                            = dsservo_size[1] + steering_servo_bracket_plate_thickness;
 
 steering_servo_mount_socket_h                     = 3;

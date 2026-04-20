@@ -40,18 +40,18 @@ function dservo_tie_rod_b_max_h() =
                 bushing_h=servo_tie_rod_b_bushing_h,
                 shank_od=servo_tie_rod_b_shank_od);
 
-function dsservo_height_after_hat() =
-  dsservo_size[2] - dsservo_hat_z_offset;
+function dsservo_height_after_flange() =
+  dsservo_size[2] - dsservo_flange_z_offset;
 
 function dsservo_height_max_bracket_l() =
-  dsservo_size[2] - dsservo_hat_z_offset
+  dsservo_size[2] - dsservo_flange_z_offset
   - dsservo_socket_z_offset
   - dsservo_socket_size[2];
 
-function dsservo_height_before_hat() =
-  servo_height_before_hat(h=dsservo_size[2],
-                          z_offst=steering_bolts_hat_z_offset,
-                          hat_thickness=dsservo_hat_thickness);
+function dsservo_height_before_flange() =
+  servo_height_before_flange(h=dsservo_size[2],
+                             z_offst=steering_servo_flange_z_offset,
+                             flange_thickness=dsservo_flange_thickness);
 
 function dsservo_gear_height() =
   servo_gear_total_height(dsservo_gearbox_size);
@@ -114,8 +114,8 @@ function steering_servo_bellcrank_y(center=false,
        eye_center_spacing_y = eye_center_spacing * sin(angle),
        flang_x = -eye_center_spacing_x - dsservo_gearbox_d1 / 2,
        flang_x_adjusted = center ? flang_x + dsservo_size[0] / 2 : flang_x,
-       hat_flange_w = (dsservo_hat_w - dsservo_size[0]) / 2,
-       bellcrank_distance = flang_x_adjusted + dsservo_size[0] + hat_flange_w)
+       flange_w = (dsservo_flange_w - dsservo_size[0]) / 2,
+       bellcrank_distance = flang_x_adjusted + dsservo_size[0] + flange_w)
        bellcrank_distance;
 
 module servo_tie_rod(bushing_rotation,
@@ -237,13 +237,13 @@ module dsservo(center=false,
                 dsservo_size[2]],
           bolts_dia=dsservo_bolt_dia,
           bolt_spacing=dsservo_bolt_spacing,
-          servo_hat_w=dsservo_hat_w,
+          servo_flange_w=dsservo_flange_w,
           center=center,
-          servo_hat_h=dsservo_hat_h,
-          servo_hat_thickness=dsservo_hat_thickness,
-          center_hat_z=false,
+          servo_flange_h=dsservo_flange_h,
+          servo_flange_thickness=dsservo_flange_thickness,
+          center_flange_z=false,
           bolts_offset=dsservo_bolts_offset,
-          bolts_hat_z_offset=dsservo_hat_z_offset,
+          servo_flange_z_offset=dsservo_flange_z_offset,
           servo_color=servo_color,
           alpha=alpha,
           gearbox_box_color=servo_color,

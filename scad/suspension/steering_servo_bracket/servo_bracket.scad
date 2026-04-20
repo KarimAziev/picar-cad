@@ -49,7 +49,7 @@ module servo_l_bracket(color=white_smoke_1,
                        show_chassis_bolt_nut=show_chassis_bolt_nut,
                        show_servo_bolt_nut=show_servo_bolt_nut) {
   hole_fn = $preview ? 16 : 200;
-  servo_bolt_through_l = dsservo_hat_thickness + steering_servo_bracket_thickness;
+  servo_bolt_through_l = dsservo_flange_thickness + steering_servo_bracket_thickness;
 
   bolt_spec = find_bolt_nut_spec(steering_servo_bracket_servo_bolt_d,
                                  default=[]);
@@ -75,7 +75,7 @@ module servo_l_bracket(color=white_smoke_1,
         difference() {
           translate([w_clearance, servo_bracket_y, 0]) {
             rounded_rect([bracket_w - w_clearance,
-                          dsservo_hat_h + bracket_extra_h],
+                          dsservo_flange_h + bracket_extra_h],
                          center=false,
                          side="top",
                          r_factor=0.5);

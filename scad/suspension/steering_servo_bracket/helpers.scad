@@ -77,11 +77,11 @@ module servo_l_bracket_chasis_slot_child(skip_rotation=false) {
 
 module servo_l_bracket_slots_children() {
   servo_w = dsservo_size[0];
-  bracket_extra_h = (dsservo_size[1] - dsservo_hat_h) / 2;
+  bracket_extra_h = (dsservo_size[1] - dsservo_flange_h) / 2;
 
-  translate([-dsservo_height_after_hat() + steering_servo_bracket_thickness,
+  translate([-dsservo_height_after_flange() + steering_servo_bracket_thickness,
              0,
-             dsservo_hat_h / 2 + bracket_extra_h]) {
+             dsservo_flange_h / 2 + bracket_extra_h]) {
     rotate([90, 0, -90]) {
       translate([servo_w / 2, 0, 0]) {
         children();
