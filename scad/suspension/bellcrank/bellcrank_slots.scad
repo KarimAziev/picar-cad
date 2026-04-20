@@ -1,3 +1,12 @@
+/**
+  * Module: Bellcrank slots on the chassis
+  *
+  * This module adds two slots to the chassis: one for the bellcrank drive and one for the bellcrank idler.
+  *
+  * Author: Karim Aziiev <karim.aziiev@gmail.com>
+  * License: GPL-3.0-or-later
+  */
+
 include <../../steering_params.scad>
 
 use <../../lib/slots.scad>
