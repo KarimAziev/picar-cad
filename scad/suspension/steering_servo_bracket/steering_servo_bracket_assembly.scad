@@ -30,6 +30,8 @@ show_chassis_bolt_nut = true;
 
 show_servo            = true;
 
+steering_servo_angle  = 0; //[-40:1:40]
+
 module steering_servo_bracket_assembly(color=white_smoke_1,
                                        lower_thickness_clearance=steering_servo_bracket_lower_thickness_clearance,
                                        chassis_thickness=upper_chassis_t,
@@ -40,6 +42,7 @@ module steering_servo_bracket_assembly(color=white_smoke_1,
                                        show_servo=show_servo,
                                        show_chassis_bolt_nut=show_chassis_bolt_nut,
                                        show_servo_bolt_nut=show_servo_bolt_nut,
+                                       steering_servo_angle=steering_servo_angle,
                                        center_y=false) {
 
   bellcrank_z_coords = bellcrank_servo_lever_z_coords();
@@ -65,7 +68,9 @@ module steering_servo_bracket_assembly(color=white_smoke_1,
         rotate([180, 0, 0]) {
           translate([0, 0, dsservo_size[1] / 2]) {
             rotate([-90, 0, 90]) {
-              dsservo(center=true, bellcrank_lever_z_end=bellcrank_lever_z_end);
+              dsservo(center=true,
+                      bellcrank_lever_z_end=bellcrank_lever_z_end,
+                      servo_horn_angle=steering_servo_angle);
             }
           }
         }

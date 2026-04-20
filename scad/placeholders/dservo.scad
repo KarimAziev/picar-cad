@@ -197,7 +197,8 @@ module dsservo(center=false,
                servo_horn_single,
                show_tie_rod=true,
                bellcrank_lever_z_end,
-               servo_horn_screw_side) {
+               servo_horn_screw_side,
+               servo_horn_angle=0) {
 
   bellcrank_lever_z_end = is_undef(bellcrank_lever_z_end)
     ? bellcrank_servo_lever_z_coords()[1]
@@ -253,7 +254,6 @@ module dsservo(center=false,
           cut_len=dsservo_cut_len,
           gearbox_h=dsservo_gearbox_h,
           gearbox_d1=dsservo_gearbox_d1,
-          servo_horn_rotation=$t * ($t > 0.5 ? -90 : 45),
           gearbox_d2=dsservo_gearbox_d2,
           gearbox_x_offset=dsservo_gearbox_x_offset,
           show_servo_horn=false,
@@ -272,7 +272,7 @@ module dsservo(center=false,
           wiring_path=[[-100, 0, dsservo_socket_z_offset]]) {
 
       if (show_servo_horn) {
-        rotate([0, 0, 180]) {
+        rotate([0, 0, 180 + servo_horn_angle]) {
           servo_arm(arm_d=steering_servo_arm_d,
                     arm_len=steering_servo_arm_len,
                     arm_base_h=steering_servo_arm_base_h,
@@ -294,7 +294,7 @@ module dsservo(center=false,
                        y_tie_rod,
                        -max_tie_rod_a_h / 2]) {
 
-              rotate([0, 0, angle]) {
+              rotate([0, 0, angle - servo_horn_angle]) {
                 servo_tie_rod(tie_rod_b_bushing_rotation=[angle, 0, 0],
                               direction="left");
               }
