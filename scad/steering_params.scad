@@ -898,7 +898,7 @@ steering_servo_bracket_thickness                  = 3;
 steering_servo_bracket_w_clearance                = 0.1;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// The lower wall (for mounting to the chassis)
+// Lower wall (for mounting to the chassis)
 // ─────────────────────────────────────────────────────────────────────────────
 // Number of holes for mounting to the chassis
 steering_servo_bracket_chassis_bolt_n             = 2;
@@ -919,14 +919,16 @@ steering_servo_bracket_lower_thickness_clearance  = 0;
 // Hole diameter for mounting to the chassis
 steering_servo_mount_bolt_d                       = m3_hole_dia;
 
-// Diameter of the countersunk bore in the chassis
+// Shape to use: either "countersunk" (a conical/beveled enlargement around a
+// hole) or "counterbore" (a cylindrical recess with a flat bottom concentric
+// with the hole).
+steering_servo_chassis_bore_type                  = "counterbore"; // [countersunk:Conical countersunk, counterbore:Cylindrical counterbore]
+
+// Diameter of the enlargement around the bolt hole in the chassis
 steering_servo_mount_bolt_bore_d                  = m3_countersunk_head_dia + 0.3;
 
-// Depth of the countersunk hole in the chassis
+// Depth of the enlargement around the bolt hole in the chassis
 steering_servo_mount_bolt_bore_h                  = m3_countersunk_head_h + 0.15;
-
-// Shape to use: either "countersunk" (a conical/beveled enlargement around a hole) or "counterbore" (a cylindrical recess with a flat bottom concentric with the hole).
-steering_servo_chassis_bore_type                  = "counterbore"; // [countersunk:Conical countersunk, counterbore:Cylindrical counterbore]
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Assembly view
