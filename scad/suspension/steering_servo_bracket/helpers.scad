@@ -75,18 +75,25 @@ module servo_l_bracket_chasis_slot_child(skip_rotation=false) {
   }
 }
 
-module servo_l_bracket_slots_children() {
-  servo_w = dsservo_size[0];
-  bracket_extra_h = (dsservo_size[1] - dsservo_flange_h) / 2;
+module servo_l_bracket_slots_children(servo_size=dsservo_size,
+                                      flange_h=dsservo_flange_h,
+                                      flange_z_offset=dsservo_flange_z_offset,
+                                      bracket_thickness=steering_servo_bracket_thickness) {
+  servo_l = servo_size[0];
+  servo_w = servo_size[1];
+  servo_h = servo_size[2];
+  bracket_extra_h = (servo_w - flange_h) / 2;
 
-  translate([-dsservo_height_after_flange() + steering_servo_bracket_thickness,
+  translate([-dsservo_height_after_flange(servo_h=servo_h,
+                                          flange_z_offset=flange_z_offset)
+             + bracket_thickness,
              0,
-             dsservo_flange_h / 2 + bracket_extra_h]) {
+             flange_h / 2 + bracket_extra_h]) {
     rotate([90, 0, -90]) {
-      translate([servo_w / 2, 0, 0]) {
+      translate([servo_l / 2, 0, 0]) {
         children();
       }
-      translate([-servo_w / 2, 0, 0]) {
+      translate([-servo_l / 2, 0, 0]) {
         mirror([1, 0, 0]) {
           children();
         }

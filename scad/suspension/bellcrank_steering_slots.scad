@@ -1,32 +1,17 @@
+/**
+  * Module: Slots for mounting the bellcrank drive, bellcrank idler, and
+  * steering servo brackets to the chassis.
+  *
+  * Author: Karim Aziiev <karim.aziiev@gmail.com>
+  * License: GPL-3.0-or-later
+  */
+
 include <../steering_params.scad>
 
 use <../lib/shapes3d.scad>
 use <../placeholders/dservo.scad>
-use <bellcrank/bellcrank_assembly.scad>
-use <bellcrank/bellcrank_drive.scad>
 use <bellcrank/bellcrank_slots.scad>
-use <steering_servo_bracket/steering_servo_bracket_assembly.scad>
 use <steering_servo_bracket/steering_servo_chassis_slots.scad>
-
-show_bellcrank_drive                 = true;
-show_bellcrank_drive_idler_lever     = true;
-show_bellcrank_drive_servo_lever     = true;
-show_bellcrank_drive_upper_cap       = true;
-
-show_bellcrank_idler                 = true;
-show_bellcrank_post                  = true;
-show_bellcrank_idler_lever           = true;
-
-show_idler_upper_bearing             = true;
-show_idler_lower_bearing             = true;
-show_center_link                     = true;
-
-show_steering_servo                  = true;
-show_steering_servo_bracket_bolt     = true;
-show_steering_servo_chassis_bolt     = true;
-show_steering_servo_chassis_bolt_nut = true;
-show_steering_servo_bracket_bolt_nut = true;
-show_steering_servo_brackets         = true;
 
 function bellcrank_steering_servo_position() =
   let (y_dist=steering_servo_bellcrank_y(center=false),

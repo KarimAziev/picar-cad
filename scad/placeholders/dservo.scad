@@ -40,8 +40,9 @@ function dservo_tie_rod_b_max_h() =
                 bushing_h=servo_tie_rod_b_bushing_h,
                 shank_od=servo_tie_rod_b_shank_od);
 
-function dsservo_height_after_flange() =
-  dsservo_size[2] - dsservo_flange_z_offset;
+function dsservo_height_after_flange(servo_h=dsservo_size[2],
+                                     flange_z_offset=dsservo_flange_z_offset) =
+  servo_h - flange_z_offset;
 
 function dsservo_height_max_bracket_l() =
   dsservo_size[2] - dsservo_flange_z_offset

@@ -26,7 +26,7 @@ show_idler_upper_bearing         = true;
 show_idler_lower_bearing         = true;
 show_center_link                 = true;
 
-bellcrank_z_angle                = 0; //[-40:1:40]
+bellcrank_z_angle                = 0; // [-40:1:40]
 
 module bellcrank_assembly(show_bellcrank_drive=show_bellcrank_drive,
                           show_bellcrank_drive_idler_lever=show_bellcrank_drive_idler_lever,

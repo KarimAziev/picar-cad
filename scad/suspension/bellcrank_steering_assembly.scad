@@ -38,7 +38,7 @@ show_steering_servo_bracket_bolt_nut = true;
 show_steering_servo_brackets         = true;
 
 // Steering angle
-steering_servo_angle                 = 0; //[-40:1:40]
+steering_servo_angle                 = 0; // [-40:1:40]
 
 module bellcrank_steering_assembly(show_bellcrank_drive=show_bellcrank_drive,
                                    show_bellcrank_drive_idler_lever=show_bellcrank_drive_idler_lever,

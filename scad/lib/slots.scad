@@ -66,6 +66,78 @@ function rect_slot_full_size_from_plist(plist) =
                                      plist),
                       d=plist_get("recess_size", plist));
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  counterbore
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Creates a cylindrical hole with an optional enlarged section. The enlarged
+  section can be either:
+
+  - a **counterbore**: a cylindrical recess with a flat bottom, or
+  - a **countersink**: a conical/beveled recess.
+
+  The enlargement is placed on the top side of the hole by default. Set
+  `reverse=true` to place it on the opposite side.
+
+  **Parameters**:
+
+  `h`: Total height of the hole.
+
+  `d`: Diameter of the main hole.
+
+  `bore_d`: Diameter of the enlarged section. If omitted, a default value is
+  derived from `d`. If enlargement is disabled, this value is ignored.
+
+  `bore_h`: Height/depth of the enlarged section. If omitted, a default value
+  is derived from `h`. If enlargement is disabled, this value is ignored.
+
+  `center`: If `true`, the hole is created at the origin. If `false`, it is
+  translated so that its minimum X and Y coordinates are at 0.
+
+  `sink`: If `true`, creates a countersink. Otherwise, creates a counterbore.
+
+  `fn`: Number of fragments used to render circular geometry.
+
+  `no_bore`: If `true`, disables the enlarged section and creates only the main
+  hole.
+
+  `autoscale_step`: Extra height added to both ends of the main hole to help
+  ensure clean subtraction in boolean operations. Set to `0` to disable this
+  behavior.
+
+  `reverse`: If `true`, places the enlarged section on the opposite side of the
+  hole.
+
+  **Examples**:
+  ```scad
+
+  // Simple hole without enlargement
+  counterbore(h=2, d=3);
+
+  // Counterbored hole
+  counterbore(d=3, h=4, bore_d=6, bore_h=2);
+
+  // Countersunk hole
+  counterbore(d=3, h=4, bore_d=6, bore_h=2, sink=true);
+
+  // Counterbored hole through a parent solid
+  parent_thickness = 4;
+  parent_size = [10, 10, parent_thickness];
+  difference() {
+    translate([0, 0, parent_size[2] / 2]) {
+      cube(parent_size, center=true);
+    }
+    counterbore(
+      d=3,
+      h=parent_thickness,
+      bore_h=parent_thickness / 2,
+      bore_d=6.2
+    );
+  }
+
+  ```
+  */
 module counterbore(h,
                    d,
                    bore_d,
@@ -372,50 +444,50 @@ module counterbore_from_plist(plist, center=true) {
               center=center);
 }
 
-translate([-10, 0, 0]) {
-  counterbore(h=3,
-              d=3,
-              bore_d=6,
-              bore_h=2,
-              sink=true,
-              fn=100,
-              center=false,
-              reverse=true);
-}
+// translate([-10, 0, 0]) {
+//   counterbore(h=3,
+//               d=3,
+//               bore_d=6,
+//               bore_h=2,
+//               sink=true,
+//               fn=100,
+//               center=false,
+//               reverse=true);
+// }
 
-w = 20;
-h = 10;
-thickness = 3;
-angle = 15;
+// w = 20;
+// h = 10;
+// thickness = 3;
+// angle = 15;
 
-rect_slot(size=[w, h],
-          h=thickness,
-          reverse=true,
-          recess_h=1.5,
-          recess_size=[w + 10, 15],
-          r_factor=0,
-          spin=80,
-          center=false);
+// rect_slot(size=[w, h],
+//           h=thickness,
+//           reverse=true,
+//           recess_h=1.5,
+//           recess_size=[w + 10, 15],
+//           r_factor=0,
+//           spin=80,
+//           center=false);
 
-dia = 3;
-bore_dia = 6;
-bore_h = 1;
-rect_size = [20, 30];
-single_hole_d = 8;
-four_corner_holes_size = [40, 60];
+// dia = 3;
+// bore_dia = 6;
+// bore_h = 1;
+// rect_size = [20, 30];
+// single_hole_d = 8;
+// four_corner_holes_size = [40, 60];
 
-four_corner_holes_size_full_size =
-  four_corner_counterbores_full_size(size=four_corner_holes_size,
-                                     d=dia,
-                                     bore_d=bore_dia,
-                                     bore_h=bore_h);
-gap = 2;
+// four_corner_holes_size_full_size =
+//   four_corner_counterbores_full_size(size=four_corner_holes_size,
+//                                      d=dia,
+//                                      bore_d=bore_dia,
+//                                      bore_h=bore_h);
+// gap = 2;
 
-four_corner_counterbores(size=four_corner_holes_size,
-                         center=false,
-                         spin=30,
-                         d=dia,
-                         bore_d=bore_dia,
-                         h=thickness,
-                         bore_h=bore_h,
-                         reverse=true);
+// four_corner_counterbores(size=four_corner_holes_size,
+//                          center=false,
+//                          spin=30,
+//                          d=dia,
+//                          bore_d=bore_dia,
+//                          h=thickness,
+//                          bore_h=bore_h,
+//                          reverse=true);
