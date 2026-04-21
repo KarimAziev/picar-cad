@@ -98,7 +98,7 @@ module servo_l_bracket(color=white_smoke_1,
                              r_factor=0.5,
                              side="top");
               }
-              servo_l_bracket_chasis_slot_child(skip_rotation=true) {
+              servo_l_bracket_chassis_slot_child(skip_rotation=true) {
                 circle(d=steering_servo_mount_bolt_d, $fn=hole_fn);
               }
             }
@@ -110,7 +110,7 @@ module servo_l_bracket(color=white_smoke_1,
       let (nut_head_dist = chassis_thickness
            + lower_thickness
            - steering_servo_mount_bolt_bore_h) {
-        servo_l_bracket_chasis_slot_child() {
+        servo_l_bracket_chassis_slot_child() {
           translate([0,
                      0,
                      chassis_thickness

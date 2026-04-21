@@ -1,20 +1,5 @@
 /**
-  * Module: Steering servo bracket
-  *
-  * This module provides two mirrored brackets, one for each side of the servo's
-  * mounting flange.
-  *
-  * Each bracket consists of two walls:
-  * - one for attaching the servo to its mounting flange. All parameters of this
-  *   wall, except for the thickness and hole diameter, are calculated
-  *   automatically from the servo mounting flange parameters.
-  * - one for attaching the bracket to the chassis. Since the servo is mounted
-  *   on the chassis while lying on its side, the thickness of this wall is
-  *   calculated automatically based on the servo mounting flange and the outer
-  *   diameter of the nut used to fasten the servo. Its length is also
-  *   calculated automatically based on the position of the wire socket on the
-  *   servo body. At the same time, the bolt diameter, number of bolts, and
-  *   spacing between them are defined by parameters.
+  * Module: Common helpers used in both the assembly and slot modules
   *
   * Author: Karim Aziiev <karim.aziiev@gmail.com>
   * License: GPL-3.0-or-later
@@ -38,7 +23,7 @@ use <../../placeholders/tie_rod_shaft.scad>
 use <../bellcrank/bellcrank_drive.scad>
 use <util.scad>
 
-module servo_l_bracket_chasis_slot_child(skip_rotation=false) {
+module servo_l_bracket_chassis_slot_child(skip_rotation=false) {
   params = steering_servo_bracket_params();
   bracket_w = params[0];
   servo_bracket_y = params[2];
