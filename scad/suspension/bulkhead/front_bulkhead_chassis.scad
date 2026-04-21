@@ -52,11 +52,12 @@ module front_bulkhead_chassis_mount_slots(outer_spacing=front_bulkhead_mount_bol
                                               padding=padding,
                                               center_x=center_x,
                                               center_y=center_y) {
+
     counterbore(d=d,
                 h=h,
                 sink=true,
                 reverse=true,
-                bore_d=$outer ? front_bulkhead_mount_bolt_bore_d : 0,
+                bore_d=($outer || $y_i == 1) ? front_bulkhead_mount_bolt_bore_d : 0,
                 bore_h=front_bulkhead_mount_bolt_bore_h);
   }
 }
@@ -110,3 +111,5 @@ module front_bulkhead_chassis_with_slots_positions(outer_spacing=front_bulkhead_
     }
   }
 }
+
+front_bulk_head_housing_slots_non_center_y();
