@@ -54,32 +54,6 @@ function dsservo_height_before_flange() =
                              z_offst=steering_servo_flange_z_offset,
                              flange_thickness=dsservo_flange_thickness);
 
-function dsservo_gear_height() =
-  servo_gear_total_height(dsservo_gearbox_size);
-
-function full_dservo_tie_rod_len() =
-  let (nut_h = find_nut_prop(prop="height",
-                             inner_d=servo_tie_rod_a_shank_bolt_d,
-                             lock=false),
-       shaft_len = steering_servo_tie_rod_body_len,
-       tie_rod_len = servo_tie_rod_a_shank_len + servo_tie_rod_a_eye_od
-       + nut_h)
-  shaft_len + tie_rod_len * 2;
-
-function dservo_tie_rod_bbox_for_len(length) =
-  let (w=servo_tie_rod_a_eye_od,
-       dims = [w, length, w],
-       ang  = [steering_servo_tie_rod_angle, 0, 0],
-       bb = rotated_bbox(size=dims, a=ang))
-  bb;
-
-function dservo_tie_rod_bbox() =
-  dservo_tie_rod_bbox_for_len(full_dservo_tie_rod_len());
-
-function dservo_tie_rod_bb() =
-  dservo_tie_rod_bbox_for_len(servo_tie_rod_a_shank_len +
-                              servo_tie_rod_a_eye_od);
-
 function steering_servo_bellcrank_y(center=false,
                                     bellcrank_lever_z_end) =
   let (bellcrank_lever_z_end = is_undef(bellcrank_lever_z_end)
@@ -156,6 +130,7 @@ module servo_tie_rod(bushing_rotation,
           tie_rod_a_show_eye_bolt=true,
           tie_rod_a_show_eye_bolt_nut=true,
           tie_rod_a_eye_bolt_through_h=steering_servo_arm_bolt_boss_h,
+          tie_rod_a_eye_bolt_lock_nut=servo_tie_rod_a_eye_bolt_lock_nut,
 
           tie_rod_a_y_angle=y_angle,
 
@@ -270,7 +245,7 @@ module dsservo(center=false,
           socket_side=dsservo_socket_side,
           socket_size=dsservo_socket_size,
           socket_z_offset=dsservo_socket_z_offset,
-          wiring_path=[[-100, 0, dsservo_socket_z_offset]]) {
+          wiring_path=[[-100, dsservo_size[1] / 2, dsservo_socket_z_offset],]) {
 
       if (show_servo_horn) {
         rotate([0, 0, 180 + servo_horn_angle]) {

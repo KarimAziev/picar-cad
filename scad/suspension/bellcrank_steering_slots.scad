@@ -21,8 +21,14 @@ function bellcrank_steering_servo_position() =
        x_steering_tie_rod_center_x=servo_h - tie_rod_center_x,
        bellcrank_steering_arm_x=-bellcrank_drive_arm_l - chassis_bellcrank_spacing / 2
        + bellcrank_servo_lever_holes_edge_offset + bellcrank_arm_bolt_d / 2,
-       x_dist=abs(bellcrank_steering_arm_x) - abs(x_steering_tie_rod_center_x))
-  [-x_dist, y_dist];
+       x_dist=abs(bellcrank_steering_arm_x) - abs(x_steering_tie_rod_center_x),
+       y_end=y_dist - dsservo_flange_w)
+  [-x_dist, y_dist, y_end];
+
+function bellcrank_steering_bbox() =
+  let (params = bellcrank_steering_servo_position(),
+       y_dist = params[1])
+  y_dist + dsservo_flange_w;
 
 module bellcrank_steering_with_servo_position() {
   params = bellcrank_steering_servo_position();

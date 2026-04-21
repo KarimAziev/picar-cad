@@ -77,10 +77,6 @@ bellcrank_idler_chamfer_angle                     = 30;
 // ─────────────────────────────────────────────────────────────────────────────
 // Bellcrank lever (used both in bellcrank drive and idler)
 // ─────────────────────────────────────────────────────────────────────────────
-
-// If true, blend the two upper bosses into a single continuous shape.
-bellcrank_lever_blend_upper_bosses                = false;
-
 bellcrank_lever_border_w                          = 1.5;
 
 bellcrank_lever_use_hull                          = false;
@@ -141,23 +137,15 @@ bellcrank_servo_lever_boss_pad_x                  = 2;
 // Bellcrank positioning on the chassis
 // ─────────────────────────────────────────────────────────────────────────────
 
-chassis_bellcrank_spacing                         = 48.8;
+// The distance from the end of the bulkhead housing to the center of the
+// bellcrank drive/idler holes
+bellcrank_y_distance_from_bulkhead                = 30.0;
 
-chassis_bellcrank_y_base                          = 22.8;
-chassis_bellcrank_position_y                      = chassis_bellcrank_y_base
-                                                     + ((bellcrank_idler_od
-                                                     - bellcrank_arm_w) / 2);
-chassis_bellcrank_mount_len                       = chassis_bellcrank_position_y;
-chassis_bellcrank_link_padding_x                  = bellcrank_idler_od / 2;
-chassis_bellcrank_mount_w                         = chassis_bellcrank_spacing
-                                                     + chassis_bellcrank_link_padding_x * 2;
+// Spacing between the centers of the bellcrank drive and bellcrank idler holes
+chassis_bellcrank_spacing                         = 48.8;
 
 chassis_center_mount_padding_y                    = 4;
 chassis_center_mount_padding_x                    = 6;
-
-chassis_center_transition_w                       = 27;
-
-chassis_steering_servo_bellcrank_y_offset         = 21.4 + 5.5;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Steering servo DSSERVO
@@ -497,8 +485,6 @@ front_bulkhead_hinge_thickness                    = 3;
 
 // Extra length added to the cylindrical support for the front upper suspension holder
 front_bulkhead_support_extra_len                  = 4;
-// Clearance for the cylindrical support (the upper holder has a matching cutout)
-front_bulkhead_support_clearance                  = 0.3;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Front bulkhead suspension arm pad recess and retainer walls
@@ -973,14 +959,12 @@ servo_tie_rod_a_bushing_flat_d                    = 4.4;
 
 servo_tie_rod_a_bushing_color                     = metallic_silver_9;
 
-servo_tie_rod_a_show_eye_bolt                     = true;
 servo_tie_rod_a_eye_bolt_through_h                = 1;
 servo_tie_rod_a_eye_bolt_h                        = 17;
 servo_tie_rod_a_y_angle                           = 0;
-servo_tie_rod_a_bushing_rotation                  = [0, 0, 0];
+
 servo_tie_rod_a_eye_bolt_lock_nut                 = true;
-servo_tie_rod_a_show_eye_bolt_nut                 = true;
-// servo_tie_rod_a_bushing_rotation                  = [steering_servo_tie_rod_angle, 0, 0];
+
 servo_tie_rod_a_color                             = steering_servo_tie_rod_color;
 servo_tie_rod_a_screw_out_depth                   = 0;
 
@@ -1048,14 +1032,3 @@ upper_steering_panel_boss_od                      = 6;
 upper_steering_panel_bulkhead_bore_d              = 4.6;
 upper_steering_panel_bulkhead_bore_h              = 1;
 upper_steering_panel_bulkhead_spacing             = 21;
-
-steering_servo_mount_bolt_padding                 = 0.7;
-steering_servo_bracket_plate_thickness            = 3;
-servo_mount_wiring_offset                         = 8.4;
-
-steering_servo_mount_len                          = dsservo_flange_w + steering_servo_mount_bolt_padding * 2;
-steering_servo_mount_h                            = dsservo_size[1] + steering_servo_bracket_plate_thickness;
-
-steering_servo_mount_socket_h                     = 3;
-
-steering_servo_clearance                          = 0.6;
