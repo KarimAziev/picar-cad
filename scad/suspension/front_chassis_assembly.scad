@@ -20,13 +20,14 @@ use <bellcrank_steering_assembly.scad>
 use <bellcrank_steering_slots.scad>
 use <bulkhead/front_bulkhead_chassis.scad>
 use <bulkhead/front_bulkhead_housing.scad>
+use <front_chassis.scad>
 use <front_suspension_assembly.scad>
 use <steering_servo_bracket/steering_servo_bracket_assembly.scad>
 use <steering_servo_bracket/steering_servo_chassis_slots.scad>
 use <wishbone_arms/lower_arm.scad>
 
-show_chassis                                = true;
-
+show_chassis_front_frame                    = true;
+show_chassis_rear_frame                     = true;
 show_bellcrank_drive                        = true;
 show_bellcrank_drive_idler_lever            = true;
 show_bellcrank_drive_servo_lever            = true;
@@ -78,80 +79,7 @@ show_front_bulkhead_housing                 = true;
 // Steering angle
 steering_servo_angle                        = 0; // [-40:1:40]
 
-module upper_chassis(debug=false, color=white_smoke_1) {
-  bellcrank_params = bellcrank_steering_servo_position();
-  bellcrank_x_dist = abs(bellcrank_params[0]);
-  bellcrank_y_dist = bellcrank_params[1];
-  bellcrank_zone_y_len = bellcrank_params[2];
-
-  bellcrank_mount_d = max(bellcrank_idler_od,
-                          upper_chassis_bellcrank_bolt_d,
-                          upper_chassis_bellcrank_bolt_bore_d);
-
-  bellcrank_mount_r = bellcrank_mount_d / 2;
-
-  servo_slot_min_w = dsservo_height_after_flange() + bellcrank_x_dist;
-
-  bulkhead_barrel_size = lower_arm_mount_cutout_size();
-  bulkhead_barrel_len = bulkhead_barrel_size[1]
-    - front_bulkhead_barrel_hinge_clearance;
-  bulkhead_transition_len = front_bulkhead_len
-    - bulkhead_barrel_len
-    - front_bulkhead_barrel_y_offset;
-
-  bulkhead_base_size = front_bulkhead_base_size(outer_spacing=front_bulkhead_mount_bolt_spacing_1,
-                                                d=front_bulkhead_mount_bolt_d,
-                                                padding_x=chassis_center_mount_padding_x,
-                                                padding_y=chassis_center_mount_padding_y);
-  bulkhead_size_x = bulkhead_base_size[0];
-  bulkhead_size_y = bulkhead_base_size[1];
-
-  bellcrank_x = chassis_bellcrank_spacing / 2;
-
-  pts = [[0, bulkhead_size_y + bulkhead_transition_len],
-         [bulkhead_size_x / 2, bulkhead_size_y + bulkhead_transition_len],
-         [bulkhead_size_x / 2, bulkhead_transition_len],
-// [front_bulkhead_w / 2, 0],
-         [bellcrank_x,
-          -bellcrank_y_distance_from_bulkhead + bellcrank_mount_r],
-         [bellcrank_x,
-          -bellcrank_y_distance_from_bulkhead + bellcrank_mount_r],
-         [bellcrank_x + bellcrank_mount_r,
-          -bellcrank_y_distance_from_bulkhead],
-         [bellcrank_x + bellcrank_mount_r,
-          -bellcrank_y_distance_from_bulkhead - bellcrank_mount_r],
-         [servo_slot_min_w,
-          -bellcrank_y_distance_from_bulkhead + bellcrank_y_dist],
-         [servo_slot_min_w,
-          -bellcrank_y_distance_from_bulkhead + bellcrank_zone_y_len],
-         [0, -bellcrank_y_distance_from_bulkhead + bellcrank_zone_y_len]];
-
-  difference() {
-    maybe_color(color) {
-      linear_extrude(height=upper_chassis_t, center=false, convexity=2) {
-        offset_vertices_2d(r=0) {
-          mirror_copy([1, 0, 0]) {
-            polygon(pts);
-          }
-        }
-      }
-    }
-    front_bulk_head_housing_slots_non_center_y();
-    translate([0,
-               -bellcrank_y_distance_from_bulkhead,
-               0]) {
-      bellcrank_steering_slots();
-    }
-  }
-
-  if (debug) {
-    translate([0, 0, upper_chassis_t]) {
-      debug_polygon_text(pts);
-    }
-  }
-}
-
-module upper_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
+module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
                               show_bellcrank_idler=show_bellcrank_idler,
                               show_bellcrank_post=show_bellcrank_post,
                               show_bellcrank_idler_lever=show_bellcrank_idler_lever,
@@ -188,9 +116,12 @@ module upper_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
                               show_bellcrank_drive_servo_lever=show_bellcrank_drive_servo_lever,
                               show_bellcrank_drive_upper_cap=show_bellcrank_drive_upper_cap,
                               steering_servo_angle=steering_servo_angle,
-                              show_chassis=show_chassis) {
-  if (show_chassis) {
-    upper_chassis();
+                              show_chassis_rear_frame=show_chassis_rear_frame) {
+  if (show_chassis_front_frame) {
+    front_chassis_front_frame();
+  }
+  if (show_chassis_rear_frame) {
+    front_chassis_rear_frame();
   }
 
   if (show_steering_assembly) {
@@ -239,12 +170,4 @@ module upper_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
   }
 }
 
-module upper_chassis_printable() {
-  rotate([0, 180, 0]) {
-    upper_chassis();
-  }
-}
-
-upper_chassis_printable();
-
-// upper_chassis_assembly();
+front_chassis_assembly();
