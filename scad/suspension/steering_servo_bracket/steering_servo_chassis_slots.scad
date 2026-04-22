@@ -11,7 +11,7 @@ use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
 use <helpers.scad>
 
-module steering_servo_chassis_slots(chassis_thickness=upper_chassis_t,
+module steering_servo_chassis_slots(chassis_thickness=front_chassis_thickness,
                                     bolt_d=steering_servo_mount_bolt_d,
                                     bolt_bore_d=steering_servo_mount_bolt_bore_d,
                                     bolt_bore_h=steering_servo_mount_bolt_bore_h,

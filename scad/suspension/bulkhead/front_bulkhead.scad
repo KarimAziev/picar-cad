@@ -42,6 +42,28 @@ show_upper_arm_ball_stud     = true;
 show_front_upper_arm_pin     = true;
 show_front_upper_pin_e_clip  = true;
 
+function front_bulkhead_pad_distance_to_hinge(bolt_d = front_bulkhead_mount_bolt_d,
+                                              pad_x = 2,
+                                              pad_y = 1.5,
+                                              barrel_y_offset=front_bulkhead_barrel_y_offset,
+                                              padding = front_bulkhead_mount_bolt_padding,
+                                              outer_spacing = front_bulkhead_mount_bolt_spacing_1,
+                                              inner_spacing = front_bulkhead_mount_bolt_spacing_2,
+                                              hinge_clearance = front_bulkhead_barrel_hinge_clearance) =
+  let (barrel_size=lower_arm_mount_cutout_size(),
+       barrel_len=barrel_size[1] - hinge_clearance,
+       bolt_spacing_max_y=max(front_bulkhead_mount_bolt_spacing_1[1],
+                              front_bulkhead_mount_bolt_spacing_2[1]),
+       full_bolt_spacing_y=bolt_spacing_max_y + front_bulkhead_mount_bolt_d,
+       x=outer_spacing[0] + bolt_d + pad_x * 2,
+       y=bolt_d + pad_y * 2,
+       y2=front_bulkhead_len / 2
+       - full_bolt_spacing_y
+       - barrel_y_offset
+       - barrel_len / 2 + full_bolt_spacing_y / 2
+       + front_bulkhead_len / 2)
+  y2 + front_suspension_arm_pad_thickness + front_suspension_arm_pad_thickness;
+
 module front_bulkhead(color=cobalt_blue_light_1,
                       shock_tower_color=cobalt_blue_metallic,
                       show_upper_suspension_holder=show_upper_suspension_holder,
@@ -380,7 +402,6 @@ module front_bulkhead_mount_hinges(bolt_d=front_bulkhead_mount_bolt_d,
                                    inner_spacing=front_bulkhead_mount_bolt_spacing_2,
                                    d=front_bulkhead_mount_bolt_d,
                                    h=front_bulkhead_hinge_thickness,
-                                   padding=front_bulkhead_mount_bolt_padding,
                                    rear=false,
                                    barrel_y_offset=front_bulkhead_barrel_y_offset,
                                    hinge_clearance=front_bulkhead_barrel_hinge_clearance) {
@@ -531,5 +552,13 @@ module front_bulkhead_support(bulkhead_w=front_bulkhead_w,
     }
   }
 }
-
+dist_size = front_bulkhead_pad_distance_to_hinge();
+dist = dist_size;
 front_bulkhead();
+translate([-50,
+           front_bulkhead_len / 2 + front_suspension_arm_pad_thickness + front_suspension_arm_pad_thickness
+           - dist,
+           0]) {
+
+  #cube([100, dist, 50]);
+}

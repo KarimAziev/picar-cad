@@ -34,7 +34,7 @@ steering_servo_angle  = 0; //[-40:1:40]
 
 module steering_servo_bracket_assembly(color=white_smoke_1,
                                        lower_thickness_clearance=steering_servo_bracket_lower_thickness_clearance,
-                                       chassis_thickness=upper_chassis_t,
+                                       chassis_thickness=front_chassis_thickness,
                                        w_clearance=steering_servo_bracket_w_clearance,
                                        show_servo_brackets=show_servo_brackets,
                                        show_servo_bolt=show_servo_bolt,

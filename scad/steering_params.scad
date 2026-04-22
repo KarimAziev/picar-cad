@@ -212,6 +212,42 @@ dsservo_socket_z_offset                           = 3.0;
 dsservo_socket_side                               = -1;
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Front chassis
+// ─────────────────────────────────────────────────────────────────────────────
+front_chassis_bellcrank_bolt_d                    = m3_hole_dia;
+front_chassis_bellcrank_bolt_bore_d               = m3_countersunk_head_dia + 0.2;
+front_chassis_bellcrank_bolt_bore_h               = m3_countersunk_head_h + 0.15;
+front_chassis_thickness                           = 5.5;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Upper steering panel
+// ─────────────────────────────────────────────────────────────────────────────
+upper_steering_panel_bolt_d                       = m3_hole_dia;
+upper_steering_panel_boss_od                      = 6;
+upper_steering_panel_bulkhead_bore_d              = 4.6;
+upper_steering_panel_bulkhead_bore_h              = 1;
+upper_steering_panel_bulkhead_spacing             = 21;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Bumper slot
+// ─────────────────────────────────────────────────────────────────────────────
+front_bumper_bolt_d                               = m3_hole_dia;
+front_bumper_bolt_pad_x                           = 3.0;
+front_bumper_center_bolt_y_offset                 = 8;
+front_bumper_bolt_pad_y                           = 4;
+front_bumper_bolt_y_offset                        = 8;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Front chasssis joint
+// ─────────────────────────────────────────────────────────────────────────────
+front_chassis_joint_rail_angle                    = 30;
+front_chassis_joint_rail_corner_r                 = 0.6;
+front_chassis_joint_bolt_d                        = 3;
+front_chassis_joint_bolt_pad                      = 2;
+front_chassis_joint_bolt_spacing                  = 42.8;
+front_chassis_joint_use_dovetail_rib              = true;
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Front suspension arm pad (geometry parameters)
 //
 // The pad surrounds the hinge-pin holes and provides a center hook that locks
@@ -1015,20 +1051,3 @@ steering_servo_arm_bolt_d                         = m3_hole_dia;
 steering_servo_arm_center_bolt_d                  = m3_hole_dia;
 steering_servo_arm_center_bolt_bore_d             = 7.8;
 steering_servo_arm_center_bolt_bore_h             = 1.2;
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Upper chassis
-// ─────────────────────────────────────────────────────────────────────────────
-upper_chassis_bellcrank_bolt_d                    = m3_hole_dia;
-upper_chassis_bellcrank_bolt_bore_d               = m3_countersunk_head_dia + 0.2;
-upper_chassis_bellcrank_bolt_bore_h               = m3_countersunk_head_h + 0.15;
-upper_chassis_t                                   = 4;
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Upper steering panel
-// ─────────────────────────────────────────────────────────────────────────────
-upper_steering_panel_bolt_d                       = m3_hole_dia;
-upper_steering_panel_boss_od                      = 6;
-upper_steering_panel_bulkhead_bore_d              = 4.6;
-upper_steering_panel_bulkhead_bore_h              = 1;
-upper_steering_panel_bulkhead_spacing             = 21;

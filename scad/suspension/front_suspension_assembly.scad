@@ -1,3 +1,12 @@
+/**
+  * Module: Front suspension assembly.
+  *
+  * Assembles the front bulkhead, bulkhead housing, upper suspension
+  * components, and left and right knuckles.
+  *
+  * Author: Karim Aziiev <karim.aziiev@gmail.com>
+  * License: GPL-3.0-or-later
+  */
 include <../steering_params.scad>
 
 use <bulkhead/front_bulkhead.scad>
