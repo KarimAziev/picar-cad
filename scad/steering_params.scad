@@ -38,7 +38,7 @@ bellcrank_arm_bolt_edge_offset                    = 2;
 bellcrank_arm_bolt_spacing                        = 9.5;
 
 // Distance from the bottom of the pivot base to the bellcrank arm root
-bellcrank_arm_z                                   = 11.1;
+bellcrank_arm_z                                   = 12.1;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Bellcrank idler (shared with the bellcrank drive)
