@@ -26,31 +26,29 @@ use <../steering_servo_bracket/steering_servo_chassis_slots.scad>
 use <../wishbone_arms/lower_arm.scad>
 use <front_chassis_joint.scad>
 
-module front_chassis_rear_frame(debug=false,
-                                color=white_smoke_1) {
+module front_chassis_rear_frame(debug=true,
+                                color=white_smoke_1,
+                                debug_font=".ADT Slab Soft Numeric:style=Bold") {
 
   bellcrank_x_start = bellcrank_x + bellcrank_mount_r;
   joint_x = joint_w / 2;
-
   servo_end_y = -bellcrank_y_distance_from_bulkhead + bellcrank_zone_y_len;
+  y_start = -bellcrank_y_distance_from_bulkhead + bellcrank_y_dist;
+  y_joint_1_end = -bellcrank_y_distance_from_bulkhead - bellcrank_mount_r;
+  y_joint_2_end = servo_end_y - joint_l;
 
-  pts = [[0, -bellcrank_y_distance_from_bulkhead + bellcrank_y_dist],
-         [joint_x,
-          -bellcrank_y_distance_from_bulkhead + bellcrank_y_dist],
-         [joint_x,
-          -bellcrank_y_distance_from_bulkhead - bellcrank_mount_r],
-         [bellcrank_x_start,
-          -bellcrank_y_distance_from_bulkhead - bellcrank_mount_r],
-         [servo_slot_min_w,
-          -bellcrank_y_distance_from_bulkhead + bellcrank_y_dist],
-         [servo_slot_min_w,
-          servo_end_y - joint_l],
-         [joint_x, servo_end_y - joint_l],
+  pts = [[0, y_start],
+         [joint_x, y_start],
+         [joint_x, y_joint_1_end],
+         [bellcrank_x_start, y_joint_1_end],
+         [servo_slot_min_w, y_start],
+         [servo_slot_min_w, y_joint_2_end],
+         [joint_x, y_joint_2_end],
          [joint_x, servo_end_y],
          [0, servo_end_y]];
 
   union() {
-    translate([0, -bellcrank_y_distance_from_bulkhead - bellcrank_mount_r, 0]) {
+    translate([0, y_joint_1_end, 0]) {
       front_chassis_joint_slot(color=color);
     }
     difference() {
@@ -70,21 +68,33 @@ module front_chassis_rear_frame(debug=false,
         bellcrank_steering_slots();
       }
     }
-    translate([0,
-               servo_end_y,
-               0]) {
+    translate([0, servo_end_y, 0]) {
       front_chassis_joint_slot(color=color);
     }
   }
 
   if (debug) {
+    font_size = min(abs(bellcrank_zone_y_len * 0.065), 5);
     translate([0, 0, front_chassis_thickness + 0.1]) {
-      debug_polygon_text(pts);
-      mirror_copy([1, 0, 0]) {
-        debug_polygon_text(pts, rotation=[0, 180, 0]);
+      debug_polygon_text(pts,
+                         font_size=font_size,
+                         color=cobalt_blue_light_2,
+                         font=debug_font);
+      mirror([1, 0, 0]) {
+        debug_polygon_text(pts,
+                           rotation=[0, 180, 0],
+                           font_size=font_size,
+                           color=cobalt_blue_light_2);
       }
     }
   }
 }
 
-front_chassis_rear_frame();
+module front_chassis_rear_frame_printable(debug=false, color=white_smoke_1) {
+  rotate([0, 90, 0]) {
+    front_chassis_rear_frame(debug=debug, color=color);
+  }
+}
+
+front_chassis_rear_frame_printable(debug=false);
+// front_chassis_rear_frame();

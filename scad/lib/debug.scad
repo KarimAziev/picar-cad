@@ -16,6 +16,7 @@ module debug_polygon_text(points,
                           offset_x,
                           offset_y,
                           rotation,
+                          font,
                           h=0.5) {
   offset_x = is_undef(offset_x) ? 0 : offset_x;
   offset_y = is_undef(offset_y) ? 0 : offset_y;
@@ -41,6 +42,7 @@ module debug_polygon_text(points,
               linear_extrude(height = 0.5) {
                 text(str(i),
                      size = font_size,
+                     font=font,
                      valign="center",
                      halign="center");
               }

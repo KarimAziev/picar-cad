@@ -123,7 +123,9 @@ module slider_dovetail_rail_2d(base_w,
                                reverse=false,
                                center_x,
                                center_y,
-                               use_dovetail_rib) {
+                               use_dovetail_rib,
+                               edge_land,
+                               relief_depth) {
 
   w_top = slider_calc_trapezoid_top_width(width=w,
                                           height=h,
@@ -132,22 +134,34 @@ module slider_dovetail_rail_2d(base_w,
   center_x = is_undef(center_x) ? center : center_x;
   center_y = is_undef(center_y) ? center : center_y;
 
+  module _main() {
+    if (!use_dovetail_rib) {
+      trapezoid_rounded_top(b=reverse ? w_top : w,
+                            t=reverse ? w : w_top,
+                            h=h,
+                            r=r,
+                            center=true);
+    } else {
+      dovetail_rib(w=w,
+                   h=h,
+                   angle=angle,
+                   r_top=r,
+                   r_bottom=0,
+                   center=true);
+    }
+  }
+
   translate([center_x ? 0 : max(base_w, w) / 2, center_y ? 0 : base_h / 2, 0]) {
     union() {
       translate([0, base_h / 2 + h / 2, 0]) {
-        if (!use_dovetail_rib) {
-          trapezoid_rounded_top(b=reverse ? w_top : w,
-                                t=reverse ? w : w_top,
-                                h=h,
-                                r=r,
-                                center=true);
+        if (!is_undef(edge_land) && !is_undef(relief_depth)) {
+          dovetail_rib_relief_cutter_2d(edge_land=edge_land,
+                                        relief_depth=relief_depth,
+                                        angle=angle) {
+            _main();
+          }
         } else {
-          dovetail_rib(w=w,
-                       h=h,
-                       angle=angle,
-                       r_top=r,
-                       r_bottom=0,
-                       center=true);
+          _main();
         }
       }
       slider_trapezoid(w=base_w,
@@ -168,16 +182,6 @@ module slider_dovetail_rail_2d(base_w,
    - the base rectangular part
    - trapezoid above the base.
 
-   **Parameters**:
-
-   `l`: Length of the dovetail rail. Note, in default orientation it is the height.
-   `base_w`: The width (x-axis) of the lower rectangular base.
-   `base_h`: The height of the base. Changing will also move the trapezoid.
-   `h`: The height of trapezoid.
-   `angle`: Angle of trapezoid.
-   `r`: Round corner radius for trapezoid and the base.
-   `center`: Whether to center.
-   `reverse`: If non-nll, trapezoid's narrow part will be at the bottom.
 
    **Example**:
    ```scad
@@ -325,6 +329,79 @@ module dovetail_rib(w,
     }
   }
 }
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  dovetail_rib_relief_cutter_2d
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Creates a 2D relief cutter shape for a dovetail rib. It consists of two parts:
+- an offset of the original shape by the relief depth, which creates the relief area
+- an offset of the original shape by the edge land, which creates the area that will be
+cut by the relief cutter.
+
+  **Parameters**:
+
+  `edge_land`:    The distance from the original shape to the edge of the relief
+                  cutter. This is the area that will be cut by the relief cutter.
+  `relief_depth`: The depth of the relief cut. This determines how much material
+                  will be removed to create the relief.
+  `angle`:        The angle of the dovetail rib. This is used to calculate the parallel
+                  distance for the relief cut based on the relief depth.
+
+  **Note:** Children must be centered for the module to work correctly, as it relies on offsets to create the relief cutter shape.
+
+  **Example**:
+  ```scad
+
+  ang = 30;
+  module my_dovetail() {
+    dovetail_rib(w=20,
+                 h=15,
+                 angle=ang,
+                 r=2,
+                 center=true);
+  }
+
+  linear_extrude(height=10, center=false) {
+    dovetail_rib_relief_cutter_2d(edge_land=0.45,
+                                  relief_depth=0.15,
+                                  angle=ang) {
+      my_dovetail();
+    }
+  }
+  // debug
+  #linear_extrude(height=10, center=false) {
+    my_dovetail();
+  }
+
+  ```
+  */
+module dovetail_rib_relief_cutter_2d(edge_land,
+                                     relief_depth,
+                                     angle) {
+
+  assert(is_num(relief_depth), "Relief depth must be a number");
+  assert(is_num(edge_land), "Edge land must be a number");
+  assert(is_num(edge_land), "Angle must be a number");
+  assert(relief_depth >= 0, "Relief depth must be 0 or positive");
+
+  assert(edge_land >= 0, "Edge land must be 0 or positive");
+  assert(angle >= 0 && angle <= 90, "Angle must be between 0 and 90 degrees");
+
+  d_parallel = relief_depth / cos(angle);
+
+  intersection() {
+    offset(r=d_parallel) {
+      children();
+    }
+
+    offset(r=-edge_land) {
+      offset(r=edge_land) {
+        children();
+      }
+    }
+  }
+}
 
 // dovetail_rib(w=20,
 //              h=15,
@@ -332,15 +409,15 @@ module dovetail_rib(w,
 //              r=2,
 //              center=false);
 
-slider_dovetail_rail_2d(base_w=25,
-                        base_h=5,
-                        w=15,
-                        h=10,
-                        angle=15,
-                        r=0,
-                        center=true,
-                        reverse=true,
-                        use_dovetail_rib=true);
+// slider_dovetail_rail_2d(base_w=25,
+//                         base_h=5,
+//                         w=15,
+//                         h=10,
+//                         angle=15,
+//                         r=0,
+//                         center=true,
+//                         reverse=true,
+//                         use_dovetail_rib=true);
 
 // slider_carriage(l=30,
 //                 base_h=10,

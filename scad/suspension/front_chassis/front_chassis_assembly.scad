@@ -61,10 +61,10 @@ show_steering_assembly                      = true;
 
 show_center_link                            = true;
 
-show_front_lower_arm                        = false;
-show_front_lower_arm_pin                    = false;
-show_front_lower_pin_e_clip                 = false;
-show_front_lower_arm_ball_stud              = false;
+show_front_lower_arm                        = true;
+show_front_lower_arm_pin                    = true;
+show_front_lower_pin_e_clip                 = true;
+show_front_lower_arm_ball_stud              = true;
 
 show_front_upper_arm                        = true;
 
