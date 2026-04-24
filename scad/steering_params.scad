@@ -45,12 +45,12 @@ bellcrank_arm_z                                   = 11.1;
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Outer diameter of the bearing
-bellcrank_idler_bearing_od                        = 10;
+bellcrank_idler_bearing_od                        = 8;
 // Inner (bore) diameter of the bearing
 bellcrank_idler_bearing_d                         = 5;
 
 // Width of the bearing
-bellcrank_idler_bearing_w                         = 4;
+bellcrank_idler_bearing_w                         = 2.5;
 
 bellcrank_idler_bearing_outer_recess_d            = 9;
 
@@ -63,7 +63,7 @@ bellcrank_bearing_clearance                       = 0.2;
 bellcrank_post_hole_clearance                     = 0.5;
 
 // The outer diameter of the bellcrank cylinder
-bellcrank_idler_od                                = bellcrank_idler_bearing_od + 5.0;
+bellcrank_idler_od                                = bellcrank_idler_bearing_od + 4.0;
 
 bellcrank_idler_extra_h                           = 0.8;
 
