@@ -49,28 +49,24 @@ module bellcrank_lever(color=cobalt_blue_metallic,
   fn=$preview ? 20 : 360;
 
   module _base_shape() {
-    length = l;
-
-    translate([0, 0, 0]) {
-      if (w_base > w_tip) {
-        translate([-l / 2, 0, 0]) {
-          rotate([0, 0, 90]) {
-            trapezoid_rounded_top(b=w_base,
-                                  t=w_tip,
-                                  h=length,
-                                  center=true,
-                                  $fn=fn,
-                                  r_factor=0.5);
-          }
+    if (w_base > w_tip) {
+      translate([-l / 2, 0, 0]) {
+        rotate([0, 0, 90]) {
+          trapezoid_rounded_top(b=w_base,
+                                t=w_tip,
+                                h=l,
+                                center=true,
+                                $fn=fn,
+                                r_factor=0.5);
         }
       }
-      else {
-        translate([-l, -w_tip / 2, 0]) {
-          rounded_rect([length, w_tip],
-                       center=false,
-                       r_factor=0.5,
-                       fn=fn);
-        }
+    }
+    else {
+      translate([-l, -w_tip / 2, 0]) {
+        rounded_rect([l, w_tip],
+                     center=false,
+                     r_factor=0.5,
+                     fn=fn);
       }
     }
   }
