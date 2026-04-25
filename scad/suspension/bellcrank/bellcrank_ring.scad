@@ -16,10 +16,9 @@ module bellcrank_ring(color=cobalt_blue_metallic,
                       parent_od=bellcrank_idler_od,
                       h,
                       thickness=bellcrank_arm_thickness,
-                      upper_boss_h=bellcrank_arm_upper_boss_h,
                       border_w=bellcrank_lever_border_w) {
 
-  h = is_undef(h) ? thickness + upper_boss_h : h;
+  h = is_undef(h) ? thickness : h;
 
   fn=$preview ? 20 : 100;
 

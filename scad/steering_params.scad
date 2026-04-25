@@ -10,26 +10,35 @@ include <parameters.scad>
 // - For the knuckle steering link, with an upper boss only.
 // ─────────────────────────────────────────────────────────────────────────────
 
+// Diameter of the bolt holes in the bellcrank idler and bellcrank drive arms
 bellcrank_arm_bolt_d                              = m3_hole_dia;
 
-// Total length of the arm starting from the center of bellcrank
+// Height of the heat-set insert nut
+bellcrank_arm_heat_insert_nut_h                   = 5.2;
+
+// Diameter of the cylindrical recess around the bolt holes for the heat-set insert nut
+bellcrank_arm_bolt_bore_d                         = 4.5;
+
+// Depth of the cylindrical recess around the bolt hole for the heat-set insert nut
+bellcrank_arm_bolt_bore_h                         = 1.5;
+
+// Total length of the arm, measured from the center of the bellcrank
 bellcrank_arm_l                                   = 25.45;
 
-bellcrank_drive_arm_l                             = 25.45;
-
 // Thickness of the arm
-bellcrank_arm_thickness                           = 3;
-// Height of the upper bosses with bolt holes
-bellcrank_arm_upper_boss_h                        = 1;
-// Hole diameter of the upper bosses
-bellcrank_arm_upper_boss_d                        = 4.3;
+bellcrank_arm_thickness                           = bellcrank_arm_heat_insert_nut_h + 1;
 
-// Width at the edge of the arm
-bellcrank_arm_w                                   = 6.10;
+// Width at the outer/tip end
+bellcrank_arm_tip_w                               = 6.10;
+
+// Width at the cylinder/pivot end
+bellcrank_arm_root_w                              = 8.10;
+
 // Height of the lower boss
 bellcrank_arm_lower_boss_h                        = 2.4;
+
 // Outer diameter of the lower boss
-bellcrank_arm_lower_boss_d                        = 6.0;
+bellcrank_arm_lower_boss_d                        = 7.0;
 
 // Distance from the edge of the arm to the start of the hole
 bellcrank_arm_bolt_edge_offset                    = 2;
@@ -52,7 +61,7 @@ bellcrank_idler_bearing_d                         = 5;
 // Width of the bearing
 bellcrank_idler_bearing_w                         = 2.5;
 
-bellcrank_idler_bearing_outer_recess_d            = 9;
+bellcrank_idler_bearing_outer_recess_d            = 7;
 
 bellcrank_idler_bearing_shoulder_d                = 6.5;
 
@@ -63,14 +72,14 @@ bellcrank_bearing_clearance                       = 0.2;
 bellcrank_post_hole_clearance                     = 0.5;
 
 // The outer diameter of the bellcrank cylinder
-bellcrank_idler_od                                = bellcrank_idler_bearing_od + 4.0;
+bellcrank_idler_od                                = bellcrank_idler_bearing_od + 3.8;
 
 bellcrank_idler_extra_h                           = 0.8;
 
 bellcrank_idler_support_thickness                 = 2;
 
 // The addional height of the bellcrank for the upper's bearing chamfer
-bellcrank_idler_chamfer_h                         = 0.8;
+bellcrank_idler_chamfer_h                         = 0.0;
 
 bellcrank_idler_chamfer_angle                     = 30;
 
@@ -82,7 +91,7 @@ bellcrank_lever_border_w                          = 1.5;
 bellcrank_lever_use_hull                          = false;
 
 bellcrank_lever_add_through_hole                  = true;
-bellcrank_lever_through_hole_d                    = 2;
+bellcrank_lever_through_hole_d                    = 1.4;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Pivot bush
@@ -132,6 +141,11 @@ bellcrank_servo_lever_boss_h                      = 3.5;
 bellcrank_servo_lever_holes_n                     = 3;
 // Padding between the center pivot cylinder and the servo lever holes
 bellcrank_servo_lever_boss_pad_x                  = 2;
+
+// Total length of the arm starting from the center of bellcrank
+bellcrank_servo_lever_l                           = 25.45;
+
+bellcrank_servo_lever_thickness                   = 4;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Bellcrank positioning on the chassis

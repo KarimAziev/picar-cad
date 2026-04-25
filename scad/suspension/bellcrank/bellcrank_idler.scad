@@ -23,11 +23,9 @@ show_idler_lower_bearing = false;
 show_idler_lever         = false;
 
 function bellcrank_idler_arm_z_end(thickness=bellcrank_arm_thickness,
-                                   upper_boss_h=bellcrank_arm_upper_boss_h,
                                    arm_z=bellcrank_arm_z,
                                    shoulder_h=bellcrank_post_flang_h) =
-  let (lever_h = thickness + upper_boss_h,)
-  shoulder_h + arm_z + lever_h;
+  shoulder_h + arm_z + thickness;
 
 function bellcrank_idler_full_mount_h(bush_h=bellcrank_post_h,
                                       shoulder_h=bellcrank_post_flang_h,
@@ -62,13 +60,15 @@ module bellcrank_idler(color=cobalt_blue_light_1,
                        show_upper_bearing=show_idler_upper_bearing,
                        arm_z=bellcrank_arm_z,
                        l=bellcrank_arm_l,
-                       w=bellcrank_arm_w,
+                       w_tip=bellcrank_arm_tip_w,
+                       w_base=bellcrank_arm_root_w,
                        thickness=bellcrank_arm_thickness,
                        bolt_d=bellcrank_arm_bolt_d,
+                       bolt_bore_d=bellcrank_arm_bolt_bore_d,
+                       bolt_bore_h=bellcrank_arm_bolt_bore_h,
                        bolt_spacing=bellcrank_arm_bolt_spacing,
                        bolt_offset=bellcrank_arm_bolt_edge_offset,
-                       upper_boss_h=bellcrank_arm_upper_boss_h,
-                       upper_boss_d=bellcrank_arm_upper_boss_d,
+                       arm_border_w=bellcrank_lever_border_w,
                        lower_boss_h=bellcrank_arm_lower_boss_h,
                        lower_boss_d=bellcrank_arm_lower_boss_d,
                        use_hull=bellcrank_lever_use_hull,
@@ -127,14 +127,16 @@ module bellcrank_idler(color=cobalt_blue_light_1,
       rotate([0, 0, z_angle]) {
         translate([0, 0, arm_z]) {
           bellcrank_lever(od=od,
+                          border_w=arm_border_w,
                           l=l,
-                          w=w,
+                          w_tip=w_tip,
+                          w_base=w_base,
                           thickness=thickness,
                           bolt_d=bolt_d,
                           bolt_spacing=bolt_spacing,
                           bolt_offset=bolt_offset,
-                          upper_boss_h=upper_boss_h,
-                          upper_boss_d=upper_boss_d,
+                          bolt_bore_d=bolt_bore_d,
+                          bolt_bore_h=bolt_bore_h,
                           lower_boss_h=lower_boss_h,
                           lower_boss_d=lower_boss_d,
                           use_hull=use_hull);
@@ -236,4 +238,13 @@ module bellcrank_idler_bearing_bush_hole(chamfer_h=bellcrank_idler_chamfer_h,
   _bearing_holes();
 }
 
+module bellcrank_idler_printable() {
+  bellcrank_idler(show_bellcrank_post=false,
+                  show_upper_bearing=false,
+                  show_lower_bearing=false,
+                  show_idler_lever=false);
+}
+
 bellcrank_idler();
+
+// bellcrank_idler_printable();

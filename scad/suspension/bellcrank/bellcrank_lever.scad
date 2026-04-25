@@ -4,7 +4,7 @@
   * Part of both the drive and idler arms.
   *
   * It has two bolt holes:
-  * - For the Ackermann plate. This hole has both upper and lower bosses.
+  * - For the center link plate. This hole has both upper and lower bosses.
   *   The lower boss is for the Ackermann plate bushing.
   * - For the knuckle steering link, with an upper boss only.
   *
@@ -18,42 +18,60 @@ include <../../steering_params.scad>
 
 use <../../lib/shapes2d.scad>
 use <../../lib/shapes3d.scad>
+use <../../lib/slots.scad>
 use <../../lib/threading/threads.scad>
+use <../../lib/trapezoids.scad>
 use <bellcrank_ring.scad>
 
 module bellcrank_lever(color=cobalt_blue_metallic,
                        alpha=1,
                        od=bellcrank_idler_od,
                        l=bellcrank_arm_l,
-                       w=bellcrank_arm_w,
+                       w_tip=bellcrank_arm_tip_w,
+                       w_base=bellcrank_arm_root_w,
                        h,
                        thickness=bellcrank_arm_thickness,
                        bolt_d=bellcrank_arm_bolt_d,
+                       bolt_bore_d=bellcrank_arm_bolt_bore_d,
+                       bolt_bore_h=bellcrank_arm_bolt_bore_h,
                        bolt_spacing=bellcrank_arm_bolt_spacing,
                        bolt_offset=bellcrank_arm_bolt_edge_offset,
-                       upper_boss_h=bellcrank_arm_upper_boss_h,
-                       upper_boss_d=bellcrank_arm_upper_boss_d,
                        lower_boss_h=bellcrank_arm_lower_boss_h,
                        lower_boss_d=bellcrank_arm_lower_boss_d,
                        border_w=bellcrank_lever_border_w,
                        use_hull=bellcrank_lever_use_hull,
                        add_through_hole=bellcrank_lever_add_through_hole,
                        through_hole_d=bellcrank_lever_through_hole_d) {
-  upper_boss_wall_t = bolt_offset > 0 ? 0 : ((upper_boss_d - bolt_d) / 2);
-
   bolt_holes_x = -l + bolt_d / 2 + bolt_offset;
 
-  h = is_undef(h) ? thickness + upper_boss_h : h;
+  h = is_undef(h) ? thickness : h;
 
   fn=$preview ? 20 : 360;
 
   module _base_shape() {
+    length = l;
 
-    translate([-l - upper_boss_wall_t, -w / 2, 0]) {
-      rounded_rect([l + upper_boss_wall_t, w],
-                   center=false,
-                   r_factor=0.5,
-                   fn=fn);
+    translate([0, 0, 0]) {
+      if (w_base > w_tip) {
+        translate([-l / 2, 0, 0]) {
+          rotate([0, 0, 90]) {
+            trapezoid_rounded_top(b=w_base,
+                                  t=w_tip,
+                                  h=length,
+                                  center=true,
+                                  $fn=fn,
+                                  r_factor=0.5);
+          }
+        }
+      }
+      else {
+        translate([-l, -w_tip / 2, 0]) {
+          rounded_rect([length, w_tip],
+                       center=false,
+                       r_factor=0.5,
+                       fn=fn);
+        }
+      }
     }
   }
 
@@ -73,37 +91,40 @@ module bellcrank_lever(color=cobalt_blue_metallic,
     }
   }
 
-  color(color, alpha=alpha) {
-    union() {
-      render() {
-        union() {
-          difference() {
-            linear_extrude(height=h, center=false) {
-              difference() {
-                _shape();
-                translate([bolt_holes_x, 0, 0]) {
-                  circle(d=bolt_d, $fn=fn);
-                  translate([bolt_spacing, 0, 0]) {
-                    circle(d=bolt_d, $fn=fn);
-                  }
-                }
-              }
-            }
-            translate([0, 0, -0.1]) {
-              screw_hole_thread(d=od, h=h + 0.2);
-            }
-            if (add_through_hole) {
-              translate([0, -od / 4, h / 2]) {
-                rotate([90, 0, 0]) {
-                  cylinder(d=through_hole_d, h=od / 2, $fn=fn);
-                }
-              }
-            }
-          }
+  render() {
+    difference() {
+      color(color, alpha=alpha) {
+        linear_extrude(height=h, center=false) {
+          _shape();
+        }
+        translate([bolt_holes_x + bolt_spacing, 0, -lower_boss_h]) {
+          cylinder(d=lower_boss_d, h=lower_boss_h, $fn=fn);
         }
       }
-      translate([bolt_holes_x + bolt_spacing, 0, -lower_boss_h]) {
-        ring(outer_d=lower_boss_d, h=lower_boss_h, d=bolt_d, fn=fn);
+
+      translate([bolt_holes_x, 0, 0]) {
+        counterbore(d=bolt_d,
+                    h=h,
+                    bore_h=bolt_bore_h,
+                    bore_d=bolt_bore_d);
+        translate([bolt_spacing, 0, -lower_boss_h]) {
+          counterbore(d=bolt_d,
+                      h=h + lower_boss_h,
+                      bore_h=bolt_bore_h,
+                      bore_d=bolt_bore_d,
+                      reverse=true);
+        }
+      }
+
+      translate([0, 0, -0.1]) {
+        screw_hole_thread(d=od, h=h + 0.2);
+      }
+      if (add_through_hole) {
+        translate([0, -od / 4, h / 2]) {
+          rotate([90, 0, 0]) {
+            cylinder(d=through_hole_d, h=od / 2, $fn=fn);
+          }
+        }
       }
     }
   }

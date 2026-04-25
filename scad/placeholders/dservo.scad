@@ -54,6 +54,36 @@ function dsservo_height_before_flange() =
                              z_offst=steering_servo_flange_z_offset,
                              flange_thickness=dsservo_flange_thickness);
 
+function steering_servo_y_tie_rod() =
+  steering_servo_arm_d / 2
+  + steering_servo_arm_len
+  - steering_servo_arm_bolt_boss_padding
+  - steering_servo_arm_bolt_d
+  + (steering_servo_arm_bolt_d - servo_tie_rod_a_bushing_d);
+
+function steering_servo_tie_rod_angle(bellcrank_lever_z_end) =
+  let (bellcrank_lever_z_end = is_undef(bellcrank_lever_z_end)
+       ? bellcrank_servo_lever_z_coords()[1]
+       : bellcrank_lever_z_end,
+       dims = tie_rod_full_len(shaft_body_len=steering_servo_tie_rod_body_len,
+                               shaft_thread_len=steering_servo_tie_rod_thread_len,
+                               shaft_thread_d=steering_servo_tie_rod_thread_d,
+                               show_shaft_nuts=true,
+                               tie_rod_a_screw_out_depth=servo_tie_rod_a_screw_out_depth,
+                               tie_rod_a_eye_od=servo_tie_rod_a_eye_od,
+                               tie_rod_a_shank_len=servo_tie_rod_a_shank_len,
+                               tie_rod_b_shank_len=servo_tie_rod_b_shank_len,
+                               tie_rod_b_eye_od=servo_tie_rod_b_eye_od,
+
+                               tie_rod_b_screw_out_depth=servo_tie_rod_b_screw_out_depth,
+                               limit_max_depth=true),
+       full_l = dims[0],
+       y_tie_rod = steering_servo_y_tie_rod(),
+       y_rod_zh = y_tie_rod + dsservo_size[1] / 2 - servo_tie_rod_b_eye_h / 2,
+       bellcrank_lever_z = y_rod_zh - bellcrank_lever_z_end,
+       angle = y_angle_from_zshift(bellcrank_lever_z, full_l))
+       angle;
+
 function steering_servo_bellcrank_y(center=false,
                                     bellcrank_lever_z_end) =
   let (bellcrank_lever_z_end = is_undef(bellcrank_lever_z_end)
@@ -71,16 +101,12 @@ function steering_servo_bellcrank_y(center=false,
                                tie_rod_b_screw_out_depth=servo_tie_rod_b_screw_out_depth,
                                limit_max_depth=true),
        full_l = dims[0],
-       y_tie_rod = + steering_servo_arm_d / 2
-       + steering_servo_arm_len
-       - steering_servo_arm_bolt_boss_padding
-       - steering_servo_arm_bolt_d
-       + (steering_servo_arm_bolt_d - servo_tie_rod_a_bushing_d),
+       y_tie_rod = steering_servo_y_tie_rod(),
        y_rod_zh = y_tie_rod + dsservo_size[1] / 2 - min(servo_tie_rod_b_shank_od,
                                                         servo_tie_rod_a_shank_od,
                                                         steering_servo_tie_rod_body_d) / 2,
        bellcrank_lever_z = y_rod_zh - bellcrank_lever_z_end,
-       angle = y_angle_from_zshift(bellcrank_lever_z, full_l),
+       angle = steering_servo_tie_rod_angle(bellcrank_lever_z_end=bellcrank_lever_z_end),
        max_tie_rod_a_h = dservo_tie_rod_a_max_h(),
        eye_center_spacing = full_l
        - servo_tie_rod_a_eye_od / 2
@@ -180,32 +206,10 @@ module dsservo(center=false,
     ? bellcrank_servo_lever_z_coords()[1]
     : bellcrank_lever_z_end;
 
-  dims = tie_rod_full_len(shaft_body_len=steering_servo_tie_rod_body_len,
-                          shaft_thread_len=steering_servo_tie_rod_thread_len,
-                          shaft_thread_d=steering_servo_tie_rod_thread_d,
-                          show_shaft_nuts=true,
-                          tie_rod_a_screw_out_depth=servo_tie_rod_a_screw_out_depth,
-                          tie_rod_a_eye_od=servo_tie_rod_a_eye_od,
-                          tie_rod_a_shank_len=servo_tie_rod_a_shank_len,
-                          tie_rod_b_shank_len=servo_tie_rod_b_shank_len,
-                          tie_rod_b_eye_od=servo_tie_rod_b_eye_od,
-                          tie_rod_b_screw_out_depth=servo_tie_rod_b_screw_out_depth,
-                          limit_max_depth=true);
+  y_tie_rod = steering_servo_y_tie_rod();
 
-  full_l = dims[0];
+  angle = steering_servo_tie_rod_angle(bellcrank_lever_z_end=bellcrank_lever_z_end);
 
-  y_tie_rod = + steering_servo_arm_d / 2
-    + steering_servo_arm_len
-    - steering_servo_arm_bolt_boss_padding
-    - steering_servo_arm_bolt_d
-    + (steering_servo_arm_bolt_d - servo_tie_rod_a_bushing_d);
-
-  y_rod_zh = y_tie_rod + dsservo_size[1] / 2 - min(servo_tie_rod_b_shank_od,
-                                                   servo_tie_rod_a_shank_od,
-                                                   steering_servo_tie_rod_body_d) / 2;
-
-  bellcrank_lever_z = y_rod_zh - bellcrank_lever_z_end;
-  angle = y_angle_from_zshift(bellcrank_lever_z, full_l);
   max_tie_rod_a_h = dservo_tie_rod_a_max_h();
 
   rotate([0, 0, 180]) {

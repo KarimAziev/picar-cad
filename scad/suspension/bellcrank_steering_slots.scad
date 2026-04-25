@@ -19,7 +19,7 @@ function bellcrank_steering_servo_position() =
        tie_rod_center_x=max_tie_rod_a_h / 2,
        servo_h=dsservo_size[2],
        x_steering_tie_rod_center_x=servo_h - tie_rod_center_x,
-       bellcrank_steering_arm_x=-bellcrank_drive_arm_l - chassis_bellcrank_spacing / 2
+       bellcrank_steering_arm_x=-bellcrank_servo_lever_l - chassis_bellcrank_spacing / 2
        + bellcrank_servo_lever_holes_edge_offset + bellcrank_arm_bolt_d / 2,
        x_dist=abs(bellcrank_steering_arm_x) - abs(x_steering_tie_rod_center_x),
        y_end=y_dist - dsservo_flange_w)
