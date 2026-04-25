@@ -18,6 +18,7 @@ include <../../steering_params.scad>
 use <../../lib/placement.scad>
 use <../../lib/shapes2d.scad>
 use <../../lib/shapes3d.scad>
+use <../../lib/trapezoids.scad>
 use <bellcrank_ring.scad>
 
 module bellcrank_servo_lever(color=cobalt_blue_metallic,
@@ -26,7 +27,8 @@ module bellcrank_servo_lever(color=cobalt_blue_metallic,
                              border_w=bellcrank_lever_border_w,
                              ring_h,
                              l=bellcrank_servo_lever_l,
-                             w=bellcrank_arm_tip_w,
+                             w_tip=bellcrank_arm_tip_w,
+                             w_base=bellcrank_arm_root_w,
                              thickness=bellcrank_servo_lever_thickness,
                              bolt_d=bellcrank_arm_bolt_d,
                              bolt_offset=bellcrank_servo_lever_holes_edge_offset,
@@ -45,16 +47,21 @@ module bellcrank_servo_lever(color=cobalt_blue_metallic,
     union() {
       bellcrank_ring(h=ring_h,
                      parent_od=parent_od,
-                     thickness=thickness,
+                     thickness=thickness + boss_h,
                      border_w=border_w);
       linear_extrude(height=thickness, center=false) {
         difference() {
-          translate([-l, -w / 2, 0]) {
-            rounded_rect([l, w],
-                         center=false,
-                         r_factor=0.5,
-                         fn=$preview ? 20 : 200);
+          translate([-l / 2, 0, 0]) {
+            rotate([0, 0, 90]) {
+              trapezoid_rounded_top(b=w_base,
+                                    t=w_tip,
+                                    h=l,
+                                    center=true,
+                                    $fn=fn,
+                                    r_factor=0.5);
+            }
           }
+
           circle(d=parent_od, $fn=fn);
           translate([bolt_holes_x, 0, 0]) {
             columns_children(cols=holes_n, w=bolt_d, gap=holes_gap) {
@@ -66,8 +73,8 @@ module bellcrank_servo_lever(color=cobalt_blue_metallic,
       translate([0, 0, thickness]) {
         linear_extrude(height=boss_h, center=false) {
           difference() {
-            translate([bolt_holes_x - bolt_offset, -w / 2, 0]) {
-              rounded_rect(size=[total_x + bolt_offset + boss_pad, w],
+            translate([bolt_holes_x - bolt_offset, -w_tip / 2, 0]) {
+              rounded_rect(size=[total_x + bolt_offset + boss_pad, w_tip],
                            fn=fn,
                            r_factor=0.5);
             }

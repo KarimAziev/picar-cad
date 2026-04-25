@@ -26,13 +26,13 @@ bellcrank_arm_bolt_bore_h                         = 1.5;
 bellcrank_arm_l                                   = 25.45;
 
 // Thickness of the arm
-bellcrank_arm_thickness                           = bellcrank_arm_heat_insert_nut_h + 1;
+bellcrank_arm_thickness                           = bellcrank_arm_heat_insert_nut_h + 1.8;
 
 // Width at the outer/tip end
 bellcrank_arm_tip_w                               = 6.10;
 
 // Width at the cylinder/pivot end
-bellcrank_arm_root_w                              = 8.10;
+bellcrank_arm_root_w                              = 9.10;
 
 // Height of the lower boss
 bellcrank_arm_lower_boss_h                        = 2.4;
@@ -72,9 +72,9 @@ bellcrank_bearing_clearance                       = 0.2;
 bellcrank_post_hole_clearance                     = 0.5;
 
 // The outer diameter of the bellcrank cylinder
-bellcrank_idler_od                                = bellcrank_idler_bearing_od + 3.8;
+bellcrank_idler_od                                = bellcrank_idler_bearing_od + 4.5;
 
-bellcrank_idler_extra_h                           = 0.8;
+bellcrank_idler_extra_h                           = 0.4;
 
 bellcrank_idler_support_thickness                 = 2;
 
