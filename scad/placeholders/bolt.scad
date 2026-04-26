@@ -334,18 +334,6 @@ module bolt(d = 2.5,                 // major diameter (mm)
                    plist_get("height",
                              head_spec,
                              with_default(head_h, 0.7 * d)));
-  if (is_undef(bolt_color)) {
-    echo("bolt_color",
-         bolt_color,
-         "bolt_d",
-         d,
-         "head_type",
-         head_type,
-         "bolt_spec",
-         bolt_spec,
-         "Colors",
-         plist_get("colors", bolt_spec, []));
-  }
 
   maybe_translate([0, 0, reverse ? (h + head_h) : 0]) {
     maybe_rotate([reverse ? 180 : 0, 0, 0]) {
