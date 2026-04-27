@@ -18,8 +18,8 @@ function front_bulkhead_base_size(outer_spacing=front_bulkhead_mount_bolt_spacin
        size_y=outer_spacing[1] + d + padding_y)
   [size_x, size_y];
 
-module front_bulk_head_housing_slots_non_center_y(barrel_y_offset=front_bulkhead_barrel_y_offset,
-                                                  hinge_clearance=front_bulkhead_barrel_hinge_clearance) {
+module front_bulkhead_housing_slots_non_center_y(barrel_y_offset=front_bulkhead_barrel_y_offset,
+                                                 hinge_clearance=front_bulkhead_barrel_hinge_clearance) {
   barrel_size = lower_arm_mount_cutout_size();
   barrel_len = barrel_size[1] - hinge_clearance;
 
@@ -112,4 +112,4 @@ module front_bulkhead_chassis_with_slots_positions(outer_spacing=front_bulkhead_
   }
 }
 
-front_bulk_head_housing_slots_non_center_y();
+front_bulkhead_housing_slots_non_center_y();

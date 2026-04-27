@@ -11,13 +11,13 @@ include <parameters.scad>
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Diameter of the bolt holes in the bellcrank idler and bellcrank drive arms
-bellcrank_arm_bolt_d                              = m3_hole_dia;
+bellcrank_arm_bolt_d                              = 3.6;
 
 // Height of the heat-set insert nut
 bellcrank_arm_heat_insert_nut_h                   = 5.2;
 
 // Diameter of the cylindrical recess around the bolt holes for the heat-set insert nut
-bellcrank_arm_bolt_bore_d                         = 4.5;
+bellcrank_arm_bolt_bore_d                         = 4.4;
 
 // Depth of the cylindrical recess around the bolt hole for the heat-set insert nut
 bellcrank_arm_bolt_bore_h                         = 1.5;
@@ -74,7 +74,7 @@ bellcrank_post_hole_clearance                     = 0.5;
 // The outer diameter of the bellcrank cylinder
 bellcrank_idler_od                                = bellcrank_idler_bearing_od + 4.5;
 
-bellcrank_idler_extra_h                           = 0.4;
+bellcrank_idler_extra_h                           = 0.8;
 
 bellcrank_idler_support_thickness                 = 2;
 
@@ -130,7 +130,7 @@ bellcrank_post_use_threading                      = false;
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Distance between the lower bellcrank lever and the upper servo lever
-bellcrank_servo_lever_z_offset                    = 5.6;
+bellcrank_servo_lever_z_offset                    = 2.6;
 // Distance between the edges of the holes in the servo lever
 bellcrank_servo_lever_holes_gap                   = 1.5;
 // Distance between the edge of the lever and the edge of the holes
@@ -231,7 +231,7 @@ dsservo_socket_side                               = -1;
 front_chassis_bellcrank_bolt_d                    = m3_hole_dia;
 front_chassis_bellcrank_bolt_bore_d               = m3_countersunk_head_dia + 0.2;
 front_chassis_bellcrank_bolt_bore_h               = m3_countersunk_head_h + 0.15;
-front_chassis_thickness                           = 5.5;
+front_chassis_thickness                           = 6.0;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Upper steering panel
@@ -254,12 +254,21 @@ front_bumper_bolt_y_offset                        = 8;
 // ─────────────────────────────────────────────────────────────────────────────
 // Front chasssis joint
 // ─────────────────────────────────────────────────────────────────────────────
-front_chassis_joint_rail_angle                    = 30;
-front_chassis_joint_rail_corner_r                 = 0.6;
+front_chassis_joint_rail_angle                    = 20;
+front_chassis_joint_rail_corner_r                 = 0.4;
 front_chassis_joint_bolt_d                        = 3;
 front_chassis_joint_bolt_pad                      = 2;
 front_chassis_joint_bolt_spacing                  = 42.8;
 front_chassis_joint_use_dovetail_rib              = true;
+
+front_chassis_joint_pin_l                         = 40.0;
+front_chassis_joint_pin_d                         = 3.1;
+front_chassis_joint_pin_pad_l                     = 5.5;
+front_chassis_joint_pin_pad_w                     = 2.5;
+
+front_chassis_joint_edge_land                     = 0.45;
+front_chassis_joint_relief_depth                  = 0.4;
+front_chassis_joint_clearance                     = 0.4;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Front suspension arm pad (geometry parameters)
@@ -374,7 +383,7 @@ front_lower_arm_ball_stud_hole_depth              = front_arm_ball_stud_len
 // How far to screw out the ball stud. A higher value means the bolt is screwed in less
 front_lower_arm_ball_stud_insert_out_depth        = 1;
 
-front_lower_arm_pin_l                             = front_lower_arm_h + front_suspension_arm_pad_thickness + 2.75;
+front_lower_arm_pin_l                             = front_lower_arm_h + front_suspension_arm_pad_thickness + 1.4;
 
 front_lower_arm_pin_groove_offset                 = 0.85;
 
@@ -428,7 +437,7 @@ front_upper_arm_ball_stud_hole_depth              = front_arm_ball_stud_len - fr
 front_upper_arm_ball_stud_insert_out_depth        = 1;
 
 // The length of the pin which inserted into arm hinges
-front_upper_arm_pin_len                           = 38.6;
+front_upper_arm_pin_len                           = 39.5;
 
 front_upper_arm_pin_washer_od                     = 5.5;
 front_upper_arm_pin_washer_thickness              = 0.5;
@@ -964,7 +973,7 @@ steering_servo_chassis_bore_type                  = "counterbore"; // [countersu
 steering_servo_mount_bolt_bore_d                  = m3_countersunk_head_dia + 0.3;
 
 // Depth of the enlargement around the bolt hole in the chassis
-steering_servo_mount_bolt_bore_h                  = m3_countersunk_head_h + 0.15;
+steering_servo_mount_bolt_bore_h                  = m3_countersunk_head_h + 0.25;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Assembly view

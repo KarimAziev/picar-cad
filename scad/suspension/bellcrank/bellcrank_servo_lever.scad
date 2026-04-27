@@ -18,14 +18,14 @@ include <../../steering_params.scad>
 use <../../lib/placement.scad>
 use <../../lib/shapes2d.scad>
 use <../../lib/shapes3d.scad>
+use <../../lib/threading/threads.scad>
 use <../../lib/trapezoids.scad>
 use <bellcrank_ring.scad>
 
 module bellcrank_servo_lever(color=cobalt_blue_metallic,
                              alpha=1,
-                             parent_od=bellcrank_idler_od,
+                             od=bellcrank_idler_od,
                              border_w=bellcrank_lever_border_w,
-                             ring_h,
                              l=bellcrank_servo_lever_l,
                              w_tip=bellcrank_arm_tip_w,
                              w_base=bellcrank_arm_root_w,
@@ -35,20 +35,34 @@ module bellcrank_servo_lever(color=cobalt_blue_metallic,
                              boss_h=bellcrank_servo_lever_boss_h,
                              boss_pad=bellcrank_servo_lever_boss_pad_x,
                              holes_gap=bellcrank_servo_lever_holes_gap,
-                             holes_n=bellcrank_servo_lever_holes_n) {
+                             holes_n=bellcrank_servo_lever_holes_n,
+                             add_through_hole=bellcrank_lever_add_through_hole,
+                             through_hole_d=bellcrank_lever_through_hole_d) {
 
   bolt_holes_x = -l + bolt_offset;
+  final_od = od + border_w * 2;
 
   fn=$preview ? 20 : 100;
   holes_params = calc_cols_params(cols=holes_n, w=bolt_d, gap=holes_gap);
   total_x = holes_params[1];
 
+  h = thickness + boss_h;
+
   color(color, alpha=alpha) {
     union() {
-      bellcrank_ring(h=ring_h,
-                     parent_od=parent_od,
-                     thickness=thickness + boss_h,
-                     border_w=border_w);
+      difference() {
+        cylinder(d=final_od, h=h, $fn=fn);
+        translate([0, 0, -0.1]) {
+          screw_hole_thread(d=od, h=h + 0.2);
+        }
+        if (add_through_hole) {
+          translate([final_od / 4, 0, h / 2]) {
+            rotate([90, 0, 90]) {
+              cylinder(d=through_hole_d, h=final_od / 2, $fn=fn);
+            }
+          }
+        }
+      }
       linear_extrude(height=thickness, center=false) {
         difference() {
           translate([-l / 2, 0, 0]) {
@@ -62,7 +76,7 @@ module bellcrank_servo_lever(color=cobalt_blue_metallic,
             }
           }
 
-          circle(d=parent_od, $fn=fn);
+          circle(d=od, $fn=fn);
           translate([bolt_holes_x, 0, 0]) {
             columns_children(cols=holes_n, w=bolt_d, gap=holes_gap) {
               circle(d=bolt_d, $fn=fn);

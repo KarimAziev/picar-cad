@@ -102,13 +102,24 @@ module bellcrank_lever(color=cobalt_blue_metallic,
         counterbore(d=bolt_d,
                     h=h,
                     bore_h=bolt_bore_h,
-                    bore_d=bolt_bore_d);
+                    bore_d=bolt_bore_d,
+                    reverse=true);
+        counterbore(d=bolt_d,
+                    h=h,
+                    bore_h=bolt_bore_h,
+                    bore_d=bolt_bore_d,
+                    reverse=false);
         translate([bolt_spacing, 0, -lower_boss_h]) {
           counterbore(d=bolt_d,
                       h=h + lower_boss_h,
                       bore_h=bolt_bore_h,
                       bore_d=bolt_bore_d,
                       reverse=true);
+          counterbore(d=bolt_d,
+                      h=h,
+                      bore_h=bolt_bore_h,
+                      bore_d=bolt_bore_d,
+                      reverse=false);
         }
       }
 

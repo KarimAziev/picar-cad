@@ -50,8 +50,8 @@ joint_rail_w            = front_chassis_joint_bolt_spacing - front_chassis_joint
 
 joint_w                 = bellcrank_x * 2 + front_chassis_joint_bolt_d + front_chassis_joint_bolt_pad;
 
-joint_rail_h            = (front_chassis_thickness / 2) - 0.25;
+joint_rail_h            = (front_chassis_thickness / 2);
 
 joint_base_h            = (front_chassis_thickness - joint_rail_h) / 2;
 
-joint_recess_w          = joint_rail_w * 0.2;
+joint_recess_w          = joint_rail_w * 0.35;

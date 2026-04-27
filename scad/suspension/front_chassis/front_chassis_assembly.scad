@@ -41,7 +41,7 @@ show_chassis_rear_frame                     = true;
 show_bellcrank_drive                        = true;
 show_bellcrank_drive_idler_lever            = true;
 show_bellcrank_drive_servo_lever            = true;
-show_bellcrank_drive_upper_cap              = true;
+show_bellcrank_drive_upper_cap              = false;
 
 show_bellcrank_idler                        = true;
 show_bellcrank_post                         = true;
@@ -87,7 +87,7 @@ show_knuckle_tie_rod                        = true;
 show_front_bulkhead_housing                 = true;
 
 // Steering angle
-steering_servo_angle                        = 0; // [-40:1:40]
+steering_servo_angle                        = 0; // [-25:1:25]
 
 module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
                               show_bellcrank_idler=show_bellcrank_idler,

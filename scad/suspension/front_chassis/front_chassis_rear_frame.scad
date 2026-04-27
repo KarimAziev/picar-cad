@@ -49,7 +49,7 @@ module front_chassis_rear_frame(debug=true,
 
   union() {
     translate([0, y_joint_1_end, 0]) {
-      front_chassis_joint_slot(color=color);
+      front_chassis_joint_female(color=color);
     }
     difference() {
       maybe_color(color) {
@@ -61,15 +61,23 @@ module front_chassis_rear_frame(debug=true,
           }
         }
       }
-      front_bulk_head_housing_slots_non_center_y();
+      translate([0, y_start, 0]) {
+        front_chassis_pin_joint_holes(center=true,
+                                      direction=1,
+                                      use_pad=false,
+                                      pad_side="bottom");
+      }
       translate([0,
                  -bellcrank_y_distance_from_bulkhead,
                  0]) {
-        bellcrank_steering_slots();
+        bellcrank_steering_with_servo_position() {
+          steering_servo_chassis_slots(center_y=false,
+                                       sink="countersunk");
+        }
       }
     }
     translate([0, servo_end_y, 0]) {
-      front_chassis_joint_slot(color=color);
+      front_chassis_joint_female(color=color);
     }
   }
 
@@ -91,10 +99,7 @@ module front_chassis_rear_frame(debug=true,
 }
 
 module front_chassis_rear_frame_printable(debug=false, color=white_smoke_1) {
-  rotate([0, 90, 0]) {
-    front_chassis_rear_frame(debug=debug, color=color);
-  }
+  front_chassis_rear_frame(debug=$preview ? false : debug, color=color);
 }
 
-front_chassis_rear_frame_printable(debug=false);
-// front_chassis_rear_frame();
+front_chassis_rear_frame_printable();
