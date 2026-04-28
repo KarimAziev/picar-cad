@@ -552,13 +552,5 @@ module front_bulkhead_support(bulkhead_w=front_bulkhead_w,
     }
   }
 }
-dist_size = front_bulkhead_pad_distance_to_hinge();
-dist = dist_size;
-front_bulkhead();
-translate([-50,
-           front_bulkhead_len / 2 + front_suspension_arm_pad_thickness + front_suspension_arm_pad_thickness
-           - dist,
-           0]) {
 
-  #cube([100, dist, 50]);
-}
+front_bulkhead();
