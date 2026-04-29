@@ -55,3 +55,8 @@ joint_rail_h            = (front_chassis_thickness / 2);
 joint_base_h            = (front_chassis_thickness - joint_rail_h) / 2;
 
 joint_recess_w          = joint_rail_w * 0.35;
+
+front_frame_x_end       = bellcrank_x
+                           + front_chassis_bellcrank_tool_access_hole_pad_x
+                           + max(bellcrank_mount_r,
+                           front_chassis_bellcrank_tool_access_hole_d / 2);

@@ -31,7 +31,7 @@ use <../bulkhead/front_bulkhead_housing.scad>
 use <../wishbone_arms/lower_arm.scad>
 use <front_chassis_joint.scad>
 
-front_chassis_debug = true;
+front_chassis_front_frame_debug = true;
 
 function front_chassis_front_frame_start_y() =
   front_bulkhead_pad_distance_to_hinge() +
@@ -41,25 +41,35 @@ function front_chassis_front_frame_start_y() =
   + front_bumper_center_bolt_y_offset
   + front_bumper_bolt_d;;
 
-module front_chassis_front_frame(debug=front_chassis_debug,
+module front_chassis_front_frame(debug=front_chassis_front_frame_debug,
                                  debug_font="Gill Sans:style=Bold",
                                  debug_color=green_2,
                                  color=white_smoke_1) {
 
   start_y0 = front_chassis_front_frame_start_y();
 
-  x1 = bulkhead_size_x / 2;
+  x1 = front_bumper_bolt_spacing_x / 2
+       + front_bumper_bolt_d / 2
+       + front_bumper_bolt_pad_x;
   start_y1 = start_y0 - front_bumper_center_bolt_y_offset;
 
-  x2 = bellcrank_x + bellcrank_mount_r;
-  y2 = bulkhead_transition_len - front_lower_arm_lower_hinge_barrel_h;
+  x2 = bulkhead_size_x / 2;
+  y2 = start_y1 - bulkhead_size_y;
+
+  y3 = bulkhead_transition_len
+       + front_chassis_bellcrank_tool_access_hole_d / 2
+        - front_lower_arm_lower_hinge_barrel_h;
+
+  x_end = front_frame_x_end;
+
   y_end = -bellcrank_y_distance_from_bulkhead - bellcrank_mount_r;
 
   pts = [[0, start_y0],
          [x1, start_y1],
-         [x1, y2],
-         [x2, y2 - bellcrank_mount_r],
-         [x2, y_end],
+         [x2, y2],
+         [x1, y3],
+         [x_end, y3 - bellcrank_mount_r],
+         [x_end, y_end],
          [0, y_end]];
 
   module _debug(rotation) {
@@ -70,7 +80,7 @@ module front_chassis_front_frame(debug=front_chassis_debug,
                          font_size=font_size,
                          font=debug_font,
                          offset_x=font_size,
-                         offset_x_exclude=[0, 5],
+                         offset_x_exclude=[0, len(pts) - 1],
                          color=debug_color);
         }
   }
@@ -120,9 +130,7 @@ module front_chassis_front_frame(debug=front_chassis_debug,
                  - front_bumper_bolt_pad_y,
                  0]) {
 
-        four_corner_counterbores(size=[bulkhead_size_x
-                                         - front_bumper_bolt_d
-                                         - front_bumper_bolt_pad_x * 2, 0],
+        four_corner_counterbores(size=[front_bumper_bolt_spacing_x, 0],
                                    center=true,
                                    d=front_bumper_bolt_d,
                                    h=front_chassis_thickness);
@@ -144,10 +152,11 @@ module front_chassis_front_frame(debug=front_chassis_debug,
   }
 }
 
-module front_chassis_front_frame_printable(debug=false, color=white_smoke_1) {
+module front_chassis_front_frame_printable(debug=front_chassis_front_frame_debug,
+                                           color=white_smoke_1) {
   rotate([0, 180, 0]) {
     front_chassis_front_frame(debug=$preview ? false : debug, color=color);
   }
 }
 
-front_chassis_front_frame();
+front_chassis_front_frame_printable();
