@@ -246,7 +246,7 @@ upper_steering_panel_bulkhead_spacing             = 21;
 // Bumper slot
 // ─────────────────────────────────────────────────────────────────────────────
 front_bumper_bolt_d                               = m3_hole_dia;
-front_bumper_bolt_pad_x                           = 3.0;
+front_bumper_bolt_pad_x                           = 1.5;
 front_bumper_center_bolt_y_offset                 = 8;
 front_bumper_bolt_pad_y                           = 4;
 front_bumper_bolt_y_offset                        = 8;
