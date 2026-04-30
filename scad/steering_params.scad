@@ -159,7 +159,7 @@ bellcrank_y_distance_from_bulkhead                = 27.5;
 chassis_bellcrank_spacing                         = 48.8;
 
 chassis_center_mount_padding_y                    = 4;
-chassis_center_mount_padding_x                    = 13;
+chassis_center_mount_padding_x                    = 12.8;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Steering servo DSSERVO
@@ -250,7 +250,7 @@ upper_steering_panel_bulkhead_spacing             = 21;
 // ─────────────────────────────────────────────────────────────────────────────
 front_bumper_bolt_d                               = m3_hole_dia;
 front_bumper_bolt_spacing_x                       = 38.0;
-front_bumper_bolt_pad_x                           = 4.5;
+front_bumper_bolt_pad_x                           = 4.4;
 front_bumper_center_bolt_y_offset                 = 8;
 front_bumper_bolt_pad_y                           = 4;
 front_bumper_bolt_y_offset                        = 8;
