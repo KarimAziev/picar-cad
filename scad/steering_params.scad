@@ -518,8 +518,10 @@ front_bulkhead_mount_bolt_d                       = m3_hole_dia;
 front_bulkhead_mount_bolt_bore_d                  = m3_countersunk_head_dia + 0.2;
 front_bulkhead_mount_bolt_bore_h                  = m3_countersunk_head_h + 0.15;
 
-// The diameter of the counterbore for the mounting bolt head / washer pocket.
 front_bulkhead_mount_bolt_padding                 = 4.6;
+
+front_bulkhead_mount_hinge_pad_x                  = 2;
+front_bulkhead_mount_hinge_pad_y                  = 1.5;
 
 // Lateral offset of the semicircular cutout in the hinge barrel in mm
 front_bulkhead_hinge_cutout_bolt_offset           = 1;
