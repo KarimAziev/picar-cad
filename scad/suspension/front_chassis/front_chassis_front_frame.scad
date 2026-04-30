@@ -125,7 +125,7 @@ module front_chassis_front_frame(debug=front_chassis_front_frame_debug,
         bellcrank_slots();
       }
 
-      // Two through holes for metal pins used in the joint with the front rear frame
+      // Two through holes for metal pins used in the joint with the rear frame
       translate([0, y_end, 0]) {
         front_chassis_pin_joint_holes(center=true,
                                       direction=-1,
