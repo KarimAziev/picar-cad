@@ -21,6 +21,11 @@ module bellcrank_slots() {
       four_corner_counterbores(d=front_chassis_bellcrank_tool_access_hole_d,
                                h=front_chassis_thickness,
                                size=[chassis_bellcrank_spacing, 0]);
+      translate([0, -bellcrank_arm_bolt_spacing, 0]) {
+        four_corner_counterbores(d=front_chassis_bellcrank_tool_access_hole_d,
+                                 h=front_chassis_thickness,
+                                 size=[chassis_bellcrank_spacing, 0]);
+      }
     }
     four_corner_counterbores(d=front_chassis_bellcrank_bolt_d,
                              h=front_chassis_thickness,
