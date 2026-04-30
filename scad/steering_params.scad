@@ -153,7 +153,7 @@ bellcrank_servo_lever_thickness                   = 4;
 
 // The distance from the end of the bulkhead housing to the center of the
 // bellcrank drive/idler holes
-bellcrank_y_distance_from_bulkhead                = 28.5;
+bellcrank_y_distance_from_bulkhead                = 27.5;
 
 // Spacing between the centers of the bellcrank drive and bellcrank idler holes
 chassis_bellcrank_spacing                         = 48.8;
