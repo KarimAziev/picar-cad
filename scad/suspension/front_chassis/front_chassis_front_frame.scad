@@ -39,7 +39,7 @@ function front_chassis_front_frame_start_y() =
   + bulkhead_transition_len
   + front_bumper_bolt_y_offset
   + front_bumper_center_bolt_y_offset
-  + front_bumper_bolt_d;;
+  + front_bumper_bolt_d;
 
 module front_chassis_front_frame(debug=front_chassis_front_frame_debug,
                                  debug_font="Gill Sans:style=Bold",
@@ -49,16 +49,16 @@ module front_chassis_front_frame(debug=front_chassis_front_frame_debug,
   start_y0 = front_chassis_front_frame_start_y();
 
   x1 = front_bumper_bolt_spacing_x / 2
-       + front_bumper_bolt_d / 2
-       + front_bumper_bolt_pad_x;
+    + front_bumper_bolt_d / 2
+    + front_bumper_bolt_pad_x;
   start_y1 = start_y0 - front_bumper_center_bolt_y_offset;
 
   x2 = bulkhead_size_x / 2;
   y2 = start_y1 - bulkhead_size_y;
 
   y3 = bulkhead_transition_len
-       + front_chassis_bellcrank_tool_access_hole_d / 2
-        - front_lower_arm_lower_hinge_barrel_h;
+    + front_chassis_bellcrank_tool_access_hole_d / 2
+    - front_lower_arm_lower_hinge_barrel_h;
 
   x_end = front_frame_x_end;
 
@@ -82,7 +82,7 @@ module front_chassis_front_frame(debug=front_chassis_front_frame_debug,
                          offset_x=font_size,
                          offset_x_exclude=[0, len(pts) - 1],
                          color=debug_color);
-        }
+    }
   }
 
   union() {
@@ -131,13 +131,13 @@ module front_chassis_front_frame(debug=front_chassis_front_frame_debug,
                  0]) {
 
         four_corner_counterbores(size=[front_bumper_bolt_spacing_x, 0],
-                                   center=true,
-                                   d=front_bumper_bolt_d,
-                                   h=front_chassis_thickness);
+                                 center=true,
+                                 d=front_bumper_bolt_d,
+                                 h=front_chassis_thickness);
       }
     }
 
-   // Male joint for connection to the front rear frame
+    // Male joint for connection to the front rear frame
     translate([0, y_end, 0]) {
       front_chassis_joint_male(color=color);
     }
