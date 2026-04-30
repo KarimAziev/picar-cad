@@ -18,10 +18,12 @@ use <../../lib/debug.scad>
 use <../../lib/functions.scad>
 use <../../lib/placement.scad>
 use <../../lib/polygon_util.scad>
+use <../../lib/shapes2d.scad>
 use <../../lib/shapes3d.scad>
 use <../../lib/slider.scad>
 use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
+use <../../lib/trapezoids.scad>
 use <../../placeholders/dservo.scad>
 use <../bellcrank/bellcrank_slots.scad>
 use <../bellcrank_steering_slots.scad>
@@ -40,6 +42,20 @@ function front_chassis_front_frame_start_y() =
   + front_bumper_bolt_y_offset
   + front_bumper_center_bolt_y_offset
   + front_bumper_bolt_d;
+
+function front_chassis_ear_pts() =
+  let (ear_y = front_chassis_ear_w / 2,
+       l = front_chassis_ear_l,
+       pts = [[0, ear_y + front_chassis_ear_extra_w],
+              [l * 0.4, ear_y],
+              [l * 0.75, ear_y * 0.85],
+              [l * 0.9, ear_y * 0.6],
+              [l * 0.97, ear_y * 0.3],
+              [l, 0],
+              [0, 0]],
+       mirrored_pts = [for (p = reverse(pts))
+           [p[0], -p[1]]])
+  concat(pts, mirrored_pts);
 
 module front_chassis_front_frame(debug=front_chassis_front_frame_debug,
                                  debug_font="Gill Sans:style=Bold",
@@ -74,7 +90,7 @@ module front_chassis_front_frame(debug=front_chassis_front_frame_debug,
 
   module _debug(rotation) {
     let (x_size = polygon_x_len(pts) * 2,
-         font_size = constraint(x_size * 0.15, 2, 5)) {
+         font_size = constraint(x_size * 0.04, 1, 5)) {
       debug_polygon_text(pts,
                          rotation=rotation,
                          font_size=font_size,
@@ -93,6 +109,12 @@ module front_chassis_front_frame(debug=front_chassis_front_frame_debug,
                        convexity=2) {
           mirror_copy([1, 0, 0]) {
             polygon(pts);
+            // The chassis ears
+            translate([x2,
+                       y2 + front_chassis_ear_w / 2,
+                       0]) {
+              polygon(front_chassis_ear_pts());
+            }
           }
         }
       }

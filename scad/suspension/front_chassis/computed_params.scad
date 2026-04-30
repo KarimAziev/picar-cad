@@ -28,8 +28,8 @@ bulkhead_transition_len = front_bulkhead_len
 
 bulkhead_base_size = front_bulkhead_base_size(outer_spacing=front_bulkhead_mount_bolt_spacing_1,
                                               d=front_bulkhead_mount_bolt_d,
-                                              padding_x=chassis_center_mount_padding_x,
-                                              padding_y=chassis_center_mount_padding_y);
+                                              padding_x=front_chassis_bulkhead_padding_x,
+                                              padding_y=front_chassis_bulkhead_padding_y);
 bellcrank_mount_d       = max(bellcrank_idler_od,
                               front_chassis_bellcrank_bolt_d,
                               front_chassis_bellcrank_bolt_bore_d);

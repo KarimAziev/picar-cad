@@ -5,8 +5,8 @@ include <parameters.scad>
 // ─────────────────────────────────────────────────────────────────────────────
 // Bellcrank link arm. Part of both the drive and idler arms.
 // It has two bolt holes:
-// - For the Ackermann plate. This hole has both upper and lower bosses.
-//   The lower boss is for the Ackermann plate bushing.
+// - For the center link. This hole has both upper and lower bosses.
+//   The lower boss is for the center link bushing.
 // - For the knuckle steering link, with an upper boss only.
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -88,9 +88,13 @@ bellcrank_idler_chamfer_angle                     = 30;
 // ─────────────────────────────────────────────────────────────────────────────
 bellcrank_lever_border_w                          = 1.5;
 
+// If true, the lever's outer end will be wider and smoothly "hulled"
 bellcrank_lever_use_hull                          = false;
 
+// Whether to add a hole in the lever for a screw to secure it to the bellcrank thread
 bellcrank_lever_add_through_hole                  = true;
+
+// Diameter of the hole in the lever for a screw to secure it to the bellcrank thread
 bellcrank_lever_through_hole_d                    = 1.4;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -157,9 +161,6 @@ bellcrank_y_distance_from_bulkhead                = 27.5;
 
 // Spacing between the centers of the bellcrank drive and bellcrank idler holes
 chassis_bellcrank_spacing                         = 48.8;
-
-chassis_center_mount_padding_y                    = 4;
-chassis_center_mount_padding_x                    = 12.8;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Steering servo DSSERVO
@@ -228,22 +229,41 @@ dsservo_socket_side                               = -1;
 // ─────────────────────────────────────────────────────────────────────────────
 // Front chassis
 // ─────────────────────────────────────────────────────────────────────────────
-front_chassis_bellcrank_bolt_d                    = m3_hole_dia;
-front_chassis_bellcrank_bolt_bore_d               = m3_countersunk_head_dia + 0.2;
-front_chassis_bellcrank_bolt_bore_h               = m3_countersunk_head_h + 0.15;
-front_chassis_bellcrank_tool_access_hole_d        = 8;
-front_chassis_bellcrank_tool_access_hole_pad_x    = 1.5;
-
 front_chassis_thickness                           = 6.0;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Upper steering panel
+// Bulkhead slots
 // ─────────────────────────────────────────────────────────────────────────────
-upper_steering_panel_bolt_d                       = m3_hole_dia;
-upper_steering_panel_boss_od                      = 6;
-upper_steering_panel_bulkhead_bore_d              = 4.6;
-upper_steering_panel_bulkhead_bore_h              = 1;
-upper_steering_panel_bulkhead_spacing             = 21;
+// The upper spacing above the bulkhead slots
+front_chassis_bulkhead_padding_y                  = 4;
+
+// The x-padding for the bulkhead slots
+front_chassis_bulkhead_padding_x                  = 12.8;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Bellcrank slots
+// ─────────────────────────────────────────────────────────────────────────────
+front_chassis_bellcrank_bolt_d                    = m3_hole_dia;
+front_chassis_bellcrank_bolt_bore_d               = m3_countersunk_head_dia + 0.2;
+front_chassis_bellcrank_bolt_bore_h               = m3_countersunk_head_h + 0.15;
+
+// The hole for easier access to the bellcrank (e.g., for fastening the steering arm)
+front_chassis_bellcrank_tool_access_hole_d        = 8;
+
+// The x-padding of the access hole
+front_chassis_bellcrank_tool_access_hole_pad_x    = 1.5;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Front chassis ears above the bulkhead slots
+// ─────────────────────────────────────────────────────────────────────────────
+// Width of the ear
+front_chassis_ear_w                               = 6.3;
+
+// Additional width near the chassis for a smoother shape
+front_chassis_ear_extra_w                         = 0.8;
+
+// Outer X-length of the ear
+front_chassis_ear_l                               = 5.1;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Bumper slot
@@ -251,9 +271,9 @@ upper_steering_panel_bulkhead_spacing             = 21;
 front_bumper_bolt_d                               = m3_hole_dia;
 front_bumper_bolt_spacing_x                       = 38.0;
 front_bumper_bolt_pad_x                           = 4.4;
-front_bumper_center_bolt_y_offset                 = 8;
+front_bumper_center_bolt_y_offset                 = 7;
 front_bumper_bolt_pad_y                           = 4;
-front_bumper_bolt_y_offset                        = 8;
+front_bumper_bolt_y_offset                        = 11.4;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Front chasssis joint
@@ -265,7 +285,7 @@ front_chassis_joint_bolt_pad                      = 2;
 front_chassis_joint_bolt_spacing                  = 42.8;
 front_chassis_joint_use_dovetail_rib              = true;
 
-front_chassis_joint_pin_l                         = 40.0;
+front_chassis_joint_pin_l                         = 41.0;
 front_chassis_joint_pin_d                         = 3.1;
 front_chassis_joint_pin_pad_l                     = 5.5;
 front_chassis_joint_pin_pad_w                     = 2.5;
@@ -506,25 +526,40 @@ front_bulkhead_rear_bolt_cbore_d                  = 6.10;
 // The depth of the counterbore for the rear bolt head / washer pocket.
 front_bulkhead_rear_bolt_offset                   = 2.20;
 
-// The diameter of the holes for mounting the bulkhead housing to the chassis and bulkhead itself.
-front_bulkhead_mount_bolt_spacing_1               = [34.0, 18.45];
+// ─────────────────────────────────────────────────────────────────────────────
+// Bulkhead bolt spacing
+// The bulkhead housing has 4 rows, each with 2 bolt holes (8 holes total):
+// two rows for fastening to the chassis, and two rows for fastening the
+// bulkhead to the housing.
+// ─────────────────────────────────────────────────────────────────────────────
 
-// The diameter of the holes for mounting the bulkhead housing to the chassis and bulkhead itself.
-front_bulkhead_mount_bolt_spacing_2               = [34.0, 5.5];
+// Distance between hole centers along the X-axis
+front_bulkhead_mount_bolt_spacing_x               = 34.0;
 
-// The diameter of the holes for mounting the bulkhead housing to the chassis and bulkhead itself.
+// [X spacing, outer Y spacing - first and fourth rows]
+front_bulkhead_mount_bolt_spacing_1               = [front_bulkhead_mount_bolt_spacing_x, 18.45];
+
+// [X spacing, inner Y spacing - second and third rows]
+front_bulkhead_mount_bolt_spacing_2               = [front_bulkhead_mount_bolt_spacing_x, 5.5];
+
+// Distance from the upper row of the outer group
+// (`front_bulkhead_mount_bolt_spacing_1`) to the upper row of the inner group
+// (`front_bulkhead_mount_bolt_spacing_2`)
+front_bulkhead_mount_bolt_padding                 = 4.6;
+
+// Diameter of the holes used to mount the bulkhead housing to the chassis
+// and the bulkhead itself.
 front_bulkhead_mount_bolt_d                       = m3_hole_dia;
 
 front_bulkhead_mount_bolt_bore_d                  = m3_countersunk_head_dia + 0.2;
 front_bulkhead_mount_bolt_bore_h                  = m3_countersunk_head_h + 0.15;
-
-front_bulkhead_mount_bolt_padding                 = 4.6;
 
 front_bulkhead_mount_hinge_pad_x                  = 2;
 front_bulkhead_mount_hinge_pad_y                  = 1.5;
 
 // Lateral offset of the semicircular cutout in the hinge barrel in mm
 front_bulkhead_hinge_cutout_bolt_offset           = 1;
+
 // Diameter of the semicircular cutout in the hinge barrel, expressed as a
 // factor of the overall barrel length. Allowed values: 0 to 1.
 front_bulkhead_hinge_cutout_d_factor              = 1;  // [0:0.1:1]
@@ -563,6 +598,9 @@ front_bulkhead_suspension_pad_clearance           = 0.6;
 // Depth of the upper suspension holder mounting holes into the bulkhead
 front_bulkhead_upper_holder_hole_depth            = 14;
 
+// The spacing between the holes for the arm hinges
+front_bulkhead_pin_spacing                        = 55.8;
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Center hook parameters
 // The hook is part of the bottom recess and keeps hinge pins from backing out.
@@ -583,9 +621,6 @@ front_suspension_arm_pad_hook_w                   = 5.2;
 // ─────────────────────────────────────────────────────────────────────────────
 // Front Shock Tower
 // ─────────────────────────────────────────────────────────────────────────────
-
-// The spacing between the holes for the arm hinges
-front_bulkhead_pin_spacing                        = 55.8;
 
 // The overall height of the tower on the Y-axis
 front_shock_tower_h                               = 28.9;
@@ -1080,3 +1115,12 @@ steering_servo_arm_bolt_d                         = m3_hole_dia;
 steering_servo_arm_center_bolt_d                  = m3_hole_dia;
 steering_servo_arm_center_bolt_bore_d             = 7.8;
 steering_servo_arm_center_bolt_bore_h             = 1.2;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Upper steering panel
+// ─────────────────────────────────────────────────────────────────────────────
+upper_steering_panel_bolt_d                       = m3_hole_dia;
+upper_steering_panel_boss_od                      = 6;
+upper_steering_panel_bulkhead_bore_d              = 4.6;
+upper_steering_panel_bulkhead_bore_h              = 1;
+upper_steering_panel_bulkhead_spacing             = 21;

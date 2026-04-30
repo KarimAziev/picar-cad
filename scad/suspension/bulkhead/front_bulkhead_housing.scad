@@ -45,8 +45,6 @@ module front_bulkhead_housing(color=cobalt_blue_metallic,
 
   barrel_size = lower_arm_mount_cutout_size();
   barrel_len = barrel_size[1] - hinge_clearance;
-  bolt_spacing_max_x = max(front_bulkhead_mount_bolt_spacing_1[0],
-                           front_bulkhead_mount_bolt_spacing_2[0]);
 
   bolt_spacing_max_y = max(front_bulkhead_mount_bolt_spacing_1[1],
                            front_bulkhead_mount_bolt_spacing_2[1]);
@@ -111,7 +109,7 @@ module front_bulkhead_housing(color=cobalt_blue_metallic,
 
               mirror_copy([1, 0, 0]) {
                 let (dia = barrel_len * front_bulkhead_hinge_cutout_d_factor) {
-                  translate([bolt_spacing_max_x / 2 + dia / 2
+                  translate([front_bulkhead_mount_bolt_spacing_x / 2 + dia / 2
                              + front_bulkhead_mount_bolt_d / 2
                              + front_bulkhead_hinge_cutout_bolt_offset,
                              front_bulkhead_len / 2
