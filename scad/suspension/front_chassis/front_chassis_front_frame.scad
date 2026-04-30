@@ -155,7 +155,7 @@ module front_chassis_front_frame(debug=front_chassis_front_frame_debug,
 module front_chassis_front_frame_printable(debug=front_chassis_front_frame_debug,
                                            color=white_smoke_1) {
   rotate([0, 180, 0]) {
-    front_chassis_front_frame(debug=$preview ? false : debug, color=color);
+    front_chassis_front_frame(debug=$preview ? debug : false, color=color);
   }
 }
 

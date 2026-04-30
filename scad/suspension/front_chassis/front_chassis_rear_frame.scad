@@ -108,7 +108,7 @@ module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
 }
 
 module front_chassis_rear_frame_printable(debug=false, color=white_smoke_1) {
-  front_chassis_rear_frame(debug=$preview ? false : debug, color=color);
+  front_chassis_rear_frame(debug=$preview ? debug : false, color=color);
 }
 
 front_chassis_rear_frame_printable(debug=front_chassis_rear_frame_debug);
