@@ -110,9 +110,7 @@ module front_chassis_front_frame(debug=front_chassis_front_frame_debug,
           mirror_copy([1, 0, 0]) {
             polygon(pts);
             // The chassis ears
-            translate([x2,
-                       y2 + front_chassis_ear_w / 2,
-                       0]) {
+            translate([x2, y2, 0]) {
               polygon(front_chassis_ear_pts());
             }
           }
