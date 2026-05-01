@@ -111,14 +111,4 @@ module front_bulkhead_chassis_with_slots_positions(outer_spacing=front_bulkhead_
   }
 }
 
-// front_bulkhead_housing_slots_non_center_y();
-
-// front_bulkhead_chassis_with_slots_positions(padding=front_bulkhead_mount_bolt_padding) {
-//   cylinder(d=3, h=10, $fn=40);
-// }
-// translate([15, 3, 0]) {
-//   #cube(front_bulkhead_mount_bolt_padding);
-// }
-
-four_corner_counterbores(size=front_bulkhead_mount_bolt_spacing_1, d=3, h=10);
-#four_corner_counterbores(size=front_bulkhead_mount_bolt_spacing_2, d=3, h=10);
+front_bulkhead_housing_slots_non_center_y();
