@@ -111,7 +111,7 @@ module sliding_lid(size=[86, 90, 35],
         }
       }
       translate([0, lid_l / 2 - rail_cutout_len / 2 + 0.1, thickness]) {
-        cube_3d(size=[lid_w + 1,
+        cuboid(size=[lid_w + 1,
                       rail_cutout_len + 0.1,
                       thickness
                       + rail_top_thickness

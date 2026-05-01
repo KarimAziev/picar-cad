@@ -44,7 +44,7 @@ module knuckle_ball_stud_housing(od=knuckle_ball_stud_mount_outer_d,
     difference() {
       intersection() {
         sphere(d=od, $fn=fn);
-        cube_3d([od, od, sphere_h]);
+        cuboid([od, od, sphere_h]);
       }
       translate([0, 0, -0.5]) {
         linear_extrude(height=sphere_h + 1, center=false) {

@@ -84,11 +84,11 @@ module screw_terminal(base_w = undef,            // overall base width (optional
           color(colr, alpha=1) {
             difference() {
               union() {
-                cube_3d(size = [effective_base_w, thickness, base_h]);
+                cuboid(size = [effective_base_w, thickness, base_h]);
 
                 if (!isosceles_trapezoid) {
                   translate([0, -thickness / 4, 0]) {
-                    cube_3d(size = [effective_base_w, thickness / 2, base_h + top_h]);
+                    cuboid(size = [effective_base_w, thickness / 2, base_h + top_h]);
                   }
                 }
 
@@ -117,7 +117,7 @@ module screw_terminal(base_w = undef,            // overall base width (optional
               cx = x_start + i * pitch;
 
               translate([cx, 0.01, wall_thickness]) {
-                cube_3d([contact_w, thickness, contact_h]);
+                cuboid([contact_w, thickness, contact_h]);
               }
 
               translate([cx, 0, wall_thickness]) {
@@ -125,7 +125,7 @@ module screw_terminal(base_w = undef,            // overall base width (optional
                   cylinder(h = base_h + top_h / 2, d = contact_w, $fn = 30);
                   rotate([0, 0, i * 30]) {
                     translate([0, 0, base_h + top_h / 2 - top_h + 0.1]) {
-                      cube_3d([0.4, contact_w, top_h]);
+                      cuboid([0.4, contact_w, top_h]);
                     }
                   }
                 }
@@ -146,7 +146,7 @@ module screw_terminal(base_w = undef,            // overall base width (optional
           cx = x_start + i * pitch;
 
           translate([cx, 0.1, wall_thickness]) {
-            cube_3d([contact_w, thickness, contact_h / 2]);
+            cuboid([contact_w, thickness, contact_h / 2]);
           }
         }
       }

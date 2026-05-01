@@ -251,7 +251,7 @@ module chassis_body_3d(panel_color="white") {
             }
           }
           translate([0, -chassis_offset_rad / 2, 0]) {
-            cube_3d(size=[chassis_body_w,
+            cuboid(size=[chassis_body_w,
                           chassis_offset_rad,
                           chassis_thickness]);
           }

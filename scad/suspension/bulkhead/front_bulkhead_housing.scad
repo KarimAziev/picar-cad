@@ -67,9 +67,9 @@ module front_bulkhead_housing(color=cobalt_blue_metallic,
             difference() {
               union() {
                 difference() {
-                  cube_3d([front_bulkhead_w,
-                           front_bulkhead_len,
-                           barrel_thickness]);
+                  cuboid([front_bulkhead_w,
+                          front_bulkhead_len,
+                          barrel_thickness]);
                 }
                 mirror_copy([1, 0, 0]) {
                   translate([-front_bulkhead_w / 2 - barrel_w,

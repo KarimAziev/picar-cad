@@ -325,7 +325,7 @@ module step_down_voltage_regulator(plist = [],
         union() {
           difference() {
             color("green", alpha=1) {
-              cube_3d([length,
+              cuboid([length,
                        w,
                        thickness],
                       center=true);

@@ -426,11 +426,11 @@ module slot_layout(specs,
 
           if (show_borders) {
             #difference() {
-              cube_3d(size=[curr_x,
+              cuboid(size=[curr_x,
                             curr_y,
                             thickness]);
               translate([0, 0, -0.5]) {
-                cube_3d(size=[curr_x - 1,
+                cuboid(size=[curr_x - 1,
                               curr_y - 1,
                               thickness + 1]);
               }

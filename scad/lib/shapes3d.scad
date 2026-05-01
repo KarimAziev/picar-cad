@@ -5,6 +5,7 @@
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */
+
 use <functions.scad>
 use <shapes2d.scad>
 use <transforms.scad>
@@ -30,13 +31,163 @@ module rounded_cube(size,
   }
 }
 
-module cube_3d(size, center=true) {
-  if (center) {
-    translate([0, 0, (is_num(size) ? size : size[2]) / 2]) {
-      cube(size, center=center);
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  cuboid
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Creates a box or rounded box with per-axis anchoring relative to the origin.
+
+  This module extends OpenSCAD's `cube()` placement behavior by allowing each
+  axis to be anchored independently. It can also generate rounded edges, either
+  as a fast rounded-rectangle extrusion or as a fully 3D-rounded shape using
+  Minkowski expansion.
+
+  **Parameters**
+
+  `size`:
+    Cuboid dimensions. May be either:
+    - a single number `s`, expanded to `[s, s, s]`
+    - a vector `[x, y, z]`
+
+  `anchor`:
+    Per-axis anchor relative to the origin as `[x, y, z]`.
+
+    Allowed values for each axis:
+    - `1`  → object starts at the origin and extends in the positive direction
+    - `0`  → object is centered on that axis
+    - `-1` → object ends at the origin and extends in the negative direction
+
+    Defaults to `[0, 0, 1]`, meaning centered on X/Y and extending upward on Z.
+
+    Examples:
+    - `[1, 1, 1]`  → same placement as `cube(size)`
+    - `[0, 0, 0]`  → same placement as `cube(size, center=true)`
+    - `[0, 0, 1]`  → centered on X/Y, rests on the XY plane
+    - `[-1, 0, 1]` → extends into negative X, centered on Y, extends upward on Z
+
+    If an element is `undef`, that axis falls back to:
+    - X: `0`
+    - Y: `0`
+    - Z: `1`
+
+  `r`:
+    Absolute rounding radius.
+
+    If `undef` or `0`, no rounding is applied unless `r_factor` produces one.
+
+  `r_factor`:
+    Relative rounding radius factor.
+
+    When `r` is `undef`, the radius is computed from the smallest relevant
+    dimension:
+    - for the extruded version: `min(size[0], size[1]) * r_factor`
+    - for the Minkowski version: `min(size[0], size[1], size[2]) * r_factor`
+
+  `use_minkowski`:
+    If `true`, creates a fully 3D-rounded cuboid by applying a Minkowski sum
+    with a sphere.
+
+    If `false` (default), creates a prism by extruding a 2D rounded rectangle.
+    This is faster, but only rounds the vertical edges and the top/bottom
+    perimeter, not all 3D corners equally.
+
+  `side`:
+    Passed through to `rounded_rect()` when `use_minkowski=false`.
+
+    Limits rounding to selected sides. Expected values are:
+    `"all"` (default behavior), `"top"`, `"left"`, `"right"`, or `"bottom"`.
+
+  `fn`:
+    Segment count used for spheres/circles when generating rounded geometry.
+    Higher values produce smoother curves at greater render cost.
+
+  **Behavior**
+
+  - If both `r` and `r_factor` are `undef` or `0`, a plain `cube()` is created.
+  - If rounding is requested and `use_minkowski=true`, all 3D edges/corners are
+    rounded.
+  - Otherwise, a rounded 2D profile is extruded along Z.
+
+  The effective radius is always clamped so it cannot exceed half of any
+  relevant dimension.
+
+  **Examples**
+  ```scad
+  // Same as cube([10, 20, 30])
+  cuboid([10, 20, 30], anchor=[1, 1, 1]);
+
+  // Same as cube([10, 20, 30], center=true)
+  cuboid([10, 20, 30], anchor=[0, 0, 0]);
+
+  // Centered in X/Y, sits on the XY plane and extends upward in Z
+  cuboid([10, 20, 30], anchor=[0, 0, 1]);
+
+  // Extends into negative X, centered in Y, extends upward in Z
+  cuboid([10, 20, 30], anchor=[-1, 0, 1]);
+
+  // Fast rounded box using 2D extrusion
+  cuboid([20, 30, 10], r=2);
+
+  // Fully 3D-rounded box
+  cuboid([20, 30, 10], r=2, use_minkowski=true, fn=48);
+  ```
+  */
+module cuboid(size,
+              anchor=[0, 0, 1],
+              r,
+              r_factor,
+              use_minkowski=false,
+              side,
+              fn=36) {
+  assert(is_num(size) || is_list(size) && len([for (v = size)
+                                                  if (is_num(v)) v]) == 3,
+         "Size should be number or [number, number, number]");
+  size = is_num(size) ? [size, size, size] : size;
+
+  anchor = is_undef(anchor) ? [0, 0, 0] : anchor;
+  align_x = is_undef(anchor[0]) ? 0 : anchor[0];
+  align_y = is_undef(anchor[1]) ? 0 : anchor[1];
+  align_z = is_undef(anchor[2]) ? 1 : anchor[2];
+
+  _align = [align_x, align_y, align_z];
+
+  function xyz(item_size) =
+    [for (i = [0 : len(_align) - 1])
+        let (n = _align[i],
+             v = item_size[i])
+          n == 0 ? -v / 2 : n == -1 ? -v : 0];
+
+  if ((is_undef(r) || r == 0) && (is_undef(r_factor) || r_factor == 0)) {
+    translate(xyz(size)) {
+      cube(size);
+    }
+  } else if (use_minkowski) {
+    rad = min(is_undef(r) ? (min(size[0], size[1], size[2])) * r_factor : r,
+              size[0] / 2,
+              size[1] / 2,
+              size[2] / 2);
+    inner = [for (i=[0:2]) max(0.001, size[i] - rad * 2)];
+
+    translate(xyz(size)) {
+      minkowski(convexity=5) {
+        cube(inner);
+        translate([rad, rad, rad]) {
+          sphere(r=rad, $fn=fn);
+        }
+      }
     }
   } else {
-    cube(size, center=false);
+    translate(xyz(size)) {
+      linear_extrude(height=size[2], center=false) {
+        rounded_rect([size[0], size[1]],
+                     center=false,
+                     side=side,
+                     fn=fn,
+                     r=r,
+                     r_factor=r_factor);
+      }
+    }
   }
 }
 

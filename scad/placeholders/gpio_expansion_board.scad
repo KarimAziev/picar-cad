@@ -96,7 +96,7 @@ module gpio_expansion_board(show_standoff=true,
                         center=true);
             translate([0, 0, 0]) {
               color(yellow_1, alpha=1) {
-                cube_3d([total_x, total_y, gpio_expansion_header_up_height]);
+                cuboid([total_x, total_y, gpio_expansion_header_up_height]);
               }
             }
           }
@@ -122,7 +122,7 @@ module gpio_expansion_board(show_standoff=true,
                                 p=0.65,
                                 center=true);
                     color(yellow_1, alpha=1) {
-                      cube_3d([total_x, total_y, gpio_expansion_header_up_height]);
+                      cuboid([total_x, total_y, gpio_expansion_header_up_height]);
                     }
                   }
                 }

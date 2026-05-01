@@ -91,7 +91,7 @@ module solder_tab_cutout(battery_dia,
     thickness = size[1];
     union() {
       translate([0, 0, inc_step != 0 ? (-inc_step / 2) : 0]) {
-        cube_3d(size=[size[0], thickness, size[2] + inc_step]);
+        cuboid(size=[size[0], thickness, size[2] + inc_step]);
       }
       mirror_copy([1, 0, 0]) {
         translate([-h / 2 - w / 2, 0, hook_y_position]) {
@@ -136,7 +136,7 @@ module solder_tab_cutout(battery_dia,
                - front_rear_thickness / 2
                - inc_step / 2,
                -inc_step]) {
-      cube_3d(size=[outer_bottom_cutout_size[0],
+      cuboid(size=[outer_bottom_cutout_size[0],
                     bottom_outer_thickness,
                     outer_bottom_cutout_size[2] + inc_step]);
     }

@@ -278,7 +278,7 @@ module test_panel(specs=example_slots,
 
   if (!use_children) {
     difference() {
-      cube_3d([total_size[0] + extra_padding, total_size[1] + extra_padding,
+      cuboid([total_size[0] + extra_padding, total_size[1] + extra_padding,
                thickness]);
       slots_or_placeholders();
     }

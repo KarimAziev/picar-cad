@@ -55,7 +55,7 @@ module probe_panel(tab_contact_hole_d=tab_contact_default_hole_d,
                 full_size[1] + panel_padding * 2,
                 slot_thickness];
   difference() {
-    cube_3d(panel_size);
+    cuboid(panel_size);
     battery_holder(tab_contact_hole_d=tab_contact_hole_d,
                    tab_contact_slot_pad_len=tab_contact_slot_pad_len,
                    tab_contact_slot_pad_w=tab_contact_slot_pad_w,

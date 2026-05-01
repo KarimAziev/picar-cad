@@ -21,7 +21,7 @@ module  chassis_connector_tongue() {
   translate([0, 0, chassis_connector_height]) {
     translate([0, -chassis_connector_len / 2, 0]) {
       difference() {
-        cube_3d(size=[chassis_connector_w,
+        cuboid(size=[chassis_connector_w,
                       chassis_connector_len,
                       chassis_connector_height]);
         mirror_copy([1, 0, 0]) {
@@ -49,7 +49,7 @@ module chassis_connector_groove() {
        length = chassis_connector_len + chassis_connector_len_clearance
        + out_clearance) {
     translate([0, -length / 2 + out_clearance, chassis_connector_height]) {
-      cube_3d(size=[chassis_connector_w + chassis_connector_w_clearance,
+      cuboid(size=[chassis_connector_w + chassis_connector_w_clearance,
                     length,
                     chassis_connector_height]);
     }

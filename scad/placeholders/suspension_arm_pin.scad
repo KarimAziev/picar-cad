@@ -35,7 +35,7 @@ module suspension_arm_pin(d,
     color(color, alpha=1) {
       intersection() {
         cylinder(d=d, h=pad_l, $fn=fn);
-        cube_3d([d, pad_w, pad_l]);
+        cuboid([d, pad_w, pad_l]);
       }
     }
   }
@@ -48,7 +48,7 @@ module suspension_arm_pin(d,
         difference() {
           children();
           translate([0, y, z]) {
-            cube_3d([d + 0.1, d + 0.1, pad_l + 0.1]);
+            cuboid([d + 0.1, d + 0.1, pad_l + 0.1]);
           }
         }
         translate([0, is_bottom ? 0 : y, is_bottom ? z : 0]) {

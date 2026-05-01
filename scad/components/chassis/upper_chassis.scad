@@ -284,7 +284,7 @@ module pan_servo_slot_3d() {
           rows_children(gap=chassis_pan_servo_rib_slots_gap,
                         rows=chassis_pan_servo_rib_slots_rows,
                         w=chassis_pan_servo_rib_slots_thickness) {
-            cube_3d([chassis_pan_servo_rib_slots_len,
+            cuboid([chassis_pan_servo_rib_slots_len,
                      chassis_pan_servo_rib_slots_thickness,
                      hole_h]);
           }

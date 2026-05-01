@@ -37,7 +37,7 @@ module center_link(length=steering_center_link_len,
       if (center_z_bar) {
         cube([bar_len + notch_d * 2, width, thickness], center=true);
       } else {
-        cube_3d([bar_len + notch_d * 2, width, thickness], center=true);
+        cuboid([bar_len + notch_d * 2, width, thickness]);
       }
 
       mirror_copy([1, 0, 0]) {

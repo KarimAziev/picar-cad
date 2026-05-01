@@ -37,8 +37,8 @@ module xt90_contact_pin(pin_d,
       difference() {
         cylinder(d=pin_d, h=pin_h, $fn=8);
         translate([0, 0, -0.1]) {
-          cube_3d([0.5, pin_d + 1, pin_h]);
-          cube_3d([pin_d + 1, 0.5, pin_h]);
+          cuboid([0.5, pin_d + 1, pin_h]);
+          cuboid([pin_d + 1, 0.5, pin_h]);
           counterbore(d=contact_d
                       - pin_thickness * 2,
                       no_bore=true,
@@ -61,7 +61,7 @@ module xt90_contact_pin(pin_d,
           }
           translate([0, contact_d / 2, contact_h - contact_wall_h]) {
 
-            cube_3d([contact_d, contact_d, contact_wall_h + 0.1]);
+            cuboid([contact_d, contact_d, contact_wall_h + 0.1]);
           }
         }
       }

@@ -57,13 +57,13 @@ module voltmeter_display(txt, display, text_props) {
     main_h = display_h - upper_thickness;
     union() {
       color(bottom_color, alpha=1) {
-        cube_3d([display_w,
+        cuboid([display_w,
                  display_len,
                  main_h]);
       }
       translate([0, 0, main_h]) {
         color(upper_color, alpha=1) {
-          cube_3d([display_w, display_len, upper_thickness]);
+          cuboid([display_w, display_len, upper_thickness]);
         }
 
         if (!is_undef(txt)) {
@@ -111,13 +111,13 @@ module voltmeter_board(show_standoffs=true,
       union() {
         union() {
           color(green_2, alpha=1) {
-            cube_3d([board_w,
+            cuboid([board_w,
                      board_len,
                      board_h]);
           }
           four_corner_children(size=bolt_spacing) {
             color(green_2, alpha=1) {
-              cube_3d(size=[bolt_dia + bolt_padding,
+              cuboid(size=[bolt_dia + bolt_padding,
                             bolt_dia + bolt_padding,
                             board_h],
                       center=true);

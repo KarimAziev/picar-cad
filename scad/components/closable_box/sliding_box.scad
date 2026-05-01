@@ -120,7 +120,7 @@ module box(size=[86, 90, 35],
           translate([0,
                      l / 2 + rim_front_w - latch_h / 2,
                      h + rim_h - latch_h]) {
-            cube_3d([latch_l, latch_h + 0.1, latch_h + 0.1],
+            cuboid([latch_l, latch_h + 0.1, latch_h + 0.1],
                     center=true);
           }
         }
@@ -153,7 +153,7 @@ module box(size=[86, 90, 35],
         }
       }
     }
-    cube_3d(size=[size[0] + rim_w, size[1] + rim_front_w, size[2] + rim_h],
+    cuboid(size=[size[0] + rim_w, size[1] + rim_front_w, size[2] + rim_h],
             center=true);
   }
 }
@@ -297,7 +297,7 @@ closable_box_and_lid(w=25,
 
 translate([-box_size[0] / 2, 0, 0]) {
 
-  #cube_3d([box_size[0], box_size[1],
+  #cuboid([box_size[0], box_size[1],
             sliding_box_full_height(size=box_size,
                                     rim_h=rim_h,
                                     lid_thickness=lid_thickness)]);

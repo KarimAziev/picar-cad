@@ -70,14 +70,14 @@ module power_case(size=[power_case_width,
         difference() {
           // Outer case
           union() {
-            rounded_cube([w, l, h], r=corner_rad, center=true);
+            cuboid(size=[w, l, h], r=corner_rad, use_minkowski=true);
             translate([0, 0, h - corner_rad / 2]) {
               cube([w, l, corner_rad], center=true);
             }
           }
           translate([0, 0, bottom_thickness]) {
             // Cutout for LiPo pack
-            cube_3d([inner_lipo_x_cutout, inner_y_cutout, h], center=true);
+            cuboid([inner_lipo_x_cutout, inner_y_cutout, h]);
           }
 
           // Holes for 4 corner mounting bolts

@@ -299,18 +299,18 @@ module battery_holder(battery_len=battery_length,
                 }
 
                 translate([0, 0, inner_cutout_h]) {
-                  cube_3d(size=[total_w - side_thickness * 2,
-                                battery_len,
-                                height]);
+                  cuboid(size=[total_w - side_thickness * 2,
+                               battery_len,
+                               height]);
                 }
 
                 mirror_copy([1, 0, 0]) {
                   translate([total_w / 2 - inner_thickness + 0.1,
                              0,
                              height - max_side_cutout_h]) {
-                    cube_3d([inner_thickness * 2 + 0.2,
-                             battery_len,
-                             height + bottom_thickness + 1]);
+                    cuboid([inner_thickness * 2 + 0.2,
+                            battery_len,
+                            height + bottom_thickness + 1]);
                   }
                 }
 
@@ -322,9 +322,9 @@ module battery_holder(battery_len=battery_length,
                   union() {
                     if (is_intercell) {
                       translate([0, 0, intercell_reces_size[2]]) {
-                        cube_3d(size=[intercell_reces_size[0],
-                                      intercell_reces_size[1],
-                                      height]);
+                        cuboid(size=[intercell_reces_size[0],
+                                     intercell_reces_size[1],
+                                     height]);
                       }
                     }
 
@@ -436,7 +436,7 @@ module battery_holder_single_cell(full_width,
     translate([center ? 0 : full_width / 2, center ? 0 : holder_l / 2, 0]) {
       color(color, alpha=1) {
         difference() {
-          cube_3d(size=[full_width, holder_l, height]);
+          cuboid(size=[full_width, holder_l, height]);
           if (terminal_type == "solder_tab") {
             mirror_copy([0, 1, 0]) {
               translate([0, -holder_l / 2 + front_rear_thickness / 2, 0]) {
@@ -450,14 +450,14 @@ module battery_holder_single_cell(full_width,
 
           if (!is_undef(inner_cutout_size)) {
             translate([0, 0, -0.2]) {
-              cube_3d(size=[inner_cutout_size[0],
-                            inner_cutout_size[1],
-                            height + 0.2]);
+              cuboid(size=[inner_cutout_size[0],
+                           inner_cutout_size[1],
+                           height + 0.2]);
             }
             translate([0, 0, bottom_thickness]) {
-              cube_3d(size=[inner_cutout_size[0],
-                            holder_l - front_rear_thickness * 2,
-                            height + 0.2]);
+              cuboid(size=[inner_cutout_size[0],
+                           holder_l - front_rear_thickness * 2,
+                           height + 0.2]);
             }
           }
 
@@ -475,11 +475,11 @@ module battery_holder_single_cell(full_width,
             }
           } else {
             translate([0, 0, bottom_thickness]) {
-              cube_3d([battery_dia,
-                       max(battery_len + 1,
-                           max_inner_cutout_len,
-                           holder_l - front_rear_thickness * 2) + 0.01,
-                       height]);
+              cuboid([battery_dia,
+                      max(battery_len + 1,
+                          max_inner_cutout_len,
+                          holder_l - front_rear_thickness * 2) + 0.01,
+                      height]);
             }
           }
         }

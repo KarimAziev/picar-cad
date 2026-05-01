@@ -133,19 +133,20 @@ module power_lid(show_switch_button=show_switch_button,
       union() {
         color(lid_color, alpha=1) {
           difference() {
-            rounded_cube(size=[power_lid_width,
-                               power_case_length,
-                               power_lid_height],
-                         center=true);
+            cuboid(size=[power_lid_width,
+                         power_case_length,
+                         power_lid_height],
+                   use_minkowski=true,
+                   r_factor=0.02);
 
             translate([0, 0, 0]) {
               power_lid_side_wall_slots();
             }
 
             translate([0, 0, -1]) {
-              cube_3d(size=[inner_x_cutout,
-                            power_case_length + 1,
-                            power_lid_height + 2]);
+              cuboid(size=[inner_x_cutout,
+                           power_case_length + 1,
+                           power_lid_height + 2]);
             }
 
             power_lid_side_bolt_holes();
@@ -206,7 +207,9 @@ module power_lid_base(size=[inner_x_cutout,
     union() {
       color(lid_color, alpha=1) {
         difference() {
-          rounded_cube(size=[w, l, thickness]);
+          cuboid(size=[w, l, thickness],
+                 use_minkowski=true,
+                 r_factor=0.02);
           power_lid_slots(left_columns=left_columns,
                           right_columns=right_columns);
         }
