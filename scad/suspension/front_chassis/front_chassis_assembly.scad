@@ -78,10 +78,10 @@ show_front_shock_tower                      = true;
 show_front_suspension_arm_pad               = true;
 
 show_left_knuckle                           = true;
-show_right_knuckle                          = false;
-show_knuckle_bushing                        = false;
-show_knuckle_inner_bearing                  = false;
-show_knuckle_outer_bearing                  = false;
+show_right_knuckle                          = true;
+show_knuckle_bushing                        = true;
+show_knuckle_inner_bearing                  = true;
+show_knuckle_outer_bearing                  = true;
 show_knuckle_tie_rod                        = true;
 
 show_front_bulkhead_housing                 = true;

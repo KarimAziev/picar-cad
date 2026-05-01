@@ -12,8 +12,8 @@ use <../wishbone_arms/lower_arm.scad>
 
 function front_bulkhead_base_size(outer_spacing=front_bulkhead_mount_bolt_spacing_1,
                                   d=front_bulkhead_mount_bolt_d,
-                                  padding_x=chassis_center_mount_padding_x,
-                                  padding_y=chassis_center_mount_padding_y) =
+                                  padding_x=front_chassis_bulkhead_padding_x,
+                                  padding_y=front_chassis_bulkhead_padding_y) =
   let (size_x=outer_spacing[0] + d + padding_x,
        size_y=outer_spacing[1] + d + padding_y)
   [size_x, size_y];
@@ -90,7 +90,6 @@ module front_bulkhead_chassis_with_slots_positions(outer_spacing=front_bulkhead_
     }
 
     translate([0, outer_spacing[1] - inner_spacing[1] - d - padding, 0]) {
-
       let (size=inner_spacing,
            full_size = four_corner_counterbores_full_size(size=size,
                                                           d=d),
@@ -112,4 +111,14 @@ module front_bulkhead_chassis_with_slots_positions(outer_spacing=front_bulkhead_
   }
 }
 
-front_bulkhead_housing_slots_non_center_y();
+// front_bulkhead_housing_slots_non_center_y();
+
+// front_bulkhead_chassis_with_slots_positions(padding=front_bulkhead_mount_bolt_padding) {
+//   cylinder(d=3, h=10, $fn=40);
+// }
+// translate([15, 3, 0]) {
+//   #cube(front_bulkhead_mount_bolt_padding);
+// }
+
+four_corner_counterbores(size=front_bulkhead_mount_bolt_spacing_1, d=3, h=10);
+#four_corner_counterbores(size=front_bulkhead_mount_bolt_spacing_2, d=3, h=10);

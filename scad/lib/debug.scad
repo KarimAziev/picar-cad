@@ -6,6 +6,7 @@
  */
 include <../colors.scad>
 
+use <functions.scad>
 use <transforms.scad>
 
 module debug_polygon_text(points,
@@ -16,11 +17,17 @@ module debug_polygon_text(points,
                           offset_x,
                           offset_y,
                           rotation,
+                          offset_x_exclude,
+                          offset_y_exclude,
                           font,
                           h=0.5) {
   offset_x = is_undef(offset_x) ? 0 : offset_x;
   offset_y = is_undef(offset_y) ? 0 : offset_y;
+
   has_h = is_num(h);
+
+  function maybe_exclude(i, items, value) =
+    !is_undef(items) && member(i, items) ? 0 : value;
 
   module _circle(r=circle_r) {
     if (has_h) {
@@ -33,8 +40,8 @@ module debug_polygon_text(points,
   }
   for (i = [0 : len(points) - 1]) {
     let (pt = points[i],
-         p0 = pt[0] + offset_x,
-         p1 = pt[1] + offset_y) {
+         p0 = pt[0] + maybe_exclude(i, offset_x_exclude, offset_x),
+         p1 = pt[1] + maybe_exclude(i, offset_y_exclude, offset_y)) {
       color(color) {
         translate([p0, p1, 0.1]) {
           maybe_rotate(rotation) {

@@ -17,10 +17,13 @@ include <computed_params.scad>
 use <../../lib/debug.scad>
 use <../../lib/functions.scad>
 use <../../lib/placement.scad>
+use <../../lib/polygon_util.scad>
+use <../../lib/shapes2d.scad>
 use <../../lib/shapes3d.scad>
 use <../../lib/slider.scad>
 use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
+use <../../lib/trapezoids.scad>
 use <../../placeholders/dservo.scad>
 use <../bellcrank/bellcrank_slots.scad>
 use <../bellcrank_steering_slots.scad>
@@ -30,31 +33,73 @@ use <../bulkhead/front_bulkhead_housing.scad>
 use <../wishbone_arms/lower_arm.scad>
 use <front_chassis_joint.scad>
 
+front_chassis_front_frame_debug = true;
+
 function front_chassis_front_frame_start_y() =
   front_bulkhead_pad_distance_to_hinge() +
   bulkhead_size_y
   + bulkhead_transition_len
   + front_bumper_bolt_y_offset
   + front_bumper_center_bolt_y_offset
-  + front_bumper_bolt_d;;
+  + front_bumper_bolt_d;
 
-module front_chassis_front_frame(debug=false,
+function front_chassis_ear_pts() =
+  let (ear_y = front_chassis_ear_w / 2,
+       l = front_chassis_ear_l,
+       pts = [[0, ear_y + front_chassis_ear_extra_w],
+              [l * 0.4, ear_y],
+              [l * 0.75, ear_y * 0.85],
+              [l * 0.9, ear_y * 0.6],
+              [l * 0.97, ear_y * 0.3],
+              [l, 0],
+              [0, 0]],
+       mirrored_pts = [for (p = reverse(pts))
+           [p[0], -p[1]]])
+  concat(pts, mirrored_pts);
+
+module front_chassis_front_frame(debug=front_chassis_front_frame_debug,
+                                 debug_font="Gill Sans:style=Bold",
+                                 debug_color=green_2,
                                  color=white_smoke_1) {
 
-  start_y1 = front_chassis_front_frame_start_y();
+  start_y0 = front_chassis_front_frame_start_y();
 
-  start_y2 = start_y1 - front_bumper_center_bolt_y_offset;
+  x1 = front_bumper_bolt_spacing_x / 2
+    + front_bumper_bolt_d / 2
+    + front_bumper_bolt_pad_x;
+  start_y1 = start_y0 - front_bumper_center_bolt_y_offset;
+
+  x2 = bulkhead_size_x / 2;
+  y2 = start_y1 - bulkhead_size_y;
+
+  y3 = bulkhead_transition_len
+    + front_chassis_bellcrank_tool_access_hole_d / 2
+    - front_lower_arm_lower_hinge_barrel_h;
+
+  x_end = front_frame_x_end;
+
   y_end = -bellcrank_y_distance_from_bulkhead - bellcrank_mount_r;
 
-  pts = [[0, start_y1],
-         [bulkhead_size_x / 2, start_y2],
-         [bulkhead_size_x / 2,
-          bulkhead_transition_len - front_lower_arm_lower_hinge_barrel_h],
-         [bellcrank_x + bellcrank_mount_r, bulkhead_transition_len
-          - bellcrank_mount_r
-          - front_lower_arm_lower_hinge_barrel_h],
-         [bellcrank_x + bellcrank_mount_r, y_end],
+  pts = [[0, start_y0],
+         [x1, start_y1],
+         [x2, y2],
+         [x1, y3],
+         [x_end, y3 - bellcrank_mount_r],
+         [x_end, y_end],
          [0, y_end]];
+
+  module _debug(rotation) {
+    let (x_size = polygon_x_len(pts) * 2,
+         font_size = constraint(x_size * 0.04, 1, 5)) {
+      debug_polygon_text(pts,
+                         rotation=rotation,
+                         font_size=font_size,
+                         font=debug_font,
+                         offset_x=font_size,
+                         offset_x_exclude=[0, len(pts) - 1],
+                         color=debug_color);
+    }
+  }
 
   union() {
     difference() {
@@ -64,6 +109,10 @@ module front_chassis_front_frame(debug=false,
                        convexity=2) {
           mirror_copy([1, 0, 0]) {
             polygon(pts);
+            // The chassis ears
+            translate([x2, y2, 0]) {
+              polygon(front_chassis_ear_pts());
+            }
           }
         }
       }
@@ -76,7 +125,7 @@ module front_chassis_front_frame(debug=false,
         bellcrank_slots();
       }
 
-      // Two through holes for metal pins used in the joint with the front rear frame
+      // Two through holes for metal pins used in the joint with the rear frame
       translate([0, y_end, 0]) {
         front_chassis_pin_joint_holes(center=true,
                                       direction=-1,
@@ -86,7 +135,7 @@ module front_chassis_front_frame(debug=false,
 
       // One center hole for the bumper
       translate([0,
-                 start_y1
+                 start_y0
                  - front_bumper_bolt_d / 2
                  - front_bumper_bolt_pad_y,
                  0]) {
@@ -96,39 +145,38 @@ module front_chassis_front_frame(debug=false,
 
       // Two side holes for the bumper
       translate([0,
-                 start_y2
+                 start_y1
                  - front_bumper_bolt_d / 2
                  - front_bumper_bolt_pad_y,
                  0]) {
 
-        four_corner_counterbores(size=[bulkhead_size_x
-                                         - front_bumper_bolt_d
-                                         - front_bumper_bolt_pad_x * 2, 0],
-                                   center=true,
-                                   d=front_bumper_bolt_d,
-                                   h=front_chassis_thickness);
+        four_corner_counterbores(size=[front_bumper_bolt_spacing_x, 0],
+                                 center=true,
+                                 d=front_bumper_bolt_d,
+                                 h=front_chassis_thickness);
       }
     }
 
-   // Male joint for connection to the front rear frame
+    // Male joint for connection to the front rear frame
     translate([0, y_end, 0]) {
       front_chassis_joint_male(color=color);
     }
   }
   if (debug) {
     translate([0, 0, front_chassis_thickness + 0.1]) {
-      debug_polygon_text(pts, font_size=4);
+      _debug();
       mirror([1, 0, 0]) {
-        debug_polygon_text(pts, rotation=[0, 180, 0], font_size=4);
+        _debug(rotation=[0, 180, 0]);
       }
     }
   }
 }
 
-module front_chassis_front_frame_printable(debug=false, color=white_smoke_1) {
+module front_chassis_front_frame_printable(debug=front_chassis_front_frame_debug,
+                                           color=white_smoke_1) {
   rotate([0, 180, 0]) {
-    front_chassis_front_frame(debug=$preview ? false : debug, color=color);
+    front_chassis_front_frame(debug=$preview ? debug : false, color=color);
   }
 }
 
-front_chassis_front_frame(debug=false);
+front_chassis_front_frame_printable();
