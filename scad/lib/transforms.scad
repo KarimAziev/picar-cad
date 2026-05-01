@@ -1,8 +1,8 @@
 use <functions.scad>
 
-module fillet(r) {
-  offset(r = -r) {
-    offset(delta = r) {
+module fillet(r, fn) {
+  offset(r = -r, $fn=fn) {
+    offset(delta = r, $fn=fn) {
       children();
     }
   }
