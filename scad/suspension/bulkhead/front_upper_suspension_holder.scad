@@ -23,6 +23,7 @@ module front_upper_suspension_holder(l=front_upper_suspension_holder_l,
                                      center_cutout_w=front_upper_suspension_holder_rect_cutout_w,
                                      pin_hole_spacing=front_bulkhead_pin_spacing,
                                      pin_d=front_upper_arm_hinge_barrel_hole_d,
+                                     grab_screw_d=front_upper_suspension_holder_grab_screw_d,
                                      bolt_d=front_upper_suspension_holder_bolt_d,
                                      bolt_spacing=front_upper_suspension_holder_bolt_spacing,
                                      bore_d=front_upper_suspension_holder_bolt_bore_d,
@@ -127,7 +128,7 @@ module front_upper_suspension_holder(l=front_upper_suspension_holder_l,
                    0.1 + barrel_border_w,
                    -thickness / 2]) {
           rotate([90, 0, 0]) {
-            sag_compensated_hole(d=bolt_d,
+            sag_compensated_hole(d=grab_screw_d,
                                  h=w + pad + barrel_border_w + 0.2,
                                  fn=$preview ? 30 : 100);
           }

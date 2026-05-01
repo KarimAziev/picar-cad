@@ -720,6 +720,8 @@ front_upper_suspension_holder_pin_barrel_d        = front_upper_arm_hinge_barrel
 // Height of the pin barrel (reinforcement ring) extrusion
 front_upper_suspension_holder_pin_barrel_h        = 6.6;
 
+front_upper_suspension_holder_grab_screw_d        = 3.1;
+
 front_bulkhead_counterbore_d                      = 4.6;
 front_bulkhead_counterbore_h                      = 1.7;
 
