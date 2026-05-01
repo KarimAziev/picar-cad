@@ -34,39 +34,41 @@ module front_upper_suspension_holder(l=front_upper_suspension_holder_l,
                                      barrel_h=front_upper_suspension_holder_pin_barrel_h,
                                      bore_y_offset=front_upper_suspension_holder_bolt_y_offset) {
 
+  barrel_border_w = (barrel_d - pin_d) / 2;
+
   translate([0, 0, thickness]) {
-    maybe_color(color) {
-      translate([0, 0, -thickness]) {
-        difference() {
-          linear_extrude(height=thickness, center=false, convexity=3) {
-            difference() {
-              union() {
-                hull() {
-                  mirror_copy([1, 0, 0]) {
-                    translate([pin_hole_spacing / 2, pin_d / 2, 0]) {
-                      circle(r=pin_d / 2, $fn=$preview ? 40 : 50);
+    difference() {
+      maybe_color(color) {
+        translate([0, 0, -thickness]) {
+          difference() {
+            linear_extrude(height=thickness, center=false, convexity=3) {
+              difference() {
+                union() {
+                  hull() {
+                    mirror_copy([1, 0, 0]) {
+                      translate([pin_hole_spacing / 2, pin_d / 2, 0]) {
+                        circle(r=pin_d / 2, $fn=$preview ? 40 : 50);
+                      }
+                    }
+
+                    translate([0, -w / 2, 0]) {
+                      rounded_rect([l, w],
+                                   center=true,
+                                   fn=30,
+                                   r_factor=0.2,
+                                   side="bottom");
+                    }
+
+                    translate([0, -w - pad / 2, 0]) {
+                      trapezoid_rounded_bottom(b=bolt_spacing + bore_d,
+                                               t=bolt_spacing + bore_d * 2,
+                                               h=pad,
+                                               center=true);
                     }
                   }
-
-                  translate([0, -w / 2, 0]) {
-                    rounded_rect([l, w],
-                                 center=true,
-                                 fn=30,
-                                 r_factor=0.2,
-                                 side="bottom");
-                  }
-
-                  translate([0, -w - pad / 2, 0]) {
-                    trapezoid_rounded_bottom(b=bolt_spacing + bore_d,
-                                             t=bolt_spacing + bore_d * 2,
-                                             h=pad,
-                                             center=true);
-                  }
-                }
-                let (border_w = (barrel_d - pin_d) / 2) {
                   mirror_copy([1, 0, 0]) {
                     translate([pin_hole_spacing / 2 - barrel_d / 2,
-                               -border_w,
+                               -barrel_border_w,
                                0]) {
                       rounded_rect([barrel_d, barrel_d],
                                    center=false,
@@ -76,45 +78,59 @@ module front_upper_suspension_holder(l=front_upper_suspension_holder_l,
                     }
                   }
                 }
-              }
 
-              translate([0, pin_d / 2, 0]) {
-                rounded_rect([center_cutout_w, pin_d],
-                             center=true,
-                             side="bottom");
-              }
+                translate([0, pin_d / 2, 0]) {
+                  rounded_rect([center_cutout_w, pin_d],
+                               center=true,
+                               side="bottom");
+                }
 
-              translate([0,
-                         - round_cutout_d / 2
-                         - bore_d / 2
-                         - round_cutout_y_offset,
-                         0]) {
-                circle(r=round_cutout_d / 2, $fn=$preview ? 16 : 360);
-              }
+                translate([0,
+                           - round_cutout_d / 2
+                           - bore_d / 2
+                           - round_cutout_y_offset,
+                           0]) {
+                  circle(r=round_cutout_d / 2, $fn=$preview ? 16 : 360);
+                }
 
-              translate([0, pin_d / 2, 0]) {
-                two_x_bolts_2d(x=pin_hole_spacing / 2,
-                               d=pin_d);
+                translate([0, pin_d / 2, 0]) {
+                  two_x_bolts_2d(x=pin_hole_spacing / 2,
+                                 d=pin_d);
+                }
+              }
+            }
+            mirror_copy([1, 0, 0]) {
+              translate([bolt_spacing / 2, -bore_d / 2 - bore_y_offset, 0]) {
+                counterbore(d=bolt_d,
+                            bore_d=bore_d,
+                            h=thickness,
+                            reverse=true,
+                            bore_h=bore_h,
+                            sink=true);
               }
             }
           }
-          mirror_copy([1, 0, 0]) {
-            translate([bolt_spacing / 2, -bore_d / 2 - bore_y_offset, 0]) {
-              counterbore(d=bolt_d,
-                          bore_d=bore_d,
-                          h=thickness,
-                          reverse=true,
-                          bore_h=bore_h,
-                          sink=true);
-            }
+        }
+        mirror_copy([1, 0, 0]) {
+          translate([pin_hole_spacing / 2,
+                     pin_d / 2,
+                     -barrel_h + (barrel_h - thickness)]) {
+            ring(outer_d=barrel_d,
+                 d=pin_d,
+                 h=barrel_h,
+                 fn=$preview ? 100 : 360);
           }
         }
       }
       mirror_copy([1, 0, 0]) {
         translate([pin_hole_spacing / 2,
-                   pin_d / 2,
-                   -barrel_h + (barrel_h - thickness)]) {
-          ring(outer_d=barrel_d, d=pin_d, h=barrel_h, fn=$preview ? 100 : 360);
+                   0.1 + barrel_border_w,
+                   -thickness / 2]) {
+          rotate([90, 0, 0]) {
+            sag_compensated_hole(d=bolt_d,
+                                 h=w + pad + barrel_border_w + 0.2,
+                                 fn=$preview ? 30 : 100);
+          }
         }
       }
     }

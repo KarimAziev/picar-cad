@@ -444,6 +444,19 @@ module counterbore_from_plist(plist, center=true) {
               center=center);
 }
 
+module sag_compensated_hole(d, h, fn=30, compensation=0.4, y_side=true) {
+  w = d + compensation;
+  hull() {
+    translate([0, 0, h / 2]) {
+      cube([y_side ? compensation : w, y_side ? w : compensation, h],
+           center=true);
+    }
+    cylinder(d=d,
+             h=h,
+             $fn=fn);
+  }
+}
+
 // translate([-10, 0, 0]) {
 //   counterbore(h=3,
 //               d=3,

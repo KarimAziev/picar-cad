@@ -130,15 +130,9 @@ module front_chassis_pin_joint_hole(direction=-1,
                            show_e_clip=false);
       }
     } else {
-      hull() {
-        translate([0, 0, front_chassis_joint_pin_l / 2]) {
-          cube([0.4, front_chassis_joint_pin_d + 0.4, front_chassis_joint_pin_l],
-               center=true);
-        }
-        cylinder(d=front_chassis_joint_pin_d,
-                 h=front_chassis_joint_pin_l,
-                 $fn=fn);
-      }
+      sag_compensated_hole(d=front_chassis_joint_pin_d,
+                           h=front_chassis_joint_pin_l,
+                           fn=fn);
     }
   }
 }
