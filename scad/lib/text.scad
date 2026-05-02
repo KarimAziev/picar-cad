@@ -662,28 +662,3 @@ module text_fit(txt="Dynamic Text",
     }
   }
 }
-
-angles=[90, 0, 180];
-
-rotate(angles) {
-  text_rows(texts=dsservo_text,
-// rotation=angles,
-            default_halign="left",
-            center_x=true,
-            center_y=true);
-}
-
-// text_rows(texts=dsservo_text,
-// // rotation=angles,
-//           default_halign="left",
-//           center_x=true,
-//           center_y=true);
-size = [30.8733, 16.7648, 0.1];
-
-// rotate(angles) {
-//   #cube(size);
-// }
-
-// rotate_children_with_shift(size=size, angles=angles, show_bbox=true) {
-//   cube(size);
-// }
