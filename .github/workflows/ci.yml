@@ -28,7 +28,7 @@ jobs:
         run: git config --global init.defaultBranch main
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           ref: ${{ github.event.inputs.ref || github.ref }}
@@ -106,7 +106,7 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Download export artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: picar-cad-${{ steps.vars.outputs.version }}
 
