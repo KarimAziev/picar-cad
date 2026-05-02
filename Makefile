@@ -92,7 +92,7 @@ clean-tests:
 $(STL_DIR)/%.stl: scad/%.scad
 	@mkdir -p $(dir $@)
 ifneq ($(CI_PREVIEW_ONLY),0)
-	$(OPENSCAD) $(SCAD_COMMON_ARGS) $(HARDWARNINGS) --preview --imgsize=400,400 -o /tmp/preview-$$(@F).png "$<"
+	$(OPENSCAD) $(SCAD_COMMON_ARGS) $(HARDWARNINGS) --preview --imgsize=400,400 -o "/tmp/preview-$(@F).png" "$<"
 else
 	$(OPENSCAD) $(SCAD_COMMON_ARGS) $(HARDWARNINGS) -o "$@" "$<"
 endif
@@ -100,7 +100,7 @@ endif
 $(MF3_DIR)/%.3mf: scad/%.scad
 	@mkdir -p $(dir $@)
 ifneq ($(CI_PREVIEW_ONLY),0)
-	$(OPENSCAD) $(SCAD_COMMON_ARGS) $(HARDWARNINGS) --preview --imgsize=400,400 -o /tmp/preview-$$(@F).png "$<"
+	$(OPENSCAD) $(SCAD_COMMON_ARGS) $(HARDWARNINGS) --preview --imgsize=400,400 -o "/tmp/preview-$(@F).png" "$<"
 else
 	@title=$$(basename "$(@F)" .3mf); \
 	description="Assembly export from $< (units: mm)"; \
@@ -122,25 +122,25 @@ $(MF3_DIR)/$(1).3mf: $(2)
 	@title=$$$$(basename "$$(@F)" .3mf); \
 	description="Exported from $$< (units: mm)"; \
 	material="$(DEFAULT_MATERIAL_TYPE)"; \
-	case "$$title" in \
+	case "$$$$title" in \
 		tire*|*tire*) \
 			material="$(TIRE_MATERIAL_TYPE)"; \
 			description="Recommended material: $(TIRE_MATERIAL_TYPE). Exported from $$< (units: mm)";; \
 	esac; \
 	if $(OPENSCAD) $(SCAD_COMMON_ARGS) $(HARDWARNINGS) $(3MF_META_ARGS) \
-		-O export-3mf/meta-data-title="$$title" \
-		-O export-3mf/meta-data-description="$$description" \
-		-O export-3mf/material-type="$$material" \
+		-O export-3mf/meta-data-title="$$$$title" \
+		-O export-3mf/meta-data-description="$$$$description" \
+		-O export-3mf/material-type="$$$$material" \
 		-o "$$@" "$$<"; then :; \
-	elif [ "$$material" != "$(DEFAULT_MATERIAL_TYPE)" ]; then \
-		echo "openscad rejected material type '$$material' for $$@, falling back to $(DEFAULT_MATERIAL_TYPE)" >&2; \
+	elif [ "$$$$material" != "$(DEFAULT_MATERIAL_TYPE)" ]; then \
+		echo "openscad rejected material type '$$$$material' for $$@, falling back to $(DEFAULT_MATERIAL_TYPE)" >&2; \
 		$(OPENSCAD) $(SCAD_COMMON_ARGS) $(HARDWARNINGS) $(3MF_META_ARGS) \
-			-O export-3mf/meta-data-title="$$title" \
-			-O export-3mf/meta-data-description="$$description" \
+			-O export-3mf/meta-data-title="$$$$title" \
+			-O export-3mf/meta-data-description="$$$$description" \
 			-O export-3mf/material-type="$(DEFAULT_MATERIAL_TYPE)" \
 			-o "$$@" "$$<"; \
 	else \
-		exit $$?; \
+		exit $$$$?; \
 	fi
 endef
 
