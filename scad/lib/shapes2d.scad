@@ -427,3 +427,19 @@ module triangle_SAS(a, b, ang) {
                   [a, 0],
                   [b*cos(ang), b*sin(ang)]]);
 }
+
+module teardrop_2d(d, ang=45, fn=30, both_sides=false) {
+  h = (d / 4) / tan(ang / 2);
+  pts = [[-d / 2, 0],
+         [d / 2, 0],
+         [0,   h]];
+  hull() {
+    circle(d=d, $fn=fn);
+    polygon(pts);
+    if (both_sides) {
+      rotate([0, 0, 180]) {
+        polygon(pts);
+      }
+    }
+  }
+}

@@ -212,11 +212,28 @@ module counterbore(h,
   };
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  rect_slot
+  ─────────────────────────────────────────────────────────────────────────────
+
+  **Example**:
+  ```scad
+  rect_slot(size=[20, 10],
+          h=5,
+          reverse=true,
+          recess_h=1.5,
+          recess_size=[30, 15],
+          r_factor=0.2,
+          center=true);
+
+  ```
+  */
 module rect_slot(h,
                  recess_h,
                  size,
                  recess_size,
-                 autoscale_step = 0.1,
+                 autoscale_step=0.1,
                  recess_corner_r,
                  r,
                  r_factor=0.3,
@@ -457,6 +474,12 @@ module sag_compensated_hole(d, h, fn=30, compensation=0.4, y_side=true) {
   }
 }
 
+module teardrop(d, h, ang=45, fn=30, both_sides=false) {
+  linear_extrude(height=h, center=false) {
+    teardrop_2d(d=d, ang=ang, both_sides=both_sides, fn=fn);
+  }
+}
+
 // translate([-10, 0, 0]) {
 //   counterbore(h=3,
 //               d=3,
@@ -467,20 +490,6 @@ module sag_compensated_hole(d, h, fn=30, compensation=0.4, y_side=true) {
 //               center=false,
 //               reverse=true);
 // }
-
-// w = 20;
-// h = 10;
-// thickness = 3;
-// angle = 15;
-
-// rect_slot(size=[w, h],
-//           h=thickness,
-//           reverse=true,
-//           recess_h=1.5,
-//           recess_size=[w + 10, 15],
-//           r_factor=0,
-//           spin=80,
-//           center=false);
 
 // dia = 3;
 // bore_dia = 6;
