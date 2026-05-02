@@ -68,6 +68,16 @@ module rounded_cube(size,
     - a single number `s`, expanded to `[s, s, s]`
     - a vector `[x, y, z]`
 
+  `center`:
+    Default X/Y placement mode when `anchor` is omitted or contains `undef`
+    values for those axes.
+
+    - `true` (default) centers the cuboid on X and Y
+    - `false` places the cuboid in the positive X and Y directions, matching
+      `cube(size)` when `anchor` is also omitted
+
+    This parameter does not affect Z placement.
+
   `anchor`:
     Per-axis anchor relative to the origin as `[x, y, z]`.
 
@@ -76,7 +86,8 @@ module rounded_cube(size,
     - `0`  → object is centered on that axis
     - `-1` → object ends at the origin and extends in the negative direction
 
-    Defaults to `[0, 0, 1]`, meaning centered on X/Y and extending upward on Z.
+    Defaults to `[0, 0, 1]` when `center=true`, or `[1, 1, 1]` when
+    `center=false`.
 
     Examples:
     - `[1, 1, 1]`  → same placement as `cube(size)`
@@ -85,8 +96,8 @@ module rounded_cube(size,
     - `[-1, 0, 1]` → extends into negative X, centered on Y, extends upward on Z
 
     If an element is `undef`, that axis falls back to:
-    - X: `0`
-    - Y: `0`
+    - X: `0` when `center=true`, otherwise `1`
+    - Y: `0` when `center=true`, otherwise `1`
     - Z: `1`
 
   `r`:
@@ -122,6 +133,8 @@ module rounded_cube(size,
 
   **Behavior**
 
+  - `center` only controls fallback placement for X and Y when `anchor` is
+    omitted or partially `undef`.
   - If both `r` and `r_factor` are `undef` or `0`, a plain `cube()` is created.
   - If rounding is requested and `use_minkowski=true`, all 3D edges/corners are
     rounded.
@@ -132,6 +145,12 @@ module rounded_cube(size,
 
   **Examples**
   ```scad
+  // Default placement: centered on X/Y and extending upward in Z
+  cuboid([10, 20, 30]);
+
+  // Same as cube([10, 20, 30])
+  cuboid([10, 20, 30], center=false);
+
   // Same as cube([10, 20, 30])
   cuboid([10, 20, 30], anchor=[1, 1, 1]);
 
@@ -152,7 +171,8 @@ module rounded_cube(size,
   ```
   */
 module cuboid(size,
-              anchor=[0, 0, 1],
+              center=true,
+              anchor,
               r,
               r_factor,
               use_minkowski=false,
@@ -163,9 +183,9 @@ module cuboid(size,
          "Size should be number or [number, number, number]");
   size = is_num(size) ? [size, size, size] : size;
 
-  anchor = is_undef(anchor) ? [0, 0, 0] : anchor;
-  align_x = is_undef(anchor[0]) ? 0 : anchor[0];
-  align_y = is_undef(anchor[1]) ? 0 : anchor[1];
+  anchor = is_undef(anchor) ? [center ? 0 : 1, center ? 0 : 1, 1] : anchor;
+  align_x = is_undef(anchor[0]) ? (center ? 0 : 1) : anchor[0];
+  align_y = is_undef(anchor[1]) ? (center ? 0 : 1) : anchor[1];
   align_z = is_undef(anchor[2]) ? 1 : anchor[2];
 
   _align = [align_x, align_y, align_z];
