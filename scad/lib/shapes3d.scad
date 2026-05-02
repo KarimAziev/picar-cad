@@ -1,6 +1,9 @@
 /**
  * Module: Utility modules that simplify common 3D geometric constructions.
  *
+ * This file provides rounded, chamfered, ring, and tapered 3D primitives used
+ * by higher-level parts.
+ *
  *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
@@ -10,6 +13,21 @@ use <functions.scad>
 use <shapes2d.scad>
 use <transforms.scad>
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  rounded_cube
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Create a rounded cuboid by offsetting an inner cube.
+
+  **Parameters:**
+  - `size`: Cuboid size as `[x, y, z]`.
+  - `r`: Explicit rounding radius. When `undef`, `r_factor` is used.
+  - `center`: If `true`, center the shape on X and Y.
+  - `z_center`: If `true`, center the shape on Z.
+  - `fn`: Fragment count for the rounding sphere.
+  - `r_factor`: Radius factor used when `r` is `undef`.
+ */
 module rounded_cube(size,
                     r=undef,
                     center=true,
@@ -191,6 +209,20 @@ module cuboid(size,
   }
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  cylinder_cut
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Create a cylinder with two opposite flats cut into its sides.
+
+  **Parameters:**
+  - `h`: Cylinder height.
+  - `r`: Cylinder radius.
+  - `cut_w`: Distance between each flat cut and the outer diameter.
+  - `center`: Forwarded to the underlying cylinder and cutter cubes.
+  - `fn`: Fragment count for the cylinder.
+ */
 module cylinder_cut(h=10, r=5, cut_w=1, center=true, fn) {
   difference() {
     cylinder(h=h, r=r, center=center, $fn=fn);
@@ -205,12 +237,45 @@ module cylinder_cut(h=10, r=5, cut_w=1, center=true, fn) {
   }
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  star_3d
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Extrude `star_2d()` into a 3D prism.
+
+  **Parameters:**
+  - `n`: Number of star points.
+  - `r_outer`: Radius of the outer tips.
+  - `r_inner`: Radius of the inner valleys.
+  - `h`: Extrusion height.
+ */
 module star_3d(n=5, r_outer=20, r_inner=10, h=2) {
   linear_extrude(height=h, center=false) {
     star_2d(n=n, r_outer=r_outer, r_inner=r_inner);
   }
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  notched_circle
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Extrude a circular profile with rectangular notches cut from the X and Y
+  axes.
+
+  **Parameters:**
+  - `d`: Circle diameter.
+  - `cutout_w`: Width of each square notch.
+  - `h`: Extrusion height.
+  - `x_cutouts_n`: Number of notch pairs along X. The current implementation
+    supports up to two positions.
+  - `y_cutouts_n`: Number of notch pairs along Y. The current implementation
+    supports up to two positions.
+  - `center`: Forwarded to `linear_extrude()`.
+  - `convexity`: Convexity hint for the extrusion.
+  - `fn`: Fragment count for the base circle.
+ */
 module notched_circle(d,
                       cutout_w,
                       h,
@@ -242,30 +307,22 @@ module notched_circle(d,
 }
 
 /**
- * Draws a rounded rectangular through-hole with an optional rectangular
- * counter-pocket (recess).
- * Parameters:
- *   size: [width_x, length_y, ...] - size of the main rounded rectangle. The
- *         corner radius is provided separately in r.
- *   recess_size: optional [recess_x, recess_y] - size of the recess. If undefined,
- *               no recess is created.
- *   r: corner radius for the rounded rectangle (applies to both main hole and
- *      the recess when recess_size is provided).
- *   thickness: total extrusion depth (depth of the main hole).
- *   recess_thickness: optional depth for the recess. If omitted, a reasonable
- *                    default (roughly thickness / 2.2, clamped to >= 1) is used.
- *   recess_reverse: boolean (default false). If true, the recess is located at
- *                  the opposite face along Z (i.e. near the top instead of at Z=0).
- *   center: boolean. If true the shapes are centered on X and Y; otherwise they
- *           are positioned with a corner at the origin.
- *
- * Behaviour:
- * - The main rounded rectangle is extruded through the full thickness.
- * - If recess_size is present a second rounded rectangle of recess_size is
- *   extruded by recess_thickness and positioned either at Z=0 or at the opposite
- *   face depending on recess_reverse.
- */
+  ─────────────────────────────────────────────────────────────────────────────
+  rounded_rect_recess
+  ─────────────────────────────────────────────────────────────────────────────
 
+  Create a rounded rectangular prism with an optional larger recess layer.
+
+  **Parameters:**
+  - `size`: Main footprint as `[x, y]`.
+  - `recess_size`: Optional recess footprint as `[x, y]`.
+  - `r`: Corner radius used for both layers.
+  - `thickness`: Main extrusion depth.
+  - `recess_thickness`: Optional recess depth. When `undef`, defaults to
+    roughly `thickness / 2.2`.
+  - `recess_reverse`: If `true`, place the recess on the opposite face.
+  - `center`: If `true`, center the footprint on XY.
+ */
 module rounded_rect_recess(size,
                            recess_size,
                            r,
@@ -306,18 +363,56 @@ module rounded_rect_recess(size,
   }
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  cube_center_y
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Place a cube so it is centered on Y while still starting at `z = 0`.
+
+  **Parameters:**
+  - `size`: Cube size, either a scalar or `[x, y, z]`.
+ */
 module cube_center_y(size) {
   translate([0, -(is_num(size) ? size : size[1]) / 2, 0]) {
     cube(size);
   }
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  cube_center_x
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Place a cube so it is centered on X while still starting at `z = 0`.
+
+  **Parameters:**
+  - `size`: Cube size, either a scalar or `[x, y, z]`.
+ */
 module cube_center_x(size) {
   translate([-(is_num(size) ? size : size[0]) / 2, 0, 0]) {
     cube(size);
   }
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  cube_border
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Extrude `rect_border()` into a 3D rectangular frame.
+
+  **Parameters:**
+  - `size`: Reference size as `[x, y, z]`.
+  - `h`: Extrusion height. When `undef`, `size[2]` is used.
+  - `border_w`: Difference between the outer and inner rectangle sizes.
+  - `inner`: Forwarded to `rect_border()`.
+  - `r`: Explicit corner radius.
+  - `center`: If `true`, center the border footprint on XY.
+  - `fn`: Fragment count for rounded corners.
+  - `r_factor`: Radius factor used when `r` is `undef`.
+  - `round_side`: Optional side selection forwarded to `rect_border()`.
+ */
 module cube_border(size,
                    h,
                    border_w=0.5,
@@ -341,6 +436,26 @@ module cube_border(size,
   }
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  ring
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Create a 3D ring by subtracting an inner cylinder from an outer cylinder.
+
+  **Parameters:**
+  - `d`: Inner diameter.
+  - `d1`: Optional inner bottom diameter for a tapered inner cut.
+  - `d2`: Optional inner top diameter for a tapered inner cut.
+  - `outer_d`: Outer diameter.
+  - `outer_d1`: Optional outer bottom diameter for a tapered outer wall.
+  - `outer_d2`: Optional outer top diameter for a tapered outer wall.
+  - `h`: Ring height.
+  - `fn`: Fragment count for both cylinders.
+  - `color`: Optional color value.
+  - `whole_color`: When `true`, color is applied to the whole ring. The current
+    implementation only emits geometry in this mode.
+ */
 module ring(d,
             d1,
             d2,
@@ -374,6 +489,22 @@ module ring(d,
   }
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  y_chamfered_cube
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Create a prism whose Y-facing edges are chamfered by extruding a chamfered
+  X/Z profile along X.
+
+  **Parameters:**
+  - `size`: Prism size as `[x, y, z]`.
+  - `chamfer`: Chamfer size.
+  - `center_x`: If `true`, center the prism on X.
+  - `center_y`: If `true`, center the prism on Y.
+  - `lower_chamfer`: If `true`, shift the prism so the lower chamfer reaches
+    below `z = 0`.
+ */
 module y_chamfered_cube(size, chamfer, center_x, center_y, lower_chamfer=false) {
   x_size = size[0];
   y_size = size[1];
@@ -398,6 +529,23 @@ module y_chamfered_cube(size, chamfer, center_x, center_y, lower_chamfer=false) 
   }
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  chamfered_cube
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Create a cube-like solid with chamfered top and side edges.
+
+  **Parameters:**
+  - `size`: Solid size as `[x, y, z]`.
+  - `chamfer`: Chamfer size.
+  - `center_x`: If `true`, center the solid on X.
+  - `center_y`: If `true`, center the solid on Y.
+  - `lower_chamfer`: If `true`, shift the solid downward so lower chamfers can
+    extend below `z = 0`.
+  - `ignore_sides`: List of side names to leave unchamfered. Supported values
+    are `"left"`, `"right"`, `"bottom"`, and `"top"`.
+ */
 module chamfered_cube(size,
                       chamfer,
                       center_x,

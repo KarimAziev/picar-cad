@@ -10,6 +10,21 @@ use <plist.scad>
 use <shapes2d.scad>
 use <transforms.scad>
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  is_no_bore
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Decide whether the enlarged bore section of a counterbore should be skipped.
+
+  **Parameters:**
+  - `no_bore`: Explicit override flag.
+  - `bore_h`: Bore height or depth.
+  - `bore_d`: Bore diameter.
+
+  **Returns:**
+  `true` when the bore is disabled or missing enough data to generate it.
+ */
 function is_no_bore(no_bore,
                     bore_h,
                     bore_d) =
@@ -19,6 +34,23 @@ function is_no_bore(no_bore,
   || bore_d == 0
   || bore_h == 0;
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  four_corner_counterbores_full_size
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Compute the overall footprint required by a four-corner counterbore pattern.
+
+  **Parameters:**
+  - `size`: Center-to-center spacing between the corner holes as `[x, y]`.
+  - `d`: Main hole diameter.
+  - `bore_d`: Bore diameter.
+  - `bore_h`: Bore height.
+  - `no_bore`: If `true`, ignore the bore dimensions.
+
+  **Returns:**
+  `[width, height]` large enough to contain the holes and their bores.
+ */
 function four_corner_counterbores_full_size(size,
                                             d,
                                             bore_d,
@@ -28,6 +60,21 @@ function four_corner_counterbores_full_size(size,
        max_d = inhibit_bore ? d : (is_undef(bore_d) ? d * 2.8 : bore_d))
   [for (v = size) v + max_d];
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  four_corner_counterbores_full_size_from_plist
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Read four-corner counterbore dimensions from a property list and return the
+  required overall footprint.
+
+  **Parameters:**
+  - `plist`: Property list containing `slot_size` or `size`, `d`, `bore_d`,
+    `bore_h`, and optional `no_bore`.
+
+  **Returns:**
+  `[width, height]` large enough to contain the hole pattern.
+ */
 function four_corner_counterbores_full_size_from_plist(plist) =
   four_corner_counterbores_full_size(size=plist_get("slot_size", plist,
                                                     plist_get("size", plist)),
@@ -36,6 +83,21 @@ function four_corner_counterbores_full_size_from_plist(plist) =
                                      bore_h=plist_get("bore_h", plist, undef),
                                      no_bore=plist_get("no_bore", plist,  false));
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  rect_recess_enabled
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Decide whether a rectangular slot should include its larger recess pocket.
+
+  **Parameters:**
+  - `size`: Base slot size as `[x, y]`.
+  - `recess_size`: Requested recess size as `[x, y]`.
+
+  **Returns:**
+  `true` when `recess_size` is defined and exceeds the base slot in at least one
+  axis.
+ */
 function rect_recess_enabled(size, recess_size) = let (slot_x = size[0],
                                                        slot_y = size[1],
                                                        disabled =
@@ -46,6 +108,21 @@ function rect_recess_enabled(size, recess_size) = let (slot_x = size[0],
   (with_default(recess_size[0], 0) > slot_x
    || with_default(recess_size[1], 0) > slot_y);
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  full_rect_slot_size
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Compute the outer footprint required by a rectangular slot and its optional
+  recess.
+
+  **Parameters:**
+  - `size`: Base slot size as `[x, y]`.
+  - `recess_size`: Optional recess size as `[x, y]`.
+
+  **Returns:**
+  `[width, height]` of the largest active slot layer.
+ */
 function full_rect_slot_size(size, recess_size) =
   let (slot_x = size[0],
        slot_y = size[1],
@@ -59,6 +136,21 @@ function full_rect_slot_size(size, recess_size) =
        : slot_y)
   [x, y];
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  rect_slot_full_size_from_plist
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Read a rectangular slot definition from a property list and return the full
+  2D footprint needed by the slot and recess.
+
+  **Parameters:**
+  - `plist`: Property list containing `slot_size` or `size` and optional
+    `recess_size`.
+
+  **Returns:**
+  `[width, height]` of the largest active slot layer.
+ */
 function rect_slot_full_size_from_plist(plist) =
   full_rect_slot_size(size=plist_get(plist_get("slot_size",
                                                plist,
@@ -217,6 +309,23 @@ module counterbore(h,
   rect_slot
   ─────────────────────────────────────────────────────────────────────────────
 
+  Create a rounded rectangular slot with an optional larger recess pocket.
+
+  **Parameters:**
+  - `h`: Main slot depth.
+  - `recess_h`: Recess depth. When `undef`, defaults to roughly `h / 2.2`.
+  - `size`: Main slot size as `[x, y]`.
+  - `recess_size`: Optional recess size as `[x, y]`.
+  - `autoscale_step`: Extra depth used to slightly extend subtractive geometry.
+  - `recess_corner_r`: Optional corner radius override for the recess layer.
+  - `r`: Explicit corner radius for the main slot.
+  - `r_factor`: Radius factor used when `r` is `undef`.
+  - `fn`: Fragment count for rounded corners.
+  - `side`: Optional side selection forwarded to `rounded_rect()`.
+  - `reverse`: If `true`, place the recess on the opposite face.
+  - `center`: If `true`, keep the slot centered on XY before any rotation.
+  - `spin`: Optional Z rotation in degrees.
+
   **Example**:
   ```scad
   rect_slot(size=[20, 10],
@@ -332,6 +441,27 @@ module rect_slot(h,
   }
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  four_corner_counterbores
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Place `counterbore()` holes at the four corners of a rectangular pattern.
+
+  **Parameters:**
+  - `size`: Center-to-center spacing between corner holes as `[x, y]`.
+  - `h`: Total hole depth.
+  - `d`: Main hole diameter.
+  - `bore_d`: Bore diameter.
+  - `bore_h`: Bore height.
+  - `center`: If `true`, keep the pattern centered on the origin.
+  - `sink`: If `true`, use countersunk bores instead of flat-bottom bores.
+  - `fn`: Fragment count for cylindrical geometry.
+  - `no_bore`: If `true`, emit simple through-holes only.
+  - `autoscale_step`: Extra subtractive depth used for clean boolean cuts.
+  - `reverse`: If `true`, place the bore enlargement on the opposite face.
+  - `spin`: Optional Z rotation in degrees.
+ */
 module four_corner_counterbores(size,
                                 h,
                                 d,
@@ -382,6 +512,17 @@ module four_corner_counterbores(size,
   }
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  rect_slot_from_plist
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Build `rect_slot()` from a property list.
+
+  **Parameters:**
+  - `plist`: Property list containing the same keys accepted by `rect_slot()`.
+  - `center`: Forwarded to `rect_slot()`.
+ */
 module rect_slot_from_plist(plist, center=false) {
   plist = with_default(plist, []);
   h = plist_get("h", plist);
@@ -411,6 +552,18 @@ module rect_slot_from_plist(plist, center=false) {
             center=center);
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  four_corner_counterbores_from_plist
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Build `four_corner_counterbores()` from a property list.
+
+  **Parameters:**
+  - `plist`: Property list containing the same keys accepted by
+    `four_corner_counterbores()`.
+  - `center`: Forwarded to `four_corner_counterbores()`.
+ */
 module four_corner_counterbores_from_plist(plist, center=true) {
   plist = with_default(plist, []);
   size = plist_get("slot_size",
@@ -438,6 +591,17 @@ module four_corner_counterbores_from_plist(plist, center=true) {
                            center=center);
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  counterbore_from_plist
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Build `counterbore()` from a property list.
+
+  **Parameters:**
+  - `plist`: Property list containing the same keys accepted by `counterbore()`.
+  - `center`: Forwarded to `counterbore()`.
+ */
 module counterbore_from_plist(plist, center=true) {
   plist = with_default(plist, []);
   h = plist_get("h", plist);
@@ -461,6 +625,21 @@ module counterbore_from_plist(plist, center=true) {
               center=center);
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  sag_compensated_hole
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Create a printable round hole with a small flat added to compensate for sag
+  on overhanging edges.
+
+  **Parameters:**
+  - `d`: Hole diameter.
+  - `h`: Hole depth.
+  - `fn`: Fragment count for the cylindrical portion.
+  - `compensation`: Extra width of the flat compensation feature.
+  - `y_side`: If `true`, place the flat along Y. Otherwise place it along X.
+ */
 module sag_compensated_hole(d, h, fn=30, compensation=0.4, y_side=true) {
   w = d + compensation;
   hull() {
@@ -474,6 +653,20 @@ module sag_compensated_hole(d, h, fn=30, compensation=0.4, y_side=true) {
   }
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  teardrop
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Extrude the 2D teardrop profile into a 3D printable hole shape.
+
+  **Parameters:**
+  - `d`: Base circle diameter.
+  - `h`: Extrusion height.
+  - `ang`: Apex angle forwarded to `teardrop_2d()`.
+  - `fn`: Fragment count for the circular portion.
+  - `both_sides`: If `true`, mirror the pointed section to both sides.
+ */
 module teardrop(d, h, ang=45, fn=30, both_sides=false) {
   linear_extrude(height=h, center=false) {
     teardrop_2d(d=d, ang=ang, both_sides=both_sides, fn=fn);

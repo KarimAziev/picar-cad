@@ -1,5 +1,26 @@
+/**
+  * Module: Transform helpers.
+  *
+  * This file provides wrapper modules for common copy, alignment, and offset
+  * operations used across the CAD library.
+  *
+  * Author: Karim Aziiev <karim.aziiev@gmail.com>
+  * License: GPL-3.0-or-later
+  */
+
 use <functions.scad>
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  fillet
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Round inward corners of a 2D child shape by applying a fillet radius.
+
+  **Parameters:**
+  - `r`: Fillet radius.
+  - `fn`: Optional fragment count passed to `offset()`.
+ */
 module fillet(r, fn) {
   offset(r = -r, $fn=fn) {
     offset(delta = r, $fn=fn) {
@@ -8,7 +29,16 @@ module fillet(r, fn) {
   }
 }
 
-// Generates the mirrored object in addition to the original one.
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  mirror_copy
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Emit the original children and an additional mirrored copy.
+
+  **Parameters:**
+  - `v`: Mirror normal passed to `mirror()`.
+ */
 module mirror_copy(v = [1, 0, 0]) {
   children();
   mirror(v) {
@@ -16,6 +46,16 @@ module mirror_copy(v = [1, 0, 0]) {
   }
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  translate_copy
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Emit the original children and an additional translated copy.
+
+  **Parameters:**
+  - `v`: Translation vector for the duplicate.
+ */
 module translate_copy(v) {
   children();
   translate(v) {
@@ -23,6 +63,16 @@ module translate_copy(v) {
   }
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  rotate_copy
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Emit the original children and an additional copy shifted by `v`.
+
+  **Parameters:**
+  - `v`: Translation vector applied to the duplicate child geometry.
+ */
 module rotate_copy(v) {
   children();
   translate(v) {
@@ -30,6 +80,21 @@ module rotate_copy(v) {
   }
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  offset_3d
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Expand or contract 3D child geometry by a radius-like offset.
+
+  Positive `r` performs an outward Minkowski expansion. Negative `r` carves an
+  inward offset volume inside a temporary bounding cube.
+
+  **Parameters:**
+  - `r`: Offset distance. Positive grows, negative shrinks, `0` passes through.
+  - `size`: Bounding cube size used by the negative-offset branch.
+  - `fn`: Fragment count for the helper sphere.
+ */
 module offset_3d(r=1, size=20, fn=12) {
   if (r == 0) {
     children();
@@ -56,6 +121,20 @@ module offset_3d(r=1, size=20, fn=12) {
   }
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  offset_vertices_2d
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Smooth polygon vertices without changing the overall silhouette drastically.
+
+  This applies paired positive and negative `offset()` operations to the child
+  shape, which is useful for softening sharp 2D corners.
+
+  **Parameters:**
+  - `r`: Offset radius used for the smoothing passes.
+  - `fn`: Optional fragment count passed to `offset()`.
+ */
 module offset_vertices_2d(r, fn) {
   offset(-r, $fn=fn) {
     offset(r, $fn=fn) {
@@ -68,6 +147,20 @@ module offset_vertices_2d(r, fn) {
   }
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  four_corner_children
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Place child geometry at the four corners of a rectangular span.
+
+  The module also exposes `$x_i` and `$y_i` in each child invocation so nested
+  code can tell which corner is being rendered.
+
+  **Parameters:**
+  - `size`: Corner-to-corner spacing as `[x, y]`.
+  - `center`: If `true`, the corner grid is centered on the origin.
+ */
 module four_corner_children(size=[10, 10],
                             center=true) {
   for (x_ind = [0, 1])
@@ -83,6 +176,21 @@ module four_corner_children(size=[10, 10],
     }
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  four_corner_holes_2d
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Draw circular holes at the four corners of a rectangular span.
+
+  Any children passed in are emitted at each hole location after the circle.
+
+  **Parameters:**
+  - `size`: Corner-to-corner spacing as `[x, y]`.
+  - `center`: If `true`, the hole pattern is centered on the origin.
+  - `d`: Hole diameter.
+  - `fn`: Fragment count for the circles.
+ */
 module four_corner_holes_2d(size=[10, 10],
                             center=false,
                             d=3,
@@ -98,6 +206,17 @@ module four_corner_holes_2d(size=[10, 10],
     }
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  maybe_rotate
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Rotate child geometry only when a non-zero 3-axis rotation is provided.
+
+  **Parameters:**
+  - `rotation`: Rotation vector `[x, y, z]`. Invalid or all-zero values pass
+    the children through unchanged.
+ */
 module maybe_rotate(rotation) {
   if (is_list(rotation) &&
       len([for (v = rotation) if (is_num(v)) v]) == 3 &&
@@ -110,6 +229,17 @@ module maybe_rotate(rotation) {
   }
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  maybe_translate
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Translate child geometry only when a non-zero vector is provided.
+
+  **Parameters:**
+  - `v`: Translation vector `[x, y, z]`. Invalid or all-zero values pass the
+    children through unchanged.
+ */
 module maybe_translate(v) {
   if (is_list(v)
       && len([for (n = v) if (is_num(n)) n]) == 3
@@ -122,6 +252,18 @@ module maybe_translate(v) {
   }
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  spin_keep_bbox_at_origin
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Rotate 2D child geometry around Z and shift it so the rotated bounding box
+  still starts at the origin.
+
+  **Parameters:**
+  - `size`: Unrotated bounding-box size as `[x, y]`.
+  - `a`: Z rotation angle in degrees. `undef` or `0` leaves children unchanged.
+ */
 module spin_keep_bbox_at_origin(size, a) {
   if (is_undef(a) || a == 0) {
     children();
@@ -135,6 +277,19 @@ module spin_keep_bbox_at_origin(size, a) {
   }
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  align_children
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Align child geometry inside a 2D parent footprint.
+
+  **Parameters:**
+  - `parent_size`: Available area as `[x, y]`.
+  - `size`: Child footprint as `[x, y]`.
+  - `align_x`: Horizontal alignment. `-1` left, `0` center, `1` right.
+  - `align_y`: Vertical alignment. `-1` bottom, `0` center, `1` top.
+ */
 module align_children(parent_size,
                       size,
                       align_x=-1,
@@ -174,6 +329,18 @@ module align_children(parent_size,
  ─────────────────────────────────────────────────────────────────────────────
  align_children_with_spin
  ─────────────────────────────────────────────────────────────────────────────
+
+ Align child geometry inside a parent footprint after optional Z rotation.
+
+ The child bounding box is expanded to its rotated extents before alignment so
+ the final placement still respects the requested cell boundaries.
+
+ **Parameters:**
+ - `parent_size`: Available area as `[x, y]`.
+ - `size`: Unrotated child footprint as `[x, y]`.
+ - `align_x`: Horizontal alignment. `-1` left, `0` center, `1` right.
+ - `align_y`: Vertical alignment. `-1` bottom, `0` center, `1` top.
+ - `spin`: Z rotation angle in degrees applied before placement.
 
  **Example**:
  ```scad
@@ -231,6 +398,17 @@ module align_children_with_spin(parent_size,
   }
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  maybe_color
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Apply `color()` to child geometry only when a color value is provided.
+
+  **Parameters:**
+  - `color`: OpenSCAD color value. `undef` leaves children unchanged.
+  - `alpha`: Alpha component forwarded to `color()`.
+ */
 module maybe_color(color, alpha=1) {
   if (is_undef(color)) {
     children();
@@ -241,6 +419,19 @@ module maybe_color(color, alpha=1) {
   }
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  rotate_children_with_shift
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Rotate child geometry and shift it so the rotated bounding box begins at the
+  origin.
+
+  **Parameters:**
+  - `size`: Unrotated child size as `[x, y, z]`.
+  - `angles`: Rotation angles `[x, y, z]` in degrees.
+  - `show_bbox`: If `true`, render the rotated bounding box as debug geometry.
+ */
 module rotate_children_with_shift(size=[0, 0, 0],
                                   angles=[0, 0, 0],
                                   show_bbox=false) {

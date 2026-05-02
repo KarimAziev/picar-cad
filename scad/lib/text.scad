@@ -13,34 +13,31 @@ use <plist.scad>
 use <transforms.scad>
 
 /**
-   Render text from the given specification or defaults.
-   `spec` may contain:
-   0. `text`: The text to generate. Only text is required.
-   1. `size`: The size of the text. Default is 4.
-   2. `color`: The optional color to use.
-   3. `rotation`: Optional value for `rotate`.
-   4. `translation`: Optional value for `translate`. Applies after rotation.
-   5. `spacing`: Factor to increase or decrease the character spacing. The default value of 1.
-   6. `font`: The name of the font that should be used.
-   7. `halign`: left, center (default) or right.
-   8. `valign`: top, center, baseline (default) and bottom.
-   9. `height`: Factor to increase or decrease the character spacing. The default value of 0.1.
+   ─────────────────────────────────────────────────────────────────────────────
+   text_from_spec
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Render extruded text from a positional specification vector.
+
+   `spec` may be a plain string or a list whose items are interpreted in this
+   order:
+   `[text, size, color, rotation, translation, spacing, font, halign, valign, height]`.
+
+   **Parameters:**
+   - `spec`: Positional text specification or plain string.
+   - `default_font`: Font used when `spec[6]` is missing.
+   - `default_height`: Extrusion height used when `spec[9]` is missing.
+   - `default_size`: Text size used when `spec[1]` is missing.
+   - `default_spacing`: Character spacing used when `spec[5]` is missing.
+   - `default_halign`: Horizontal alignment fallback.
+   - `default_valign`: Vertical alignment fallback.
+   - `default_color`: Color fallback.
 
    **Example:**
-
    ```scad
-   text_from_spec(["Hello world",
-                8, // size
-                "white", // color
-                [0, 0, 90], // rotation
-                [0, -10, 0], // translation
-                1.1, // spacing
-                undef, // font
-                "center", // halign
-                "center" // valign
-               ]);
+   text_from_spec(["Hello world", 8, "white", [0, 0, 90], [0, -10, 0], 1.1]);
    ```
-*/
+ */
 
 module text_from_spec(spec,
                       default_font,
@@ -100,39 +97,33 @@ module text_from_spec(spec,
 }
 
 /**
-   Render text or numbers from the given plist specification or defaults.
+   ─────────────────────────────────────────────────────────────────────────────
+   text_from_plist
+   ─────────────────────────────────────────────────────────────────────────────
 
-   `plist` may contain (all properties are optional):
-   - `text`: The text to generate if `txt` argument is not provided.
-   - `size`: The size of the text. Default is 4.
-   - `color`: The optional color to use.
-   - `rotation`: Optional value for `rotate`.
-   - `translation`: Optional value for `translate`. Applies after rotation.
-   - `spacing`: Factor to increase or decrease the character spacing. The default value of 1.
-   - `font`: The name of the font that should be used.
-   - `halign`: left, center (default) or right.
-   - `valign`: top, center, baseline (default) and bottom.
-   - `height`: Factor to increase or decrease the character spacing. The default value of 0.1.
+   Render extruded text from a property list.
+
+   Supported plist keys include `text`, `size`, `color`, `rotation`,
+   `translation`, `spacing`, `font`, `halign`, `valign`, and `height`.
+
+   **Parameters:**
+   - `txt`: Explicit text override. When provided, it wins over `plist["text"]`.
+   - `plist`: Property list describing the text.
+   - `default_font`: Font fallback.
+   - `default_height`: Extrusion height fallback.
+   - `default_size`: Text size fallback.
+   - `default_spacing`: Character spacing fallback.
+   - `default_halign`: Horizontal alignment fallback.
+   - `default_valign`: Vertical alignment fallback.
+   - `default_rotation`: Rotation fallback.
+   - `default_translation`: Translation fallback.
+   - `default_color`: Color fallback.
 
    **Example:**
-
    ```scad
-   text_from_plist("My text",
-                ["size", 8,
-                 "color", "red",
-                 "spacing", 0.9,
-                 "height", 6,
-                 "rotation", [0, 0, 90],
-                 "translation", [10, 0, 0],
-                 "valign", "center",
-                 "halign", "left",
-                 "font", "DSEG14 Classic:style=Italic"]);
+   text_from_plist("My text", ["size", 8, "color", "red", "rotation", [0, 0, 90]]);
    ```
-
-   ```scad
-   text_from_plist("Hello world", ["text", "My text"]); // will display "Hello world"
-   ```
-*/
+ */
 
 module text_from_plist(txt,
                        plist = [],
@@ -192,11 +183,39 @@ module text_from_plist(txt,
   }
 }
 
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   get_z_rotation
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Extract the Z rotation from a text spec plist.
+
+   **Parameters:**
+   - `spec`: Property list that may contain `rotation`.
+
+   **Returns:**
+   The Z rotation component or the raw scalar rotation value.
+ */
 function get_z_rotation(spec) =
   let (rotation = plist_get("rotation", spec),
        z_rotation = is_list(rotation) ? rotation[2] : rotation)
   z_rotation;
 
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   get_rotation
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Normalize the `rotation` entry of a text spec plist into a 3-element vector
+   when possible.
+
+   **Parameters:**
+   - `spec`: Property list that may contain `rotation`.
+
+   **Returns:**
+   `[x, y, z]`, a scalar Z rotation promoted to `[0, 0, z]`, or the original
+   value when it is neither a list nor a number.
+ */
 function get_rotation(spec) =
   let (rotation = plist_get("rotation", spec))
   is_list(rotation)
@@ -206,10 +225,39 @@ function get_rotation(spec) =
     with_default(v, 0, "number")]
   : is_num(rotation) ? [0, 0, rotation] : rotation;
 
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   should_swap_size
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Decide whether width and height should be swapped for text metrics.
+
+   **Parameters:**
+   - `spec`: Property list that may contain `rotation`.
+
+   **Returns:**
+   `true` when the Z rotation is exactly `90` or `-90` degrees.
+ */
 function should_swap_size(spec) =
   let (z_rotation = get_z_rotation(spec))
   is_num(z_rotation) && abs(z_rotation) == 90;
 
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   get_text_size
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Measure the 2D size of a text spec using `textmetrics()`.
+
+   **Parameters:**
+   - `txt`: Text string to measure.
+   - `plist`: Property list supplying size, font, spacing, alignment, and
+     rotation.
+
+   **Returns:**
+   `[width, height]` of the measured text. Width and height are swapped for
+   quarter-turn rotations.
+ */
 function get_text_size(txt, plist) =
   let (tm = textmetrics(text=txt,
                         size=plist_get("size", plist),
@@ -220,23 +268,115 @@ function get_text_size(txt, plist) =
        should_swap = should_swap_size(plist))
   should_swap ? [tm.size[1], tm.size[0]] : tm.size;
 
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   get_y_size
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Return the Y component of a size-like spec.
+
+   **Parameters:**
+   - `spec`: Value accepted by `get_size_at()`.
+
+   **Returns:**
+   The element at index `1`.
+ */
 function get_y_size(spec) =
   get_size_at(1, spec);
 
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   get_gap_before
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Read the extra gap inserted before a text row.
+
+   **Parameters:**
+   - `spec`: Property list that may contain `gap_before`.
+
+   **Returns:**
+   The `gap_before` value, or `0`.
+ */
 function get_gap_before(spec) =
   plist_get("gap_before", spec, 0);
 
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   get_gap_after
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Read the extra gap inserted after a text row.
+
+   **Parameters:**
+   - `spec`: Property list that may contain `gap_after`.
+
+   **Returns:**
+   The `gap_after` value, or `0`.
+ */
 function get_gap_after(spec) =
   plist_get("gap_after", spec, 0);
 
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   get_gap_x_offset
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Extract the X translation component from a text spec.
+
+   **Parameters:**
+   - `spec`: Property list that may contain `translation`.
+
+   **Returns:**
+   The X component of `translation`, or `0`.
+ */
 function get_gap_x_offset(spec) =
   let (tr = plist_get("translation", spec))
   is_list(tr) ? tr[0] : 0;
 
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   get_gap_y_offset
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Extract the Y translation component from a text spec.
+
+   **Parameters:**
+   - `spec`: Property list that may contain `translation`.
+   - `default_gap`: Fallback value when no Y translation is defined.
+
+   **Returns:**
+   The Y component of `translation`, or `default_gap`.
+ */
 function get_gap_y_offset(spec, default_gap = 0) =
   let (tr = plist_get("translation", spec))
   is_list(tr) ? tr[1] : default_gap;
 
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   normalize_texts
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Normalize a mixed collection of text inputs into a list of plists plus
+   measured layout metadata.
+
+   **Parameters:**
+   - `texts`: A string, number, plist, or list mixing those representations.
+   - `plist`: Default plist merged into each row spec.
+   - `gap`: Default gap inserted between rows.
+   - `default_font`: Font fallback.
+   - `default_height`: Extrusion height fallback.
+   - `default_size`: Text size fallback.
+   - `default_spacing`: Character spacing fallback.
+   - `default_halign`: Horizontal alignment fallback.
+   - `default_valign`: Vertical alignment fallback.
+   - `default_rotation`: Rotation fallback.
+   - `default_translation`: Translation fallback.
+   - `default_color`: Color fallback.
+
+   **Returns:**
+   A plist-like vector containing normalized row plists, measured sizes, gaps,
+   and total stacked size.
+ */
 function normalize_texts(texts = [],
                          plist,
                          gap = 0,
@@ -315,45 +455,39 @@ function normalize_texts(texts = [],
    "gaps", gaps];
 
 /**
-   Render text row(s).
+   ─────────────────────────────────────────────────────────────────────────────
+   text_rows
+   ─────────────────────────────────────────────────────────────────────────────
 
-   Text row can be:
-   - list of strings or numbers
-   - the single string or number
-   - list of text plists where each `plist` may contain:
-   - `text` (string or number): The text to display.
-   - `size`: The size of the text. Default is 4.
-   - `color`: The optional color to use.
-   - `rotation`: Optional value for `rotate`.
-   - `translation`: Optional value for `translate`. Applies after rotation.
-   - `spacing`: Factor to increase or decrease the character spacing. The default value of 1.
-   - `font`: The name of the font that should be used.
-   - `halign`: left, center (default) or right.
-   - `valign`: top, center, baseline (default) and bottom.
-   - `height`: Factor to increase or decrease the character spacing. The default value of 0.1.
-   - `y_offset`: Custom Y-offset that affects position only of the current row.
-   - `gap_before`: Y-gap before the text row.
-  -  `gap_after`: Y-gap after the text row.
+   Render one or more text rows stacked vertically.
+
+   Each row may be a string, a number, or a plist containing keys such as
+   `text`, `size`, `color`, `rotation`, `translation`, `spacing`, `font`,
+   `halign`, `valign`, `height`, `y_offset`, `gap_before`, `gap_after`, and the
+   optional background keys `bg_color`, `bg_pad_*`, and `bg_h`.
+
+   **Parameters:**
+   - `texts`: Row definitions to normalize and render.
+   - `plist`: Default plist merged into each row.
+   - `gap`: Default gap inserted between rows.
+   - `default_font`: Font fallback.
+   - `default_height`: Extrusion height fallback.
+   - `default_size`: Text size fallback.
+   - `default_spacing`: Character spacing fallback.
+   - `default_halign`: Horizontal alignment fallback.
+   - `default_valign`: Vertical alignment fallback.
+   - `default_rotation`: Rotation fallback applied per row.
+   - `default_translation`: Translation fallback applied per row.
+   - `default_color`: Color fallback applied per row.
+   - `center_x`: If `true`, center the full text block on X.
+   - `center_y`: If `true`, center the full text block on Y.
+   - `rotation`: Currently unused.
 
    **Examples:**
-
    ```scad
-   text_rows("My text",
-          ["size", 8,
-           "color", "red",
-           "spacing", 0.9,
-           "height", 6,
-           "rotation", [0, 0, 90],
-           "translation", [10, 0, 0],
-           "valign", "center",
-           "halign", "left",
-           "font", "DSEG14 Classic:style=Italic"]);
+   text_rows(["Top", ["text", "Bottom", "gap_before", 1]], center_x=true);
    ```
-
-   ```scad
-   text_rows("Hello world", ["text", "My text"]); // will display "Hello world"
-   ```
-*/
+ */
 
 module text_rows(texts = [],
                  plist,
@@ -483,6 +617,21 @@ module text_rows(texts = [],
   }
 }
 
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   text_fit
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Scale text uniformly so it fits inside a target X/Y box, then extrude it.
+
+   **Parameters:**
+   - `txt`: Text to render.
+   - `x`: Target width.
+   - `y`: Target height.
+   - `h`: Extrusion height.
+   - `spacing`: Character spacing used for both measuring and rendering.
+   - `font`: Optional font override.
+ */
 module text_fit(txt="Dynamic Text",
                 x,
                 y,

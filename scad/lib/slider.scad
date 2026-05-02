@@ -12,16 +12,63 @@ use <shapes2d.scad>
 use <transforms.scad>
 use <trapezoids.scad>
 
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   slider_calc_trapezoid_top_width
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Compute the top width of a trapezoid from its base width, height, and side
+   angle.
+
+   **Parameters:**
+   - `width`: Bottom width of the trapezoid.
+   - `height`: Vertical height of the taper.
+   - `angle`: Side angle in degrees.
+
+   **Returns:**
+   The resulting top width, clamped to `0`.
+ */
 function slider_calc_trapezoid_top_width(width, height, angle) =
   max(0, width - 2 * height * tan(angle));
 
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   slider_carriege_full_width
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Compute the outer carriage width from the rail opening and wall thickness.
+
+   **Parameters:**
+   - `w`: Inner opening width.
+   - `wall`: Wall thickness added on each side.
+
+   **Returns:**
+   `w + 2 * wall`.
+ */
 function slider_carriege_full_width(w, wall) = w + (wall * 2);
 
 /**
    ─────────────────────────────────────────────────────────────────────────────
    slider_carriage
    ─────────────────────────────────────────────────────────────────────────────
-    Creates a slider carriage with a base and an internal trapezoid or dovetail cutout.
+
+   Create a slider carriage block with either a trapezoid groove or a dovetail
+   groove cut into it.
+
+   **Parameters:**
+   - `l`: Extrusion length along Z.
+   - `base_h`: Height of the flat base section below the groove.
+   - `h`: Groove height above the base.
+   - `w`: Groove width.
+   - `wall`: Side-wall thickness added around the groove.
+   - `angle`: Side angle in degrees for the groove profile.
+   - `r`: Outer corner radius of the carriage body.
+   - `trapezoid_rad`: Corner radius used for the inner groove profile.
+   - `use_dovetail_rib`: If `true`, cut a dovetail profile. Otherwise cut a
+     plain trapezoid.
+   - `center_x`: If `true`, center the carriage on X.
+   - `center_y`: If `true`, center the carriage on Y.
+   - `center_z`: If `true`, center the extrusion on Z.
 
    **Example**:
    ```scad
@@ -98,7 +145,25 @@ module slider_carriage(l=30,
    slider_dovetail_rail_2d
    ─────────────────────────────────────────────────────────────────────────────
 
-   Creates a 2D dovetail rail profile with a base.
+   Create a 2D rail profile consisting of a base plus a trapezoid or dovetail
+   top section.
+
+   **Parameters:**
+   - `base_w`: Base width.
+   - `base_h`: Base height.
+   - `base_angle`: Side angle used for the base profile.
+   - `base_r`: Corner radius used for the base profile.
+   - `w`: Width of the upper rail section.
+   - `h`: Height of the upper rail section.
+   - `angle`: Side angle of the upper rail section.
+   - `r`: Corner radius for the upper rail section.
+   - `center`: Shared default for `center_x` and `center_y`.
+   - `reverse`: If `true`, flip which side of the upper trapezoid is wider.
+   - `center_x`: Optional X-centering override.
+   - `center_y`: Optional Y-centering override.
+   - `use_dovetail_rib`: If `true`, use `dovetail_rib()` for the upper section.
+   - `edge_land`: Optional land width for the relief cutter.
+   - `relief_depth`: Optional relief depth used with `edge_land`.
 
    **Example**:
    ```scad
@@ -178,10 +243,24 @@ module slider_dovetail_rail_2d(base_w,
    slider_dovetail_rail
    ─────────────────────────────────────────────────────────────────────────────
 
-   Creates a dovetail rail profile with a rectangular base. It consists of two parts:
-   - the base rectangular part
-   - trapezoid above the base.
+   Extrude `slider_dovetail_rail_2d()` into a 3D rail.
 
+   **Parameters:**
+   - `l`: Extrusion length.
+   - `base_w`: Base width.
+   - `base_h`: Base height.
+   - `base_angle`: Side angle used for the base profile.
+   - `base_r`: Corner radius used for the base profile.
+   - `w`: Width of the upper rail section.
+   - `h`: Height of the upper rail section.
+   - `angle`: Side angle of the upper rail section.
+   - `r`: Corner radius for the upper rail section.
+   - `reverse`: If `true`, flip which side of the upper trapezoid is wider.
+   - `center`: Shared default for `center_x` and `center_y`.
+   - `center_x`: Optional X-centering override.
+   - `center_y`: Optional Y-centering override.
+   - `convexity`: Convexity hint passed to `linear_extrude()`.
+   - `use_dovetail_rib`: If `true`, use `dovetail_rib()` for the upper section.
 
    **Example**:
    ```scad
@@ -233,7 +312,14 @@ module slider_dovetail_rail(l,
    slider_trapezoid
    ─────────────────────────────────────────────────────────────────────────────
 
-   Creates a trapezoid shape with rounded corners.
+   Create a rounded trapezoid profile from slider dimensions.
+
+   **Parameters:**
+   - `w`: Bottom width.
+   - `h`: Height.
+   - `r`: Corner radius.
+   - `angle`: Side angle in degrees.
+   - `center`: If `true`, center the profile on the origin.
 
    **Example**:
    ```scad
@@ -262,7 +348,22 @@ module slider_trapezoid(w,
    dovetail_rib
    ─────────────────────────────────────────────────────────────────────────────
 
-   Creates a 2D dovetail rib shape with rounded corners.
+   Create a 2D dovetail rib profile.
+
+   When `r_top` and `r_bottom` are both provided, the top and bottom halves use
+   separate radii. Otherwise the same `r` value is used for the mirrored shape.
+
+   **Parameters:**
+   - `w`: Full rib width.
+   - `h`: Full rib height.
+   - `r`: Shared corner radius used by the mirrored fallback shape.
+   - `r_top`: Corner radius for the upper half when split radii are used.
+   - `r_bottom`: Corner radius for the lower half when split radii are used.
+   - `angle`: Side angle in degrees.
+   - `center`: Shared default for `center_x` and `center_y`.
+   - `center_x`: Optional X-centering override.
+   - `center_y`: Optional Y-centering override.
+   - `fn`: Fragment count override for rounded corners.
 
    **Example**:
    ```scad
@@ -334,21 +435,17 @@ module dovetail_rib(w,
   dovetail_rib_relief_cutter_2d
   ─────────────────────────────────────────────────────────────────────────────
 
-  Creates a 2D relief cutter shape for a dovetail rib. It consists of two parts:
-- an offset of the original shape by the relief depth, which creates the relief area
-- an offset of the original shape by the edge land, which creates the area that will be
-cut by the relief cutter.
+  Create a 2D cutter profile that removes a shallow relief from the sides of a
+  centered dovetail rib.
 
   **Parameters**:
 
-  `edge_land`:    The distance from the original shape to the edge of the relief
-                  cutter. This is the area that will be cut by the relief cutter.
-  `relief_depth`: The depth of the relief cut. This determines how much material
-                  will be removed to create the relief.
-  `angle`:        The angle of the dovetail rib. This is used to calculate the parallel
-                  distance for the relief cut based on the relief depth.
+  `edge_land`: Width of the land preserved at the edge of the original profile.
+  `relief_depth`: Amount of relief to remove perpendicular to the angled face.
+  `angle`: Side angle of the dovetail rib in degrees.
 
-  **Note:** Children must be centered for the module to work correctly, as it relies on offsets to create the relief cutter shape.
+  **Behavior:**
+  Children must be centered for the offsets to line up correctly.
 
   **Example**:
   ```scad
