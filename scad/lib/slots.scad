@@ -201,6 +201,12 @@ function rect_slot_full_size_from_plist(plist) =
   `reverse`: If `true`, places the enlarged section on the opposite side of the
   hole.
 
+  `teardrop_angle`: If defined and non-zero, creates the hole with a teardrop
+   profile instead of a straight cylinder.
+  `teardrop_both_sides`: When `teardrop_angle` is defined, set to `true` to
+   mirror the pointed section of the teardrop to both sides, creating a shape
+   that resembles an American football in 3D.
+
   **Examples**:
   ```scad
 
@@ -239,8 +245,11 @@ module counterbore(h,
                    fn=60,
                    no_bore=false,
                    autoscale_step = 0.1,
-                   reverse=false) {
+                   reverse=false,
+                   teardrop_angle,
+                   teardrop_both_sides=false) {
 
+  is_teardrop = !is_undef(teardrop_angle) && teardrop_angle != 0;
   inhibit_bore = is_no_bore(no_bore=no_bore, bore_h=bore_h, bore_d=bore_d);
   bore_h = is_undef(bore_h) ? h * 0.3 : bore_h;
   bore_r = (is_undef(bore_d) ? d * 2.8 : bore_d) / 2;
@@ -250,28 +259,57 @@ module counterbore(h,
   max_d = inhibit_bore ? d : bore_r * 2;
 
   module main_slot() {
-    cylinder(h=auto_scale
-             ? h + (autoscale_step * 2)
-             : h,
-             r=d / 2,
-             center=false,
-             $fn=fn);
+
+    let (height = auto_scale
+         ? h + (autoscale_step * 2)
+         : h) {
+      if (is_teardrop) {
+        teardrop(h=height,
+                 d=d,
+                 ang=teardrop_angle,
+                 fn=fn,
+                 both_sides=teardrop_both_sides);
+      } else {
+        cylinder(h=height,
+                 d=d,
+                 center=false,
+                 $fn=fn);
+      }
+    }
   }
 
   module cbore_hole() {
     if (sink) {
       r1 = !reverse ? d / 2 : bore_r;
       r2 = !reverse ? bore_r : d / 2;
-      cylinder(h=cbore_h,
-               r1=r1,
-               r2=r2,
-               center=false,
-               $fn=fn);
+      if (is_teardrop) {
+        teardrop(r1=r1,
+                 r2=r2,
+                 h=cbore_h,
+                 ang=teardrop_angle,
+                 fn=fn,
+                 both_sides=teardrop_both_sides);
+      } else {
+        cylinder(h=cbore_h,
+                 r1=r1,
+                 r2=r2,
+                 center=false,
+                 $fn=fn);
+      }
     } else {
-      cylinder(h=cbore_h,
-               r=bore_r,
-               center=false,
-               $fn=fn);
+
+      if (is_teardrop) {
+        teardrop(h=cbore_h,
+                 d=bore_r * 2,
+                 ang=teardrop_angle,
+                 fn=fn,
+                 both_sides=teardrop_both_sides);
+      } else {
+        cylinder(h=cbore_h,
+                 r=bore_r,
+                 center=false,
+                 $fn=fn);
+      }
     }
   }
 
@@ -461,6 +499,11 @@ module rect_slot(h,
   - `autoscale_step`: Extra subtractive depth used for clean boolean cuts.
   - `reverse`: If `true`, place the bore enlargement on the opposite face.
   - `spin`: Optional Z rotation in degrees.
+  - `teardrop_angle`: If defined and non-zero, create the holes with teardrop
+     profiles instead of straight cylinders.
+  - `teardrop_both_sides`: When `teardrop_angle` is
+     defined, set to `true` to mirror the pointed section of the teardrop to both
+     sides, creating a shape that resembles an American football in 3D.
  */
 module four_corner_counterbores(size,
                                 h,
@@ -473,7 +516,9 @@ module four_corner_counterbores(size,
                                 no_bore=false,
                                 autoscale_step = 0.1,
                                 reverse=false,
-                                spin) {
+                                spin,
+                                teardrop_angle,
+                                teardrop_both_sides=false) {
 
   full_size = four_corner_counterbores_full_size(size=size,
                                                  d=d,
@@ -495,7 +540,9 @@ module four_corner_counterbores(size,
                   reverse=reverse,
                   fn=fn,
                   no_bore=no_bore,
-                  autoscale_step=autoscale_step);
+                  autoscale_step=autoscale_step,
+                  teardrop_angle=teardrop_angle,
+                  teardrop_both_sides=teardrop_both_sides);
     }
   }
 
@@ -662,14 +709,42 @@ module sag_compensated_hole(d, h, fn=30, compensation=0.4, y_side=true) {
 
   **Parameters:**
   - `d`: Base circle diameter.
+  - `r1`: Optional base radius for a counterbore-style shape. When defined, `r2`
+          must also be defined.
+  - `r2`: Optional tip radius for a counterbore-style shape. When defined, `r1`
+          must also be defined.
   - `h`: Extrusion height.
   - `ang`: Apex angle forwarded to `teardrop_2d()`.
   - `fn`: Fragment count for the circular portion.
   - `both_sides`: If `true`, mirror the pointed section to both sides.
+
+  **Example**:
+  ```scad
+  // Simple teardrop hole
+  teardrop(d=5, h=10);
+
+  // Countersunk-style teardrop hole
+  teardrop(r1=4, r2=6, h=10);
+  ```
  */
-module teardrop(d, h, ang=45, fn=30, both_sides=false) {
-  linear_extrude(height=h, center=false) {
-    teardrop_2d(d=d, ang=ang, both_sides=both_sides, fn=fn);
+module teardrop(d, r1, r2, h, ang=45, fn=30, both_sides=false) {
+  if (!is_undef(r1) && !is_undef(r2)) {
+    let (height = 0.01) {
+      hull() {
+        linear_extrude(height=height, center=false) {
+          teardrop_2d(d=r1 * 2, ang=ang, both_sides=both_sides, fn=fn);
+        }
+        translate([0, 0, h - height]) {
+          linear_extrude(height=height, center=false) {
+            teardrop_2d(d=r2 * 2, ang=ang, both_sides=both_sides, fn=fn);
+          }
+        }
+      }
+    }
+  } else {
+    linear_extrude(height=h, center=false) {
+      teardrop_2d(d=d, ang=ang, both_sides=both_sides, fn=fn);
+    }
   }
 }
 
