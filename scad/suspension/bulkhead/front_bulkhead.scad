@@ -55,6 +55,22 @@ function front_bulkhead_pad_distance_to_hinge(barrel_y_offset=front_bulkhead_bar
        - barrel_len / 2 + full_bolt_spacing_y / 2)
   y2 + front_suspension_arm_pad_thickness + front_suspension_arm_pad_thickness;
 
+function front_bulkhead_upper_suspension_holder_z_pos(tower_pin_hole_y_offset=front_shock_tower_pin_y_offset,
+                                                      shock_tower_mount_offset=front_bulkhead_shock_tower_mount_offset,
+                                                      upper_holder_bore_y_offset=front_upper_suspension_holder_bolt_y_offset,
+                                                      pin_d=front_upper_arm_hinge_barrel_hole_d,
+                                                      upper_holder_bore_d=front_upper_suspension_holder_bolt_bore_d,
+                                                      upper_holder_bolt_d=front_upper_suspension_holder_bolt_d) =
+  let (bore_d = max(upper_holder_bore_d, upper_holder_bolt_d),
+       bore_r =  bore_d / 2,
+       common_pin_y = tower_pin_hole_y_offset + pin_d / 2,
+       z_end = shock_tower_mount_offset
+       + common_pin_y
+       - upper_holder_bore_y_offset,
+       z_center = z_end - bore_r,
+       z_start = z_center - bore_r)
+  [z_start, z_center, z_end];
+
 module front_bulkhead(color=cobalt_blue_light_1,
                       shock_tower_color=cobalt_blue_metallic,
                       show_upper_suspension_holder=show_upper_suspension_holder,
@@ -119,7 +135,9 @@ module front_bulkhead(color=cobalt_blue_light_1,
   rear_h = shock_tower_mount_offset + upper_holder_w - bellcrank_z_end;
 
   bulkhead_h = shock_tower_mount_offset + shock_tower_bolt_spacing[1];
+
   bellcrank_h = bellcrank_idler_full_mount_h() + shoulder_h;
+
   upper_panel_boss_h = bellcrank_h
     - bulkhead_housing_h
     - bellcrank_z_end
@@ -128,6 +146,15 @@ module front_bulkhead(color=cobalt_blue_light_1,
   upper_panel_hole_depth = bellcrank_h
     - bulkhead_housing_h
     - bellcrank_z_end;
+
+  upper_suspension_holder_z_pos =
+    front_bulkhead_upper_suspension_holder_z_pos(tower_pin_hole_y_offset=tower_pin_hole_y_offset,
+                                                 shock_tower_mount_offset=shock_tower_mount_offset,
+                                                 upper_holder_bore_y_offset=upper_holder_bore_y_offset,
+                                                 pin_d=pin_d,
+                                                 upper_holder_bore_d=upper_holder_bore_d,
+                                                 upper_holder_bolt_d=upper_holder_bolt_d);
+  upper_suspension_holes_z = upper_suspension_holder_z_pos[1];
 
   union() {
     maybe_color(color) {
@@ -186,6 +213,10 @@ module front_bulkhead(color=cobalt_blue_light_1,
                                  upper_holder_round_cutout_d=upper_holder_round_cutout_d,
                                  support_extra_len=support_extra_len,
                                  upper_holder_round_cutout_y_offset=upper_holder_round_cutout_y_offset,
+                                 tower_pin_hole_y_offset=tower_pin_hole_y_offset,
+                                 pin_d=pin_d,
+                                 upper_holder_bore_y_offset=upper_holder_bore_y_offset,
+                                 upper_holder_bolt_d=upper_holder_bolt_d,
                                  extra_rear_len=extra_rear_len);
         }
         // front lower cutout for the arm pad
@@ -218,20 +249,19 @@ module front_bulkhead(color=cobalt_blue_light_1,
           }
         }
 
-        // rear holes for the upper arm holder
+        // rear holes for the upper suspension holder
         translate([0, -l2 + upper_holder_hole_depth, 0]) {
           rotate([90, 0, 0]) {
-            translate([0, shock_tower_mount_offset + common_pin_y, 0]) {
+            translate([0, upper_suspension_holes_z, 0]) {
               mirror_copy([1, 0, 0]) {
-                translate([upper_holder_bolt_spacing / 2,
-                           - upper_holder_bore_d / 2 - upper_holder_bore_y_offset,
-                           0]) {
+                translate([upper_holder_bolt_spacing / 2, 0, 0]) {
                   counterbore(d=upper_holder_bolt_d,
                               h=upper_holder_mount_thickness
                               + upper_holder_hole_depth
                               + extra_rear_len,
                               bore_d=front_bulkhead_counterbore_d,
                               bore_h=front_bulkhead_counterbore_h,
+                              teardrop_angle=45,
                               reverse=false,
                               sink=false);
                 }
@@ -340,9 +370,7 @@ module front_bulkhead_shock_tower_mount(color=cobalt_blue_metallic,
     + shock_tower_pad_y * 2;
 
   maybe_color(color) {
-    translate([0,
-               shock_mount_size_y / 2 + mount_offset,
-               0]) {
+    translate([0, shock_mount_size_y / 2 + mount_offset, 0]) {
       linear_extrude(height=thickness,
                      center=false) {
         difference() {
@@ -371,7 +399,12 @@ module front_bulkhead_shock_tower_mount(color=cobalt_blue_metallic,
           }
           four_corner_holes_2d(size=shock_tower_bolt_spacing,
                                d=shock_tower_bolt_d,
-                               center=true);
+                               center=true) {
+            teardrop_2d(d=shock_tower_bolt_d,
+                        ang=45,
+                        fn=$preview ? 40 : 300,
+                        both_sides=true);
+          }
         }
       }
     }
@@ -465,9 +498,20 @@ module front_bulkhead_support(bulkhead_w=front_bulkhead_w,
                               upper_holder_round_cutout_d=front_upper_suspension_holder_round_cutout_d,
                               support_extra_len=front_bulkhead_support_extra_len,
                               upper_holder_round_cutout_y_offset=front_upper_suspension_holder_round_cutout_offset,
-                              extra_rear_len=front_bulkhead_extra_len,
-                              debug=false) {
+                              tower_pin_hole_y_offset=front_shock_tower_pin_y_offset,
+                              pin_d=front_upper_arm_hinge_barrel_hole_d,
+                              upper_holder_bore_y_offset=front_upper_suspension_holder_bolt_y_offset,
+                              upper_holder_bolt_d=front_upper_suspension_holder_bolt_d,
+                              extra_rear_len=front_bulkhead_extra_len) {
   l2 = bulkhead_l / 2;
+
+  upper_suspension_holder_z_pos =
+    front_bulkhead_upper_suspension_holder_z_pos(tower_pin_hole_y_offset=tower_pin_hole_y_offset,
+                                                 shock_tower_mount_offset=shock_tower_mount_offset,
+                                                 upper_holder_bore_y_offset=upper_holder_bore_y_offset,
+                                                 pin_d=pin_d,
+                                                 upper_holder_bore_d=upper_holder_bore_d,
+                                                 upper_holder_bolt_d=upper_holder_bolt_d);
 
   bellcrank_z_end = bellcrank_idler_arm_z_end();
 
@@ -478,15 +522,14 @@ module front_bulkhead_support(bulkhead_w=front_bulkhead_w,
     - upper_holder_round_cutout_y_offset;
 
   rear_h = shock_tower_mount_offset + upper_holder_w - bellcrank_z_end;
+  min_rear_h = upper_suspension_holder_z_pos[2] - upper_suspension_holder_z_pos[0];
+  holder_h = max(min_rear_h, rear_h);
+
   rear_l = extra_rear_len + upper_holder_mount_thickness;
 
   length = rear_l + support_extra_len;
 
   poly_h = 0.5;
-
-  pts = [[0, 0],
-         [0, bellcrank_z_end - front_bulkhead_housing_h],
-         [length, bellcrank_z_end - front_bulkhead_housing_h]];
 
   pts2 = [[0, 0],
           [0, bellcrank_z_end - front_bulkhead_housing_h],
@@ -494,14 +537,21 @@ module front_bulkhead_support(bulkhead_w=front_bulkhead_w,
 
   module _cyl() {
     rotate([90, 0, 0]) {
-      difference() {
-        cylinder(d=upper_holder_round_cutout_d,
-                 h=length,
-                 $fn=$preview ? 30 : 360);
-        translate([0, -upper_holder_round_cutout_d, -0.5]) {
-          cube_center_x([upper_holder_round_cutout_d,
-                         upper_holder_round_cutout_d,
-                         length + 1]);
+      hull() {
+        difference() {
+          cylinder(d=upper_holder_round_cutout_d,
+                   h=length,
+                   $fn=$preview ? 30 : 360);
+          translate([0, -upper_holder_round_cutout_d, -0.5]) {
+            cube_center_x([upper_holder_round_cutout_d,
+                           upper_holder_round_cutout_d,
+                           length + 1]);
+          }
+        }
+        translate([0, -upper_holder_round_cutout_d / 2, -0.5]) {
+          cube_center_x([poly_h,
+                         upper_holder_round_cutout_d / 2,
+                         poly_h]);
         }
       }
     }
@@ -510,10 +560,11 @@ module front_bulkhead_support(bulkhead_w=front_bulkhead_w,
   union() {
     hull() {
       translate([0, -l2, 0]) {
-        translate([0, -rear_l, bellcrank_z_end]) {
-          cube_center_x(size=[bulkhead_w,
-                              rear_l,
-                              rear_h]);
+        translate([0, 0, shock_tower_mount_offset + upper_holder_w]) {
+          cuboid(size=[bulkhead_w,
+                       rear_l,
+                       holder_h],
+                 anchor=[0, -1, -1]);
         }
         translate([0, 0, front_bulkhead_housing_h]) {
           rotate([90, 0, -90]) {
@@ -524,27 +575,18 @@ module front_bulkhead_support(bulkhead_w=front_bulkhead_w,
         }
       }
     }
-    translate([0, -l2, 0]) {
-      hull() {
-        translate([0, 0, front_bulkhead_housing_h]) {
-          rotate([90, 0, -90]) {
-            linear_extrude(height=poly_h, center=true) {
-              polygon(pts);
-            }
-          }
-        }
-
-        translate([0, 0, z]) {
-          _cyl();
-        }
-      }
-      if (debug) {
-        rotate([90, 0, -90]) {
-          debug_polygon_text(pts, circle_r=0, offset_x=2);
-        }
-      }
+    translate([0, -l2, z]) {
+      _cyl();
     }
   }
 }
 
-front_bulkhead();
+translate([0, 0, front_bulkhead_housing_h]) {
+  front_bulkhead();
+}
+
+translate([0, -60, 0]) {
+  rotate([0, 0, -90]) {
+    %bellcrank_drive(show_idler_lever=true, show_servo_lever=true, z_angle=0);
+  }
+}

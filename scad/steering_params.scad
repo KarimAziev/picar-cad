@@ -696,11 +696,14 @@ front_upper_suspension_holder_round_cutout_offset = 1.5;
 // Width of the central rectangular cutout (on the side opposite the round cutout)
 front_upper_suspension_holder_rect_cutout_w       = 30;
 
-// Through-hole diameter for the mounting bolts (M3 clearance)
-front_upper_suspension_holder_bolt_d              = m3_hole_dia;
+// Through-hole diameter for the mounting bolts (M3 clearance for heat insert nut)
+front_upper_suspension_holder_bolt_d              = 3.7;
 
 // Counterbore diameter for the bolt head / washer pocket
 front_upper_suspension_holder_bolt_bore_d         = m3_hole_dia * 2 + 0.1;
+
+front_bulkhead_counterbore_d                      = 4.65;
+front_bulkhead_counterbore_h                      = 2.4;
 
 // Center-to-center spacing of the mounting bolts
 front_upper_suspension_holder_bolt_spacing        = 14.3;
@@ -721,9 +724,6 @@ front_upper_suspension_holder_pin_barrel_d        = front_upper_arm_hinge_barrel
 front_upper_suspension_holder_pin_barrel_h        = 6.6;
 
 front_upper_suspension_holder_grab_screw_d        = 3.1;
-
-front_bulkhead_counterbore_d                      = 4.6;
-front_bulkhead_counterbore_h                      = 1.7;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Knuckle

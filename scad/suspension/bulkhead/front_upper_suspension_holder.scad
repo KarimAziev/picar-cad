@@ -128,9 +128,9 @@ module front_upper_suspension_holder(l=front_upper_suspension_holder_l,
                    0.1 + barrel_border_w,
                    -thickness / 2]) {
           rotate([90, 0, 0]) {
-            sag_compensated_hole(d=grab_screw_d,
-                                 h=w + pad + barrel_border_w + 0.2,
-                                 fn=$preview ? 30 : 100);
+            teardrop(d=grab_screw_d,
+                     h=w + pad + barrel_border_w + 0.2,
+                     fn=$preview ? 30 : 100);
           }
         }
       }
