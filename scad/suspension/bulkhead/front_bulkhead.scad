@@ -55,6 +55,52 @@ function front_bulkhead_pad_distance_to_hinge(barrel_y_offset=front_bulkhead_bar
        - barrel_len / 2 + full_bolt_spacing_y / 2)
   y2 + front_suspension_arm_pad_thickness + front_suspension_arm_pad_thickness;
 
+function shock_tower_mount_size_x(bolt_d=front_shock_tower_bolt_d,
+                                  pad_x=front_bulkhead_shock_tower_mount_pad_x,
+                                  bolt_spacing=front_shock_tower_bolt_spacing) =
+  bolt_spacing[0] + bolt_d + pad_x * 2;
+
+function shock_tower_mount_size_y(bolt_d=front_shock_tower_bolt_d,
+                                  pad_y=front_shock_tower_damper_holes_pad_y,
+                                  bolt_spacing=front_shock_tower_bolt_spacing) =
+  bolt_spacing[1] + bolt_d + pad_y * 2;
+
+function front_bulkhead_bbox_size(bulkhead_w=front_bulkhead_w,
+                                  bulkhead_l=front_bulkhead_len,
+                                  support_extra_len=front_bulkhead_support_extra_len,
+                                  extra_rear_len=front_bulkhead_extra_len,
+                                  outer_spacing=front_bulkhead_mount_bolt_spacing_1,
+                                  inner_spacing=front_bulkhead_mount_bolt_spacing_2,
+                                  shock_tower_bolt_spacing=front_shock_tower_bolt_spacing,
+                                  hinge_pad_x=front_bulkhead_mount_hinge_pad_x,
+                                  shock_tower_mount_offset=front_bulkhead_shock_tower_mount_offset,
+                                  bolt_d=front_bulkhead_mount_bolt_d,
+                                  upper_holder_barrel_h=front_upper_suspension_holder_pin_barrel_h,
+                                  upper_holder_thickness=front_upper_suspension_holder_thickness,
+                                  arm_pad_thickness=front_suspension_arm_pad_thickness,
+                                  arm_pad_holder_thickness=front_bulkhead_suspension_pad_thickness,
+                                  shock_tower_pad_y=front_shock_tower_damper_holes_pad_y,
+                                  shock_tower_pad_x=front_bulkhead_shock_tower_mount_pad_x,
+                                  shock_tower_bolt_d=front_shock_tower_bolt_d,
+                                  tower_pin_hole_y_offset=front_shock_tower_pin_y_offset,
+                                  pin_d=front_upper_arm_hinge_barrel_hole_d,
+                                  pad_y_top=front_bulkhead_shock_tower_mount_pad_y_top) =
+  let (upper_holder_mount_thickness = upper_holder_barrel_h - upper_holder_thickness,
+       common_pin_y = tower_pin_hole_y_offset + pin_d / 2,
+       rear_l = extra_rear_len + upper_holder_mount_thickness,
+       shock_tower_x = shock_tower_mount_size_x(bolt_d=shock_tower_bolt_d,
+                                                pad_x=shock_tower_pad_x,
+                                                bolt_spacing=shock_tower_bolt_spacing),
+       shock_tower_y = shock_tower_mount_size_y(bolt_d=shock_tower_bolt_d,
+                                                pad_y=shock_tower_pad_y,
+                                                bolt_spacing=shock_tower_bolt_spacing),
+       hinge_len = max(outer_spacing[0], inner_spacing[0]) + hinge_pad_x * 2 + bolt_d,
+
+       x = max(bulkhead_w, hinge_len, shock_tower_x),
+       y = bulkhead_l + rear_l + support_extra_len + arm_pad_holder_thickness + arm_pad_thickness,
+       z = shock_tower_mount_offset + shock_tower_y + pad_y_top)
+  [x, y, z];
+
 function front_bulkhead_upper_suspension_holder_z_pos(tower_pin_hole_y_offset=front_shock_tower_pin_y_offset,
                                                       shock_tower_mount_offset=front_bulkhead_shock_tower_mount_offset,
                                                       upper_holder_bore_y_offset=front_upper_suspension_holder_bolt_y_offset,
@@ -76,6 +122,10 @@ module front_bulkhead(color=cobalt_blue_light_1,
                       show_upper_suspension_holder=show_upper_suspension_holder,
                       show_shock_tower=show_front_shock_tower,
                       show_suspension_arm_pad=show_suspension_arm_pad,
+                      show_front_upper_arm=show_front_upper_arm,
+                      show_upper_arm_ball_stud=show_upper_arm_ball_stud,
+                      show_front_upper_arm_pin=show_front_upper_arm_pin,
+                      show_front_upper_pin_e_clip=show_front_upper_pin_e_clip,
                       bulkhead_w=front_bulkhead_w,
                       bulkhead_l=front_bulkhead_len,
                       bulkhead_housing_h=front_bulkhead_housing_h,
@@ -100,15 +150,11 @@ module front_bulkhead(color=cobalt_blue_light_1,
                       support_extra_len=front_bulkhead_support_extra_len,
                       upper_holder_round_cutout_y_offset=front_upper_suspension_holder_round_cutout_offset,
                       pin_d=front_upper_arm_hinge_barrel_hole_d,
-                      show_front_upper_arm=show_front_upper_arm,
-                      show_upper_arm_ball_stud=show_upper_arm_ball_stud,
-                      show_front_upper_arm_pin=show_front_upper_arm_pin,
                       arm_pin_l=front_upper_arm_pin_len,
                       arm_pad_hook_h=front_suspension_arm_pad_hook_len_y,
                       arm_pad_thickness=front_suspension_arm_pad_thickness,
                       arm_pad_holder_thickness=front_bulkhead_suspension_pad_thickness,
                       arm_pad_clearance=front_bulkhead_suspension_pad_clearance,
-                      show_front_upper_pin_e_clip=show_front_upper_pin_e_clip,
                       extra_rear_len=front_bulkhead_extra_len,
                       groove_offset=0.85,
                       upper_bolt_d=upper_steering_panel_bolt_d,
@@ -361,13 +407,12 @@ module front_bulkhead_shock_tower_mount(color=cobalt_blue_metallic,
                                         shock_tower_pad_y=front_shock_tower_damper_holes_pad_y,
                                         pad_x=front_bulkhead_shock_tower_mount_pad_x) {
 
-  shock_mount_size_x = shock_tower_bolt_spacing[0]
-    + shock_tower_bolt_d
-    + pad_x * 2;
-
-  shock_mount_size_y = shock_tower_bolt_spacing[1]
-    + shock_tower_bolt_d
-    + shock_tower_pad_y * 2;
+  shock_mount_size_x = shock_tower_mount_size_x(bolt_d=shock_tower_bolt_d,
+                                                pad_x=pad_x,
+                                                bolt_spacing=shock_tower_bolt_spacing);
+  shock_mount_size_y = shock_tower_mount_size_y(bolt_d=shock_tower_bolt_d,
+                                                pad_y=shock_tower_pad_y,
+                                                bolt_spacing=shock_tower_bolt_spacing);
 
   maybe_color(color) {
     translate([0, shock_mount_size_y / 2 + mount_offset, 0]) {
@@ -375,11 +420,6 @@ module front_bulkhead_shock_tower_mount(color=cobalt_blue_metallic,
                      center=false) {
         difference() {
           union() {
-            rounded_rect([shock_mount_size_x, shock_mount_size_y],
-                         center=true,
-                         side="top",
-                         r=tower_mount_corner_r,
-                         fn=$preview ? 40 : 300);
             translate([-shock_mount_size_x / 2, -shock_mount_size_y / 2, 0]) {
               rounded_rect([shock_mount_size_x, shock_mount_size_y + pad_y_top],
                            center=false,
@@ -493,8 +533,8 @@ module front_bulkhead_support(bulkhead_w=front_bulkhead_w,
                               shock_tower_mount_offset=front_bulkhead_shock_tower_mount_offset,
                               shock_tower_bolt_spacing=front_shock_tower_bolt_spacing,
                               upper_holder_barrel_h=front_upper_suspension_holder_pin_barrel_h,
-                              upper_holder_bore_d=front_upper_suspension_holder_bolt_bore_d,
                               upper_holder_thickness=front_upper_suspension_holder_thickness,
+                              upper_holder_bore_d=front_upper_suspension_holder_bolt_bore_d,
                               upper_holder_round_cutout_d=front_upper_suspension_holder_round_cutout_d,
                               support_extra_len=front_bulkhead_support_extra_len,
                               upper_holder_round_cutout_y_offset=front_upper_suspension_holder_round_cutout_offset,
@@ -522,7 +562,7 @@ module front_bulkhead_support(bulkhead_w=front_bulkhead_w,
     - upper_holder_round_cutout_y_offset;
 
   rear_h = shock_tower_mount_offset + upper_holder_w - bellcrank_z_end;
-  min_rear_h = upper_suspension_holder_z_pos[2] - upper_suspension_holder_z_pos[0];
+  min_rear_h = (upper_suspension_holder_z_pos[2] - upper_suspension_holder_z_pos[0]) + 0.5;
   holder_h = max(min_rear_h, rear_h);
 
   rear_l = extra_rear_len + upper_holder_mount_thickness;
@@ -581,12 +621,36 @@ module front_bulkhead_support(bulkhead_w=front_bulkhead_w,
   }
 }
 
-translate([0, 0, front_bulkhead_housing_h]) {
-  front_bulkhead();
-}
-
-translate([0, -60, 0]) {
-  rotate([0, 0, -90]) {
-    %bellcrank_drive(show_idler_lever=true, show_servo_lever=true, z_angle=0);
+module front_bulkhead_printable_splitted(front=true) {
+  bbox = front_bulkhead_bbox_size();
+  render() {
+    difference() {
+      front_bulkhead_printable();
+      translate([0, 0, -0.5]) {
+        cuboid(size=[bbox[0] + 1, bbox[1], bbox[2] + 1],
+               anchor=[0, front ? -1 : 1,
+                       1]);
+      }
+    }
   }
 }
+
+module front_bulkhead_printable() {
+  front_bulkhead(show_upper_suspension_holder=false,
+                 show_shock_tower=false,
+                 show_suspension_arm_pad=false,
+                 show_front_upper_arm=false,
+                 show_upper_arm_ball_stud=false,
+                 show_front_upper_arm_pin=false,
+                 show_front_upper_pin_e_clip=false);
+}
+
+module front_bulkhead_printable_front() {
+  front_bulkhead_printable_splitted(front=true);
+}
+
+module front_bulkhead_printable_rear() {
+  front_bulkhead_printable_splitted(front=false);
+}
+
+front_bulkhead_printable_front();

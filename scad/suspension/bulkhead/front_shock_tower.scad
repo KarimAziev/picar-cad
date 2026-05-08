@@ -394,5 +394,5 @@ module front_shock_tower(color=cobalt_blue_metallic,
 }
 
 union() {
-  front_shock_tower(debug=true);
+  front_shock_tower(debug=false);
 }
