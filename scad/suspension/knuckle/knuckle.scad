@@ -24,6 +24,9 @@ use <knuckle_steering_arm.scad>
 use <knuckle_threaded_plug.scad>
 use <steering_link.scad>
 use <util.scad>
+use <../wishbone_arms/util.scad>
+
+
 
 show_lower_arm             = false;
 show_upper_arm             = false;

@@ -14,6 +14,9 @@ use <bulkhead/front_bulkhead_chassis.scad>
 use <bulkhead/front_bulkhead_housing.scad>
 use <knuckle/knuckle.scad>
 use <wishbone_arms/lower_arm.scad>
+use <wishbone_arms/util.scad>
+
+
 
 show_front_lower_arm                        = true;
 show_front_lower_arm_pin                    = true;

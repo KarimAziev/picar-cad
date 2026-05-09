@@ -19,6 +19,7 @@ use <../../lib/transforms.scad>
 use <../../placeholders/suspension_arm_pin.scad>
 use <../wishbone_arms/barrel_hinge.scad>
 use <../wishbone_arms/lower_arm.scad>
+use <../wishbone_arms/util.scad>
 use <front_bulkhead_chassis.scad>
 
 show_front_lower_arm           = true;

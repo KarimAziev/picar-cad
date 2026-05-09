@@ -32,6 +32,9 @@ use <../bulkhead/front_bulkhead_chassis.scad>
 use <../bulkhead/front_bulkhead_housing.scad>
 use <../wishbone_arms/lower_arm.scad>
 use <front_chassis_joint.scad>
+use <../bulkhead/util.scad>
+
+
 
 front_chassis_front_frame_debug = true;
 

@@ -23,26 +23,14 @@ use <../../lib/transforms.scad>
 use <../../placeholders/ball_stud.scad>
 use <../../placeholders/suspension_arm_pin.scad>
 use <barrel_hinge.scad>
+use <util.scad>
 
 default_show_ball_stud      = false;
 default_debug               = false;
 
 show_front_lower_arm_pin    = false;
+
 show_front_lower_pin_e_clip = false;
-
-function lower_arm_ball_stud_y_pos() =
-  let (cutout_depth = front_lower_arm_damper_boss_h
-       + front_lower_arm_upper_boss_y_offset)
-  front_lower_arm_h - cutout_depth - front_lower_arm_apex_width / 2;
-
-function lower_arm_mount_cutout_size() =
-  let (profile_x0 = front_lower_arm_hinge_barrel_hole_d / 2
-       + front_lower_arm_hinge_barrel_hole_offset
-       + front_lower_arm_hinge_barrel_hole_d,
-       hinge_cutout_len = front_lower_arm_hinge_barrel_len - profile_x0,
-       hinge_cutout_h = front_lower_arm_h - (front_lower_arm_upper_hinge_barrel_h
-                                             + front_lower_arm_lower_hinge_barrel_h))
-  [hinge_cutout_len, hinge_cutout_h];
 
 module lower_arm_hinge(h=front_lower_arm_upper_hinge_barrel_h) {
   barrel_hinge(size=[front_lower_arm_hinge_barrel_len,
@@ -51,16 +39,6 @@ module lower_arm_hinge(h=front_lower_arm_upper_hinge_barrel_h) {
                d=front_lower_arm_hinge_barrel_hole_d,
                distance=front_lower_arm_hinge_barrel_hole_offset);
 }
-
-function lower_arm_full_size(inlcude_ball_stud=true) =
-  let (notch_dep = notch_depth(front_arm_ball_stud_ball_d, front_arm_ball_stud_ball_hole_d),
-       ball_stud_len = !inlcude_ball_stud
-       ? 0
-       : front_arm_ball_stud_ball_d
-       + front_arm_ball_stud_len
-       - front_lower_arm_ball_stud_hole_depth
-       + front_lower_arm_ball_stud_insert_out_depth)
-  [front_lower_arm_len + ball_stud_len, front_lower_arm_h, front_lower_arm_thickness];
 
 module damper_boss() {
   cylinder(d1=front_lower_arm_thickness,

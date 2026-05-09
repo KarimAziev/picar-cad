@@ -1,3 +1,10 @@
+/**
+  * Module: Front shock tower
+  *
+  * Author: Karim Aziiev <karim.aziiev@gmail.com>
+  * License: GPL-3.0-or-later
+  */
+
 include <../../colors.scad>
 include <../../parameters.scad>
 include <../../steering_params.scad>
@@ -9,77 +16,7 @@ use <../../lib/shapes2d.scad>
 use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
 use <../../lib/trapezoids.scad>
-
-function xs(ps) = [for (p = ps) p[0]];
-function ys(ps) = [for (p = ps) p[1]];
-
-function lower_damper_hole_y_pos(tilt_angle,
-                                 damper_holes_n,
-                                 total_h,
-                                 damper_bolt_d,
-                                 gap,
-                                 pad_x,
-                                 pad_y) =
-  let (bb=bbox_holder_hull_samepads(tilt_angle=tilt_angle,
-                                    damper_holes_n=damper_holes_n,
-                                    bolt_d=damper_bolt_d,
-                                    gap=gap,
-                                    pad_x=pad_x,
-                                    pad_y=pad_y),
-       size=size2d_from_bbox(bb),
-       size_y=size[1],
-       lower_damper_hole_y=total_h + damper_bolt_d / 2 - size_y)
-  lower_damper_hole_y;
-
-function front_shock_damper_holes_poses(tilt_angle=front_shock_tower_damper_holes_angle,
-                                        damper_holes_n=front_shock_tower_damper_holes_amount,
-                                        bolt_d=front_shock_tower_shock_damper_bolt_d,
-                                        gap=front_shock_tower_damper_holes_gap) =
-  let (angle_cos=cos(tilt_angle),
-       angle_sin=sin(tilt_angle),
-       step=bolt_d + gap)
-  [for (i = [0 : damper_holes_n - 1])
-      let (base_offst = i * step,
-           x = base_offst * angle_cos,
-           y = base_offst * angle_sin)
-        [x, y]];
-
-function bbox_holder_hull_samepads(tilt_angle,
-                                   damper_holes_n,
-                                   bolt_d,
-                                   gap,
-                                   pad_x,
-                                   pad_y) =
-  let (ps = front_shock_damper_holes_poses(tilt_angle=tilt_angle,
-                                           damper_holes_n=damper_holes_n,
-                                           bolt_d=bolt_d, gap=gap),
-       rx = bolt_d / 2 + pad_x,
-       ry = bolt_d / 2 + pad_y,
-       x  = xs(ps),
-       y  = ys(ps))
-  [[min(x) - rx, min(y) - ry],
-   [max(x) + rx, max(y) + ry]];
-
-function bbox2d_of_circles(ps, r) =
-  let (x = xs(ps),
-       y = ys(ps),
-       minx = min(x),
-       maxx = max(x),
-       miny = min(y),
-       maxy = max(y))
-  [[minx - r, miny - r], [maxx + r, maxy + r]];
-
-function size2d_from_bbox(b) = [b[1][0] - b[0][0],
-                                b[1][1] - b[0][1]];
-
-function front_shock_damper_holes_size2d(tilt_angle,
-                                         damper_holes_n,
-                                         bolt_d,
-                                         gap) =
-  let (ps = front_shock_damper_holes_poses(tilt_angle, damper_holes_n, bolt_d, gap),
-       r  = bolt_d / 2,
-       bb = bbox2d_of_circles(ps, r))
-  size2d_from_bbox(bb);
+use <util.scad>
 
 module front_shock_holder_2d(tilt_angle=front_shock_tower_damper_holes_angle,
                              damper_holes_n=front_shock_tower_damper_holes_amount,
@@ -123,16 +60,6 @@ module front_shock_tower_damper_holes_2d(tilt_angle=front_shock_tower_damper_hol
         circle(r = bolt_r, $fn = 360);
       }
     }
-  }
-}
-
-module front_shock_tower_mount_holes_2d(spacing=front_shock_tower_bolt_spacing,
-                                        bolt_d=front_shock_tower_bolt_d) {
-
-  translate([0, spacing[1] / 2 + bolt_d / 2, 0]) {
-    four_corner_holes_2d(size=spacing,
-                         d=bolt_d,
-                         center=true);
   }
 }
 

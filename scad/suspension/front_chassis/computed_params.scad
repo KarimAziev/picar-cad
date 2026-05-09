@@ -10,9 +10,7 @@ include <../../steering_params.scad>
 use <../../placeholders/dservo.scad>
 use <../bellcrank_steering_slots.scad>
 use <../bulkhead/front_bulkhead.scad>
-use <../bulkhead/front_bulkhead_chassis.scad>
-use <../bulkhead/front_bulkhead_housing.scad>
-use <../wishbone_arms/lower_arm.scad>
+use <../wishbone_arms/util.scad>
 
 bellcrank_params        = bellcrank_steering_servo_position();
 bellcrank_x_dist        = abs(bellcrank_params[0]);

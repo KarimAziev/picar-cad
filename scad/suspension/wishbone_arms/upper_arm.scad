@@ -22,14 +22,10 @@ use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
 use <../../placeholders/ball_stud.scad>
 use <barrel_hinge.scad>
+use <util.scad>
 
 show_ball_stud = false;
 debug          = false;
-
-function upper_arm_ball_stud_y_pos() =
-  front_upper_arm_ball_stud_mount_extra_h
-  + front_upper_arm_h
-  - front_upper_arm_ball_stud_mount_size[1] / 2;
 
 module upper_arm_barrel() {
   barrel_hinge(size=[front_upper_arm_hinge_barrel_len,
@@ -38,17 +34,6 @@ module upper_arm_barrel() {
                d=front_upper_arm_hinge_barrel_hole_d,
                distance=front_upper_arm_hinge_barrel_hole_offset);
 }
-
-function upper_arm_full_size(inlcude_ball_stud=true) =
-  let (notch_dep = notch_depth(front_arm_ball_stud_ball_d,
-                               front_arm_ball_stud_ball_hole_d),
-       ball_stud_len = !inlcude_ball_stud
-       ? 0
-       : front_arm_ball_stud_ball_d
-       + front_arm_ball_stud_len
-       - front_upper_arm_ball_stud_hole_depth
-       + front_upper_arm_ball_stud_insert_out_depth)
-  [front_upper_arm_len + ball_stud_len, front_upper_arm_h, front_upper_arm_thickness];
 
 module upper_arm_hinge_barrels() {
   cut_h = front_upper_arm_h - front_upper_arm_hinge_barrel_h * 2;

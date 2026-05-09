@@ -1,3 +1,10 @@
+/**
+  * Module: Helpers for bulkhead slos
+  *
+  * Author: Karim Aziiev <karim.aziiev@gmail.com>
+  * License: GPL-3.0-or-later
+  */
+
 include <../../colors.scad>
 include <../../parameters.scad>
 include <../../steering_params.scad>
@@ -8,15 +15,7 @@ use <../../lib/shapes3d.scad>
 use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
 use <../../lib/trapezoids.scad>
-use <../wishbone_arms/lower_arm.scad>
-
-function front_bulkhead_base_size(outer_spacing=front_bulkhead_mount_bolt_spacing_1,
-                                  d=front_bulkhead_mount_bolt_d,
-                                  padding_x=front_chassis_bulkhead_padding_x,
-                                  padding_y=front_chassis_bulkhead_padding_y) =
-  let (size_x=outer_spacing[0] + d + padding_x,
-       size_y=outer_spacing[1] + d + padding_y)
-  [size_x, size_y];
+use <../wishbone_arms/util.scad>
 
 module front_bulkhead_housing_slots_non_center_y(barrel_y_offset=front_bulkhead_barrel_y_offset,
                                                  hinge_clearance=front_bulkhead_barrel_hinge_clearance) {
