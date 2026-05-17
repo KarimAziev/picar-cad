@@ -13,10 +13,7 @@ use <bulkhead/front_bulkhead.scad>
 use <bulkhead/front_bulkhead_chassis.scad>
 use <bulkhead/front_bulkhead_housing.scad>
 use <knuckle/knuckle.scad>
-use <wishbone_arms/lower_arm.scad>
 use <wishbone_arms/util.scad>
-
-
 
 show_front_lower_arm                        = true;
 show_front_lower_arm_pin                    = true;
@@ -62,11 +59,11 @@ module front_suspension_assembly(show_front_lower_arm=show_front_lower_arm,
                                  show_left_knuckle=show_left_knuckle,
                                  show_right_knuckle=show_right_knuckle,
                                  show_front_bulkhead_housing=show_front_bulkhead_housing) {
-  barrel_size = lower_arm_mount_cutout_size();
+  barrel_size = front_lower_arm_mount_cutout_size();
   barrel_y_start = front_bulkhead_len - front_bulkhead_barrel_y_offset
     - barrel_size[1];
   bulkhead_full_w = front_bulkhead_w + front_bulkhead_barrel_hinge_w * 2;
-  bolt_stud_y_pos = lower_arm_ball_stud_y_pos();
+  bolt_stud_y_pos = front_lower_arm_ball_stud_y_pos();
 
   lower_arm_offset = front_lower_arm_hinge_barrel_hole_offset
     + front_bulkhead_barrel_pin_hole_offset

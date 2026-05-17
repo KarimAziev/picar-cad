@@ -33,7 +33,7 @@ use <../bulkhead/front_bulkhead_housing.scad>
 use <../front_suspension_assembly.scad>
 use <../steering_servo_bracket/steering_servo_bracket_assembly.scad>
 use <../steering_servo_bracket/steering_servo_chassis_slots.scad>
-use <../wishbone_arms/lower_arm.scad>
+use <../wishbone_arms/front_lower_arm.scad>
 use <front_chassis.scad>
 
 show_chassis_front_frame                    = true;

@@ -8,12 +8,12 @@
 include <../../steering_params.scad>
 
 
-function lower_arm_ball_stud_y_pos() =
+function front_lower_arm_ball_stud_y_pos() =
   let (cutout_depth = front_lower_arm_damper_boss_h
        + front_lower_arm_upper_boss_y_offset)
   front_lower_arm_h - cutout_depth - front_lower_arm_apex_width / 2;
 
-function lower_arm_mount_cutout_size() =
+function front_lower_arm_mount_cutout_size() =
   let (profile_x0 = front_lower_arm_hinge_barrel_hole_d / 2
        + front_lower_arm_hinge_barrel_hole_offset
        + front_lower_arm_hinge_barrel_hole_d,
@@ -22,7 +22,7 @@ function lower_arm_mount_cutout_size() =
                                              + front_lower_arm_lower_hinge_barrel_h))
   [hinge_cutout_len, hinge_cutout_h];
 
-function lower_arm_full_size(inlcude_ball_stud=true) =
+function front_lower_arm_full_size(inlcude_ball_stud=true) =
   let (notch_dep = notch_depth(front_arm_ball_stud_ball_d, front_arm_ball_stud_ball_hole_d),
        ball_stud_len = !inlcude_ball_stud
        ? 0
@@ -32,12 +32,12 @@ function lower_arm_full_size(inlcude_ball_stud=true) =
        + front_lower_arm_ball_stud_insert_out_depth)
   [front_lower_arm_len + ball_stud_len, front_lower_arm_h, front_lower_arm_thickness];
 
-function upper_arm_ball_stud_y_pos() =
+function front_upper_arm_ball_stud_y_pos() =
   front_upper_arm_ball_stud_mount_extra_h
   + front_upper_arm_h
   - front_upper_arm_ball_stud_mount_size[1] / 2;
 
-function upper_arm_full_size(inlcude_ball_stud=true) =
+function front_upper_arm_full_size(inlcude_ball_stud=true) =
   let (notch_dep = notch_depth(front_arm_ball_stud_ball_d,
                                front_arm_ball_stud_ball_hole_d),
        ball_stud_len = !inlcude_ball_stud

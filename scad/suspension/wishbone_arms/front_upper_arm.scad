@@ -66,12 +66,12 @@ module upper_arm_hinge_barrels() {
   }
 }
 
-module upper_arm(color=cobalt_blue_metallic,
-                 show_ball_stud=show_ball_stud,
-                 x_angle=0,
-                 y_angle=0,
-                 z_angle=0,
-                 debug=debug) {
+module front_upper_arm(color=cobalt_blue_metallic,
+                       show_ball_stud=show_ball_stud,
+                       x_angle=0,
+                       y_angle=0,
+                       z_angle=0,
+                       debug=debug) {
   cut_h = front_upper_arm_h - front_upper_arm_hinge_barrel_h * 2;
   cut_y_offset = front_upper_arm_h / 2 - cut_h / 2;
   full_h = front_upper_arm_h + front_upper_arm_ball_stud_mount_extra_h;
@@ -85,7 +85,7 @@ module upper_arm(color=cobalt_blue_metallic,
 
   ball_stud_mount_chamfer_thickness = ball_stud_mount_extra_thickness / 2;
 
-  ball_stud_y = upper_arm_ball_stud_y_pos();
+  ball_stud_y = front_upper_arm_ball_stud_y_pos();
 
   upper_bent_len = front_upper_arm_len - ball_stud_mount_length;
   hole_start_x = front_upper_arm_hinge_barrel_len
@@ -122,7 +122,7 @@ module upper_arm(color=cobalt_blue_metallic,
                 - front_upper_arm_leg_width) * 0.8,
                cut_h - front_upper_arm_ball_stud_mount_extra_h]];
 
-  full_size = upper_arm_full_size(inlcude_ball_stud=true);
+  full_size = front_upper_arm_full_size(inlcude_ball_stud=true);
 
   module upper_arm_hole() {
     polygon(hole_pts, $fn=$preview ? 30 : 360);
@@ -224,4 +224,4 @@ module upper_arm(color=cobalt_blue_metallic,
   }
 }
 
-upper_arm();
+front_upper_arm();

@@ -16,7 +16,7 @@ function front_bulkhead_pad_distance_to_hinge(barrel_y_offset=front_bulkhead_bar
                                               bulkhead_mount_bolt_d=front_bulkhead_mount_bolt_d,
                                               bulkhead_len=front_bulkhead_len,
                                               arm_pad_thickness=front_suspension_arm_pad_thickness) =
-  let (barrel_size=lower_arm_mount_cutout_size(),
+  let (barrel_size=front_lower_arm_mount_cutout_size(),
        barrel_len=barrel_size[1] - hinge_clearance,
        bolt_spacing_max_y=max(outer_spacing[1],
                               inner_spacing[1]),

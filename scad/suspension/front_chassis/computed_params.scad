@@ -17,7 +17,7 @@ bellcrank_x_dist        = abs(bellcrank_params[0]);
 bellcrank_y_dist        = bellcrank_params[1];
 bellcrank_zone_y_len    = bellcrank_params[2];
 
-bulkhead_barrel_size    = lower_arm_mount_cutout_size();
+bulkhead_barrel_size    = front_lower_arm_mount_cutout_size();
 bulkhead_barrel_len     = bulkhead_barrel_size[1]
                            - front_bulkhead_barrel_hinge_clearance;
 bulkhead_transition_len = front_bulkhead_len

@@ -16,17 +16,15 @@ use <../../lib/threading/threaded_plug_hex_socket.scad>
 use <../../lib/transforms.scad>
 use <../../placeholders/ball_bearing.scad>
 use <../../placeholders/bolt.scad>
-use <../wishbone_arms/lower_arm.scad>
-use <../wishbone_arms/upper_arm.scad>
+use <../wishbone_arms/front_lower_arm.scad>
+use <../wishbone_arms/front_upper_arm.scad>
+use <../wishbone_arms/util.scad>
 use <knuckle_ball_stud_housing.scad>
 use <knuckle_bushing.scad>
 use <knuckle_steering_arm.scad>
 use <knuckle_threaded_plug.scad>
 use <steering_link.scad>
 use <util.scad>
-use <../wishbone_arms/util.scad>
-
-
 
 show_lower_arm             = false;
 show_upper_arm             = false;
@@ -195,11 +193,11 @@ module knuckle_left(color=color,
 
   shifted_angles = [angles[2], camber_angle, caster_angle];
 
-  lower_arm_size = lower_arm_full_size();
-  lower_ball_stud_y_pos = lower_arm_ball_stud_y_pos();
-  upper_ball_stud_y_pos = upper_arm_ball_stud_y_pos();
+  lower_arm_size = front_lower_arm_full_size();
+  lower_ball_stud_y_pos = front_lower_arm_ball_stud_y_pos();
+  upper_ball_stud_y_pos = front_upper_arm_ball_stud_y_pos();
 
-  upper_arm_size = upper_arm_full_size();
+  upper_arm_size = front_upper_arm_full_size();
   lower_arm_y_angle = y_angle_from_zshift(-knuckle_z_shift,
                                           lower_arm_size[0]);
   upper_arm_y_angle = y_angle_from_zshift(-knuckle_z_shift,
@@ -257,7 +255,7 @@ module knuckle_left(color=color,
         }
       }
       if (show_lower_arm) {
-        let (ball_stud_y_pos = lower_arm_ball_stud_y_pos()) {
+        let (ball_stud_y_pos = front_lower_arm_ball_stud_y_pos()) {
           translate([ball_stud_mount_x,
                      0,
                      0]) {
@@ -268,8 +266,8 @@ module knuckle_left(color=color,
                        + front_arm_ball_stud_unthreaded_h
                        + knuckle_ball_stud_house_h]) {
               rotate([0, 90, 0]) {
-                lower_arm(show_ball_stud=show_lower_arm_ball_stud,
-                          y_angle=lower_arm_y_angle);
+                front_lower_arm(show_ball_stud=show_lower_arm_ball_stud,
+                                y_angle=lower_arm_y_angle);
               }
             }
           }
@@ -283,8 +281,8 @@ module knuckle_left(color=color,
                      + front_arm_ball_stud_unthreaded_h
                      + knuckle_ball_stud_house_h]) {
             rotate([0, 90, 0]) {
-              upper_arm(show_ball_stud=show_upper_arm_ball_stud,
-                        y_angle=upper_arm_y_angle);
+              front_upper_arm(show_ball_stud=show_upper_arm_ball_stud,
+                              y_angle=upper_arm_y_angle);
             }
           }
         }

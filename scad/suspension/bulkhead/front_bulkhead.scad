@@ -26,8 +26,8 @@ use <../../placeholders/bolt.scad>
 use <../../placeholders/suspension_arm_pin.scad>
 use <../bellcrank/bellcrank_drive.scad>
 use <../bellcrank/bellcrank_idler.scad>
-use <../wishbone_arms/lower_arm.scad>
-use <../wishbone_arms/upper_arm.scad>
+use <../wishbone_arms/front_lower_arm.scad>
+use <../wishbone_arms/front_upper_arm.scad>
 use <../wishbone_arms/util.scad>
 use <front_bulkhead_chassis.scad>
 use <front_bulkhead_housing.scad>
@@ -295,7 +295,7 @@ module front_bulkhead(color=cobalt_blue_light_1,
                      shock_tower_mount_thickness / 2 - front_upper_arm_h,
                      shock_tower_mount_offset + front_upper_arm_thickness / 2]) {
 
-            upper_arm(show_ball_stud=show_upper_arm_ball_stud);
+            front_upper_arm(show_ball_stud=show_upper_arm_ball_stud);
           }
         }
       }
@@ -396,7 +396,7 @@ module front_bulkhead_mount_hinges(bolt_d=front_bulkhead_mount_bolt_d,
                                    rear=false,
                                    barrel_y_offset=front_bulkhead_barrel_y_offset,
                                    hinge_clearance=front_bulkhead_barrel_hinge_clearance) {
-  barrel_size = lower_arm_mount_cutout_size();
+  barrel_size = front_lower_arm_mount_cutout_size();
   barrel_len = barrel_size[1] - hinge_clearance;
 
   bolt_spacing_max_y = max(front_bulkhead_mount_bolt_spacing_1[1],

@@ -27,7 +27,7 @@ use <../bellcrank_steering_slots.scad>
 use <../bulkhead/front_bulkhead.scad>
 use <../bulkhead/front_bulkhead_chassis.scad>
 use <../bulkhead/front_bulkhead_housing.scad>
-use <../wishbone_arms/lower_arm.scad>
+use <../wishbone_arms/front_lower_arm.scad>
 use <front_chassis_front_frame.scad>
 use <front_chassis_joint.scad>
 use <front_chassis_rear_frame.scad>

@@ -18,7 +18,7 @@ use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
 use <../../placeholders/suspension_arm_pin.scad>
 use <../wishbone_arms/barrel_hinge.scad>
-use <../wishbone_arms/lower_arm.scad>
+use <../wishbone_arms/front_lower_arm.scad>
 use <../wishbone_arms/util.scad>
 use <front_bulkhead_chassis.scad>
 
@@ -44,7 +44,7 @@ module front_bulkhead_housing(color=cobalt_blue_metallic,
                               center_y=false,
                               center_by_hinges=false) {
 
-  barrel_size = lower_arm_mount_cutout_size();
+  barrel_size = front_lower_arm_mount_cutout_size();
   barrel_len = barrel_size[1] - hinge_clearance;
 
   bolt_spacing_max_y = max(front_bulkhead_mount_bolt_spacing_1[1],
@@ -149,7 +149,7 @@ module front_bulkhead_housing(color=cobalt_blue_metallic,
                      + (min(front_lower_arm_y_offset,
                             step)),
                      (barrel_thickness - front_lower_arm_thickness) / 2]) {
-            lower_arm(show_ball_stud=show_front_lower_arm_ball_stud);
+            front_lower_arm(show_ball_stud=show_front_lower_arm_ball_stud);
           }
           if (show_front_lower_arm_pin) {
             translate([front_bulkhead_w / 2 + barrel_w - pin_hole_offset

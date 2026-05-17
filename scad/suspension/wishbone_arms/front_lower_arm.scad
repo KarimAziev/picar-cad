@@ -47,13 +47,13 @@ module damper_boss() {
            h=front_lower_arm_damper_boss_h);
 }
 
-module lower_arm(color=cobalt_blue_dark_1,
-                 debug=default_debug,
-                 x_angle=0,
-                 y_angle=0,
-                 z_angle=0,
-                 show_ball_stud=default_show_ball_stud,
-                 use_lower_edge_cutout=front_lower_arm_use_lower_edge_cutout) {
+module front_lower_arm(color=cobalt_blue_dark_1,
+                       debug=default_debug,
+                       x_angle=0,
+                       y_angle=0,
+                       z_angle=0,
+                       show_ball_stud=default_show_ball_stud,
+                       use_lower_edge_cutout=front_lower_arm_use_lower_edge_cutout) {
 
   hole_resolution = $preview ? 16 : 360;
   profile_x0 = front_lower_arm_hinge_barrel_hole_d / 2
@@ -62,7 +62,7 @@ module lower_arm(color=cobalt_blue_dark_1,
 
   profile_length = front_lower_arm_len - profile_x0;
 
-  hinge_cutout_size = lower_arm_mount_cutout_size();
+  hinge_cutout_size = front_lower_arm_mount_cutout_size();
 
   hinge_cutout_len = hinge_cutout_size[0];
   hinge_cutout_h = hinge_cutout_size[1];
@@ -84,7 +84,7 @@ module lower_arm(color=cobalt_blue_dark_1,
 
   available_h = front_lower_arm_h - cutout_depth - front_lower_arm_apex_width;
 
-  full_size = lower_arm_full_size(inlcude_ball_stud=true);
+  full_size = front_lower_arm_full_size(inlcude_ball_stud=true);
 
   outer_profile_pts = [[0, 0],
                        [0, front_lower_arm_h],
@@ -123,7 +123,7 @@ module lower_arm(color=cobalt_blue_dark_1,
                           hinge_cutout_h - cutout_depth
                           - hinge_cutout_corner_r]];
 
-  bolt_stud_y_pos = lower_arm_ball_stud_y_pos();
+  bolt_stud_y_pos = front_lower_arm_ball_stud_y_pos();
   rotate_children_with_shift(size=full_size,
                              angles=[x_angle, y_angle, z_angle]) {
     render() {
@@ -276,4 +276,4 @@ module lower_arm(color=cobalt_blue_dark_1,
   }
 }
 
-lower_arm(y_angle=0);
+front_lower_arm(y_angle=0);
