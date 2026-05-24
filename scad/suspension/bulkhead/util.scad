@@ -59,7 +59,6 @@ function front_bulkhead_bbox_size(bulkhead_w=front_bulkhead_w,
                                   pin_d=front_upper_arm_hinge_barrel_hole_d,
                                   pad_y_top=front_bulkhead_shock_tower_mount_pad_y_top) =
   let (upper_holder_mount_thickness = upper_holder_barrel_h - upper_holder_thickness,
-       common_pin_y = tower_pin_hole_y_offset + pin_d / 2,
        rear_l = extra_rear_len + upper_holder_mount_thickness,
        shock_tower_x = shock_tower_mount_size_x(bolt_d=shock_tower_bolt_d,
                                                 pad_x=shock_tower_pad_x,
