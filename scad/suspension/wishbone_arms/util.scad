@@ -23,8 +23,7 @@ function front_lower_arm_mount_cutout_size() =
   [hinge_cutout_len, hinge_cutout_h];
 
 function front_lower_arm_full_size(inlcude_ball_stud=true) =
-  let (notch_dep = notch_depth(front_arm_ball_stud_ball_d, front_arm_ball_stud_ball_hole_d),
-       ball_stud_len = !inlcude_ball_stud
+  let (ball_stud_len = !inlcude_ball_stud
        ? 0
        : front_arm_ball_stud_ball_d
        + front_arm_ball_stud_len
@@ -38,9 +37,7 @@ function front_upper_arm_ball_stud_y_pos() =
   - front_upper_arm_ball_stud_mount_size[1] / 2;
 
 function front_upper_arm_full_size(inlcude_ball_stud=true) =
-  let (notch_dep = notch_depth(front_arm_ball_stud_ball_d,
-                               front_arm_ball_stud_ball_hole_d),
-       ball_stud_len = !inlcude_ball_stud
+  let (ball_stud_len = !inlcude_ball_stud
        ? 0
        : front_arm_ball_stud_ball_d
        + front_arm_ball_stud_len
