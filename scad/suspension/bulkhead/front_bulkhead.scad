@@ -26,6 +26,7 @@ use <../../placeholders/bolt.scad>
 use <../../placeholders/suspension_arm_pin.scad>
 use <../bellcrank/bellcrank_drive.scad>
 use <../bellcrank/bellcrank_idler.scad>
+use <../bellcrank/util.scad>
 use <../wishbone_arms/front_lower_arm.scad>
 use <../wishbone_arms/front_upper_arm.scad>
 use <../wishbone_arms/util.scad>
