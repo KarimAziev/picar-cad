@@ -28,56 +28,56 @@ use <power_socket_case.scad>
 show_socket_case                  = true;
 
 // Insert the socket jack for the XT90E-M male connector
-show_socket                       = false;
+show_socket                       = true;
 // Fasten the XT90E-M male connector with bolts
-show_socket_bolts                 = false;
+show_socket_bolts                 = true;
 
-show_socket_nuts                  = false;
+show_socket_nuts                  = true;
 
-echo_socket_bolts_info            = false;
+echo_socket_bolts_info            = true;
 
 // Connect the XT90E-M male connector to the fuse holders.
-show_socket_case_atm_fuse_holders = false;
+show_socket_case_atm_fuse_holders = true;
 
 // Slide the socket case lid into place.
-show_socket_case_lid              = false;
+show_socket_case_lid              = true;
 
 // Now mount the power case onto the socket-case lid.
-show_power_case                   = false;
+show_power_case                   = true;
 
 // Insert the bolts.
 show_bottom_bolts                 = true;
 // Show the required bolt length and diameter.
 show_bottom_bolts_info            = true;
 // Tighten the bolts.
-bottom_bolts_down                 = false;
+bottom_bolts_down                 = true;
 
 // From the bottom, fasten the bolts to the standoffs.
-show_standoffs                    = false;
+show_standoffs                    = true;
 // Attach your Turnigy Rapid (or other LiPo) pack.
-show_lipo_pack                    = false;
+show_lipo_pack                    = true;
 
 // Uncheck the previous variables to see only the power-lid assembly.
-show_lid                          = false;
+show_lid                          = true;
 // Connect your step-down voltage regulator.
-show_lid_dc_regulator             = false;
+show_lid_dc_regulator             = true;
 // Connect the step-down voltage regulator to the fuse holders.
-show_atm_fuse_holders             = false;
+show_atm_fuse_holders             = true;
 // Connect your voltmeters.
-show_lid_voltmeter                = false;
+show_lid_voltmeter                = true;
 // Connect your perfboard, if any.
-show_perf_board                   = false;
+show_perf_board                   = true;
 
 // Fasten everything with bolts.
-show_lid_bolts                    = false;
+show_lid_bolts                    = true;
 
 // Connect your custom slots, if any.
 // Show if defined in power_lid_left_slots or power_lid_right_slots.
-show_lid_ato_fuse                 = false;
+show_lid_ato_fuse                 = true;
 // Show XT90E if defined in power_lid_left_slots or power_lid_right_slots.
-show_lid_xt90e                    = false;
+show_lid_xt90e                    = true;
 // Show if defined in power_lid_left_slots or power_lid_right_slots.
-show_lid_switch_button            = false;
+show_lid_switch_button            = true;
 
 // ASSEMBLY END
 slot_mode                         = false;

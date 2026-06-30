@@ -17,8 +17,6 @@ use <../lib/slots.scad>
 use <../lib/transforms.scad>
 use <../lib/wire.scad>
 
-
-
 module xt90_contact_pin(pin_d,
                         contact_d,
                         contact_wall_h,

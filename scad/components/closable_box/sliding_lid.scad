@@ -112,11 +112,11 @@ module sliding_lid(size=[86, 90, 35],
       }
       translate([0, lid_l / 2 - rail_cutout_len / 2 + 0.1, thickness]) {
         cuboid(size=[lid_w + 1,
-                      rail_cutout_len + 0.1,
-                      thickness
-                      + rail_top_thickness
-                      + rim_h + 0.1],
-                center=true);
+                     rail_cutout_len + 0.1,
+                     thickness
+                     + rail_top_thickness
+                     + rim_h + 0.1],
+               center=true);
       }
       translate([0, 0, thickness + rail_top_thickness]) {
         linear_extrude(height=thickness
@@ -140,8 +140,7 @@ module sliding_lid(size=[86, 90, 35],
               fn=fn);
         }
       }
-      if (!is_undef(lid_texts)) {
-
+      if (!is_undef(lid_texts) && len(lid_texts) > 0) {
         props = normalize_texts(lid_texts,
                                 plist=text_props,
                                 default_valign="center",

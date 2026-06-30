@@ -59,18 +59,24 @@ module box(size=[86, 90, 35],
 
   w = size[0] - (rim_should_subtract ? rim_w * 2 : 0);
   l = size[1] - (rim_should_subtract ? rim_front_w * 2 : 0);
-  h = size[2]  - (rim_should_subtract ? rim_h : 0);
+  h = size[2] - (rim_should_subtract ? rim_h : 0);
 
   inner_x = w - side_thickness * 2;
   inner_y = l - front_thickness * 2;
 
   module base_box() {
     if (use_inner_round) {
-      rounded_cube([w,
-                    l,
-                    h + corner_rad],
-                   center=true,
-                   r=corner_rad);
+      difference() {
+        cuboid(size=[w, l, h + corner_rad],
+               anchor=[0, 0, 1],
+               r=corner_rad,
+               use_minkowski=true);
+        translate([0, 0, h]) {
+          cuboid(size=[w, l, corner_rad + 0.1],
+                 anchor=[0, 0, 1],
+                 r=0);
+        }
+      }
     } else {
       linear_extrude(height=h, center=false, convexity=2) {
         rounded_rect([w, l], center=true, r=corner_rad, fn=fn);
@@ -121,7 +127,7 @@ module box(size=[86, 90, 35],
                      l / 2 + rim_front_w - latch_h / 2,
                      h + rim_h - latch_h]) {
             cuboid([latch_l, latch_h + 0.1, latch_h + 0.1],
-                    center=true);
+                   center=true);
           }
         }
       }
@@ -138,8 +144,7 @@ module box(size=[86, 90, 35],
       if (!is_undef(grid_spec) && len(grid_spec) > 0) {
         intersection() {
           linear_extrude(height = h +
-                         (include_rim_sizing ? rim_h : 0) - latch_h
-                         - 0.3,
+                         (include_rim_sizing ? rim_h : 0) - latch_h - 0.3,
                          center=false,
                          convexity = 2) {
 
@@ -154,7 +159,7 @@ module box(size=[86, 90, 35],
       }
     }
     cuboid(size=[size[0] + rim_w, size[1] + rim_front_w, size[2] + rim_h],
-            center=true);
+           center=true);
   }
 }
 
@@ -258,14 +263,18 @@ module closable_box_and_lid(w=40,
   }
 }
 
-box_size = [25, 40, 10];
-lid_thickness = 2;
-rim_h = 3;
+box_size = [144, 119, 81];
+corner_rad       = 5;
+lid_thickness    = 3;
+front_thickness  = 3;
+side_thickness   = 3;
+bottom_thickness = 2.5;
+rim_h            = 3;
 
-closable_box_and_lid(w=25,
-                     l=40,
-                     h=10,
-                     corner_rad=1.0,
+closable_box_and_lid(w=box_size[0],
+                     l=box_size[1],
+                     h=box_size[2],
+                     corner_rad=corner_rad,
                      use_inner_round=true,
                      rim_h=rim_h,
                      rim_w=2,
@@ -274,7 +283,7 @@ closable_box_and_lid(w=25,
                      rail_thickness=1,
                      rail_tolerance=0.4,
                      rail_top_thickness=1,
-                     front_thickness=1,
+                     front_thickness=front_thickness,
                      lid_thickness=lid_thickness,
                      latch_h=1,
                      latch_l=0.5,
@@ -284,9 +293,9 @@ closable_box_and_lid(w=25,
                      text_props=["size", 8,
                                  "color", "red",
                                  "spacing", 0.9],
-                     side_thickness=1,
+                     side_thickness=side_thickness,
                      bottom_thickness=1.5,
-                     assembly=true,
+                     assembly=false,
                      assembly_debug=false,
                      show_lid=true,
                      show_box=true,
@@ -295,10 +304,10 @@ closable_box_and_lid(w=25,
                                 [50, [80]],
                                 [20, [30, 30]]]);
 
-translate([-box_size[0] / 2, 0, 0]) {
+// translate([-box_size[0] / 2, 0, 0]) {
 
-  #cuboid([box_size[0], box_size[1],
-            sliding_box_full_height(size=box_size,
-                                    rim_h=rim_h,
-                                    lid_thickness=lid_thickness)]);
-}
+//   #cuboid([box_size[0], box_size[1],
+//            sliding_box_full_height(size=box_size,
+//                                    rim_h=rim_h,
+//                                    lid_thickness=lid_thickness)]);
+// }

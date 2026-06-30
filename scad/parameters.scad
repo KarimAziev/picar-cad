@@ -1084,9 +1084,9 @@ ir_case_head_bolts_side_panel_positions              = [[ir_case_head_side_panel
 // LiPo Battery Pack dimensions (4S2P configuration)
 // ─────────────────────────────────────────────────────────────────────────────
 
-lipo_pack_length                                     = 138.4; // Length of the battery pack
-lipo_pack_width                                      = 47;   // Width of the battery pack
-lipo_pack_height                                     = 48.4;  // Height of the battery pack
+lipo_pack_length                                     = 155.41; // Length of the battery pack
+lipo_pack_width                                      = 47.4;   // Width of the battery pack
+lipo_pack_height                                     = 21.9;  // Height of the battery pack
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PAN SERVO CONFIGURATION (Dimensions & Visual Representation)
@@ -2041,6 +2041,39 @@ voltmeter_default_spec                               = ["display", ["size", [vol
                                                                              voltmeter_board_h]];
 
 // ─────────────────────────────────────────────────────────────────────────────
+// XT60 connector placeholder
+// ─────────────────────────────────────────────────────────────────────────────
+
+xt_60_size                                           = [11.6, 18.0];
+
+xt_60_bolt_spacing                                   = [0, 25.4];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// XT60BE-M connector placeholder
+// ─────────────────────────────────────────────────────────────────────────────
+xt60be_size                                          = [xt_60_size[0], xt_60_size[1], 15.1];
+xt60be_mounting_panel_size                           = [15.65, 33.2, 2.5];
+xt60be_mount_spacing                                 = 25.4;
+xt60be_mount_dia                                     = m3_hole_dia;
+xt60be_mount_cbore_dia                               = m3_countersunk_head_dia;
+xt60be_mount_cbore_h                                 = m3_countersunk_head_h;
+
+xt60be_pin_spacing                                   = 7.6;
+xt60be_pin_dia                                       = 3.7;
+xt60be_contact_dia                                   = 4.2;
+xt60be_contact_h                                     = 4.2;
+xt60be_contact_thickness                             = 0.8;
+xt60be_contact_wall_h                                = 2;
+xt60be_contact_base_h                                = 1;
+
+xt60be_pin_length                                    = 6.0;
+
+xt60be_pin_thickness                                 = 1;
+
+xt60be_shell_color                                   = matte_black;
+xt60be_pin_color                                     = dark_gold_2;
+
+// ─────────────────────────────────────────────────────────────────────────────
 // XT90 connector placeholder
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -2079,15 +2112,15 @@ xt90e_pin_color                                      = dark_gold_2;
 
 // External width of the power module case (X dimension).
 // This is the full outside width including side walls and rails.
-power_case_width                                     = 52.4;
+power_case_width                                     = lipo_pack_width + 5.4;
 
 // External length of the power module case (Y dimension).
 // This is the full outside length of the battery case including front/back walls.
-power_case_length                                    = 146;
+power_case_length                                    = lipo_pack_length + 7.6;
 
 // External height of the base case body (Z dimension) measured to the top face
 // of the main case (does not include the dovetail rails mounted above).
-power_case_height                                    = 55;
+power_case_height                                    = lipo_pack_height + 6.6;
 
 power_case_round_rad                                 = 1; // Corner radius for rounded exterior geometry.
 
@@ -2208,30 +2241,30 @@ power_socket_case_rail_top_thickness                 = 1;
 
 power_socket_case_jack_plist                         = ["type", "custom",
                                                         "placeholder", "xt90e_m",
-                                                        "placeholder_size", xt90e_mounting_panel_size,
-                                                        "slot_size", xt_90_size,
-                                                        "shell_size", xt90e_size,
-                                                        "mounting_panel_size", xt90e_mounting_panel_size,
-                                                        "bolt_spacing", xt_90_bolt_spacing,
+                                                        "placeholder_size", xt60be_mounting_panel_size,
+                                                        "slot_size", xt_60_size,
+                                                        "shell_size", xt60be_size,
+                                                        "mounting_panel_size", xt60be_mounting_panel_size,
+                                                        "bolt_spacing", xt_60_bolt_spacing,
                                                         "align", 1,
                                                         "gap_before", 5,
-                                                        "mount_spacing", xt90e_mount_spacing,
-                                                        "mount_dia", xt90e_mount_dia,
-                                                        "mount_bore_dia", xt90e_mount_cbore_dia,
-                                                        "mount_bore_h", xt90e_mount_cbore_h,
+                                                        "mount_spacing", xt60be_mount_spacing,
+                                                        "mount_dia", xt60be_mount_dia,
+                                                        "mount_bore_dia", xt60be_mount_cbore_dia,
+                                                        "mount_bore_h", xt60be_mount_cbore_h,
                                                         "r_factor", 0.3,
                                                         "shell_r_factor", 0.5,
-                                                        "contact_d", xt90e_contact_dia,
-                                                        "contact_h", xt90e_contact_h,
-                                                        "contact_wall_h", xt90e_contact_wall_h,
-                                                        "contact_base_h", xt90e_contact_base_h,
-                                                        "contact_thickness", xt90e_contact_thickness,
-                                                        "pin_color", xt90e_pin_color,
-                                                        "pin_spacing", xt90e_pin_spacing,
-                                                        "pin_dia", xt90e_pin_dia,
-                                                        "pin_length", xt90e_pin_length,
-                                                        "pin_thickness", xt90e_pin_thickness,
-                                                        "shell_color", xt90e_shell_color,
+                                                        "contact_d", xt60be_contact_dia,
+                                                        "contact_h", xt60be_contact_h,
+                                                        "contact_wall_h", xt60be_contact_wall_h,
+                                                        "contact_base_h", xt60be_contact_base_h,
+                                                        "contact_thickness", xt60be_contact_thickness,
+                                                        "pin_color", xt60be_pin_color,
+                                                        "pin_spacing", xt60be_pin_spacing,
+                                                        "pin_dia", xt60be_pin_dia,
+                                                        "pin_length", xt60be_pin_length,
+                                                        "pin_thickness", xt60be_pin_thickness,
+                                                        "shell_color", xt60be_shell_color,
                                                         "bolt_head_type", "pan",
                                                         "round_side", "bottom",
                                                         "gnd_wiring_color", matte_black,
@@ -2306,7 +2339,7 @@ power_socket_case_side_panel_slots                   = [["placeholder", "atm_fus
 
 power_socket_case_mounting_panel_size                = plist_get("placeholder_size",
                                                                  power_socket_case_jack_plist,
-                                                                 xt90e_mounting_panel_size);
+                                                                 xt60be_mounting_panel_size);
 power_socket_case_mounting_panel_h                   = power_socket_case_mounting_panel_size[0];
 power_socket_case_size                               = [power_case_width,
                                                         power_case_length,

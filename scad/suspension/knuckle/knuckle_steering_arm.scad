@@ -204,4 +204,4 @@ module knuckle_steering_arm(w_base=knuckle_arm_base_w,
   }
 }
 
-knuckle_steering_arm(debug=true);
+knuckle_steering_arm(debug=false);
