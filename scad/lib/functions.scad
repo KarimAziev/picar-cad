@@ -1928,3 +1928,36 @@ function offset_path(points, offset, up=[0, 0, 1]) =
       let (t = point_tangent(points, i),
            p = safe_perp(t, up))
         vadd(points[i], vmul(p, offset))];
+
+/**
+─────────────────────────────────────────────────────────────────────────────
+countersink_h
+─────────────────────────────────────────────────────────────────────────────
+
+Compute the height of a conical countersink from the through-hole diameter,
+the countersink opening diameter, and the included angle.
+
+**Parameters:**
+
+`d`: Through-hole diameter.
+`sink_d`: Countersink opening diameter at the wide end.
+`angle`: Included countersink angle in degrees.
+
+**Returns:**
+
+The countersink height needed to transition from diameter `d` to diameter
+`sink_d` at the given included angle.
+
+
+For valid physical results, `sink_d` should be greater than or equal to `d`,
+and `angle` should be greater than `0` and less than `180`.
+
+**Examples:**
+```scad
+countersink_h(d=3, sink_d=6, angle=90); // -> 1.5
+countersink_h(d=3, sink_d=6.5, angle=90); // -> 1.75
+countersink_h(d=4, sink_d=8, angle=82);   // -> ~2.3
+```
+*/
+function countersink_h(d, sink_d, angle) =
+  ((sink_d - d) / 2) / tan(angle / 2);

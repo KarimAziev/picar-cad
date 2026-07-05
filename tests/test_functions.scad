@@ -310,6 +310,18 @@ module test_qsort() {
             "qsort([5, 2, 9, 2, 1, 7], asc=false)");
 }
 
+module test_countersink_h() {
+  assert_eq(countersink_h(d=3, sink_d=6, angle=90),
+            1.5,
+            "countersink_h(d=3, sink_d=6, angle=90)");
+  assert_eq(countersink_h(d=3, sink_d=6.5, angle=90),
+            1.75,
+            "countersink_h(d=3, sink_d=6.5, angle=90)");
+  assert_eq(truncate(countersink_h(d=4, sink_d=8, angle=82), 1),
+            2.3,
+            "truncate(countersink_h(d=4, sink_d=8, angle=82), 1)");
+}
+
 test_slice();
 test_truncate_all_nums();
 test_take();
@@ -334,3 +346,4 @@ test_safe_perp();
 test_offset_path();
 test_point_tangent();
 test_qsort();
+test_countersink_h();
