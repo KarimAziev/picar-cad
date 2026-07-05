@@ -247,7 +247,8 @@ module counterbore(h,
                    autoscale_step = 0.1,
                    reverse=false,
                    teardrop_angle,
-                   teardrop_both_sides=false) {
+                   teardrop_both_sides=false,
+                   print_sink_angle=false) {
 
   is_teardrop = !is_undef(teardrop_angle) && teardrop_angle != 0;
   inhibit_bore = is_no_bore(no_bore=no_bore, bore_h=bore_h, bore_d=bore_d);
@@ -259,11 +260,11 @@ module counterbore(h,
   max_d = inhibit_bore ? d : bore_r * 2;
 
   module main_slot() {
-
     let (height = auto_scale
          ? h + (autoscale_step * 2)
          : h) {
       if (is_teardrop) {
+        assert(is_num(teardrop_angle), "Teardop angle should be a number! ");
         teardrop(h=height,
                  d=d,
                  ang=teardrop_angle,
@@ -280,21 +281,35 @@ module counterbore(h,
 
   module cbore_hole() {
     if (sink) {
-      r1 = !reverse ? d / 2 : bore_r;
-      r2 = !reverse ? bore_r : d / 2;
-      if (is_teardrop) {
-        teardrop(r1=r1,
-                 r2=r2,
-                 h=cbore_h,
-                 ang=teardrop_angle,
-                 fn=fn,
-                 both_sides=teardrop_both_sides);
-      } else {
-        cylinder(h=cbore_h,
-                 r1=r1,
-                 r2=r2,
-                 center=false,
-                 $fn=fn);
+      let (r1 = !reverse ? d / 2 : bore_r,
+           r2 = !reverse ? bore_r : d / 2) {
+        if (print_sink_angle) {
+          let (angle = truncate(taper_angle_from_axis(d1=r1 * 2,
+                                                      d2=r2 * 2,
+                                                      h=cbore_h),
+                                1)) {
+            echo(str("Countersink angle is ",
+                     angle,
+                     " (d=", d,
+                     ", bore_d=", bore_d,
+                     ", h=", h,
+                     ");"));
+          }
+        }
+        if (is_teardrop) {
+          teardrop(r1=r1,
+                   r2=r2,
+                   h=cbore_h,
+                   ang=teardrop_angle,
+                   fn=fn,
+                   both_sides=teardrop_both_sides);
+        } else {
+          cylinder(h=cbore_h,
+                   r1=r1,
+                   r2=r2,
+                   center=false,
+                   $fn=fn);
+        }
       }
     } else {
 
