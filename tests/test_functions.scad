@@ -302,12 +302,12 @@ module test_offset_path() {
 }
 
 module test_qsort() {
-  assert_eq(echo(qsort([5, 2, 9, 2, 1, 7], asc=true)),
+  assert_eq(qsort([5, 2, 9, 2, 1, 7], asc=true),
             [1, 2, 2, 5, 7, 9],
-            "echo(qsort([5, 2, 9, 2, 1, 7], asc=true))");
-  assert_eq(echo(qsort([5, 2, 9, 2, 1, 7], asc=false)),
+            "qsort([5, 2, 9, 2, 1, 7], asc=true)");
+  assert_eq(qsort([5, 2, 9, 2, 1, 7], asc=false),
             [9, 7, 5, 2, 2, 1],
-            "echo(qsort([5, 2, 9, 2, 1, 7], asc=false))");
+            "qsort([5, 2, 9, 2, 1, 7], asc=false)");
 }
 
 test_slice();
