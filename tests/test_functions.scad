@@ -301,6 +301,15 @@ module test_offset_path() {
             "offset_path([[0,0,0], [0,10,0]], 1, [0,0,1])");
 }
 
+module test_qsort() {
+  assert_eq(echo(qsort([5, 2, 9, 2, 1, 7], asc=true)),
+            [1, 2, 2, 5, 7, 9],
+            "echo(qsort([5, 2, 9, 2, 1, 7], asc=true))");
+  assert_eq(echo(qsort([5, 2, 9, 2, 1, 7], asc=false)),
+            [9, 7, 5, 2, 2, 1],
+            "echo(qsort([5, 2, 9, 2, 1, 7], asc=false))");
+}
+
 test_slice();
 test_truncate_all_nums();
 test_take();
@@ -324,3 +333,4 @@ test_vmul();
 test_safe_perp();
 test_offset_path();
 test_point_tangent();
+test_qsort();

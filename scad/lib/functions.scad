@@ -1350,16 +1350,13 @@ function last(l) =
   */
 
 function qsort(v, asc=true) =
-  len(v) <= 1 ? v :
-  let (p = v[0])
-  asc ?
-  concat(qsort([for (x=v) if (x <  p) x], asc),
-         [for (x=v) if (x == p) x],
-         qsort([for (x=v) if (x >  p) x], asc))
-  :
-  concat(qsort([for (x=v) if (x >  p) x], asc),
-         [for (x=v) if (x == p) x],
-         qsort([for (x=v) if (x <  p) x], asc));
+  len(v) <= 1
+  ? v
+  : let (pivot = v[0],
+         left = [for (x=v) if (asc ? x < pivot : x > pivot) x],
+         mid  = [for (x=v) if (x == pivot) x],
+         right  = [for (x=v) if (asc ? x > pivot : x < pivot) x])
+  concat(qsort(left, asc), mid, qsort(right, asc));
 
 /**
 ─────────────────────────────────────────────────────────────────────────────
