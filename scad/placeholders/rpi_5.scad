@@ -8,6 +8,7 @@
 include <../colors.scad>
 include <../parameters.scad>
 
+use <../lib/functions.scad>
 use <../lib/holes.scad>
 use <../lib/shapes2d.scad>
 use <../lib/slots.scad>
@@ -337,183 +338,188 @@ module rpi_5(size=[rpi_width, rpi_len, rpi_thickness],
              ethernet_jack_size=rpi_ethernet_jack_size,
              standoff_height=rpi_standoff_height,
              bolt_visible_h=chassis_thickness - chassis_counterbore_h,
+             anchor=[1, 1, 1],
              slot_mode=false) {
+
   w = size[0];
   length = size[1];
   h = size[2];
-  if (slot_mode) {
-    translate([bolt_offset, bolt_offset, 0]) {
-      four_corner_children(bolt_spacing,
-                           center=false) {
-        counterbore(d=mount_dia,
-                    h=slot_thickness,
-                    bore_h=chassis_counterbore_h,
-                    bore_d=rpi_bolt_cbore_dia,
-                    autoscale_step=0.1,
-                    sink=true,
-                    reverse=true);
+
+  with_anchor(anchor=anchor, size=size, centered=false) {
+    if (slot_mode) {
+      translate([bolt_offset, bolt_offset, 0]) {
+        four_corner_children(bolt_spacing,
+                             center=false) {
+          counterbore(d=mount_dia,
+                      h=slot_thickness,
+                      bore_h=chassis_counterbore_h,
+                      bore_d=rpi_bolt_cbore_dia,
+                      autoscale_step=0.1,
+                      sink=true,
+                      reverse=true);
+        }
       }
     }
-  }
-  else {
-    translate([0, 0, show_standoffs ? standoff_height + bolt_visible_h : 0]) {
-      union() {
+    else {
+      translate([0, 0, show_standoffs ? standoff_height + bolt_visible_h : 0]) {
         union() {
-          color(green_3, alpha=1) {
-            linear_extrude(height=h, center=false) {
-              difference() {
-                rounded_rect([w, length], r=corner_rad);
+          union() {
+            color(green_3, alpha=1) {
+              linear_extrude(height=h, center=false) {
+                difference() {
+                  rounded_rect([w, length], r=corner_rad);
+                  translate([bolt_offset, bolt_offset, 0]) {
+                    four_corner_holes_2d(size=bolt_spacing,
+                                         center=false,
+                                         d=placeholder_hole_dia);
+                  }
+                }
+              }
+            }
+            if (show_standoffs) {
+              rpi_standoffs(standoff_height=standoff_height,
+                            bolt_visible_h=bolt_visible_h);
+            }
+
+            translate([0, 0, h]) {
+              translate([0, bolt_offset * 2, 0]) {
+                pin_header(cols=header_cols,
+                           rows=header_rows,
+                           header_width=header_width,
+                           header_height=header_height,
+                           pin_height=pin_height,
+                           z_offset=h + 0.5,
+                           p=0.65,
+                           center=false);
+                translate([header_width * 2 + 1, 0, 0]) {
+                  wifi_bt(size=wifi_bt_size);
+                }
+              }
+            }
+            translate([0, 0, h]) {
+              color(yellow_3, alpha=1) {
                 translate([bolt_offset, bolt_offset, 0]) {
-                  four_corner_holes_2d(size=bolt_spacing,
-                                       center=false,
-                                       d=placeholder_hole_dia);
+                  four_corner_children(size=bolt_spacing, center=false) {
+                    pad_hole(bolt_d=placeholder_hole_dia,
+                             specs=pad_hole_specs,
+                             thickness=0.1);
+                  }
                 }
               }
-            }
-          }
-          if (show_standoffs) {
-            rpi_standoffs(standoff_height=standoff_height,
-                          bolt_visible_h=bolt_visible_h);
-          }
-
-          translate([0, 0, h]) {
-            translate([0, bolt_offset * 2, 0]) {
-              pin_header(cols=header_cols,
-                         rows=header_rows,
-                         header_width=header_width,
-                         header_height=header_height,
-                         pin_height=pin_height,
-                         z_offset=h + 0.5,
-                         p=0.65,
-                         center=false);
-              translate([header_width * 2 + 1, 0, 0]) {
-                wifi_bt(size=wifi_bt_size);
+              translate([header_width * 2 + rpi_ram_size[1] + 2,
+                         header_width * 10,
+                         0]) {
+                bcm_processor();
               }
-            }
-          }
-          translate([0, 0, h]) {
-            color(yellow_3, alpha=1) {
-              translate([bolt_offset, bolt_offset, 0]) {
-                four_corner_children(size=bolt_spacing, center=false) {
-                  pad_hole(bolt_d=placeholder_hole_dia,
-                           specs=pad_hole_specs,
-                           thickness=0.1);
-                }
-              }
-            }
-            translate([header_width * 2 + rpi_ram_size[1] + 2,
-                       header_width * 10,
-                       0]) {
-              bcm_processor();
-            }
 
-            translate([header_width * 2 + 5,
-                       header_width * 10,
-                       0]) {
-              ram();
-              translate([-1, 0, 0]) {
-                color("white", alpha=1) {
-                  rotate([0, 0, 90]) {
-                    linear_extrude(height=0.1, center=false) {
-                      text(rpi_model_text,
-                           size=2,
-                           font=rpi_text_font,
-                           valign="bottom");
+              translate([header_width * 2 + 5,
+                         header_width * 10,
+                         0]) {
+                ram();
+                translate([-1, 0, 0]) {
+                  color("white", alpha=1) {
+                    rotate([0, 0, 90]) {
+                      linear_extrude(height=0.1, center=false) {
+                        text(rpi_model_text,
+                             size=2,
+                             font=rpi_text_font,
+                             valign="bottom");
+                      }
                     }
                   }
                 }
               }
-            }
-            union() {
-              offst = 3;
-              translate([0, length - usb_size[1] + offst, h]) {
-                usb(size=usb_size);
-                translate([usb_size[0] + 5, 0, 0]) {
+              union() {
+                offst = 3;
+                translate([0, length - usb_size[1] + offst, h]) {
                   usb(size=usb_size);
+                  translate([usb_size[0] + 5, 0, 0]) {
+                    usb(size=usb_size);
 
-                  translate([0, -usb_size[1], 0]) {
-                    io_controller(size=io_size);
+                    translate([0, -usb_size[1], 0]) {
+                      io_controller(size=io_size);
+                    }
                   }
                 }
+                translate([(usb_size[0] + 5) * 2,
+                           length
+                           - ethernet_jack_size[1]
+                           + offst,
+                           0]) {
+                  ethernet(size=ethernet_jack_size);
+                }
               }
-              translate([(usb_size[0] + 5) * 2,
-                         length
-                         - ethernet_jack_size[1]
-                         + offst,
-                         0]) {
-                ethernet(size=ethernet_jack_size);
-              }
-            }
-            rpi_usb_hdmi_connectors();
+              rpi_usb_hdmi_connectors();
 
-            translate([rpi_csi_position_x, rpi_csi_position_y, 0]) {
-              csi_camera_connector(size=csi_size);
-              translate([0, -csi_size[1] - 3, 0]) {
+              translate([rpi_csi_position_x, rpi_csi_position_y, 0]) {
                 csi_camera_connector(size=csi_size);
+                translate([0, -csi_size[1] - 3, 0]) {
+                  csi_camera_connector(size=csi_size);
+                }
               }
-            }
-            translate([w / 2 - pci_size[0] / 2,
-                       0,
-                       0]) {
-              pci_connector(size=pci_size);
-              translate([pci_size[0] + 7,
-                         rpi_on_off_button_size[1] +
-                         rpi_on_off_button_dia / 2 - 0.2,
-                         h]) {
-                on_off_buton(size=on_off_button_size,
-                             dia=on_off_button_dia);
+              translate([w / 2 - pci_size[0] / 2,
+                         0,
+                         0]) {
+                pci_connector(size=pci_size);
+                translate([pci_size[0] + 7,
+                           rpi_on_off_button_size[1] +
+                           rpi_on_off_button_dia / 2 - 0.2,
+                           h]) {
+                  on_off_buton(size=on_off_button_size,
+                               dia=on_off_button_dia);
+                }
               }
             }
           }
-        }
 
-        translate([0,
-                   0,
-                   header_height + (h / 2) +
-                   (show_ai_hat
-                    ? ai_hat_header_height : 0)]) {
-          if (show_ai_hat) {
-            ai_hat(center=false);
-          }
           translate([0,
                      0,
-                     (show_servo_driver_hat
-                      ? servo_driver_hat_header_height
-                      : 0)
-                     + (show_ai_hat ? ai_hat_size[2]
-                        : 0)]) {
-            if (show_servo_driver_hat) {
-              servo_driver_hat(center=false);
+                     header_height + (h / 2) +
+                     (show_ai_hat
+                      ? ai_hat_header_height : 0)]) {
+            if (show_ai_hat) {
+              ai_hat(center=false);
             }
-
             translate([0,
                        0,
-                       (show_motor_driver_hat
-                        ? motor_driver_hat_lower_header_height
-                        : 0) +
                        (show_servo_driver_hat
-                        ? servo_driver_hat_size[2]
-                        : 0)]) {
-
-              if (show_motor_driver_hat) {
-                motor_driver_hat(center=false,
-                                 show_upper_pin_header=show_gpio_expansion_board,
-                                 show_lower_pin_header=true,
-                                 extra_standoff_h=motor_driver_hat_upper_header_height);
+                        ? servo_driver_hat_header_height
+                        : 0)
+                       + (show_ai_hat ? ai_hat_size[2]
+                          : 0)]) {
+              if (show_servo_driver_hat) {
+                servo_driver_hat(center=false);
               }
-              let (extra_upper_header_height = show_motor_driver_hat
-                   ? motor_driver_hat_upper_header_height
-                   + motor_driver_hat_size[2]
-                   : 0) {
-                translate([0,
-                           0,
-                           (show_gpio_expansion_board
-                            ? gpio_expansion_header_height
-                            : 0) + extra_upper_header_height]) {
-                  if (show_gpio_expansion_board) {
-                    gpio_expansion_board(center=false,
-                                         show_nut=true,
-                                         extra_standoff_h=extra_upper_header_height);
+
+              translate([0,
+                         0,
+                         (show_motor_driver_hat
+                          ? motor_driver_hat_lower_header_height
+                          : 0) +
+                         (show_servo_driver_hat
+                          ? servo_driver_hat_size[2]
+                          : 0)]) {
+
+                if (show_motor_driver_hat) {
+                  motor_driver_hat(center=false,
+                                   show_upper_pin_header=show_gpio_expansion_board,
+                                   show_lower_pin_header=true,
+                                   extra_standoff_h=motor_driver_hat_upper_header_height);
+                }
+                let (extra_upper_header_height = show_motor_driver_hat
+                     ? motor_driver_hat_upper_header_height
+                     + motor_driver_hat_size[2]
+                     : 0) {
+                  translate([0,
+                             0,
+                             (show_gpio_expansion_board
+                              ? gpio_expansion_header_height
+                              : 0) + extra_upper_header_height]) {
+                    if (show_gpio_expansion_board) {
+                      gpio_expansion_board(center=false,
+                                           show_nut=true,
+                                           extra_standoff_h=extra_upper_header_height);
+                    }
                   }
                 }
               }
