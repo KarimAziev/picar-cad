@@ -9,10 +9,13 @@ include <../colors.scad>
 include <../parameters.scad>
 include <../steering_params.scad>
 
+use <../components/encoder_l_bracket.scad>
 use <../lib/debug.scad>
 use <../lib/functions.scad>
+use <../lib/shapes3d.scad>
 use <../suspension/bellcrank/bellcrank_drive.scad>
 use <bolt.scad>
+use <rotary_encoder.scad>
 use <servo.scad>
 use <servo_arm.scad>
 use <tie_rod.scad>
@@ -191,9 +194,14 @@ module dsservo(center=false,
                show_servo_horn_bolt,
                servo_horn_single,
                show_tie_rod=true,
+               show_encoder=true,
+               show_encoder_bracket=true,
                bellcrank_lever_z_end,
                servo_horn_screw_side,
-               servo_horn_angle=0) {
+               servo_horn_angle=0,
+               show_magnet=true,
+               magnet_d=steering_magnet_d,
+               magnet_h=steering_magnet_h) {
 
   bellcrank_lever_z_end = is_undef(bellcrank_lever_z_end)
     ? bellcrank_servo_lever_z_coords()[1]
@@ -242,7 +250,7 @@ module dsservo(center=false,
           socket_side=dsservo_socket_side,
           socket_size=dsservo_socket_size,
           socket_z_offset=dsservo_socket_z_offset,
-          wiring_path=[[-100, dsservo_size[1] / 2, dsservo_socket_z_offset],]) {
+          wiring_path=[[-100, dsservo_size[1] / 2, dsservo_socket_z_offset]]) {
 
       if (show_servo_horn) {
         rotate([0, 0, 180 + servo_horn_angle]) {
@@ -266,10 +274,48 @@ module dsservo(center=false,
             translate([-steering_servo_arm_w / 2 + servo_tie_rod_a_eye_od / 2,
                        y_tie_rod,
                        -max_tie_rod_a_h / 2]) {
-
               rotate([0, 0, angle - servo_horn_angle]) {
                 servo_tie_rod(tie_rod_b_bushing_rotation=[angle, 0, 0],
                               direction="left");
+              }
+            }
+          }
+        }
+      }
+
+      if (steering_encoder_plist) {
+        encoder_target_h = dsservo_size[1] / 2;
+        encoder_thickness = encoder_total_thickness(plist=steering_encoder_plist);
+        translate([0, 0, steering_servo_arm_base_h]) {
+          if (show_magnet) {
+            color(metallic_silver_3, alpha=1) {
+              cylinder(d=magnet_d, h=magnet_h, $fn=28);
+            }
+          }
+          if (show_encoder_bracket) {
+            translate([0,
+                       0,
+                       magnet_h + encoder_thickness
+                       + steering_encoder_side_thickness
+                       + steering_encoder_magnet_distance]) {
+              rotate([90, 0, 0]) {
+                translate([0, 0, -encoder_target_h]) {
+                  encoder_l_bracket(plist=steering_encoder_plist,
+                                    target_h=encoder_target_h,
+                                    bottom_thickness=steering_encoder_bottom_thickness,
+                                    side_thickness=steering_encoder_side_thickness,
+                                    top_side_padding=steering_encoder_top_side_padding,
+                                    extra_left_w=steering_encoder_extra_left_w,
+                                    extra_right_w=steering_encoder_extra_right_w,
+                                    top_up_padding=steering_encoder_top_up_padding,
+                                    top_bolt_min_padding=steering_encoder_top_bolt_min_padding,
+                                    top_corner_r=steering_encoder_top_corner_r,
+                                    bottom_pan_bolt_spacing=steering_encoder_bottom_pan_bolt_spacing,
+                                    bottom_pan_bolt_d=steering_encoder_bottom_pan_bolt_d,
+                                    bottom_pan_bolt_pad=steering_encoder_bottom_pan_bolt_pad,
+                                    bottom_corner_r=steering_encoder_bottom_corner_r,
+                                    show_encoder=show_encoder);
+                }
               }
             }
           }

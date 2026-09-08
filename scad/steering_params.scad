@@ -1119,6 +1119,29 @@ steering_servo_arm_center_bolt_bore_d             = 7.8;
 steering_servo_arm_center_bolt_bore_h             = 1.2;
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Steering servo encoder
+// ─────────────────────────────────────────────────────────────────────────────
+
+steering_encoder_plist                            = as5048A_encoder_plist;
+steering_encoder_bottom_thickness                 = 1.6;
+steering_encoder_side_thickness                   = 3;
+steering_encoder_top_side_padding                 = 0;
+steering_encoder_extra_left_w                     = 10;
+steering_encoder_extra_right_w                    = 0;
+steering_encoder_top_up_padding                   = 0;
+steering_encoder_top_bolt_min_padding             = 1.5;
+steering_encoder_top_corner_r                     = 1;
+steering_encoder_bottom_pan_bolt_spacing          = 10;
+steering_encoder_bottom_pan_bolt_d                = m3_hole_dia;
+steering_encoder_bottom_pan_bolt_pad              = 8;
+steering_encoder_bottom_corner_r                  = 3;
+
+steering_encoder_magnet_distance                  = 0.5;
+
+steering_magnet_d                                 = 5;
+steering_magnet_h                                 = 2;
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Upper steering panel
 // ─────────────────────────────────────────────────────────────────────────────
 upper_steering_panel_bolt_d                       = m3_hole_dia;
