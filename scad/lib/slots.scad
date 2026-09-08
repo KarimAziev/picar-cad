@@ -533,7 +533,8 @@ module four_corner_counterbores(size,
                                 reverse=false,
                                 spin,
                                 teardrop_angle,
-                                teardrop_both_sides=false) {
+                                teardrop_both_sides=false,
+                                print_sink_angle=false) {
 
   full_size = four_corner_counterbores_full_size(size=size,
                                                  d=d,
@@ -557,7 +558,8 @@ module four_corner_counterbores(size,
                   no_bore=no_bore,
                   autoscale_step=autoscale_step,
                   teardrop_angle=teardrop_angle,
-                  teardrop_both_sides=teardrop_both_sides);
+                  teardrop_both_sides=teardrop_both_sides,
+                  print_sink_angle=print_sink_angle);
     }
   }
 
@@ -636,10 +638,13 @@ module four_corner_counterbores_from_plist(plist, center=true) {
   bore_d = plist_get("bore_d", plist);
   bore_h = plist_get("bore_h", plist);
   sink = plist_get("sink", plist, false);
-  fn = plist_get("fn", plist, 60);
+  fn = plist_get("fn", plist, $preview ? 50 : 300);
   no_bore = plist_get("no_bore", plist, false);
   autoscale_step = plist_get("autoscale_step", plist,  0.1);
   reverse = plist_get("reverse", plist, false);
+  teardrop_angle = plist_get("teardrop_angle", plist);
+  teardrop_both_sides = plist_get("teardrop_both_sides", plist, false);
+  print_sink_angle = plist_get("print_sink_angle", plist, false);
   four_corner_counterbores(size=size,
                            h=h,
                            d=d,
@@ -650,7 +655,10 @@ module four_corner_counterbores_from_plist(plist, center=true) {
                            no_bore=no_bore,
                            autoscale_step=autoscale_step,
                            reverse=reverse,
-                           center=center);
+                           center=center,
+                           teardrop_angle=teardrop_angle,
+                           teardrop_both_sides=teardrop_both_sides,
+                           print_sink_angle=print_sink_angle);
 }
 
 /**
@@ -675,6 +683,9 @@ module counterbore_from_plist(plist, center=true) {
   no_bore = plist_get("no_bore", plist, false);
   autoscale_step = plist_get("autoscale_step", plist,  0.1);
   reverse = plist_get("reverse", plist, false);
+  teardrop_angle = plist_get("teardrop_angle", plist);
+  teardrop_both_sides = plist_get("teardrop_both_sides", plist, false);
+  print_sink_angle = plist_get("print_sink_angle", plist, false);
   counterbore(h=h,
               d=d,
               bore_d=bore_d,
@@ -684,7 +695,10 @@ module counterbore_from_plist(plist, center=true) {
               no_bore=no_bore,
               autoscale_step=autoscale_step,
               reverse=reverse,
-              center=center);
+              center=center,
+              teardrop_angle=teardrop_angle,
+              teardrop_both_sides=teardrop_both_sides,
+              print_sink_angle=print_sink_angle);
 }
 
 /**
