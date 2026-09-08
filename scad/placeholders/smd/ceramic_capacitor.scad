@@ -25,8 +25,8 @@ module ceramic_capactior(plist, center=false) {
   body_color = plist_get("body_color", plist, metallic_gold_2);
   fillet_factor = plist_get("fillet_factor", plist, 0.0);
   pad_color = plist_get("pad_color", plist, "lightyellow");
-  pad_factor_x = plist_get("pad_factor_x", plist, x > y ? 0.7 : 1.1);
-  pad_factor_y = plist_get("pad_factor_y", plist, x < y ? 0.7 : 1.1);
+  pad_factor_x = plist_get("pad_factor_x", plist, x > y ? 0.7 : 1.01);
+  pad_factor_y = plist_get("pad_factor_y", plist, x < y ? 0.7 : 1.01);
   marking = plist_get("marking", plist, undef);
   mark_color = plist_get("mark_color", plist, undef);
   mark_size = plist_get("mark_size", plist, undef);
@@ -53,4 +53,6 @@ module ceramic_capactior(plist, center=false) {
                use_inner_round=use_inner_round);
 }
 
-ceramic_capactior();
+ceramic_capactior(["placeholder_size", [1.82, 0.9, 0.76], "pad_factor_x", 0.8]);
+
+// cube([1.82, 0.9, 0.76]);
