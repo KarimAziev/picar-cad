@@ -2068,7 +2068,7 @@ function to_anchor(anchor, size, centered=false) =
   [for (i = [0:2])
       let (a = anchor[i],
            v = size[i])
-        centered
+        (centered && i != 2)
         ? (a ==  1 ?  v/2 :
            a ==  0 ?  0   :
            -v/2)
