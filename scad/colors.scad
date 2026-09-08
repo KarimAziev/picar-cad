@@ -16,6 +16,7 @@ metallic_silver_6        = "#e7dfd6";
 metallic_silver_7        = "#e5e0d5";
 metallic_silver_8        = "#dbd6cb";
 metallic_silver_9        = "#acacac";
+graphite_grey_1          = "#3D3C42";
 
 cobalt_blue_metallic     = "#39699E";
 // Lighter tints (mixed with white)
