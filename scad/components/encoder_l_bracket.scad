@@ -46,6 +46,18 @@ function encoder_should_rotate(plist,
        should_rotate=diff_val_1 <= 0)
   should_rotate;
 
+module encoder_l_bracket_bottom_pan_bolt_children(bottom_pan_bolt_spacing=10,
+                                                  bottom_pan_bolt_d=m3_hole_dia,
+                                                  bottom_pan_bolt_pad=8) {
+  bottom_pan_l = bottom_pan_bolt_pad + bottom_pan_bolt_d;
+
+  for (x = [-bottom_pan_bolt_spacing / 2, bottom_pan_bolt_spacing / 2]) {
+    translate([x, bottom_pan_l / 2, 0]) {
+      children();
+    }
+  }
+}
+
 module encoder_l_bracket(plist,
                          target_h,
                          bottom_thickness=1.6,
@@ -131,27 +143,26 @@ module encoder_l_bracket(plist,
     }
   }
   module _lower_pan() {
-    translate([0, bottom_pan_l / 2, 0]) {
-      maybe_color(color) {
-        difference() {
-          translate([left_x, 0, 0]) {
-            cuboid(size=[effective_w
-                         + extra_left_w
-                         + extra_right_w,
-                         bottom_pan_l,
-                         bottom_thickness],
-                   r=bottom_corner_r,
-                   anchor=[1, 0],
-                   side="top");
-          }
-          four_corner_children(size=[bottom_pan_bolt_spacing, 0],
-                               center=true) {
-            rotate([0, 0, 90]) {
-              counterbore(h=bottom_thickness,
-                          teardrop_both_sides=true,
-                          teardrop_angle=45,
-                          d=bottom_pan_bolt_d);
-            }
+    maybe_color(color) {
+      difference() {
+        translate([left_x, bottom_pan_l / 2, 0]) {
+          cuboid(size=[effective_w
+                       + extra_left_w
+                       + extra_right_w,
+                       bottom_pan_l,
+                       bottom_thickness],
+                 r=bottom_corner_r,
+                 anchor=[1, 0],
+                 side="top");
+        }
+        encoder_l_bracket_bottom_pan_bolt_children(bottom_pan_bolt_spacing=bottom_pan_bolt_spacing,
+                                                    bottom_pan_bolt_d=bottom_pan_bolt_d,
+                                                    bottom_pan_bolt_pad=bottom_pan_bolt_pad) {
+          rotate([0, 0, 90]) {
+            counterbore(h=bottom_thickness,
+                        teardrop_both_sides=true,
+                        teardrop_angle=45,
+                        d=bottom_pan_bolt_d);
           }
         }
       }

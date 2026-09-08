@@ -56,6 +56,9 @@ show_steering_servo_chassis_bolt            = true;
 show_steering_servo_chassis_bolt_nut        = true;
 show_steering_servo_bracket_bolt_nut        = true;
 show_steering_servo_brackets                = true;
+show_steering_servo_encoder                 = true;
+show_steering_servo_encoder_bracket         = true;
+show_steering_servo_magnet                  = true;
 
 show_steering_assembly                      = true;
 
@@ -96,12 +99,14 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
                               show_idler_upper_bearing=show_idler_upper_bearing,
                               show_idler_lower_bearing=show_idler_lower_bearing,
                               show_steering_servo=show_steering_servo,
-                              show_steering_servo=show_steering_servo,
                               show_steering_servo_bracket_bolt=show_steering_servo_bracket_bolt,
                               show_steering_servo_chassis_bolt=show_steering_servo_chassis_bolt,
                               show_steering_servo_chassis_bolt_nut=show_steering_servo_chassis_bolt_nut,
                               show_steering_servo_bracket_bolt_nut=show_steering_servo_bracket_bolt_nut,
                               show_steering_servo_brackets=show_steering_servo_brackets,
+                              show_steering_servo_encoder=show_steering_servo_encoder,
+                              show_steering_servo_encoder_bracket=show_steering_servo_encoder_bracket,
+                              show_steering_servo_magnet=show_steering_servo_magnet,
                               show_steering_assembly=show_steering_assembly,
                               show_center_link=show_center_link,
                               show_front_lower_arm=show_front_lower_arm,
@@ -173,6 +178,9 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
                                 show_steering_servo_chassis_bolt_nut=show_steering_servo_chassis_bolt_nut,
                                 show_steering_servo_bracket_bolt_nut=show_steering_servo_bracket_bolt_nut,
                                 show_steering_servo_brackets=show_steering_servo_brackets,
+                                show_steering_servo_encoder=show_steering_servo_encoder,
+                                show_steering_servo_encoder_bracket=show_steering_servo_encoder_bracket,
+                                show_steering_servo_magnet=show_steering_servo_magnet,
                                 steering_servo_angle=steering_servo_angle);
   }
 }

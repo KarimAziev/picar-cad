@@ -29,6 +29,9 @@ show_chassis_bolt     = true;
 show_chassis_bolt_nut = true;
 
 show_servo            = true;
+show_encoder          = true;
+show_encoder_bracket  = true;
+show_magnet           = true;
 
 steering_servo_angle  = 0; //[-40:1:40]
 
@@ -42,6 +45,9 @@ module steering_servo_bracket_assembly(color=white_smoke_1,
                                        show_servo=show_servo,
                                        show_chassis_bolt_nut=show_chassis_bolt_nut,
                                        show_servo_bolt_nut=show_servo_bolt_nut,
+                                       show_encoder=show_encoder,
+                                       show_encoder_bracket=show_encoder_bracket,
+                                       show_magnet=show_magnet,
                                        steering_servo_angle=steering_servo_angle,
                                        center_y=false) {
 
@@ -70,6 +76,9 @@ module steering_servo_bracket_assembly(color=white_smoke_1,
             rotate([-90, 0, 90]) {
               dsservo(center=true,
                       bellcrank_lever_z_end=bellcrank_lever_z_end,
+                      show_encoder=show_encoder,
+                      show_encoder_bracket=show_encoder_bracket,
+                      show_magnet=show_magnet,
                       servo_horn_angle=steering_servo_angle);
             }
           }

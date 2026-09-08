@@ -10,6 +10,7 @@ include <../../steering_params.scad>
 use <../../placeholders/dservo.scad>
 use <../bellcrank_steering_slots.scad>
 use <../bulkhead/front_bulkhead.scad>
+use <../steering_servo_bracket/helpers.scad>
 use <../wishbone_arms/util.scad>
 
 bellcrank_params        = bellcrank_steering_servo_position();
@@ -34,7 +35,12 @@ bellcrank_mount_d       = max(bellcrank_idler_od,
 
 bellcrank_mount_r       = bellcrank_mount_d / 2;
 
-servo_slot_min_w        = dsservo_height_after_flange() + bellcrank_x_dist;
+servo_chassis_reach     = steering_encoder_plist
+                           ? max(dsservo_height_after_flange(),
+                                 steering_servo_encoder_chassis_reach())
+                           : dsservo_height_after_flange();
+
+servo_slot_min_w        = servo_chassis_reach + bellcrank_x_dist;
 
 bulkhead_size_x         = bulkhead_base_size[0];
 bulkhead_size_y         = bulkhead_base_size[1];

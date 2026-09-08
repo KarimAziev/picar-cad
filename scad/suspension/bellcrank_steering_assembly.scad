@@ -36,6 +36,9 @@ show_steering_servo_chassis_bolt     = true;
 show_steering_servo_chassis_bolt_nut = true;
 show_steering_servo_bracket_bolt_nut = true;
 show_steering_servo_brackets         = true;
+show_steering_servo_encoder          = true;
+show_steering_servo_encoder_bracket  = true;
+show_steering_servo_magnet           = true;
 
 // Steering angle
 steering_servo_angle                 = 0; // [-40:1:40]
@@ -56,6 +59,9 @@ module bellcrank_steering_assembly(show_bellcrank_drive=show_bellcrank_drive,
                                    show_steering_servo_chassis_bolt_nut=show_steering_servo_chassis_bolt_nut,
                                    show_steering_servo_bracket_bolt_nut=show_steering_servo_bracket_bolt_nut,
                                    show_steering_servo_brackets=show_steering_servo_brackets,
+                                   show_steering_servo_encoder=show_steering_servo_encoder,
+                                   show_steering_servo_encoder_bracket=show_steering_servo_encoder_bracket,
+                                   show_steering_servo_magnet=show_steering_servo_magnet,
                                    steering_servo_angle=steering_servo_angle) {
 
   bellcrank_assembly(show_bellcrank_drive=show_bellcrank_drive,
@@ -77,6 +83,9 @@ module bellcrank_steering_assembly(show_bellcrank_drive=show_bellcrank_drive,
                                     show_servo_bolt_nut=show_steering_servo_bracket_bolt_nut,
                                     show_chassis_bolt=show_steering_servo_chassis_bolt,
                                     show_chassis_bolt_nut=show_steering_servo_chassis_bolt_nut,
+                                    show_encoder=show_steering_servo_encoder,
+                                    show_encoder_bracket=show_steering_servo_encoder_bracket,
+                                    show_magnet=show_steering_servo_magnet,
                                     steering_servo_angle=steering_servo_angle,
                                     center_y=false);
   }

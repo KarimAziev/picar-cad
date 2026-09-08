@@ -27,6 +27,20 @@ function dsservo_full_height() =
                     dsservo_gearbox_h,
                     dsservo_gearbox_size);
 
+// `servo()` places its children at the base of the output gear stack, while
+// `dsservo_full_height()` includes the stack itself.
+function dsservo_output_attachment_height() =
+  dsservo_size[2] + dsservo_gearbox_h;
+
+function dsservo_encoder_bracket_arm_offset(plist=steering_encoder_plist,
+                                            magnet_h=steering_magnet_h,
+                                            side_thickness=steering_encoder_side_thickness,
+                                            magnet_distance=steering_encoder_magnet_distance) =
+  magnet_h
+  + encoder_total_thickness(plist=plist)
+  + side_thickness
+  + magnet_distance;
+
 function dservo_tie_rod_a_max_h() =
   tie_rod_max_h(eye_od=servo_tie_rod_a_eye_od,
                 eye_h=servo_tie_rod_a_eye_h,
@@ -285,7 +299,6 @@ module dsservo(center=false,
 
       if (steering_encoder_plist) {
         encoder_target_h = dsservo_size[1] / 2;
-        encoder_thickness = encoder_total_thickness(plist=steering_encoder_plist);
         translate([0, 0, steering_servo_arm_base_h]) {
           if (show_magnet) {
             color(metallic_silver_3, alpha=1) {
@@ -295,9 +308,8 @@ module dsservo(center=false,
           if (show_encoder_bracket) {
             translate([0,
                        0,
-                       magnet_h + encoder_thickness
-                       + steering_encoder_side_thickness
-                       + steering_encoder_magnet_distance]) {
+                       dsservo_encoder_bracket_arm_offset(plist=steering_encoder_plist,
+                                                          magnet_h=magnet_h)]) {
               rotate([90, 0, 0]) {
                 translate([0, 0, -encoder_target_h]) {
                   encoder_l_bracket(plist=steering_encoder_plist,

@@ -23,6 +23,64 @@ use <../../placeholders/tie_rod_shaft.scad>
 use <../bellcrank/bellcrank_drive.scad>
 use <util.scad>
 
+function steering_servo_encoder_bracket_bend_reach(plist=steering_encoder_plist,
+                                                    magnet_h=steering_magnet_h,
+                                                    arm_base_h=steering_servo_arm_base_h,
+                                                    side_thickness=steering_encoder_side_thickness,
+                                                    magnet_distance=steering_encoder_magnet_distance) =
+  !plist
+  ? 0
+  : dsservo_output_attachment_height()
+  + arm_base_h
+  + dsservo_encoder_bracket_arm_offset(plist=plist,
+                                       magnet_h=magnet_h,
+                                       side_thickness=side_thickness,
+                                       magnet_distance=magnet_distance);
+
+function steering_servo_encoder_chassis_reach(plist=steering_encoder_plist,
+                                               magnet_h=steering_magnet_h,
+                                               arm_base_h=steering_servo_arm_base_h,
+                                               side_thickness=steering_encoder_side_thickness,
+                                               magnet_distance=steering_encoder_magnet_distance,
+                                               bottom_pan_bolt_d=steering_encoder_bottom_pan_bolt_d,
+                                               bottom_pan_bolt_pad=steering_encoder_bottom_pan_bolt_pad) =
+  !plist
+  ? 0
+  : steering_servo_encoder_bracket_bend_reach(plist=plist,
+                                               magnet_h=magnet_h,
+                                               arm_base_h=arm_base_h,
+                                               side_thickness=side_thickness,
+                                               magnet_distance=magnet_distance)
+  + bottom_pan_bolt_pad
+  + bottom_pan_bolt_d;
+
+module steering_servo_encoder_bracket_position(plist=steering_encoder_plist,
+                                               magnet_h=steering_magnet_h,
+                                               arm_base_h=steering_servo_arm_base_h,
+                                               side_thickness=steering_encoder_side_thickness,
+                                               magnet_distance=steering_encoder_magnet_distance,
+                                               target_h=dsservo_size[1] / 2,
+                                               center_y=false) {
+  bend_x = steering_servo_encoder_bracket_bend_reach(plist=plist,
+                                                      magnet_h=magnet_h,
+                                                      arm_base_h=arm_base_h,
+                                                      side_thickness=side_thickness,
+                                                      magnet_distance=magnet_distance);
+  output_shaft_y = -dsservo_size[0] / 2 + dsservo_gearbox_d1 / 2;
+
+  maybe_translate([0, center_y ? 0 : -dsservo_flange_w / 2, 0]) {
+    translate([-bend_x,
+               output_shaft_y,
+               dsservo_size[1] / 2 - target_h]) {
+      // In the assembled servo orientation, the bracket's local +Y points
+      // toward chassis -X while its local +X points toward chassis +Y.
+      rotate([0, 0, 90]) {
+        children();
+      }
+    }
+  }
+}
+
 module servo_l_bracket_chassis_slot_child(skip_rotation=false) {
   params = steering_servo_bracket_params();
   bracket_w = params[0];
