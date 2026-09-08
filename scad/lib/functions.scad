@@ -1961,3 +1961,117 @@ countersink_h(d=4, sink_d=8, angle=82);   // -> ~2.3
 */
 function countersink_h(d, sink_d, angle) =
   ((sink_d - d) / 2) / tan(angle / 2);
+
+/**
+─────────────────────────────────────────────────────────────────────────────
+normalize_anchor
+─────────────────────────────────────────────────────────────────────────────
+
+Normalize an anchor specification into a 3-element `[x, y, z]` vector.
+
+Missing anchors default to `[1, 1, 1]`. Any individual `undef` component is
+also replaced with `1`.
+
+Anchor values use this convention per axis:
+
+- `1`: near/min side
+- `0`: center
+- `-1`: far/max side
+
+Only the values `-1`, `0`, and `1` are allowed.
+
+**Parameters:**
+
+`anchor`: Anchor vector as `[x, y, z]`, or `undef`.
+
+**Returns:**
+
+A normalized 3-element anchor vector.
+
+
+**Examples:**
+```scad
+normalize_anchor();              // -> [1, 1, 1]
+normalize_anchor([1, 0, -1]);    // -> [1, 0, -1]
+normalize_anchor([undef, 0, 1]); // -> [1, 0, 1]
+```
+*/
+function normalize_anchor(anchor) =
+  let (anchor = with_default(anchor, [1, 1, 1]),
+       align_x = is_undef(anchor[0]) ? 1 : anchor[0],
+       align_y = is_undef(anchor[1]) ? 1 : anchor[1],
+       align_z = is_undef(anchor[2]) ? 1 : anchor[2])
+  assert(is_list(anchor) && len(anchor) == 3,
+         "Anchor must be a list of 3 elements")
+  assert(is_num(anchor[0]) && in_list(abs(anchor[0]), [0, 1]),
+         "Invalid value in anchor[0]")
+  assert(is_num(anchor[1]) && in_list(abs(anchor[1]), [0, 1]),
+         "Invalid value in anchor[1]")
+  assert(is_num(anchor[2]) && in_list(abs(anchor[2]), [0, 1]),
+         "Invalid value in anchor[2]")
+  [align_x, align_y, align_z];
+
+/**
+─────────────────────────────────────────────────────────────────────────────
+to_anchor
+─────────────────────────────────────────────────────────────────────────────
+
+Convert an anchor specification into a translation vector for an object of
+the given size.
+
+The anchor convention per axis is:
+
+- `1`: near/min side
+- `0`: center
+- `-1`: far/max side
+
+For non-centered geometry (`centered=false`), the object is assumed to span
+from `0` to `size[i]` on each axis.
+
+For centered geometry (`centered=true`), the object is assumed to span from
+`-size[i]/2` to `size[i]/2` on each axis.
+
+The returned translation places the requested anchor on the origin along each
+axis.
+
+**Parameters:**
+
+`anchor`: Anchor vector as `[x, y, z]`.
+`size`: Object size as `[x, y, z]`.
+`centered`: Whether the object is already centered on each axis.
+
+**Returns:**
+
+A 3-element translation vector.
+
+
+**Examples:**
+```scad
+to_anchor([1, 1, 1], [20, 30, 10], false);   // -> [0, 0, 0]
+to_anchor([0, 0, 0], [20, 30, 10], false);   // -> [-10, -15, -5]
+to_anchor([-1, 0, 1], [20, 30, 10], false);  // -> [-20, -15, 0]
+
+to_anchor([1, 1, 1], [20, 30, 10], true);    // -> [10, 15, 5]
+to_anchor([0, 0, 0], [20, 30, 10], true);    // -> [0, 0, 0]
+to_anchor([-1, 0, 1], [20, 30, 10], true);   // -> [-10, 0, 5]
+```
+*/
+function to_anchor(anchor, size, centered=false) =
+  assert(is_list(anchor) && len(anchor) == 3,
+         "Anchor must be a list of 3 elements")
+  assert(is_num(anchor[0]) && in_list(abs(anchor[0]), [0, 1]),
+         "Invalid value in anchor[0]")
+  assert(is_num(anchor[1]) && in_list(abs(anchor[1]), [0, 1]),
+         "Invalid value in anchor[1]")
+  assert(is_num(anchor[2]) && in_list(abs(anchor[2]), [0, 1]),
+         "Invalid value in anchor[2]")
+  [for (i = [0:2])
+      let (a = anchor[i],
+           v = size[i])
+        centered
+        ? (a ==  1 ?  v/2 :
+           a ==  0 ?  0   :
+           -v/2)
+        : (a ==  1 ?  0   :
+           a ==  0 ? -v/2 :
+           -v)];

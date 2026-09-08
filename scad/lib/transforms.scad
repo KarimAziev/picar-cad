@@ -448,3 +448,64 @@ module rotate_children_with_shift(size=[0, 0, 0],
     #cube([bb[0], bb[1], bb[2]]);
   }
 }
+
+/**
+─────────────────────────────────────────────────────────────────────────────
+with_anchor
+─────────────────────────────────────────────────────────────────────────────
+
+Translate child geometry so that the requested anchor lies at the origin.
+
+This is a convenience wrapper around `normalize_anchor()` and `to_anchor()`.
+It computes the anchor translation from the given size and applies it to
+`children()`.
+
+If `size` is a scalar, it is expanded to `[size, size, size]`.
+
+Anchor values use this convention per axis:
+
+- `1`: near/min side
+- `0`: center
+- `-1`: far/max side
+
+Use `centered=true` when the child geometry is already centered, such as
+`cube(size=..., center=true)`.
+
+**Parameters:**
+
+`anchor`: Anchor vector as `[x, y, z]`, or `undef`.
+`size`: Object size as a scalar or `[x, y, z]`.
+`centered`: Whether the child geometry is already centered.
+
+**Children:**
+
+Child geometry to translate.
+
+**Examples:**
+```scad
+with_anchor(anchor=[1, 1, 1], size=[20, 30, 10]) {
+  cube([20, 30, 10]);
+}
+
+with_anchor(anchor=[0, 0, 0], size=[20, 30, 10]) {
+  cube([20, 30, 10]);
+}
+
+with_anchor(anchor=[-1, 0, 1], size=[20, 30, 10], centered=true) {
+  cube([20, 30, 10], center=true);
+}
+```
+*/
+module with_anchor(anchor, size, centered=false) {
+  anchor = normalize_anchor(anchor);
+  size = is_num(size) ? [size, size, size] : size;
+  coords = to_anchor(anchor=anchor, size=size, centered=centered);
+
+  if (coords == [0, 0, 0]) {
+    children();
+  } else {
+    translate(coords) {
+      children();
+    }
+  }
+}
