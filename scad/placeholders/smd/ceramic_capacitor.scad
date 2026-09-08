@@ -54,5 +54,3 @@ module ceramic_capactior(plist, center=false) {
 }
 
 ceramic_capactior(["placeholder_size", [1.82, 0.9, 0.76], "pad_factor_x", 0.8]);
-
-// cube([1.82, 0.9, 0.76]);
