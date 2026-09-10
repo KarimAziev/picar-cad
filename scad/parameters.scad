@@ -3147,29 +3147,48 @@ rplidar_c1_plist = ["size", [55.6, 55.6],
                                    "position", "center",
                                    "color", "black"]];
 
-// Rear drivetrain packaging specification. Caliper photos establish body_l
-// 55.62 and gearbox_l 17.68. Typed readings supply body_w/body_h/can_d;
-// mass is the seller's value. Remaining details are provisional (rear_chassis/README.md).
-rc_gearmotor_plist = ["body_w", 41.97,
-                      "body_h", 31.34,
-                      "body_l", 55.62,
-                      "mass_g", 91,
-                      "gearbox_l", 17.68,
-                      "gearbox_color", "#D25553",
-                      "can_d", 24.31,
-                      "end_cap_l", 3,
-                      "cover_l", 1,
-                      "output_lobe_d", 18,
-                      "bearing_d", 8,
-                      "bearing_l", 2,
-                      "shaft_d", 4,
-                      "rear_shaft_l", 10,
-                      "front_shaft_l", 38,
-                      "ear_d", 6,
-                      "case_bolt_d", 2,
-                      "terminal_w", 3,
-                      "terminal_h", 0.5,
-                      "terminal_l", 3];
+// Measured motor stack from rc_gearbox.scad. Housing dimensions supersede the
+// earlier photo envelope; gear-center placement and the long output remain provisional.
+rc_motor_plist = ["body",
+                ["d", 24.3,
+                 "h", 27.7,
+                 "color", matte_black],
+                "contact_cup", ["h", 1.6,
+                                "color", midnight_blue],
+                "contact", ["size", [0.8, 1.8, 3],
+                            "color", metallic_silver_3,
+                            "pad", 3],
+                "contact_stack",
+                [["size", [8.6, 17.4, 4.8],
+                  "corner_r", 2,
+                  "color", midnight_blue],
+                 ["d", 8,
+                  "corner_r", 2,
+                  "color", midnight_blue,
+                  "h", 2.6]],
+                "pinion_gear_h", 2.6,
+                "pinion_gear_color", "silver",
+                "pinion_hole_d", 8,
+                "drive_shaft", ["d", 4, "h", 14,
+                                "gear_d", 18,
+                                "gear_h", 3.5,
+                                "gear_inner_d", 6.5],
+                "motor_shaft", ["h", 10.9, "d", 2, "gear_d", 7.3, "gear_h", 5.1],
+                "motor_shaft_gears", [["d", 15, "inner_d", 6.5], ["d", 15, "inner_d", 6.5]],
+                "gearbox", ["size", [42, 31.5, 14.75],
+                            // Provisional standard-gear module, not a measured tooth specification.
+                            "mesh_module", 0.6,
+                            "bearing_d", 7,
+                            "bearing_h", 2,
+                            "rear_shaft_h", 9.3,
+                            "front_shaft_h", 38, // Still provisional.
+                            "boolean_overlap", 0.02,
+                            "pad", 0.8,
+                            "color", metallic_silver_3]];
+
+
+// Both entry points consume the same nested hardware specification.
+rc_gearmotor_plist = rc_motor_plist;
 
 rc_driveshaft_plist = [// Measured base length is recorded separately until its end datums are confirmed.
                        "base_l", 48,

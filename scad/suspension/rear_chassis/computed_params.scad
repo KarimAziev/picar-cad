@@ -10,6 +10,7 @@ include <../front_chassis/computed_params.scad>
 include <../rear_suspension/computed_params.scad>
 use <../../lib/plist.scad>
 use <../../placeholders/rc_gearmotor.scad>
+use <../../placeholders/rc_gearbox.scad>
 use <../../placeholders/rc_driveshaft.scad>
 
 /**
@@ -26,29 +27,31 @@ use <../../placeholders/rc_driveshaft.scad>
 function rear_chassis_layout(motor_spec=rc_gearmotor_plist,
                              shaft_spec=rc_driveshaft_plist) =
   let (motor = rc_gearmotor_size(motor_spec),
+       body = plist_get("body", motor_spec),
+       box = plist_get("gearbox", motor_spec),
+       motor_x = motor[2] / 2 - rc_gearmotor_axis_z(motor_spec),
        rail_w = rear_chassis_rail_w,
        cross_w = rear_chassis_cross_w,
        gap = rear_chassis_clearance,
        land = rear_chassis_mount_land,
-       inner_w = max(rear_chassis_diff_size[0], motor[2] + land * 2) + gap * 2,
+       inner_w = max(rear_chassis_diff_size[0], motor[2] + abs(motor_x) * 2 + land * 2) + gap * 2,
        ladder_w = inner_w + rail_w * 2,
        transition_l = max(0, (chassis_joint_wide_w - ladder_w) / 2),
        root_l = max(cross_w, (front_chassis_joint_pin_l - joint_l) / 2 + land),
        shoulder_y = -joint_l - root_l,
        straight_y = shoulder_y - transition_l,
-       terminal_l = plist_get("terminal_l", motor_spec),
+       terminal_l = plist_get("size", plist_get("contact", motor_spec))[2],
        motor_y = straight_y - gap - max(land, terminal_l) - motor[1] / 2,
        motor_z = rear_chassis_rail_h + rear_chassis_carrier_h,
        output_z = motor_z + motor[0] / 2 - rc_gearmotor_axis_x(motor_spec),
        can_z = motor_z + motor[0] / 2 - rc_gearmotor_axis_x(motor_spec, false),
-       gear_front_y = motor_y - motor[1] / 2 + plist_get("gearbox_l", motor_spec),
-       can_l = motor[1] - plist_get("gearbox_l", motor_spec)
-               - plist_get("end_cap_l", motor_spec),
-       can_y = gear_front_y + can_l / 2,
+       gear_front_y = motor_y - motor[1] / 2 + rc_gearbox_size(motor_spec)[2],
+       can_l = plist_get("h", body),
+       can_y = gear_front_y + plist_get("pinion_gear_h", motor_spec) + can_l / 2,
        hub_reach = plist_get("socket_l", shaft_spec),
        engagement = rc_driveshaft_hub_l(shaft_spec) / 2,
        start = [0, motor_y - motor[1] / 2
-                - plist_get("rear_shaft_l", motor_spec) - hub_reach + engagement,
+                - plist_get("rear_shaft_h", box) - hub_reach + engagement,
                 output_z],
        shaft_l = plist_get("pivot_l", shaft_spec),
        input_z = front_chassis_thickness + rear_chassis_diff_input_h,
@@ -68,7 +71,7 @@ function rear_chassis_layout(motor_spec=rc_gearmotor_plist,
        bolt_row = carrier_l / 2 - land - rear_chassis_mount_bolt_d / 2)
   assert(ladder_w <= chassis_joint_wide_w, "Rear hardware is wider than the socket adapter")
   assert(rear_chassis_rail_h >= front_chassis_thickness)
-  assert(plist_get("bore_d", shaft_spec) >= plist_get("shaft_d", motor_spec),
+  assert(plist_get("bore_d", shaft_spec) >= plist_get("d", plist_get("drive_shaft", motor_spec)),
          "Propeller-shaft hub bore is smaller than the motor output")
   assert(abs(drop) < shaft_l, "Differential drop exceeds shaft reach")
   assert(rc_driveshaft_joint_angle(end - start, [0, -1, 0])
@@ -80,8 +83,9 @@ function rear_chassis_layout(motor_spec=rc_gearmotor_plist,
   ["size", [chassis_joint_wide_w, -rear_y, rear_chassis_rail_h],
    "ladder_w", ladder_w, "rail_x", (inner_w + rail_w) / 2,
    "shoulder_y", shoulder_y, "straight_y", straight_y,
-   "motor_pos", [0, motor_y, motor_z],
-   "can_pos", [0, can_y, can_z], "can_l", can_l,
+   "motor_pos", [motor_x, motor_y, motor_z],
+   "can_pos", [motor_x + rc_gearmotor_axis_z(motor_spec, false) - motor[2] / 2,
+               can_y, can_z], "can_l", can_l,
    "gear_front_y", gear_front_y,
    "carrier_size", [ladder_w, carrier_l, rear_chassis_carrier_h],
    "bolt_ys", [motor_y - bolt_row, motor_y + bolt_row],

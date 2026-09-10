@@ -4,16 +4,15 @@ use <../scad/placeholders/rc_gearmotor.scad>
 use <../scad/placeholders/rc_driveshaft.scad>
 
 motor_size = rc_gearmotor_size();
-assert(motor_size == [41.97, 55.62, 31.34]);
-assert(plist_get("can_d", rc_gearmotor_plist) == 24.31);
-assert(plist_get("gearbox_l", rc_gearmotor_plist) == 17.68);
+assert(norm(motor_size - [42, 54.05, 31.5]) < 0.00001);
+assert(plist_get("d", plist_get("body", rc_gearmotor_plist)) == 24.3);
 assert(plist_get("tube_d", rc_driveshaft_plist) == 8);
 assert(plist_get("bore_d", rc_driveshaft_plist) == 4);
 assert(plist_get("yoke_l", rc_driveshaft_plist) + rc_driveshaft_hub_l()
        == plist_get("socket_l", rc_driveshaft_plist));
 assert(rc_gearmotor_axis_x(output=false) - rc_gearmotor_axis_x()
-       > (plist_get("can_d", rc_gearmotor_plist)
-          + plist_get("bearing_d", rc_gearmotor_plist)) / 2);
+       > (plist_get("d", plist_get("body", rc_gearmotor_plist))
+          + plist_get("bearing_d", plist_get("gearbox", rc_gearmotor_plist))) / 2);
 
 module check_layout(motor_spec=rc_gearmotor_plist, shaft_spec=rc_driveshaft_plist) {
   layout = rear_chassis_layout(motor_spec, shaft_spec);
@@ -31,7 +30,8 @@ module check_layout(motor_spec=rc_gearmotor_plist, shaft_spec=rc_driveshaft_plis
   hub_reach = plist_get("socket_l", shaft_spec);
   engagement = rc_driveshaft_hub_l(shaft_spec) / 2;
   assert(abs(norm(end - start) - plist_get("pivot_l", shaft_spec)) < 0.00001);
-  assert(start[0] == clocked_tip[0] && start[2] == clocked_tip[2]);
+  assert(abs(start[0] - clocked_tip[0]) < 0.00001
+         && abs(start[2] - clocked_tip[2]) < 0.00001);
   assert(abs(start[1] + hub_reach - engagement - clocked_tip[1]) < 0.00001);
   assert(rc_driveshaft_joint_angle(end - start, [0, -1, 0])
          < plist_get("max_angle", shaft_spec));
@@ -47,7 +47,8 @@ module check_layout(motor_spec=rc_gearmotor_plist, shaft_spec=rc_driveshaft_plis
 }
 
 check_layout();
-check_layout(plist_put("body_l", 65, rc_gearmotor_plist));
+check_layout(plist_put("body", plist_put("h", 35, plist_get("body", rc_gearmotor_plist)),
+                       rc_gearmotor_plist));
 check_layout(shaft_spec=plist_put("pivot_l", 70, rc_driveshaft_plist));
 check_layout(shaft_spec=plist_put("socket_l", 15, rc_driveshaft_plist));
 assert(rc_driveshaft_joint_angle([0, -1, 0], [0, 1, 0]) == 0);
