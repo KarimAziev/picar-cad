@@ -1,5 +1,5 @@
 /**
-  * Module: Removable rear motor carrier and shared mounting datums.
+  * Module: Removable middle-mounted motor carrier and shared drivetrain datums.
   *
   * A can saddle and two strap passages provide provisional retention without
   * inventing a gearbox mounting-hole pattern. Fit must be checked on hardware.
@@ -38,7 +38,7 @@ module rear_chassis_motor_position(motor_spec=rc_gearmotor_plist,
   ─────────────────────────────────────────────────────────────────────────────
   rear_chassis_motor_bolt_slots
   ─────────────────────────────────────────────────────────────────────────────
-  Cut the same four vertical bolt passages through carrier and supporting rails.
+  Cut the same four vertical bolt passages through carrier and middle-frame rails.
   **Parameters:**
   - `motor_spec`: Motor property list.
   - `shaft_spec`: Shaft property list defining the shared layout.
@@ -50,7 +50,7 @@ module rear_chassis_motor_bolt_slots(motor_spec=rc_gearmotor_plist,
   for (side = [-1, 1], y = plist_get("bolt_ys", layout)) {
     translate([side * plist_get("rail_x", layout), y, -eps]) {
       cylinder(d=rear_chassis_mount_bolt_d,
-               h=rear_chassis_rail_h + rear_chassis_carrier_h + eps * 2, $fn=40);
+               h=plist_get("carrier_z", layout) + rear_chassis_carrier_h + eps * 2, $fn=40);
     }
   }
 }
@@ -59,7 +59,7 @@ module rear_chassis_motor_bolt_slots(motor_spec=rc_gearmotor_plist,
   ─────────────────────────────────────────────────────────────────────────────
   rear_chassis_carrier_position
   ─────────────────────────────────────────────────────────────────────────────
-  Place a default-anchored carrier on its supporting rear rails.
+  Place a default-anchored carrier on the middle deck, in rear-frame coordinates.
   **Parameters:**
   - `motor_spec`: Motor property list.
   - `shaft_spec`: Shaft property list defining the shared layout.
@@ -68,7 +68,7 @@ module rear_chassis_motor_bolt_slots(motor_spec=rc_gearmotor_plist,
 module rear_chassis_carrier_position(motor_spec=rc_gearmotor_plist,
                                      shaft_spec=rc_driveshaft_plist) {
   layout = rear_chassis_layout(motor_spec, shaft_spec);
-  translate([0, plist_get("motor_pos", layout)[1], rear_chassis_rail_h]) {
+  translate([0, plist_get("motor_pos", layout)[1], plist_get("carrier_z", layout)]) {
     children();
   }
 }
@@ -99,8 +99,9 @@ module rear_chassis_motor_carrier(motor_spec=rc_gearmotor_plist,
   fit = rear_chassis_fit_clearance;
   land = rear_chassis_mount_land;
   eps = front_chassis_joint_boolean_overlap;
-  saddle_h = can_pos[2] - rear_chassis_rail_h - can_d / 3;
-  shift = [0, -motor_pos[1], -rear_chassis_rail_h];
+  carrier_z = plist_get("carrier_z", layout);
+  saddle_h = can_pos[2] - carrier_z - can_d / 3;
+  shift = [0, -motor_pos[1], -carrier_z];
 
   with_anchor(anchor, [size[0], size[1], max(size[2], saddle_h)], centered=true) {
     translate(shift) {
@@ -109,10 +110,10 @@ module rear_chassis_motor_carrier(motor_spec=rc_gearmotor_plist,
       } else {
         difference() {
           union() {
-            translate([0, motor_pos[1], rear_chassis_rail_h]) {
+            translate([0, motor_pos[1], carrier_z]) {
               cuboid(size, r=land);
             }
-            translate([can_pos[0], can_pos[1], rear_chassis_rail_h]) {
+            translate([can_pos[0], can_pos[1], carrier_z]) {
               cuboid([can_d + (fit + land) * 2, can_l, saddle_h], r=land);
             }
           }
@@ -124,7 +125,7 @@ module rear_chassis_motor_carrier(motor_spec=rc_gearmotor_plist,
           rear_chassis_motor_bolt_slots(motor_spec, shaft_spec);
           for (side = [-1, 1], y = plist_get("strap_ys", layout)) {
             translate([can_pos[0] + side * (can_d / 2 + fit + rear_chassis_strap_h / 2),
-                       y, rear_chassis_rail_h - eps]) {
+                       y, carrier_z - eps]) {
               rect_slot(size=[rear_chassis_strap_h, rear_chassis_strap_w],
                          h=saddle_h + eps * 2, center=true, r=rear_chassis_strap_h / 2);
             }

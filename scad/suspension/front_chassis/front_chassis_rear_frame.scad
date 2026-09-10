@@ -26,10 +26,13 @@ use <../bulkhead/front_bulkhead_housing.scad>
 use <../steering_servo_bracket/steering_servo_chassis_slots.scad>
 use <../wishbone_arms/front_lower_arm.scad>
 use <front_chassis_joint.scad>
+use <front_chassis_controls.scad>
 
 front_chassis_rear_frame_debug = true;
+show_front_controls_slots = true;
 
 module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
+                                show_controls_slots=show_front_controls_slots,
                                 color=white_smoke_1,
                                 debug_color=green_2,
                                 debug_font="Gill Sans:style=Bold") {
@@ -67,6 +70,9 @@ module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
           polygon(pts);
         }
       }
+    }
+    if (show_controls_slots) {
+      front_chassis_controls(slot_mode=true);
     }
     translate([0, y_joint_1_end, 0]) {
       front_chassis_joint_female(slot_mode=true);

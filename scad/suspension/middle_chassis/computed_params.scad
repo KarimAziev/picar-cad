@@ -12,7 +12,7 @@ include <../../parameters.scad>
 include <../../steering_params.scad>
 include <../front_chassis/computed_params.scad>
 
-use <../../panel_stack/panel_stack.scad>
+use <../../placeholders/rc_gearmotor.scad>
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -25,10 +25,9 @@ use <../../panel_stack/panel_stack.scad>
   - Size as `[w, l, h]`.
  */
 function middle_chassis_body_size() =
-  let (panel_size = panel_stack_size(),
-       electronics_l = rpi_len
+  let (electronics_l = rpi_len
          + middle_chassis_component_gap
-         + panel_size[0],
+         + rc_gearmotor_size()[1] + rear_chassis_mount_land * 2,
        w = rpi_width
          + middle_chassis_component_gap * 2
          + max(power_case_width, power_lid_width) * 2
@@ -95,19 +94,31 @@ function middle_chassis_power_case_center_x(side) =
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
-  middle_chassis_panel_center_y
+  middle_chassis_motor_center_y
   ─────────────────────────────────────────────────────────────────────────────
 
-  Return the panel-stack center behind the Raspberry Pi.
+  Return the motor center behind the Raspberry Pi, between the power cases.
 
-  **Returns:**
-  - Local Y coordinate of the rotated panel stack.
+  **Parameters:**
+  - `motor_spec`: Motor hardware property list.
+  **Returns:** Local Y coordinate in the centered middle-frame envelope.
  */
-function middle_chassis_panel_center_y() =
+function middle_chassis_motor_center_y(motor_spec=rc_gearmotor_plist) =
   middle_chassis_component_front_y()
   - rpi_len
   - middle_chassis_component_gap
-  - panel_stack_size()[0] / 2;
+  - rear_chassis_mount_land
+  - rc_gearmotor_size(motor_spec)[1] / 2;
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  middle_chassis_motor_carrier_w
+  ─────────────────────────────────────────────────────────────────────────────
+  Fit the removable carrier between the inner faces of the battery cases.
+  **Returns:** Carrier width with a service gap on each side.
+ */
+function middle_chassis_motor_carrier_w() =
+  rpi_width + middle_chassis_component_gap * 2 - rear_chassis_clearance * 2;
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -171,7 +182,7 @@ function middle_chassis_joint_pin_spacing() = chassis_joint_wide_pin_spacing;
 function middle_chassis_rail_w() =
   max(power_case_bottom_cbore_dia,
       rpi_bolt_cbore_dia,
-      panel_stack_bolt_cbore_dia)
+      rear_chassis_mount_bolt_d)
   + middle_chassis_mount_land * 2;
 
 /**
@@ -194,21 +205,22 @@ function middle_chassis_cross_rail_ys() =
        rpi_rear_y = front_y - rpi_len + rpi_bolts_offset,
        rpi_ys = [rpi_rear_y,
                  rpi_rear_y + rpi_bolt_spacing[1]],
-       panel_center_y = middle_chassis_panel_center_y(),
-       panel_ys = [for (side = [-1, 1])
-           panel_center_y + side * panel_stack_bolt_spacing()[0] / 2])
-  concat(power_ys, rpi_ys, panel_ys);
+       motor_l = rc_gearmotor_size()[1] + rear_chassis_mount_land * 2,
+       motor_ys = [for (side = [-1, 1])
+           middle_chassis_motor_center_y()
+           + side * (motor_l / 2 - rear_chassis_mount_land - rear_chassis_mount_bolt_d / 2)])
+  concat(power_ys, rpi_ys, motor_ys);
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
   middle_chassis_center_rail_xs
   ─────────────────────────────────────────────────────────────────────────────
 
-  Return longitudinal rail centers aligned with the rotated panel-stack holes.
+  Return longitudinal rail centers aligned with the motor-carrier holes.
 
   **Returns:**
   - List of symmetric local X coordinates.
  */
 function middle_chassis_center_rail_xs() =
   [for (side = [-1, 1])
-      side * panel_stack_bolt_spacing()[1] / 2];
+      side * (middle_chassis_motor_carrier_w() - rear_chassis_rail_w) / 2];

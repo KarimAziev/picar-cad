@@ -33,16 +33,25 @@ module rc_dogbone(spec=rc_driveshaft_plist,
   d = max(shank_d, ball_d, pin_l);
   assert(outer_l >= ball_d && insert_l > 0 && pin_d <= ball_d && clearance >= 0);
   $fn = $preview ? 32 : 64;
-  with_anchor(anchor, [d, max(shank_d, ball_d), l], centered=true)
-    if (slot_mode) translate([0, 0, -clearance])
-      cylinder(d=d + clearance * 2, h=l + clearance * 2);
-    else color("silver") union() {
-      cylinder(d=shank_d, h=ball_z);
-      translate([0, 0, ball_z]) {
-        sphere(d=ball_d);
-        rotate([0, 90, 0]) cylinder(d=pin_d, h=pin_l, center=true);
+  with_anchor(anchor, [d, max(shank_d, ball_d), l], centered=true) {
+    if (slot_mode) {
+      translate([0, 0, -clearance]) {
+        cylinder(d=d + clearance * 2, h=l + clearance * 2);
+      }
+    } else {
+      color("silver") {
+        union() {
+          cylinder(d=shank_d, h=ball_z);
+          translate([0, 0, ball_z]) {
+            sphere(d=ball_d);
+            rotate([0, 90, 0]) {
+              cylinder(d=pin_d, h=pin_l, center=true);
+            }
+          }
+        }
       }
     }
+  }
 }
 
 rc_dogbone();

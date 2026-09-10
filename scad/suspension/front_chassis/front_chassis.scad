@@ -20,14 +20,16 @@ use <front_chassis_rear_frame.scad>
 module front_chassis(show_front_frame=true,
                      show_rear_frame=true,
                      debug=false,
-                     spacing=0) {
+                     spacing=0,
+                     show_controls_slots=true,
+                     show_access_slots=true) {
 
   if (show_front_frame) {
-    front_chassis_front_frame(debug=debug);
+    front_chassis_front_frame(debug=debug, show_access_slots=show_access_slots);
   }
   if (show_rear_frame) {
     translate([0, -spacing, 0]) {
-      front_chassis_rear_frame(debug=debug);
+      front_chassis_rear_frame(debug=debug, show_controls_slots=show_controls_slots);
     }
   }
 }

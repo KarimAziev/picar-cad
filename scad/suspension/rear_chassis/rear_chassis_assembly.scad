@@ -23,8 +23,8 @@ show_rear_driveshaft = true;
 show_rear_dogbone = true;
 show_rear_unused_shaft = true;
 show_rear_differential_envelope = false;
-show_rear_motor_slots = true;
 rear_motor_spacing = 0; // [0:1:40]
+motor_joint_spacing = 0; // Compensates rear-frame separation for the middle-mounted motor.
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -43,8 +43,8 @@ rear_motor_spacing = 0; // [0:1:40]
   - `show_rear_dogbone`: Show the short differential-side dogbone.
   - `show_rear_unused_shaft`: Show the unused forward output shaft.
   - `show_rear_differential_envelope`: Preview the reserved differential space.
-  - `show_rear_motor_slots`: Cut the frame's carrier bolt holes.
   - `rear_motor_spacing`: Explode the entire drivetrain upward, in mm.
+  - `motor_joint_spacing`: Keep the middle-mounted carrier forward when the rear frame separates.
   - `anchor`: Anchor on the frame envelope, not the elevated drivetrain.
  */
 module rear_chassis_assembly(motor_spec=rc_gearmotor_plist,
@@ -58,35 +58,57 @@ module rear_chassis_assembly(motor_spec=rc_gearmotor_plist,
                              show_rear_dogbone=show_rear_dogbone,
                              show_rear_unused_shaft=show_rear_unused_shaft,
                              show_rear_differential_envelope=show_rear_differential_envelope,
-                             show_rear_motor_slots=show_rear_motor_slots,
                              rear_motor_spacing=rear_motor_spacing,
+                             motor_joint_spacing=motor_joint_spacing,
                              anchor=[0, -1, 1]) {
   layout = rear_chassis_layout(motor_spec, shaft_spec);
   size = plist_get("size", layout);
-  with_anchor(anchor, size, centered=true) translate([0, size[1] / 2, 0]) {
-    if (show_rear_chassis) color("#dddfe5")
-      rear_chassis(motor_spec, shaft_spec, show_motor_slots=show_rear_motor_slots);
-    if (show_rear_chassis_components) translate([0, 0, rear_motor_spacing]) {
-      if (show_rear_motor_carrier) color("#517aad")
-        rear_chassis_carrier_position(motor_spec, shaft_spec)
-          rear_chassis_motor_carrier(motor_spec, shaft_spec);
-      rear_chassis_motor_position(motor_spec, shaft_spec)
-        rc_gearmotor(spec=motor_spec, show_motor=show_rear_motor,
-                      show_gearbox=show_rear_gearbox,
-                      show_rear_shaft=show_rear_gearbox,
-                      show_front_shaft=show_rear_unused_shaft);
-      if (show_rear_driveshaft)
-        rc_driveshaft_between(plist_get("shaft_start", layout),
-                              plist_get("shaft_end", layout), spec=shaft_spec);
-      if (show_rear_dogbone) rear_chassis_dogbone_position(motor_spec, shaft_spec)
-        rc_dogbone(spec=shaft_spec);
-      if (show_rear_differential_envelope) {
-        %color("#39bcd2", 0.35) translate(plist_get("diff_pos", layout))
-          cuboid(rear_chassis_diff_size, r=rear_chassis_mount_land);
-        %color("#39bcd2", 0.35)
-          translate([0, plist_get("diff_front_y", layout), plist_get("shaft_end", layout)[2]])
-            rotate([-90, 0, 0]) cylinder(d=plist_get("bore_d", shaft_spec),
-                                        h=rear_chassis_diff_input_l, $fn=32);
+  with_anchor(anchor, size, centered=true) {
+    translate([0, size[1] / 2, 0]) {
+      if (show_rear_chassis) {
+        color("#dddfe5") {
+          rear_chassis(motor_spec, shaft_spec);
+        }
+      }
+      if (show_rear_chassis_components) {
+        translate([0, 0, rear_motor_spacing]) {
+          translate([0, motor_joint_spacing, 0]) {
+            if (show_rear_motor_carrier) {
+              color("#517aad") {
+                rear_chassis_carrier_position(motor_spec, shaft_spec) {
+                  rear_chassis_motor_carrier(motor_spec, shaft_spec);
+                }
+              }
+            }
+            rear_chassis_motor_position(motor_spec, shaft_spec) {
+              rc_gearmotor(spec=motor_spec, show_motor=show_rear_motor,
+                            show_gearbox=show_rear_gearbox,
+                            show_rear_shaft=show_rear_gearbox,
+                            show_front_shaft=show_rear_unused_shaft);
+            }
+          }
+          if (show_rear_driveshaft) {
+            rc_driveshaft_between(plist_get("shaft_start", layout),
+                                  plist_get("shaft_end", layout), spec=shaft_spec);
+          }
+          if (show_rear_dogbone) {
+            rear_chassis_dogbone_position(motor_spec, shaft_spec) {
+              rc_dogbone(spec=shaft_spec);
+            }
+          }
+          if (show_rear_differential_envelope) {
+            %color("#39bcd2", 0.35) {
+              translate(plist_get("diff_pos", layout)) {
+                cuboid(rear_chassis_diff_size, r=rear_chassis_mount_land);
+              }
+              translate([0, plist_get("diff_front_y", layout), plist_get("shaft_end", layout)[2]]) {
+                rotate([-90, 0, 0]) {
+                  cylinder(d=plist_get("bore_d", shaft_spec), h=rear_chassis_diff_input_l, $fn=32);
+                }
+              }
+            }
+          }
+        }
       }
     }
   }
@@ -107,8 +129,11 @@ module rear_chassis_dogbone_position(motor_spec=rc_gearmotor_plist,
                                       shaft_spec=rc_driveshaft_plist) {
   layout = rear_chassis_layout(motor_spec, shaft_spec);
   l = plist_get("dogbone_outer_l", shaft_spec) + plist_get("dogbone_insert_l", shaft_spec);
-  translate(plist_get("dogbone_tip", layout) + [0, l, 0])
-    rotate([90, 0, 0]) children();
+  translate(plist_get("dogbone_tip", layout) + [0, l, 0]) {
+    rotate([90, 0, 0]) {
+      children();
+    }
+  }
 }
 
 rear_chassis_assembly();

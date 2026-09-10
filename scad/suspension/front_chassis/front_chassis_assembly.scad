@@ -44,6 +44,7 @@ use <../wishbone_arms/front_lower_arm.scad>
 use <front_chassis.scad>
 use <front_chassis_front_frame.scad>
 use <../middle_chassis/middle_chassis.scad>
+use <front_chassis_controls.scad>
 use <../rear_chassis/rear_chassis_assembly.scad>
 
 show_chassis_front_frame                    = true;
@@ -116,16 +117,18 @@ show_rear_driveshaft                        = true;
 show_rear_dogbone                           = true;
 show_rear_unused_shaft                      = true;
 show_rear_differential_envelope             = false;
-show_rear_motor_slots                       = true;
+show_middle_chassis_motor_slots             = true;
 
 show_middle_chassis                        = true;
 show_middle_chassis_components             = true;
 show_middle_chassis_power_cases            = true;
 show_middle_chassis_rpi                    = true;
-show_middle_chassis_panel_stack            = true;
+show_front_controls                       = true;
+show_front_controls_slots                 = true;
+show_front_access_slots                   = true;
+show_middle_camera_slots                  = true;
 show_middle_chassis_power_case_slots       = true;
 show_middle_chassis_rpi_slots              = true;
-show_middle_chassis_panel_stack_slots      = true;
 
 // Steering angle
 steering_servo_angle                        = 0; // [-25:1:25]
@@ -179,10 +182,12 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
                               show_middle_chassis_components=show_middle_chassis_components,
                               show_middle_chassis_power_cases=show_middle_chassis_power_cases,
                               show_middle_chassis_rpi=show_middle_chassis_rpi,
-                              show_middle_chassis_panel_stack=show_middle_chassis_panel_stack,
+                              show_front_controls=show_front_controls,
+                              show_front_controls_slots=show_front_controls_slots,
+                              show_front_access_slots=show_front_access_slots,
+                              show_middle_camera_slots=show_middle_camera_slots,
                               show_middle_chassis_power_case_slots=show_middle_chassis_power_case_slots,
                               show_middle_chassis_rpi_slots=show_middle_chassis_rpi_slots,
-                              show_middle_chassis_panel_stack_slots=show_middle_chassis_panel_stack_slots,
                               rear_chassis_joint_spacing=rear_chassis_joint_spacing,
                               rear_motor_spacing=rear_motor_spacing,
                               show_rear_chassis=show_rear_chassis,
@@ -194,11 +199,19 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
                               show_rear_dogbone=show_rear_dogbone,
                               show_rear_unused_shaft=show_rear_unused_shaft,
                               show_rear_differential_envelope=show_rear_differential_envelope,
-                              show_rear_motor_slots=show_rear_motor_slots) {
+                              show_middle_chassis_motor_slots=show_middle_chassis_motor_slots) {
   front_chassis(show_front_frame=show_chassis_front_frame,
                 show_rear_frame=show_chassis_rear_frame,
                 debug=false,
-                spacing=front_chassis_joint_spacing);
+                spacing=front_chassis_joint_spacing,
+                show_controls_slots=show_front_controls_slots,
+                show_access_slots=show_front_access_slots);
+
+  if (show_front_chassis_components && show_front_controls) {
+    translate([0, -front_chassis_joint_spacing, 0]) {
+      front_chassis_controls();
+    }
+  }
 
   if (show_front_chassis_components) {
     if (show_steering_assembly) {
@@ -269,10 +282,10 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
       show_middle_chassis_components=show_middle_chassis_components,
       show_middle_chassis_power_cases=show_middle_chassis_power_cases,
       show_middle_chassis_rpi=show_middle_chassis_rpi,
-      show_middle_chassis_panel_stack=show_middle_chassis_panel_stack,
       show_middle_chassis_power_case_slots=show_middle_chassis_power_case_slots,
       show_middle_chassis_rpi_slots=show_middle_chassis_rpi_slots,
-      show_middle_chassis_panel_stack_slots=show_middle_chassis_panel_stack_slots,
+      show_middle_chassis_motor_slots=show_middle_chassis_motor_slots,
+      show_middle_chassis_camera_slots=show_middle_camera_slots,
       anchor=[0, -1, 1]);
     translate([0, -middle_chassis_size()[1] + joint_l - rear_chassis_joint_spacing, 0]) {
       rear_chassis_assembly(
@@ -285,8 +298,8 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
         show_rear_dogbone=show_rear_dogbone,
         show_rear_unused_shaft=show_rear_unused_shaft,
         show_rear_differential_envelope=show_rear_differential_envelope,
-        show_rear_motor_slots=show_rear_motor_slots,
-        rear_motor_spacing=rear_motor_spacing);
+        rear_motor_spacing=rear_motor_spacing,
+        motor_joint_spacing=rear_chassis_joint_spacing);
     }
   }
 }

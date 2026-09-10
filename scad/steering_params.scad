@@ -300,10 +300,6 @@ front_chassis_joint_boolean_overlap               = 0.02;
 // ─────────────────────────────────────────────────────────────────────────────
 front_chassis_head_mount_padding                  = 2.0;
 front_chassis_head_wire_land                      = 3.0;
-front_chassis_head_ribbon_slot_w                  = 32.0;
-front_chassis_head_ribbon_slot_l                  = 5.0;
-front_chassis_head_servo_slot_w                   = 10.0;
-front_chassis_head_servo_slot_l                   = 5.0;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Middle chassis

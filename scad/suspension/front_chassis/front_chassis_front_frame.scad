@@ -33,13 +33,25 @@ use <../bulkhead/front_bulkhead_housing.scad>
 use <../bulkhead/util.scad>
 use <../wishbone_arms/front_lower_arm.scad>
 use <front_chassis_head_slots.scad>
+use <front_chassis_access_slots.scad>
 use <front_chassis_joint.scad>
 
 front_chassis_front_frame_debug = true;
+show_front_access_slots = true;
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_front_frame_start_y
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Locate the nose from the front ribbon passage and bumper mounting lands.
+
+  **Returns:** Front-frame maximum Y, with the bumper hole pattern ahead of
+  the ribbon passage. The elevated camera projection does not set deck length.
+ */
 function front_chassis_front_frame_start_y() =
-  front_chassis_head_center_y() + front_chassis_head_front_reach()
-  + front_chassis_head_mount_padding
+  front_chassis_head_center_y() + front_chassis_head_front_ribbon_y()
+  + chassis_pan_servo_top_ribbon_cuttout_h / 2 + front_chassis_head_wire_land
   + front_bumper_center_bolt_y_offset
   + front_bumper_bolt_d + front_bumper_bolt_pad_y * 2;
 
@@ -55,8 +67,7 @@ function front_chassis_front_frame_start_y() =
  */
 function front_chassis_head_center_y() =
   front_bulkhead_pad_distance_to_hinge() + bulkhead_size_y
-  + bulkhead_transition_len + front_chassis_head_wire_land
-  - front_chassis_head_wire_y()[1] + front_chassis_head_servo_slot_l / 2;
+  + bulkhead_transition_len + front_chassis_head_rear_reach();
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -86,6 +97,7 @@ function front_chassis_ear_pts() =
   concat(pts, mirrored_pts);
 
 module front_chassis_front_frame(debug=front_chassis_front_frame_debug,
+                                 show_access_slots=show_front_access_slots,
                                  debug_font="Gill Sans:style=Bold",
                                  debug_color=green_2,
                                  color=white_smoke_1) {
@@ -97,15 +109,15 @@ module front_chassis_front_frame(debug=front_chassis_front_frame_debug,
   bumper_x = front_bumper_bolt_spacing_x / 2
     + front_bumper_bolt_d / 2
     + front_bumper_bolt_pad_x;
-  x1 = max(bumper_x, head_mount_size[0] / 2);
+  x1 = max(bumper_x, head_mount_size[0] / 2
+           + front_chassis_head_side_slot_w + front_chassis_head_wire_land * 2);
   start_y1 = start_y0 - front_bumper_center_bolt_y_offset;
 
   x2 = bulkhead_size_x / 2;
   y2 = front_bulkhead_pad_distance_to_hinge()
     + bulkhead_transition_len + front_bumper_bolt_y_offset
     + front_bumper_bolt_d;
-  head_rear_y = head_center_y + front_chassis_head_wire_y()[1]
-    - front_chassis_head_servo_slot_l / 2 - front_chassis_head_wire_land;
+  head_rear_y = head_center_y - front_chassis_head_rear_reach();
 
   y3 = bulkhead_transition_len
     + front_chassis_bellcrank_tool_access_hole_d / 2
@@ -195,6 +207,9 @@ module front_chassis_front_frame(debug=front_chassis_front_frame_debug,
 
       translate([0, head_center_y, 0]) {
         front_chassis_head_slots();
+      }
+      if (show_access_slots) {
+        front_chassis_access_slots(head_center_y);
       }
     }
 

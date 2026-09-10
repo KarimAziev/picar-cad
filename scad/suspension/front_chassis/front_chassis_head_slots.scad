@@ -15,6 +15,7 @@ use <../../head/head_neck.scad>
 use <../../lib/functions.scad>
 use <../../lib/placement.scad>
 use <../../lib/shapes3d.scad>
+use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
 
 /**
@@ -39,11 +40,11 @@ function front_chassis_head_mount_size() =
   front_chassis_head_front_reach
   ─────────────────────────────────────────────────────────────────────────────
 
-  Bound the neutral head's forward projection for bumper service clearance.
+  Bound the neutral head's forward projection for packaging inspection.
 
   Includes the side-panel depth and a camera envelope measured from the pan
   axis through both servo shaft displacements. This is a packaging envelope,
-  not a limit on the head's pan or tilt motion.
+  not a limit on the head's pan or tilt motion or a minimum deck length.
  */
 function front_chassis_head_front_reach() =
   max(head_side_panel_width,
@@ -55,27 +56,70 @@ function front_chassis_head_front_reach() =
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
-  front_chassis_head_wire_y
+  front_chassis_head_ribbon_slot_ys
+  ─────────────────────────────────────────────────────────────────────────────
+  Locate every slot in the head-side ribbon threading bank, nearest first.
+  **Parameters:**
+  - `rows`: Number of separate ribbon openings; at least three for threading.
+  - `slot_l`: Slot dimension along the chassis Y axis.
+  - `gap`: Solid strip width between adjacent openings.
+  **Returns:** Y centers relative to the pan axis, behind the head base.
+ */
+function front_chassis_head_ribbon_slot_ys(rows=front_chassis_head_ribbon_slot_rows,
+                                         slot_l=front_chassis_head_ribbon_slot_l,
+                                         gap=front_chassis_head_ribbon_slot_gap) =
+  assert(rows >= 3 && rows == floor(rows), "Ribbon threading requires at least three slots")
+  assert(slot_l > 0 && gap > 0)
+  let (first_y = -front_chassis_head_mount_size()[1] / 2
+         - front_chassis_head_wire_land - slot_l / 2)
+  [for (row = [0:rows - 1]) first_y - row * (slot_l + gap)];
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_head_rear_reach
   ─────────────────────────────────────────────────────────────────────────────
 
-  Return cable-slot row centers behind the pan-axis mounting footprint.
+  Bound the ribbon bank and its rear material land from the pan axis.
 
   **Returns:**
-  - `[ribbon_y, servo_y]`, relative to the pan axis.
+  - Positive distance to the rear edge of the ribbon bank's supporting land.
  */
-function front_chassis_head_wire_y() =
-  let (ribbon_y = -front_chassis_head_mount_size()[1] / 2
-         - front_chassis_head_wire_land - front_chassis_head_ribbon_slot_l / 2)
-  [ribbon_y,
-   ribbon_y - front_chassis_head_ribbon_slot_l / 2
-     - front_chassis_head_wire_land - front_chassis_head_servo_slot_l / 2];
+function front_chassis_head_rear_reach() =
+  let (ys = front_chassis_head_ribbon_slot_ys())
+  -ys[len(ys) - 1] + front_chassis_head_ribbon_slot_l / 2
+    + front_chassis_head_wire_land;
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_head_ribbon_slots
+  ─────────────────────────────────────────────────────────────────────────────
+  Cut the separate head-side slots used to thread and retain the camera ribbon.
+  **Parameters:**
+  - `thickness`: Frame thickness crossed by every slot.
+  - `anchor`: Anchor on the head mounting-pad envelope, matching the horn slots.
+  **Notes:** Defaults preserve the old chassis's three 20 × 3 mm openings and
+  two 3 mm strips. These are functional ribbon-routing features, not vents.
+ */
+module front_chassis_head_ribbon_slots(thickness=front_chassis_thickness,
+                                      anchor=[0, 0, 1]) {
+  size = front_chassis_head_mount_size();
+  eps = front_chassis_joint_boolean_overlap;
+  with_anchor(anchor, [size[0], size[1], thickness], centered=true) {
+    for (y = front_chassis_head_ribbon_slot_ys()) {
+      translate([0, y, -eps]) {
+        rect_slot(size=[front_chassis_head_ribbon_slot_w, front_chassis_head_ribbon_slot_l],
+                   h=thickness + eps * 2, autoscale_step=0, center=true, r=0);
+      }
+    }
+  }
+}
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
   front_chassis_head_slots
   ─────────────────────────────────────────────────────────────────────────────
 
-  Build the anchored through-hole, horn recess, and selectable horn screw rows.
+  Build the head mounting cuts and the three-slot ribbon threading bank.
 
   **Parameters:**
   - thickness: Frame thickness crossed by through-holes.
@@ -140,21 +184,8 @@ module front_chassis_head_slots(thickness=front_chassis_thickness,
         }
       }
 
-      // Wide camera ribbon opening and two connector-sized servo passages.
-      translate([0, front_chassis_head_wire_y()[0], -eps]) {
-        cuboid([front_chassis_head_ribbon_slot_w,
-                front_chassis_head_ribbon_slot_l, thickness + eps * 2],
-               r=front_chassis_head_ribbon_slot_l / 2);
-      }
-      for (side = [-1, 1]) {
-        translate([side * (front_chassis_head_servo_slot_w
-                          + front_chassis_head_wire_land) / 2,
-                   front_chassis_head_wire_y()[1], -eps]) {
-          cuboid([front_chassis_head_servo_slot_w,
-                  front_chassis_head_servo_slot_l, thickness + eps * 2],
-                 r=front_chassis_head_servo_slot_l / 2);
-        }
-      }
+      // The ribbon weaves through separate slots; do not merge their solid strips.
+      front_chassis_head_ribbon_slots(thickness=thickness);
     }
   }
 }

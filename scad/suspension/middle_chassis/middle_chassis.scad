@@ -2,7 +2,7 @@
   * Module: Suspension middle chassis.
   *
   * Provides a lightweight lattice deck for the paired power cases, Raspberry
-  * Pi, and controls. Both ends carry wide male joints so the frame can be
+  * Pi, and motor carrier. Both ends carry wide male joints so the frame can be
   * printed with its upper face on the bed. The central volume remains available
   * for a future lidar tower above the electronics.
   *
@@ -17,19 +17,20 @@ include <computed_params.scad>
 
 use <../../lib/shapes3d.scad>
 use <../../lib/transforms.scad>
-use <../../panel_stack/panel_stack.scad>
+use <../rear_chassis/rear_chassis_motor_carrier.scad>
 use <../../placeholders/rpi_5.scad>
 use <../../power/power_case_assembly.scad>
 use <../front_chassis/front_chassis_joint.scad>
+use <middle_chassis_camera_slots.scad>
 
 show_middle_chassis                   = true;
 show_middle_chassis_components        = true;
 show_middle_chassis_power_cases       = true;
 show_middle_chassis_rpi               = true;
-show_middle_chassis_panel_stack       = true;
 show_middle_chassis_power_case_slots  = true;
 show_middle_chassis_rpi_slots         = true;
-show_middle_chassis_panel_stack_slots = true;
+show_middle_chassis_motor_slots       = true;
+show_middle_chassis_camera_slots      = true;
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -39,7 +40,7 @@ show_middle_chassis_panel_stack_slots = true;
   Place all current middle-chassis components or their exact mounting slots.
 
   The heavy power cases occupy the outer, lowest lanes. The Raspberry Pi and
-  control/fuse stack occupy the protected central lane. This leaves the center
+  motor carrier occupy the protected central lane. This leaves the center
   axis suitable for a future tower whose lidar can sit above every current
   component.
 
@@ -47,13 +48,11 @@ show_middle_chassis_panel_stack_slots = true;
   - slot_mode: Render mounting slots instead of component geometry.
   - show_power_cases: Show or cut the paired power-case mounts.
   - show_rpi: Show or cut the Raspberry Pi mount.
-  - show_panel_stack: Show or cut the controls and fuse-panel mount.
   - anchor: Anchor vector for the complete middle-chassis envelope.
  */
 module middle_chassis_component_layout(slot_mode=false,
                                        show_power_cases=show_middle_chassis_power_cases,
                                        show_rpi=show_middle_chassis_rpi,
-                                       show_panel_stack=show_middle_chassis_panel_stack,
                                        anchor=[0, 0, 1]) {
   size = middle_chassis_size();
   front_y = middle_chassis_component_front_y();
@@ -68,17 +67,6 @@ module middle_chassis_component_layout(slot_mode=false,
                 slot_mode=slot_mode,
                 slot_thickness=middle_chassis_thickness,
                 anchor=[0, -1, 1]);
-        }
-      }
-
-      if (show_panel_stack) {
-        translate([0, middle_chassis_panel_center_y(), 0]) {
-          panel_stack(show_buttons=true,
-                      show_standoff=true,
-                      y_axle=false,
-                      center=true,
-                      slot_mode=slot_mode,
-                      slot_thickness=middle_chassis_thickness);
         }
       }
 
@@ -116,6 +104,7 @@ module _middle_chassis_lattice(color=white_smoke_1) {
     intersection() {
       cuboid([w, l, h], r=middle_chassis_corner_r);
       union() {
+        middle_chassis_camera_slots(slot_mode=false);
         mirror_copy([1, 0, 0]) {
           translate([w / 2 - middle_chassis_edge_rail_w / 2, body_center_y, 0]) {
             cuboid([middle_chassis_edge_rail_w, l, h]);
@@ -169,13 +158,15 @@ module _middle_chassis_lattice(color=white_smoke_1) {
   - color: Chassis display color.
   - show_power_case_slots: Cut the paired power-case mounting slots.
   - show_rpi_slots: Cut the Raspberry Pi mounting slots.
-  - show_panel_stack_slots: Cut the controls and fuse-panel mounting slots.
+  - show_motor_slots: Cut the relocated motor-carrier mounting slots.
+  - show_camera_slots: Cut three rectangular CSI ribbon passages.
   - anchor: Anchor vector for the complete chassis envelope.
  */
 module middle_chassis(color=white_smoke_1,
                       show_power_case_slots=show_middle_chassis_power_case_slots,
                       show_rpi_slots=show_middle_chassis_rpi_slots,
-                      show_panel_stack_slots=show_middle_chassis_panel_stack_slots,
+                      show_motor_slots=show_middle_chassis_motor_slots,
+                      show_camera_slots=show_middle_chassis_camera_slots,
                       anchor=[0, 0, 1]) {
   size = middle_chassis_size();
   rear_joint_y = -size[1] / 2 + joint_l;
@@ -186,8 +177,15 @@ module middle_chassis(color=white_smoke_1,
         _middle_chassis_lattice(color=color);
         middle_chassis_component_layout(slot_mode=true,
                                         show_power_cases=show_power_case_slots,
-                                        show_rpi=show_rpi_slots,
-                                        show_panel_stack=show_panel_stack_slots);
+                                        show_rpi=show_rpi_slots);
+        if (show_motor_slots) {
+          translate([0, -size[1] / 2 + joint_l, 0]) {
+            rear_chassis_motor_bolt_slots();
+          }
+        }
+        if (show_camera_slots) {
+          middle_chassis_camera_slots();
+        }
         for (y = [size[1] / 2, rear_joint_y]) {
           translate([0, y, 0]) {
             front_chassis_pin_joint_holes(
@@ -246,31 +244,31 @@ module middle_chassis_printable() {
   - show_middle_chassis_components: Render current middle-chassis components.
   - show_middle_chassis_power_cases: Render the paired power cases.
   - show_middle_chassis_rpi: Render the Raspberry Pi stack.
-  - show_middle_chassis_panel_stack: Render the controls and fuse-panel stack.
   - show_middle_chassis_power_case_slots: Cut the power-case mounting slots.
   - show_middle_chassis_rpi_slots: Cut the Raspberry Pi mounting slots.
-  - show_middle_chassis_panel_stack_slots: Cut the panel-stack mounting slots.
+  - show_middle_chassis_motor_slots: Cut the motor-carrier mounting slots.
+  - show_middle_chassis_camera_slots: Cut the three CSI ribbon passages.
   - `anchor`: Anchor for the complete middle chassis envelope.
  */
 module middle_chassis_assembly(show_middle_chassis=show_middle_chassis,
                                show_middle_chassis_components=show_middle_chassis_components,
                                show_middle_chassis_power_cases=show_middle_chassis_power_cases,
                                show_middle_chassis_rpi=show_middle_chassis_rpi,
-                               show_middle_chassis_panel_stack=show_middle_chassis_panel_stack,
                                show_middle_chassis_power_case_slots=show_middle_chassis_power_case_slots,
                                show_middle_chassis_rpi_slots=show_middle_chassis_rpi_slots,
-                               show_middle_chassis_panel_stack_slots=show_middle_chassis_panel_stack_slots,
+                               show_middle_chassis_motor_slots=show_middle_chassis_motor_slots,
+                               show_middle_chassis_camera_slots=show_middle_chassis_camera_slots,
                                anchor=[0, 0, 1]) {
   if (show_middle_chassis) {
     middle_chassis(show_power_case_slots=show_middle_chassis_power_case_slots,
                    show_rpi_slots=show_middle_chassis_rpi_slots,
-                   show_panel_stack_slots=show_middle_chassis_panel_stack_slots,
+                   show_motor_slots=show_middle_chassis_motor_slots,
+                   show_camera_slots=show_middle_chassis_camera_slots,
                    anchor=anchor);
   }
   if (show_middle_chassis_components) {
     middle_chassis_component_layout(show_power_cases=show_middle_chassis_power_cases,
                                     show_rpi=show_middle_chassis_rpi,
-                                    show_panel_stack=show_middle_chassis_panel_stack,
                                     anchor=anchor);
   }
 }

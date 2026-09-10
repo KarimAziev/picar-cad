@@ -285,8 +285,8 @@ module pan_servo_slot_3d() {
                         rows=chassis_pan_servo_rib_slots_rows,
                         w=chassis_pan_servo_rib_slots_thickness) {
             cuboid([chassis_pan_servo_rib_slots_len,
-                     chassis_pan_servo_rib_slots_thickness,
-                     hole_h]);
+                    chassis_pan_servo_rib_slots_thickness,
+                    hole_h]);
           }
         }
       }
@@ -627,26 +627,26 @@ module chassis_upper_3d(panel_color=white_snow_1,
       }
 
       chassis_upper_front_panel_slot();
-      head_zone_slot();
+      // #head_zone_slot();
       chassis_upper_steering_hinges();
 
-      chassis_upper_rib_hole_slot(border_mode=false);
-      chassis_top_most_side_holes(border_mode=false);
-      chassis_mid_side_trapezoids(border_mode=false);
+      // chassis_upper_rib_hole_slot(border_mode=false);
+      // #chassis_top_most_side_holes(border_mode=false);
+      // #chassis_mid_side_trapezoids(border_mode=false);
       chassis_bottom_side_holes(border_mode=false);
-      chassis_transition_side_holes(border_mode=false);
-      chassis_upper_transition_rect_slots(border_mode=false);
+      // chassis_transition_side_holes(border_mode=false);
+      // chassis_upper_transition_rect_slots(border_mode=false);
     }
   }
 
   if (show_upper_chassis) {
     // borders
-    chassis_upper_rib_hole_slot(border_mode=true);
-    chassis_top_most_side_holes(border_mode=true);
-    chassis_mid_side_trapezoids(border_mode=true);
-    chassis_bottom_side_holes(border_mode=true);
-    chassis_transition_side_holes(border_mode=true);
-    chassis_upper_transition_rect_slots(border_mode=true);
+    // chassis_upper_rib_hole_slot(border_mode=true);
+    // chassis_top_most_side_holes(border_mode=true);
+    // chassis_mid_side_trapezoids(border_mode=true);
+    // chassis_bottom_side_holes(border_mode=true);
+    // chassis_transition_side_holes(border_mode=true);
+    // chassis_upper_transition_rect_slots(border_mode=true);
   }
 
   // assembly
