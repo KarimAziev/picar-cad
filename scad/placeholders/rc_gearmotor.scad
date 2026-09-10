@@ -5,14 +5,16 @@
   * Local output axis is -Y. The body is XY-centered and rests on Z=0;
   * shafts and terminals extend beyond its nominal anchor envelope.
   */
+include <../colors.scad>
 include <../parameters.scad>
+
 use <../lib/plist.scad>
 use <../lib/shapes3d.scad>
 use <../lib/transforms.scad>
 
-show_motor = true;
-show_gearbox = true;
-show_rear_shaft = true;
+show_motor       = true;
+show_gearbox     = true;
+show_rear_shaft  = true;
 show_front_shaft = true;
 
 /**
@@ -39,7 +41,7 @@ function rc_gearmotor_size(spec=rc_gearmotor_plist) =
  */
 function rc_gearmotor_axis_x(spec=rc_gearmotor_plist, output=true) =
   output ? (plist_get("output_lobe_d", spec) - plist_get("body_w", spec)) / 2
-         : (plist_get("body_w", spec) - plist_get("body_h", spec)) / 2;
+  : (plist_get("body_w", spec) - plist_get("body_h", spec)) / 2;
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -55,7 +57,8 @@ function rc_gearmotor_shaft_tip(spec=rc_gearmotor_plist, rear=true) =
   let (size = rc_gearmotor_size(spec))
   [rc_gearmotor_axis_x(spec),
    -size[1] / 2 + (rear ? -plist_get("rear_shaft_l", spec)
-     : plist_get("gearbox_l", spec) + plist_get("front_shaft_l", spec)),
+                   : plist_get("gearbox_l", spec) + plist_get("front_shaft_l",
+                                                              spec)),
    size[2] / 2];
 
 module _rc_gearmotor_profile(spec) {
@@ -70,7 +73,9 @@ module _rc_gearmotor_profile(spec) {
 
 // Cylinders run from the rear face toward +Y.
 module _rc_gearmotor_axial(d, l) {
-  rotate([-90, 0, 0]) cylinder(d=d, h=l);
+  rotate([-90, 0, 0]) {
+    cylinder(d=d, h=l);
+  }
 }
 
 /**
@@ -102,6 +107,7 @@ module rc_gearmotor(spec=rc_gearmotor_plist,
   cap_l = plist_get("end_cap_l", spec);
   cover_l = plist_get("cover_l", spec);
   ear_d = plist_get("ear_d", spec);
+  gearbox_color = plist_get("gearbox_color", spec);
   output_x = rc_gearmotor_axis_x(spec);
   can_x = rc_gearmotor_axis_x(spec, false);
   z = size[2] / 2;
@@ -128,20 +134,28 @@ module rc_gearmotor(spec=rc_gearmotor_plist,
       }
     } else {
       if (show_gearbox) {
-        color("#30343b") {
+        color(gearbox_color) {
           difference() {
             union() {
-              translate([0, -size[1] / 2 + gear_l, 0]) rotate([90, 0, 0])
-                linear_extrude(height=gear_l - cover_l) _rc_gearmotor_profile(spec);
+              translate([0, -size[1] / 2 + gear_l, 0]) {
+                rotate([90, 0, 0]) {
+                  linear_extrude(height=gear_l - cover_l) {
+                    _rc_gearmotor_profile(spec);
+                  }
+                }
+              }
+
               // Casing ears are visualization only, not chassis mount datums.
               for (side = [-1, 1]) hull() {
-                translate([side * (size[0] - ear_d) / 2,
-                           -size[1] / 2 + cover_l,
-                           side > 0 ? ear_d / 2 : size[2] - ear_d / 2])
-                  _rc_gearmotor_axial(ear_d, gear_l - cover_l);
-                translate([rc_gearmotor_axis_x(spec, side < 0), -size[1] / 2 + cover_l, z])
-                  _rc_gearmotor_axial(ear_d, gear_l - cover_l);
-              }
+                  translate([side * (size[0] - ear_d) / 2,
+                             -size[1] / 2 + cover_l,
+                             side > 0 ? ear_d / 2 : size[2] - ear_d / 2])
+                    _rc_gearmotor_axial(ear_d, gear_l - cover_l);
+                  translate([rc_gearmotor_axis_x(spec, side < 0),
+                             -size[1] / 2 + cover_l,
+                             z])
+                    _rc_gearmotor_axial(ear_d, gear_l - cover_l);
+                }
             }
             for (side = [-1, 1])
               translate([side * (size[0] - ear_d) / 2,
@@ -153,21 +167,28 @@ module rc_gearmotor(spec=rc_gearmotor_plist,
         }
         color("silver")
           translate([0, -size[1] / 2 + cover_l, 0]) rotate([90, 0, 0])
-            linear_extrude(height=cover_l) _rc_gearmotor_profile(spec);
+          linear_extrude(height=cover_l) _rc_gearmotor_profile(spec);
         for (rear = [true, false]) {
           bearing_l = plist_get("bearing_l", spec);
           color("#555b65")
-            translate([output_x, -size[1] / 2 + (rear ? -bearing_l : gear_l), z])
-              _rc_gearmotor_axial(plist_get("bearing_d", spec), bearing_l);
+            translate([output_x,
+                       -size[1] / 2 + (rear ? -bearing_l : gear_l),
+                       z])
+            _rc_gearmotor_axial(plist_get("bearing_d", spec), bearing_l);
         }
       }
       if (show_motor) {
-        color("silver")
-          translate([can_x, -size[1] / 2 + gear_l, z])
+        color("silver") {
+          translate([can_x, -size[1] / 2 + gear_l, z]) {
             _rc_gearmotor_axial(can_d, size[1] - gear_l - cap_l);
-        color("#343a85")
-          translate([can_x, size[1] / 2 - cap_l, z])
+          }
+        }
+
+        color("#343a85") {
+          translate([can_x, size[1] / 2 - cap_l, z]) {
             _rc_gearmotor_axial(can_d, cap_l);
+          }
+        }
         for (side = [-1, 1])
           color("gold") translate([can_x + side * can_d / 3, size[1] / 2, z])
             cuboid(plist_props(["terminal_w", "terminal_l", "terminal_h"], spec),
@@ -178,7 +199,8 @@ module rc_gearmotor(spec=rc_gearmotor_plist,
           tip = rc_gearmotor_shaft_tip(spec, rear);
           face_y = -size[1] / 2 + (rear ? 0 : gear_l);
           color("silver") translate([output_x, min(tip[1], face_y), z])
-            _rc_gearmotor_axial(plist_get("shaft_d", spec), abs(tip[1] - face_y));
+            _rc_gearmotor_axial(plist_get("shaft_d", spec),
+                                abs(tip[1] - face_y));
         }
       }
     }

@@ -3155,6 +3155,7 @@ rc_gearmotor_plist = ["body_w", 41.97,
                       "body_l", 55.62,
                       "mass_g", 91,
                       "gearbox_l", 17.68,
+                      "gearbox_color", "#D25553",
                       "can_d", 24.31,
                       "end_cap_l", 3,
                       "cover_l", 1,
@@ -3188,7 +3189,8 @@ rc_driveshaft_plist = [// Measured base length is recorded separately until its 
                        "dogbone_outer_l", 12,
                        "dogbone_insert_l", 4,
                        "dogbone_ball_d", 5,
-                       "dogbone_pin_d", 2, "dogbone_pin_l", 8,
+                       "dogbone_pin_d", 2,
+                       "dogbone_pin_l", 8,
                        "max_angle", 30];
 
 // Local Variables:
