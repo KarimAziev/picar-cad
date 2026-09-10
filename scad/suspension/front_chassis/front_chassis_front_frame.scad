@@ -30,21 +30,46 @@ use <../bellcrank_steering_slots.scad>
 use <../bulkhead/front_bulkhead.scad>
 use <../bulkhead/front_bulkhead_chassis.scad>
 use <../bulkhead/front_bulkhead_housing.scad>
-use <../wishbone_arms/front_lower_arm.scad>
-use <front_chassis_joint.scad>
 use <../bulkhead/util.scad>
-
-
+use <../wishbone_arms/front_lower_arm.scad>
+use <front_chassis_head_slots.scad>
+use <front_chassis_joint.scad>
 
 front_chassis_front_frame_debug = true;
 
 function front_chassis_front_frame_start_y() =
-  front_bulkhead_pad_distance_to_hinge() +
-  bulkhead_size_y
-  + bulkhead_transition_len
-  + front_bumper_bolt_y_offset
+  front_chassis_head_center_y() + front_chassis_head_front_reach()
+  + front_chassis_head_mount_padding
   + front_bumper_center_bolt_y_offset
-  + front_bumper_bolt_d;
+  + front_bumper_bolt_d + front_bumper_bolt_pad_y * 2;
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_head_center_y
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Return the pan-axis center of the head mounting pad.
+
+  **Returns:**
+  - Head center on the front-frame Y axis.
+ */
+function front_chassis_head_center_y() =
+  front_bulkhead_pad_distance_to_hinge() + bulkhead_size_y
+  + bulkhead_transition_len + front_chassis_head_wire_land
+  - front_chassis_head_wire_y()[1] + front_chassis_head_servo_slot_l / 2;
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_head_mount_z
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Return the head-neck assembly height at the top of the horn recess.
+
+  **Returns:**
+  - Head-neck placement coordinate on Z.
+ */
+function front_chassis_head_mount_z() =
+  front_chassis_thickness - chassis_pan_servo_slot_recess;
 
 function front_chassis_ear_pts() =
   let (ear_y = front_chassis_ear_w / 2,
@@ -66,14 +91,21 @@ module front_chassis_front_frame(debug=front_chassis_front_frame_debug,
                                  color=white_smoke_1) {
 
   start_y0 = front_chassis_front_frame_start_y();
+  head_mount_size = front_chassis_head_mount_size();
+  head_center_y = front_chassis_head_center_y();
 
-  x1 = front_bumper_bolt_spacing_x / 2
+  bumper_x = front_bumper_bolt_spacing_x / 2
     + front_bumper_bolt_d / 2
     + front_bumper_bolt_pad_x;
+  x1 = max(bumper_x, head_mount_size[0] / 2);
   start_y1 = start_y0 - front_bumper_center_bolt_y_offset;
 
   x2 = bulkhead_size_x / 2;
-  y2 = start_y1 - bulkhead_size_y;
+  y2 = front_bulkhead_pad_distance_to_hinge()
+    + bulkhead_transition_len + front_bumper_bolt_y_offset
+    + front_bumper_bolt_d;
+  head_rear_y = head_center_y + front_chassis_head_wire_y()[1]
+    - front_chassis_head_servo_slot_l / 2 - front_chassis_head_wire_land;
 
   y3 = bulkhead_transition_len
     + front_chassis_bellcrank_tool_access_hole_d / 2
@@ -84,9 +116,11 @@ module front_chassis_front_frame(debug=front_chassis_front_frame_debug,
   y_end = -bellcrank_y_distance_from_bulkhead - bellcrank_mount_r;
 
   pts = [[0, start_y0],
-         [x1, start_y1],
+         [bumper_x, start_y1],
+         [x1, head_center_y + head_mount_size[1] / 2],
+         [x1, head_rear_y],
          [x2, y2],
-         [x1, y3],
+         [bumper_x, y3],
          [x_end, y3 - bellcrank_mount_r],
          [x_end, y_end],
          [0, y_end]];
@@ -157,6 +191,10 @@ module front_chassis_front_frame(debug=front_chassis_front_frame_debug,
                                  center=true,
                                  d=front_bumper_bolt_d,
                                  h=front_chassis_thickness);
+      }
+
+      translate([0, head_center_y, 0]) {
+        front_chassis_head_slots();
       }
     }
 

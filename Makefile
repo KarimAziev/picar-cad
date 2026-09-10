@@ -67,7 +67,7 @@ tests:
 		log=$$(mktemp /tmp/picar-cad-test-log-XXXXXX.txt); \
 		echo "Running $$src"; \
 		if $(OPENSCAD) $(SCAD_COMMON_ARGS) -o "$$out" "$$src" >"$$log" 2>&1; then rc=0; else rc=$$?; fi; \
-		if grep -q "FAIL:" "$$log"; then cat "$$log"; status=1; \
+		if grep -Eq "FAIL:|ERROR:" "$$log"; then cat "$$log"; status=1; \
 		elif [ $$rc -ne 0 ] && ! grep -q "Current top level object is empty" "$$log"; then \
 			cat "$$log"; status=$$rc; \
 		else \

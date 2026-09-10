@@ -29,6 +29,27 @@ function panel_stack_bolt_spacing() =
   [max(fuses_size[0], buttons_size[0]),
    max(fuses_size[1], buttons_size[1])];
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  panel_stack
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Render the controls/fuse stack or the matching chassis mounting slots.
+
+  **Parameters:**
+  - `show_fuses`: Show installed fuse holders.
+  - `show_standoff`: Show panel standoffs.
+  - `show_buttons`: Show installed controls.
+  - `show_buttons_panel`: Include the controls panel.
+  - `show_fuse_panel`: Include the fuse panel.
+  - `center`: Center the layout on its local axes.
+  - `show_cap`: Show fuse-holder caps.
+  - `y_axle`: Keep the panel length along Y; false rotates it onto X.
+  - `panel_color`: Display color for panel geometry.
+  - `slot_mode`: Render only mounting slots when true.
+  - `slot_thickness`: Through-hole depth in slot mode.
+  - `slot_bore_h`: Counterbore depth in slot mode.
+ */
 module panel_stack(show_fuses=true,
                    show_standoff=true,
                    show_buttons=true,
@@ -37,14 +58,23 @@ module panel_stack(show_fuses=true,
                    center=false,
                    show_cap=true,
                    y_axle=true,
-                   panel_color=white_snow_1) {
+                   panel_color=white_snow_1,
+                   slot_mode=false,
+                   slot_thickness=chassis_thickness,
+                   slot_bore_h=chassis_counterbore_h) {
   size = panel_stack_size();
   bolt_spacing = panel_stack_bolt_spacing();
   w = size[0];
   l = size[1];
 
-  maybe_translate([0, y_axle ? 0 : center ? 0 : w, 0]) {
-    maybe_rotate([0, 0, y_axle ? 0 : -90]) {
+  if (slot_mode) {
+    panel_stack_bolt_holes(y_axle=y_axle,
+                           center=center,
+                           slot_thickness=slot_thickness,
+                           slot_bore_h=slot_bore_h);
+  } else {
+    maybe_translate([0, y_axle ? 0 : center ? 0 : w, 0]) {
+      maybe_rotate([0, 0, y_axle ? 0 : -90]) {
       if (show_buttons_panel && show_fuse_panel) {
         translate([center ? 0 : w / 2, center ? 0 : l / 2, 0]) {
           fuse_panel(show_fuses=show_fuses,
@@ -88,8 +118,25 @@ module panel_stack(show_fuses=true,
     }
   }
 }
+}
 
-module panel_stack_bolt_holes(y_axle=true, center=false) {
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  panel_stack_bolt_holes
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Render the four mounting counterbores for the oriented panel stack.
+
+  **Parameters:**
+  - `y_axle`: Keep the panel length along Y; false rotates it onto X.
+  - `center`: Center the mounting pattern on its local axes.
+  - `slot_thickness`: Through-hole depth.
+  - `slot_bore_h`: Counterbore depth.
+ */
+module panel_stack_bolt_holes(y_axle=true,
+                              center=false,
+                              slot_thickness=chassis_thickness,
+                              slot_bore_h=chassis_counterbore_h) {
   size = panel_stack_size();
   bolt_spacing = panel_stack_bolt_spacing();
   w = size[0];
@@ -100,10 +147,10 @@ module panel_stack_bolt_holes(y_axle=true, center=false) {
       translate([center ? 0 : w / 2, center ? 0 : l / 2, 0]) {
         four_corner_children(size=bolt_spacing,
                              center=true) {
-          counterbore(h=chassis_thickness,
+          counterbore(h=slot_thickness,
                       d=panel_stack_bolt_dia,
                       bore_d=panel_stack_bolt_cbore_dia,
-                      bore_h=chassis_counterbore_h);
+                      bore_h=slot_bore_h);
         }
       }
     }

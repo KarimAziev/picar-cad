@@ -125,7 +125,9 @@ module rounded_cube(size,
     Passed through to `rounded_rect()` when `use_minkowski=false`.
 
     Limits rounding to selected sides. Expected values are:
-    `"all"` (default behavior), `"top"`, `"left"`, `"right"`, or `"bottom"`.
+    `"all"` (default behavior), `"top"`, `"left"`, `"right"`, `"bottom"`,
+    `"top_left"`, `"top_right"`, `"bottom_left"`, or `"bottom_right"`.
+    Corner names round only one corner of the XY profile; Z faces stay flat.
 
   `fn`:
     Segment count used for spheres/circles when generating rounded geometry.
@@ -165,6 +167,9 @@ module rounded_cube(size,
 
   // Fast rounded box using 2D extrusion
   cuboid([20, 30, 10], r=2);
+
+  // Round one exposed XY corner while keeping three junctions square.
+  cuboid([20, 30, 10], r=2, side="top_left");
 
   // Fully 3D-rounded box
   cuboid([20, 30, 10], r=2, use_minkowski=true, fn=48);
@@ -648,3 +653,44 @@ module chamfered_cube(size,
     }
   }
 }
+
+module tapered_box(base_size,
+                   top_size,
+                   h,
+                   r_top_factor=0.1,
+                   r_bottom_factor=0.1,
+                   r_top_side,
+                   r_base_side,
+                   r_top,
+                   r_bottom,
+                   anchor=[0, 0, 1]) {
+  max_w = max(base_size[0], top_size[0]);
+  max_l = max(base_size[1], top_size[1]);
+  with_anchor(anchor=anchor, size=[max_w, max_l, 0], centered=true) {
+    hull() {
+      linear_extrude(height=0.01, center=false) {
+        rounded_rect(base_size,
+                     center=true,
+                     r_factor=r_bottom_factor,
+                     r=r_bottom,
+                     side=r_base_side);
+      }
+      translate([0, 0, h]) {
+        linear_extrude(height=0.01, center=false) {
+          rounded_rect(top_size,
+                       center=true,
+                       r_factor=r_top_factor,
+                       r=r_top,
+                       side=r_top_side);
+        }
+      }
+    }
+  }
+}
+
+tapered_box(base_size=[30, 20],
+            top_size=[25, 18],
+            h=10,
+            r_top_factor=0.0,
+            r_bottom_factor=0.1,
+            anchor=[1, 1, 1]);

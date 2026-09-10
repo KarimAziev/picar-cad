@@ -468,14 +468,16 @@ Anchor values use this convention per axis:
 - `0`: center
 - `-1`: far/max side
 
-Use `centered=true` when the child geometry is already centered, such as
-`cube(size=..., center=true)`.
+Use `centered=true` when the child geometry is already centered on X and Y.
+The flag is ignored for Z, where child geometry is always expected to span
+from `0` to `size[2]`.
 
 **Parameters:**
 
 `anchor`: Anchor vector as `[x, y, z]`, or `undef`.
 `size`: Object size as a scalar or `[x, y, z]`.
-`centered`: Whether the child geometry is already centered.
+`centered`: Whether the child geometry is already centered on X and Y. It does
+not affect Z placement.
 
 **Children:**
 
@@ -492,7 +494,9 @@ with_anchor(anchor=[0, 0, 0], size=[20, 30, 10]) {
 }
 
 with_anchor(anchor=[-1, 0, 1], size=[20, 30, 10], centered=true) {
-  cube([20, 30, 10], center=true);
+  translate([0, 0, 5]) {
+    cube([20, 30, 10], center=true);
+  }
 }
 ```
 */

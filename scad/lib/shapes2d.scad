@@ -43,7 +43,8 @@ function calc_corner_rad(size, r, r_factor=0.3) =
   - `fn`: Fragment count for circular corners.
   - `r_factor`: Fraction of the smaller dimension used when `r` is `undef`.
   - `side`: Rounded side selection. Supported values are `"all"`, `"top"`,
-    `"left"`, `"right"`, or `"bottom"`.
+    `"left"`, `"right"`, `"bottom"`, `"top_left"`, `"top_right"`,
+    `"bottom_left"`, or `"bottom_right"`. Corner names round only that corner.
 
   **Examples:**
   ```scad
@@ -91,7 +92,7 @@ module rounded_rect(size, r=undef, center=false, fn, r_factor=0.3, side) {
   rounded_rect_two
   ─────────────────────────────────────────────────────────────────────────────
 
-  Create a rectangle with only two adjacent rounded corners by building a
+  Create a rectangle with one corner or two adjacent corners rounded using a
   custom polygon.
 
   **Parameters:**
@@ -103,7 +104,8 @@ module rounded_rect(size, r=undef, center=false, fn, r_factor=0.3, side) {
   - `r_factor`: Fraction of the smaller dimension used when `r` is `undef`.
   - `fn`: Optional polygon fragment hint.
   - `side`: Which edge pair receives the rounded corners: `"top"`, `"left"`,
-    `"right"`, or `"bottom"`.
+    `"right"`, or `"bottom"`. A single corner can be selected with `"top_left"`,
+    `"top_right"`, `"bottom_left"`, or `"bottom_right"`.
 
   **Examples:**
   ```scad
@@ -126,10 +128,10 @@ module rounded_rect_two(size,
 
   offst = center ? [-w/2, -h/2] : [0, 0];
 
-  round_tl = (side == "top")|| (side == "left");
-  round_tr = (side == "top")|| (side == "right");
-  round_br = (side == "bottom") || (side == "right");
-  round_bl = (side == "bottom") || (side == "left");
+  round_tl = side == "top" || side == "left" || side == "top_left";
+  round_tr = side == "top" || side == "right" || side == "top_right";
+  round_br = side == "bottom" || side == "right" || side == "bottom_right";
+  round_bl = side == "bottom" || side == "left" || side == "bottom_left";
 
   function arc(cx, cy, a0, a1) =
     [for (i = [1:segments])

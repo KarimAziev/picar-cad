@@ -353,91 +353,91 @@ as5048A_encoder_plist                                = ["size", [14.75, 17.1, 1.
                                                         "corner_r", 1,
                                                         "color", graphite_grey_1,
                                                         "sensor_ic", ["placeholder_size", [5.19,
-                                                            7.5],
-                                                        "chip_size", [5.19, 4.26, 0.84],
-                                                        "text_rows", ["AS5048A",
-                                                        "2524MAZ",
-                                                        "AMU1"],
-                                                        "text_props", ["size", 0.8,
-                                                        "gap", 0.4,
-                                                        "color", "grey",
-                                                        "spacing", 0.9,
-                                                        "valign", "center",
-                                                        "halign", "center"],
-                                                        "j_lead", [["count", 7,
-                                                        "thickness", 0.3,
-                                                        "sides", ["top", "bottom"]]],
-                                                        "rotation", [0, 0, 180]],
+                                                                                           7.5],
+                                                                      "chip_size", [5.19, 4.26, 0.84],
+                                                                      "text_rows", ["AS5048A",
+                                                                                    "2524MAZ",
+                                                                                    "AMU1"],
+                                                                      "text_props", ["size", 0.8,
+                                                                                     "gap", 0.4,
+                                                                                     "color", "grey",
+                                                                                     "spacing", 0.9,
+                                                                                     "valign", "center",
+                                                                                     "halign", "center"],
+                                                                      "j_lead", [["count", 7,
+                                                                                  "thickness", 0.3,
+                                                                                  "sides", ["top", "bottom"]]],
+                                                                      "rotation", [0, 0, 180]],
                                                         // optional interface contact pads, mainly SPI + power
                                                         "interface_pads", ["cols", 8,
-                                                        "gap", 0.5,
-                                                        "w", 0.7,
-                                                        "l", 3.6,
-                                                        "side", "top", // top | bottom | left | right
-                                                        "padding", 0.3,
-                                                        "color", metallic_silver_1,
-                                                        "text_props", ["size", 0.4,
-                                                           "gap", 0.2,
-                                                           "rotation", [0, 0, 90],
-                                                           "valign", "center",
-                                                           "spacing", 0.85],
-                                                        "texts", [["bottom", ["text", "GND",
-                                                                  "color", "black",
-                                                                  "rotation", [0, 0, 0],
-                                                                  "spacing", 0.9,
-                                                                  "gap", 0.5,]],
-                                                        ["bottom", ["text", "CSN",
-                                                                  "color", "orange",
-                                                                  "spacing", 1]],
-                                                        ["bottom", ["text", "CLK",
-                                                                  "color", "yellow",
-                                                                  "spacing", 0.9,
-                                                                  "rotation", [0, 0, 0]]],
-                                                        ["bottom", ["text", "MOSI",
-                                                                  "color", "green",
-                                                                  "rotation", [0, 0, 0]]],
-                                                        ["bottom", ["text", "MISO",
-                                                                  "color", cobalt_blue_metallic,
-                                                                  "rotation", [0, 0, 0],]],
-                                                        ["bottom", ["text", "5V",
-                                                                  "color", "red",
-                                                                  "rotation", [0, 0, 0],
-                                                                  "size", 0.5]],
-                                                        ["bottom", ["text", "GND",
-                                                                  "color", "black",
-                                                                  "spacing", 0.9,
-                                                                  "size", 0.5]],
-                                                        ["bottom", ["text", "GND",
-                                                                  "color", "black",
-                                                                  "spacing", 0.9,
-                                                                  "size", 0.5]],]],
+                                                                           "gap", 0.5,
+                                                                           "w", 0.7,
+                                                                           "l", 3.6,
+                                                                           "side", "top", // top | bottom | left | right
+                                                                           "padding", 0.3,
+                                                                           "color", metallic_silver_1,
+                                                                           "text_props", ["size", 0.4,
+                                                                                          "gap", 0.2,
+                                                                                          "rotation", [0, 0, 90],
+                                                                                          "valign", "center",
+                                                                                          "spacing", 0.85],
+                                                                           "texts", [["bottom", ["text", "GND",
+                                                                                                 "color", "black",
+                                                                                                 "rotation", [0, 0, 0],
+                                                                                                 "spacing", 0.9,
+                                                                                                 "gap", 0.5,]],
+                                                                                     ["bottom", ["text", "CSN",
+                                                                                                 "color", "orange",
+                                                                                                 "spacing", 1]],
+                                                                                     ["bottom", ["text", "CLK",
+                                                                                                 "color", "yellow",
+                                                                                                 "spacing", 0.9,
+                                                                                                 "rotation", [0, 0, 0]]],
+                                                                                     ["bottom", ["text", "MOSI",
+                                                                                                 "color", "green",
+                                                                                                 "rotation", [0, 0, 0]]],
+                                                                                     ["bottom", ["text", "MISO",
+                                                                                                 "color", cobalt_blue_metallic,
+                                                                                                 "rotation", [0, 0, 0],]],
+                                                                                     ["bottom", ["text", "5V",
+                                                                                                 "color", "red",
+                                                                                                 "rotation", [0, 0, 0],
+                                                                                                 "size", 0.5]],
+                                                                                     ["bottom", ["text", "GND",
+                                                                                                 "color", "black",
+                                                                                                 "spacing", 0.9,
+                                                                                                 "size", 0.5]],
+                                                                                     ["bottom", ["text", "GND",
+                                                                                                 "color", "black",
+                                                                                                 "spacing", 0.9,
+                                                                                                 "size", 0.5]],]],
                                                         // optional large solder pads for wires - GND, power, PWM
                                                         "wire_pads", ["cols", 3,
-                                                        "gap", 0.8,
-                                                        "w", 1.9,
-                                                        "l", 2.71,
-                                                        "color", metallic_silver_1,
-                                                        "r_factor", 0.5,
-                                                        "fn", 24,
-                                                        "side", "bottom", // top | bottom | left | right
-                                                        "padding", 0.7,
-                                                        "text_props", ["size", 0.8, "gap", 0.2, "height", 0.11, "valign", "center"],
-                                                        "texts", [["top", ["text", "GND", "color", "black"]],
-                                                        ["top", ["text", "V5", "color", "red",]],
-                                                        ["top", ["text", "PWM", "color", "yellow",]]]],
+                                                                      "gap", 0.8,
+                                                                      "w", 1.9,
+                                                                      "l", 2.71,
+                                                                      "color", metallic_silver_1,
+                                                                      "r_factor", 0.5,
+                                                                      "fn", 24,
+                                                                      "side", "bottom", // top | bottom | left | right
+                                                                      "padding", 0.7,
+                                                                      "text_props", ["size", 0.8, "gap", 0.2, "height", 0.11, "valign", "center"],
+                                                                      "texts", [["top", ["text", "GND", "color", "black"]],
+                                                                                ["top", ["text", "V5", "color", "red",]],
+                                                                                ["top", ["text", "PWM", "color", "yellow",]]]],
                                                         "ceramic_capacitors", ["props", ["placeholder_size", [1.82, 0.9, 0.76]],
-                                                        "cols", 2,
-                                                        "gap", 6.7,
-                                                        "side", "bottom",
-                                                        "padding", 4.6,
-                                                        "texts", [["before", ["text", "C2",
-                                                                      "size", 0.9,
-                                                                      "color", metallic_silver_5,
-                                                                      "gap", 0.3]],
-                                                          ["after", ["text", "C1",
-                                                                     "size", 0.9,
-                                                                     "color", metallic_silver_5,
-                                                                     "gap", 0.3]]]]];
+                                                                               "cols", 2,
+                                                                               "gap", 6.7,
+                                                                               "side", "bottom",
+                                                                               "padding", 4.6,
+                                                                               "texts", [["before", ["text", "C2",
+                                                                                                     "size", 0.9,
+                                                                                                     "color", metallic_silver_5,
+                                                                                                     "gap", 0.3]],
+                                                                                         ["after", ["text", "C1",
+                                                                                                    "size", 0.9,
+                                                                                                    "color", metallic_silver_5,
+                                                                                                    "gap", 0.3]]]]];
 
 panel_stack_bolt_dia                                 = m3_hole_dia;
 panel_stack_bolt_cbore_dia                           = panel_stack_bolt_dia * 2;
@@ -448,9 +448,7 @@ panel_stack_padding_y                                = 1;
 
 fuse_panel_plist_specs                               = concat(repeat(plist_merge(atm_fuse_default_plist, ["gap_after", 4,
                                                                                                           "cap_to_bottom", true]),
-                                                                     2),
-                                                              [plist_merge(atm_fuse_default_plist, ["gap_after", 4,
-                                                                                                    "cap_to_bottom", false])]);
+                                                                     2));
 
 chassis_panel_stack_x_offset                         = 0;
 chassis_panel_stack_y_offset                         = 1;
@@ -1181,7 +1179,7 @@ ir_case_head_bolts_side_panel_positions              = [[ir_case_head_side_panel
 
 lipo_pack_length                                     = 155.41; // Length of the battery pack
 lipo_pack_width                                      = 47.4;   // Width of the battery pack
-lipo_pack_height                                     = 21.9;  // Height of the battery pack
+lipo_pack_height                                     = 14.6;  // Height of the battery pack
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PAN SERVO CONFIGURATION (Dimensions & Visual Representation)
@@ -2523,8 +2521,7 @@ control_panel_default_toggle_switch_spec             = ["size",
                                                         [toggle_switch_metallic_head_h]];
 
 control_panel_switch_button_specs                    = [control_panel_default_toggle_switch_spec,
-                                                        control_panel_default_toggle_switch_spec,
-                                                        control_panel_default_toggle_switch_spec];
+                                                        control_panel_default_toggle_switch_spec,];
 
 control_panel_thickness                              = toggle_switch_nut_out_h + 2;
 
@@ -3126,6 +3123,55 @@ tie_rod_bearing_center_distance                      = calc_isosceles_trapezoid_
 tie_rod_len                                          = tie_rod_bearing_center_distance
                                                         + tie_rod_bearing_outer_dia
                                                         + tie_rod_bearing_x_offset * 2;
+// RPLIDAR C1: SLAMTEC C1M1-R2 datasheet, mechanical drawing, page 18.
+// https://wiki.slamtec.com/download/attachments/83066883/SLAMTEC_rplidar_datasheet_C1_v1.0_en.pdf
+// The four M2.5 mounting threads enter from the underside. Maximum screw
+// insertion is 4 mm, NOT the total screw length including the mounting plate.
+lidar_boolean_overlap = 0.01;
+rplidar_c1_plist = ["size", [55.6, 55.6],
+                    "corner_r", 4, // Approximate housing detail.
+                    "color", matte_black,
+                    "base_h", 23.1,
+                    "top_h", 18.2,
+                    "laser_transceiver_h", 29.8,
+                    "top_round_d", 43.0, // Approximation; drawing does not dimension this diameter.
+                    "bolt_d", 2.5,
+                    "bolt_depth", 4,
+                    "bolt_spacing", [43.0, 43.0],
+                    "bolt_head_type", undef, // Blind threaded holes, not countersinks.
+                    "lid_ring_h", 0.2, // Cosmetic details, not measured features.
+                    "lid_ring_w", 1,
+                    // Metadata only: cable/connector dimensions are not modeled.
+                    // "bottom" is the -Y edge in plan view, not a Z-facing exit.
+                    "cable_exit", ["side", "bottom",
+                                   "position", "center",
+                                   "color", "black"]];
+
+// Rear drivetrain packaging specification. Caliper photos establish body_l
+// 55.62 and gearbox_l 17.68. Typed readings supply body_w/body_h/can_d;
+// mass is the seller's value. Remaining details are provisional (rear_chassis/README.md).
+rc_gearmotor_plist = [
+  "body_w", 41.97, "body_h", 31.34, "body_l", 55.62, "mass_g", 91,
+  "gearbox_l", 17.68, "can_d", 24.31, "end_cap_l", 3,
+  "cover_l", 1, "output_lobe_d", 18, "bearing_d", 8, "bearing_l", 2,
+  "shaft_d", 4, "rear_shaft_l", 10, "front_shaft_l", 38,
+  "ear_d", 6, "case_bolt_d", 2,
+  "terminal_w", 3, "terminal_h", 0.5, "terminal_l", 3
+];
+
+rc_driveshaft_plist = [
+  // Measured base length is recorded separately until its end datums are confirmed.
+  "base_l", 48, "socket_l", 13,
+  "pivot_l", 60, "min_pivot_l", 50, "max_pivot_l", 75,
+  "tube_d", 8, "rod_d", 4, "joint_d", 8,
+  // Hub length is derived from socket_l - yoke_l; pivot location is provisional.
+  "yoke_l", 5, "bore_d", 4, "bore_clearance", 0.05, "pin_d", 2,
+  // Exposed length is measured; insertion, ball and pin sizes are provisional.
+  "dogbone_outer_l", 12, "dogbone_insert_l", 4,
+  "dogbone_ball_d", 5, "dogbone_pin_d", 2, "dogbone_pin_l", 8,
+  "max_angle", 30
+];
+
 // Local Variables:
 // c-label-minimum-indentation: 53
 // End:

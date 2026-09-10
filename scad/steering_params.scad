@@ -293,6 +293,28 @@ front_chassis_joint_pin_pad_w                     = 2.5;
 front_chassis_joint_edge_land                     = 0.45;
 front_chassis_joint_relief_depth                  = 0.4;
 front_chassis_joint_clearance                     = 0.4;
+front_chassis_joint_boolean_overlap               = 0.02;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Head mount on the front chassis
+// ─────────────────────────────────────────────────────────────────────────────
+front_chassis_head_mount_padding                  = 2.0;
+front_chassis_head_wire_land                      = 3.0;
+front_chassis_head_ribbon_slot_w                  = 32.0;
+front_chassis_head_ribbon_slot_l                  = 5.0;
+front_chassis_head_servo_slot_w                   = 10.0;
+front_chassis_head_servo_slot_l                   = 5.0;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Middle chassis
+// ─────────────────────────────────────────────────────────────────────────────
+middle_chassis_thickness                          = front_chassis_thickness;
+middle_chassis_component_gap                      = 8.0;
+middle_chassis_mount_land                         = 3.0;
+middle_chassis_edge_rail_w                        = 10.0;
+middle_chassis_diagonal_w                         = 6.0;
+middle_chassis_corner_r                           = 3.0;
+suspension_chassis_joint_wide_bolt_cols           = 5;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Front suspension arm pad (geometry parameters)
@@ -1149,3 +1171,19 @@ upper_steering_panel_boss_od                      = 6;
 upper_steering_panel_bulkhead_bore_d              = 4.6;
 upper_steering_panel_bulkhead_bore_h              = 1;
 upper_steering_panel_bulkhead_spacing             = 21;
+
+// Rear ladder frame: packaging allowances, not measured suspension interfaces.
+rear_chassis_rail_w                              = 12;
+rear_chassis_rail_h                              = 12;
+rear_chassis_cross_w                             = 12;
+rear_chassis_clearance                           = 2;
+rear_chassis_fit_clearance                       = 0.4;
+rear_chassis_carrier_h                           = 4;
+rear_chassis_mount_land                          = 3;
+rear_chassis_mount_bolt_d                        = m3_hole_dia;
+rear_chassis_strap_w                             = 5;
+rear_chassis_strap_h                             = 2;
+rear_chassis_diff_size                           = [54, 38, 32];
+rear_chassis_diff_input_l                        = 12;
+// Measured from the chassis top mounting surface to the differential input axis.
+rear_chassis_diff_input_h                        = 20;

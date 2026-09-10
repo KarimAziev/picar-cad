@@ -42,6 +42,7 @@ show_steering_servo_magnet           = true;
 
 // Steering angle
 steering_servo_angle                 = 0; // [-40:1:40]
+steering_servo_spacing               = 0; // [0:1:30]
 
 module bellcrank_steering_assembly(show_bellcrank_drive=show_bellcrank_drive,
                                    show_bellcrank_drive_idler_lever=show_bellcrank_drive_idler_lever,
@@ -62,7 +63,8 @@ module bellcrank_steering_assembly(show_bellcrank_drive=show_bellcrank_drive,
                                    show_steering_servo_encoder=show_steering_servo_encoder,
                                    show_steering_servo_encoder_bracket=show_steering_servo_encoder_bracket,
                                    show_steering_servo_magnet=show_steering_servo_magnet,
-                                   steering_servo_angle=steering_servo_angle) {
+                                   steering_servo_angle=steering_servo_angle,
+                                   steering_servo_spacing=steering_servo_spacing) {
 
   bellcrank_assembly(show_bellcrank_drive=show_bellcrank_drive,
                      show_bellcrank_drive_idler_lever=show_bellcrank_drive_idler_lever,
@@ -76,18 +78,21 @@ module bellcrank_steering_assembly(show_bellcrank_drive=show_bellcrank_drive,
                      show_center_link=show_center_link,
                      bellcrank_z_angle=steering_servo_angle);
 
-  bellcrank_steering_with_servo_position() {
-    steering_servo_bracket_assembly(show_servo=show_steering_servo,
-                                    show_servo_brackets=show_steering_servo_brackets,
-                                    show_servo_bolt=show_steering_servo_bracket_bolt,
-                                    show_servo_bolt_nut=show_steering_servo_bracket_bolt_nut,
-                                    show_chassis_bolt=show_steering_servo_chassis_bolt,
-                                    show_chassis_bolt_nut=show_steering_servo_chassis_bolt_nut,
-                                    show_encoder=show_steering_servo_encoder,
-                                    show_encoder_bracket=show_steering_servo_encoder_bracket,
-                                    show_magnet=show_steering_servo_magnet,
-                                    steering_servo_angle=steering_servo_angle,
-                                    center_y=false);
+  // Only the servo belongs to the rear frame; bellcrank posts stay in front.
+  translate([0, -steering_servo_spacing, 0]) {
+    bellcrank_steering_with_servo_position() {
+      steering_servo_bracket_assembly(show_servo=show_steering_servo,
+                                      show_servo_brackets=show_steering_servo_brackets,
+                                      show_servo_bolt=show_steering_servo_bracket_bolt,
+                                      show_servo_bolt_nut=show_steering_servo_bracket_bolt_nut,
+                                      show_chassis_bolt=show_steering_servo_chassis_bolt,
+                                      show_chassis_bolt_nut=show_steering_servo_chassis_bolt_nut,
+                                      show_encoder=show_steering_servo_encoder,
+                                      show_encoder_bracket=show_steering_servo_encoder_bracket,
+                                      show_magnet=show_steering_servo_magnet,
+                                      steering_servo_angle=steering_servo_angle,
+                                      center_y=false);
+    }
   }
 }
 

@@ -695,8 +695,7 @@ function rot_x_bbox_align(size, angle, pos=[0, 0]) =
        max_z = max([za, zb, zc, zd]),
 
        rot_y_size = max_y - min_y,
-       rot_z_size = max_z - min_z,
-       z_shift = -min_z)
+       rot_z_size = max_z - min_z)
   [rot_y_size, rot_z_size, min_y, min_z, max_y, max_z];
 
 /**
@@ -1045,7 +1044,7 @@ function best_height_combo(min_h, heights, limit) =
    ```
 */
 function repeat(v, n=1) =
-  (n <= 0) ? [] : [for (i = [0 : n-1]) v];
+  (n <= 0) ? [] : [for (_ = [0 : n-1]) v];
 
 /**
    ─────────────────────────────────────────────────────────────────────────────
@@ -1170,10 +1169,57 @@ function calc_rotated_bbox(w, h, a) =
    -b[1]           // sy
   ];
 
-function percent_to_mm(percent, total_val) = percent * total_val / 100;
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   percent_to_mm
+   ─────────────────────────────────────────────────────────────────────────────
 
-function to_percent(val, total_val) =
-  (total_val == 0) ? 0 : (val * 100 / total_val);
+   Convert a percentage of a total length to an absolute length.
+
+   **Parameters:**
+
+   `percent`: Percentage value, where `100` represents the full total.
+   `total`: Total length in millimeters.
+
+   **Returns:**
+
+   The requested percentage of `total`, in millimeters.
+
+   **Examples:**
+
+   ```scad
+   percent_to_mm(25, 80);    // -> 20
+   percent_to_mm(12.5, 240); // -> 30
+   ```
+*/
+function percent_to_mm(percent, total) = percent * total / 100;
+
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   to_percent
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Express a value as a percentage of a total.
+
+   **Parameters:**
+
+   `val`: Absolute value to convert.
+   `total`: Total value that represents `100` percent.
+
+   **Returns:**
+
+   `val` as a percentage of `total`. Returns `0` when `total` is `0`.
+
+   **Examples:**
+
+   ```scad
+   to_percent(20, 80);  // -> 25
+   to_percent(30, 240); // -> 12.5
+   to_percent(20, 0);   // -> 0
+   ```
+*/
+function to_percent(val, total) =
+  (total == 0) ? 0 : (val * 100 / total);
 
 /**
    ─────────────────────────────────────────────────────────────────────────────
@@ -2028,8 +2074,10 @@ The anchor convention per axis is:
 For non-centered geometry (`centered=false`), the object is assumed to span
 from `0` to `size[i]` on each axis.
 
-For centered geometry (`centered=true`), the object is assumed to span from
-`-size[i]/2` to `size[i]/2` on each axis.
+For centered geometry (`centered=true`), X and Y are assumed to span from
+`-size[i]/2` to `size[i]/2`. The flag is deliberately ignored for Z: Z is
+always assumed to span from `0` to `size[2]`. This matches the library's common
+"centered on the build plane" convention.
 
 The returned translation places the requested anchor on the origin along each
 axis.
@@ -2038,7 +2086,8 @@ axis.
 
 `anchor`: Anchor vector as `[x, y, z]`.
 `size`: Object size as `[x, y, z]`.
-`centered`: Whether the object is already centered on each axis.
+`centered`: Whether the object is already centered on X and Y. It never changes
+Z handling.
 
 **Returns:**
 
@@ -2051,9 +2100,9 @@ to_anchor([1, 1, 1], [20, 30, 10], false);   // -> [0, 0, 0]
 to_anchor([0, 0, 0], [20, 30, 10], false);   // -> [-10, -15, -5]
 to_anchor([-1, 0, 1], [20, 30, 10], false);  // -> [-20, -15, 0]
 
-to_anchor([1, 1, 1], [20, 30, 10], true);    // -> [10, 15, 5]
-to_anchor([0, 0, 0], [20, 30, 10], true);    // -> [0, 0, 0]
-to_anchor([-1, 0, 1], [20, 30, 10], true);   // -> [-10, 0, 5]
+to_anchor([1, 1, 1], [20, 30, 10], true);    // -> [10, 15, 0]
+to_anchor([0, 0, 0], [20, 30, 10], true);    // -> [0, 0, -5]
+to_anchor([-1, 0, 1], [20, 30, 10], true);   // -> [-10, 0, 0]
 ```
 */
 function to_anchor(anchor, size, centered=false) =
@@ -2075,3 +2124,222 @@ function to_anchor(anchor, size, centered=false) =
         : (a ==  1 ?  0   :
            a ==  0 ? -v/2 :
            -v)];
+
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   substr
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Extract a fixed-length substring from a string.
+
+   **Parameters:**
+
+   `string`: Source string.
+   `start`: Zero-based index of the first character to include.
+   `length`: Number of characters to include. Values less than or equal to `0`
+   return an empty string.
+
+   **Returns:**
+
+   A string containing `length` characters beginning at `start`.
+
+   The requested range is expected to lie within `string`.
+
+   **Examples:**
+
+   ```scad
+   substr("abcdef", 0, 3); // -> "abc"
+   substr("abcdef", 2, 3); // -> "cde"
+   substr("abcdef", 3, 0); // -> ""
+   ```
+*/
+function substr(string, start, length) =
+  length > 0 ? str(string[start], substr(string, start + 1, length - 1)) : "";
+
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   char_to_num
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Convert one decimal digit character to its numeric value.
+
+   **Parameters:**
+
+   `c`: A single character from `"0"` through `"9"`.
+
+   **Returns:**
+
+   The corresponding integer from `0` through `9`.
+
+   **Examples:**
+
+   ```scad
+   char_to_num("0"); // -> 0
+   char_to_num("7"); // -> 7
+   ```
+*/
+function char_to_num(c) = ord(c) - ord("0");
+
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   _int_part
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Parse the integer digits at the start of a non-negative decimal string.
+
+   Parsing stops at the first decimal point or at the end of the string. This
+   helper is intended for valid strings containing decimal digits and at most
+   one decimal point.
+
+   **Parameters:**
+
+   `s`: Numeric string to parse.
+   `ret`: Accumulated integer value used during recursion (default `0`).
+   `i`: Character index at which parsing starts (default `0`).
+
+   **Returns:**
+
+   The integer represented by the parsed digits.
+
+   **Examples:**
+
+   ```scad
+   _int_part("123");    // -> 123
+   _int_part("123.45"); // -> 123
+   ```
+*/
+function _int_part(s, ret=0, i=0) =
+  i >= len(s) || s[i] == "."
+  ? ret
+  : _int_part(s,
+              ret * 10 + char_to_num(s[i]),
+              i + 1);
+
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   _dec_part
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Parse decimal digits as a fractional value.
+
+   This helper is intended for valid decimal digits. Use `i` to begin after a
+   decimal point in a larger numeric string.
+
+   **Parameters:**
+
+   `s`: String containing the fractional digits.
+   `ret`: Accumulated fractional value used during recursion (default `0`).
+   `i`: Character index at which parsing starts (default `0`).
+   `divisor`: Place-value divisor for the current digit (default `10`).
+
+   **Returns:**
+
+   The fractional value represented by the digits from `i` onward.
+
+   **Examples:**
+
+   ```scad
+   _dec_part("45");          // -> 0.45
+   _dec_part("123.45", i=4); // -> 0.45
+   ```
+*/
+function _dec_part(s, ret=0, i=0, divisor=10) =
+  i >= len(s)
+  ? ret
+  : _dec_part(s,
+              ret + char_to_num(s[i]) / divisor,
+              i + 1,
+              divisor * 10);
+
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   _find_dot
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Find the first decimal point in a string.
+
+   **Parameters:**
+
+   `s`: String to search.
+   `i`: Character index at which the search starts (default `0`).
+
+   **Returns:**
+
+   The zero-based index of the first `"."`, or `undef` when none is present.
+
+   **Examples:**
+
+   ```scad
+   _find_dot("123.45"); // -> 3
+   _find_dot("123");    // -> undef
+   ```
+*/
+function _find_dot(s, i=0) =
+  i >= len(s) ? undef : s[i] == "."
+  ? i
+  : _find_dot(s, i + 1);
+
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   str_to_num
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Parse a non-negative decimal string as a number.
+
+   The input may contain decimal digits and one optional decimal point. Leading
+   or trailing decimal points are accepted. Signs, whitespace, and exponent
+   notation are not supported.
+
+   **Parameters:**
+
+   `s`: Numeric string to parse.
+
+   **Returns:**
+
+   The number represented by `s`.
+
+   **Examples:**
+
+   ```scad
+   str_to_num("123");   // -> 123
+   str_to_num("123.45"); // -> 123.45
+   str_to_num(".5");    // -> 0.5
+   ```
+*/
+function str_to_num(s) =
+  let (dot = _find_dot(s))
+  is_undef(dot)
+  ? _int_part(s)
+  : _int_part(s) + _dec_part(s, i = dot + 1);
+
+/**
+   ─────────────────────────────────────────────────────────────────────────────
+   parse_percent
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Parse a non-negative percentage string as its numeric percentage value.
+
+   A trailing percent sign is optional. The numeric portion follows the same
+   decimal format as `str_to_num()`.
+
+   **Parameters:**
+
+   `s`: Percentage string, with or without a trailing `"%"`.
+
+   **Returns:**
+
+   The numeric percentage without scaling it to a fraction.
+
+   **Examples:**
+
+   ```scad
+   parse_percent("25%");   // -> 25
+   parse_percent("12.5%"); // -> 12.5
+   parse_percent("25");    // -> 25
+   ```
+*/
+function parse_percent(s) =
+  let (str = s[len(s)-1] == "%"
+       ? substr(s, 0, len(s)-1)
+       : s)
+  str_to_num(str);

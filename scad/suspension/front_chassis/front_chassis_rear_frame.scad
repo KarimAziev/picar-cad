@@ -34,21 +34,16 @@ module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
                                 debug_color=green_2,
                                 debug_font="Gill Sans:style=Bold") {
 
-  joint_x = joint_w / 2;
   servo_end_y = -bellcrank_y_distance_from_bulkhead + bellcrank_zone_y_len;
   y_start = -bellcrank_y_distance_from_bulkhead + bellcrank_y_dist;
   y_joint_1_end = -bellcrank_y_distance_from_bulkhead - bellcrank_mount_r;
   y_joint_2_end = servo_end_y - joint_l;
 
-  pts = [[0, y_start],
-         [joint_x, y_start],
-         [joint_x, y_joint_1_end],
+  pts = [[0, y_joint_1_end],
          [front_frame_x_end, y_joint_1_end],
          [servo_slot_min_w, y_start],
          [servo_slot_min_w, y_joint_2_end],
-         [joint_x, y_joint_2_end],
-         [joint_x, servo_end_y],
-         [0, servo_end_y]];
+         [0, y_joint_2_end]];
 
   module _debug(rotation) {
     let (x_size = polygon_x_len(pts) * 2,
@@ -63,37 +58,40 @@ module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
     }
   }
 
-  union() {
-    translate([0, y_joint_1_end, 0]) {
-      front_chassis_joint_female(color=color);
+  difference() {
+    maybe_color(color) {
+      linear_extrude(height=front_chassis_thickness,
+                     center=false,
+                     convexity=2) {
+        mirror_copy([1, 0, 0]) {
+          polygon(pts);
+        }
+      }
     }
-    difference() {
-      maybe_color(color) {
-        linear_extrude(height=front_chassis_thickness,
-                       center=false,
-                       convexity=2) {
-          mirror_copy([1, 0, 0]) {
-            polygon(pts);
-          }
-        }
-      }
-      translate([0, y_start, 0]) {
-        front_chassis_pin_joint_holes(center=true,
-                                      direction=1,
-                                      use_pad=false,
-                                      pad_side="bottom");
-      }
-      translate([0,
-                 -bellcrank_y_distance_from_bulkhead,
-                 0]) {
-        bellcrank_steering_with_servo_position() {
-          steering_servo_chassis_slots(center_y=false,
-                                       sink="countersunk");
-        }
+    translate([0, y_joint_1_end, 0]) {
+      front_chassis_joint_female(slot_mode=true);
+    }
+    translate([0, y_start, 0]) {
+      front_chassis_pin_joint_holes(center=true,
+                                    direction=1,
+                                    use_pad=false,
+                                    pad_side="bottom");
+    }
+    translate([0, -bellcrank_y_distance_from_bulkhead, 0]) {
+      bellcrank_steering_with_servo_position() {
+        steering_servo_chassis_slots(center_y=false,
+                                     sink="countersunk");
       }
     }
     translate([0, servo_end_y, 0]) {
-      front_chassis_joint_female(color=color);
+      front_chassis_joint_female(color=color,
+                                 w=chassis_joint_wide_w,
+                                 rail_w=chassis_joint_wide_rail_w,
+                                 bolt_xs=chassis_joint_wide_bolt_xs,
+                                 pin_spacing=chassis_joint_wide_pin_spacing,
+                                 include_pin_holes=true,
+                                 slot_mode=true,
+                                 root_side=1);
     }
   }
 

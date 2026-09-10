@@ -49,5 +49,35 @@ module test_plist_merge() {
             "merge_with_defaults");
 }
 
+module test_plist_maybe_from_percent() {
+  p = ["width", "25%",
+       "height", 12,
+       "decimal", "12.5%",
+       "suffix_optional", "40"];
+
+  assert_eq(plist_maybe_from_percent("width", p, 0, 200),
+            50,
+            "convert percent property to absolute value");
+  assert_eq(plist_maybe_from_percent("decimal", p, 0, 240),
+            30,
+            "convert decimal percent property");
+  assert_eq(plist_maybe_from_percent("suffix_optional", p, 0, 200),
+            80,
+            "convert string without percent suffix");
+  assert_eq(plist_maybe_from_percent("height", p, 0, 200),
+            12,
+            "leave numeric property unchanged");
+  assert_eq(plist_maybe_from_percent("missing", p, "10%", 200),
+            20,
+            "convert string default");
+  assert_eq(plist_maybe_from_percent("missing", p, 7, 200),
+            7,
+            "leave numeric default unchanged");
+  assert_eq(plist_maybe_from_percent("width", p, 0, 0),
+            0,
+            "convert percent against zero total");
+}
+
 test_plist_merge();
 test_plist_remove_by_keys();
+test_plist_maybe_from_percent();

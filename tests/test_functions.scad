@@ -219,6 +219,80 @@ module test_calc_rotated_bbox() {
             "calc_rotated_bbox(20, 10, 17)");
 }
 
+module test_percent_to_mm() {
+  assert_eq(percent_to_mm(0, 80), 0,
+            "percent_to_mm(0, 80)");
+  assert_eq(percent_to_mm(25, 80), 20,
+            "percent_to_mm(25, 80)");
+  assert_eq(percent_to_mm(100, 80), 80,
+            "percent_to_mm(100, 80)");
+  assert_eq(percent_to_mm(12.5, 240), 30,
+            "percent_to_mm(12.5, 240)");
+}
+
+module test_to_percent() {
+  assert_eq(to_percent(0, 80), 0,
+            "to_percent(0, 80)");
+  assert_eq(to_percent(20, 80), 25,
+            "to_percent(20, 80)");
+  assert_eq(to_percent(80, 80), 100,
+            "to_percent(80, 80)");
+  assert_eq(to_percent(30, 240), 12.5,
+            "to_percent(30, 240)");
+  assert_eq(to_percent(20, 0), 0,
+            "to_percent returns zero for a zero total");
+}
+
+module test_substr() {
+  assert_eq(substr("abcdef", 0, 3), "abc",
+            "substr from the beginning");
+  assert_eq(substr("abcdef", 2, 3), "cde",
+            "substr from an offset");
+  assert_eq(substr("abcdef", 3, 0), "",
+            "substr with zero length");
+}
+
+module test_char_to_num() {
+  assert_eq(char_to_num("0"), 0, "char_to_num zero");
+  assert_eq(char_to_num("7"), 7, "char_to_num seven");
+  assert_eq(char_to_num("9"), 9, "char_to_num nine");
+}
+
+module test_number_string_helpers() {
+  assert_eq(_int_part("123"), 123,
+            "_int_part integer string");
+  assert_eq(_int_part("123.45"), 123,
+            "_int_part stops at decimal point");
+  assert_eq(_dec_part("45"), 0.45,
+            "_dec_part decimal digits");
+  assert_eq(_dec_part("123.45", i=4), 0.45,
+            "_dec_part from an offset");
+  assert_eq(_find_dot("123.45"), 3,
+            "_find_dot finds decimal point");
+  assert_eq(_find_dot("123"), undef,
+            "_find_dot returns undef when absent");
+}
+
+module test_str_to_num() {
+  assert_eq(str_to_num("123"), 123,
+            "str_to_num integer");
+  assert_eq(str_to_num("123.45"), 123.45,
+            "str_to_num decimal");
+  assert_eq(str_to_num(".5"), 0.5,
+            "str_to_num decimal without integer digits");
+  assert_eq(str_to_num("5."), 5,
+            "str_to_num decimal without fractional digits");
+}
+
+module test_parse_percent() {
+  assert_eq(parse_percent("25%"), 25,
+            "parse_percent with suffix");
+  assert_eq(parse_percent("12.5%"), 12.5,
+            "parse_percent decimal with suffix");
+  assert_eq(parse_percent("25"), 25,
+            "parse_percent without suffix");
+}
+
 module test_rotated_bbox() {
   assert_eq(rotX([0, 1, 0], 90), [0, 0, 1], "rotX([0, 1, 0], 90)");
   assert_eq(rotY([1, 0, 0], 90), [0, 0, -1], "rotY([1, 0, 0], 90)");
@@ -335,6 +409,13 @@ test_sum();
 test_rot2();
 test_rotated_bbox2();
 test_calc_rotated_bbox();
+test_percent_to_mm();
+test_to_percent();
+test_substr();
+test_char_to_num();
+test_number_string_helpers();
+test_str_to_num();
+test_parse_percent();
 test_rotated_bbox();
 test_vlen();
 test_vunit();

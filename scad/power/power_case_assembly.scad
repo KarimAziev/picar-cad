@@ -117,7 +117,8 @@ module power_case_assembly(slot_mode=slot_mode,
                            slot_bore_h=chassis_counterbore_h,
                            socket_size=power_socket_case_size,
                            socket_lid_thickness=power_socket_case_lid_thickness,
-                           socket_rim_h=power_socket_case_rim_h) {
+                           socket_rim_h=power_socket_case_rim_h,
+                           anchor=[0, 0, 1]) {
   standoff_z = standoff_thread_h + slot_bore_h;
   standoff_full_h = standoff_thread_h + standoff_h;
 
@@ -252,36 +253,40 @@ module power_case_assembly(slot_mode=slot_mode,
     }
   }
 
-  if (slot_mode) {
-    with_power_case_mounting_holes(bolt_spacing=bolt_spacing,
-                                   offsets=bolt_offsets) {
-      counterbore(d=power_case_bottom_bolt_dia,
-                  h=slot_thickness,
-                  bore_h=slot_bore_h,
-                  bore_d=power_case_bottom_cbore_dia,
-                  autoscale_step=0.1,
-                  sink=false,
-                  reverse=false);
-    }
-  } else if (show_socket_case) {
-    power_socket_case(show_standoffs=show_standoffs,
-                      case_color=case_color,
-                      standoff_h=standoff_h,
-                      assembly=true,
-                      assembly_debug=false,
-                      show_lid=show_socket_case_lid,
-                      lid_thickness=socket_lid_thickness,
-                      size=socket_size,
-                      show_socket=show_socket,
-                      show_socket_bolts=show_socket_bolts,
-                      show_socket_nuts=show_socket_nuts,
-                      echo_socket_bolts_info=echo_socket_bolts_info,
-                      show_atm_fuse_holders=show_socket_case_atm_fuse_holders,
-                      standoff_thread_h=standoff_thread_h) {
+  with_anchor(anchor=anchor,
+              size=[power_case_width, power_case_length, power_case_height],
+              centered=true) {
+    if (slot_mode) {
+      with_power_case_mounting_holes(bolt_spacing=bolt_spacing,
+                                     offsets=bolt_offsets) {
+        counterbore(d=power_case_bottom_bolt_dia,
+                    h=slot_thickness,
+                    bore_h=slot_bore_h,
+                    bore_d=power_case_bottom_cbore_dia,
+                    autoscale_step=0.1,
+                    sink=false,
+                    reverse=false);
+      }
+    } else if (show_socket_case) {
+      power_socket_case(show_standoffs=show_standoffs,
+                        case_color=case_color,
+                        standoff_h=standoff_h,
+                        assembly=true,
+                        assembly_debug=false,
+                        show_lid=show_socket_case_lid,
+                        lid_thickness=socket_lid_thickness,
+                        size=socket_size,
+                        show_socket=show_socket,
+                        show_socket_bolts=show_socket_bolts,
+                        show_socket_nuts=show_socket_nuts,
+                        echo_socket_bolts_info=echo_socket_bolts_info,
+                        show_atm_fuse_holders=show_socket_case_atm_fuse_holders,
+                        standoff_thread_h=standoff_thread_h) {
+        _stack();
+      }
+    } else {
       _stack();
     }
-  } else {
-    _stack();
   }
 }
 
