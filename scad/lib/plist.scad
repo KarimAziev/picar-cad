@@ -1,9 +1,18 @@
 /**
  * Module: Property-list utilities.
  *
+ *
  * Defines helpers for reading, updating, combining, and validating flat
  * property lists in the form `[key0, value0, key1, value1, ...]`.
+
+ * A property list is an even-length list in which every even-indexed element
+ * is a string key. The empty list is a valid property list. Values and
+ * duplicate keys are not otherwise restricted.
+ *
+ * Author: Karim Aziiev <karim.aziiev@gmail.com>
+ * License: GPL-3.0-or-later
  */
+
 use <functions.scad>
 
 /**
@@ -12,10 +21,6 @@ use <functions.scad>
    ─────────────────────────────────────────────────────────────────────────────
 
    Check whether a value has the structure of a property list.
-
-   A property list is an even-length list in which every even-indexed element
-   is a string key. The empty list is a valid property list. Values and duplicate
-   keys are not otherwise restricted.
 
    **Parameters:**
 
@@ -28,9 +33,9 @@ use <functions.scad>
    **Examples:**
 
    ```scad
-   plist_is(["size", [5, 10], "dia", 4]); // -> true
+   plist_is(["size", [5, 10], "dia", 4]);   // -> true
    plist_is([]);                            // -> true
-   plist_is(["size", 5, 10, 4]);           // -> false
+   plist_is(["size", 5, 10, 4]);            // -> false
    ```
 */
 function plist_is(value) =
