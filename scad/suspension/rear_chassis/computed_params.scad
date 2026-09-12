@@ -7,11 +7,12 @@
 include <../../parameters.scad>
 include <../../steering_params.scad>
 include <../front_chassis/computed_params.scad>
-include <../rear_suspension/computed_params.scad>
 include <../middle_chassis/computed_params.scad>
+include <../rear_suspension/computed_params.scad>
+
 use <../../lib/plist.scad>
-use <../../placeholders/rc_gearmotor.scad>
-use <../../placeholders/rc_gearbox.scad>
+use <../../placeholders/motors/rc/rc_gearbox.scad>
+use <../../placeholders/motors/rc/rc_gearmotor.scad>
 use <../../placeholders/rc_driveshaft.scad>
 
 /**
@@ -40,7 +41,7 @@ function rear_chassis_layout(motor_spec=rc_gearmotor_plist,
        root_l = max(cross_w, (front_chassis_joint_pin_l - joint_l) / 2 + land),
        shoulder_y = -joint_l - root_l,
        motor_y = middle_chassis_motor_center_y(motor_spec)
-         + middle_chassis_size()[1] / 2 - joint_l,
+       + middle_chassis_size()[1] / 2 - joint_l,
        carrier_w = middle_chassis_motor_carrier_w(),
        carrier_z = middle_chassis_thickness,
        motor_z = carrier_z + rear_chassis_carrier_h,
@@ -73,38 +74,42 @@ function rear_chassis_layout(motor_spec=rc_gearmotor_plist,
        rear_y = suspension_y - plist_get("max_y", suspension),
        carrier_l = motor[1] + land * 2,
        bolt_row = carrier_l / 2 - land - rear_chassis_mount_bolt_d / 2)
-  assert(ladder_w <= chassis_joint_wide_w, "Rear hardware is wider than the socket adapter")
-  assert(rear_chassis_rail_h >= front_chassis_thickness)
-  assert(plist_get("bore_d", shaft_spec) >= plist_get("d", plist_get("drive_shaft", motor_spec)),
-         "Propeller-shaft hub bore is smaller than the motor output")
-  assert(abs(drop) < shaft_l, "Differential drop exceeds shaft reach")
-  assert(rc_driveshaft_min_l(shaft_spec) <= shaft_l
-         && shaft_l <= rc_driveshaft_max_l(shaft_spec),
-         "Selected drivetrain spacing exceeds shaft travel")
-  assert(rc_driveshaft_joint_angle(end - start, [0, -1, 0])
-         <= plist_get("max_angle", shaft_spec), "Shaft exceeds the provisional joint-angle limit")
-  assert(rail_end_y < shoulder_y, "Suspension transition overlaps the wide joint root")
-  assert(motor_y - motor[1] / 2 - land > joint_l,
-         "Motor carrier reaches the middle/rear joint")
-  assert(carrier_w / 2 - rear_chassis_rail_w / 2 - rear_chassis_mount_bolt_d / 2
-         > motor[2] / 2 + abs(motor_x), "Carrier bolts intersect the motor envelope")
-  assert(output_z - drop - rear_chassis_diff_size[2] / 2 >= 0,
-         "Differential reservation extends below the frame printing plane")
-  ["size", [chassis_joint_wide_w, -rear_y, rear_chassis_rail_h],
-   "ladder_w", ladder_w, "rail_x", (carrier_w - rail_w) / 2,
-   "shoulder_y", shoulder_y, "straight_y", straight_y,
-   "motor_pos", [motor_x, motor_y, motor_z],
-   "can_pos", [motor_x + rc_gearmotor_axis_z(motor_spec, false) - motor[2] / 2,
-               can_y, can_z], "can_l", can_l,
-   "gear_front_y", gear_front_y,
-   "carrier_size", [carrier_w, carrier_l, rear_chassis_carrier_h],
-   "carrier_z", carrier_z,
-   "bolt_ys", [motor_y - bolt_row, motor_y + bolt_row],
-   "strap_ys", [can_y - can_l / 4, can_y + can_l / 4],
-   "shaft_start", start, "shaft_end", end,
-   "dogbone_tip", dogbone_tip,
-   "suspension_y", suspension_y, "suspension_front_y", suspension_front_y,
-   "suspension_w", suspension_w, "rail_end_y", rail_end_y,
-   "diff_pos", [0, diff_y, end[2] - rear_chassis_diff_size[2] / 2],
-   "diff_front_y", diff_front_y,
-   "rear_y", rear_y];
+       assert(ladder_w <= chassis_joint_wide_w,
+              "Rear hardware is wider than the socket adapter")
+       assert(rear_chassis_rail_h >= front_chassis_thickness)
+       assert(plist_get("bore_d", shaft_spec) >= plist_get("d", plist_get("drive_shaft", motor_spec)),
+              "Propeller-shaft hub bore is smaller than the motor output")
+       assert(abs(drop) < shaft_l, "Differential drop exceeds shaft reach")
+       assert(rc_driveshaft_min_l(shaft_spec) <= shaft_l
+              && shaft_l <= rc_driveshaft_max_l(shaft_spec),
+              "Selected drivetrain spacing exceeds shaft travel")
+       assert(rc_driveshaft_joint_angle(end - start, [0, -1, 0])
+              <= plist_get("max_angle", shaft_spec),
+              "Shaft exceeds the provisional joint-angle limit")
+       assert(rail_end_y < shoulder_y,
+              "Suspension transition overlaps the wide joint root")
+       assert(motor_y - motor[1] / 2 - land > joint_l,
+              "Motor carrier reaches the middle/rear joint")
+       assert(carrier_w / 2 - rear_chassis_rail_w / 2 - rear_chassis_mount_bolt_d / 2
+              > motor[2] / 2 + abs(motor_x),
+              "Carrier bolts intersect the motor envelope")
+       assert(output_z - drop - rear_chassis_diff_size[2] / 2 >= 0,
+              "Differential reservation extends below the frame printing plane")
+       ["size", [chassis_joint_wide_w, -rear_y, rear_chassis_rail_h],
+        "ladder_w", ladder_w, "rail_x", (carrier_w - rail_w) / 2,
+        "shoulder_y", shoulder_y, "straight_y", straight_y,
+        "motor_pos", [motor_x, motor_y, motor_z],
+        "can_pos", [motor_x + rc_gearmotor_axis_z(motor_spec, false) - motor[2] / 2,
+                    can_y, can_z], "can_l", can_l,
+        "gear_front_y", gear_front_y,
+        "carrier_size", [carrier_w, carrier_l, rear_chassis_carrier_h],
+        "carrier_z", carrier_z,
+        "bolt_ys", [motor_y - bolt_row, motor_y + bolt_row],
+        "strap_ys", [can_y - can_l / 4, can_y + can_l / 4],
+        "shaft_start", start, "shaft_end", end,
+        "dogbone_tip", dogbone_tip,
+        "suspension_y", suspension_y, "suspension_front_y", suspension_front_y,
+        "suspension_w", suspension_w, "rail_end_y", rail_end_y,
+        "diff_pos", [0, diff_y, end[2] - rear_chassis_diff_size[2] / 2],
+        "diff_front_y", diff_front_y,
+        "rear_y", rear_y];

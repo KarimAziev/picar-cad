@@ -5,26 +5,27 @@
   * is an envelope only; no rear suspension or wheel geometry is implemented.
   */
 include <computed_params.scad>
+
 use <../../lib/plist.scad>
 use <../../lib/shapes3d.scad>
 use <../../lib/transforms.scad>
-use <../../placeholders/rc_gearmotor.scad>
-use <../../placeholders/rc_driveshaft.scad>
+use <../../placeholders/motors/rc/rc_gearmotor.scad>
 use <../../placeholders/rc_dogbone.scad>
+use <../../placeholders/rc_driveshaft.scad>
 use <rear_chassis.scad>
 use <rear_chassis_motor_carrier.scad>
 
-show_rear_chassis = true;
-show_rear_chassis_components = true;
-show_rear_motor_carrier = true;
-show_rear_motor = true;
-show_rear_gearbox = true;
-show_rear_driveshaft = true;
-show_rear_dogbone = true;
-show_rear_unused_shaft = true;
+show_rear_chassis               = true;
+show_rear_chassis_components    = true;
+show_rear_motor_carrier         = true;
+show_rear_motor                 = true;
+show_rear_gearbox               = true;
+show_rear_driveshaft            = true;
+show_rear_dogbone               = true;
+show_rear_unused_shaft          = true;
 show_rear_differential_envelope = false;
-rear_motor_spacing = 0; // [0:1:40]
-motor_joint_spacing = 0; // Compensates rear-frame separation for the middle-mounted motor.
+rear_motor_spacing              = 0; // [0:1:40]
+motor_joint_spacing             = 0; // Compensates rear-frame separation for the middle-mounted motor.
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -81,15 +82,17 @@ module rear_chassis_assembly(motor_spec=rc_gearmotor_plist,
               }
             }
             rear_chassis_motor_position(motor_spec, shaft_spec) {
-              rc_gearmotor(spec=motor_spec, show_motor=show_rear_motor,
-                            show_gearbox=show_rear_gearbox,
-                            show_rear_shaft=show_rear_gearbox,
-                            show_front_shaft=show_rear_unused_shaft);
+              rc_gearmotor(spec=motor_spec,
+                           show_motor=show_rear_motor,
+                           show_gearbox=show_rear_gearbox,
+                           show_rear_shaft=show_rear_gearbox,
+                           show_front_shaft=show_rear_unused_shaft);
             }
           }
           if (show_rear_driveshaft) {
             rc_driveshaft_between(plist_get("shaft_start", layout),
-                                  plist_get("shaft_end", layout), spec=shaft_spec);
+                                  plist_get("shaft_end", layout),
+                                  spec=shaft_spec);
           }
           if (show_rear_dogbone) {
             rear_chassis_dogbone_position(motor_spec, shaft_spec) {
@@ -101,9 +104,13 @@ module rear_chassis_assembly(motor_spec=rc_gearmotor_plist,
               translate(plist_get("diff_pos", layout)) {
                 cuboid(rear_chassis_diff_size, r=rear_chassis_mount_land);
               }
-              translate([0, plist_get("diff_front_y", layout), plist_get("shaft_end", layout)[2]]) {
+              translate([0,
+                         plist_get("diff_front_y", layout),
+                         plist_get("shaft_end", layout)[2]]) {
                 rotate([-90, 0, 0]) {
-                  cylinder(d=plist_get("bore_d", shaft_spec), h=rear_chassis_diff_input_l, $fn=32);
+                  cylinder(d=plist_get("bore_d", shaft_spec),
+                           h=rear_chassis_diff_input_l,
+                           $fn=32);
                 }
               }
             }
@@ -126,9 +133,10 @@ module rear_chassis_assembly(motor_spec=rc_gearmotor_plist,
   **Notes:** The outer tip is the provisional differential-input reference.
  */
 module rear_chassis_dogbone_position(motor_spec=rc_gearmotor_plist,
-                                      shaft_spec=rc_driveshaft_plist) {
+                                     shaft_spec=rc_driveshaft_plist) {
   layout = rear_chassis_layout(motor_spec, shaft_spec);
-  l = plist_get("dogbone_outer_l", shaft_spec) + plist_get("dogbone_insert_l", shaft_spec);
+  l = plist_get("dogbone_outer_l", shaft_spec) + plist_get("dogbone_insert_l",
+                                                           shaft_spec);
   translate(plist_get("dogbone_tip", layout) + [0, l, 0]) {
     rotate([90, 0, 0]) {
       children();

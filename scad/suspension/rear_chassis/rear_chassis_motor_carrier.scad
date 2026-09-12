@@ -5,11 +5,12 @@
   * inventing a gearbox mounting-hole pattern. Fit must be checked on hardware.
   */
 include <computed_params.scad>
+
 use <../../lib/plist.scad>
 use <../../lib/shapes3d.scad>
 use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
-use <../../placeholders/rc_gearmotor.scad>
+use <../../placeholders/motors/rc/rc_gearmotor.scad>
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -44,13 +45,14 @@ module rear_chassis_motor_position(motor_spec=rc_gearmotor_plist,
   - `shaft_spec`: Shaft property list defining the shared layout.
  */
 module rear_chassis_motor_bolt_slots(motor_spec=rc_gearmotor_plist,
-                                    shaft_spec=rc_driveshaft_plist) {
+                                     shaft_spec=rc_driveshaft_plist) {
   layout = rear_chassis_layout(motor_spec, shaft_spec);
   eps = front_chassis_joint_boolean_overlap;
   for (side = [-1, 1], y = plist_get("bolt_ys", layout)) {
     translate([side * plist_get("rail_x", layout), y, -eps]) {
       cylinder(d=rear_chassis_mount_bolt_d,
-               h=plist_get("carrier_z", layout) + rear_chassis_carrier_h + eps * 2, $fn=40);
+               h=plist_get("carrier_z", layout) + rear_chassis_carrier_h + eps * 2,
+               $fn=40);
     }
   }
 }
@@ -68,7 +70,9 @@ module rear_chassis_motor_bolt_slots(motor_spec=rc_gearmotor_plist,
 module rear_chassis_carrier_position(motor_spec=rc_gearmotor_plist,
                                      shaft_spec=rc_driveshaft_plist) {
   layout = rear_chassis_layout(motor_spec, shaft_spec);
-  translate([0, plist_get("motor_pos", layout)[1], plist_get("carrier_z", layout)]) {
+  translate([0,
+             plist_get("motor_pos", layout)[1],
+             plist_get("carrier_z", layout)]) {
     children();
   }
 }
@@ -103,7 +107,9 @@ module rear_chassis_motor_carrier(motor_spec=rc_gearmotor_plist,
   saddle_h = can_pos[2] - carrier_z - can_d / 3;
   shift = [0, -motor_pos[1], -carrier_z];
 
-  with_anchor(anchor, [size[0], size[1], max(size[2], saddle_h)], centered=true) {
+  with_anchor(anchor,
+              [size[0], size[1], max(size[2], saddle_h)],
+              centered=true) {
     translate(shift) {
       if (slot_mode) {
         rear_chassis_motor_bolt_slots(motor_spec, shaft_spec);
@@ -119,15 +125,21 @@ module rear_chassis_motor_carrier(motor_spec=rc_gearmotor_plist,
           }
           translate(can_pos) {
             rotate([90, 0, 0]) {
-              cylinder(d=can_d + fit * 2, h=can_l + eps * 2, center=true, $fn=80);
+              cylinder(d=can_d + fit * 2,
+                       h=can_l + eps * 2,
+                       center=true,
+                       $fn=80);
             }
           }
           rear_chassis_motor_bolt_slots(motor_spec, shaft_spec);
           for (side = [-1, 1], y = plist_get("strap_ys", layout)) {
             translate([can_pos[0] + side * (can_d / 2 + fit + rear_chassis_strap_h / 2),
-                       y, carrier_z - eps]) {
+                       y,
+                       carrier_z - eps]) {
               rect_slot(size=[rear_chassis_strap_h, rear_chassis_strap_w],
-                         h=saddle_h + eps * 2, center=true, r=rear_chassis_strap_h / 2);
+                        h=saddle_h + eps * 2,
+                        center=true,
+                        r=rear_chassis_strap_h / 2);
             }
           }
         }

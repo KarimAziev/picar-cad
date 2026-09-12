@@ -29,7 +29,7 @@ use <../../panel_stack/fuse_panel.scad>
 use <../../panel_stack/panel_stack.scad>
 use <../../placeholders/battery_holder/battery_holder.scad>
 use <../../placeholders/bolt.scad>
-use <../../placeholders/motor.scad>
+use <../../placeholders/motors/simple_motor.scad>
 use <../../placeholders/rpi_5.scad>
 use <../../placeholders/ups_hat.scad>
 use <../../power/power_case_assembly.scad>

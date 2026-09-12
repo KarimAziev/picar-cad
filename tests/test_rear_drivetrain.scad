@@ -1,6 +1,7 @@
 include <../scad/suspension/rear_chassis/computed_params.scad>
+
 use <../scad/lib/plist.scad>
-use <../scad/placeholders/rc_gearmotor.scad>
+use <../scad/placeholders/motors/rc/rc_gearmotor.scad>
 use <../scad/placeholders/rc_driveshaft.scad>
 
 motor_size = rc_gearmotor_size();
@@ -13,7 +14,8 @@ assert(rc_gearmotor_axis_x(output=false) - rc_gearmotor_axis_x()
        > (plist_get("d", plist_get("body", rc_gearmotor_plist))
           + plist_get("bearing_d", plist_get("gearbox", rc_gearmotor_plist))) / 2);
 
-module check_layout(motor_spec=rc_gearmotor_plist, shaft_spec=rc_driveshaft_plist) {
+module check_layout(motor_spec=rc_gearmotor_plist,
+                    shaft_spec=rc_driveshaft_plist) {
   layout = rear_chassis_layout(motor_spec, shaft_spec);
   start = plist_get("shaft_start", layout);
   end = plist_get("shaft_end", layout);
@@ -40,7 +42,7 @@ module check_layout(motor_spec=rc_gearmotor_plist, shaft_spec=rc_driveshaft_plis
     assert(y - rear_chassis_mount_bolt_d / 2 > joint_l);
     assert(y + rear_chassis_mount_bolt_d / 2
            < middle_chassis_component_front_y() - rpi_len
-             + middle_chassis_size()[1] / 2 - joint_l);
+           + middle_chassis_size()[1] / 2 - joint_l);
   }
   assert(plist_get("carrier_z", layout) == middle_chassis_thickness);
   assert(plist_get("carrier_size", layout)[0] + rear_chassis_clearance * 2

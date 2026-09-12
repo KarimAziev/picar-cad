@@ -5,12 +5,12 @@
   * The motor extends along +Z; the driven output extends along -Z.
   * Gear positions use a provisional pitch model, not a manufacturing drawing.
   */
-include <../parameters.scad>
+include <../../../parameters.scad>
 
-use <../lib/functions.scad>
-use <../lib/plist.scad>
-use <../lib/shapes3d.scad>
-use <../lib/transforms.scad>
+use <../../../lib/functions.scad>
+use <../../../lib/plist.scad>
+use <../../../lib/shapes3d.scad>
+use <../../../lib/transforms.scad>
 
 motor_plist = rc_motor_plist;
 show_motor = true;

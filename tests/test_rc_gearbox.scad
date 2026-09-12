@@ -1,7 +1,8 @@
 include <../scad/parameters.scad>
+
 use <../scad/lib/plist.scad>
-use <../scad/placeholders/rc_gearbox.scad>
-use <../scad/placeholders/rc_gearmotor.scad>
+use <../scad/placeholders/motors/rc/rc_gearbox.scad>
+use <../scad/placeholders/motors/rc/rc_gearmotor.scad>
 
 module check_gearbox(spec=rc_motor_plist) {
   layout = rc_gearbox_layout(spec);
@@ -32,7 +33,7 @@ assert(plist_get("bearing_h", plist_get("gearbox", rc_motor_plist)) == 2);
 assert(plist_get("rear_shaft_h", plist_get("gearbox", rc_motor_plist)) == 9.3);
 check_gearbox();
 check_gearbox(plist_put("gearbox", plist_put("size", [43, 31.5, 14.75],
-                                            plist_get("gearbox", rc_motor_plist)), rc_motor_plist));
+                                             plist_get("gearbox", rc_motor_plist)), rc_motor_plist));
 check_gearbox(plist_put("gearbox", plist_put("mesh_module", 0.55,
-                                            plist_get("gearbox", rc_motor_plist)), rc_motor_plist));
+                                             plist_get("gearbox", rc_motor_plist)), rc_motor_plist));
 echo("PASS: measured gearbox envelope, motor stack and all three gear-center constraints");

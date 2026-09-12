@@ -12,7 +12,7 @@ include <../../parameters.scad>
 include <../../steering_params.scad>
 include <../front_chassis/computed_params.scad>
 
-use <../../placeholders/rc_gearmotor.scad>
+use <../../placeholders/motors/rc/rc_gearmotor.scad>
 
 /**
   ─────────────────────────────────────────────────────────────────────────────

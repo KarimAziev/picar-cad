@@ -21,7 +21,7 @@ use <../../lib/text.scad>
 use <../../lib/transforms.scad>
 use <../../lib/trapezoids.scad>
 use <../../placeholders/bolt.scad>
-use <../../placeholders/motor.scad>
+use <../../placeholders/motors/simple_motor.scad>
 use <../../placeholders/pan_servo.scad>
 use <../../placeholders/ups_hat.scad>
 use <../../steering_system/knuckle_shaft.scad>

@@ -4,15 +4,15 @@
   * The shared nested specification lives in parameters.scad. The housing is
   * XY-centered, rests on Z=0, and its driven shaft points along -Y.
   */
-include <../parameters.scad>
+include <../../../parameters.scad>
 
-use <../lib/plist.scad>
-use <../lib/transforms.scad>
+use <../../../lib/plist.scad>
+use <../../../lib/transforms.scad>
 use <rc_gearbox.scad>
 
-show_motor = true;
-show_gearbox = true;
-show_rear_shaft = true;
+show_motor       = true;
+show_gearbox     = true;
+show_rear_shaft  = true;
 show_front_shaft = true;
 
 /**
@@ -101,10 +101,15 @@ module rc_gearmotor(spec=rc_gearmotor_plist,
   with_anchor(anchor, size, centered=true) {
     translate([-center[0], -size[1] / 2, size[2] / 2]) {
       rotate([-90, 0, 0]) {
-        rc_motor(plist=spec, show_motor=show_motor, show_gearbox=show_gearbox,
-                  show_gear_layout=false, show_rear_shaft=show_rear_shaft,
-                  show_front_shaft=show_front_shaft, slot_mode=slot_mode,
-                  clearance=clearance, anchor=undef);
+        rc_motor(plist=spec,
+                 show_motor=show_motor,
+                 show_gearbox=show_gearbox,
+                 show_gear_layout=false,
+                 show_rear_shaft=show_rear_shaft,
+                 show_front_shaft=show_front_shaft,
+                 slot_mode=slot_mode,
+                 clearance=clearance,
+                 anchor=undef);
       }
     }
   }
