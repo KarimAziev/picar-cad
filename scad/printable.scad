@@ -266,8 +266,7 @@ module printable(spacing=5) {
           translate([0, -pinion_offst / 2 - spacing * 2 - knuckle_dia / 2, 0]) {
             panel_stack_print_plate(show_fuse_panel=show_fuse_panel,
                                     show_buttons_panel=show_buttons_panel,
-                                    align_x=-1,
-                                    align_y=-1);
+                                    anchor=[-1, -1, 1]);
           }
         }
       }

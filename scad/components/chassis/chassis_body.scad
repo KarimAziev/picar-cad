@@ -272,9 +272,9 @@ module chassis_body_3d(panel_color="white") {
       }
 
       chassis_with_panel_stack_position() {
-        panel_stack_bolt_holes(center=false,
-                               y_axle=chassis_panel_stack_orientation
-                               == "vertical");
+        panel_stack_bolt_holes(anchor=[1, 1, 1],
+                               orientation=chassis_panel_stack_orientation
+                               == "vertical" ? "wlh" : "lwh");
       }
 
       chassis_battery_holders_slots_or_placeholders(mode="slot");
@@ -405,12 +405,19 @@ module chassis_body(panel_color="white",
   if (show_buttons_panel || show_fuse_panel) {
     translate([0, 0, chassis_thickness / 2]) {
       chassis_with_panel_stack_position() {
-        panel_stack(center=false,
-                    y_axle=chassis_panel_stack_orientation == "vertical",
-                    show_fuses=show_fuses,
-                    show_fuse_panel=show_fuse_panel,
-                    show_buttons_panel=show_buttons_panel,
-                    show_buttons=show_buttons);
+        // Preserve the legacy clockwise layout: lwh itself turns +90 degrees.
+        vertical = chassis_panel_stack_orientation == "vertical";
+        size = panel_stack_oriented_size(vertical ? "wlh" : "lwh");
+        translate(vertical ? [0, 0, 0] : [size[0], size[1], 0]) {
+          rotate([0, 0, vertical ? 0 : 180]) {
+            panel_stack(anchor=[1, 1, 1],
+                        orientation=vertical ? "wlh" : "lwh",
+                        show_fuses=show_fuses,
+                        show_fuse_panel=show_fuse_panel,
+                        show_buttons_panel=show_buttons_panel,
+                        show_buttons=show_buttons);
+          }
+        }
       }
     }
   }

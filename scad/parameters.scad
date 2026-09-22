@@ -246,7 +246,9 @@ fuse_panel_plist_specs                               = concat(repeat(plist_merge
 
 chassis_panel_stack_x_offset                         = 0;
 chassis_panel_stack_y_offset                         = 1;
-chassis_panel_stack_orientation                      = "horizontal"; // [horizontal, vertical]
+chassis_panel_stack_orientation                      = "horizontal"; // [horizontal, vertical] // -> deprecated
+
+panel_stack_orientation                              = "wlh"; // wlh | lwh
 
 control_panel_row_gap                                = 0.8;
 

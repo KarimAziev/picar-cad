@@ -103,7 +103,23 @@ function fuse_panel_size() = [full_panel_width,
                               fuse_panel_thickness];
 
 function fuse_panel_standoff_upper_height() =
-  non_empty(standoff_params[1]) ? sum(standoff_params[1]) : upper_h;
+  upper_standoff_height;
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  fuse_panel_height
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Return the height from the mounting plane to the fuse panel's top face.
+
+  **Parameters:**
+  - `show_standoff`: Include the supporting standoff height.
+
+  **Returns:** Structural height, excluding fuse holders and fastener protrusions.
+ */
+function fuse_panel_height(show_standoff=true) =
+  (show_standoff ? lower_standoff_height - standoff_bore_h : 0)
+  + fuse_panel_thickness;
 
 module fuse_panel_slots(slot_mode = true,
                         show_atm_fuse_holders = true,
@@ -167,9 +183,7 @@ module fuse_panel(show_fuses=false,
   full_w = size[0];
   full_l = size[1];
 
-  z = show_standoff
-    ? lower_standoff_height - standoff_bore_h
-    : 0;
+  z = fuse_panel_height(show_standoff) - fuse_panel_thickness;
 
   translate([center ? 0 : full_w / 2,
              center ? 0 : full_l / 2,
@@ -227,18 +241,21 @@ module fuse_panel(show_fuses=false,
 
         if ($children) {
           translate([0, 0, fuse_panel_thickness]) {
-            four_corner_children(size=bolt_spacing, center=true) {
-              standoffs_stack(d=panel_stack_bolt_dia,
-                              min_h=upper_h,
-                              show_bolt=show_bolt,
-                              show_nut=show_nut,
-                              bolt_color=bolt_color,
-                              nut_pos=fuse_panel_thickness,
-                              bolt_visible_h=bolt_visible_h,
-                              bolt_head_type=bolt_head_type,
-                              thread_at_top=true);
+            if (show_standoff) {
+              four_corner_children(size=bolt_spacing, center=true) {
+                standoffs_stack(d=panel_stack_bolt_dia,
+                                min_h=upper_h,
+                                show_bolt=show_bolt,
+                                show_nut=show_nut,
+                                bolt_color=bolt_color,
+                                nut_pos=fuse_panel_thickness,
+                                bolt_visible_h=bolt_visible_h,
+                                bolt_head_type=bolt_head_type,
+                                thread_at_top=true);
+              }
             }
-            translate([0, 0, upper_standoff_height]) {
+            translate([0, 0, show_standoff
+                       ? fuse_panel_standoff_upper_height() : 0]) {
               children();
             }
           }

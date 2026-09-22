@@ -101,7 +101,8 @@ module lidar_mount_slots(plist=rplidar_c1_plist, h, d, anchor=[0, 0, 1]) {
  */
 module lidar(plist=rplidar_c1_plist,
              anchor=[0, 0, 1],
-             show_mount_holes=show_lidar_mount_holes) {
+             show_mount_holes=show_lidar_mount_holes,
+             anchor_z_to_base_height=true) {
   corner_r = plist_get("corner_r", plist);
 
   base_h = plist_get("base_h", plist);
@@ -120,7 +121,9 @@ module lidar(plist=rplidar_c1_plist,
   color = plist_get("color", plist, matte_black);
   assert(bolt_depth > 0 && bolt_depth < base_h);
 
-  with_anchor(anchor=anchor, size=size, centered=true) {
+  with_anchor(anchor=anchor,
+              size=[size[0], size[1], anchor_z_to_base_height ? base_h : size[2]],
+              centered=true) {
     difference() {
       maybe_color(color) {
         cuboid(size=cube_size, anchor=[0, 0, 1], r=corner_r);
@@ -145,4 +148,4 @@ module lidar(plist=rplidar_c1_plist,
   }
 }
 
-lidar();
+lidar(anchor=[0, 0, -1]);

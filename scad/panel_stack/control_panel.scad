@@ -100,6 +100,22 @@ function control_panel_size() = [full_panel_width,
 
 function control_panel_bolt_size() = panel_bolt_spacing;
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  control_panel_height
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Return the height from the mounting plane to the panel's top face.
+
+  **Parameters:**
+  - `show_standoff`: Include the supporting standoff height.
+
+  **Returns:** Structural height, excluding switches and fastener protrusions.
+ */
+function control_panel_height(show_standoff=true) =
+  (show_standoff ? standoff_full_h - standoff_bore_h : 0)
+  + control_panel_thickness;
+
 module control_panel_slots(specs=control_panel_switch_button_specs,
                            gap=control_panel_row_gap,
                            center=true,
@@ -177,13 +193,13 @@ module control_panel(specs=control_panel_switch_button_specs,
                      panel_color = white_snow_1,
                      size=[full_panel_width, full_panel_len],
                      bolt_spacing=panel_bolt_spacing) {
-  standoff_real_h = standoff_full_h - standoff_bore_h;
+  panel_z = control_panel_height(show_standoff) - control_panel_thickness;
   full_w = size[0];
   full_l = size[1];
 
   translate([center ? 0 : full_w / 2,
              center ? 0 : full_l / 2,
-             show_standoff ? standoff_real_h : 0]) {
+             panel_z]) {
     union() {
       difference() {
         color(panel_color, alpha=1) {
