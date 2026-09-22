@@ -32,12 +32,12 @@ use <../bulkhead/front_bulkhead_chassis.scad>
 use <../bulkhead/front_bulkhead_housing.scad>
 use <../bulkhead/util.scad>
 use <../wishbone_arms/front_lower_arm.scad>
-use <front_chassis_head_slots.scad>
 use <front_chassis_access_slots.scad>
+use <front_chassis_head_slots.scad>
 use <front_chassis_joint.scad>
 
 front_chassis_front_frame_debug = true;
-show_front_access_slots = true;
+show_front_access_slots         = true;
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -67,7 +67,7 @@ function front_chassis_front_frame_start_y() =
  */
 function front_chassis_head_center_y() =
   front_bulkhead_pad_distance_to_hinge() + bulkhead_size_y
-  + bulkhead_transition_len + front_chassis_head_rear_reach();
+  + front_chassis_head_rear_reach();
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -109,7 +109,8 @@ module front_chassis_front_frame(debug=front_chassis_front_frame_debug,
   bumper_x = front_bumper_bolt_spacing_x / 2
     + front_bumper_bolt_d / 2
     + front_bumper_bolt_pad_x;
-  x1 = max(bumper_x, head_mount_size[0] / 2
+  x1 = max(bumper_x,
+           head_mount_size[0] / 2
            + front_chassis_head_side_slot_w + front_chassis_head_wire_land * 2);
   start_y1 = start_y0 - front_bumper_center_bolt_y_offset;
 
@@ -117,7 +118,9 @@ module front_chassis_front_frame(debug=front_chassis_front_frame_debug,
   y2 = front_bulkhead_pad_distance_to_hinge()
     + bulkhead_transition_len + front_bumper_bolt_y_offset
     + front_bumper_bolt_d;
-  head_rear_y = head_center_y - front_chassis_head_rear_reach();
+
+  head_rear_y = head_center_y - front_chassis_head_rear_reach()
+    + bulkhead_transition_len;
 
   y3 = bulkhead_transition_len
     + front_chassis_bellcrank_tool_access_hole_d / 2

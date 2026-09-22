@@ -4,9 +4,11 @@
   * License: GPL-3.0-or-later
   */
 include <computed_params.scad>
+
 use <../../lib/plist.scad>
 use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
+use <../front_chassis/front_chassis_joint.scad>
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -36,20 +38,50 @@ module rear_suspension_slots(anchor=undef) {
   layout = rear_suspension_layout();
   size = plist_get("size", layout);
   center_y = (plist_get("min_y", layout) + plist_get("max_y", layout)) / 2;
-  with_anchor(is_undef(anchor) ? [0, 0, 1] : anchor, size, centered=true)
+
+  with_anchor(is_undef(anchor) ? [0, 0, 1] : anchor, size, centered=true) {
     translate([0, is_undef(anchor) ? 0 : -center_y, 0]) {
       for (row = [[0, [rear_suspension_holder_bolt_spacing_x, 0]],
                   [plist_get("bulkhead_1_y", layout), rear_bulkhead_bolt_spacing_1],
-                  [plist_get("bulkhead_2_y", layout), rear_bulkhead_bolt_spacing_2]])
-        translate([0, row[0], 0]) four_corner_children(size=row[1])
-          rear_suspension_counterbore();
-      translate([0, plist_get("rect_y", layout), 0])
+                  [plist_get("bulkhead_2_y", layout), rear_bulkhead_bolt_spacing_2]]) {
+        translate([0, row[0], 0]) {
+          four_corner_children(size=row[1]) {
+            rear_suspension_counterbore();
+          }
+        }
+      }
+
+      translate([0, plist_get("rect_y", layout), 0]) {
         rect_slot(h=front_chassis_thickness,
-                   size=rear_suspension_arm_pad_rect_slot_size,
-                   r=rear_suspension_arm_pad_rect_corner_r, center=true);
-      translate([0, plist_get("maintenance_y", layout), 0])
-        counterbore(h=front_chassis_thickness, d=rear_chassis_maintenance_hole_d);
+                  size=rear_suspension_arm_pad_rect_slot_size,
+                  r=rear_suspension_arm_pad_rect_corner_r,
+                  center=true);
+      }
+
+      translate([0, plist_get("maintenance_y", layout), 0]) {
+        counterbore(h=front_chassis_thickness,
+                    d=rear_chassis_maintenance_hole_d);
+      }
+
+      translate([rc_motor_x_offset,
+                 plist_get("motor_y", layout),
+                 0]) {
+        with_anchor(anchor=[-1, -1, 1],
+                    size=rc_motor_bolt_spacing,
+                    centered=true) {
+          four_corner_children(size=rc_motor_bolt_spacing,
+                               center=true) {
+            counterbore(d=rc_motor_mount_bolt_d,
+                        h=front_chassis_thickness,
+                        bore_d=rc_motor_mount_cbore_d,
+                        bore_h=rc_motor_mount_cbore_h,
+                        reverse=true,
+                        sink=false);
+          }
+        }
+      }
     }
+  }
 }
 
 rear_suspension_slots();

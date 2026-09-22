@@ -94,7 +94,6 @@ module can_capacitor(d,
                 color(marking_color, alpha=1) {
                   rows_children(rows=len(rows),
                                 w=max_row_size,
-                                reverse=false,
                                 gap=gap) {
                     linear_extrude(height=0.05, center=false) {
                       text(rows[$i],

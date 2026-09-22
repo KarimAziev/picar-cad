@@ -513,3 +513,66 @@ module with_anchor(anchor, size, centered=false) {
     }
   }
 }
+
+/**
+─────────────────────────────────────────────────────────────────────────────
+with_orientation
+─────────────────────────────────────────────────────────────────────────────
+
+Reorient child geometry between width-length-height axis conventions.
+
+The logical `size` is always given as `[w, l, h]`.
+
+`from` describes how the child is currently oriented in XYZ.
+`to` describes the desired final orientation in XYZ.
+
+The child must already use anchor `[0, 0, 1]` in its current orientation: its
+bounding box is centered on X/Y and spans Z from `0` to its oriented height.
+The result uses the requested `anchor` relative to the target-oriented box.
+
+**Parameters:**
+
+- `from`: Current orientation. One of:
+  `"wlh"` (default), `"whl"`, `"lwh"`, `"lhw"`, `"hlw"`, `"hwl"`.
+- `to`: Target orientation. One of:
+  `"wlh"` (default), `"whl"`, `"lwh"`, `"lhw"`, `"hlw"`, `"hwl"`.
+- `size`: Logical child size as `[w, l, h]`.
+- `anchor`: Final target anchor.
+
+**Example:**
+```scad
+size = [20, 50, 10];
+initial_anchor = [0, 0, 1];
+target_anchor = [0, -1, 0];
+
+with_orientation(from="wlh",
+                 to="lhw",
+                 size=size,
+                 anchor=target_anchor) {
+  cuboid(size=size,
+         anchor=initial_anchor);
+}
+```
+*/
+
+module with_orientation(from="wlh",
+                        to="wlh",
+                        size,
+                        anchor=[0, 0, 1]) {
+  from = assert_orientation(with_default(from, "wlh"), "from");
+  to = assert_orientation(with_default(to, "wlh"), "to");
+  anchor = normalize_anchor(anchor);
+
+  from_size = orientation_size(from, size);
+  to_size = orientation_size(to, size);
+
+  with_anchor(size=to_size, anchor=anchor, centered=true) {
+    translate([0, 0, to_size[2] / 2]) {
+      multmatrix(orientation_transform(from, to)) {
+        translate([0, 0, -from_size[2] / 2]) {
+          children();
+        }
+      }
+    }
+  }
+}

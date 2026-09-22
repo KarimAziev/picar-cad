@@ -627,7 +627,7 @@ module chassis_upper_3d(panel_color=white_snow_1,
       }
 
       chassis_upper_front_panel_slot();
-      // #head_zone_slot();
+      #head_zone_slot();
       chassis_upper_steering_hinges();
 
       // chassis_upper_rib_hole_slot(border_mode=false);

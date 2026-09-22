@@ -18,6 +18,7 @@ module suspension_arm_pin(d,
                           e_clip_thickness=0.4,
                           groove_d,
                           groove_side="all", // "top" | "bottom" | "all"
+                          pad_side="all",    // "top" | "bottom" | "all"
                           pad_l,
                           pad_w,
                           groove_w,
@@ -28,6 +29,11 @@ module suspension_arm_pin(d,
 
   is_all = groove_side == "all";
   is_bottom = groove_side == "bottom";
+
+  pad_is_all = pad_side == "all";
+  pad_is_bottom = pad_side == "bottom";
+  pad_is_top = pad_side == "top";
+
   groove_d = with_default(groove_d, d - 0.4);
   groove_w = with_default(groove_w, 0.4);
 
@@ -40,20 +46,46 @@ module suspension_arm_pin(d,
     }
   }
 
-  module _with_pad() {
+  // at_bottom=true  -> pad at z=0
+  // at_bottom=false -> pad at z=l-pad_l
+  module _with_single_pad(at_bottom=true) {
     if (pad_l > 0 && pad_w > 0) {
+      pad_z = at_bottom ? -0.01 : l - pad_l + 0.01;
+
       union() {
-        y = is_bottom ? -0.1 : 0;
-        z = is_bottom ? l - pad_l : -0.1;
         difference() {
           children();
-          translate([0, y, z]) {
-            cuboid([d + 0.1, d + 0.1, pad_l + 0.1]);
+          translate([0, 0, pad_z]) {
+            cuboid([d + 0.02, d + 0.02, pad_l]);
           }
         }
-        translate([0, is_bottom ? 0 : y, is_bottom ? z : 0]) {
+        translate([0, 0, pad_z]) {
           _pad();
         }
+      }
+    } else {
+      children();
+    }
+  }
+
+  module _with_pad() {
+    if (pad_l > 0 && pad_w > 0) {
+      if (pad_is_all) {
+        _with_single_pad(true) {
+          _with_single_pad(false) {
+            children();
+          }
+        }
+      } else if (pad_is_bottom) {
+        _with_single_pad(true) {
+          children();
+        }
+      } else if (pad_is_top) {
+        _with_single_pad(false) {
+          children();
+        }
+      } else {
+        children();
       }
     } else {
       children();
@@ -65,6 +97,7 @@ module suspension_arm_pin(d,
       cylinder(d=d, h=l, $fn=fn);
     }
   }
+
   if (is_undef(groove_offset) || groove_offset == 0) {
     _with_pad() {
       _main();
@@ -112,6 +145,7 @@ suspension_arm_pin(d=3,
                    l=39.5,
                    pad_l=5.5,
                    pad_w=2.5,
+                   pad_side="all",
                    color=undef,
-                   groove_side="top",
+                   groove_side="all",
                    show_e_clip=false);

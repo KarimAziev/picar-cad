@@ -6,7 +6,6 @@
  */
 include <../steering_params.scad>
 
-use <debug.scad>
 use <functions.scad>
 use <placement.scad>
 use <plist.scad>
@@ -589,7 +588,6 @@ module text_rows(texts = [],
                 }
               }
               color(colr) {
-
                 maybe_translate(translation) {
                   maybe_rotate(rotation) {
                     linear_extrude(height=height, center=false) {
@@ -662,3 +660,7 @@ module text_fit(txt="Dynamic Text",
     }
   }
 }
+
+size = [30, 20, 15];
+
+text_fit(txt="My text", x=size[0], y=size[1], h=size[2]);

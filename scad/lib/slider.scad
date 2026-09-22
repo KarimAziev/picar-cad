@@ -412,6 +412,7 @@ module dovetail_rib(w,
                                    t=w_top,
                                    h=half_of_h,
                                    r=r_bottom,
+                                   $fn=fn,
                                    center=true);
         }
       }
@@ -425,6 +426,7 @@ module dovetail_rib(w,
                               t=w,
                               h=half_of_h,
                               r=r,
+                              $fn=fn,
                               center=false);
       }
     }
@@ -550,3 +552,25 @@ module dovetail_rib_relief_cutter_2d(edge_land,
 //              r_bottom=0.5,
 //              center=true,
 //              center_y=false);
+
+// slider_dovetail_rail_2d(base_w=20,
+//                         base_h=5,
+//                         w=15,
+//                         h=10,
+//                         angle=15,
+//                         r=1,
+//                         use_dovetail_rib=true,
+//                         center=false);
+dovetail_rib(w=15,
+             h=10,
+             angle=15,
+             r_top=4,
+             r_bottom=1,
+             fn=100,
+             center=true);
+
+// dovetail_rib(w=20,
+//                 h=15,
+//                 angle=10,
+//                 r=2,
+//                 center=false);

@@ -973,7 +973,9 @@ ir_case_head_bolts_side_panel_positions              = [[ir_case_head_side_panel
 
 lipo_pack_length                                     = 155.41; // Length of the battery pack
 lipo_pack_width                                      = 47.4;   // Width of the battery pack
-lipo_pack_height                                     = 14.6;  // Height of the battery pack
+lipo_pack_s3_height                                  = 21.8;  // Height of the S3 battery pack
+lipo_pack_s2_height                                  = 14.6;  // Height of the S2 battery pack
+lipo_pack_height                                     = lipo_pack_s3_height;  // Height of the battery pack
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PAN SERVO CONFIGURATION (Dimensions & Visual Representation)
@@ -1469,8 +1471,11 @@ rpi_pin_headers_cols                                 = 20;
 rpi_pin_headers_rows                                 = 2;
 
 rpi_len                                              = 85;
+
 rpi_width                                            = 56;
 rpi_thickness                                        = 1.9;
+
+rpi_usb_y_offset                                     = 3;
 
 // The amount by which to offset the Raspberry Pi
 rpi_offset_rad                                       = 2.4;
@@ -2968,14 +2973,16 @@ rc_motor_plist = ["body",
                                   "gear_h", 3.5,
                                   "gear_inner_d", 6.5],
                   "motor_shaft", ["h", 10.9, "d", 2, "gear_d", 7.3, "gear_h", 5.1],
-                  "motor_shaft_gears", [["d", 15, "inner_d", 6.5], ["d", 15, "inner_d", 6.5]],
+                  "motor_shaft_gears", [["d", 15,
+                                                     "inner_d", 6.5],
+                                        ["d", 15,
+                                         "inner_d", 6.5]],
                   "gearbox", ["size", [42, 31.5, 14.75],
-// Provisional standard-gear module, not a measured tooth specification.
                               "mesh_module", 0.6,
                               "bearing_d", 7,
                               "bearing_h", 2,
                               "rear_shaft_h", 9.3,
-                              "front_shaft_h", 38, // Still provisional.
+                              "front_shaft_h", 38,
                               "boolean_overlap", 0.02,
                               "pad", 0.8,
                               "color", metallic_silver_3]];

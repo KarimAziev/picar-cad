@@ -7,7 +7,16 @@
 include <../colors.scad>
 
 use <functions.scad>
+use <plist.scad>
+use <polygon_util.scad>
+use <text.scad>
 use <transforms.scad>
+
+function polygon_vertex_radial_dir(pts, i) =
+  let (c = centroid(pts),
+       d = [pts[i][0] - c[0], pts[i][1] - c[1]],
+       l = sqrt(d[0]*d[0] + d[1]*d[1]))
+  l == 0 ? [1, 1] : [d[0]/l, d[1]/l];
 
 module debug_polygon_text(points,
                           font_size=3.0,
@@ -19,6 +28,10 @@ module debug_polygon_text(points,
                           rotation,
                           offset_x_exclude,
                           offset_y_exclude,
+                          offset_line_w=0.1,
+                          default_txt_plist=["valign", "center",
+                                             "halign", "center"],
+                          auto_offset_direction=true,
                           font,
                           h=0.5) {
   offset_x = is_undef(offset_x) ? 0 : offset_x;
@@ -38,39 +51,80 @@ module debug_polygon_text(points,
       circle(r=r, $fn=20);
     }
   }
+  module text_item(txt, plist) {
+    let (pl = with_default(plist, [])) {
+      text(txt,
+           size=plist_get("size", pl, font_size),
+           font=plist_get("font", pl, font),
+           valign=plist_get("valign", pl),
+           halign=plist_get("halign", pl));
+    }
+  }
   for (i = [0 : len(points) - 1]) {
     let (pt = points[i],
-         p0 = pt[0] + maybe_exclude(i, offset_x_exclude, offset_x),
-         p1 = pt[1] + maybe_exclude(i, offset_y_exclude, offset_y)) {
+         txt_or_pl = pt[2],
+         label = is_string(txt_or_pl)
+         ? pt[2]
+         : is_list(pt[2])
+         ? plist_get("text", pt[2])
+         : pt[2],
+         txt = is_string(label) ? str(i, ". ", label) : str(i),
+         txt_props = plist_merge(plist_merge(default_txt_plist, ["size", font_size,
+                                                                 "font", font]),
+                                 is_list(pt[2])
+                                 ? pt[2]
+                                 : is_list(pt[3])
+                                 ? pt[3]
+                                 : []),
+
+         offst_x = plist_get("offset_x", txt_props),
+         offst_y = plist_get("offset_y", txt_props),
+
+         dir = auto_offset_direction ? polygon_vertex_outward_dir(points, i) : [1, 1],
+
+         dx = is_num(offst_x)
+         ? offst_x
+         : maybe_exclude(i, offset_x_exclude,
+                         auto_offset_direction ? abs(offset_x) * dir[0] : offset_x),
+
+         dy = is_num(offst_y)
+         ? offst_y
+         : maybe_exclude(i, offset_y_exclude,
+                         auto_offset_direction ? abs(offset_y) * dir[1] : offset_y),
+
+         x = pt[0],
+         y = pt[1],
+         p0 = x + dx,
+         p1 = y + dy,
+         rot = plist_get("rotation", txt_props, rotation),
+         crcle_r = plist_get("circle_r", txt_props, circle_r),
+         crcl_color = plist_get("circle_color", txt_props, circle_color),
+         crcl_alpha = plist_get("circle_alpha", txt_props, 1)) {
       color(color) {
         translate([p0, p1, 0.1]) {
-          maybe_rotate(rotation) {
+          maybe_rotate(rot) {
             if (has_h) {
-              linear_extrude(height = 0.5) {
-                text(str(i),
-                     size = font_size,
-                     font=font,
-                     valign="center",
-                     halign="center");
+              linear_extrude(height=0.5) {
+                text_item(txt, txt_props);
               }
             } else {
-              text(str(i), size = font_size, valign="center", halign="center");
+              text_item(txt, txt_props);
             }
           }
         }
       }
 
-      color(circle_color) {
+      color(crcl_color, crcl_alpha) {
         translate([pt[0], pt[1]]) {
-          _circle();
+          _circle(r=crcle_r);
         }
         if (p0 != pt[0] || p1 != pt[1]) {
           hull() {
             translate([pt[0], pt[1]]) {
-              _circle(r=0.1);
+              _circle(r=offset_line_w);
             }
             translate([p0, p1]) {
-              _circle(r=0.1);
+              _circle(r=offset_line_w);
             }
           }
         }

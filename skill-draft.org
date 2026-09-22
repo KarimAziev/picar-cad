@@ -1,0 +1,242 @@
+#+AUTHOR: Karim Aziiev
+#+TITLE: Good OpenSCAD
+
+The document below is my random notes on the principles I have accumulated for working with such a poor language as OpenSCAD.
+
+* Principles of Good OpenSCAD
+
+Every model is standalone and self-contained. If a model is a detail with a slot, it should also follow a standard pattern. In this case, it provides:
+- the usual mode (normal solid geometry) which contains:
+  - toggleable placeholders, e.g. =show_bolt=, =show_nuts=
+- slot mode (holes mode) - all mounting features: holes, cutouts etc.
+
+
+The detail is oriented so that the width is along the X axis, the length is along the Y axis, and the height is along the Z axis. By default, the model is defined so that its bottom face is at =z=0= and it extends upward in the positive Z direction to =z=h=. Models are always placed this way, even if they are going to be used in another orientation. The holes/slots in models are always made before all orientations. Models use a standard parameter for this: =anchor=.
+
+All models must accept =anchor: [1 | 0 | -1, 1 | 0 | -1, 1 | 0 | -1]=.
+
+The default anchor is =[1, 1, 1]=: the model starts at the origin and extends along positive X, Y, and Z. The exact convention and implementation are explained below.
+
+Some examples:
+- A LiPo pack's long part should be oriented along Y, the narrow part along X, and the full Z dimension should span from 0 to 1. The LiPo pack placeholder is placed in a separate file/subdirectory: =scad/placeholders=. It provides useful reusable functions to operate with it. The details for this placeholder are placed in the corresponding feature subdirectory (for example, =suspension=, =power=, etc.), and consumers reuse them for placement operations. The placeholder file also exposes a module that accepts plist (property list, see =scad/lib/plist.scad=) parameters and passes them down as arguments to the main one. Some parameters are not passed as plists: assembly-related ones, dynamic or mapped ones, and toggles (for example, =show_bolt=, =show_nuts=, etc.).
+
+- Another example is a PCB. It likely contains mounting slots; in this case, it should also expose those mounting slots along with different rotation and placement options. As with the LiPo pack example, the logical consumer is the corresponding power case module. It may combine multiple placeholders.
+
+Printable models should be provided in a separate file in "pure" printable mode, already oriented for printing.
+
+Existing modules should be reused whenever possible.
+
+
+** Anchors: exact meaning and placement
+
+An =anchor= chooses which point of the model's reference bounding box is placed at the local origin. Each component controls one axis independently, in =[x, y, z]= order.
+
+For geometry built from =0= to =size[i]= on an axis, the rule is:
+
+| Anchor component | Point placed at the origin    | Translation  | Resulting bounds          | Where the model extends |
+|------------------+-------------------------------+--------------+---------------------------+-------------------------|
+| =1=              | Minimum coordinate: =0=       | =0=          | =[0, size[i]]=            | Positive direction      |
+| =0=              | Midpoint: =size[i] / 2=       | =-size[i]/2= | =[-size[i]/2, size[i]/2]= | Both directions         |
+| =-1=             | Maximum coordinate: =size[i]= | =-size[i]=   | =[-size[i], 0]=           | Negative direction      |
+
+*Positive anchor means the model extends in the positive direction from the origin; negative anchor means it extends in the negative direction; zero centers it on that axis.* Consequently, =1= puts the minimum side at the origin, and =-1= puts the maximum side at the origin. Use these coordinate meanings when interpreting the signs.
+
+*** The default anchor does nothing to a normal cube
+
+These two expressions produce exactly the same geometry at exactly the same coordinates:
+
+#+begin_src scad
+with_anchor(size=[20, 10, 20], anchor=[1, 1, 1]) {
+  cube([20, 10, 20]);
+}
+
+cube([20, 10, 20]);
+#+end_src
+
+Both occupy =X: [0, 20]=, =Y: [0, 10]=, =Z: [0, 20]=. The computed translation is =[0, 0, 0]=, and =with_anchor= directly emits its children in this case.
+
+For the same cube, these are the other useful placements:
+
+| Anchor         | Translation       | X bounds    | Y bounds   | Z bounds    |
+|----------------+-------------------+-------------+------------+-------------|
+| =[1, 1, 1]=    | =[0, 0, 0]=       | =[0, 20]=   | =[0, 10]=  | =[0, 20]=   |
+| =[0, 0, 0]=    | =[-10, -5, -10]=  | =[-10, 10]= | =[-5, 5]=  | =[-10, 10]= |
+| =[-1, -1, -1]= | =[-20, -10, -20]= | =[-20, 0]=  | =[-10, 0]= | =[-20, 0]=  |
+| =[0, 0, 1]=    | =[-10, -5, 0]=    | =[-10, 10]= | =[-5, 5]=  | =[0, 20]=   |
+| =[-1, 0, 1]=   | =[-20, -5, 0]=    | =[-20, 0]=  | =[-5, 5]=  | =[0, 20]=   |
+
+For example, =[0, 0, 1]= centers the footprint on X/Y and keeps the bottom on =z=0=. For this cube, =[0, 0, 0]= has the same result as =cube([20, 10, 20], center=true)=.
+
+*** What each helper actually does
+
+The implementation lives in [[file:scad/lib/transforms.scad][scad/lib/transforms.scad]] and [[file:scad/lib/functions.scad][scad/lib/functions.scad]].
+
+- =normalize_anchor(anchor)= validates a three-element vector whose components are =-1=, =0=, or =1=. An omitted anchor or whole =undef= becomes =[1, 1, 1]=. These are discrete placement values; their magnitudes are preserved.
+- =to_anchor(anchor, size, centered=false)= returns the translation vector. With the default input convention, each component is =(anchor[i] - 1) * size[i] / 2=. It computes coordinates only; it does not transform geometry. Pass a valid anchor vector and a three-element size vector to this function.
+- =with_anchor(anchor, size, centered=false)= calls =normalize_anchor=, expands a scalar size to =[size, size, size]=, calls =to_anchor=, and applies that translation to all children. A zero translation passes the children through directly.
+
+Current implementation detail: although the =normalize_anchor= comment advertises replacement of individual =undef= components, its assertions validate the original components and reject them. Thus =normalize_anchor(undef)= works, but =normalize_anchor([undef, 0, 1])= currently fails. Supply all three numeric components when providing a vector.
+
+=with_anchor= uses the supplied reference size and input-coordinate convention. It does not measure children, infer their bounding box, resize them, rotate them, or mirror them. The size must describe the reference box you intend to anchor. A negative anchor changes placement while preserving the model's orientation.
+
+*** The meaning of centered=true
+
+=centered= describes the *input geometry*. When =centered=true=, X and Y are assumed to already span =[-size[i]/2, size[i]/2]=. Z is still assumed to span =[0, size[2]]=.
+
+The requested output bounds in the tables above stay the same; the translation changes to account for where the input starts. For centered X/Y, the translation is =anchor[i] * size[i] / 2=. Z always follows the default formula.
+
+#+begin_src scad
+to_anchor([1, 1, 1], [20, 10, 20], false); // [0, 0, 0]
+to_anchor([1, 1, 1], [20, 10, 20], true);  // [10, 5, 0]
+to_anchor([0, 0, 0], [20, 10, 20], true);  // [0, 0, -10]
+#+end_src
+
+OpenSCAD's =cube(..., center=true)= centers all three axes. To use it as input to =with_anchor(..., centered=true)=, first raise it by half its height so its bottom is at zero:
+
+#+begin_src scad
+with_anchor(size=[20, 10, 20], anchor=[1, 1, 1], centered=true) {
+  translate([0, 0, 10]) {
+    cube([20, 10, 20], center=true);
+  }
+}
+#+end_src
+
+This also produces the same placement as =cube([20, 10, 20])=. Passing an ordinary non-centered cube with =centered=true= would describe its input coordinates incorrectly.
+
+*** Placing a model in an assembly
+
+Build the body, holes, slots, and associated placeholders in the same canonical coordinate system, and apply the same anchor transform to them. Slot mode must preserve the solid model's reference box so that its mounting features remain aligned.
+
+An outer =translate(position)= moves the selected anchor to =position=. An outer rotation rotates the already-anchored geometry about that anchor:
+
+#+begin_src scad
+translate([100, 50, 30]) {
+  rotate([0, 0, 90]) {
+    with_anchor(size=[20, 10, 20], anchor=[0, 0, 1]) {
+      cube([20, 10, 20]);
+    }
+  }
+}
+#+end_src
+
+Here the bottom-face center is placed at =[100, 50, 30]=, and the cube is rotated around it. Anchor components refer to the model's canonical axes before the outer rotation. Rotating children inside =with_anchor= changes the input coordinates; its original size and centering assumptions must still hold for placement to be correct.
+
+#+begin_quote
+[!NOTE]
+
+Use the standard orientation and anchor conventions by default. Complex or asymmetric models may use a different origin, reference box, or orientation when it makes their construction or mechanical interfaces clearer. Explain that choice where the component’s interface is documented, and keep its placement behavior consistent across its supported modes.
+#+end_quote
+
+** Naming Conventions and Abbreviations
+- =w= - width (along X)
+- =l= - length (along Y)
+- =h= - height (along Z)
+- =d= - diameter
+- =bolt_d= - bolt diameter
+- =bore_d= - a companion to =bolt_d= or =d=. This is the larger diameter, optionally with a countersunk shape (controlled by the boolean parameter =sink=). See also =scad/lib/slots.scad=.
+- =bolt_spacing=: [x: number, y: number] - =[x, y]= is similar to the size of a square, but with holes located at the centers of the corners. See also =four_corner_children= in =scad/lib/transforms.scad=, which is commonly used both for holes with =counterbore= (in =scad/lib/slots.scad=) and with bolt placeholders.
+- =dist=, =distance=, =spacing= - when used for holes, these refer to the distance between the edges of holes or counterbores, not their centers. The reason is that =distance=0= should not collapse two holes; they should still remain separate. It is also easier to measure this way with calipers.
+
+Also prefer standard names such as =size=, =anchor=, etc.
+
+** Polygons
+
+See =scad/lib/debug.scad=, =scad/lib/polygon_util.scad=, and =front_chassis_front_frame=/=front_chassis_rear_frame= as good standard examples. We use debug debug_polygon_text for easy debugging polygon.
+
+** Most Popular Reusable Components
+- =scad/placeholders/bolt.scad=
+- for PCBs:
+  - =scad/placeholders/smd/=
+  - =scad/placeholders/screw_terminal.scad=
+  - =scad/placeholders/standoff.scad=
+
+- =scad/lib/transforms.scad=
+- =scad/lib/placement.scad=
+- =scad/lib/shapes3d.scad=
+- =scad/lib/shapes2d.scad=
+- =scad/lib/plist.scad=
+- =scad/lib/functions.scad=
+- =scad/lib/slots.scad=
+- =scad/lib/text.scad=
+- =scad/lib/trapezoids.scad=
+- =scad/lib/slider.scad=
+
+** Attention to Detail
+
+Detailed placeholders with small toggles, including bolt specifications, are not just for pretty previews. They serve a practical purpose by helping catch errors before or after 3D printing-for example, when the head or nut of a horizontal bolt does not fit in a bottom-mounted position.
+
+** Mapping Items
+
+We are trying to configure everything in a generic, dynamic way. It should be easy to change the number of rows, the gap, and so on. We are even building custom grids: =scad/core/grid.scad=, =scad/core/smd_placeholder_renderer.scad=, =scad/core/slot_layout_components.scad=, etc.
+
+** Size and Placeholders
+
+The size of placeholders should drive dynamically calculated detail dimensions. They should always be tied to each other to avoid desynchronization.
+
+** Deprecated Components
+
+The project is currently in the process of full migration to the principles mentioned above, as well as to a more complex design with suspension, a single RC motor, etc.
+
+Deprecated directories:
+- =scad/steering_system/= (do not use this)
+- =scad/components/chassis/= - good as an example; some parts should be preserved in an improved implementation
+- =scad/assembly.scad= and =scad/assembly_guide.scad=
+
+** Code style
+
+
+Always use braces, even for simple one-line expressions.
+
+*Bad*
+#+begin_src scad
+translate(coords) children();
+#+end_src
+
+*Good*
+#+begin_src scad
+translate(coords) {
+  children();
+}
+#+end_src
+
+Always format plists as normal dictionaries or JSON, for example:
+
+*Bad:*
+#+begin_src scad
+["motor_shaft_gears", [["d", 15, "inner_d", 6.5], ["d", 15, "inner_d", 6.5]],]
+#+end_src
+
+*Good:*
+#+begin_src scad
+"motor_shaft_gears", [["d", 15,
+                       "inner_d", 6.5],
+                      ["d", 15,
+                       "inner_d", 6.5]],
+#+end_src
+
+** File structure
+
+While it may seem that moving everything into separate files is a sign of good code, that is not always the case. Split modules into logical files.
+
+Example of a good file structure:
+
+=scad/power/=:
+#+begin_example
+├── printable.scad
+├── power_socket_lid.scad
+├── power_socket_case.scad
+├── power_lid.scad
+├── power_case_rail.scad
+├── power_case_assembly.scad
+├── power_case.scad
+├── common.scad
+#+end_example
+
+Why is it good? Because it contains logical entities, not modules split up just for the sake of splitting.
+
+** Bad code
+Recently, code agents wrote some bad code that I now have to refactor manually:
+
+- =scad/suspension/middle_chassis/=
+- =scad/suspension/rear_chassis/=
+- =scad/suspension/front_chassis/front_chassis_rear_frame.scad= - mostly written by me; originally, it was entirely mine. Yes, it is not ideal, but it is readable.

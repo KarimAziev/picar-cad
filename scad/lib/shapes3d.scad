@@ -195,33 +195,23 @@ module cuboid(size,
 
   _align = [align_x, align_y, align_z];
 
-  function xyz(item_size) =
-    [for (i = [0 : len(_align) - 1])
-        let (n = _align[i],
-             v = item_size[i])
-          n == 0 ? -v / 2 : n == -1 ? -v : 0];
-
-  if ((is_undef(r) || r == 0) && (is_undef(r_factor) || r_factor == 0)) {
-    translate(xyz(size)) {
+  with_anchor(anchor=_align, size=size) {
+    if ((is_undef(r) || r == 0) && (is_undef(r_factor) || r_factor == 0)) {
       cube(size);
-    }
-  } else if (use_minkowski) {
-    rad = min(is_undef(r) ? (min(size[0], size[1], size[2])) * r_factor : r,
-              size[0] / 2,
-              size[1] / 2,
-              size[2] / 2);
-    inner = [for (i=[0:2]) max(0.001, size[i] - rad * 2)];
+    } else if (use_minkowski) {
+      rad = min(is_undef(r) ? min(size[0], size[1], size[2]) * r_factor : r,
+                size[0] / 2,
+                size[1] / 2,
+                size[2] / 2);
+      inner = [for (i=[0:2]) max(0.001, size[i] - rad * 2)];
 
-    translate(xyz(size)) {
       minkowski(convexity=5) {
         cube(inner);
         translate([rad, rad, rad]) {
           sphere(r=rad, $fn=fn);
         }
       }
-    }
-  } else {
-    translate(xyz(size)) {
+    } else {
       linear_extrude(height=size[2], center=false) {
         rounded_rect([size[0], size[1]],
                      center=false,
@@ -687,10 +677,3 @@ module tapered_box(base_size,
     }
   }
 }
-
-tapered_box(base_size=[30, 20],
-            top_size=[25, 18],
-            h=10,
-            r_top_factor=0.0,
-            r_bottom_factor=0.1,
-            anchor=[1, 1, 1]);

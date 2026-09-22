@@ -2009,6 +2009,166 @@ function countersink_h(d, sink_d, angle) =
   ((sink_d - d) / 2) / tan(angle / 2);
 
 /**
+  ──────────────────────────────────────────────────────────────────────────────
+  is_orientation
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Return whether a string names a supported width-length-height orientation.
+
+  **Parameters:**
+
+  `orientation`: Orientation string to check.
+
+  **Returns:**
+
+  `true` for `"wlh"`, `"whl"`, `"lwh"`, `"lhw"`, `"hlw"`, or `"hwl"`;
+  otherwise `false`.
+ */
+function is_orientation(orientation) =
+  is_string(orientation)
+  && in_list(orientation, ["wlh", "whl", "lwh", "lhw", "hlw", "hwl"]);
+
+/**
+  ────────────────────────────────────────────────────────────────────────────
+  assert_orientation
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Validate and return a width-length-height orientation string.
+
+  **Parameters:**
+
+  `orientation`: Orientation string to validate.
+  `name`: Parameter name used in the assertion message.
+
+  **Returns:**
+
+  The validated orientation string.
+ */
+function assert_orientation(orientation, name="orientation") =
+  assert(is_orientation(orientation),
+         str(name,
+             " must be one of: \"wlh\", \"whl\", \"lwh\", \"lhw\", \"hlw\", \"hwl\""))
+  orientation;
+
+/**
+  ────────────────────────────────────────────────────────────────────────────
+  orientation_size
+  ──────────────────────────────────────────────────────────────────────────────
+
+  Permute logical `[width, length, height]` into XYZ extents.
+
+  The orientation letters name the logical dimension placed on X, Y, and Z in
+  that order. For example, `"lhw"` produces `[length, height, width]`.
+
+  **Parameters:**
+
+  `orientation`: Supported orientation string.
+  `size`: Logical dimensions as `[width, length, height]`.
+
+  **Returns:**
+
+  The axis-aligned XYZ size for the requested orientation.
+ */
+function orientation_size(orientation, size) =
+  assert(is_list(size) && len(size) == 3
+         && len([for (v = size) if (is_num(v)) v]) == 3,
+         "size must be [width, length, height]")
+  let (orientation = assert_orientation(orientation),
+       w = size[0],
+       l = size[1],
+       h = size[2])
+  orientation == "wlh" ? [w, l, h] :
+  orientation == "whl" ? [w, h, l] :
+  orientation == "lwh" ? [l, w, h] :
+  orientation == "lhw" ? [l, h, w] :
+  orientation == "hlw" ? [h, l, w] :
+  [h, w, l];
+
+/**
+  ───────────────────────────────────────────────────────────────────────────
+  transpose_matrix
+  ──────────────────────────────────────────────────────────────────────────────
+
+  Transpose a rectangular matrix represented as equal-length rows.
+
+  **Parameters:**
+
+  `matrix`: Matrix to transpose.
+
+  **Returns:**
+
+  A matrix whose rows are the input matrix's columns.
+ */
+function transpose_matrix(matrix) =
+  [for (column = [0 : len(matrix[0]) - 1])
+      [for (row = [0 : len(matrix) - 1]) matrix[row][column]]];
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  orientation_matrix
+  ──────────────────────────────────────────────────────────────────────────────
+
+  Return the homogeneous rotation matrix for an orientation.
+
+  The matrix maps centered canonical `"wlh"` coordinates to the requested
+  orientation. It contains rotation only and is suitable for `multmatrix()`.
+
+  **Parameters:**
+
+  `orientation`: Supported orientation string.
+
+  **Returns:**
+
+  A 4 by 4 right-handed rotation matrix.
+ */
+function orientation_matrix(orientation) =
+  let (orientation = assert_orientation(orientation))
+  orientation == "wlh" ? [[ 1,  0,  0, 0],
+                            [ 0,  1,  0, 0],
+                            [ 0,  0,  1, 0],
+                            [ 0,  0,  0, 1]] :
+  orientation == "whl" ? [[ 1,  0,  0, 0],
+                            [ 0,  0, -1, 0],
+                            [ 0,  1,  0, 0],
+                            [ 0,  0,  0, 1]] :
+  orientation == "lwh" ? [[ 0, -1,  0, 0],
+                            [ 1,  0,  0, 0],
+                            [ 0,  0,  1, 0],
+                            [ 0,  0,  0, 1]] :
+  orientation == "lhw" ? [[ 0,  1,  0, 0],
+                            [ 0,  0,  1, 0],
+                            [ 1,  0,  0, 0],
+                            [ 0,  0,  0, 1]] :
+  orientation == "hlw" ? [[ 0,  0, -1, 0],
+                            [ 0,  1,  0, 0],
+                            [ 1,  0,  0, 0],
+                            [ 0,  0,  0, 1]] :
+                           [[ 0,  0,  1, 0],
+                            [ 1,  0,  0, 0],
+                            [ 0,  1,  0, 0],
+                            [ 0,  0,  0, 1]];
+
+/**
+  ──────────────────────────────────────────────────────────────────────────────
+  orientation_transform
+  ────────────────────────────────────────────────────────────────────────────
+
+  Return the rotation matrix that changes one orientation into another.
+
+  **Parameters:**
+
+  `from`: Current orientation of the coordinates.
+  `to`: Target orientation of the coordinates.
+
+  **Returns:**
+
+  A 4 by 4 right-handed rotation matrix suitable for `multmatrix()`.
+ */
+function orientation_transform(from="wlh", to="wlh") =
+  orientation_matrix(assert_orientation(to, "to"))
+  * transpose_matrix(orientation_matrix(assert_orientation(from, "from")));
+
+/**
 ─────────────────────────────────────────────────────────────────────────────
 normalize_anchor
 ─────────────────────────────────────────────────────────────────────────────
@@ -2049,11 +2209,11 @@ function normalize_anchor(anchor) =
        align_z = is_undef(anchor[2]) ? 1 : anchor[2])
   assert(is_list(anchor) && len(anchor) == 3,
          "Anchor must be a list of 3 elements")
-  assert(is_num(anchor[0]) && in_list(abs(anchor[0]), [0, 1]),
+  assert(is_num(align_x) && in_list(abs(align_x), [0, 1]),
          "Invalid value in anchor[0]")
-  assert(is_num(anchor[1]) && in_list(abs(anchor[1]), [0, 1]),
+  assert(is_num(align_y) && in_list(abs(align_y), [0, 1]),
          "Invalid value in anchor[1]")
-  assert(is_num(anchor[2]) && in_list(abs(anchor[2]), [0, 1]),
+  assert(is_num(align_z) && in_list(abs(align_z), [0, 1]),
          "Invalid value in anchor[2]")
   [align_x, align_y, align_z];
 
@@ -2343,3 +2503,8 @@ function parse_percent(s) =
        ? substr(s, 0, len(s)-1)
        : s)
   str_to_num(str);
+
+function maybe_percent_string_to_num(val, total) = is_string(val)
+  ? percent_to_mm(parse_percent(val),
+                  total=total)
+  : val;

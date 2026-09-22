@@ -8,6 +8,7 @@ use <functions.scad>
 use <holes.scad>
 use <shapes3d.scad>
 use <slots.scad>
+use <transforms.scad>
 
 module row_of_circles(total_width,
                       d,
@@ -103,17 +104,25 @@ module columns_children(cols, w, gap=0, center=false) {
 module rows_children(rows,
                      w,
                      gap=0,
-                     center=false,
-                     reverse=false) {
+                     anchor=1) {
   rows_params = calc_cols_params(cols=rows, w=w, gap=gap);
   step = rows_params[0];
   total_y = rows_params[1];
-  translate([0, center ? -total_y / 2 : reverse ? -total_y : 0, 0]) {
-    for (i = [0 : rows - 1]) {
-      let (by = i * step + w / 2) {
-        translate([0, by, 0]) {
-          $i = i;
-          children();
+
+  assert(is_list(anchor) || is_undef(anchor) || in_list(anchor, [1, 0, -1]),
+         "Invalid anchor");
+
+  translate([0, 0, 0]) {
+
+    with_anchor(anchor=is_num(anchor) ? [1, anchor, 1] : anchor,
+                size=[0, total_y, 0],
+                centered=false) {
+      for (i = [0 : rows - 1]) {
+        let (by = i * step + w / 2) {
+          translate([0, by, 0]) {
+            $i = i;
+            children();
+          }
         }
       }
     }

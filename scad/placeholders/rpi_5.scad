@@ -10,7 +10,9 @@ include <../parameters.scad>
 
 use <../lib/functions.scad>
 use <../lib/holes.scad>
+use <../lib/placement.scad>
 use <../lib/shapes2d.scad>
+use <../lib/shapes3d.scad>
 use <../lib/slots.scad>
 use <../lib/transforms.scad>
 use <ai_hat.scad>
@@ -22,11 +24,16 @@ use <pin_header.scad>
 use <servo_driver_hat.scad>
 use <standoff.scad>
 
-show_standoffs            = true;
-show_ai_hat               = true;
-show_motor_driver_hat     = true;
-show_servo_driver_hat     = true;
-show_gpio_expansion_board = true;
+show_standoffs              = true;
+show_ai_hat                 = true;
+show_motor_driver_hat       = true;
+show_servo_driver_hat       = true;
+show_gpio_expansion_board   = true;
+show_camera_ribbon_slot     = true;
+
+rpi_camera_ribbon_slot_size = [rpi_csi_size[0], 1.6];
+rpi_camera_ribbon_slot_gap  = 1.4;
+rpi_camera_ribbon_slot_rows = 3;
 
 module io_controller(size=rpi_io_size) {
   color(matte_black, alpha=1) {
@@ -310,6 +317,19 @@ module rpi_standoffs(standoff_height=rpi_standoff_height,
   }
 }
 
+module rpi_camera_ribbon_slots(thickness, anchor=[1, 1, 1]) {
+  with_anchor(anchor=[anchor[0], 1, anchor[2]], size=[0, 0, 0], centered=true) {
+    rows_children(w=rpi_camera_ribbon_slot_size[1],
+                  gap=rpi_camera_ribbon_slot_gap,
+                  rows=rpi_camera_ribbon_slot_rows,
+                  anchor=anchor) {
+      rect_slot(h=thickness,
+                size=rpi_camera_ribbon_slot_size,
+                center=true);
+    }
+  }
+}
+
 module rpi_5(size=[rpi_width, rpi_len, rpi_thickness],
              bolt_spacing=rpi_bolt_spacing,
              corner_rad=rpi_offset_rad,
@@ -336,8 +356,12 @@ module rpi_5(size=[rpi_width, rpi_len, rpi_thickness],
              on_off_button_size=rpi_on_off_button_size,
              on_off_button_dia=rpi_on_off_button_dia,
              ethernet_jack_size=rpi_ethernet_jack_size,
+             usb_x_gap=5,
+             usb_y_offset=rpi_usb_y_offset,
              standoff_height=rpi_standoff_height,
              bolt_visible_h=chassis_thickness - chassis_counterbore_h,
+             camera_ribbon_slot=rpi_camera_ribbon_slot_size,
+             show_camera_ribbon_slot=show_camera_ribbon_slot,
              anchor=[1, 1, 1],
              slot_mode=false) {
 
@@ -345,18 +369,38 @@ module rpi_5(size=[rpi_width, rpi_len, rpi_thickness],
   length = size[1];
   h = size[2];
 
-  with_anchor(anchor=anchor, size=size, centered=false) {
+  usb_y = length - usb_size[1] + usb_y_offset;
+
+  with_anchor(anchor=anchor,
+              size=[w, length + usb_y_offset, h],
+              centered=false) {
     if (slot_mode) {
-      translate([bolt_offset, bolt_offset, 0]) {
-        four_corner_children(bolt_spacing,
-                             center=false) {
-          counterbore(d=mount_dia,
-                      h=slot_thickness,
-                      bore_h=chassis_counterbore_h,
-                      bore_d=rpi_bolt_cbore_dia,
-                      autoscale_step=0.1,
-                      sink=true,
-                      reverse=true);
+      union() {
+        translate([bolt_offset, bolt_offset, 0]) {
+          four_corner_children(bolt_spacing,
+                               center=false) {
+            counterbore(d=mount_dia,
+                        h=slot_thickness,
+                        bore_h=chassis_counterbore_h,
+                        bore_d=rpi_bolt_cbore_dia,
+                        autoscale_step=0.1,
+                        sink=true,
+                        reverse=true);
+          }
+        }
+        if (show_camera_ribbon_slot) {
+          translate([rpi_csi_position_x,
+                     length - camera_ribbon_slot[1] / 2 ,
+                     0]) {
+            rows_children(w=camera_ribbon_slot[1],
+                          gap=rpi_camera_ribbon_slot_gap,
+                          rows=rpi_camera_ribbon_slot_rows,
+                          anchor=[-1, -1, 1]) {
+              rect_slot(h=slot_thickness,
+                        size=camera_ribbon_slot,
+                        center=false);
+            }
+          }
         }
       }
     }
@@ -430,10 +474,10 @@ module rpi_5(size=[rpi_width, rpi_len, rpi_thickness],
                 }
               }
               union() {
-                offst = 3;
-                translate([0, length - usb_size[1] + offst, h]) {
+
+                translate([0, usb_y, h]) {
                   usb(size=usb_size);
-                  translate([usb_size[0] + 5, 0, 0]) {
+                  translate([usb_size[0] + usb_x_gap, 0, 0]) {
                     usb(size=usb_size);
 
                     translate([0, -usb_size[1], 0]) {
@@ -441,10 +485,10 @@ module rpi_5(size=[rpi_width, rpi_len, rpi_thickness],
                     }
                   }
                 }
-                translate([(usb_size[0] + 5) * 2,
+                translate([(usb_size[0] + usb_x_gap) * 2,
                            length
                            - ethernet_jack_size[1]
-                           + offst,
+                           + usb_y_offset,
                            0]) {
                   ethernet(size=ethernet_jack_size);
                 }
@@ -531,6 +575,17 @@ module rpi_5(size=[rpi_width, rpi_len, rpi_thickness],
   }
 }
 
-rpi_5(show_standoffs=show_standoffs,
-      show_ai_hat=show_ai_hat,
-      bolt_visible_h=chassis_thickness - chassis_counterbore_h);
+// rpi_5(show_standoffs=show_standoffs,
+//       show_ai_hat=show_ai_hat,
+//       bolt_visible_h=chassis_thickness - chassis_counterbore_h,
+//       slot_mode=false,
+//       anchor=[1, 1, 1]);
+
+// rpi_5(show_standoffs=show_standoffs,
+//       show_ai_hat=show_ai_hat,
+//       bolt_visible_h=chassis_thickness - chassis_counterbore_h,
+//       slot_mode=true,
+//       anchor=[1, 1, 1]);
+
+rpi_5(anchor=[1, 1, 1]);
+rpi_5(anchor=[1, 1, 1], slot_mode=true);

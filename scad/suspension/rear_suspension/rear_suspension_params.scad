@@ -1,4 +1,5 @@
 include <../../parameters.scad>
+include <../../steering_params.scad>
 
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -56,3 +57,19 @@ rear_chassis_maintenance_hole_arm_pad_dist = 8.40;
 // Rear part of the chassis with suspension.
 rear_suspension_chassis_bolt_pad           = 2.75;
 rear_suspension_chassis_corner_r           = 1;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RC motor slot
+// ─────────────────────────────────────────────────────────────────────────────
+
+rc_motor_maintenance_hole_dist             = 16.9;
+
+rc_motor_bolt_spacing                      = [19, 26];
+rc_motor_x_offset                          = 5.6;
+rc_motor_mount_bolt_d                      = m3_hole_dia;
+rc_motor_mount_cbore_d                     = m3_hole_dia * 2 + 0.2;
+rc_motor_mount_cbore_h                     = front_chassis_thickness / 2;
+
+rc_motor_mount_pad_x                       = 3;
+
+// 20.35

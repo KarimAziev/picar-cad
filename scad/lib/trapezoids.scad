@@ -89,8 +89,39 @@ module trapezoid_rounded_bottom(b=20,
                                 r_factor=0.1,
                                 center=false,
                                 $fn=20) {
-  rad = (is_undef(r) ? min(b, t, h) * r_factor : r);
+
+  assert(b > 0, "b must be > 0");
+  assert(t > 0, "t must be > 0");
+  assert(h > 0, "h must be > 0");
+
+  base_scale = min(b, t, h);
+  requested_rad = is_undef(r) ? base_scale * r_factor : r;
+
   m = (b - t) / 2;
+
+  // Maximum radius that keeps the rounded bottom inside the slanted sides
+  r_max_geom = b * h / (b + t);
+
+  // Also prevent left/right fillets from overlapping
+  r_max_width = b / 2;
+
+  r_max = min(r_max_width, r_max_geom);
+  r_factor_max = r_max / base_scale;
+
+  rad = min(requested_rad, r_max);
+
+  if (requested_rad > r_max)
+    echo(str("WARNING: trapezoid_rounded_bottom(): requested radius ",
+             requested_rad,
+             " exceeds maximum ",
+             r_max,
+             " (width limit=", r_max_width,
+             ", side limit=", r_max_geom,
+             "); clamped to ",
+             rad,
+             ". Max r_factor=",
+             r_factor_max));
+
   n = $fn;
 
   left_fillet = [for (i = [0 : n])

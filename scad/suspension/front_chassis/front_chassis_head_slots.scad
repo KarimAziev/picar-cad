@@ -17,6 +17,7 @@ use <../../lib/placement.scad>
 use <../../lib/shapes3d.scad>
 use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
+use <../../lib/trapezoids.scad>
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -31,7 +32,7 @@ use <../../lib/transforms.scad>
 function front_chassis_head_mount_size() =
   [max(head_neck_full_pan_panel_h() + head_neck_tilt_servo_slot_thickness,
        front_chassis_head_ribbon_slot_w)
-     + front_chassis_head_wire_land * 2,
+   + front_chassis_head_wire_land * 2,
    head_neck_full_w() + front_chassis_head_mount_padding * 2,
    front_chassis_thickness];
 
@@ -66,12 +67,13 @@ function front_chassis_head_front_reach() =
   **Returns:** Y centers relative to the pan axis, behind the head base.
  */
 function front_chassis_head_ribbon_slot_ys(rows=front_chassis_head_ribbon_slot_rows,
-                                         slot_l=front_chassis_head_ribbon_slot_l,
-                                         gap=front_chassis_head_ribbon_slot_gap) =
-  assert(rows >= 3 && rows == floor(rows), "Ribbon threading requires at least three slots")
+                                           slot_l=front_chassis_head_ribbon_slot_l,
+                                           gap=front_chassis_head_ribbon_slot_gap) =
+  assert(rows >= 3 && rows == floor(rows),
+         "Ribbon threading requires at least three slots")
   assert(slot_l > 0 && gap > 0)
   let (first_y = -front_chassis_head_mount_size()[1] / 2
-         - front_chassis_head_wire_land - slot_l / 2)
+       - front_chassis_head_wire_land - slot_l / 2)
   [for (row = [0:rows - 1]) first_y - row * (slot_l + gap)];
 
 /**
@@ -87,7 +89,7 @@ function front_chassis_head_ribbon_slot_ys(rows=front_chassis_head_ribbon_slot_r
 function front_chassis_head_rear_reach() =
   let (ys = front_chassis_head_ribbon_slot_ys())
   -ys[len(ys) - 1] + front_chassis_head_ribbon_slot_l / 2
-    + front_chassis_head_wire_land;
+  + front_chassis_head_wire_land;
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -101,14 +103,17 @@ function front_chassis_head_rear_reach() =
   two 3 mm strips. These are functional ribbon-routing features, not vents.
  */
 module front_chassis_head_ribbon_slots(thickness=front_chassis_thickness,
-                                      anchor=[0, 0, 1]) {
+                                       anchor=[0, 0, 1]) {
   size = front_chassis_head_mount_size();
   eps = front_chassis_joint_boolean_overlap;
   with_anchor(anchor, [size[0], size[1], thickness], centered=true) {
     for (y = front_chassis_head_ribbon_slot_ys()) {
       translate([0, y, -eps]) {
         rect_slot(size=[front_chassis_head_ribbon_slot_w, front_chassis_head_ribbon_slot_l],
-                   h=thickness + eps * 2, autoscale_step=0, center=true, r=0);
+                  h=thickness + eps * 2,
+                  autoscale_step=0,
+                  center=true,
+                  r=0);
       }
     }
   }
@@ -137,21 +142,48 @@ module front_chassis_head_slots(thickness=front_chassis_thickness,
   x_screw_cols = round((chassis_pan_servo_recesess_x_len / 2) / screw_step);
   y_screw_rows = round((chassis_pan_servo_recesess_y_len / 2) / screw_step);
 
+  cols_params = calc_cols_params(gap=chassis_pan_servo_screws_gap,
+                                 cols=x_screw_cols,
+                                 w=chassis_pan_servo_screw_d);
+  rows_params = calc_cols_params(gap=chassis_pan_servo_screws_gap,
+                                 cols=y_screw_rows,
+                                 w=chassis_pan_servo_screw_d);
+
+  total_x = cols_params[1];
+  total_y = rows_params[1];
+
+  recess_w = total_x * 2 + slot_r * 2 + chassis_pan_servo_screw_d
+    + chassis_pan_servo_screws_gap;
+  recess_l = total_y * 2 + slot_r * 2 + chassis_pan_servo_screw_d
+    + chassis_pan_servo_screws_gap;
+
   with_anchor(anchor=anchor,
               size=[size[0], size[1], thickness],
               centered=true) {
     union() {
       translate([0, 0, thickness - recess_h]) {
-        cuboid([chassis_pan_servo_recesess_x_len,
-                chassis_pan_servo_recesess_thickness,
-                recess_h + eps],
-               anchor=[0, 0, 1],
-               r=chassis_pan_servo_recesess_thickness / 2);
-        cuboid([chassis_pan_servo_recesess_thickness,
-                chassis_pan_servo_recesess_y_len,
-                recess_h + eps],
-               anchor=[0, 0, 1],
-               r=chassis_pan_servo_recesess_thickness / 2);
+        linear_extrude(height=recess_h + eps, center=false) {
+          mirror_copy([0, 1, 0]) {
+            translate([-chassis_pan_servo_recesess_thickness / 2, 0, 0]) {
+              trapezoid_rounded_top(b=chassis_pan_servo_slot_dia,
+                                    t=chassis_pan_servo_recesess_thickness,
+                                    h=recess_w / 2,
+                                    center=false,
+                                    r_factor=0.5);
+            }
+          }
+          rotate([0, 0, 90]) {
+            mirror_copy([0, 1, 0]) {
+              translate([-chassis_pan_servo_recesess_thickness / 2, 0, 0]) {
+                trapezoid_rounded_top(b=chassis_pan_servo_slot_dia,
+                                      t=chassis_pan_servo_recesess_thickness,
+                                      h=recess_l / 2,
+                                      center=false,
+                                      r_factor=0.5);
+              }
+            }
+          }
+        }
       }
 
       translate([0, 0, -eps]) {
@@ -189,3 +221,5 @@ module front_chassis_head_slots(thickness=front_chassis_thickness,
     }
   }
 }
+
+front_chassis_head_slots();

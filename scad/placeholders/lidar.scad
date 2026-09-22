@@ -49,8 +49,10 @@ function lidar_size(plist=rplidar_c1_plist) =
   **Returns:** Minimum lidar bottom Z in the caller's chassis coordinates.
   Inputs are geometric envelopes, not just current component visibility states.
  */
-function lidar_min_mount_z(obstacle_z, clearance,
-                           payload_z, service_clearance,
+function lidar_min_mount_z(obstacle_z,
+                           clearance,
+                           payload_z,
+                           service_clearance,
                            plist=rplidar_c1_plist) =
   assert(clearance >= 0 && service_clearance >= 0)
   max(obstacle_z + clearance - plist_get("base_h", plist),
@@ -97,8 +99,9 @@ module lidar_mount_slots(plist=rplidar_c1_plist, h, d, anchor=[0, 0, 1]) {
   **Notes:** Threads, cable and connector are not detailed geometry. The upper
   cylinder diameter and corner rounding remain visual approximations.
  */
-module lidar(plist=rplidar_c1_plist, anchor=[0, 0, 1],
-              show_mount_holes=show_lidar_mount_holes) {
+module lidar(plist=rplidar_c1_plist,
+             anchor=[0, 0, 1],
+             show_mount_holes=show_lidar_mount_holes) {
   corner_r = plist_get("corner_r", plist);
 
   base_h = plist_get("base_h", plist);

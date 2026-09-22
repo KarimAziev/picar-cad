@@ -74,8 +74,7 @@ module servo_arm(arm_d,
             rotate([0, 0, 180]) {
               rows_children(rows=bolt_n,
                             w=bolt_d,
-                            gap=arm_bolt_boss_spacing,
-                            center=false) {
+                            gap=arm_bolt_boss_spacing) {
                 translate([0, -bolt_d / 2, 0]) {
 
                   counterbore(d=bolt_d,

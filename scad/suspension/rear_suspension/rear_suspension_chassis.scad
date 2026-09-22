@@ -4,12 +4,16 @@
   * License: GPL-3.0-or-later
   */
 include <../../colors.scad>
+include <../../steering_params.scad>
 include <computed_params.scad>
+include <rear_suspension_params.scad>
+
 use <../../lib/debug.scad>
 use <../../lib/functions.scad>
 use <../../lib/plist.scad>
 use <../../lib/shapes2d.scad>
 use <../../lib/transforms.scad>
+use <../front_chassis/front_chassis_joint.scad>
 use <rear_suspension_slots.scad>
 
 /**
@@ -23,9 +27,13 @@ module rear_suspension_outline() {
   layout = rear_suspension_layout();
   r = rear_suspension_chassis_corner_r;
   mirror_copy([1, 0, 0]) {
-    offset_vertices_2d(r=r) polygon(rear_suspension_outline_points());
-    translate([plist_get("join_w", layout) / 2 - r, plist_get("min_y", layout)])
+    offset_vertices_2d(r=r) {
+      polygon(rear_suspension_outline_points());
+    }
+    translate([plist_get("join_w", layout) / 2 - r,
+               plist_get("min_y", layout)]) {
       square([r, r]);
+    }
   }
 }
 
@@ -53,18 +61,32 @@ module rear_suspension_chassis(debug=false,
   center_y = (plist_get("min_y", layout) + plist_get("max_y", layout)) / 2;
   with_anchor(is_undef(anchor) ? [0, 0, 1] : anchor, size, centered=true)
     translate([0, is_undef(anchor) ? 0 : -center_y, 0]) {
-      if (slot_mode) rear_suspension_slots();
-      else maybe_color(color) difference() {
-        linear_extrude(height=front_chassis_thickness) rear_suspension_outline();
-        rear_suspension_slots();
-      }
-      if (debug && !slot_mode)
-        translate([0, 0, front_chassis_thickness + front_chassis_joint_boolean_overlap])
-          mirror_copy([1, 0, 0])
-            debug_polygon_text(rear_suspension_outline_points(), circle_color="red",
-                                font_size=constraint(size[0] * 0.04, 1, 5),
-                                font=debug_font, color=debug_color);
+    if (slot_mode) {
+      rear_suspension_slots();
     }
+    else {
+      maybe_color(color) {
+        difference() {
+          linear_extrude(height=front_chassis_thickness) {
+            rear_suspension_outline();
+          }
+          rear_suspension_slots();
+        }
+      }
+    }
+    if (debug && !slot_mode)
+      translate([0,
+                 0,
+                 front_chassis_thickness + front_chassis_joint_boolean_overlap]) {
+        mirror_copy([1, 0, 0]) {
+          debug_polygon_text(rear_suspension_outline_points(),
+                             circle_color="red",
+                             font_size=constraint(size[0] * 0.04, 1, 5),
+                             font=debug_font,
+                             color=debug_color);
+        }
+      }
+  }
 }
 
 rear_suspension_chassis();

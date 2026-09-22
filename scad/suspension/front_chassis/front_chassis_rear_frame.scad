@@ -14,10 +14,12 @@ use <../../lib/debug.scad>
 use <../../lib/functions.scad>
 use <../../lib/placement.scad>
 use <../../lib/polygon_util.scad>
+use <../../lib/shapes3d.scad>
 use <../../lib/slider.scad>
 use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
 use <../../placeholders/dservo.scad>
+use <../../placeholders/rpi_5.scad>
 use <../bellcrank/bellcrank_slots.scad>
 use <../bellcrank_steering_slots.scad>
 use <../bulkhead/front_bulkhead.scad>
@@ -25,28 +27,26 @@ use <../bulkhead/front_bulkhead_chassis.scad>
 use <../bulkhead/front_bulkhead_housing.scad>
 use <../steering_servo_bracket/steering_servo_chassis_slots.scad>
 use <../wishbone_arms/front_lower_arm.scad>
-use <front_chassis_joint.scad>
 use <front_chassis_controls.scad>
+use <front_chassis_joint.scad>
 
 front_chassis_rear_frame_debug = true;
-show_front_controls_slots = true;
+show_front_controls_slots      = true;
+
+function front_chassis_pts() =
+  let (half_of_main_w = front_chassis_rear_frame_w / 2)
+  [[0, y_front_chassis_rear_frame_joint_1_start],
+   [front_frame_x_end, y_front_chassis_rear_frame_joint_1_start],
+   [half_of_main_w, y_front_chassis_rear_frame_main_start],
+   [half_of_main_w, front_chassis_y_joint_2_end],
+   [0, front_chassis_y_joint_2_end]];
 
 module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
-                                show_controls_slots=show_front_controls_slots,
                                 color=white_smoke_1,
                                 debug_color=green_2,
                                 debug_font="Gill Sans:style=Bold") {
 
-  servo_end_y = -bellcrank_y_distance_from_bulkhead + bellcrank_zone_y_len;
-  y_start = -bellcrank_y_distance_from_bulkhead + bellcrank_y_dist;
-  y_joint_1_end = -bellcrank_y_distance_from_bulkhead - bellcrank_mount_r;
-  y_joint_2_end = servo_end_y - joint_l;
-
-  pts = [[0, y_joint_1_end],
-         [front_frame_x_end, y_joint_1_end],
-         [servo_slot_min_w, y_start],
-         [servo_slot_min_w, y_joint_2_end],
-         [0, y_joint_2_end]];
+  pts = front_chassis_pts();
 
   module _debug(rotation) {
     let (x_size = polygon_x_len(pts) * 2,
@@ -63,21 +63,41 @@ module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
 
   difference() {
     maybe_color(color) {
-      linear_extrude(height=front_chassis_thickness,
-                     center=false,
-                     convexity=2) {
-        mirror_copy([1, 0, 0]) {
-          polygon(pts);
+      union() {
+        linear_extrude(height=front_chassis_thickness,
+                       center=false,
+                       convexity=2) {
+          mirror_copy([1, 0, 0]) {
+            offset_vertices_2d(r=front_chassis_rear_frame_corner_r) {
+              polygon(pts);
+            }
+          }
+        }
+        // remove rounded part at the top center
+        translate(concat(take(pts[0], 2), [0])) {
+          cuboid(size=[front_chassis_rear_frame_corner_r * 2,
+                       front_chassis_rear_frame_corner_r,
+                       front_chassis_thickness],
+                 anchor=[0, -1, 1]);
+        }
+        // remove rounded part at the end
+        translate([0, front_chassis_y_joint_2_end, 0]) {
+          cuboid(size=[front_chassis_rear_frame_w,
+                       front_chassis_rear_frame_corner_r,
+                       front_chassis_thickness],
+                 anchor=[0, 1, 1]);
         }
       }
     }
-    if (show_controls_slots) {
-      front_chassis_controls(slot_mode=true);
-    }
-    translate([0, y_joint_1_end, 0]) {
+
+    translate([0, y_front_chassis_rear_frame_joint_1_start, 0]) {
       front_chassis_joint_female(slot_mode=true);
     }
-    translate([0, y_start, 0]) {
+
+    translate([0, y_front_chassis_rear_frame_main_start, 0]) {
+      rpi_5(anchor=[1, -1, 1], slot_mode=true);
+    }
+    translate([0, y_front_chassis_rear_frame_main_start, 0]) {
       front_chassis_pin_joint_holes(center=true,
                                     direction=1,
                                     use_pad=false,
@@ -89,7 +109,8 @@ module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
                                      sink="countersunk");
       }
     }
-    translate([0, servo_end_y, 0]) {
+
+    translate([0, front_chassis_y_joint_2_end + joint_l, 0]) {
       front_chassis_joint_female(color=color,
                                  w=chassis_joint_wide_w,
                                  rail_w=chassis_joint_wide_rail_w,
@@ -115,4 +136,4 @@ module front_chassis_rear_frame_printable(debug=false, color=white_smoke_1) {
   front_chassis_rear_frame(debug=$preview ? debug : false, color=color);
 }
 
-front_chassis_rear_frame_printable(debug=front_chassis_rear_frame_debug);
+front_chassis_rear_frame();

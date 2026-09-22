@@ -16,8 +16,8 @@ include <../../colors.scad>
 include <../../parameters.scad>
 include <../../steering_params.scad>
 include <computed_params.scad>
-include <../middle_chassis/computed_params.scad>
 
+use <../../head/head_neck.scad>
 use <../../lib/debug.scad>
 use <../../lib/functions.scad>
 use <../../lib/shapes2d.scad>
@@ -25,8 +25,10 @@ use <../../lib/shapes3d.scad>
 use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
 use <../../lib/trapezoids.scad>
-use <../../head/head_neck.scad>
+use <../../lipo_pack_case/multi_lipo_pack_case.scad>
+use <../../motor_brackets/rc/gearbox_bracket.scad>
 use <../../placeholders/dservo.scad>
+use <../../placeholders/lidar.scad>
 use <../../placeholders/rpi_5.scad>
 use <../../power/power_case.scad>
 use <../bellcrank/bellcrank_drive.scad>
@@ -38,14 +40,14 @@ use <../bellcrank_steering_slots.scad>
 use <../bulkhead/front_bulkhead_chassis.scad>
 use <../bulkhead/front_bulkhead_housing.scad>
 use <../front_suspension_assembly.scad>
+use <../middle_chassis/middle_chassis.scad>
+use <../rear_chassis/rear_chassis_frame.scad>
 use <../steering_servo_bracket/steering_servo_bracket_assembly.scad>
 use <../steering_servo_bracket/steering_servo_chassis_slots.scad>
 use <../wishbone_arms/front_lower_arm.scad>
 use <front_chassis.scad>
-use <front_chassis_front_frame.scad>
-use <../middle_chassis/middle_chassis.scad>
 use <front_chassis_controls.scad>
-use <../rear_chassis/rear_chassis_assembly.scad>
+use <front_chassis_front_frame.scad>
 
 show_chassis_front_frame                    = true;
 show_chassis_rear_frame                     = true;
@@ -83,6 +85,7 @@ show_front_lower_arm_ball_stud              = true;
 show_front_upper_arm                        = true;
 
 show_front_bulkhead                         = true;
+show_front_rpi                              = true;
 show_front_bulkhead_upper_suspension_holder = true;
 
 show_upper_arm_ball_stud                    = true;
@@ -102,11 +105,13 @@ show_front_bulkhead_housing                 = true;
 show_head                                   = true;
 show_front_chassis_components               = true;
 
+lidar_h                                     = 48;
+
 // Joint separation for assembly inspection.
 front_chassis_joint_spacing                 = 0; // [0:1:30]
 middle_chassis_joint_spacing                = 0; // [0:1:30]
 rear_chassis_joint_spacing                  = 0; // [0:1:30]
-rear_motor_spacing                         = 0; // [0:1:40]
+rear_motor_spacing                          = 0; // [0:1:40]
 
 show_rear_chassis                           = true;
 show_rear_chassis_components                = true;
@@ -119,16 +124,18 @@ show_rear_unused_shaft                      = true;
 show_rear_differential_envelope             = false;
 show_middle_chassis_motor_slots             = true;
 
-show_middle_chassis                        = true;
-show_middle_chassis_components             = true;
-show_middle_chassis_power_cases            = true;
-show_middle_chassis_rpi                    = true;
-show_front_controls                       = true;
-show_front_controls_slots                 = true;
-show_front_access_slots                   = true;
-show_middle_camera_slots                  = true;
-show_middle_chassis_power_case_slots       = true;
-show_middle_chassis_rpi_slots              = true;
+show_middle_chassis                         = true;
+show_middle_chassis_components              = true;
+show_middle_chassis_power_case              = true;
+show_middle_chassis_rpi                     = true;
+show_front_controls                         = true;
+show_front_controls_slots                   = true;
+show_front_access_slots                     = true;
+show_middle_camera_slots                    = true;
+show_middle_chassis_power_case_slots        = true;
+show_middle_chassis_rpi_slots               = true;
+
+rear_chassis_y_offset                       = 200;  // [0:1:500]
 
 // Steering angle
 steering_servo_angle                        = 0; // [-25:1:25]
@@ -180,7 +187,7 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
                               middle_chassis_joint_spacing=middle_chassis_joint_spacing,
                               show_middle_chassis=show_middle_chassis,
                               show_middle_chassis_components=show_middle_chassis_components,
-                              show_middle_chassis_power_cases=show_middle_chassis_power_cases,
+                              show_middle_chassis_power_case=show_middle_chassis_power_case,
                               show_middle_chassis_rpi=show_middle_chassis_rpi,
                               show_front_controls=show_front_controls,
                               show_front_controls_slots=show_front_controls_slots,
@@ -199,17 +206,25 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
                               show_rear_dogbone=show_rear_dogbone,
                               show_rear_unused_shaft=show_rear_unused_shaft,
                               show_rear_differential_envelope=show_rear_differential_envelope,
-                              show_middle_chassis_motor_slots=show_middle_chassis_motor_slots) {
+                              show_middle_chassis_motor_slots=show_middle_chassis_motor_slots,
+                              show_front_rpi=show_front_rpi) {
+  lipo_pack_case_props = multi_lipo_pack_props(plist=multi_lipo_packs_case);
+
+  full_lipo_pack_size = plist_get("size", lipo_pack_case_props);
+
   front_chassis(show_front_frame=show_chassis_front_frame,
                 show_rear_frame=show_chassis_rear_frame,
                 debug=false,
                 spacing=front_chassis_joint_spacing,
-                show_controls_slots=show_front_controls_slots,
                 show_access_slots=show_front_access_slots);
 
-  if (show_front_chassis_components && show_front_controls) {
+  if (show_front_rpi) {
+    front_chassis_rpi(slot_mode=false);
+  }
+
+  if (show_front_chassis_components && show_front_rpi) {
     translate([0, -front_chassis_joint_spacing, 0]) {
-      front_chassis_controls();
+      front_chassis_rpi(slot_mode=false);
     }
   }
 
@@ -272,36 +287,25 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
                 pan_servo_rotation=0);
     }
   }
+  translate([0, front_chassis_y_joint_2_end, front_chassis_thickness]) {
+    multi_lipo_pack_case(multi_lipo_packs_case, anchor=[0, -1, 1]);
 
-  translate([0,
-             -bellcrank_y_distance_from_bulkhead + bellcrank_zone_y_len
-             - front_chassis_joint_spacing - middle_chassis_joint_spacing,
-             0]) {
-    middle_chassis_assembly(
-      show_middle_chassis=show_middle_chassis,
-      show_middle_chassis_components=show_middle_chassis_components,
-      show_middle_chassis_power_cases=show_middle_chassis_power_cases,
-      show_middle_chassis_rpi=show_middle_chassis_rpi,
-      show_middle_chassis_power_case_slots=show_middle_chassis_power_case_slots,
-      show_middle_chassis_rpi_slots=show_middle_chassis_rpi_slots,
-      show_middle_chassis_motor_slots=show_middle_chassis_motor_slots,
-      show_middle_chassis_camera_slots=show_middle_camera_slots,
-      anchor=[0, -1, 1]);
-    translate([0, -middle_chassis_size()[1] + joint_l - rear_chassis_joint_spacing, 0]) {
-      rear_chassis_assembly(
-        show_rear_chassis=show_rear_chassis,
-        show_rear_chassis_components=show_rear_chassis_components,
-        show_rear_motor_carrier=show_rear_motor_carrier,
-        show_rear_motor=show_rear_motor,
-        show_rear_gearbox=show_rear_gearbox,
-        show_rear_driveshaft=show_rear_driveshaft,
-        show_rear_dogbone=show_rear_dogbone,
-        show_rear_unused_shaft=show_rear_unused_shaft,
-        show_rear_differential_envelope=show_rear_differential_envelope,
-        rear_motor_spacing=rear_motor_spacing,
-        motor_joint_spacing=rear_chassis_joint_spacing);
+    translate([0, 0, full_lipo_pack_size[2]]) {
+      cuboid(size=concat(plist_get("size", rplidar_c1_plist), [lidar_h]),
+             anchor=[0, -1, 1]);
+      translate([0, 0,  lidar_h]) {
+
+        lidar(anchor=[0, -1, 1]);
+      }
+    }
+
+    translate([0, -full_lipo_pack_size[1], 0]) {
+      rear_chassis();
     }
   }
 }
 
 front_chassis_assembly();
+// translate([0, 20, 0]) {
+//   #cuboid(size=[125, 260 , 40], anchor=[0, -1, 1]);
+// }

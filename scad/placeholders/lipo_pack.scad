@@ -9,6 +9,10 @@ include <../colors.scad>
 include <../parameters.scad>
 
 use <../lib/functions.scad>
+use <../lib/plist.scad>
+use <../lib/shapes3d.scad>
+use <../lib/text.scad>
+use <../lib/transforms.scad>
 
 lipo_power_wiring_size    = [9.6, 8, 16.5];
 lipo_wiring_balancer_size = [8.75, 8, 11.3];
@@ -266,4 +270,139 @@ module lipo_pack(center=true,
   }
 }
 
-lipo_pack();
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  lipo_pack_oriented_size
+  ────────────────────────────────────────────────────────────────────────────
+
+  Return a LiPo pack plist's XYZ size after applying its orientation.
+
+  **Parameters:**
+
+  `plist`: LiPo pack properties containing logical `size=[width, length,
+  height]` and optional `orientation`.
+
+  **Returns:**
+
+  The oriented XYZ bounding-box size.
+ */
+function lipo_pack_oriented_size(plist) =
+  orientation_size(plist_get("orientation", plist, "wlh"),
+                   plist_get("size", plist));
+
+/**
+  ────────────────────────────────────────────────────────────────────────────
+  lipo_pack_from_pl
+  ──────────────────────────────────────────────────────────────────────────────
+
+  Render a plist-defined LiPo pack in its requested orientation.
+
+  **Parameters:**
+
+  `plist`: Pack properties. `size` is logical `[width, length, height]` and
+  `orientation` defaults to `"wlh"`.
+  `anchor`: Anchor of the final oriented bounding box.
+ */
+module lipo_pack_from_pl(plist, anchor=[0, 1, 1]) {
+  size = plist_get("size", plist);
+  w = size[0];
+  l = size[1];
+  h = size[2];
+  corner_r = plist_get("corner_r", plist);
+  orientation = plist_get("orientation", plist, "wlh");
+
+  color = plist_get("color", plist, "#B51F2C");
+  side_cover_box = plist_get("side_cover", plist);
+  top_cover_box = plist_get("top_cover", plist, []);
+
+  top_cover_box_bg = plist_get("bg", top_cover_box);
+
+  function _from_percent_val(val, total) = is_string(val)
+    ? percent_to_mm(parse_percent(val),
+                    total=total)
+    : val;
+
+  module _cover(pl,
+                total_w=w,
+                total_l=l,
+                w_def="90%",
+                l_def="90%",
+                is_side=false,
+                anchor=[0, 0, 1]) {
+    bg = plist_get("bg", pl);
+    cover_size = plist_get("size", pl, []);
+    corner_r = plist_get("corner_r", pl);
+    texts = plist_get("texts", pl, []);
+    let (params = [[total_w, w_def], [total_l, l_def]],
+         xy = [for (i = [0:1]) let (v = cover_size[i],
+                                    spec = params[i],
+                                    total = spec[0],
+                                    def = spec[1],
+                                    val = with_default(v, def),)
+                                 maybe_percent_string_to_num(val=val,
+                                                             total=total)],
+         cover_w = xy[0],
+         cover_y = xy[1]) {
+      color(bg, alpha=1) {
+        cuboid(size=[cover_w, cover_y, 0.07],
+               r=corner_r,
+               anchor=anchor);
+      }
+
+      if (texts && len(texts) > 0) {
+        text_texts_defaults = plist_get("props",
+                                        pl,
+                                        ["size", (cover_w * 0.9) / len(texts)]);
+        final_pl = plist_merge(["halign", "center"],
+                               text_texts_defaults);
+
+        rotate([0, 0, 90]) {
+          text_rows(texts, plist=final_pl);
+        }
+      }
+    }
+  }
+
+  with_orientation(from="wlh",
+                   to=orientation,
+                   size=size,
+                   anchor=anchor) {
+    if (top_cover_box_bg) {
+      translate([0, 0, h]) {
+        _cover(top_cover_box);
+      }
+    }
+    if (side_cover_box) {
+      mirror_copy([1, 0, 0]) {
+        translate([w / 2, 0, 0]) {
+          rotate([0, 90, 0]) {
+            _cover(side_cover_box,
+                   total_w=h,
+                   l_def="100%",
+                   anchor=[-1, 0, 1]);
+          }
+        }
+      }
+    }
+
+    color(color) {
+      cuboid(size=size, r=corner_r, anchor=[0, 0, 1]);
+    }
+  }
+}
+
+lipo_pack_from_pl(plist=["size", [lipo_pack_width,
+                                  lipo_pack_length,
+                                  lipo_pack_height],
+                         "orientation", "lhw", // wlh (default) | lwh | lhw | whl | hlw | hwl
+                         "top_cover", ["bg", "gold",
+                                       "texts", [["text", " 5000 MAH",
+                                                  "size", 11.4],
+                                                 ["text", "2S",
+                                                  "size", 10,
+                                                  "halign", "left",
+                                                  "gap_before", 4,
+                                                  "font", "DSEG14 Classic:style=Bold"]],
+                                       "props", ["halign", "center", "color", "#28282B"]],
+                         "side_cover", ["bg", "silver"]],
+                  anchor=[0, 0, 1]);

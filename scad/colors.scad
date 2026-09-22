@@ -62,6 +62,8 @@ brown_3                  = "#7a4d48";
 
 red_1                    = "#df1d29";
 red_2                    = "#D63A20";
+red_3                    = "#B75456";
+red_4                    = "#D54D48";
 
 white_smoke_1            = "#f5f5f5";
 white_off_1              = "#F2F0EF";

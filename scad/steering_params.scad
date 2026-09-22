@@ -1,6 +1,7 @@
 include <colors.scad>
 include <parameters.scad>
 
+use <lipo_pack_case/multi_lipo_pack_case.scad>
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Bellcrank link arm. Part of both the drive and idler arms.
@@ -9,6 +10,11 @@ include <parameters.scad>
 //   The lower boss is for the center link bushing.
 // - For the knuckle steering link, with an upper boss only.
 // ─────────────────────────────────────────────────────────────────────────────
+
+chassis_bolt_d                                    = m3_hole_dia;
+chassis_bore_d                                    = 6.2;
+chassis_bore_h                                    = min(m3_countersunk_head_h + 0.2,
+                                                        chassis_thickness / 2);
 
 // Diameter of the bolt holes in the bellcrank idler and bellcrank drive arms
 bellcrank_arm_bolt_d                              = 3.6;
@@ -229,7 +235,7 @@ dsservo_socket_side                               = -1;
 // ─────────────────────────────────────────────────────────────────────────────
 // Front chassis
 // ─────────────────────────────────────────────────────────────────────────────
-front_chassis_thickness                           = 6.0;
+front_chassis_thickness                           = chassis_thickness;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Bulkhead slots
@@ -1169,17 +1175,139 @@ upper_steering_panel_bulkhead_bore_h              = 1;
 upper_steering_panel_bulkhead_spacing             = 21;
 
 // Rear ladder frame: packaging allowances, not measured suspension interfaces.
-rear_chassis_rail_w                              = 12;
-rear_chassis_rail_h                              = 12;
-rear_chassis_cross_w                             = 12;
-rear_chassis_clearance                           = 2;
-rear_chassis_fit_clearance                       = 0.4;
-rear_chassis_carrier_h                           = 4;
-rear_chassis_mount_land                          = 3;
-rear_chassis_mount_bolt_d                        = m3_hole_dia;
-rear_chassis_strap_w                             = 5;
-rear_chassis_strap_h                             = 2;
-rear_chassis_diff_size                           = [54, 38, 32];
-rear_chassis_diff_input_l                        = 12;
+rear_chassis_rail_w                               = 12;
+rear_chassis_rail_h                               = 12;
+rear_chassis_cross_w                              = 12;
+rear_chassis_clearance                            = 2;
+rear_chassis_fit_clearance                        = 0.4;
+rear_chassis_carrier_h                            = 4;
+rear_chassis_mount_land                           = 3;
+rear_chassis_mount_bolt_d                         = m3_hole_dia;
+rear_chassis_strap_w                              = 5;
+rear_chassis_strap_h                              = 2;
+rear_chassis_diff_size                            = [54, 38, 32];
+rear_chassis_diff_input_l                         = 12;
 // Measured from the chassis top mounting surface to the differential input axis.
-rear_chassis_diff_input_h                        = 20;
+rear_chassis_diff_input_h                         = 20;
+
+motor_plist                                       = ["body", ["d", 24.3,
+                                                              "h", 27.7,
+                                                              "color", matte_black],
+                                                     "contact_cup", ["h", 1.6,
+                                                                     "color", midnight_blue],
+                                                     "contact", ["size", [0.8, 1.8, 3],
+                                                                 "color", metallic_silver_3,
+                                                                 "pad", 3],
+                                                     "contact_stack", [["size", [8.6, 17.4, 4.8],
+                                                                        "corner_r", 2,
+                                                                        "color", midnight_blue],
+                                                                       ["d", 8,
+                                                                        "corner_r", 2,
+                                                                        "color", midnight_blue,
+                                                                        "h", 2.6]],
+                                                     "pinion_hole_d", 8,
+                                                     "pinion_gear_h", 2.6,
+                                                     "pinion_gear_color", "silver",
+                                                     "motor_shaft", ["h", 10.9,
+                                                                     "d", 2,
+                                                                     "gear_d", 7.3,
+                                                                     "gear_h", 5.1,],
+                                                     "drive_seeve", ["od", 19.7,
+                                                                     "h", 25.7,
+                                                                     "outer_dist", 1.8],
+                                                     "drive_seeve_shaft", ["od", 4.95,
+                                                                           "l", 24.3,
+                                                                           "outer_l", 6.8,
+                                                                           "pad_l", 6.8],
+                                                     "drive_shaft", ["d", 3.95,
+                                                                     "bearing", ["od", 7,
+                                                                                 "w", 2],
+                                                     // "rear_l", 47.58,
+                                                                     "rear_l", 11,
+                                                                     "l", 61.42,
+                                                        // "l", 98.1,
+                                                                     "pad_l", 6.8,],
+                                                     "gearbox", ["side_ears", ["poses",
+                                                                               [[-21.3, 2.84],
+                                                                                [-26, 29.5],
+                                                                                [11.8, 17.63]],
+                                                                               "thickness", 8,
+                                                                               "bolt_d", m2_hole_dia,
+                                                                               "d", 5],
+                                                                 "thickness", 18,
+                                                                 "corner_r", 6,
+                                                                 "color", red_4,
+                                                                 "bottom_straight_w", 15.34,
+                                                                 "bearing_boss_wall", 1.05,
+                                                                 "bearing_boss_h", 2.5,
+                                                                 "motor_shaft_y", 18.8,
+                                                                 "motor_outer_shaft_x_pad", 11.65, // right width
+                                                     // "motor_outer_shaft_x_pad", 15.65, // right width
+                                                                 "motor_x_shift", 16.0, // left
+                                                                 "outer_shaft_y_center", 10.65,
+                                                                 "front_mount_ear_y_center", 10.65,
+                                                                 "rear_mount_ear_y_center", 12.35,
+                                                                 "mount_bolt_d", m3_hole_dia,
+                                                                 "mount_ears", ["boss_d", 8.6,
+                                                                // "ear_l", 6.7,
+                                                                                "ear_l", 2.35,
+                                                                                "ear_y_pad", 3.35,
+                                                                                "ear_thickness", 3.24,
+                                                                                "rear_boss_h", 1.0,
+                                                                                "front_boss_h", 0.0],
+                                                                 "mount_ear_x_dist", 3.2,
+                                                     // "mount_ear_x_dist", 13.0,
+                                                                 "mount_ear_y_shift", 1.6,
+                                                                 "mount_ear_y_spacing", 25.6,
+                                                     // "mount_ear_y_spacing", 25.6,
+                                                                 "mount_ear_x_spacing", 19.8,
+                                                                 "mount_cbore_h", 4,
+                                                                 "mount_cbore_d", 6.8, // 6.6
+                                                                 "upper_gear", ["x", 1.46,
+                                                                                "y", 22.09,
+                                                                                "d", 18.4],
+                                                                 "motor_pad", 1.2]];
+
+front_rpi_y_offset                                = 0;
+front_rpi_x_offset                                = -5;
+
+front_chassis_rear_frame_corner_r                 = 4;
+
+lipo_pack_base_pl                                 = ["size", [lipo_pack_width, lipo_pack_length, lipo_pack_height],
+                                                     "orientation", "lhw",
+                                                     "top_cover", ["bg", "gold",
+                                                                   "texts", [["text", "2S",
+                                                                              "size", 10,
+                                                                              "font", "DSEG14 Classic:style=Bold"]],
+                                                                   "props", ["halign", "center", "color", "#28282B"]],
+                                                     "side_cover", ["bg", "silver"]];
+
+lipo_packs                                        = [lipo_pack_base_pl, lipo_pack_base_pl];
+
+basic_vent_spec                                   = ["vent_h", 2,
+                                                     "vent_w", "20%",
+                                                     "vent_col_gap", "5%",
+                                                     "vent_pad", 5];
+
+function merge_vent_spec(pl) = plist_merge(basic_vent_spec, pl);
+
+multi_lipo_packs_case                             = ["lipo_packs", lipo_packs,
+                                                     "color", white_smoke_1,
+                                                     "orientation", "wlh",
+                                                     "walls", ["front", merge_vent_spec(["t", 2]),
+                                                               "rear", merge_vent_spec(["t", 2]),
+                                                               "bottom", ["t", 3],
+                                                               "left", merge_vent_spec(["t", 2]),
+                                                               "right", merge_vent_spec(["t", 2]),
+                                                               "inner", ["t", 2,]],
+                                                     "bolt_pad_x", 10,
+                                                     "bolt_pad_y", 5,
+                                                     "bolt_d", m3_hole_dia,
+                                                     "bore_d", front_chassis_bellcrank_bolt_bore_d,
+                                                     "bore_h", front_chassis_bellcrank_bolt_bore_h,];
+
+multi_power_case_props                            = multi_lipo_pack_props(plist=multi_lipo_packs_case);
+multi_power_case_size                             = plist_get("size",
+                                                              multi_power_case_props);
+
+chassis_body_min_w                                = multi_power_case_size[0];
