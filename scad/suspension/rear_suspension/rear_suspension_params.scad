@@ -58,18 +58,18 @@ rear_chassis_maintenance_hole_arm_pad_dist = 8.40;
 rear_suspension_chassis_bolt_pad           = 2.75;
 rear_suspension_chassis_corner_r           = 1;
 
+// length of the transition to the wider part
+rear_suspension_chassis_transition_len     = 10;
+
 // ─────────────────────────────────────────────────────────────────────────────
 // RC motor slot
 // ─────────────────────────────────────────────────────────────────────────────
 
+// Gap from the sleeve's outer end to the maintenance-hole center along +Y.
+// Without a sleeve, use the start of the output shaft's end flat.
 rc_motor_maintenance_hole_dist             = 16.9;
 
-rc_motor_bolt_spacing                      = [19, 26];
-rc_motor_x_offset                          = 5.6;
-rc_motor_mount_bolt_d                      = m3_hole_dia;
-rc_motor_mount_cbore_d                     = m3_hole_dia * 2 + 0.2;
-rc_motor_mount_cbore_h                     = front_chassis_thickness / 2;
-
-rc_motor_mount_pad_x                       = 3;
-
-// 20.35
+// Sides refer to the mounted bracket in chassis coordinates, after rotation.
+panel_stack_side                          = "auto"; // auto | left (-X) | right (+X)
+panel_stack_side_x_dist_from_motor         = 3; // edge-to-edge bracket/panel gap
+panel_stack_y_offset                      = 0; // from bracket footprint center, along chassis Y

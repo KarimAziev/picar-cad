@@ -48,10 +48,11 @@ module gearmotor(plist,
                  show_shaft_seeve=show_shaft_seeve,
                  show_extra_drive_shaft=show_extra_drive_shaft,
                  slot_mode) {
-  gearbox_plist = plist_get("gearbox", plist);
-  pinion_gear_h = plist_get("pinion_gear_h", plist);
-  motor_shaft_y = plist_get("motor_shaft_y", gearbox_plist);
-  motor_outer_shaft_x_spacing = plist_get("motor_x_shift", gearbox_plist);
+  gearbox_params = gearbox_compute_params(plist);
+  pinion_gear_h = plist_get("pinion_gear_h", gearbox_params);
+  motor_shaft_y = plist_get("motor_shaft_y", gearbox_params);
+  motor_outer_shaft_x_spacing = plist_get("motor_outer_shaft_x_spacing",
+                                          gearbox_params);
 
   translate([0, 0, parent_thickness]) {
 

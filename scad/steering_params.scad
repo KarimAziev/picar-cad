@@ -1290,7 +1290,7 @@ basic_vent_spec                                   = ["vent_h", 2,
 function merge_vent_spec(pl) = plist_merge(basic_vent_spec, pl);
 
 multi_lipo_packs_case                             = ["lipo_packs", lipo_packs,
-                                                     "color", white_smoke_1,
+                                                     "color", cobalt_blue_metallic,
                                                      "orientation", "wlh",
                                                      "walls", ["front", merge_vent_spec(["t", 2]),
                                                                "rear", merge_vent_spec(["t", 2]),

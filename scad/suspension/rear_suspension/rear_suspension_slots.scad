@@ -3,11 +3,14 @@
   * Author: Karim Aziiev <karim.aziiev@gmail.com>
   * License: GPL-3.0-or-later
   */
+include <../../steering_params.scad>
 include <computed_params.scad>
 
 use <../../lib/plist.scad>
 use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
+use <../../motor_brackets/rc/gearbox_bracket.scad>
+use <../../panel_stack/panel_stack.scad>
 use <../front_chassis/front_chassis_joint.scad>
 
 /**
@@ -32,12 +35,14 @@ module rear_suspension_counterbore() {
   Emit the measured bolt pattern, arm-pad slot and maintenance hole.
   **Parameters:**
   - `anchor`: Envelope anchor, or `undef` to retain native holder-row coordinates.
+  - `layout`: Resolved rear layout shared with the plate and components.
   **Notes:** Body and cutters use the same envelope. Mounting recesses face -Z.
  */
-module rear_suspension_slots(anchor=undef) {
-  layout = rear_suspension_layout();
+module rear_suspension_slots(anchor=undef, layout=rear_suspension_layout()) {
   size = plist_get("size", layout);
   center_y = (plist_get("min_y", layout) + plist_get("max_y", layout)) / 2;
+
+  maintenance_y = plist_get("maintenance_y", layout);
 
   with_anchor(is_undef(anchor) ? [0, 0, 1] : anchor, size, centered=true) {
     translate([0, is_undef(anchor) ? 0 : -center_y, 0]) {
@@ -58,27 +63,24 @@ module rear_suspension_slots(anchor=undef) {
                   center=true);
       }
 
-      translate([0, plist_get("maintenance_y", layout), 0]) {
+      translate([0, maintenance_y, 0]) {
         counterbore(h=front_chassis_thickness,
                     d=rear_chassis_maintenance_hole_d);
       }
-
-      translate([rc_motor_x_offset,
-                 plist_get("motor_y", layout),
-                 0]) {
-        with_anchor(anchor=[-1, -1, 1],
-                    size=rc_motor_bolt_spacing,
-                    centered=true) {
-          four_corner_children(size=rc_motor_bolt_spacing,
-                               center=true) {
-            counterbore(d=rc_motor_mount_bolt_d,
-                        h=front_chassis_thickness,
-                        bore_d=rc_motor_mount_cbore_d,
-                        bore_h=rc_motor_mount_cbore_h,
-                        reverse=true,
-                        sink=false);
-          }
+      translate(plist_get("motor_pos", layout)) {
+        rotate(plist_get("motor_rotation", layout)) {
+          gearmotor_bracket(params=plist_get("bracket", layout),
+                            anchor=plist_get("motor_anchor", layout),
+                            chassis_thickness=front_chassis_thickness,
+                            slot_mode=true);
         }
+      }
+
+      translate(plist_get("panel_pos", layout)) {
+        panel_stack_bolt_holes(orientation=plist_get("panel_orientation", layout),
+                               anchor=plist_get("panel_anchor", layout),
+                               anchor_mode="size",
+                               slot_thickness=front_chassis_thickness);
       }
     }
   }

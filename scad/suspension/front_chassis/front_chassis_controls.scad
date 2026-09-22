@@ -35,8 +35,8 @@ function front_chassis_controls_pos() =
 module front_chassis_controls(slot_mode=false) {
   pos = front_chassis_controls_pos();
   translate([pos[0], pos[1], slot_mode ? 0 : pos[2]]) {
-    panel_stack(center=true,
-                y_axle=true,
+    panel_stack(anchor=[0, 0, 1],
+                orientation="wlh",
                 show_buttons=true,
                 show_standoff=true,
                 slot_mode=slot_mode,

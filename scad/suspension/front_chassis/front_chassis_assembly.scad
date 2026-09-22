@@ -20,6 +20,7 @@ include <computed_params.scad>
 use <../../head/head_neck.scad>
 use <../../lib/debug.scad>
 use <../../lib/functions.scad>
+use <../../lib/plist.scad>
 use <../../lib/shapes2d.scad>
 use <../../lib/shapes3d.scad>
 use <../../lib/slots.scad>
@@ -105,8 +106,6 @@ show_front_bulkhead_housing                 = true;
 show_head                                   = true;
 show_front_chassis_components               = true;
 
-lidar_h                                     = 48;
-
 // Joint separation for assembly inspection.
 front_chassis_joint_spacing                 = 0; // [0:1:30]
 middle_chassis_joint_spacing                = 0; // [0:1:30]
@@ -127,6 +126,10 @@ show_middle_chassis_motor_slots             = true;
 show_middle_chassis                         = true;
 show_middle_chassis_components              = true;
 show_middle_chassis_power_case              = true;
+show_middle_chassis_lipo_packs              = true;
+show_middle_chassis_lidar                   = true;
+show_middle_chassis_lidar_support           = true;
+
 show_middle_chassis_rpi                     = true;
 show_front_controls                         = true;
 show_front_controls_slots                   = true;
@@ -188,13 +191,10 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
                               show_middle_chassis=show_middle_chassis,
                               show_middle_chassis_components=show_middle_chassis_components,
                               show_middle_chassis_power_case=show_middle_chassis_power_case,
-                              show_middle_chassis_rpi=show_middle_chassis_rpi,
-                              show_front_controls=show_front_controls,
-                              show_front_controls_slots=show_front_controls_slots,
+                              show_middle_chassis_lipo_packs=show_middle_chassis_lipo_packs,
+                              show_middle_chassis_lidar=show_middle_chassis_lidar,
+                              show_middle_chassis_lidar_support=show_middle_chassis_lidar_support,
                               show_front_access_slots=show_front_access_slots,
-                              show_middle_camera_slots=show_middle_camera_slots,
-                              show_middle_chassis_power_case_slots=show_middle_chassis_power_case_slots,
-                              show_middle_chassis_rpi_slots=show_middle_chassis_rpi_slots,
                               rear_chassis_joint_spacing=rear_chassis_joint_spacing,
                               rear_motor_spacing=rear_motor_spacing,
                               show_rear_chassis=show_rear_chassis,
@@ -208,6 +208,7 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
                               show_rear_differential_envelope=show_rear_differential_envelope,
                               show_middle_chassis_motor_slots=show_middle_chassis_motor_slots,
                               show_front_rpi=show_front_rpi) {
+  lidar_h = head_neck_max_z();
   lipo_pack_case_props = multi_lipo_pack_props(plist=multi_lipo_packs_case);
 
   full_lipo_pack_size = plist_get("size", lipo_pack_case_props);
@@ -287,20 +288,22 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
                 pan_servo_rotation=0);
     }
   }
+
+  translate([0, front_chassis_y_joint_2_end, 0]) {
+    middle_chassis_assembly(show_middle_chassis=show_middle_chassis,
+                            show_middle_chassis_components=show_middle_chassis_components,
+                            show_middle_chassis_power_case=show_middle_chassis_power_case,
+                            show_middle_chassis_lipo_packs=show_middle_chassis_lipo_packs,
+                            show_middle_chassis_lidar_support=show_middle_chassis_lidar_support,
+                            show_middle_chassis_lidar=show_middle_chassis_lidar,
+                            power_case_plist=multi_lipo_packs_case);
+  }
   translate([0, front_chassis_y_joint_2_end, front_chassis_thickness]) {
-    multi_lipo_pack_case(multi_lipo_packs_case, anchor=[0, -1, 1]);
-
-    translate([0, 0, full_lipo_pack_size[2]]) {
-      cuboid(size=concat(plist_get("size", rplidar_c1_plist), [lidar_h]),
-             anchor=[0, -1, 1]);
-      translate([0, 0,  lidar_h]) {
-
-        lidar(anchor=[0, -1, 1]);
+    // Join the rear plate to the battery's rear edge
+    translate([0, -full_lipo_pack_size[1], -front_chassis_thickness]) {
+      rotate([0, 0, 180]) {
+        rear_chassis(anchor=[0, 1, 1]);
       }
-    }
-
-    translate([0, -full_lipo_pack_size[1], 0]) {
-      rear_chassis();
     }
   }
 }
