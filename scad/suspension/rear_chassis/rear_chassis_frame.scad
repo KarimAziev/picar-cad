@@ -47,6 +47,9 @@ function rear_chassis_size(layout=rear_suspension_layout()) =
   - `show_extra_drive_shaft`: Display the shaft extending from the sleeve.
   - `anchor`: Plate envelope anchor, or `undef` for native holder-row coordinates.
   - `layout`: Resolved rear layout; display toggles do not change its dimensions.
+  - `show_motor_encoder_bracket`: Display the removable shaft encoder mount.
+  - `show_motor_encoder`: Display its PCB.
+  - `show_motor_encoder_magnet`: Display its shaft-end magnet.
  */
 module rear_chassis(show_panel_stack=true,
                     show_gearbox_bracket=true,
@@ -59,7 +62,10 @@ module rear_chassis(show_panel_stack=true,
                     show_shaft_seeve=true,
                     show_extra_drive_shaft=true,
                     anchor=[0, 1, 1],
-                    layout=rear_suspension_layout()) {
+                    layout=rear_suspension_layout(),
+                    show_motor_encoder_bracket=true,
+                    show_motor_encoder=true,
+                    show_motor_encoder_magnet=true) {
   size = rear_chassis_size(layout);
   center_y = (plist_get("min_y", layout) + plist_get("max_y", layout)) / 2;
   with_anchor(is_undef(anchor) ? [0, 0, 1] : anchor, size, centered=true) {
@@ -78,7 +84,10 @@ module rear_chassis(show_panel_stack=true,
                               show_mount_bolts=show_mount_bolts,
                               show_nuts=show_nuts,
                               show_shaft_seeve=show_shaft_seeve,
-                              show_extra_drive_shaft=show_extra_drive_shaft);
+                              show_extra_drive_shaft=show_extra_drive_shaft,
+                              show_encoder_bracket=show_motor_encoder_bracket,
+                              show_encoder=show_motor_encoder,
+                              show_encoder_magnet=show_motor_encoder_magnet);
           }
         }
         if (show_panel_stack) {

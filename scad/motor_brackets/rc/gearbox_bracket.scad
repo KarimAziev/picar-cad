@@ -21,17 +21,23 @@ use <../../placeholders/motors/rc/brushed_motor.scad>
 use <../../placeholders/motors/rc/gearbox.scad>
 use <../../placeholders/motors/rc/gearmotor.scad>
 use <../../placeholders/rpi_5.scad>
+use <gearmotor_encoder_bracket.scad>
 
 show_gearbox                  = true;
 show_motor                    = true;
 show_bearing                  = true;
 show_drive_shaft              = true;
-show_mount_bolts              = true;
+show_mount_bolts              = false;
 show_nuts                     = true;
 show_bracket                  = true;
 show_shaft_seeve              = true;
 show_extra_drive_shaft        = true;
+show_encoder_bracket          = true;
+show_encoder                  = true;
+show_encoder_magnet           = true;
+
 show_min_parent_surface_width = false;
+
 debug_circle_color            = matte_black;
 
 bracket_thickness             = 6;
@@ -111,6 +117,7 @@ module loft_polyhedron(pts1, pts2, h) {
   - `corner_r`: Outline rounding radius.
   - `fillet_x_w`: Base flare along X.
   - `fillet_y_w`: Base flare along Y.
+  - `encoder_plist`: Shaft encoder PCB specification; `undef` omits its mount.
 
   **Returns:**
   A plist shared by the renderer and its consumers. Coordinates are native,
@@ -118,7 +125,10 @@ module loft_polyhedron(pts1, pts2, h) {
   reference plane, and the mounting surface is Z=0. The motor extends toward
   +Y; its output shaft extends toward -Y.
   - `bounds`, `size`: Conservative bracket reference box and XYZ dimensions,
-    including the flared base and support towers, excluding hardware.
+    including the flared base, support towers and removable encoder mount,
+    excluding hardware. `base_bounds` retains the original bracket envelope.
+  - `encoder_mount`: Encoder mounting datums and printable-part parameters, or
+    `undef`. Its footprint automatically contributes to the chassis layout.
   - `side_widths`: `[left, right]` reach from the drive-shaft axis.
   - `min_parent_surface_size`: Symmetric shaft-centered width and the length
     from the bracket through the drive connection. No chassis margin is added.
@@ -136,7 +146,8 @@ function gearmotor_bracket_compute_params(plist=motor_plist,
                                           bracket_thickness=bracket_thickness,
                                           corner_r=gearbox_bracket_corner_r,
                                           fillet_x_w=gearbox_bracket_fillet_x_w,
-                                          fillet_y_w=gearbox_bracket_fillet_y_w) =
+                                          fillet_y_w=gearbox_bracket_fillet_y_w,
+                                          encoder_plist=motor_encoder_plist) =
   assert(bolt_d > 0 && bracket_thickness > 0,
          "Bracket hole diameter and thickness must be positive")
   assert(min(bolt_pad_x, bolt_pad_y, ear_bolt_pad, corner_r,
@@ -220,8 +231,9 @@ function gearmotor_bracket_compute_params(plist=motor_plist,
                                "Rear mount bolt", ["rotation", [0, 0, 70]]],
                               concat(motor_cap_bolt_left,
                                      ["Back motor bolt left", ["rotation", [0, 0, 90]]]),
-                              concat(motor_cap_bolt_right,
-                                     ["Back motor bolt right", ["rotation", [0, 0, 90]]])],
+// concat(motor_cap_bolt_right,
+//        ["Back motor bolt right", ["rotation", [0, 0, 90]]])
+                             ],
 
 // holes for gearbox to bracket itself
        gearbox_mount_holes = [bracket_gearbox_bolt_left_center,
@@ -278,11 +290,11 @@ function gearmotor_bracket_compute_params(plist=motor_plist,
        min_hole_y = polygon_min_y(all_holes),
        max_hole_y = polygon_max_y(all_holes),
 
-       min_y = polygon_min_y(pts_2),
-       max_y = polygon_max_y(pts_2),
+       base_min_y = polygon_min_y(pts_2),
+       base_max_y = polygon_max_y(pts_2),
 
-       min_x = polygon_min_x(pts_2),
-       max_x = polygon_max_x(pts_2),
+       base_min_x = polygon_min_x(pts_2),
+       base_max_x = polygon_max_x(pts_2),
        drive_seeve = plist_get("drive_seeve", plist, []),
        has_sleeve = plist_get("od", drive_seeve, 0) > 0
        && plist_get("h", drive_seeve, 0) > 0,
@@ -296,14 +308,27 @@ function gearmotor_bracket_compute_params(plist=motor_plist,
                        + plist_get("drive_seeve_h", gearbox_params)
                        : shaft_start + plist_get("outer_shaft_l", gearbox_params)
                        - plist_get("outer_shaft_pad_l", gearbox_params)),
-       height = bracket_thickness
+       base_height = bracket_thickness
        + max(0.01, motor_shaft_y - motor_d * 0.2,
              front_mount_ear_y_min - 0.1, rear_mount_ear_y_min - 0.2),
+       encoder_mount = gearmotor_encoder_params(motor=plist, base_h=bracket_thickness, encoder_plist=encoder_plist,
+                                                chassis_holes=[for (p = bracket_mount_holes) [p[0], p[1]]],
+                                                chassis_bolt_d=bolt_d),
+       encoder_bounds = is_undef(encoder_mount)
+       ? [[base_min_x, base_min_y, 0], [base_max_x, base_max_y, base_height]]
+       : plist_get("bounds", encoder_mount),
+       min_x = min(base_min_x, encoder_bounds[0][0]),
+       max_x = max(base_max_x, encoder_bounds[1][0]),
+       min_y = min(base_min_y, encoder_bounds[0][1]),
+       max_y = max(base_max_y, encoder_bounds[1][1]),
+       height = max(base_height, encoder_bounds[1][2]),
        side_widths = [max(0, -min_x), max(0, max_x)],
        bounds = [[min_x, min_y, 0], [max_x, max_y, height]],
        surface_min_y = min(min_y, drive_end_y),
        surface_max_y = max(max_y, drive_end_y))
   ["motor", plist,
+   "encoder_mount", encoder_mount,
+   "base_bounds", [[base_min_x, base_min_y, 0], [base_max_x, base_max_y, base_height]],
    "bolt_d", bolt_d,
    "bolt_pad_x", bolt_pad_x,
    "bolt_pad_y", bolt_pad_y,
@@ -387,6 +412,10 @@ function gearmotor_bracket_compute_params(plist=motor_plist,
   - `debug`: Display outline and hole labels.
   - `params`: Result of `gearmotor_bracket_compute_params()`; overrides `plist`
     and sizing arguments so layout and geometry use the same specification.
+  - `encoder_plist`: Encoder PCB specification; `undef` removes the mounting feature.
+  - `show_encoder_bracket`: Display the removable encoder mount.
+  - `show_encoder`: Display its PCB; `show_mount_bolts` also controls its fasteners.
+  - `show_encoder_magnet`: Display the magnet bonded to the unused shaft end.
  */
 module gearmotor_bracket(plist,
                          color=white_off_1,
@@ -414,7 +443,11 @@ module gearmotor_bracket(plist,
                          show_min_parent_surface_width=show_min_parent_surface_width,
                          slot_mode=false,
                          debug=false,
-                         params=undef) {
+                         params=undef,
+                         encoder_plist=motor_encoder_plist,
+                         show_encoder_bracket=show_encoder_bracket,
+                         show_encoder=show_encoder,
+                         show_encoder_magnet=show_encoder_magnet) {
   resolved = is_undef(params)
     ? gearmotor_bracket_compute_params(plist,
                                        bolt_pad_x,
@@ -424,9 +457,11 @@ module gearmotor_bracket(plist,
                                        bracket_thickness,
                                        corner_r,
                                        fillet_x_w,
-                                       fillet_y_w)
+                                       fillet_y_w,
+                                       encoder_plist)
     : params;
   motor = plist_get("motor", resolved);
+  encoder_mount = plist_get("encoder_mount", resolved);
   resolved_bolt_d = plist_get("bolt_d", resolved);
   resolved_bracket_thickness = plist_get("bracket_thickness", resolved);
   resolved_corner_r = plist_get("corner_r", resolved);
@@ -518,11 +553,22 @@ module gearmotor_bracket(plist,
   module _bracket() {
     difference() {
       maybe_color(color) {
-        loft_slices(pts_2,
-                    pts,
-                    resolved_bracket_thickness,
-                    steps=24,
-                    r=resolved_corner_r);
+        union() {
+          loft_slices(pts_2,
+                      pts,
+                      resolved_bracket_thickness,
+                      steps=24,
+                      r=resolved_corner_r);
+          if (!is_undef(encoder_mount)) {
+            land = plist_get("base_extension_bounds", encoder_mount);
+            translate(land[0]) {
+              cuboid(size=land[1] - land[0],
+                     anchor=[1, 1, 1],
+                     side="right",
+                     r_factor=0.5);
+            }
+          }
+        }
         translate(concat(take(bracket_gearbox_bolt_right_center, 2),
                          [resolved_bracket_thickness])) {
           ring(d=mount_bolt_d,
@@ -554,6 +600,17 @@ module gearmotor_bracket(plist,
               }
             }
           }
+        }
+      }
+
+      if (!is_undef(encoder_mount)) {
+        gearmotor_encoder_bracket(encoder_mount, slot_mode=true);
+        // Remove the loft's 0.01 mm final slice above the flat seating land.
+        land = plist_get("base_extension_bounds", encoder_mount);
+        translate([land[0][0], land[0][1], resolved_bracket_thickness]) {
+          // cuboid(size=[land[1][0] - land[0][0], land[1][1] - land[0][1], 0.02],
+          //        anchor=[1, 1, 1]);
+          cube([land[1][0] - land[0][0], land[1][1] - land[0][1], 0.02]);
         }
       }
 
@@ -592,6 +649,25 @@ module gearmotor_bracket(plist,
             cuboid(size=concat(plist_get("min_parent_surface_size", resolved),
                                [1]),
                    anchor=[1, 1, 1]);
+          }
+        }
+      }
+
+      if (!is_undef(encoder_mount)) {
+        gearmotor_encoder_bracket(encoder_mount,
+                                  show_bracket=show_encoder_bracket,
+                                  show_encoder=show_encoder,
+                                  show_mount_bolts=show_mount_bolts,
+                                  color=color);
+        if (show_encoder_magnet) {
+          translate(plist_get("shaft_tip", encoder_mount)) {
+            rotate([-90, 0, 0]) {
+              color(metallic_silver_3) {
+                cylinder(d=plist_get("magnet_d", encoder_mount),
+                         h=plist_get("magnet_h", encoder_mount),
+                         $fn=48);
+              }
+            }
           }
         }
       }

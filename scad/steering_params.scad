@@ -1190,6 +1190,22 @@ rear_chassis_diff_input_l                         = 12;
 // Measured from the chassis top mounting surface to the differential input axis.
 rear_chassis_diff_input_h                         = 20;
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Gearmotor shaft encoder, opposite the sleeve (near the motor contacts)
+// ─────────────────────────────────────────────────────────────────────────────
+// Set the plist to undef to omit the encoder mounting feature entirely.
+motor_encoder_plist                              = as5048A_encoder_plist;
+motor_encoder_bottom_thickness                   = 2;
+motor_encoder_side_thickness                     = 3;
+motor_encoder_pcb_padding                        = 1;
+motor_encoder_mount_bolt_d                       = m3_hole_dia;
+motor_encoder_mount_wall                         = 1.5;
+motor_encoder_nut_clearance                      = 0.2; // radial and axial pocket clearance
+motor_encoder_clearance                          = 0.6; // bolt-head and PCB clearance
+motor_encoder_magnet_distance                    = 0.5; // IC package face to magnet face
+motor_encoder_magnet_d                           = 5;
+motor_encoder_magnet_h                           = 2;
+
 motor_plist                                       = ["body", ["d", 24.3,
                                                               "h", 27.7,
                                                               "color", matte_black],

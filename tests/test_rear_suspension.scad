@@ -36,7 +36,9 @@ module near(actual, expected) {
 
 bracket = gearmotor_bracket_compute_params(motor_plist);
 bounds = plist_get("bounds", bracket);
-near(plist_get("side_widths", bracket), [35.75, 14.325]);
+encoder_bounds = plist_get("bounds", plist_get("encoder_mount", bracket));
+near(plist_get("side_widths", bracket), [35.75, encoder_bounds[1][0]]);
+near(plist_get("base_bounds", bracket)[1], [14.325, 44.3, 19.94]);
 near([plist_get("drive_end_y", bracket)], [-48]);
 near(plist_get("size", bracket), bounds[1] - bounds[0]);
 assert(plist_get("min_parent_surface_size", bracket)[0] == 71.5);
@@ -44,7 +46,7 @@ assert(plist_get("min_parent_surface_size", bracket)[1]
        >= bounds[1][1] - plist_get("drive_end_y", bracket));
 
 // Reversing the bracket swaps its sides, but keeps the drive shaft on X=0.
-near(plist_get("motor_side_widths", layout), [14.325, 35.75]);
+near(plist_get("motor_side_widths", layout), [encoder_bounds[1][0], 35.75]);
 assert(plist_get("motor_pos", layout)[0] == 0);
 assert(plist_get("panel_side", layout) == "left");
 for (side = ["left", "right", "auto"], orientation = ["wlh", "lwh"],
@@ -68,7 +70,9 @@ for (side = ["left", "right", "auto"], orientation = ["wlh", "lwh"],
     assert(part[1][1] <= plist_get("transition_y_end", current) - rear_suspension_chassis_bolt_pad + tol);
   }
   if (side == "auto") {
-    assert(plist_get("max_half_w", current) == min(plist_get("candidate_half_widths", current)));
+    near([plist_get("max_half_w", current)],
+         [max(front_middle_chassis_max_w / 2,
+              min(plist_get("candidate_half_widths", current)))]);
   }
 }
 

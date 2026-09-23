@@ -20,6 +20,9 @@ module gearbox_printable() {
                     show_nuts=false,
                     show_shaft_seeve=false,
                     show_extra_drive_shaft=false,
+                    show_encoder_bracket=false,
+                    show_encoder=false,
+                    show_encoder_magnet=false,
                     debug=false,
                     anchor_mode="size");
 }
