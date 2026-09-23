@@ -9,6 +9,7 @@ include <../steering_params.scad>
 use <functions.scad>
 use <placement.scad>
 use <plist.scad>
+use <shapes3d.scad>
 use <transforms.scad>
 
 /**
@@ -554,6 +555,8 @@ module text_rows(texts = [],
                y_offset = plist_get("y_offset", spec, 0),
                final_y = y_acc + ratio * y_offset,
                bg_color = plist_get("bg_color", spec),
+               bg_corner_r = plist_get("bg_corner_r", spec),
+               bg_r_factor = plist_get("bg_r_factor", spec, 0),
                bg_pad_left = plist_get("bg_pad_left", spec, 0),
                bg_pad_right = plist_get("bg_pad_right", spec, 0),
                bg_pad_top = plist_get("bg_pad_top", spec, 0),
@@ -562,6 +565,13 @@ module text_rows(texts = [],
                text_size = text_sizes[i],
                x_size = text_size[0],
                y_size = text_size[1],
+// x_offset = halign == "right"
+// ? -x_size - (max_x_size - x_size)
+// : halign == "left"
+         // ? 0
+// : halign == "center"
+// ? -x_size / 2
+        // : 0,
                x_offset = halign == "right"
                ? (max_x_size - x_size)
                : halign == "left"
@@ -580,7 +590,10 @@ module text_rows(texts = [],
                                    (valign == "center" ? -y_size / 2 : 0)
                                    - bg_pad_bottom,
                                    0]) {
-                          cube([x_size + bg_pad_left + bg_pad_right, h, bg_h]);
+                          cuboid(size=[x_size + bg_pad_left + bg_pad_right, h, bg_h],
+                                 anchor=[1, 1, 1],
+                                 r_factor=bg_r_factor,
+                                 r=bg_corner_r);
                         }
                       }
                     }
@@ -660,7 +673,3 @@ module text_fit(txt="Dynamic Text",
     }
   }
 }
-
-size = [30, 20, 15];
-
-text_fit(txt="My text", x=size[0], y=size[1], h=size[2]);

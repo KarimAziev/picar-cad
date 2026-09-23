@@ -352,12 +352,15 @@ module lipo_pack_from_pl(plist, anchor=[0, 1, 1]) {
       if (texts && len(texts) > 0) {
         text_texts_defaults = plist_get("props",
                                         pl,
-                                        ["size", (cover_w * 0.9) / len(texts)]);
-        final_pl = plist_merge(["halign", "center"],
-                               text_texts_defaults);
-
-        rotate([0, 0, 90]) {
-          text_rows(texts, plist=final_pl);
+                                        ["size",
+                                         (cover_w * 0.9) / len(texts)]);
+        final_pl = plist_merge(plist_merge(["halign", "center", "valign", "center"],
+                                           text_texts_defaults),
+                               ["rotation", [0, 0, 0]]);
+        translate([0, 0, 0]) {
+          rotate([0, 0, 90]) {
+            text_rows(texts, plist=final_pl);
+          }
         }
       }
     }
@@ -394,15 +397,17 @@ module lipo_pack_from_pl(plist, anchor=[0, 1, 1]) {
 lipo_pack_from_pl(plist=["size", [lipo_pack_width,
                                   lipo_pack_length,
                                   lipo_pack_height],
-                         "orientation", "lhw", // wlh (default) | lwh | lhw | whl | hlw | hwl
+                         "orientation", "wlh", // wlh (default) | lwh | lhw | whl | hlw | hwl
                          "top_cover", ["bg", "gold",
-                                       "texts", [["text", " 5000 MAH",
-                                                  "size", 11.4],
-                                                 ["text", "2S",
+
+                                       "texts", [["text", "2S",
                                                   "size", 10,
-                                                  "halign", "left",
-                                                  "gap_before", 4,
-                                                  "font", "DSEG14 Classic:style=Bold"]],
+                                                  "halign", "center",
+                                                  "gap_before", 4],
+                                                 ["text", "5000MAH",
+                                                  "size", 10,
+                                                  "halign", "center",
+                                                  "gap_before", 10]],
                                        "props", ["halign", "center", "color", "#28282B"]],
                          "side_cover", ["bg", "silver"]],
                   anchor=[0, 0, 1]);
