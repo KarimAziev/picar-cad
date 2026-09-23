@@ -677,3 +677,15 @@ module tapered_box(base_size,
     }
   }
 }
+
+module cyl(h, d, d1, d2, $fn=20, anchor=[0, 0, 1]) {
+  d = with_default(with_default(d, d1), d2);
+  d1 = with_default(d1, d);
+  d2 = with_default(d2, d);
+
+  max_d = max(d2, d1);
+
+  with_anchor(anchor=anchor, size=[max_d, max_d, h], centered=true) {
+    cylinder(d1=d1, d2=d2, h=h);
+  }
+}
