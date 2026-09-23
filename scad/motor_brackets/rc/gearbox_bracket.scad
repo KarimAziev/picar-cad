@@ -37,11 +37,8 @@ debug_circle_color            = matte_black;
 bracket_thickness             = 6;
 
 gearbox_bracket_bolt_d        = m3_hole_dia;
-gearbox_bracket_bolt_cbore_d  = m3_hole_dia * 2 + 0.5;
-gearbox_bracket_cbore_h       = 3;
 gearbox_bracket_bolt_pad_x    = 3;
 gearbox_bracket_bolt_pad_y    = 3;
-gearbox_bracket_carrier_pad   = 2;
 gearbox_bracket_ear_bolt_pad  = 3;
 gearbox_bracket_corner_r      = 1;
 gearbox_bracket_fillet_x_w    = 3;

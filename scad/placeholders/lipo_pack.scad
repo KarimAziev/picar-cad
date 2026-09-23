@@ -357,10 +357,8 @@ module lipo_pack_from_pl(plist, anchor=[0, 1, 1]) {
         final_pl = plist_merge(plist_merge(["halign", "center", "valign", "center"],
                                            text_texts_defaults),
                                ["rotation", [0, 0, 0]]);
-        translate([0, 0, 0]) {
-          rotate([0, 0, 90]) {
-            text_rows(texts, plist=final_pl);
-          }
+        rotate([0, 0, 90]) {
+          text_rows(texts, plist=final_pl);
         }
       }
     }
