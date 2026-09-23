@@ -1,5 +1,5 @@
 /**
-  * Module: Controls and fuse stack beside the steering servo.
+  * Module: Controls, fuse stack and Raspberry Pi placement beside the steering servo.
   * Component and mounting slots share the same front-frame datum.
   */
 include <computed_params.scad>
@@ -44,10 +44,27 @@ module front_chassis_controls(slot_mode=false) {
   }
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_rpi
+  ─────────────────────────────────────────────────────────────────────────────
+  Place the RPi or its mounting cutters using the front-frame configuration.
+  **Parameters:**
+  - `slot_mode`: Cut mounting holes and camera-ribbon passages through the frame.
+
+  `front_rpi_orientation` selects the flat layout; `front_rpi_reverse_z` turns
+  the board 180 degrees in its plane. Both keep the configured minimum X and
+  maximum Y of its reference box fixed. The frame uses the same reference bounds.
+ */
 module front_chassis_rpi(slot_mode=false) {
-  y_start = -bellcrank_y_distance_from_bulkhead + bellcrank_y_dist;
-  translate([front_rpi_x_offset, y_start + front_rpi_y_offset, 0]) {
-    rpi_5(anchor=[1, -1, 1], slot_mode=slot_mode);
+  bounds = front_chassis_rpi_bounds();
+  translate([bounds[0][0], bounds[1][1], 0]) {
+    rpi_5(anchor=[1, -1, 1],
+          orientation=front_rpi_orientation,
+          reverse_z=front_rpi_reverse_z,
+          slot_thickness=front_chassis_thickness,
+          bolt_visible_h=front_chassis_thickness - chassis_counterbore_h,
+          slot_mode=slot_mode);
   }
 }
 

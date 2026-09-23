@@ -208,7 +208,6 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
                               show_rear_differential_envelope=show_rear_differential_envelope,
                               show_middle_chassis_motor_slots=show_middle_chassis_motor_slots,
                               show_front_rpi=show_front_rpi) {
-  lidar_h = head_neck_max_z();
   lipo_pack_case_props = multi_lipo_pack_props(plist=multi_lipo_packs_case);
 
   full_lipo_pack_size = plist_get("size", lipo_pack_case_props);
@@ -218,10 +217,6 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
                 debug=false,
                 spacing=front_chassis_joint_spacing,
                 show_access_slots=show_front_access_slots);
-
-  if (show_front_rpi) {
-    front_chassis_rpi(slot_mode=false);
-  }
 
   if (show_front_chassis_components && show_front_rpi) {
     translate([0, -front_chassis_joint_spacing, 0]) {

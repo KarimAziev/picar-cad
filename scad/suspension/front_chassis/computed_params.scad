@@ -8,6 +8,7 @@
 include <../../steering_params.scad>
 
 use <../../placeholders/dservo.scad>
+use <../../placeholders/rpi_5.scad>
 use <../bellcrank_steering_slots.scad>
 use <../bulkhead/front_bulkhead.scad>
 use <../steering_servo_bracket/helpers.scad>
@@ -65,8 +66,36 @@ front_frame_x_end                        = bellcrank_x
                                             + max(bellcrank_mount_r,
                                             front_chassis_bellcrank_tool_access_hole_d / 2);
 
+servo_end_y                              = -bellcrank_y_distance_from_bulkhead + bellcrank_zone_y_len;
+y_front_chassis_rear_frame_joint_1_start = -bellcrank_y_distance_from_bulkhead - bellcrank_mount_r;
+y_front_chassis_rear_frame_main_start    = -bellcrank_y_distance_from_bulkhead + bellcrank_y_dist;
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_rpi_bounds
+  ─────────────────────────────────────────────────────────────────────────────
+  Return the RPi reference bounds on the rear section of the front chassis.
+  **Parameters:**
+  - `orientation`: Flat PCB orientation, `"wlh"` or `"lwh"`.
+  - `x_offset`: Minimum X of the oriented reference box.
+  - `y_offset`: Maximum Y relative to the rear frame's main-section start.
+  **Returns:** `[minimum_xyz, maximum_xyz]` with the mounting reference at Z=0.
+  Uses the same `[1, -1, 1]` anchor as the component and its mounting cutters.
+ */
+function front_chassis_rpi_bounds(orientation=front_rpi_orientation,
+                                  x_offset=front_rpi_x_offset,
+                                  y_offset=front_rpi_y_offset) =
+  assert(orientation == "wlh" || orientation == "lwh",
+         "Front RPi mounting requires a flat PCB (wlh or lwh)")
+  let (size = rpi_5_oriented_size(orientation),
+       y = y_front_chassis_rear_frame_main_start + y_offset)
+  [[x_offset, y - size[1], 0], [x_offset + size[0], y, size[2]]];
+
+front_rpi_bounds                        = front_chassis_rpi_bounds();
 front_chassis_rear_frame_w               = max(chassis_body_min_w,
-                                               servo_slot_min_w * 2);
+                                               servo_slot_min_w * 2,
+                                               2 * max(abs(front_rpi_bounds[0][0]),
+                                                       abs(front_rpi_bounds[1][0])));
 
 chassis_joint_wide_w                     = front_chassis_rear_frame_w;
 chassis_joint_wide_rail_w                = chassis_joint_wide_w
@@ -82,9 +111,5 @@ chassis_joint_wide_bolt_xs               = [for (i = [0 : suspension_chassis_joi
                                             + i * chassis_joint_wide_bolt_step];
 chassis_joint_wide_pin_spacing           = chassis_joint_wide_rail_w / 2;
 
-servo_end_y                              = -bellcrank_y_distance_from_bulkhead + bellcrank_zone_y_len;
-y_front_chassis_rear_frame_joint_1_start = -bellcrank_y_distance_from_bulkhead - bellcrank_mount_r;
-y_front_chassis_rear_frame_main_start    = -bellcrank_y_distance_from_bulkhead + bellcrank_y_dist;
-
-rpi_y_end                                = y_front_chassis_rear_frame_main_start + front_rpi_y_offset - rpi_len - rpi_usb_y_offset;
+rpi_y_end                                = front_rpi_bounds[0][1];
 front_chassis_y_joint_2_end              = min(servo_end_y, rpi_y_end) - joint_l;

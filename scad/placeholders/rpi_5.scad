@@ -35,6 +35,38 @@ rpi_camera_ribbon_slot_size = [rpi_csi_size[0], 1.6];
 rpi_camera_ribbon_slot_gap  = 1.4;
 rpi_camera_ribbon_slot_rows = 3;
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  rpi_5_size
+  ─────────────────────────────────────────────────────────────────────────────
+  Return the canonical reference box used to anchor the Raspberry Pi.
+  **Parameters:**
+  - `size`: PCB width, length and thickness.
+  - `usb_y_offset`: USB/Ethernet overhang beyond the PCB's +Y edge.
+  **Returns:** `[width, length + overhang, pcb_thickness]`.
+  This is the placement reference, excluding standoffs, HATs and component height.
+ */
+function rpi_5_size(size=[rpi_width, rpi_len, rpi_thickness],
+                    usb_y_offset=rpi_usb_y_offset) =
+  [size[0], size[1] + usb_y_offset, size[2]];
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  rpi_5_oriented_size
+  ─────────────────────────────────────────────────────────────────────────────
+  Return the Raspberry Pi's reference box in the requested orientation.
+  **Parameters:**
+  - `orientation`: One of the six `with_orientation` axis conventions.
+  - `size`: Canonical PCB width, length and thickness.
+  - `usb_y_offset`: USB/Ethernet overhang beyond the PCB's +Y edge.
+  **Returns:** Oriented `[x, y, z]` reference size, excluding accessory envelopes.
+  A `reverse_z` half-turn does not change this reference size.
+ */
+function rpi_5_oriented_size(orientation="wlh",
+                             size=[rpi_width, rpi_len, rpi_thickness],
+                             usb_y_offset=rpi_usb_y_offset) =
+  orientation_size(orientation, rpi_5_size(size, usb_y_offset));
+
 module io_controller(size=rpi_io_size) {
   color(matte_black, alpha=1) {
     rpi_rectangle_3d(size);
@@ -371,7 +403,7 @@ module rpi_5(size=[rpi_width, rpi_len, rpi_thickness],
   length = size[1];
   h = size[2];
 
-  max_size = [w, length + usb_y_offset, h];
+  max_size = rpi_5_size(size, usb_y_offset);
 
   usb_y = length - usb_size[1] + usb_y_offset;
 

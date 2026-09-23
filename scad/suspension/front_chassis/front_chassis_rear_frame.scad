@@ -94,9 +94,8 @@ module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
       front_chassis_joint_female(slot_mode=true);
     }
 
-    translate([0, y_front_chassis_rear_frame_main_start, 0]) {
-      rpi_5(anchor=[1, -1, 1], slot_mode=true);
-    }
+    front_chassis_rpi(slot_mode=true);
+
     translate([0, y_front_chassis_rear_frame_main_start, 0]) {
       front_chassis_pin_joint_holes(center=true,
                                     direction=1,

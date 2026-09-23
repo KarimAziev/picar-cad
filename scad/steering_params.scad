@@ -1194,17 +1194,17 @@ rear_chassis_diff_input_h                         = 20;
 // Gearmotor shaft encoder, opposite the sleeve (near the motor contacts)
 // ─────────────────────────────────────────────────────────────────────────────
 // Set the plist to undef to omit the encoder mounting feature entirely.
-motor_encoder_plist                              = as5048A_encoder_plist;
-motor_encoder_bottom_thickness                   = 2;
-motor_encoder_side_thickness                     = 3;
-motor_encoder_pcb_padding                        = 1;
-motor_encoder_mount_bolt_d                       = m3_hole_dia;
-motor_encoder_mount_wall                         = 1.5;
-motor_encoder_nut_clearance                      = 0.2; // radial and axial pocket clearance
-motor_encoder_clearance                          = 0.6; // bolt-head and PCB clearance
-motor_encoder_magnet_distance                    = 0.5; // IC package face to magnet face
-motor_encoder_magnet_d                           = 5;
-motor_encoder_magnet_h                           = 2;
+motor_encoder_plist                               = as5048A_encoder_plist;
+motor_encoder_bottom_thickness                    = 2;
+motor_encoder_side_thickness                      = 3;
+motor_encoder_pcb_padding                         = 1;
+motor_encoder_mount_bolt_d                        = m3_hole_dia;
+motor_encoder_mount_wall                          = 1.5;
+motor_encoder_nut_clearance                       = 0.2; // radial and axial pocket clearance
+motor_encoder_clearance                           = 0.6; // bolt-head and PCB clearance
+motor_encoder_magnet_distance                     = 0.5; // IC package face to magnet face
+motor_encoder_magnet_d                            = 5;
+motor_encoder_magnet_h                            = 2;
 
 motor_plist                                       = ["body", ["d", 24.3,
                                                               "h", 27.7,
@@ -1282,8 +1282,12 @@ motor_plist                                       = ["body", ["d", 24.3,
                                                                                 "d", 18.4],
                                                                  "motor_pad", 1.2]];
 
+// Offsets locate the oriented reference box: minimum X and maximum Y.
+// Y is relative to the front rear-frame main-section start.
 front_rpi_y_offset                                = 0;
 front_rpi_x_offset                                = -5;
+front_rpi_orientation                             = "lwh"; // wlh | lwh (flat PCB)
+front_rpi_reverse_z                               = true; // 180-degree turn in the PCB plane
 
 front_chassis_rear_frame_corner_r                 = 4;
 
