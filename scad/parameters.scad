@@ -2942,14 +2942,28 @@ rplidar_c1_plist = ["size", [55.6, 55.6],
                     "bolt_head_type", undef, // Blind threaded holes, not countersinks.
                     "lid_ring_h", 0.2, // Cosmetic details, not measured features.
                     "lid_ring_w", 1,
+                    "texts", ["front",
+                              [["text", "RPLIDAR",
+                                "translation", [-10, 0, 0],
+                                "bg_pad_bottom", 2,
+                                "bg_pad_top", 2,
+                                "bg_pad_left", 3,
+                                "bg_pad_right", 3,
+                                "bg_r_factor", 0.5,
+                                "bg_color", black_1,
+                                "color", onyx]]],
 // Metadata only: cable/connector dimensions are not modeled.
 // "bottom" is the -Y edge in plan view, not a Z-facing exit.
-                    "cable_exit", ["side", "bottom",
-                                   "position", "center",
-                                   "color", "black",
+                    "cable_exit", ["side", "rear", // left | right | front | rear
+                                   "position", "bottom", // top | bottom | center
+                                   "side_offset", 0,
+                                   "z_offset",  2,
+                                   "color", matte_black,
                                    "socket_d", 9.13,
+                                   "socket_l", 7,
                                    "cable_d", 4.8,
-                                   "cable_l", 30]];
+                                   "cable_l", 300,
+                                   "cable_rigid_l", 12]];
 
 rc_driveshaft_plist = [// Selected assembly pivot spacing, not a hardware measurement.
                        "pivot_l", 60,

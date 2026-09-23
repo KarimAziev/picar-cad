@@ -12,7 +12,9 @@ use <../lib/functions.scad>
 use <../lib/plist.scad>
 use <../lib/shapes3d.scad>
 use <../lib/slots.scad>
+use <../lib/text.scad>
 use <../lib/transforms.scad>
+use <../lib/wire.scad>
 
 show_lidar_mount_holes = true;
 
@@ -111,36 +113,155 @@ module lidar(plist=rplidar_c1_plist,
   top_round_d = plist_get("top_round_d", plist);
 
   bolt_depth = plist_get("bolt_depth", plist);
+
   ring_h = plist_get("lid_ring_h", plist, 0);
   ring_w = plist_get("lid_ring_w", plist, 0);
 
   total_h = base_h + top_h;
   size = lidar_size(plist);
+  w = size[0];
+  l = size[1];
   cube_size = concat(plist_get("size", plist), [base_h]);
 
   color = plist_get("color", plist, matte_black);
+
+  texts = plist_get("texts", plist, []);
+
+  front_texts = plist_get("front", texts);
+
+  cable_exit = plist_get("cable_exit", plist);
+
+  cable_side = plist_get("side", cable_exit, "rear");
+  cable_side_offset = plist_get("side_offset", cable_exit, 0);
+  cable_socket_z_offset= plist_get("z_offset", cable_exit, 0);
+
+  cable_position = plist_get("position", cable_exit, "bottom");
+  cable_color = plist_get("color", cable_exit, color);
+  cable_d = plist_get("cable_d", cable_exit);
+  cable_l = plist_get("cable_l", cable_exit);
+  socket_d = plist_get("socket_d", cable_exit, cable_d);
+  socket_l = plist_get("socket_l", cable_exit);
+
   assert(bolt_depth > 0 && bolt_depth < base_h);
 
   with_anchor(anchor=anchor,
-              size=[size[0], size[1], anchor_z_to_base_height ? base_h : size[2]],
+              size=[w,
+                    l,
+                    anchor_z_to_base_height
+                    ? base_h
+                    : size[2]],
               centered=true) {
-    difference() {
-      maybe_color(color) {
-        cuboid(size=cube_size, anchor=[0, 0, 1], r=corner_r);
-        translate([0, 0, base_h]) {
-          cylinder(d=top_round_d, h=top_h, $fn=40);
+    union() {
+      difference() {
+        union() {
+          maybe_color(color) {
+            cuboid(size=cube_size, anchor=[0, 0, 1], r=corner_r);
+            translate([0, 0, base_h]) {
+              cylinder(d=top_round_d, h=top_h, $fn=40);
+            }
+          }
+
+          if (front_texts) {
+            translate([0, -0.1 - l / 2, base_h / 2]) {
+              rotate([90, 0, 0]) {
+                text_rows(front_texts,
+                          default_halign="center");
+              }
+            }
+          }
+        }
+
+        if (show_mount_holes) {
+          // Extend through the exterior face without changing the blind-hole end.
+          translate([0, 0, -lidar_boolean_overlap])
+            lidar_mount_slots(plist=plist,
+                              h=bolt_depth + lidar_boolean_overlap);
+        }
+        // Engrave the cosmetic top ring instead of creating a floating solid.
+        if (ring_h > 0 && ring_w > 0) {
+          translate([0, 0, total_h - ring_h]) {
+            let (d = top_round_d / 2) {
+              ring(outer_d=d, d=d - ring_w * 2, h=ring_h * 2, $fn=40);
+            }
+          }
         }
       }
-      if (show_mount_holes) {
-        // Extend through the exterior face without changing the blind-hole end.
-        translate([0, 0, -lidar_boolean_overlap])
-          lidar_mount_slots(plist=plist, h=bolt_depth + lidar_boolean_overlap);
-      }
-      // Engrave the cosmetic top ring instead of creating a floating solid.
-      if (ring_h > 0 && ring_w > 0) {
-        translate([0, 0, total_h - ring_h]) {
-          let (d = top_round_d / 2) {
-            ring(outer_d=d, d=d - ring_w * 2, h=ring_h * 2, $fn=40);
+
+      if (socket_d) {
+        assert(in_list(cable_position, ["top", "center", "bottom"]),
+               "Invalid position");
+        assert(in_list(cable_side, ["rear", "front", "left", "right"]),
+               "Invalid position");
+
+        let (cable_rigid_l = plist_get("cable_rigid_l", cable_exit, 5),
+             socket_rotations = ["left", [0, -90, 0],
+                                 "right", [0, 90, 0],
+                                 "front", [90, 0, 0],
+                                 "rear", [90, 0, 0]],
+             socket_translations = ["left", [-w / 2, 0, 0],
+                                    "right", [w / 2, 0, 0],
+                                    "front", [0, -l / 2, 0],
+                                    "rear", [0, l / 2, 0]],
+             anchors = ["left", [1, 0, 1],
+                        "right", [-1, 0, 1],
+                        "front", [0, 1, 1],
+                        "rear", [0, 1, -1]],
+             side_offsets = ["left", [0, cable_side_offset, 0],
+                             "right", [0, cable_side_offset, 0],
+                             "front", [cable_side_offset, 0, 0],
+                             "rear", [cable_side_offset, 0, 0],],
+             side_offst = plist_get(cable_side, side_offsets),
+             anchor = plist_get(cable_side, anchors),
+             socket_translation = plist_get(cable_side, socket_translations),
+             socket_rotation = plist_get(cable_side, socket_rotations),
+             z_position_offsets = ["top", [0, 0, base_h - socket_d
+                                           + cable_socket_z_offset],
+                                   "center", [0, 0, base_h / 2 - (socket_d / 2)
+                                              + cable_socket_z_offset],
+                                   "bottom", [0, 0, cable_socket_z_offset]],
+             z_pos = plist_get(cable_position, z_position_offsets),
+             socket_r = socket_d / 2,
+             initial_cable_l = socket_l + cable_rigid_l,
+
+             initial_pts_by_sides = ["left", [[-socket_l, 0, socket_r],
+                                              [-initial_cable_l, 0, socket_r]],
+                                     "right", [[socket_l, 0, socket_r],
+                                               [initial_cable_l, 0, socket_r]],
+                                     "front", [[0, -socket_l, socket_r],
+                                               [0, -initial_cable_l, socket_r]],
+                                     "rear", [[0, socket_l, socket_r],
+                                              [0, initial_cable_l, socket_r]]],
+             pts_defaults = ["left", [[-initial_cable_l, 0, -cable_l * 0.3],
+                                      [-cable_l * 0.2, 0, -cable_l * 0.3]],
+                             "right", [[-initial_cable_l, 0, -cable_l * 0.3],
+                                       [cable_l * 0.2, 0, cable_l * 0.3]],
+                             "front", [[0, -initial_cable_l, -cable_l * 0.3],
+                                       [0, -cable_l * 0.2, -cable_l * 0.3]],
+                             "rear", [[0, initial_cable_l, -cable_l * 0.3],
+                                      [0, cable_l * 0.2, -cable_l * 0.5]]],
+
+             initial_pts = plist_get(cable_side, initial_pts_by_sides),
+             default_pts = plist_get(cable_side, pts_defaults),
+             wire_pts = concat(initial_pts,
+                               plist_get("points", cable_exit, default_pts))) {
+
+          translate(side_offst) {
+            translate(z_pos) {
+              maybe_color(cable_color) {
+                maybe_translate(socket_translation) {
+                  wire_path(points=wire_pts,
+                            d=cable_d,
+                            mode="centripetal",
+                            quality="medium",
+                            cut_len=0,
+                            put_joints=true,
+                            print_wire_len=true);
+                  maybe_rotate(socket_rotation) {
+                    cyl(d=socket_d, h=socket_l, anchor=anchor);
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -148,4 +269,4 @@ module lidar(plist=rplidar_c1_plist,
   }
 }
 
-lidar(anchor=[0, 0, -1]);
+lidar(anchor=[0, 0, 1]);
