@@ -2946,7 +2946,10 @@ rplidar_c1_plist = ["size", [55.6, 55.6],
 // "bottom" is the -Y edge in plan view, not a Z-facing exit.
                     "cable_exit", ["side", "bottom",
                                    "position", "center",
-                                   "color", "black"]];
+                                   "color", "black",
+                                   "socket_d", 9.13,
+                                   "cable_d", 4.8,
+                                   "cable_l", 30]];
 
 rc_driveshaft_plist = [// Selected assembly pivot spacing, not a hardware measurement.
                        "pivot_l", 60,
