@@ -14,6 +14,22 @@ use <../lib/shapes2d.scad>
 use <../lib/shapes3d.scad>
 use <../lib/text.scad>
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  maybe_to_mm
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Resolve a grid row height or cell width using the legacy mixed-unit convention.
+
+  **Parameters:**
+  - `val`: Numeric dimension. Values greater than one are absolute millimeters;
+    values up to one are fractions of the complete parent dimension.
+  - `total_val`: Parent dimension in millimeters.
+
+  **Returns:** The resolved dimension in millimeters. In particular, `1` means
+  the whole parent dimension, not one millimeter. Fractions do not use the space
+  remaining after absolute dimensions are allocated.
+ */
 function maybe_to_mm(val, total_val) = val > 1 ? val : percent_to_mm(val * 100,
                                                                      total_val);
 
@@ -72,7 +88,7 @@ module grid_plist_render(size,
   row_h_specs = [for (r = rows) plist_get("h", r, 0)];
   row_heights = [for (hs = row_h_specs) maybe_to_mm(hs, inner_y)];
 
-  for (ri=[0:len(rows)-1]) {
+  for (ri=[0:1:len(rows)-1]) {
     row = rows[ri];
     assert(row_is(row),
            str("Row ", ri, " must be a plist with keys 'h' and 'cells'"));
@@ -121,7 +137,7 @@ module grid_plist_render(size,
       w_specs = [for (c=cells) plist_get("w", c, 0)];
       widths  = [for (ws=w_specs) maybe_to_mm(ws, inner_x)];
 
-      for (ci=[0:len(cells)-1]) {
+      for (ci=[0:1:len(cells)-1]) {
         cell = cells[ci];
         assert(cell_is(cell),
                str("Cell R", ri,"C", ci," must be a plist with key 'w'"));
@@ -176,6 +192,7 @@ module grid_plist_render(size,
 
               grid_plist_render(size=[w, h],
                                 grid=nested,
+                                mode=mode,
                                 debug=debug,
                                 debug_spec=debug_spec,
                                 level=level + 1) {

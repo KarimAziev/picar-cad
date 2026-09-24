@@ -8,6 +8,7 @@
 include <../colors.scad>
 include <../parameters.scad>
 
+use <../core/pcb_grid.scad>
 use <../lib/functions.scad>
 use <../lib/holes.scad>
 use <../lib/placement.scad>
@@ -17,17 +18,12 @@ use <../lib/shapes3d.scad>
 use <../lib/slots.scad>
 use <../lib/transforms.scad>
 use <ai_hat.scad>
-use <bcm.scad>
 use <gpio_expansion_board.scad>
 use <motor_driver_hat.scad>
 use <pad_hole.scad>
-use <pcb/pcb_button.scad>
-use <pcb/pci_connector.scad>
-use <pin_header.scad>
+use <rpi_5_grid.scad>
 use <servo_driver_hat.scad>
 use <standoff.scad>
-use <usb/generic_usb_socket.scad>
-use <usb/usb_a_plug.scad>
 
 show_standoffs              = false;
 show_ai_hat                 = false;
@@ -74,185 +70,14 @@ function rpi_5_oriented_size(orientation="wlh",
                              usb_a_y_offset=rpi_usb_y_offset) =
   orientation_size(orientation, rpi_5_size(size, usb_a_y_offset));
 
-module io_controller(size=rpi_io_size) {
-  color(matte_black, alpha=1) {
-    rpi_rectangle_3d(size);
-  }
-}
-
-module wifi_bt(size=rpi_wifi_bt_size) {
-  color(metallic_silver_1, alpha=1) {
-    rpi_rectangle_3d(size);
-  }
-}
-
-module ethernet(size=rpi_ethernet_jack_size) {
-  hole_x_factor = 0.9;
-  hole_y_factor = 0.2;
-  hole_z_factor = 0.8;
-  hole_x = size[0] * hole_x_factor;
-  hole_y = size[1] * hole_y_factor;
-  hole_z = size[2] * hole_z_factor;
-  x_offst = ((1 - hole_x_factor) * size[0]) / 2;
-  y_offst = ((1 - hole_y_factor) * size[1]) + 1;
-  z_offst = size[2] - hole_z - 1;
-  union() {
-    difference() {
-      color(metallic_yellow_silver) {
-        linear_extrude(height=size[2], center=false) {
-          rounded_rect(size=size, r=min(size[1], size[2]) * 0.1, center=false);
-        }
-      }
-      translate([x_offst, y_offst, size[2] - hole_z - 0.5]) {
-        linear_extrude(height=hole_z, center=false) {
-          rounded_rect(size=[hole_x, hole_y], r=0.5, center=false);
-        }
-      }
-    }
-
-    color(matte_black, alpha=1) {
-      translate([x_offst, y_offst, z_offst]) {
-        linear_extrude(height=hole_z, center=false) {
-          square(size=[hole_x, 1], center=false);
-        }
-      }
-    }
-  }
-}
-
-module ram_2d(size=rpi_ram_size) {
-  rounded_rect(size=size, r=1.5, center=false);
-}
-
-module ram(size=rpi_ram_size) {
-  color(matte_black, alpha=1) {
-    rpi_rectangle_3d(size=size, r_factor=0);
-  }
-}
-
-module usb_jack_base(size=rpi_usb_c_jack_size) {
-  difference() {
-    linear_extrude(height=size[2], center=false) {
-      rounded_rect([size[0], size[1]],
-                   center=true,
-                   r=min(size[0], size[1]) * 0.1);
-    }
-    translate([size[0] * 0.1 + 1, 0, size[2] * 0.1]) {
-      linear_extrude(height=size[2] * 0.8, center=false) {
-        square([size[0] * 0.8, size[1] * 0.9], center=true);
-      }
-    }
-  }
-}
-
-module usb_jack(size=rpi_usb_c_jack_size) {
-  union() {
-    color("silver", alpha=1) {
-      usb_jack_base();
-    }
-    color(matte_black, alpha=1) {
-      translate([size[0] * 0.05, 0, size[2] * 0.1]) {
-        linear_extrude(height=size[2] * 0.8, center=false) {
-          square([size[0] * 0.8, size[1] * 0.9], center=true);
-        }
-      }
-    }
-  }
-}
-
-module micro_hdmi_jack(size=rpi_micro_hdmi_jack_size) {
-  usb_jack(size);
-}
-
-module rtc_battery_connector(size=rpi_rtc_connector_size) {
-  if (rpi_model_detailed) {
-    difference() {
-      hole_w = size[0] * 0.6;
-      hole_h = size[1] * 0.8;
-      linear_extrude(height=size[2], center=false) {
-        square([size[0], size[1]], center=false);
-      }
-
-      translate([hole_w / 2,
-                 (size[1] - hole_h) / 2,
-                 size[2] - size[2] / 2 + 1]) {
-        linear_extrude(height=size[2] * 0.5, center=false) {
-          square([hole_w, hole_h],
-                 center=false);
-        }
-      }
-    }
-  } else {
-    linear_extrude(height=size[2], center=false) {
-      square([size[0], size[1]], center=false);
-    }
-  }
-}
-
-module uart_connector(size=rpi_uart_connector_size) {
-  rtc_battery_connector(size);
-}
-
-module rpi_usb_hdmi_connectors() {
-  x_offst = 2;
-  uart_x_offst = -rpi_micro_hdmi_jack_size[0] / 2 + x_offst / 2;
-  translate([rpi_width - rpi_usb_c_jack_size[0] / 2 + x_offst,
-             rpi_usb_c_jack_size[1] / 2 + m25_hole_dia * 2 + 0.8,
-             0]) {
-    usb_jack();
-    translate([uart_x_offst,
-               rpi_usb_c_jack_size[1] / 2 +
-               rpi_rtc_connector_size[1] / 2,
-               0]) {
-      color(metallic_yellow_silver_2, alpha=1) {
-        rtc_battery_connector();
-      }
-    }
-    translate([0,
-               rpi_usb_c_jack_size[1],
-               0]) {
-      translate([0,  rpi_micro_hdmi_jack_size[1], 0]) {
-        micro_hdmi_jack();
-        translate([-rpi_usb_c_jack_size[0],
-                   -rpi_micro_hdmi_jack_size[1] / 2,
-                   0]) {
-          rotate([0, 0, 90]) {
-            color("white", alpha=1) {
-              linear_extrude(height=0.1, center=false) {
-                text("HDMI",
-                     size=4,
-                     font=rpi_text_font,
-                     halign="left",
-                     valign="center");
-              }
-            }
-          }
-        }
-        translate([uart_x_offst + 1,
-                   rpi_micro_hdmi_jack_size[1]
-                   - rpi_uart_connector_size[1] / 2,
-                   0]) {
-          color(metallic_yellow_silver_2, alpha=1) {
-            uart_connector();
-          }
-        }
-        translate([0,
-                   rpi_micro_hdmi_jack_size[0]
-                   + rpi_uart_connector_size[1] + 1.2,
-                   0]) {
-          micro_hdmi_jack();
-        }
-      }
-    }
-  }
-}
-
 module rpi_standoffs(standoff_height=rpi_standoff_height,
-                     bolt_visible_h) {
+                     bolt_visible_h,
+                     bolt_spacing=rpi_bolt_spacing,
+                     bolt_offset=rpi_bolts_offset) {
   show_bolt = !is_undef(bolt_visible_h);
 
-  translate([rpi_bolts_offset, rpi_bolts_offset, -standoff_height]) {
-    four_corner_children(size=rpi_bolt_spacing,
+  translate([bolt_offset, bolt_offset, -standoff_height]) {
+    four_corner_children(size=bolt_spacing,
                          center=false) {
 
       standoffs_stack(d=m2_hole_dia,
@@ -277,6 +102,53 @@ module rpi_camera_ribbon_slots(thickness, anchor=[1, 1, 1]) {
   }
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  rpi_5
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Raspberry Pi 5 placeholder with mounting cutters and optional HAT stack.
+
+  The PCB starts at `[0, 0, 0]`; the placement reference includes the +Y port
+  overhang, but excludes component height, inserted plugs and accessories.
+  `anchor`, `orientation` and `rotate_z_180` apply equally to solid and slot
+  modes. The grid contains the visible components, not the mounting interfaces.
+
+  **Parameters:**
+  - `size`: PCB `[width, length, thickness]`.
+  - `bolt_spacing`, `corner_rad`: Hole-center spacing and PCB corner radius.
+  - `slot_thickness`, `mount_dia`: Mounting cutter height and shaft diameter.
+  - `placeholder_hole_dia`, `bolt_offset`: Visible PCB hole diameter and inset.
+  - `header_height`, `header_width`, `pin_height`, `header_cols`, `header_rows`:
+    GPIO housing dimensions, pitch and contact counts.
+  - `show_standoffs`, `show_ai_hat`, `show_motor_driver_hat`,
+    `show_servo_driver_hat`, `show_gpio_expansion_board`: Accessory toggles.
+  - `pad_hole_specs`: Mounting pad rings as `[diameter, color]` pairs.
+  - `usb_a_size`, `csi_size`, `io_size`, `wifi_bt_size`, `pci_size`,
+    `ethernet_jack_size`: Component reference sizes for the default grid.
+  - `usb_a_x_gap`, `usb_a_edge_gap`, `usb_a_y_offset`: USB stack gap, left
+    margin and USB/Ethernet overhang beyond the +Y board edge.
+  - `rpi_usb_a_n`: Number of USB-A stacks.
+  - `standoff_height`, `bolt_visible_h`: Standoff and visible bolt heights.
+  - `camera_ribbon_slot`, `show_camera_ribbon_slot`: Ribbon cutter footprint
+    and whether to include these cutters in slot mode.
+  - `plugged_usb_a`: Plist of plugged socket indices under `left` and `right`.
+  - `anchor`: Placement of the reference box on each axis: `1` positive,
+    `0` centered, `-1` negative.
+  - `orientation`: Axis convention accepted by `with_orientation`.
+  - `rotate_z_180`: Additional half-turn about Z after orientation.
+  - `slot_mode`: Render mounting/ribbon cutters instead of the placeholder.
+  - `component_grid`: Optional complete `pcb_grid` plist. `undef` builds
+    `rpi_5_grid` from the component parameters above. A supplied grid controls
+    visible components only; it does not change holes or accessory mounting.
+  - `debug_grid`: Show the component grid's cell outlines and dimensions.
+
+  **Examples:**
+  ```scad
+  rpi_5(anchor=[0, 0, 1], debug_grid=true);
+  rpi_5(component_grid=rpi_5_grid(csi_n=0, button=[]));
+  ```
+ */
 module rpi_5(size=[rpi_width, rpi_len, rpi_thickness],
              bolt_spacing=rpi_bolt_spacing,
              corner_rad=rpi_offset_rad,
@@ -313,7 +185,9 @@ module rpi_5(size=[rpi_width, rpi_len, rpi_thickness],
              anchor=[1, 1, 1],
              orientation="wlh",
              rotate_z_180=false,
-             slot_mode=false) {
+             slot_mode=false,
+             component_grid,
+             debug_grid=false) {
 
   w = size[0];
   length = size[1];
@@ -321,7 +195,26 @@ module rpi_5(size=[rpi_width, rpi_len, rpi_thickness],
 
   max_size = rpi_5_size(size, usb_a_y_offset);
 
-  usb_y = length - usb_a_size[1] + usb_a_y_offset;
+  grid = is_undef(component_grid)
+    ? rpi_5_grid(size=size,
+                 bolt_offset=bolt_offset,
+                 header_height=header_height,
+                 header_width=header_width,
+                 pin_height=pin_height,
+                 header_cols=header_cols,
+                 header_rows=header_rows,
+                 usb_a_size=usb_a_size,
+                 csi_size=csi_size,
+                 io_size=io_size,
+                 wifi_bt_size=wifi_bt_size,
+                 pci_size=pci_size,
+                 ethernet_jack_size=ethernet_jack_size,
+                 usb_a_x_gap=usb_a_x_gap,
+                 usb_a_edge_gap=usb_a_edge_gap,
+                 usb_a_y_offset=usb_a_y_offset,
+                 usb_a_n=rpi_usb_a_n,
+                 plugged_usb_a=plugged_usb_a)
+    : component_grid;
 
   with_orientation(from="wlh",
                    to=orientation,
@@ -381,125 +274,26 @@ module rpi_5(size=[rpi_width, rpi_len, rpi_thickness],
               }
               if (show_standoffs) {
                 rpi_standoffs(standoff_height=standoff_height,
-                              bolt_visible_h=bolt_visible_h);
+                              bolt_visible_h=bolt_visible_h,
+                              bolt_spacing=bolt_spacing,
+                              bolt_offset=bolt_offset);
               }
 
-              translate([0, 0, h]) {
-                translate([0, bolt_offset * 2, 0]) {
-                  pin_header(cols=header_cols,
-                             rows=header_rows,
-                             header_width=header_width,
-                             header_height=header_height,
-                             pin_height=pin_height,
-                             z_offset=h + 0.5,
-                             p=0.65,
-                             center=false);
-                  translate([header_width * 2 + 1, 0, 0]) {
-                    wifi_bt(size=wifi_bt_size);
-                  }
-                }
-              }
-              translate([0, 0, h]) {
+              // Pad rings share the mounting datum, independently of the grid.
+              translate([bolt_offset, bolt_offset, h]) {
                 color(yellow_3, alpha=1) {
-                  translate([bolt_offset, bolt_offset, 0]) {
-                    four_corner_children(size=bolt_spacing, center=false) {
-                      pad_hole(bolt_d=placeholder_hole_dia,
-                               specs=pad_hole_specs,
-                               thickness=0.1);
-                    }
+                  four_corner_children(size=bolt_spacing, center=false) {
+                    pad_hole(bolt_d=placeholder_hole_dia,
+                             specs=pad_hole_specs,
+                             thickness=0.1);
                   }
                 }
-                translate([header_width * 2 + rpi_ram_size[1] + 2,
-                           header_width * 10,
-                           0]) {
-                  bcm_processor();
-                }
-
-                translate([header_width * 2 + 5,
-                           header_width * 10,
-                           0]) {
-                  ram();
-                  translate([-1, 0, 0]) {
-                    color("white", alpha=1) {
-                      rotate([0, 0, 90]) {
-                        linear_extrude(height=0.1, center=false) {
-                          text(rpi_model_text,
-                               size=2,
-                               font=rpi_text_font,
-                               valign="bottom");
-                        }
-                      }
-                    }
-                  }
-                }
-                union() {
-                  translate([0, usb_y, h]) {
-                    let (left = plist_get("left", plugged_usb_a, []),
-                         right = plist_get("right", plugged_usb_a, [])) {
-                      translate([usb_a_edge_gap, 0, 0]) {
-                        columns_children(cols=rpi_usb_a_n,
-                                         gap=usb_a_x_gap,
-                                         w=usb_a_size[0]) {
-
-                          multi_usb_socket(size=usb_a_size,
-                                           plugged_usb_idxes=$i == 0
-                                           ? right
-                                           : left,
-                                           usb_plist=usb_a_plist,
-                                           offsets=[0, 0, 1],
-                                           anchor=[0, 1, 1],
-                                           color=metallic_yellow_silver);
-                          if ($i == 0) {
-                            translate([usb_a_x_gap, -usb_a_size[1], 0]) {
-                              io_controller(size=io_size);
-                            }
-                          }
-                        }
-                      }
-
-                      translate([w, 0, 0]) {
-                      }
-                    }
-                  }
-                  translate([(usb_a_size[0] + usb_a_x_gap) * rpi_usb_a_n,
-                             length
-                             - ethernet_jack_size[1]
-                             + usb_a_y_offset,
-                             0]) {
-                    ethernet(size=ethernet_jack_size);
-                  }
-                }
-                rpi_usb_hdmi_connectors();
-
-                if (rpi_csi_cameras_n > 0) {
-                  translate([rpi_csi_position_x,
-                             rpi_csi_position_y,
-                             0]) {
-                    rows_children(rows=rpi_csi_cameras_n,
-                                  w=csi_size[0],
-                                  gap=rpi_csi_camera_gap,
-                                  anchor=-1) {
-                      pci_connector(size=csi_size, anchor=[1, 1, 1]);
-                    }
-                  }
-                }
-
-                translate([w / 2, 0, 0]) {
-                  pci_connector(size=pci_size);
-
-                  if (rpi_on_off_button_plist) {
-                    let (offsets = plist_get("offsets",
-                                             rpi_on_off_button_plist, [0, 0])) {
-                      translate([pci_size[1] / 2 + offsets[0],
-                                 offsets[1],
-                                 0]) {
-                        pcb_button_from_plist(rpi_on_off_button_plist,
-                                              anchor=[1, 1, 1],
-                                              orientation="whl");
-                      }
-                    }
-                  }
-                }
+              }
+              translate([0, max_size[1], 0]) {
+                pcb_grid(grid=grid,
+                         thickness=h,
+                         debug=debug_grid,
+                         mode="placeholder");
               }
             }
 
@@ -563,17 +357,4 @@ module rpi_5(size=[rpi_width, rpi_len, rpi_thickness],
   }
 }
 
-// rpi_5(show_standoffs=show_standoffs,
-//       show_ai_hat=show_ai_hat,
-//       bolt_visible_h=chassis_thickness - chassis_counterbore_h,
-//       slot_mode=false,
-//       anchor=[1, 1, 1]);
-
-// rpi_5(show_standoffs=show_standoffs,
-//       show_ai_hat=show_ai_hat,
-//       bolt_visible_h=chassis_thickness - chassis_counterbore_h,
-//       slot_mode=true,
-//       anchor=[1, 1, 1]);
-
-rpi_5(anchor=[1, 1, 1], rotate_z_180=false);
-// rpi_5(anchor=[1, 1, 1], slot_mode=true);
+rpi_5(anchor=[1, 1, 1]);
