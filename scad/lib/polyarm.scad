@@ -92,7 +92,7 @@ module segment_center_x(size,
           }
         }
       } else {
-        cube_center_x(size);
+        cuboid(size, anchor=[0, 1, 1]);
       }
     }
   }

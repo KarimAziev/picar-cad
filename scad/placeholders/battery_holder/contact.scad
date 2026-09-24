@@ -49,9 +49,6 @@ module solder_tab_cutout(battery_dia,
                 (front_rear_thickness / 2) - 0.5,
                 holder_height];
 
-  contact_mount_bottom_size =
-    solder_tab_contact_mount_outer_size(battery_dia=battery_dia,
-                                        contact_hole_d=contact_hole_d);
   inner_cutout_size = [contact_w * 0.92,
                        (front_rear_thickness / 2),
                        max(1, holder_height - 2)];
@@ -69,9 +66,6 @@ module solder_tab_cutout(battery_dia,
   outer_hook_cutout_size = [hook_trapezoid_bottom,
                             hook_trapezoid_top,
                             1.5]; // trapezoid bottom, top and height
-
-  half_of_front_thickness = front_rear_thickness / 2;
-  half_of_inner_cutout_h = inner_cutout_size[2] / 2;
 
   outer_hook_y_position = outer_size[2] / 2;
   inner_hook_y_position = inner_cutout_size[2] - inner_hook_cutout_size[0]/ 2;
@@ -137,8 +131,8 @@ module solder_tab_cutout(battery_dia,
                - inc_step / 2,
                -inc_step]) {
       cuboid(size=[outer_bottom_cutout_size[0],
-                    bottom_outer_thickness,
-                    outer_bottom_cutout_size[2] + inc_step]);
+                   bottom_outer_thickness,
+                   outer_bottom_cutout_size[2] + inc_step]);
     }
   }
 }
@@ -151,6 +145,7 @@ module battery_holder_solder_tab_contact(battery_dia=18,
                                          angle = 0) {
 
   holder_height = with_default(holder_height, battery_dia);
+
   width = solder_tab_contact_mount_w(battery_dia=battery_dia,
                                      contact_hole_d=contact_hole_d);
   outer_size = [width * 0.5,
@@ -164,22 +159,8 @@ module battery_holder_solder_tab_contact(battery_dia=18,
                        (front_rear_thickness / 2),
                        max(1, holder_height - 2)];
 
-  hook_trapezoid_bottom = 0.2 * holder_height;
-  hook_trapezoid_top = 0.79 * hook_trapezoid_bottom;
-
-  inner_hook_cutout_size = [hook_trapezoid_bottom,
-                            hook_trapezoid_top,
-                            0.5]; // trapezoid bottom, top and height
-  outer_hook_cutout_size = [hook_trapezoid_bottom,
-                            hook_trapezoid_top,
-                            1.5]; // trapezoid bottom, top and height
-
   half_of_front_thickness = front_rear_thickness / 2;
   half_of_inner_cutout_h = inner_cutout_size[2] / 2;
-
-  outer_hook_cutout_y_position = outer_size[2] / 2;
-  inner_hook_cutout_y_position = inner_cutout_size[2]
-    - inner_hook_cutout_size[0] / 2;
 
   bbox = rot_x_bbox_align([width, thickness,
                            half_of_inner_cutout_h],
@@ -190,34 +171,37 @@ module battery_holder_solder_tab_contact(battery_dia=18,
       translate([0, bbox[2] + thickness, holder_height - bbox[5]]) {
         rotate([-angle, 0, 0]) {
           translate([0, 0, 0]) {
-            cube_center_x([width, thickness, half_of_inner_cutout_h]);
+            cuboid([width, thickness, half_of_inner_cutout_h],
+                   anchor=[0, 1, 1]);
           }
         }
       }
       translate([0, 0, holder_height - bbox[5] * 2]) {
         rotate([angle, 0, 0]) {
           translate([0, 0, 0]) {
-            cube_center_x([width, thickness, half_of_inner_cutout_h]);
+            cuboid([width, thickness, half_of_inner_cutout_h],
+                   anchor=[0, 1, 1]);
           }
         }
       }
     }
 
     translate([0, 0, holder_height - inner_cutout_size[2]]) {
-      cube_center_x([width, thickness, inner_cutout_size[2]]);
+      cuboid([width, thickness, inner_cutout_size[2]], anchor=[0, 1, 1]);
     }
 
     translate([0, thickness, 0]) {
       translate([0, 0, holder_height - thickness]) {
-        cube_center_x([width, half_of_front_thickness, thickness]);
+        cuboid([width, half_of_front_thickness, thickness], anchor=[0, 1, 1]);
       }
       translate([0, half_of_front_thickness, 0]) {
-        cube_center_x([width, thickness, holder_height]);
+        cuboid([width, thickness, holder_height], anchor=[0, 1, 1]);
         translate([0, thickness, 0]) {
-          cube_center_x([outer_size[0], half_of_front_thickness, thickness]);
+          cuboid([outer_size[0], half_of_front_thickness, thickness],
+                 anchor=[0, 1, 1]);
           translate([0, half_of_front_thickness, 0]) {
             difference() {
-              cube_center_x(contact_mount_bottom_size);
+              cuboid(contact_mount_bottom_size, anchor=[0, 1, 1]);
               translate([0, contact_mount_bottom_size[1] / 2, -0.5]) {
                 cylinder(r=contact_hole_d / 2, h=thickness + 1);
               }

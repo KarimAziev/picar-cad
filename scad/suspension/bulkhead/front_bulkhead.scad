@@ -149,9 +149,10 @@ module front_bulkhead(color=cobalt_blue_light_1,
           }
           // fill gap between rear support and the main part
           translate([0, -l2, 0]) {
-            cube_center_x(size=[bulkhead_w,
-                                extra_rear_len,
-                                shock_tower_mount_offset + upper_holder_w]);
+            cuboid(size=[bulkhead_w,
+                         extra_rear_len,
+                         shock_tower_mount_offset + upper_holder_w],
+                   anchor=[0, 1, 1]);
           }
 
           // bosses for the upper steering panel
@@ -172,9 +173,10 @@ module front_bulkhead(color=cobalt_blue_light_1,
 
           // front lower protrusion for the arm pad
           translate([0, l2, 0]) {
-            cube_center_x(size=[bulkhead_w,
-                                arm_pad_holder_thickness + arm_pad_thickness,
-                                arm_pad_hook_h + arm_pad_holder_thickness]);
+            cuboid(size=[bulkhead_w,
+                         arm_pad_holder_thickness + arm_pad_thickness,
+                         arm_pad_hook_h + arm_pad_holder_thickness],
+                   anchor=[0, 1, 1]);
           }
           front_bulkhead_support(bulkhead_w=bulkhead_w,
                                  bulkhead_l=bulkhead_l,
@@ -196,10 +198,11 @@ module front_bulkhead(color=cobalt_blue_light_1,
         // front lower cutout for the arm pad
         translate([0, -arm_pad_clearance / 2, -1]) {
           translate([0, l2, 0]) {
-            cube_center_x(size=[bulkhead_w
-                                - arm_pad_holder_thickness * 2,
-                                arm_pad_thickness + arm_pad_clearance,
-                                arm_pad_hook_h + 1]);
+            cuboid(size=[bulkhead_w
+                         - arm_pad_holder_thickness * 2,
+                         arm_pad_thickness + arm_pad_clearance,
+                         arm_pad_hook_h + 1],
+                   anchor=[0, 1, 1]);
           }
         }
 
@@ -511,15 +514,17 @@ module front_bulkhead_support(bulkhead_w=front_bulkhead_w,
                    h=length,
                    $fn=$preview ? 30 : 360);
           translate([0, -upper_holder_round_cutout_d, -0.5]) {
-            cube_center_x([upper_holder_round_cutout_d,
-                           upper_holder_round_cutout_d,
-                           length + 1]);
+            cuboid([upper_holder_round_cutout_d,
+                    upper_holder_round_cutout_d,
+                    length + 1],
+                   anchor=[0, 1, 1]);
           }
         }
         translate([0, -upper_holder_round_cutout_d / 2, -0.5]) {
-          cube_center_x([poly_h,
-                         upper_holder_round_cutout_d / 2,
-                         poly_h]);
+          cuboid([poly_h,
+                  upper_holder_round_cutout_d / 2,
+                  poly_h],
+                 anchor=[0, 1, 1]);
         }
       }
     }
