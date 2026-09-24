@@ -90,7 +90,7 @@ module grid_plist_render(size,
       if (debug || debug_row) {
         color(debug_color, alpha=1) {
           cube_border(size=[inner_x, h],
-                      center=false,
+                      anchor=[1, 1, 1],
                       border_w=debug_border_w,
                       h=debug_border_h);
         }
@@ -138,7 +138,7 @@ module grid_plist_render(size,
           if ((debug || cell_debug) && is_undef(nested)) {
             color(debug_color, alpha=1) {
               cube_border(size=[w, h],
-                          center=false,
+                          anchor=[1, 1, 1],
                           border_w=debug_border_w,
                           h=debug_border_h);
             }

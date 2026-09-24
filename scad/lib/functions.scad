@@ -2504,6 +2504,32 @@ function parse_percent(s) =
        : s)
   str_to_num(str);
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  maybe_percent_string_to_num
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Resolve a percentage string against a total, or return a non-string unchanged.
+
+  **Parameters:**
+  - `val`: A number, percentage string, or other value to pass through.
+    Strings contain non-negative decimal digits with an optional trailing
+    `"%"`. Signs, whitespace and exponent notation are not supported.
+  - `total`: Reference value representing 100 percent. Used only for strings.
+
+  **Returns:**
+  Strings resolve to `parse_percent(val) * total / 100`. All other values,
+  including `undef`, pass through unchanged so callers can apply defaults.
+  A numeric string without `"%"` is also a percentage, not an absolute value.
+
+  **Examples:**
+  ```scad
+  maybe_percent_string_to_num("12.5%", 80); // -> 10
+  maybe_percent_string_to_num("25", 80);   // -> 20
+  maybe_percent_string_to_num(25, 80);     // -> 25
+  maybe_percent_string_to_num(undef, 80);  // -> undef
+  ```
+ */
 function maybe_percent_string_to_num(val, total) = is_string(val)
   ? percent_to_mm(parse_percent(val),
                   total=total)

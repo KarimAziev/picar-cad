@@ -65,7 +65,9 @@ use <transforms.scad>
     - Z: `1`
 
   `r`:
-    Absolute rounding radius.
+    Absolute rounding radius or percentage string such as `"10%"`.
+    Percentages use the smallest X/Y dimension for the extruded version,
+    or the smallest X/Y/Z dimension when `use_minkowski=true`.
 
     If `undef` or `0`, no rounding is applied unless `r_factor` produces one.
 
@@ -151,6 +153,8 @@ module cuboid(size,
                                                   if (is_num(v)) v]) == 3,
          "Size should be number or [number, number, number]");
   size = is_num(size) ? [size, size, size] : size;
+  r = maybe_percent_string_to_num(r,
+                                  use_minkowski ? min(size) : min(size[0], size[1]));
 
   anchor = [with_default(anchor[0], center ? 0 : 1),
             with_default(anchor[1], center ? 0 : 1),
@@ -287,17 +291,32 @@ module notched_circle(d,
   rounded_rect_recess
   ─────────────────────────────────────────────────────────────────────────────
 
-  Create a rounded rectangular prism with an optional larger recess layer.
+  Create a rounded rectangular cutter with an optional concentric recess.
 
   **Parameters:**
-  - `size`: Main footprint as `[x, y]`.
-  - `recess_size`: Optional recess footprint as `[x, y]`.
-  - `r`: Corner radius used for both layers.
-  - `thickness`: Main extrusion depth.
-  - `recess_thickness`: Optional recess depth. When `undef`, defaults to
-    roughly `thickness / 2.2`.
-  - `recess_reverse`: If `true`, place the recess on the opposite face.
-  - `center`: If `true`, center the footprint on XY.
+  - `size`: Main footprint `[width, length]` on X/Y.
+  - `recess_size`: Recess footprint `[width, length]`. `undef`, or a zero
+    component, omits the recess.
+  - `r`: Common corner radius, as a number or percentage of the smaller main
+    footprint dimension. Each layer clamps the radius to fit. `undef` uses
+    the rounded-rectangle default radius factor independently for each layer.
+  - `thickness`: Main cutter depth along Z.
+  - `recess_thickness`: Recess depth; `undef` uses `max(1, thickness / 2.2)`.
+  - `recess_reverse`: If `true`, align the recess with the top of the main
+    cutter; otherwise align it with the bottom (default `false`).
+  - `anchor`: Reference-box placement (default `[1, 1, 1]`). Components `1`,
+    `0`, and `-1` select positive, centered, and negative placement. The box
+    uses the larger footprint on each axis and the main `thickness` on Z.
+
+  **Behavior:**
+  Both layers share the same X/Y center. A recess deeper than `thickness`
+  extends beyond the anchored main depth; its depth is not clamped.
+
+  **Examples:**
+  ```scad
+  rounded_rect_recess([20, 12], recess_size=[24, 16], r="10%",
+                      thickness=6, recess_thickness=2, anchor=[0, 0, 1]);
+  ```
  */
 module rounded_rect_recess(size,
                            recess_size,
@@ -305,17 +324,17 @@ module rounded_rect_recess(size,
                            thickness,
                            recess_thickness,
                            recess_reverse=false,
-                           center=false) {
+                           anchor=[1, 1, 1]) {
+  r = maybe_percent_string_to_num(r, min(size[0], size[1]));
   recess_t = is_undef(recess_thickness)
     ? max(1, thickness / 2.2)
     : recess_thickness;
   recess_size = recess_size && recess_size[0] && recess_size[1] ? recess_size : undef;
   recess_z = recess_reverse ? thickness - recess_t : 0;
-  translate([center
-             ? 0
-             : max(size[0], is_undef(recess_size) ? 0 : recess_size[0]) / 2,
-             center ? 0 : max(size[1], is_undef(recess_size) ? 0 : recess_size[1]) / 2,
-             0]) {
+  reference_size = [max(size[0], is_undef(recess_size) ? 0 : recess_size[0]),
+                    max(size[1], is_undef(recess_size) ? 0 : recess_size[1]),
+                    thickness];
+  with_anchor(anchor=anchor, size=reference_size, centered=true) {
     union() {
       linear_extrude(height=thickness,
                      center=false) {
@@ -344,39 +363,56 @@ module rounded_rect_recess(size,
   cube_border
   ─────────────────────────────────────────────────────────────────────────────
 
-  Extrude `rect_border()` into a 3D rectangular frame.
+  Create a rectangular frame extruded along Z.
 
   **Parameters:**
-  - `size`: Reference size as `[x, y, z]`.
-  - `h`: Extrusion height. When `undef`, `size[2]` is used.
-  - `border_w`: Difference between the outer and inner rectangle sizes.
-  - `inner`: Forwarded to `rect_border()`.
-  - `r`: Explicit corner radius.
-  - `center`: If `true`, center the border footprint on XY.
+  - `size`: Reference dimensions `[width, length, height]`, or `[width, length]`
+    when `h` is supplied.
+  - `h`: Extrusion height; `undef` uses `size[2]`.
+  - `border_w`: Difference between outer and inner footprint dimensions
+    (default `0.5`), as a number or percentage of `min(size[0], size[1])`.
+    Each straight wall is half this value.
+  - `inner`: If `true` (default), the reference footprint is the outside.
+    If `false`, it is the opening, with the border extending outward.
+  - `r`: Common outline radius, as a number or percentage of the smaller
+    reference footprint dimension (default `0`). `undef` uses `r_factor`.
+  - `anchor`: Reference-box placement (default `[1, 1, 1]`). Components `1`,
+    `0`, and `-1` select positive, centered, and negative placement. Z uses
+    the resolved extrusion height.
   - `fn`: Fragment count for rounded corners.
-  - `r_factor`: Radius factor used when `r` is `undef`.
-  - `round_side`: Optional side selection forwarded to `rect_border()`.
+  - `r_factor`: Radius fraction for each outline when `r=undef` (default `0.3`).
+  - `round_side`: Rounded side or corner selection passed to `rect_border()`.
+
+  **Behavior:**
+  With `inner=false`, the border extends `border_w / 2` beyond each X/Y edge
+  of the anchored reference box. Both outlines share their X/Y center.
+
+  **Examples:**
+  ```scad
+  cube_border([40, 20, 6], border_w="10%", r="5%", anchor=[0, 0, -1]);
+  ```
  */
 module cube_border(size,
                    h,
                    border_w=0.5,
                    inner=true,
                    r=0,
-                   center=false,
+                   anchor=[1, 1, 1],
                    fn,
                    r_factor=0.3,
                    round_side) {
-  linear_extrude(height=is_undef(h) ? size[2] : h,
-                 center=false,
-                 convexity=2) {
-    rect_border(size=[size[0], size[1]],
-                border_w=border_w,
-                inner=inner,
-                r=r,
-                center=center,
-                fn=fn,
-                r_factor=r_factor,
-                round_side=round_side);
+  h = with_default(h, size[2]);
+  with_anchor(anchor=anchor, size=[size[0], size[1], h], centered=true) {
+    linear_extrude(height=h, center=false, convexity=2) {
+      rect_border(size=[size[0], size[1]],
+                  border_w=border_w,
+                  inner=inner,
+                  r=r,
+                  anchor=[0, 0, 1],
+                  fn=fn,
+                  r_factor=r_factor,
+                  round_side=round_side);
+    }
   }
 }
 
@@ -438,21 +474,30 @@ module ring(d,
   y_chamfered_cube
   ─────────────────────────────────────────────────────────────────────────────
 
-  Create a prism whose Y-facing edges are chamfered by extruding a chamfered
-  X/Z profile along X.
+  Create an X-directed prism with the four corners of its Y/Z profile chamfered.
 
   **Parameters:**
-  - `size`: Prism size as `[x, y, z]`.
-  - `chamfer`: Chamfer size.
-  - `center_x`: If `true`, center the prism on X.
-  - `center_y`: If `true`, center the prism on Y.
-  - `lower_chamfer`: If `true`, shift the prism so the lower chamfer reaches
-    below `z = 0`.
+  - `size`: Reference dimensions `[width, length, height]` on X/Y/Z.
+  - `chamfer`: Non-negative corner trim, as a number or percentage of
+    `min(size[1], size[2])`. Keep it at or below half that minimum to avoid
+    crossing profile edges.
+  - `anchor`: Reference-box placement (default `[1, 1, 1]`). Components `1`,
+    `0`, and `-1` select positive, centered, and negative placement.
+  - `lower_chamfer`: If `true`, shift the anchored prism down by the resolved
+    chamfer distance (default `false`). The reference height stays `size[2]`.
+
+  **Examples:**
+  ```scad
+  y_chamfered_cube([30, 20, 10], chamfer="10%", anchor=[0, 0, 1]);
+  ```
  */
-module y_chamfered_cube(size, chamfer, center_x, center_y, lower_chamfer=false) {
+module y_chamfered_cube(size, chamfer, anchor=[1, 1, 1], lower_chamfer=false) {
   x_size = size[0];
   y_size = size[1];
   z_size = size[2];
+  chamfer = maybe_percent_string_to_num(chamfer, min(y_size, z_size));
+  assert(is_num(chamfer) && chamfer >= 0,
+         "y_chamfered_cube: chamfer must be non-negative or a percentage");
   pts = [[0, chamfer],
          [0, y_size - chamfer],
          [chamfer, y_size],
@@ -462,12 +507,12 @@ module y_chamfered_cube(size, chamfer, center_x, center_y, lower_chamfer=false) 
          [z_size - chamfer, 0],
          [chamfer, 0]];
 
-  translate([center_x ? -x_size / 2 : 0,
-             center_y ? -y_size / 2 : 0,
-             z_size + (lower_chamfer ? -chamfer : 0)]) {
-    rotate([0, 90, 0]) {
-      linear_extrude(height=x_size, center=false) {
-        polygon(pts);
+  with_anchor(anchor=anchor, size=size) {
+    translate([0, 0, z_size + (lower_chamfer ? -chamfer : 0)]) {
+      rotate([0, 90, 0]) {
+        linear_extrude(height=x_size, center=false) {
+          polygon(pts);
+        }
       }
     }
   }
@@ -478,94 +523,104 @@ module y_chamfered_cube(size, chamfer, center_x, center_y, lower_chamfer=false) 
   chamfered_cube
   ─────────────────────────────────────────────────────────────────────────────
 
-  Create a cube-like solid with chamfered top and side edges.
+  Create a box with chamfers around its top and bottom faces.
 
   **Parameters:**
-  - `size`: Solid size as `[x, y, z]`.
-  - `chamfer`: Chamfer size.
-  - `center_x`: If `true`, center the solid on X.
-  - `center_y`: If `true`, center the solid on Y.
-  - `lower_chamfer`: If `true`, shift the solid downward so lower chamfers can
-    extend below `z = 0`.
-  - `ignore_sides`: List of side names to leave unchamfered. Supported values
-    are `"left"`, `"right"`, `"bottom"`, and `"top"`.
+  - `size`: Reference dimensions `[width, length, height]` on X/Y/Z.
+  - `chamfer`: Non-negative edge trim, as a number or percentage of `min(size)`.
+    Keep it at or below half that minimum so the chamfer bands fit.
+  - `anchor`: Reference-box placement (default `[1, 1, 1]`). Components `1`,
+    `0`, and `-1` select positive, centered, and negative placement.
+  - `lower_chamfer`: If `true`, shift the anchored box down by the resolved
+    chamfer distance (default `false`). The reference height stays `size[2]`.
+  - `ignore_sides`: Side names whose top/bottom edges remain square (default
+    `[]`): `"left"` is minimum X, `"right"` maximum X, `"bottom"` minimum Y,
+    and `"top"` maximum Y. Names refer to the canonical box before anchoring.
+
+  **Examples:**
+  ```scad
+  chamfered_cube([30, 20, 10], chamfer="10%", anchor=[0, 0, 1],
+                 ignore_sides=["right"]);
+  ```
  */
 module chamfered_cube(size,
                       chamfer,
-                      center_x,
-                      center_y,
+                      anchor=[1, 1, 1],
                       lower_chamfer=false,
                       ignore_sides=[]) {
   x_size = size[0];
   y_size = size[1];
   z_size = size[2];
+  chamfer = maybe_percent_string_to_num(chamfer, min(size));
+  assert(is_num(chamfer) && chamfer >= 0,
+         "chamfered_cube: chamfer must be non-negative or a percentage");
 
   is_left_non_chamfered = member("left", ignore_sides);
   is_right_non_chamfered = member("right", ignore_sides);
 
-  translate([center_x ? -x_size / 2 : 0,
-             center_y ? -y_size / 2 : 0,
-             lower_chamfer ? -chamfer : 0]) {
-    intersection() {
-      cube(size=[x_size, y_size, z_size]);
-      union() {
-        translate([x_size, 0, chamfer]) {
-          rotate([0, 180, 0]) {
+  with_anchor(anchor=anchor, size=size) {
+    translate([0, 0, lower_chamfer ? -chamfer : 0]) {
+      intersection() {
+        cube(size=[x_size, y_size, z_size]);
+        union() {
+          translate([x_size, 0, chamfer]) {
+            rotate([0, 180, 0]) {
+              roof() {
+                square(size=[x_size, y_size]);
+              }
+            }
+          }
+
+          for (side = ignore_sides) {
+            if (side == "left") {
+              y_chamfered_cube(size=[x_size / 2, y_size, z_size],
+                               chamfer=chamfer);
+            } else if (side == "right") {
+              translate([x_size / 2, 0, 0]) {
+                y_chamfered_cube(size=[x_size / 2, y_size, z_size],
+                                 chamfer=chamfer);
+              }
+            } else if (side == "bottom") {
+              translate([x_size, 0, 0]) {
+                rotate([0, 0, 90]) {
+                  y_chamfered_cube(size=[y_size / 2, x_size, z_size],
+                                   chamfer=chamfer);
+                }
+              }
+              if (is_left_non_chamfered) {
+                cube([chamfer, chamfer, z_size]);
+              }
+              if (is_right_non_chamfered) {
+                translate([x_size - chamfer, 0, 0]) {
+                  cube([chamfer, chamfer, z_size]);
+                }
+              }
+            } else if (side == "top") {
+              translate([x_size, y_size / 2, 0]) {
+                rotate([0, 0, 90]) {
+                  y_chamfered_cube(size=[y_size / 2, x_size, z_size],
+                                   chamfer=chamfer);
+                }
+              }
+              if (is_left_non_chamfered) {
+                translate([0, y_size - chamfer, 0]) {
+                  cube([chamfer, chamfer, z_size]);
+                }
+              }
+              if (is_right_non_chamfered) {
+                translate([x_size - chamfer, y_size - chamfer, 0]) {
+                  cube([chamfer, chamfer, z_size]);
+                }
+              }
+            }
+          }
+          translate([0, 0, chamfer]) {
+            cube(size=[x_size, y_size, z_size - chamfer * 2]);
+          }
+          translate([0, 0, z_size - chamfer]) {
             roof() {
               square(size=[x_size, y_size]);
             }
-          }
-        }
-
-        for (side = ignore_sides) {
-          if (side == "left") {
-            y_chamfered_cube(size=[x_size / 2, y_size, z_size],
-                             chamfer=chamfer);
-          } else if (side == "right") {
-            translate([x_size / 2, 0, 0]) {
-              y_chamfered_cube(size=[x_size / 2, y_size, z_size],
-                               chamfer=chamfer);
-            }
-          } else if (side == "bottom") {
-            translate([x_size, 0, 0]) {
-              rotate([0, 0, 90]) {
-                y_chamfered_cube(size=[y_size / 2, x_size, z_size],
-                                 chamfer=chamfer);
-              }
-            }
-            if (is_left_non_chamfered) {
-              cube([chamfer, chamfer, z_size]);
-            }
-            if (is_right_non_chamfered) {
-              translate([x_size - chamfer, 0, 0]) {
-                cube([chamfer, chamfer, z_size]);
-              }
-            }
-          } else if (side == "top") {
-            translate([x_size, y_size / 2, 0]) {
-              rotate([0, 0, 90]) {
-                y_chamfered_cube(size=[y_size / 2, x_size, z_size],
-                                 chamfer=chamfer);
-              }
-            }
-            if (is_left_non_chamfered) {
-              translate([0, y_size - chamfer, 0]) {
-                cube([chamfer, chamfer, z_size]);
-              }
-            }
-            if (is_right_non_chamfered) {
-              translate([x_size - chamfer, y_size - chamfer, 0]) {
-                cube([chamfer, chamfer, z_size]);
-              }
-            }
-          }
-        }
-        translate([0, 0, chamfer]) {
-          cube(size=[x_size, y_size, z_size - chamfer * 2]);
-        }
-        translate([0, 0, z_size - chamfer]) {
-          roof() {
-            square(size=[x_size, y_size]);
           }
         }
       }
@@ -573,6 +628,37 @@ module chamfered_cube(size,
   }
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  tapered_box
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Create a solid taper between concentric rounded rectangular footprints.
+
+  **Parameters:**
+  - `base_size`: Bottom footprint `[width, length]` on X/Y.
+  - `top_size`: Top footprint `[width, length]` on X/Y.
+  - `h`: Total height along Z; must be positive.
+  - `r_top_factor`: Fraction of the smaller top dimension used when `r_top`
+    is `undef` (default `0.1`).
+  - `r_bottom_factor`: Fraction of the smaller base dimension used when
+    `r_bottom` is `undef` (default `0.1`).
+  - `r_top_side`: Top rounded side or corner selection for `rounded_rect()`.
+  - `r_base_side`: Base rounded side or corner selection for `rounded_rect()`.
+  - `r_top`: Top corner radius, as a number or percentage of `min(top_size)`.
+    `undef` uses `r_top_factor`; the resolved radius is clamped to fit.
+  - `r_bottom`: Base corner radius, as a number or percentage of `min(base_size)`.
+    `undef` uses `r_bottom_factor`; the resolved radius is clamped to fit.
+  - `anchor`: Reference-box placement (default `[0, 0, 1]`). Components `1`,
+    `0`, and `-1` select positive, centered, and negative placement. The box
+    uses the larger footprint dimension on each X/Y axis and `h` on Z.
+
+  **Examples:**
+  ```scad
+  tapered_box([40, 30], [24, 18], h=20, r_top="10%", r_bottom="5%",
+              anchor=[0, 0, -1]);
+  ```
+ */
 module tapered_box(base_size,
                    top_size,
                    h,
@@ -585,17 +671,19 @@ module tapered_box(base_size,
                    anchor=[0, 0, 1]) {
   max_w = max(base_size[0], top_size[0]);
   max_l = max(base_size[1], top_size[1]);
-  with_anchor(anchor=anchor, size=[max_w, max_l, 0], centered=true) {
+  assert(is_num(h) && h > 0, "tapered_box: h must be positive");
+  slice_h = min(0.01, h / 2);
+  with_anchor(anchor=anchor, size=[max_w, max_l, h], centered=true) {
     hull() {
-      linear_extrude(height=0.01, center=false) {
+      linear_extrude(height=slice_h, center=false) {
         rounded_rect(base_size,
                      center=true,
                      r_factor=r_bottom_factor,
                      r=r_bottom,
                      side=r_base_side);
       }
-      translate([0, 0, h]) {
-        linear_extrude(height=0.01, center=false) {
+      translate([0, 0, h - slice_h]) {
+        linear_extrude(height=slice_h, center=false) {
           rounded_rect(top_size,
                        center=true,
                        r_factor=r_top_factor,
