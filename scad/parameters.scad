@@ -3007,6 +3007,18 @@ middle_chassis_camera_slot_l                      = 5;
 middle_chassis_camera_slot_rows                   = 3;
 middle_chassis_camera_slot_r                      = 1;
 
+usb_a_plist = ["plug_shell", ["size", [12.0, 12.52, 4.4],
+                                                     "color", metallic_silver_3],
+               "plug_body", ["size", [15.46, 15.35, 8.08],
+                             "color", matte_black],
+               "strain_relief", ["size", [5.9, 7, 5.8]]];
+
+usb_c_plist = ["plug_shell", ["size", [8.2, 7.4, 2.4],
+                                                     "color", metallic_silver_3],
+               "plug_body", ["size", [11.23, 14.9, 7.7],
+                             "color", matte_black],
+               "strain_relief", ["size", [5.9, 7, 5.8]]];
+
 // Local Variables:
 // c-label-minimum-indentation: 53
 // End:
