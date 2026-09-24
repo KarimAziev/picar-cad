@@ -9,7 +9,7 @@ import numpy as np
 import check_suspension_mesh as check
 
 
-def main():
+def main() -> None:
     check.FIXTURE = check.ROOT / "tests/fixtures/lidar_mesh.scad"
     check.OUT = check.ROOT / "build/skill-previews/lidar-review/mesh-checks"
     check.OUT.mkdir(parents=True, exist_ok=True)
@@ -26,6 +26,9 @@ def main():
     anchored = check.one_solid("anchor")
     np.testing.assert_allclose(anchored.bounds - body.bounds,
                                [[-27.8, -27.8, -20.65]] * 2, atol=1e-5)
+    base_anchored = check.one_solid("base_anchor")
+    np.testing.assert_allclose(base_anchored.bounds - body.bounds,
+                               [[-27.8, -27.8, -11.55]] * 2, atol=1e-5)
     print("PASS: four underside holes at +/-21.5 mm, exactly 4 mm deep; correct anchors")
 
 

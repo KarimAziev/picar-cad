@@ -9,17 +9,46 @@ Outputs are reviewable under build/skill-previews/chassis-mesh-checks.
 """
 from pathlib import Path
 import subprocess
+from typing import Literal, overload
 import numpy as np
 import trimesh
+
+from scad_test_support import OPENSCAD
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "tests/fixtures/suspension_chassis_mesh.scad"
 OUT = ROOT / "build/skill-previews/chassis-mesh-checks"
 
 
-def export(part, *, name=None, empty=False, **params):
+@overload
+def export(
+    part: str,
+    *,
+    name: str | None = None,
+    empty: Literal[False] = False,
+    **params: object,
+) -> trimesh.Trimesh: ...
+
+
+@overload
+def export(
+    part: str,
+    *,
+    name: str | None = None,
+    empty: Literal[True],
+    **params: object,
+) -> trimesh.Trimesh | None: ...
+
+
+def export(
+    part: str,
+    *,
+    name: str | None = None,
+    empty: bool = False,
+    **params: object,
+) -> trimesh.Trimesh | None:
     path = OUT / f"{name or part}.stl"
-    cmd = ["openscad", "--backend=Manifold", "--enable=textmetrics", "--enable=roof",
+    cmd = [OPENSCAD, "--backend=Manifold", "--enable=textmetrics", "--enable=roof",
            "--hardwarnings", "-o", str(path), "-D", f'part="{part}"']
     for key, value in params.items():
         cmd += ["-D", f"{key}={str(value).lower()}"]
@@ -30,11 +59,13 @@ def export(part, *, name=None, empty=False, **params):
         return None
     assert result.returncode == 0, log
     assert path.exists(), log
-    return trimesh.load_mesh(path)
+    mesh = trimesh.load_mesh(path)
+    assert isinstance(mesh, trimesh.Trimesh), f"{path}: expected a triangle mesh"
+    return mesh
 
 
-def one_solid(part, **params):
-    mesh = export(part, **params)
+def one_solid(part: str, *, name: str | None = None, **params: object) -> trimesh.Trimesh:
+    mesh = export(part, name=name, empty=False, **params)
     assert mesh.is_watertight, f"{part}: mesh is not watertight"
     assert mesh.is_winding_consistent, f"{part}: inconsistent face winding"
     shells = mesh.split(only_watertight=False)
@@ -44,7 +75,17 @@ def one_solid(part, **params):
     return mesh
 
 
-def main():
+def assert_no_interference(mesh: trimesh.Trimesh | None, part: str) -> None:
+    if mesh is None:
+        return
+    # Coplanar contact faces have zero volume and an undefined center of mass.
+    # Integrate volume directly to avoid computing Trimesh's mass properties.
+    tri = mesh.triangles
+    volume = np.einsum("ij,ij->i", tri[:, 0], np.cross(tri[:, 1], tri[:, 2])).sum() / 6
+    assert abs(volume) < 1e-6, (part, volume)
+
+
+def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     for part in ("front", "rear", "middle"):
         one_solid(part)
@@ -53,28 +94,29 @@ def main():
     layer = one_solid("first_layer")
     np.testing.assert_allclose(layer.bounds[:, :2], printable.bounds[:, :2],
                                atol=1e-6)
-    print("PASS first layer: connected deck and both tongues reach the bed")
+    print("PASS first layer: connected deck footprint reaches the bed")
 
     for wide in (False, True):
         for part in ("male", "female"):
             one_solid(part, name=f"{part}-{wide}", wide=wide)
         collision = export("joint_collision", name=f"joint_collision-{wide}",
                            empty=True, wide=wide)
-        assert collision is None or abs(collision.volume) < 1e-6
+        assert_no_interference(collision, f"joint_collision-{wide}")
     for part in ("front_collision", "middle_collision"):
         collision = export(part, empty=True)
-        # Coplanar face contacts can be exported as zero-volume triangles.
-        assert collision is None or abs(collision.volume) < 1e-6, part
+        assert_no_interference(collision, part)
     print("PASS compact/wide joints and complete frames: no solid interference")
 
-    base = one_solid("placed_middle", name="spacing-zero")
-    for front, middle in ((10, 0), (0, 10), (10, 20)):
-        moved = one_solid("placed_middle", name=f"spacing-{front}-{middle}",
-                          front_spacing=front, middle_spacing=middle)
+    # The current middle deck no longer uses the former two-joint spacing API.
+    # Check the active front-chassis assembly's rear-frame spacing instead.
+    base = one_solid("placed_rear", name="spacing-zero")
+    for spacing in (10, 20):
+        moved = one_solid("placed_rear", name=f"spacing-{spacing}",
+                          front_spacing=spacing)
         np.testing.assert_allclose(moved.bounds - base.bounds,
-                                   [[0, -front - middle, 0]] * 2, atol=1e-6)
+                                   [[0, -spacing, 0]] * 2, atol=1e-5)
         np.testing.assert_allclose(moved.volume, base.volume, atol=1e-5)
-    print("PASS both spacing controls propagate through the top assembly")
+    print("PASS front-chassis spacing moves the rear frame without changing its solid")
 
     corners = export("corners").split(only_watertight=False)
     assert len(corners) == 4 and all(m.is_watertight for m in corners)

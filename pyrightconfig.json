@@ -1,0 +1,8 @@
+{
+  "include": ["tests"],
+  "strict": ["tests/test_*.py", "tests/scad_test_support.py"],
+  "venvPath": ".",
+  "venv": ".venv",
+  "pythonVersion": "3.11",
+  "typeCheckingMode": "standard"
+}

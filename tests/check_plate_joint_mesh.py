@@ -7,18 +7,47 @@ from pathlib import Path
 import json
 import subprocess
 import tempfile
+from typing import Literal, overload
 
 import numpy as np
 import trimesh
+
+from scad_test_support import OPENSCAD
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "build/plate-joint/mesh-checks"
 FIXTURE = ROOT / "tests/fixtures/plate_joint_mesh.scad"
 
 
-def export(part, name, empty=False, **params):
+@overload
+def export(
+    part: str,
+    name: str,
+    *,
+    empty: Literal[False] = False,
+    **params: object,
+) -> trimesh.Trimesh: ...
+
+
+@overload
+def export(
+    part: str,
+    name: str,
+    *,
+    empty: Literal[True],
+    **params: object,
+) -> trimesh.Trimesh | None: ...
+
+
+def export(
+    part: str,
+    name: str,
+    *,
+    empty: bool = False,
+    **params: object,
+) -> trimesh.Trimesh | None:
     path = OUT / f"{name}.stl"
-    command = ["openscad", "--backend=Manifold", "--enable=textmetrics", "--hardwarnings",
+    command = [OPENSCAD, "--backend=Manifold", "--enable=textmetrics", "--hardwarnings",
                "-o", str(path), "-D", f"part={json.dumps(part)}"]
     for key, value in params.items():
         command += ["-D", f"{key}={json.dumps(value)}"]
@@ -29,6 +58,7 @@ def export(part, name, empty=False, **params):
         return None
     assert result.returncode == 0 and path.exists(), log
     mesh = trimesh.load_mesh(path)
+    assert isinstance(mesh, trimesh.Trimesh), f"{path}: expected a triangle mesh"
     if empty:
         tri = mesh.triangles
         volume = np.einsum("ij,ij->i", tri[:, 0], np.cross(tri[:, 1], tri[:, 2])).sum() / 6
@@ -39,7 +69,7 @@ def export(part, name, empty=False, **params):
     return mesh
 
 
-def invalid_inputs():
+def invalid_inputs() -> None:
     cases = {
         'rail_w="oops%"': "non-negative decimal percentage",
         'rail_w="1.2.3%"': "non-negative decimal percentage",
@@ -55,14 +85,14 @@ def invalid_inputs():
         for args, expected in cases.items():
             source.write_text(f'use <{ROOT}/scad/components/plate_joint/plate_joint.scad>\n'
                               f'plate_joint(plate_h=6, bolt_d=3, w=54, l=24, {args});\n')
-            result = subprocess.run(["openscad", "--backend=Manifold", "--enable=textmetrics",
+            result = subprocess.run([OPENSCAD, "--backend=Manifold", "--enable=textmetrics",
                                      "--hardwarnings", "-o", str(Path(folder) / "invalid.stl"),
                                      str(source)], capture_output=True, text=True)
             assert result.returncode != 0 and expected in result.stderr, (args, result.stderr)
     print(f"PASS {len(cases)} invalid configurations rejected with parameter errors")
 
 
-def main():
+def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     for rib, pins, pad, relief in ((True, False, False, 0), (False, True, False, 0),
                                     (True, True, True, 0.1)):
@@ -70,7 +100,7 @@ def main():
         for side in (-1, 1):
             name = f"{rib}-{pins}-{pad}-{side}"
             for part in ("male", "female"):
-                export(part, f"{part}-{name}", side=side, **options)
+                export(part, f"{part}-{name}", empty=False, side=side, **options)
             export("collision", f"collision-{name}", empty=True, side=side, **options)
             export("socket_difference", f"socket-{name}", empty=True, side=side, **options)
     print("PASS rib/plain rails, pin flats, relief and both roots: single solids, no interference, socket cutters match")
@@ -102,8 +132,8 @@ def main():
     for anchor in ([1, 0, 1], [0, 0, 0], [-1, -1, -1]):
         for part in ("male", "female", "base"):
             options = dict(joint_anchor=anchor, pins=True, pin_d=3.1)
-            normal = export(part, f"normal-{part}-{anchor}", **options)
-            flipped = export(part, f"flipped-{part}-{anchor}", flip=True, **options)
+            normal = export(part, f"normal-{part}-{anchor}", empty=False, **options)
+            flipped = export(part, f"flipped-{part}-{anchor}", empty=False, flip=True, **options)
             expected = normal.bounds.copy()
             expected[:, 2] = 6 * anchor[2] - normal.bounds[::-1, 2]
             np.testing.assert_allclose(flipped.bounds, expected, atol=1e-5)

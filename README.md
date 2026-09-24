@@ -76,12 +76,30 @@ Since `textmetrics` is used throughout the project, a nightly build of OpenSCAD 
 
 ### CLI workflows (Makefile)
 
+The Python checks require Python 3.11 or newer. Set up the local test environment
+once (the Makefile and Pyright both discover `.venv`):
+
+```sh
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements-dev.txt
+```
+
 - `make help` — list available targets.
-- `make tests` — run all `tests/test_*.scad` suites; tolerates the empty top-level warning used by logic-only tests.
+- `make tests` — run Python unit tests, Pyright, OpenSCAD assertions and Python mesh checks.
+- `make tests-python` — discover `tests/test_*.py` with `unittest`; these fast tests need neither OpenSCAD nor third-party Python packages.
+- `make tests-scad` — run `tests/test_*.scad`; tolerates the empty top-level warning used by logic-only tests.
+- `make tests-mesh` — run every `tests/check_*.py` script; requires OpenSCAD and the Python dependencies. These checks render geometry and take longer than unit tests.
+- `make typecheck` — run Pyright over all Python code in `tests/` using the configured interpreter, with strict checking for unit tests and shared log-parsing helpers.
 - `make assembly` — export `scad/assembly.scad` to `build/export/stl/assembly.stl` and `build/export/3mf/assembly.3mf` with `--backend=Manifold --enable=textmetrics --hardwarnings` and 3MF metadata.
 - `make printable` — export `scad/printable.scad` and every file in `scad/printable_parts/` to flattened `build/export/stl/` and `build/export/3mf/` (tires prefer the TPU material hint; falls back if unsupported).
 - `make all` — run tests, then build assembly and all printable exports.
 - `make clean` — remove build outputs and test temp files.
+
+Override tools with `PYTHON=/path/to/python`, `PYRIGHT=/path/to/pyright`, or
+`OPENSCAD=/path/to/openscad` on the make command line. The OpenSCAD override also
+applies to Python checks. To run a single mesh check, use, for example,
+`.venv/bin/python tests/check_plate_joint_mesh.py`. CI installs the same development
+dependencies and runs these checks through `make all`.
 
 ### Configurations
 

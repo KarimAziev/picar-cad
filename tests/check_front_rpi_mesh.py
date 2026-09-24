@@ -12,10 +12,12 @@ import tempfile
 
 from check_rear_chassis_mesh import read_triangles, ray_hits
 
+from scad_test_support import OPENSCAD
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def main():
+def main() -> None:
     source_text = f'''
 include <{ROOT}/scad/suspension/front_chassis/computed_params.scad>
 use <{ROOT}/scad/suspension/front_chassis/front_chassis_rear_frame.scad>
@@ -37,13 +39,14 @@ front_chassis_rear_frame(debug=false);
                        "-D", f"front_rpi_rotate_z_180={str(reverse).lower()}",
                        "-D", f"front_rpi_x_offset={x_offset}"]
             result = subprocess.run(
-                ["openscad", "--backend=Manifold", "--enable=textmetrics", "--enable=roof",
+                [OPENSCAD, "--backend=Manifold", "--enable=textmetrics", "--enable=roof",
                  "--hardwarnings", "--export-format", "binstl", "-o", str(mesh),
                  *defines, str(source)], text=True, capture_output=True)
             log = result.stdout + result.stderr
             assert result.returncode == 0 and "WARNING:" not in log and "ERROR:" not in log, log
             match = re.search(r"ECHO: reference = (.*), offset = (.*), spacing = (.*), radius = (.*), "
                               r"front_y = (.*), width = (.*), rear_y = (.*)", log)
+            assert match is not None, log
             reference, offset, spacing, radius, front_y, width, rear_y = map(ast.literal_eval, match.groups())
             triangles = read_triangles(mesh)
             oriented_w, oriented_l = (reference[:2] if orientation == "wlh"
@@ -70,7 +73,7 @@ front_chassis_rear_frame(debug=false);
                         ry = y + radius * math.sin(math.radians(angle))
                         assert ray_hits(triangles, rx, ry), (orientation, reverse, x_offset, "missing land", x, y, angle)
             check = subprocess.run(
-                ["openscad", "--hardwarnings", "-o", str(Path(folder) / "assertions.csg"),
+                [OPENSCAD, "--hardwarnings", "-o", str(Path(folder) / "assertions.csg"),
                  *defines, str(ROOT / "tests/test_front_rpi.scad")], text=True, capture_output=True)
             assert check.returncode == 0 and "ERROR:" not in check.stderr, check.stderr
             print(f"PASS {orientation}, reverse={reverse}, x={x_offset}: "

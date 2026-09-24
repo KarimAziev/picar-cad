@@ -8,6 +8,8 @@ import struct
 import subprocess
 import tempfile
 
+from scad_test_support import OPENSCAD
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -41,7 +43,7 @@ def mesh_volume(path):
     return abs(volume)
 
 
-def main():
+def main() -> None:
     common = f'''
 use <{ROOT}/scad/motor_brackets/rc/gearbox_bracket.scad>
 use <{ROOT}/scad/motor_brackets/rc/gearmotor_encoder_bracket.scad>
@@ -85,7 +87,7 @@ module fasteners() {{
             source.write_text(common + call + "\n")
             mesh = Path(folder) / f"{label}.stl"
             result = subprocess.run(
-                ["openscad", "--backend=Manifold", "--enable=textmetrics", "--hardwarnings",
+                [OPENSCAD, "--backend=Manifold", "--enable=textmetrics", "--hardwarnings",
                  "--export-format", "binstl", "-o", str(mesh), str(source)],
                 text=True, capture_output=True)
             log = result.stdout + result.stderr

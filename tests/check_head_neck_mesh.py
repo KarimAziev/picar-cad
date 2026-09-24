@@ -5,10 +5,11 @@ Run: python3 tests/check_head_neck_mesh.py
 from pathlib import Path
 import ast
 import json
-import re
 import struct
 import subprocess
 import tempfile
+
+from scad_test_support import OPENSCAD, echo_value
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -30,7 +31,7 @@ def mesh_bounds(path):
     return [lo, hi]
 
 
-def main():
+def main() -> None:
     cases = [
         (0, 0, True, {}),
         (37, 42, True, {}),
@@ -56,7 +57,7 @@ def main():
             '          center_pan_servo_slot=centered);\n'
         )
         for pan, tilt, centered, params in cases:
-            command = ["openscad", "--backend=Manifold", "--enable=textmetrics",
+            command = [OPENSCAD, "--backend=Manifold", "--enable=textmetrics",
                        "--hardwarnings", "--export-format", "binstl", "-o", str(mesh)]
             params = dict(params, pan=pan, tilt=tilt, centered=centered)
             for key, value in params.items():
@@ -65,9 +66,9 @@ def main():
             log = result.stdout + result.stderr
             assert result.returncode == 0, log
             assert "WARNING:" not in log and "ERROR:" not in log, log
-            expected = ast.literal_eval(re.search(r"ECHO: bounds = (.*)", log)[1])
-            max_z = float(re.search(r"ECHO: max_z = (.*)", log)[1])
-            max_height = float(re.search(r"ECHO: max_height = (.*)", log)[1])
+            expected = ast.literal_eval(echo_value(log, "bounds"))
+            max_z = float(echo_value(log, "max_z"))
+            max_height = float(echo_value(log, "max_height"))
             actual = mesh_bounds(mesh)
             # echo rounds values; STL also stores single-precision coordinates.
             tolerance = 0.001

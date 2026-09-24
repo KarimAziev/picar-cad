@@ -7,10 +7,11 @@ import ast
 import itertools
 import json
 from pathlib import Path
-import re
 import struct
 import subprocess
 import tempfile
+
+from scad_test_support import OPENSCAD, echo_value
 
 ROOT = Path(__file__).resolve().parents[1]
 # Independent signed XYZ permutations for the six documented orientations.
@@ -53,7 +54,7 @@ def transformed_bounds(original, reference, orientation, anchor):
     return bounds(points)
 
 
-def main():
+def main() -> None:
     with tempfile.TemporaryDirectory(prefix="panel-stack-mesh-") as folder:
         source = Path(folder) / "fixture.scad"
         mesh = Path(folder) / "fixture.stl"
@@ -66,12 +67,12 @@ def main():
                 'echo(height=panel_stack_height());\n'
                 '$fn=24;\n' + call + '\n')
             result = subprocess.run(
-                ["openscad", "--backend=Manifold", "--enable=textmetrics",
+                [OPENSCAD, "--backend=Manifold", "--enable=textmetrics",
                  "--hardwarnings", "--export-format", "binstl", "-o", str(mesh),
                  str(source)], capture_output=True, text=True)
             log = result.stdout + result.stderr
             assert result.returncode == 0 and "ERROR:" not in log and "WARNING:" not in log, log
-            dims = {name: ast.literal_eval(re.search(rf"ECHO: {name} = (.*)", log)[1])
+            dims = {name: ast.literal_eval(echo_value(log, name))
                     for name in ("size", "bolts", "height")}
             return vertices(mesh), dims
 

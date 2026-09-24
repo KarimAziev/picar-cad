@@ -99,6 +99,9 @@ use <transforms.scad>
     Segment count used for spheres/circles when generating rounded geometry.
     Higher values produce smoother curves at greater render cost.
 
+  `color`:
+    Optional color to use.
+
   **Behavior**
 
   - `center` only controls fallback placement for X and Y when `anchor` is
@@ -148,7 +151,8 @@ module cuboid(size,
               r_factor,
               use_minkowski=false,
               side,
-              fn=36) {
+              fn=36,
+              color) {
   assert(is_num(size) || is_list(size) && len([for (v = size)
                                                   if (is_num(v)) v]) == 3,
          "Size should be number or [number, number, number]");
@@ -160,31 +164,107 @@ module cuboid(size,
             with_default(anchor[1], center ? 0 : 1),
             with_default(anchor[2], 1)];
 
-  with_anchor(anchor=anchor, size=size) {
-    if ((is_undef(r) || r == 0) && (is_undef(r_factor) || r_factor == 0)) {
-      cube(size);
-    } else if (use_minkowski) {
-      rad = min(is_undef(r) ? min(size[0], size[1], size[2]) * r_factor : r,
-                size[0] / 2,
-                size[1] / 2,
-                size[2] / 2);
-      inner = [for (i=[0:2]) max(0.001, size[i] - rad * 2)];
+  maybe_color(color) {
+    with_anchor(anchor=anchor, size=size) {
+      if ((is_undef(r) || r == 0) && (is_undef(r_factor) || r_factor == 0)) {
+        cube(size);
+      } else if (use_minkowski) {
+        rad = min(is_undef(r) ? min(size[0], size[1], size[2]) * r_factor : r,
+                  size[0] / 2,
+                  size[1] / 2,
+                  size[2] / 2);
+        inner = [for (i=[0:2]) max(0.001, size[i] - rad * 2)];
 
-      minkowski(convexity=5) {
-        cube(inner);
-        translate([rad, rad, rad]) {
-          sphere(r=rad, $fn=fn);
+        minkowski(convexity=5) {
+          cube(inner);
+          translate([rad, rad, rad]) {
+            sphere(r=rad, $fn=fn);
+          }
+        }
+      } else {
+        linear_extrude(height=size[2], center=false) {
+          rounded_rect([size[0], size[1]],
+                       center=false,
+                       side=side,
+                       fn=fn,
+                       r=r,
+                       r_factor=r_factor);
         }
       }
-    } else {
-      linear_extrude(height=size[2], center=false) {
-        rounded_rect([size[0], size[1]],
-                     center=false,
-                     side=side,
-                     fn=fn,
-                     r=r,
-                     r_factor=r_factor);
-      }
+    }
+  }
+}
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  cyl
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Create a cylinder, cone, or frustum with orientation and per-axis anchoring.
+
+  **Parameters:**
+  - `h`: Axial height (default `0`). Supply a positive value for a solid.
+  - `d`: Common diameter used for either omitted end diameter. If `undef`,
+    falls back to `d1`, then `d2`. At least one diameter must be numeric.
+  - `d1`: Diameter at the bottom before rotation (`z=0`). Overrides `d` for
+    that end; defaults to the resolved `d`.
+  - `d2`: Diameter at the top before rotation (`z=h`). Overrides `d` for
+    that end; defaults to the resolved `d`. Set either end to `0` for a cone.
+  - `$fn`: Circumference fragment count (default `20`). Use `0` to let
+    OpenSCAD determine resolution from `$fa` and `$fs`.
+  - `anchor`: Placement on the final X/Y/Z axes (default `[0, 0, 1]`).
+    Each component is `1` to extend positively from the origin, `0` to
+    center, or `-1` to extend negatively. Explicit `undef`, or an `undef`
+    component, uses the corresponding default from `[1, 1, 1]`.
+  - `orientation`: Logical width/length/height on X/Y/Z, respectively
+    (default `"wlh"`; `undef` also uses `"wlh"`). Both width and length
+    are the larger resolved end diameter. The direction from `d1` to `d2` is:
+    - `"wlh"` or `"lwh"`: positive Z.
+    - `"whl"`: negative Y; `"lhw"`: positive Y.
+    - `"hlw"`: negative X; `"hwl"`: positive X.
+  - `color`: Optional OpenSCAD color; `undef` inherits the enclosing color.
+
+  **Behavior:**
+  Anchoring uses the rotated reference box based on the larger end diameter
+  and `h`, rather than either end face alone. The default anchor centers this
+  box on X/Y and places its minimum Z at `0` in every orientation.
+
+  A single supplied diameter produces a cylinder. Unequal end diameters
+  produce a taper, so orientations with opposite axial directions also
+  reverse which end is wider.
+
+  **Examples:**
+  ```scad
+  // Vertical cylinder centered on X/Y, from z=0 to z=10.
+  cyl(h=10, d=4);
+
+  // Horizontal cylinder from x=0 to x=10, centered on Y/Z.
+  cyl(h=10, d=4, orientation="hwl", anchor=[1, 0, 0]);
+
+  // Frustum with its wide end at y=0 and narrow end at y=10.
+  cyl(h=10, d1=8, d2=4, orientation="lhw", anchor=[0, 1, 0]);
+
+  // Cone centered on all axes, with its tip toward positive Z.
+  cyl(h=10, d1=8, d2=0, anchor=[0, 0, 0], $fn=48);
+  ```
+  */
+module cyl(h=0, d, d1, d2, $fn=20, anchor=[0, 0, 1], orientation="wlh", color) {
+  assert(is_num(h), "cyl: h (height) must be provided");
+  assert(is_num(d) || is_num(d1) || is_num(d2),
+         "cyl: d, d1 or d2 must be provided");
+
+  d = with_default(with_default(d, d1), d2);
+  d1 = with_default(d1, d);
+  d2 = with_default(d2, d);
+
+  max_d = max(d2, d1);
+
+  maybe_color(color) {
+    with_orientation(from="wlh",
+                     to=orientation,
+                     anchor=anchor,
+                     size=[max_d, max_d, h]) {
+      cylinder(d1=d1, d2=d2, h=h);
     }
   }
 }
@@ -200,19 +280,35 @@ module cuboid(size,
   - `h`: Cylinder height.
   - `r`: Cylinder radius.
   - `cut_w`: Distance between each flat cut and the outer diameter.
-  - `center`: Forwarded to the underlying cylinder and cutter cubes.
+  - `center`: Center the original cylinder and cutter cubes (default `true`).
+    Also selects the default final placement when `anchor` is omitted.
   - `fn`: Fragment count for the cylinder.
+  - `anchor`: Placement on the final X/Y/Z axes, as in `cyl()`. Omitted or
+    `undef` uses `[0, 0, 0]` when `center=true`, otherwise `[0, 0, 1]`.
+    Individual `undef` components normalize to `1`.
+  - `orientation`: Logical width/length/height on X/Y/Z, as in `cyl()`;
+    default and `undef` use `"wlh"`. The reference footprint is the uncut
+    circle's diameter on both axes; the flats rotate with the body.
+  - `color`: Optional OpenSCAD color; `undef` inherits the enclosing color.
  */
-module cylinder_cut(h=10, r=5, cut_w=1, center=true, fn) {
-  difference() {
-    cylinder(h=h, r=r, center=center, $fn=fn);
+module cylinder_cut(h=10, r=5, cut_w=1, center=true, fn,
+                    anchor, orientation="wlh", color) {
+  anchor = with_default(anchor, center ? [0, 0, 0] : [0, 0, 1]);
+  maybe_color(color) {
+    with_orientation(to=orientation, anchor=anchor, size=[r * 2, r * 2, h]) {
+      translate([0, 0, center ? h / 2 : 0]) {
+        difference() {
+          cylinder(h=h, r=r, center=center, $fn=fn);
 
-    d = r * 2;
-    translate([d - cut_w * 0.5, 0, 0]) {
-      cube([d, d, h + 1], center=center);
-    }
-    translate([-d + cut_w * 0.5, 0, 0]) {
-      cube([d, d, h + 1], center=center);
+          d = r * 2;
+          translate([d - cut_w * 0.5, 0, 0]) {
+            cube([d, d, h + 1], center=center);
+          }
+          translate([-d + cut_w * 0.5, 0, 0]) {
+            cube([d, d, h + 1], center=center);
+          }
+        }
+      }
     }
   }
 }
@@ -229,10 +325,13 @@ module cylinder_cut(h=10, r=5, cut_w=1, center=true, fn) {
   - `r_outer`: Radius of the outer tips.
   - `r_inner`: Radius of the inner valleys.
   - `h`: Extrusion height.
+  - `color`: Optional OpenSCAD color; `undef` inherits the enclosing color.
  */
-module star_3d(n=5, r_outer=20, r_inner=10, h=2) {
-  linear_extrude(height=h, center=false) {
-    star_2d(n=n, r_outer=r_outer, r_inner=r_inner);
+module star_3d(n=5, r_outer=20, r_inner=10, h=2, color) {
+  maybe_color(color) {
+    linear_extrude(height=h, center=false) {
+      star_2d(n=n, r_outer=r_outer, r_inner=r_inner);
+    }
   }
 }
 
@@ -252,9 +351,17 @@ module star_3d(n=5, r_outer=20, r_inner=10, h=2) {
     supports up to two positions.
   - `y_cutouts_n`: Number of notch pairs along Y. The current implementation
     supports up to two positions.
-  - `center`: Forwarded to `linear_extrude()`.
+  - `center`: Default placement when `anchor` is omitted. `true` centers all
+    final axes; `false` (default) centers X/Y and rests the box on the XY plane.
   - `convexity`: Convexity hint for the extrusion.
   - `fn`: Fragment count for the base circle.
+  - `anchor`: Placement on the final X/Y/Z axes, as in `cyl()`. Omitted or
+    `undef` uses `[0, 0, 0]` when `center=true`, otherwise `[0, 0, 1]`.
+    Individual `undef` components normalize to `1`.
+  - `orientation`: Logical width/length/height on X/Y/Z, as in `cyl()`;
+    default and `undef` use `"wlh"`. The reference footprint is the uncut
+    circle's diameter on both axes; the notches rotate with the body.
+  - `color`: Optional OpenSCAD color; `undef` inherits the enclosing color.
  */
 module notched_circle(d,
                       cutout_w,
@@ -263,22 +370,30 @@ module notched_circle(d,
                       y_cutouts_n=0,
                       center=false,
                       convexity=1,
-                      fn=40) {
+                      fn=40,
+                      anchor,
+                      orientation="wlh",
+                      color) {
   square_center_x = notched_circle_square_center_x(r=d / 2, cutout_w=cutout_w);
-  linear_extrude(h=h, center=center, convexity=convexity) {
-    difference() {
-      circle(r=d / 2, $fn=fn);
-      if (x_cutouts_n > 0) {
-        for (i = [1:x_cutouts_n]) {
-          translate([i == 1 ? square_center_x : -square_center_x, 0]) {
-            square([cutout_w, cutout_w], center=true);
+  anchor = with_default(anchor, center ? [0, 0, 0] : [0, 0, 1]);
+  maybe_color(color) {
+    with_orientation(to=orientation, anchor=anchor, size=[d, d, h]) {
+      linear_extrude(height=h, center=false, convexity=convexity) {
+        difference() {
+          circle(r=d / 2, $fn=fn);
+          if (x_cutouts_n > 0) {
+            for (i = [1:x_cutouts_n]) {
+              translate([i == 1 ? square_center_x : -square_center_x, 0]) {
+                square([cutout_w, cutout_w], center=true);
+              }
+            }
           }
-        }
-      }
-      if (y_cutouts_n > 0) {
-        for (i = [1:y_cutouts_n]) {
-          translate([0, i == 1 ? square_center_x : -square_center_x]) {
-            square([cutout_w, cutout_w], center=true);
+          if (y_cutouts_n > 0) {
+            for (i = [1:y_cutouts_n]) {
+              translate([0, i == 1 ? square_center_x : -square_center_x]) {
+                square([cutout_w, cutout_w], center=true);
+              }
+            }
           }
         }
       }
@@ -307,6 +422,7 @@ module notched_circle(d,
   - `anchor`: Reference-box placement (default `[1, 1, 1]`). Components `1`,
     `0`, and `-1` select positive, centered, and negative placement. The box
     uses the larger footprint on each axis and the main `thickness` on Z.
+  - `color`: Optional OpenSCAD color; `undef` inherits the enclosing color.
 
   **Behavior:**
   Both layers share the same X/Y center. A recess deeper than `thickness`
@@ -324,7 +440,8 @@ module rounded_rect_recess(size,
                            thickness,
                            recess_thickness,
                            recess_reverse=false,
-                           anchor=[1, 1, 1]) {
+                           anchor=[1, 1, 1],
+                           color) {
   r = maybe_percent_string_to_num(r, min(size[0], size[1]));
   recess_t = is_undef(recess_thickness)
     ? max(1, thickness / 2.2)
@@ -334,23 +451,25 @@ module rounded_rect_recess(size,
   reference_size = [max(size[0], is_undef(recess_size) ? 0 : recess_size[0]),
                     max(size[1], is_undef(recess_size) ? 0 : recess_size[1]),
                     thickness];
-  with_anchor(anchor=anchor, size=reference_size, centered=true) {
-    union() {
-      linear_extrude(height=thickness,
-                     center=false) {
-        rounded_rect(size=[size[0], size[1]],
-                     r=r,
-                     center=true);
-      }
+  maybe_color(color) {
+    with_anchor(anchor=anchor, size=reference_size, centered=true) {
+      union() {
+        linear_extrude(height=thickness,
+                       center=false) {
+          rounded_rect(size=[size[0], size[1]],
+                       r=r,
+                       center=true);
+        }
 
-      if (recess_size) {
-        translate([0, 0, recess_z]) {
-          linear_extrude(height=recess_t,
-                         center=false) {
-            rounded_rect(size=[recess_size[0],
-                               recess_size[1]],
-                         r=r,
-                         center=true);
+        if (recess_size) {
+          translate([0, 0, recess_z]) {
+            linear_extrude(height=recess_t,
+                           center=false) {
+              rounded_rect(size=[recess_size[0],
+                                 recess_size[1]],
+                           r=r,
+                           center=true);
+            }
           }
         }
       }
@@ -382,6 +501,7 @@ module rounded_rect_recess(size,
   - `fn`: Fragment count for rounded corners.
   - `r_factor`: Radius fraction for each outline when `r=undef` (default `0.3`).
   - `round_side`: Rounded side or corner selection passed to `rect_border()`.
+  - `color`: Optional OpenSCAD color; `undef` inherits the enclosing color.
 
   **Behavior:**
   With `inner=false`, the border extends `border_w / 2` beyond each X/Y edge
@@ -400,18 +520,21 @@ module cube_border(size,
                    anchor=[1, 1, 1],
                    fn,
                    r_factor=0.3,
-                   round_side) {
+                   round_side,
+                   color) {
   h = with_default(h, size[2]);
-  with_anchor(anchor=anchor, size=[size[0], size[1], h], centered=true) {
-    linear_extrude(height=h, center=false, convexity=2) {
-      rect_border(size=[size[0], size[1]],
-                  border_w=border_w,
-                  inner=inner,
-                  r=r,
-                  anchor=[0, 0, 1],
-                  fn=fn,
-                  r_factor=r_factor,
-                  round_side=round_side);
+  maybe_color(color) {
+    with_anchor(anchor=anchor, size=[size[0], size[1], h], centered=true) {
+      linear_extrude(height=h, center=false, convexity=2) {
+        rect_border(size=[size[0], size[1]],
+                    border_w=border_w,
+                    inner=inner,
+                    r=r,
+                    anchor=[0, 0, 1],
+                    fn=fn,
+                    r_factor=r_factor,
+                    round_side=round_side);
+      }
     }
   }
 }
@@ -433,8 +556,14 @@ module cube_border(size,
   - `h`: Ring height.
   - `fn`: Fragment count for both cylinders.
   - `color`: Optional color value.
-  - `whole_color`: When `true`, color is applied to the whole ring. The current
-    implementation only emits geometry in this mode.
+  - `whole_color`: When `true` (default), color the complete ring. When
+    `false`, apply color only to the outer solid before cutting the bore.
+  - `anchor`: Placement on the final X/Y/Z axes, as in `cyl()` (default
+    `[0, 0, 1]`). Explicit `undef` or individual `undef` components use `1`.
+  - `orientation`: Logical width/length/height on X/Y/Z, as in `cyl()`;
+    default and `undef` use `"wlh"`. The reference box uses the larger outer
+    end diameter on both footprint axes and `h` along the cylinder axis.
+    Inner and outer tapers rotate together.
  */
 module ring(d,
             d1,
@@ -445,26 +574,23 @@ module ring(d,
             h,
             fn=30,
             color,
-            whole_color=true) {
+            whole_color=true,
+            anchor=[0, 0, 1],
+            orientation="wlh") {
   fn = with_default(fn, 30);
-  module _ring() {
-    difference() {
-      if (!whole_color) {
-        maybe_color(color) {
-          cylinder(d=od, h=h, $fn=fn, d1=d1, d2=d2);
+  // Match cylinder()'s default diameter when an end is unspecified.
+  max_d = max(with_default(od1, with_default(od, 2)),
+              with_default(od2, with_default(od, 2)));
+  with_orientation(to=orientation, anchor=anchor, size=[max_d, max_d, h]) {
+    maybe_color(whole_color ? color : undef) {
+      difference() {
+        maybe_color(whole_color ? undef : color) {
+          cylinder(d=od, d1=od1, d2=od2, h=h, $fn=fn);
         }
-      } else {
-        cylinder(d=od, d1=od1, d2=od2, h=h, $fn=fn);
+        translate([0, 0, -0.05]) {
+          cylinder(d=d, h=h + 0.1, $fn=fn, d1=d1, d2=d2);
+        }
       }
-
-      translate([0, 0, -0.05]) {
-        cylinder(d=d, h=h + 0.1, $fn=fn, d1=d1, d2=d2);
-      }
-    }
-  }
-  if (whole_color) {
-    maybe_color(color, alpha=1) {
-      _ring();
     }
   }
 }
@@ -485,13 +611,14 @@ module ring(d,
     `0`, and `-1` select positive, centered, and negative placement.
   - `lower_chamfer`: If `true`, shift the anchored prism down by the resolved
     chamfer distance (default `false`). The reference height stays `size[2]`.
+  - `color`: Optional OpenSCAD color; `undef` inherits the enclosing color.
 
   **Examples:**
   ```scad
   y_chamfered_cube([30, 20, 10], chamfer="10%", anchor=[0, 0, 1]);
   ```
  */
-module y_chamfered_cube(size, chamfer, anchor=[1, 1, 1], lower_chamfer=false) {
+module y_chamfered_cube(size, chamfer, anchor=[1, 1, 1], lower_chamfer=false, color) {
   x_size = size[0];
   y_size = size[1];
   z_size = size[2];
@@ -507,11 +634,13 @@ module y_chamfered_cube(size, chamfer, anchor=[1, 1, 1], lower_chamfer=false) {
          [z_size - chamfer, 0],
          [chamfer, 0]];
 
-  with_anchor(anchor=anchor, size=size) {
-    translate([0, 0, z_size + (lower_chamfer ? -chamfer : 0)]) {
-      rotate([0, 90, 0]) {
-        linear_extrude(height=x_size, center=false) {
-          polygon(pts);
+  maybe_color(color) {
+    with_anchor(anchor=anchor, size=size) {
+      translate([0, 0, z_size + (lower_chamfer ? -chamfer : 0)]) {
+        rotate([0, 90, 0]) {
+          linear_extrude(height=x_size, center=false) {
+            polygon(pts);
+          }
         }
       }
     }
@@ -536,6 +665,7 @@ module y_chamfered_cube(size, chamfer, anchor=[1, 1, 1], lower_chamfer=false) {
   - `ignore_sides`: Side names whose top/bottom edges remain square (default
     `[]`): `"left"` is minimum X, `"right"` maximum X, `"bottom"` minimum Y,
     and `"top"` maximum Y. Names refer to the canonical box before anchoring.
+  - `color`: Optional OpenSCAD color; `undef` inherits the enclosing color.
 
   **Examples:**
   ```scad
@@ -547,7 +677,8 @@ module chamfered_cube(size,
                       chamfer,
                       anchor=[1, 1, 1],
                       lower_chamfer=false,
-                      ignore_sides=[]) {
+                      ignore_sides=[],
+                      color) {
   x_size = size[0];
   y_size = size[1];
   z_size = size[2];
@@ -558,68 +689,70 @@ module chamfered_cube(size,
   is_left_non_chamfered = member("left", ignore_sides);
   is_right_non_chamfered = member("right", ignore_sides);
 
-  with_anchor(anchor=anchor, size=size) {
-    translate([0, 0, lower_chamfer ? -chamfer : 0]) {
-      intersection() {
-        cube(size=[x_size, y_size, z_size]);
-        union() {
-          translate([x_size, 0, chamfer]) {
-            rotate([0, 180, 0]) {
+  maybe_color(color) {
+    with_anchor(anchor=anchor, size=size) {
+      translate([0, 0, lower_chamfer ? -chamfer : 0]) {
+        intersection() {
+          cube(size=[x_size, y_size, z_size]);
+          union() {
+            translate([x_size, 0, chamfer]) {
+              rotate([0, 180, 0]) {
+                roof() {
+                  square(size=[x_size, y_size]);
+                }
+              }
+            }
+
+            for (side = ignore_sides) {
+              if (side == "left") {
+                y_chamfered_cube(size=[x_size / 2, y_size, z_size],
+                                 chamfer=chamfer);
+              } else if (side == "right") {
+                translate([x_size / 2, 0, 0]) {
+                  y_chamfered_cube(size=[x_size / 2, y_size, z_size],
+                                   chamfer=chamfer);
+                }
+              } else if (side == "bottom") {
+                translate([x_size, 0, 0]) {
+                  rotate([0, 0, 90]) {
+                    y_chamfered_cube(size=[y_size / 2, x_size, z_size],
+                                     chamfer=chamfer);
+                  }
+                }
+                if (is_left_non_chamfered) {
+                  cube([chamfer, chamfer, z_size]);
+                }
+                if (is_right_non_chamfered) {
+                  translate([x_size - chamfer, 0, 0]) {
+                    cube([chamfer, chamfer, z_size]);
+                  }
+                }
+              } else if (side == "top") {
+                translate([x_size, y_size / 2, 0]) {
+                  rotate([0, 0, 90]) {
+                    y_chamfered_cube(size=[y_size / 2, x_size, z_size],
+                                     chamfer=chamfer);
+                  }
+                }
+                if (is_left_non_chamfered) {
+                  translate([0, y_size - chamfer, 0]) {
+                    cube([chamfer, chamfer, z_size]);
+                  }
+                }
+                if (is_right_non_chamfered) {
+                  translate([x_size - chamfer, y_size - chamfer, 0]) {
+                    cube([chamfer, chamfer, z_size]);
+                  }
+                }
+              }
+            }
+            translate([0, 0, chamfer]) {
+              cube(size=[x_size, y_size, z_size - chamfer * 2]);
+            }
+            translate([0, 0, z_size - chamfer]) {
               roof() {
                 square(size=[x_size, y_size]);
               }
-            }
-          }
-
-          for (side = ignore_sides) {
-            if (side == "left") {
-              y_chamfered_cube(size=[x_size / 2, y_size, z_size],
-                               chamfer=chamfer);
-            } else if (side == "right") {
-              translate([x_size / 2, 0, 0]) {
-                y_chamfered_cube(size=[x_size / 2, y_size, z_size],
-                                 chamfer=chamfer);
-              }
-            } else if (side == "bottom") {
-              translate([x_size, 0, 0]) {
-                rotate([0, 0, 90]) {
-                  y_chamfered_cube(size=[y_size / 2, x_size, z_size],
-                                   chamfer=chamfer);
-                }
-              }
-              if (is_left_non_chamfered) {
-                cube([chamfer, chamfer, z_size]);
-              }
-              if (is_right_non_chamfered) {
-                translate([x_size - chamfer, 0, 0]) {
-                  cube([chamfer, chamfer, z_size]);
-                }
-              }
-            } else if (side == "top") {
-              translate([x_size, y_size / 2, 0]) {
-                rotate([0, 0, 90]) {
-                  y_chamfered_cube(size=[y_size / 2, x_size, z_size],
-                                   chamfer=chamfer);
-                }
-              }
-              if (is_left_non_chamfered) {
-                translate([0, y_size - chamfer, 0]) {
-                  cube([chamfer, chamfer, z_size]);
-                }
-              }
-              if (is_right_non_chamfered) {
-                translate([x_size - chamfer, y_size - chamfer, 0]) {
-                  cube([chamfer, chamfer, z_size]);
-                }
-              }
-            }
-          }
-          translate([0, 0, chamfer]) {
-            cube(size=[x_size, y_size, z_size - chamfer * 2]);
-          }
-          translate([0, 0, z_size - chamfer]) {
-            roof() {
-              square(size=[x_size, y_size]);
             }
           }
         }
@@ -652,6 +785,7 @@ module chamfered_cube(size,
   - `anchor`: Reference-box placement (default `[0, 0, 1]`). Components `1`,
     `0`, and `-1` select positive, centered, and negative placement. The box
     uses the larger footprint dimension on each X/Y axis and `h` on Z.
+  - `color`: Optional OpenSCAD color; `undef` inherits the enclosing color.
 
   **Examples:**
   ```scad
@@ -668,99 +802,32 @@ module tapered_box(base_size,
                    r_base_side,
                    r_top,
                    r_bottom,
-                   anchor=[0, 0, 1]) {
+                   anchor=[0, 0, 1],
+                   color) {
   max_w = max(base_size[0], top_size[0]);
   max_l = max(base_size[1], top_size[1]);
   assert(is_num(h) && h > 0, "tapered_box: h must be positive");
   slice_h = min(0.01, h / 2);
-  with_anchor(anchor=anchor, size=[max_w, max_l, h], centered=true) {
-    hull() {
-      linear_extrude(height=slice_h, center=false) {
-        rounded_rect(base_size,
-                     center=true,
-                     r_factor=r_bottom_factor,
-                     r=r_bottom,
-                     side=r_base_side);
-      }
-      translate([0, 0, h - slice_h]) {
+  maybe_color(color) {
+    with_anchor(anchor=anchor, size=[max_w, max_l, h], centered=true) {
+      hull() {
         linear_extrude(height=slice_h, center=false) {
-          rounded_rect(top_size,
+          rounded_rect(base_size,
                        center=true,
-                       r_factor=r_top_factor,
-                       r=r_top,
-                       side=r_top_side);
+                       r_factor=r_bottom_factor,
+                       r=r_bottom,
+                       side=r_base_side);
+        }
+        translate([0, 0, h - slice_h]) {
+          linear_extrude(height=slice_h, center=false) {
+            rounded_rect(top_size,
+                         center=true,
+                         r_factor=r_top_factor,
+                         r=r_top,
+                         side=r_top_side);
+          }
         }
       }
     }
-  }
-}
-/**
-  ─────────────────────────────────────────────────────────────────────────────
-  cyl
-  ─────────────────────────────────────────────────────────────────────────────
-
-  Create a cylinder, cone, or frustum with orientation and per-axis anchoring.
-
-  **Parameters:**
-  - `h`: Axial height (default `0`). Supply a positive value for a solid.
-  - `d`: Common diameter used for either omitted end diameter. If `undef`,
-    falls back to `d1`, then `d2`. At least one diameter must be numeric.
-  - `d1`: Diameter at the bottom before rotation (`z=0`). Overrides `d` for
-    that end; defaults to the resolved `d`.
-  - `d2`: Diameter at the top before rotation (`z=h`). Overrides `d` for
-    that end; defaults to the resolved `d`. Set either end to `0` for a cone.
-  - `$fn`: Circumference fragment count (default `20`). Use `0` to let
-    OpenSCAD determine resolution from `$fa` and `$fs`.
-  - `anchor`: Placement on the final X/Y/Z axes (default `[0, 0, 1]`).
-    Each component is `1` to extend positively from the origin, `0` to
-    center, or `-1` to extend negatively. Explicit `undef`, or an `undef`
-    component, uses the corresponding default from `[1, 1, 1]`.
-  - `orientation`: Logical width/length/height on X/Y/Z, respectively
-    (default `"wlh"`; `undef` also uses `"wlh"`). Both width and length
-    are the larger resolved end diameter. The direction from `d1` to `d2` is:
-    - `"wlh"` or `"lwh"`: positive Z.
-    - `"whl"`: negative Y; `"lhw"`: positive Y.
-    - `"hlw"`: negative X; `"hwl"`: positive X.
-
-  **Behavior:**
-  Anchoring uses the rotated reference box based on the larger end diameter
-  and `h`, rather than either end face alone. The default anchor centers this
-  box on X/Y and places its minimum Z at `0` in every orientation.
-
-  A single supplied diameter produces a cylinder. Unequal end diameters
-  produce a taper, so orientations with opposite axial directions also
-  reverse which end is wider.
-
-  **Examples:**
-  ```scad
-  // Vertical cylinder centered on X/Y, from z=0 to z=10.
-  cyl(h=10, d=4);
-
-  // Horizontal cylinder from x=0 to x=10, centered on Y/Z.
-  cyl(h=10, d=4, orientation="hwl", anchor=[1, 0, 0]);
-
-  // Frustum with its wide end at y=0 and narrow end at y=10.
-  cyl(h=10, d1=8, d2=4, orientation="lhw", anchor=[0, 1, 0]);
-
-  // Cone centered on all axes, with its tip toward positive Z.
-  cyl(h=10, d1=8, d2=0, anchor=[0, 0, 0], $fn=48);
-  ```
-  */
-module cyl(h=0, d, d1, d2, $fn=20, anchor=[0, 0, 1], orientation ="wlh") {
-  assert(is_num(h), "cyl: h (height) must be provided");
-  assert(is_num(d) || is_num(d1) || is_num(d2),
-         "cyl: d, d1 or d2 must be provided");
-
-  d = with_default(with_default(d, d1), d2);
-  d1 = with_default(d1, d);
-  d2 = with_default(d2, d);
-
-  max_d = max(d2, d1);
-
-  with_orientation(from="wlh",
-                   to=orientation,
-                   anchor=anchor,
-                   size=[max_d, max_d, h]) {
-    cylinder(d1=d1, d2=d2, h=h);
   }
 }

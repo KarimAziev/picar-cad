@@ -11,6 +11,8 @@ import subprocess
 import tempfile
 
 
+from scad_test_support import OPENSCAD
+
 ROOT = Path(__file__).resolve().parents[1]
 HEADER = f"""use <{ROOT}/scad/lib/shapes2d.scad>
 use <{ROOT}/scad/lib/shapes3d.scad>
@@ -22,7 +24,7 @@ def render(folder, name, source, extension):
     scad = folder / f"{name}.scad"
     output = folder / f"{name}.{extension}"
     scad.write_text(HEADER + source)
-    command = ["openscad", "--backend=Manifold", "--enable=textmetrics",
+    command = [OPENSCAD, "--backend=Manifold", "--enable=textmetrics",
                "--enable=roof", "--hardwarnings"]
     if extension == "stl":
         command += ["--export-format", "binstl"]
@@ -136,7 +138,7 @@ def check_anchors(folder):
     print(f"PASS: rendered bounds for {len(cases) * len(anchors)} anchor cases", flush=True)
 
 
-def main():
+def main() -> None:
     with tempfile.TemporaryDirectory(prefix="shape-helpers-") as directory:
         folder = Path(directory)
         check_percentages(folder)

@@ -1,6 +1,10 @@
 SHELL := /bin/sh
 
 OPENSCAD ?= openscad
+PYTHON ?= $(if $(wildcard .venv/bin/python),.venv/bin/python,python3)
+PYRIGHT ?= $(PYTHON) -m pyright
+export OPENSCAD
+MESH_TESTS := $(sort $(wildcard tests/check_*.py))
 SCAD_COMMON_ARGS := --backend=Manifold --enable=textmetrics
 HARDWARNINGS := --hardwarnings
 CI_PREVIEW_ONLY ?= 0
@@ -38,7 +42,7 @@ PRINTABLE_PAIRS := $(foreach s,$(PRINTABLE_SRCS),$(notdir $(basename $s))|$s)
 	-O export-3mf/meta-data-copyright="$(DESIGNER_CONTACT)" \
 	-O export-3mf/meta-data-license-terms="$(LICENSE_TERMS)"
 
-.PHONY: all assembly printable tests clean clean-assembly clean-printable clean-tests help
+.PHONY: all assembly printable tests tests-scad tests-python tests-mesh typecheck clean clean-assembly clean-printable clean-tests help
 
 all: tests assembly printable
 
@@ -47,7 +51,11 @@ help:
 	@echo "Targets:"
 	@echo "  help             Show this help message."
 	@echo "  all              Run tests, then build assembly and printable exports."
-	@echo "  tests            Run OpenSCAD assertion suites (tolerates empty top-level geometry)."
+	@echo "  tests            Run OpenSCAD assertions, Python unit tests, mesh checks and Pyright."
+	@echo "  tests-scad       Run OpenSCAD assertions (tolerates empty top-level geometry)."
+	@echo "  tests-python     Run Python unit tests without OpenSCAD."
+	@echo "  tests-mesh       Run Python mesh checks using OpenSCAD."
+	@echo "  typecheck        Type-check all Python test code with Pyright."
 	@echo "  assembly         Export scad/assembly.scad to $(STL_DIR)/assembly.stl and $(MF3_DIR)/assembly.3mf with hard warnings."
 	@echo "  printable        Export scad/printable.scad and scad/printable_parts/*.scad to flattened $(STL_DIR) and $(MF3_DIR)."
 	@echo "  clean            Remove build outputs and test temp files."
@@ -59,7 +67,21 @@ assembly: $(ASSEMBLY_TARGETS)
 
 printable: $(PRINTABLE_STL) $(PRINTABLE_3MF)
 
-tests:
+tests: tests-python typecheck tests-scad tests-mesh
+
+tests-python:
+	$(PYTHON) -m unittest discover -s tests -p 'test_*.py' -v
+
+tests-mesh:
+	@set -eu; for src in $(MESH_TESTS); do \
+		echo "Running $$src"; \
+		$(PYTHON) -u "$$src"; \
+	done
+
+typecheck:
+	$(PYRIGHT) --pythonpath "$(PYTHON)"
+
+tests-scad:
 	@status=0; \
 	for src in tests/test_*.scad; do \
 		name=$$(basename $$src .scad); \

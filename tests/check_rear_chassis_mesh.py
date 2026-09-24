@@ -11,6 +11,8 @@ import struct
 import subprocess
 import tempfile
 
+from scad_test_support import OPENSCAD
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -35,7 +37,7 @@ def ray_hits(triangles, x, y):
     return False
 
 
-def main():
+def main() -> None:
     cases = [(side, orientation, [0, 1, 1], False, 0)
              for side in ("auto", "left", "right") for orientation in ("wlh", "lwh")]
     cases += [("auto", "wlh", [-1, 0, -1], False, -20),
@@ -88,7 +90,7 @@ echo(size=size, shift=shift, holes=holes);
 rear_suspension_chassis(anchor=anchor, layout=layout);
 ''')
         for side, orientation, anchor, changed, offset in cases:
-            command = ["openscad", "--backend=Manifold", "--enable=textmetrics", "--hardwarnings",
+            command = [OPENSCAD, "--backend=Manifold", "--enable=textmetrics", "--hardwarnings",
                        "--export-format", "binstl", "-o", str(mesh),
                        "-D", f'side="{side}"', "-D", f'orientation="{orientation}"',
                        "-D", f"anchor={anchor}", "-D", f"changed={str(changed).lower()}",
@@ -97,6 +99,7 @@ rear_suspension_chassis(anchor=anchor, layout=layout);
             log = result.stdout + result.stderr
             assert result.returncode == 0 and "WARNING:" not in log and "ERROR:" not in log, log
             values = re.search(r"ECHO: size = (.*), shift = (.*), holes = (.*)", log)
+            assert values is not None, log
             size, shift, holes = map(ast.literal_eval, values.groups())
             triangles = read_triangles(mesh)
             points = [point for triangle in triangles for point in triangle]
