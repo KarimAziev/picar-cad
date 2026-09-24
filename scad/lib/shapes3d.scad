@@ -15,42 +15,6 @@ use <transforms.scad>
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
-  rounded_cube
-  ─────────────────────────────────────────────────────────────────────────────
-
-  Create a rounded cuboid by offsetting an inner cube.
-
-  **Parameters:**
-  - `size`: Cuboid size as `[x, y, z]`.
-  - `r`: Explicit rounding radius. When `undef`, `r_factor` is used.
-  - `center`: If `true`, center the shape on X and Y.
-  - `z_center`: If `true`, center the shape on Z.
-  - `fn`: Fragment count for the rounding sphere.
-  - `r_factor`: Radius factor used when `r` is `undef`.
- */
-module rounded_cube(size,
-                    r=undef,
-                    center=true,
-                    z_center=false,
-                    fn=36,
-                    r_factor=0.02) {
-  rad = is_undef(r) ? (min(size[0], size[1], size[2])) * r_factor : r;
-
-  x = size[0] - rad * 2;
-  y = size[1] - rad * 2;
-  z = size[2] - rad * 2;
-  translate([(center ? 0 : x / 2),
-             (center ? 0 : y / 2),
-             (z_center ? 0 : z / 2)
-             + rad]) {
-    offset_3d(r=rad, fn=fn) {
-      cube([x, y, z], center=true);
-    }
-  }
-}
-
-/**
-  ─────────────────────────────────────────────────────────────────────────────
   cuboid
   ─────────────────────────────────────────────────────────────────────────────
 

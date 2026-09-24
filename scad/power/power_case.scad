@@ -93,7 +93,10 @@ module power_case(size=[power_case_width,
 
           // Front and rear panels upper cutouts
           translate([0, 0, front_rear_h]) {
-            rounded_cube([inner_x_cutout, l + 1, lipo_h + 1], center=true);
+            cuboid([inner_x_cutout, l + 1, lipo_h + 1],
+                   anchor=[0, 0, 1],
+                   r_factor=0.02,
+                   use_minkowski=true);
           }
 
           // Front and rear panels vent

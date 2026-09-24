@@ -51,19 +51,22 @@ module toggle_switch(size                               = toggle_switch_size,
     union() {
       translate([0, 0, terminal_size[2]]) {
         color(brown_3, alpha=1) {
-          rounded_cube(size=[size[0],
-                             size[1],
-                             size[2]
-                             - metallic_head_h]);
+          cuboid(size=[size[0],
+                       size[1],
+                       size[2] - metallic_head_h],
+                 anchor=[0, 0, 1],
+                 r_factor=0.02,
+                 use_minkowski=true);
         }
         translate([0,
                    0,
                    size[2]
                    - metallic_head_h]) {
           color(metallic_silver_1, alpha=1) {
-            rounded_cube(size=[size[0],
-                               size[1],
-                               metallic_head_h]);
+            cuboid(size=[size[0], size[1], metallic_head_h],
+                   anchor=[0, 0, 1],
+                   r_factor=0.02,
+                   use_minkowski=true);
           }
         }
       }
@@ -73,7 +76,10 @@ module toggle_switch(size                               = toggle_switch_size,
                      - terminal_size[0] / 2 - 0.1,
                      0,
                      0]) {
-            rounded_cube(terminal_size);
+            cuboid(terminal_size,
+                   anchor=[0, 0, 1],
+                   r_factor=0.02,
+                   use_minkowski=true);
           }
         }
       }

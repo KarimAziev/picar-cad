@@ -66,8 +66,7 @@ module smd_placeholder_renderer(plist,
         if (show_smd_resistor && placeholder == "smd_resistor") {
           smd_resistor_from_plist(plist, center=false);
         } else if (show_schottky_diode && placeholder == "schottky_diode") {
-          schottky_diode(plist, center=false); {
-          }
+          schottky_diode(plist, center=false);
         } else if (show_ceramic_capactior
                    && placeholder == "ceramic_capactior") {
           ceramic_capactior(plist, center=false); {
@@ -126,7 +125,6 @@ module smd_placeholder_slot_renderer(plist,
                                      show_screw_terminal=true) {
   placeholder = plist_get("type", plist);
   cell_size = with_default(cell_size, []);
-  placeholder_size = plist_get("placeholder_size", plist);
   spin = with_default(spin, 0);
 
   translate([0, 0, 0]) {

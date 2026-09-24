@@ -70,7 +70,10 @@ module smd_resistor(size=[3.2, 1.4, 0.4],
       }
       color(pad_color, alpha=1) {
         if (use_inner_round) {
-          rounded_cube(size=adjusted_size, r_factor=fillet_factor);
+          cuboid(size=adjusted_size,
+                 anchor=[0, 0, 1],
+                 r_factor=fillet_factor,
+                 use_minkowski=true);
         } else {
           linear_extrude(height=adjusted_size[2],
                          center=false) {

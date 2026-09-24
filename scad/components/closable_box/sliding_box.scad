@@ -107,11 +107,12 @@ module box(size=[86, 90, 35],
 
         translate([0, 0, bottom_thickness]) {
           if (use_inner_round) {
-            rounded_cube([inner_x,
-                          inner_y,
-                          h + corner_rad + rim_h + 0.1],
-                         r=corner_rad,
-                         center=true);
+            cuboid([inner_x,
+                    inner_y,
+                    h + corner_rad + rim_h + 0.1],
+                   anchor=[0, 0, 1],
+                   r=corner_rad,
+                   use_minkowski=true);
           } else {
             linear_extrude(height=h + rim_h + 0.1, center=false, convexity=2) {
               rounded_rect(size=[inner_x, inner_y],

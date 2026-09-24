@@ -51,12 +51,16 @@ module atc_ato_blade_fuse_holder_top_cover() {
                  - atc_ato_blade_mounting_wall_thickness + 0.5,
                  atc_ato_blade_fuse_holder_top_cover_h
                  - atc_ato_blade_mounting_wall_h]) {
-        rounded_cube([atc_ato_blade_mounting_wall_w +
-                      (atc_ato_blade_fuse_holder_top_cover_w / 2),
-                      atc_ato_blade_mounting_wall_thickness,
-                      atc_ato_blade_mounting_wall_h],
-                     center=false,
-                     r=0.5);
+        // Preserve the mounting wall's half-millimeter X/Y overhang.
+        translate([-0.5, -0.5, 0]) {
+          cuboid([atc_ato_blade_mounting_wall_w +
+                  (atc_ato_blade_fuse_holder_top_cover_w / 2),
+                  atc_ato_blade_mounting_wall_thickness,
+                  atc_ato_blade_mounting_wall_h],
+                 anchor=[1, 1, 1],
+                 r=0.5,
+                 use_minkowski=true);
+        }
       }
 
       mirror_copy([1, 0, 0]) {
@@ -66,9 +70,12 @@ module atc_ato_blade_fuse_holder_top_cover() {
                    -atc_ato_blade_fuse_holder_top_cover_thickness / 2
                    - atc_ato_blade_mounting_wall_thickness / 2 + 0.5,
                    0]) {
-          rounded_cube([atc_ato_blade_fuse_holder_top_cover_w * 0.1,
-                        atc_ato_blade_mounting_wall_thickness,
-                        atc_ato_blade_fuse_holder_top_cover_h]);
+          cuboid([atc_ato_blade_fuse_holder_top_cover_w * 0.1,
+                  atc_ato_blade_mounting_wall_thickness,
+                  atc_ato_blade_fuse_holder_top_cover_h],
+                 anchor=[0, 0, 1],
+                 r_factor=0.02,
+                 use_minkowski=true);
         }
       }
     }
