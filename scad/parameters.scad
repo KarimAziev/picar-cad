@@ -2963,7 +2963,7 @@ rplidar_c1_plist = ["size", [55.6, 55.6],
                                    "socket_l", 7,
                                    "cable_d", 4.8,
                                    "cable_l", 300,
-                                   "cable_rigid_l", 12]];
+                                   "bend_exclusion_l", 12]];
 
 rc_driveshaft_plist = [// Selected assembly pivot spacing, not a hardware measurement.
                        "pivot_l", 60,

@@ -193,7 +193,7 @@ module lidar(plist=rplidar_c1_plist,
         assert(in_list(cable_side, ["rear", "front", "left", "right"]),
                "Invalid position");
 
-        let (cable_rigid_l = plist_get("cable_rigid_l", cable_exit, 5),
+        let (bend_exclusion_l = plist_get("bend_exclusion_l", cable_exit, 5),
              socket_rotations = ["left", [0, -90, 0],
                                  "right", [0, 90, 0],
                                  "front", [90, 0, 0],
@@ -221,7 +221,7 @@ module lidar(plist=rplidar_c1_plist,
                                    "bottom", [0, 0, cable_socket_z_offset]],
              z_pos = plist_get(cable_position, z_position_offsets),
              socket_r = socket_d / 2,
-             initial_cable_l = socket_l + cable_rigid_l,
+             initial_cable_l = socket_l + bend_exclusion_l,
 
              initial_pts_by_sides = ["left", [[-socket_l, 0, socket_r],
                                               [-initial_cable_l, 0, socket_r]],
