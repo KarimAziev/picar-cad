@@ -558,7 +558,8 @@ with_orientation(from="wlh",
 module with_orientation(from="wlh",
                         to="wlh",
                         size,
-                        anchor=[0, 0, 1]) {
+                        anchor=[0, 0, 1],
+                        reverse_z=false) {
   from = assert_orientation(with_default(from, "wlh"), "from");
   to = assert_orientation(with_default(to, "wlh"), "to");
   anchor = normalize_anchor(anchor);
@@ -567,10 +568,12 @@ module with_orientation(from="wlh",
   to_size = orientation_size(to, size);
 
   with_anchor(size=to_size, anchor=anchor, centered=true) {
-    translate([0, 0, to_size[2] / 2]) {
-      multmatrix(orientation_transform(from, to)) {
-        translate([0, 0, -from_size[2] / 2]) {
-          children();
+    maybe_rotate([0, 0, reverse_z ? 180 : 0]) {
+      translate([0, 0, to_size[2] / 2]) {
+        multmatrix(orientation_transform(from, to)) {
+          translate([0, 0, -from_size[2] / 2]) {
+            children();
+          }
         }
       }
     }

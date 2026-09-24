@@ -15,9 +15,9 @@ use <../../lib/shapes3d.scad>
 use <../../lib/transforms.scad>
 use <../../lib/wire.scad>
 
-function usb_params(plist) =
+function usb_plug_params(plist) =
   let (plug_shell=plist_get("plug_shell", plist, []),
-       plug_shell_size=plist_get("size", plug_shell),
+       plug_shell_size=plist_get("size", plug_shell, [0, 0, 0]),
        plug_shell_color=plist_get("color", plug_shell, metallic_silver_3),
        plug_body=plist_get("plug_body", plist, []),
        plug_body_color=plist_get("color", plug_body, matte_black),
@@ -74,14 +74,15 @@ function usb_params(plist) =
 
 function usb_oriented_size(plist,
                            orientation="wlh") =
-  let (params = usb_params(plist),
+  let (params = usb_plug_params(plist),
        full_size =  plist_get("full_size", params))
   orientation_size(orientation, full_size);
 
 module generic_usb_plug(plist,
                         orientation="wlh",
-                        anchor=[0, 0, 1]) {
-  params = usb_params(plist);
+                        anchor=[0, 0, 1],
+                        reverse_z=false) {
+  params = usb_plug_params(plist);
 
   plug_shell_size = plist_get("plug_shell_size", params);
   plug_shell_color = plist_get("plug_shell_color", params);
@@ -105,6 +106,7 @@ module generic_usb_plug(plist,
 
   with_orientation(anchor=anchor,
                    to=orientation,
+                   reverse_z=reverse_z,
                    size=[max_w, full_l, max_thickness]) {
     translate([0, strain_l - full_l / 2, max_thickness / 2]) {
       union() {
@@ -161,6 +163,7 @@ module generic_usb_plug(plist,
 }
 
 generic_usb_plug(plist=usb_c_plist,
+
                  anchor=[1, 1, 0]);
 
 generic_usb_plug(plist=usb_a_plist,

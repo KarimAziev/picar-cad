@@ -14,7 +14,7 @@ function usb_c_oriented_size(plist=usb_c_plist, orientation="wlh") =
                     orientation=orientation);
 
 function usb_c_params(plist=usb_c_plist, orientation="wlh") =
-  usb_params(plist);
+  usb_plug_params(plist);
 
 module usb_c_plug(plist=usb_c_plist,
                   orientation="wlh",
