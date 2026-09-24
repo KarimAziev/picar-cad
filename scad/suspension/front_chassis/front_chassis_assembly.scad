@@ -21,7 +21,6 @@ use <../../head/head_neck.scad>
 use <../../lib/debug.scad>
 use <../../lib/functions.scad>
 use <../../lib/plist.scad>
-use <../../lib/shapes2d.scad>
 use <../../lib/shapes3d.scad>
 use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
@@ -123,7 +122,7 @@ show_rear_unused_shaft                      = true;
 show_rear_differential_envelope             = false;
 show_middle_chassis_motor_slots             = true;
 
-show_middle_chassis                         = true;
+show_middle_chassis                         = false;
 show_middle_chassis_components              = true;
 show_middle_chassis_power_case              = true;
 show_middle_chassis_lipo_packs              = true;
@@ -138,10 +137,12 @@ show_middle_camera_slots                    = true;
 show_middle_chassis_power_case_slots        = true;
 show_middle_chassis_rpi_slots               = true;
 
-rear_chassis_y_offset                       = 200;  // [0:1:500]
-
 // Steering angle
 steering_servo_angle                        = 0; // [-25:1:25]
+
+show_ideal_length                           = false;
+
+chassis_ideal_wheelbase                     = 260;
 
 module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
                               show_bellcrank_idler=show_bellcrank_idler,
@@ -293,9 +294,12 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
                             show_middle_chassis_lidar=show_middle_chassis_lidar,
                             power_case_plist=multi_lipo_packs_case);
   }
+
   translate([0, front_chassis_y_joint_2_end, front_chassis_thickness]) {
     // Join the rear plate to the battery's rear edge
-    translate([0, -full_lipo_pack_size[1], -front_chassis_thickness]) {
+    translate([0,
+               show_middle_chassis ? -full_lipo_pack_size[1] : 0,
+               -front_chassis_thickness]) {
       rotate([0, 0, 180]) {
         rear_chassis(anchor=[0, 1, 1]);
       }
@@ -304,6 +308,8 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
 }
 
 front_chassis_assembly();
-// translate([0, 20, 0]) {
-//   #cuboid(size=[125, 260 , 40], anchor=[0, -1, 1]);
-// }
+if (show_ideal_length) {
+  translate([0, front_bulkhead_len / 2, 0]) {
+    #cuboid(size=[200, chassis_ideal_wheelbase, 40], anchor=[0, -1, 1]);
+  }
+ }
