@@ -3011,7 +3011,11 @@ usb_a_plist = ["plug_shell", ["size", [12.0, 12.52, 4.4],
                                                      "color", metallic_silver_3],
                "plug_body", ["size", [15.46, 15.35, 8.08],
                              "color", matte_black],
-               "strain_relief", ["size", [5.9, 7, 5.8]]];
+               "strain_relief", ["size", [5.9, 7, 5.8]],];
+
+usb_a_socket_plist = ["size", [rpi_usb_size[0], rpi_usb_size[1], rpi_usb_size[2] / 2],
+                      "color", metallic_yellow_silver,
+                      "offsets", [0, 0, 1]];
 
 usb_c_plist = ["plug_shell", ["size", [8.2, 7.4, 2.4],
                                                      "color", metallic_silver_3],

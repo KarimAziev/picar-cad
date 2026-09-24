@@ -538,6 +538,9 @@ The result uses the requested `anchor` relative to the target-oriented box.
   `"wlh"` (default), `"whl"`, `"lwh"`, `"lhw"`, `"hlw"`, `"hwl"`.
 - `size`: Logical child size as `[w, l, h]`.
 - `anchor`: Final target anchor.
+- `rotate_z_180`: If `true`, rotate 180 degrees around the target Z axis
+  through the reference box's X/Y center, after reorientation and before
+  anchoring. Defaults to `false`; the reference size is unchanged.
 
 **Example:**
 ```scad
@@ -559,7 +562,7 @@ module with_orientation(from="wlh",
                         to="wlh",
                         size,
                         anchor=[0, 0, 1],
-                        reverse_z=false) {
+                        rotate_z_180=false) {
   from = assert_orientation(with_default(from, "wlh"), "from");
   to = assert_orientation(with_default(to, "wlh"), "to");
   anchor = normalize_anchor(anchor);
@@ -568,7 +571,7 @@ module with_orientation(from="wlh",
   to_size = orientation_size(to, size);
 
   with_anchor(size=to_size, anchor=anchor, centered=true) {
-    maybe_rotate([0, 0, reverse_z ? 180 : 0]) {
+    maybe_rotate([0, 0, rotate_z_180 ? 180 : 0]) {
       translate([0, 0, to_size[2] / 2]) {
         multmatrix(orientation_transform(from, to)) {
           translate([0, 0, -from_size[2] / 2]) {

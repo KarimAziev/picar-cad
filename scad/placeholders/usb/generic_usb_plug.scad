@@ -81,7 +81,7 @@ function usb_oriented_size(plist,
 module generic_usb_plug(plist,
                         orientation="wlh",
                         anchor=[0, 0, 1],
-                        reverse_z=false) {
+                        rotate_z_180=false) {
   params = usb_plug_params(plist);
 
   plug_shell_size = plist_get("plug_shell_size", params);
@@ -106,7 +106,7 @@ module generic_usb_plug(plist,
 
   with_orientation(anchor=anchor,
                    to=orientation,
-                   reverse_z=reverse_z,
+                   rotate_z_180=rotate_z_180,
                    size=[max_w, full_l, max_thickness]) {
     translate([0, strain_l - full_l / 2, max_thickness / 2]) {
       union() {

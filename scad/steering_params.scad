@@ -1287,7 +1287,7 @@ motor_plist                                       = ["body", ["d", 24.3,
 front_rpi_y_offset                                = 0;
 front_rpi_x_offset                                = -5;
 front_rpi_orientation                             = "lwh"; // wlh | lwh (flat PCB)
-front_rpi_reverse_z                               = true; // 180-degree turn in the PCB plane
+front_rpi_rotate_z_180                            = true; // 180-degree turn in the PCB plane
 
 front_chassis_rear_frame_corner_r                 = 4;
 

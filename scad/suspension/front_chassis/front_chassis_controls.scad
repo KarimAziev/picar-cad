@@ -52,7 +52,7 @@ module front_chassis_controls(slot_mode=false) {
   **Parameters:**
   - `slot_mode`: Cut mounting holes and camera-ribbon passages through the frame.
 
-  `front_rpi_orientation` selects the flat layout; `front_rpi_reverse_z` turns
+  `front_rpi_orientation` selects the flat layout; `front_rpi_rotate_z_180` turns
   the board 180 degrees in its plane. Both keep the configured minimum X and
   maximum Y of its reference box fixed. The frame uses the same reference bounds.
  */
@@ -61,7 +61,7 @@ module front_chassis_rpi(slot_mode=false) {
   translate([bounds[0][0], bounds[1][1], 0]) {
     rpi_5(anchor=[1, -1, 1],
           orientation=front_rpi_orientation,
-          reverse_z=front_rpi_reverse_z,
+          rotate_z_180=front_rpi_rotate_z_180,
           slot_thickness=front_chassis_thickness,
           bolt_visible_h=front_chassis_thickness - chassis_counterbore_h,
           slot_mode=slot_mode);
