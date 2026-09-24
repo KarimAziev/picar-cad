@@ -11,6 +11,7 @@ include <../parameters.scad>
 use <../lib/functions.scad>
 use <../lib/holes.scad>
 use <../lib/placement.scad>
+use <../lib/plist.scad>
 use <../lib/shapes2d.scad>
 use <../lib/shapes3d.scad>
 use <../lib/slots.scad>
@@ -20,6 +21,8 @@ use <bcm.scad>
 use <gpio_expansion_board.scad>
 use <motor_driver_hat.scad>
 use <pad_hole.scad>
+use <pcb/pcb_button.scad>
+use <pcb/pci_connector.scad>
 use <pin_header.scad>
 use <servo_driver_hat.scad>
 use <standoff.scad>
@@ -33,7 +36,7 @@ show_servo_driver_hat       = false;
 show_gpio_expansion_board   = false;
 show_camera_ribbon_slot     = true;
 
-rpi_camera_ribbon_slot_size = [rpi_csi_size[0], 1.6];
+rpi_camera_ribbon_slot_size = [rpi_csi_size[1], 1.6];
 rpi_camera_ribbon_slot_gap  = 1.4;
 rpi_camera_ribbon_slot_rows = 3;
 
@@ -46,13 +49,13 @@ rpi_plugged_usb_a           = ["left", [1], "right", []];
   Return the canonical reference box used to anchor the Raspberry Pi.
   **Parameters:**
   - `size`: PCB width, length and thickness.
-  - `usb_y_offset`: USB/Ethernet overhang beyond the PCB's +Y edge.
+  - `usb_a_y_offset`: USB/Ethernet overhang beyond the PCB's +Y edge.
   **Returns:** `[width, length + overhang, pcb_thickness]`.
   This is the placement reference, excluding standoffs, HATs and component height.
  */
 function rpi_5_size(size=[rpi_width, rpi_len, rpi_thickness],
-                    usb_y_offset=rpi_usb_y_offset) =
-  [size[0], size[1] + usb_y_offset, size[2]];
+                    usb_a_y_offset=rpi_usb_y_offset) =
+  [size[0], size[1] + usb_a_y_offset, size[2]];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -62,14 +65,14 @@ function rpi_5_size(size=[rpi_width, rpi_len, rpi_thickness],
   **Parameters:**
   - `orientation`: One of the six `with_orientation` axis conventions.
   - `size`: Canonical PCB width, length and thickness.
-  - `usb_y_offset`: USB/Ethernet overhang beyond the PCB's +Y edge.
+  - `usb_a_y_offset`: USB/Ethernet overhang beyond the PCB's +Y edge.
   **Returns:** Oriented `[x, y, z]` reference size, excluding accessory envelopes.
   A `rotate_z_180` half-turn does not change this reference size.
  */
 function rpi_5_oriented_size(orientation="wlh",
                              size=[rpi_width, rpi_len, rpi_thickness],
-                             usb_y_offset=rpi_usb_y_offset) =
-  orientation_size(orientation, rpi_5_size(size, usb_y_offset));
+                             usb_a_y_offset=rpi_usb_y_offset) =
+  orientation_size(orientation, rpi_5_size(size, usb_a_y_offset));
 
 module io_controller(size=rpi_io_size) {
   color(matte_black, alpha=1) {
@@ -112,29 +115,6 @@ module ethernet(size=rpi_ethernet_jack_size) {
         linear_extrude(height=hole_z, center=false) {
           square(size=[hole_x, 1], center=false);
         }
-      }
-    }
-  }
-}
-
-module usb(size=rpi_usb_size,
-           rpi_usb_rows=2,
-           plugged_usb_idxes=[],
-           usb_plist=usb_a_plist) {
-
-  single_h = size[2] / rpi_usb_rows;
-
-  for (i = [0: rpi_usb_rows - 1]) {
-    let (z = i * single_h) {
-
-      translate([0, 0, z]) {
-        usb_socket(usb_plist=usb_plist,
-                   rotate_z_180=true,
-                   show_usb_plug=in_list(i, plugged_usb_idxes),
-                   anchor=[1, 1, 1],
-                   plist=["size", [size[0], size[1], single_h],
-                          "color", metallic_yellow_silver,
-                          "offsets", [0, 0, 1]]);
       }
     }
   }
@@ -211,46 +191,6 @@ module rtc_battery_connector(size=rpi_rtc_connector_size) {
 
 module uart_connector(size=rpi_uart_connector_size) {
   rtc_battery_connector(size);
-}
-
-module pci_connector(size=rpi_pci_size, extra_x=2) {
-  union() {
-    color(metallic_yellow_silver_2, alpha=1) {
-      cube(size, center=false);
-    }
-    translate([-extra_x / 2, 0, size[2]]) {
-      color(jet_black, alpha=1) {
-        linear_extrude(height=1, center=false) {
-          difference() {
-            rounded_rect([size[0] + extra_x, size[1]]);
-            translate([extra_x / 2, size[1] / 2, 0]) {
-              square([size[0], size[1]]);
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-module csi_camera_connector(size=rpi_csi_size) {
-  pci_connector(size=size);
-}
-
-module on_off_buton(size=rpi_on_off_button_size,
-                    dia=rpi_on_off_button_dia) {
-  rotate([90, 0, 0]) {
-    union() {
-      color(matte_black, alpha=1) {
-        linear_extrude(height=size[2], center=false) {
-          square([size[0], size[1]], center=true);
-        }
-      }
-      linear_extrude(height=size[2] + 0.8, center=false) {
-        circle(r=dia / 2, $fn=8);
-      }
-    }
-  }
 }
 
 module rpi_usb_hdmi_connectors() {
@@ -355,16 +295,16 @@ module rpi_5(size=[rpi_width, rpi_len, rpi_thickness],
              show_servo_driver_hat=show_servo_driver_hat,
              show_gpio_expansion_board=show_gpio_expansion_board,
              pad_hole_specs=rpi_pad_hole_specs,
-             usb_size=rpi_usb_size,
+             usb_a_size=rpi_usb_a_size,
              csi_size=rpi_csi_size,
              io_size=rpi_io_size,
              wifi_bt_size=rpi_wifi_bt_size,
              pci_size=rpi_pci_size,
-             on_off_button_size=rpi_on_off_button_size,
-             on_off_button_dia=rpi_on_off_button_dia,
              ethernet_jack_size=rpi_ethernet_jack_size,
-             usb_x_gap=5,
-             usb_y_offset=rpi_usb_y_offset,
+             usb_a_x_gap=rpi_usb_a_gap,
+             usb_a_edge_gap=rpi_usb_a_edge_gap,
+             usb_a_y_offset=rpi_usb_y_offset,
+             rpi_usb_a_n=rpi_usb_a_n,
              standoff_height=rpi_standoff_height,
              bolt_visible_h=chassis_thickness - chassis_counterbore_h,
              camera_ribbon_slot=rpi_camera_ribbon_slot_size,
@@ -379,9 +319,9 @@ module rpi_5(size=[rpi_width, rpi_len, rpi_thickness],
   length = size[1];
   h = size[2];
 
-  max_size = rpi_5_size(size, usb_y_offset);
+  max_size = rpi_5_size(size, usb_a_y_offset);
 
-  usb_y = length - usb_size[1] + usb_y_offset;
+  usb_y = length - usb_a_size[1] + usb_a_y_offset;
 
   with_orientation(from="wlh",
                    to=orientation,
@@ -493,46 +433,71 @@ module rpi_5(size=[rpi_width, rpi_len, rpi_thickness],
                   }
                 }
                 union() {
-
                   translate([0, usb_y, h]) {
                     let (left = plist_get("left", plugged_usb_a, []),
                          right = plist_get("right", plugged_usb_a, [])) {
-                      usb(size=usb_size, plugged_usb_idxes=right);
-                      translate([usb_size[0] + usb_x_gap, 0, 0]) {
-                        usb(size=usb_size, plugged_usb_idxes=left);
+                      translate([usb_a_edge_gap, 0, 0]) {
+                        columns_children(cols=rpi_usb_a_n,
+                                         gap=usb_a_x_gap,
+                                         w=usb_a_size[0]) {
 
-                        translate([0, -usb_size[1], 0]) {
-                          io_controller(size=io_size);
+                          multi_usb_socket(size=usb_a_size,
+                                           plugged_usb_idxes=$i == 0
+                                           ? right
+                                           : left,
+                                           usb_plist=usb_a_plist,
+                                           offsets=[0, 0, 1],
+                                           anchor=[0, 1, 1],
+                                           color=metallic_yellow_silver);
+                          if ($i == 0) {
+                            translate([usb_a_x_gap, -usb_a_size[1], 0]) {
+                              io_controller(size=io_size);
+                            }
+                          }
                         }
+                      }
+
+                      translate([w, 0, 0]) {
                       }
                     }
                   }
-                  translate([(usb_size[0] + usb_x_gap) * 2,
+                  translate([(usb_a_size[0] + usb_a_x_gap) * rpi_usb_a_n,
                              length
                              - ethernet_jack_size[1]
-                             + usb_y_offset,
+                             + usb_a_y_offset,
                              0]) {
                     ethernet(size=ethernet_jack_size);
                   }
                 }
                 rpi_usb_hdmi_connectors();
 
-                translate([rpi_csi_position_x, rpi_csi_position_y, 0]) {
-                  csi_camera_connector(size=csi_size);
-                  translate([0, -csi_size[1] - 3, 0]) {
-                    csi_camera_connector(size=csi_size);
+                if (rpi_csi_cameras_n > 0) {
+                  translate([rpi_csi_position_x,
+                             rpi_csi_position_y,
+                             0]) {
+                    rows_children(rows=rpi_csi_cameras_n,
+                                  w=csi_size[0],
+                                  gap=rpi_csi_camera_gap,
+                                  anchor=-1) {
+                      pci_connector(size=csi_size, anchor=[1, 1, 1]);
+                    }
                   }
                 }
-                translate([w / 2 - pci_size[0] / 2,
-                           0,
-                           0]) {
+
+                translate([w / 2, 0, 0]) {
                   pci_connector(size=pci_size);
-                  translate([pci_size[0] + 7,
-                             rpi_on_off_button_size[1] +
-                             rpi_on_off_button_dia / 2 - 0.2,
-                             h]) {
-                    on_off_buton(size=on_off_button_size,
-                                 dia=on_off_button_dia);
+
+                  if (rpi_on_off_button_plist) {
+                    let (offsets = plist_get("offsets",
+                                             rpi_on_off_button_plist, [0, 0])) {
+                      translate([pci_size[1] / 2 + offsets[0],
+                                 offsets[1],
+                                 0]) {
+                        pcb_button_from_plist(rpi_on_off_button_plist,
+                                              anchor=[1, 1, 1],
+                                              orientation="whl");
+                      }
+                    }
                   }
                 }
               }
@@ -610,5 +575,5 @@ module rpi_5(size=[rpi_width, rpi_len, rpi_thickness],
 //       slot_mode=true,
 //       anchor=[1, 1, 1]);
 
-rpi_5(anchor=[1, 1, 1], orientation="lwh", rotate_z_180=true);
+rpi_5(anchor=[1, 1, 1], rotate_z_180=false);
 // rpi_5(anchor=[1, 1, 1], slot_mode=true);

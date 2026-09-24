@@ -1504,16 +1504,19 @@ rpi_ram_size                                         = [10.2, 15, 1]; // Size of
 rpi_processor_size                                   = [15, 15, 0.5]; // BCM2712 processor
 
 // USB 2.0 and USB 3.0 jacks
-rpi_usb_size                                         = [13.25, 17.60, 15.04];
+rpi_usb_a_size                                       = [13.25, 17.60, 15.04];
+rpi_usb_a_gap                                        = 5;
+rpi_usb_a_edge_gap                                   = 2;
+rpi_usb_a_n                                          = 2;
 
 // Ethernet jack
 rpi_ethernet_jack_size                               = [16.15, 21.34, 13.40];
 
 // PCI Express interface
-rpi_pci_size                                         = [12.85, 2, 3];
+rpi_pci_size                                         = [2, 12.85, 3];
 
 // 2 x 4-lane MIPI DSI/CSI connectors
-rpi_csi_size                                         = [13.0, 2, 2.5];
+rpi_csi_size                                         = [2, 16.0, 2.5];
 
 rpi_pad_hole_specs                                   = [[4.5, yellow_3]];
 
@@ -1535,15 +1538,26 @@ rpi_wifi_bt_size                                     = [14, 11, 1.5];
 // RP1 I/O controller
 rpi_io_size                                          = [14, 10, 1.5];
 
-// The size of the On-off button
-rpi_on_off_button_size                               = [3.85, 1.8, 2];
-// The diameter of the On-off button
-rpi_on_off_button_dia                                = 1.5;
+// On-off button
+rpi_on_off_button_plist                              = ["size", [3.85, 2, 1.8],
+                                                        "button_d", 1.5,
+                                                        "button_h", 0.8,
+                                                        "offsets", [3.12, 0]];
+
+rpi_camera_ribbon_slot_size                          = [rpi_csi_size[1], 1.6];
+rpi_camera_ribbon_slot_gap                           = 1.4;
+rpi_camera_ribbon_slot_rows                          = 3;
+
+rpi_plugged_usb_a                                    = ["left", [1], "right", []];
 
 //The height of the standoffs for Raspberry Pi
 rpi_standoff_height                                  = 6;
-rpi_csi_position_x                                   = rpi_bolt_spacing[0] - rpi_csi_size[0] / 2 - 2;
-rpi_csi_position_y                                   = rpi_bolt_spacing[1] - m25_hole_dia - 1;
+
+// CSI
+rpi_csi_cameras_n                                    = 2; // number of camera CSI connectors on the Raspberry PI
+rpi_csi_position_x                                   = rpi_bolt_spacing[0] - rpi_csi_size[1] / 2 - 2;
+rpi_csi_position_y                                   = rpi_bolt_spacing[1] - m25_hole_dia;
+rpi_csi_camera_gap                                   = 3.84;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // AI HAT+
@@ -1554,7 +1568,7 @@ ai_hat_corner_rad                                    = 2.4;
 ai_hat_bolt_dia                                      = m25_hole_dia;
 
 ai_hat_mounting_hole_pad_spec                        = [[m25_hole_dia + 2.5, yellow_3]];
-ai_hat_csi_slot_size                                 = [rpi_csi_size[0] + 4, ai_hat_size[1]
+ai_hat_csi_slot_size                                 = [rpi_csi_size[1] + 4, ai_hat_size[1]
                                                         - rpi_csi_position_y];
 
 ai_hat_processor_size                                = [17, 17, 1];
@@ -3013,7 +3027,7 @@ usb_a_plist = ["plug_shell", ["size", [12.0, 12.52, 4.4],
                              "color", matte_black],
                "strain_relief", ["size", [5.9, 7, 5.8]],];
 
-usb_a_socket_plist = ["size", [rpi_usb_size[0], rpi_usb_size[1], rpi_usb_size[2] / 2],
+usb_a_socket_plist = ["size", [rpi_usb_a_size[0], rpi_usb_a_size[1], rpi_usb_a_size[2] / 2],
                       "color", metallic_yellow_silver,
                       "offsets", [0, 0, 1]];
 

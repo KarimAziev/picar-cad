@@ -15,7 +15,7 @@ module usb_socket(plist,
                   show_usb_plug=false,
                   rotate_z_180=false) {
   plist = with_default(plist, []);
-  usb_params = usb_plug_params(usb_plist);
+  usb_params = usb_plug_params(with_default(usb_plist, []));
 
   plug_shell_size = plist_get("plug_shell_size", usb_params);
 
@@ -55,4 +55,33 @@ module usb_socket(plist,
   }
 }
 
-usb_socket(usb_plist=usb_a_plist, plist=usb_a_socket_plist);
+module multi_usb_socket(size=rpi_usb_a_size,
+                        usb_rows=2,
+                        color=metallic_yellow_silver,
+                        offsets=[0, 0, 1],
+                        plugged_usb_idxes=[],
+                        usb_plist=usb_a_plist,
+                        orientation="wlh",
+                        rotate_z_180=true,
+                        anchor=[0, 1, 1]) {
+
+  single_h = size[2] / usb_rows;
+
+  with_orientation(from="wlh", to=orientation, anchor=anchor, size=size) {
+    for (i = [0: usb_rows - 1]) {
+      let (z = i * single_h) {
+        translate([0, 0, z]) {
+          usb_socket(usb_plist=usb_plist,
+                     rotate_z_180=rotate_z_180,
+                     show_usb_plug=in_list(i, plugged_usb_idxes),
+                     anchor=[0, 0, 1],
+                     plist=["size", [size[0], size[1], single_h],
+                            "color", color,
+                            "offsets", offsets]);
+        }
+      }
+    }
+  }
+}
+// multi_usb_socket();
+// usb_socket(usb_plist=usb_a_plist, plist=usb_a_socket_plist);
