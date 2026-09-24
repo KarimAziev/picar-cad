@@ -5,6 +5,9 @@
   * License: GPL-3.0-or-later
  */
 
+use <functions.scad>
+use <transforms.scad>
+
 /**
   ─────────────────────────────────────────────────────────────────────────────
   calc_corner_rad
@@ -39,50 +42,60 @@ function calc_corner_rad(size, r, r_factor=0.3) =
   - `size`: Rectangle size as `[width, height]`.
   - `r`: Explicit corner radius. When `undef`, the radius comes from
     `r_factor`.
-  - `center`: If `true`, center the rectangle on the origin.
+  - `center`: Default X/Y placement when `anchor` is omitted or its X/Y
+    components are `undef`. If `true`, center on those axes; otherwise extend
+    positively from the origin (default `false`).
   - `fn`: Fragment count for circular corners.
   - `r_factor`: Fraction of the smaller dimension used when `r` is `undef`.
   - `side`: Rounded side selection. Supported values are `"all"`, `"top"`,
     `"left"`, `"right"`, `"bottom"`, `"top_left"`, `"top_right"`,
     `"bottom_left"`, or `"bottom_right"`. Corner names round only that corner.
+  - `anchor`: Per-axis placement as `[x, y, z]`. Each component is `1` to
+    extend positively, `0` to center, or `-1` to extend negatively. Defaults
+    to `[1, 1, 1]`, or `[0, 0, 1]` when `center=true`. Individual `undef`
+    components use the same defaults. The reference size is
+    `[size[0], size[1], 0]`, so Z anchoring leaves the shape at `z=0`.
 
   **Examples:**
   ```scad
   rounded_rect([40, 20], r=3, center=true, fn=48);
   rounded_rect([100, 10], r_factor=0.25, side="top");
+  rounded_rect([40, 20], r=3, anchor=[-1, 0, 1]);
   ```
  */
-module rounded_rect(size, r=undef, center=false, fn, r_factor=0.3, side) {
+module rounded_rect(size, r=undef, center=false, fn, r_factor=0.3, side, anchor) {
   w = size[0];
   h = size[1];
   rad = calc_corner_rad(size=size, r=r, r_factor=r_factor);
+  anchor = [with_default(anchor[0], center ? 0 : 1),
+            with_default(anchor[1], center ? 0 : 1),
+            with_default(anchor[2], 1)];
 
-  if (rad == 0) {
-    square(size, center=center);
-  } else if (is_string(side) && side != "all") {
-    rounded_rect_two(size=size,
-                     r=r,
-                     segments=is_undef(fn) ? 10 : fn,
-                     r_factor=r_factor,
-                     side=side,
-                     center=center,
-                     fn=fn);
-  }
-  else {
-    offst = center ? [-w/2, -h/2] : [0, 0];
-
-    hull() {
-      translate([rad, rad] + offst) {
-        circle(rad, $fn=fn);
+  with_anchor(anchor=anchor, size=[w, h, 0]) {
+    if (rad == 0) {
+      square(size);
+    } else if (is_string(side) && side != "all") {
+      rounded_rect_two(size=size,
+                       r=r,
+                       segments=is_undef(fn) ? 10 : fn,
+                       r_factor=r_factor,
+                       side=side,
+                       fn=fn);
+    } else {
+      hull() {
+        translate([rad, rad]) {
+          circle(rad, $fn=fn);
+        }
+        translate([w - rad, rad]) {
+          circle(rad, $fn=fn);
+        }
+        translate([rad, h - rad]) {
+          circle(rad, $fn=fn);
+        }
+        translate([w - rad, h - rad]) {
+          circle(rad, $fn=fn);
+        }
       }
-      translate([w - rad, rad] + offst) {
-        circle(rad, $fn=fn);
-      }
-      translate([rad, h - rad] + offst) {
-        circle(rad, $fn=fn);
-      }
-      translate([w - rad, h - rad] + offst)
-        circle(rad, $fn=fn);
     }
   }
 }
@@ -99,18 +112,26 @@ module rounded_rect(size, r=undef, center=false, fn, r_factor=0.3, side) {
   - `size`: Rectangle size as `[width, height]`.
   - `r`: Explicit corner radius. When `undef`, the radius comes from
     `r_factor`.
-  - `center`: If `true`, center the polygon on the origin.
+  - `center`: Default X/Y placement when `anchor` is omitted or its X/Y
+    components are `undef`. If `true`, center on those axes; otherwise extend
+    positively from the origin (default `false`).
   - `segments`: Number of points used for each rounded corner arc.
   - `r_factor`: Fraction of the smaller dimension used when `r` is `undef`.
   - `fn`: Optional polygon fragment hint.
   - `side`: Which edge pair receives the rounded corners: `"top"`, `"left"`,
     `"right"`, or `"bottom"`. A single corner can be selected with `"top_left"`,
     `"top_right"`, `"bottom_left"`, or `"bottom_right"`.
+  - `anchor`: Per-axis placement as `[x, y, z]`. Each component is `1` to
+    extend positively, `0` to center, or `-1` to extend negatively. Defaults
+    to `[1, 1, 1]`, or `[0, 0, 1]` when `center=true`. Individual `undef`
+    components use the same defaults. The reference size is
+    `[size[0], size[1], 0]`, so Z anchoring leaves the shape at `z=0`.
 
   **Examples:**
   ```scad
   rounded_rect_two([50, 20], r=4, center=true, segments=12, side="top");
   rounded_rect_two([80, 40], r_factor=0.25, side="left");
+  rounded_rect_two([50, 20], r=4, side="top_left", anchor=[0, -1, 1]);
   ```
  */
 module rounded_rect_two(size,
@@ -119,14 +140,16 @@ module rounded_rect_two(size,
                         segments=10,
                         r_factor=0.5,
                         fn,
-                        side = "top" // "top" | "left" | "right" | "bottom"
-                       ) {
+                        side="top",
+                        anchor) {
 
   w = size[0];
   h = size[1];
   rad = min(is_undef(r) ? (min(h, w)) * r_factor : r, w / 2, h / 2);
 
-  offst = center ? [-w/2, -h/2] : [0, 0];
+  anchor = [with_default(anchor[0], center ? 0 : 1),
+            with_default(anchor[1], center ? 0 : 1),
+            with_default(anchor[2], 1)];
 
   round_tl = side == "top" || side == "left" || side == "top_left";
   round_tr = side == "top" || side == "right" || side == "top_right";
@@ -149,8 +172,9 @@ module rounded_rect_two(size,
            round_bl ? [[0, rad]] : [[0, 0]],
            round_bl ? arc(rad, rad, 180, 270) : []);
 
-  translate(offst)
+  with_anchor(anchor=anchor, size=[w, h, 0]) {
     polygon(points = pts, $fn=fn);
+  }
 }
 
 /**

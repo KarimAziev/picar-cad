@@ -188,14 +188,11 @@ module cuboid(size,
          "Size should be number or [number, number, number]");
   size = is_num(size) ? [size, size, size] : size;
 
-  anchor = is_undef(anchor) ? [center ? 0 : 1, center ? 0 : 1, 1] : anchor;
-  align_x = is_undef(anchor[0]) ? (center ? 0 : 1) : anchor[0];
-  align_y = is_undef(anchor[1]) ? (center ? 0 : 1) : anchor[1];
-  align_z = is_undef(anchor[2]) ? 1 : anchor[2];
+  anchor = [with_default(anchor[0], center ? 0 : 1),
+            with_default(anchor[1], center ? 0 : 1),
+            with_default(anchor[2], 1)];
 
-  _align = [align_x, align_y, align_z];
-
-  with_anchor(anchor=_align, size=size) {
+  with_anchor(anchor=anchor, size=size) {
     if ((is_undef(r) || r == 0) && (is_undef(r_factor) || r_factor == 0)) {
       cube(size);
     } else if (use_minkowski) {
@@ -298,7 +295,7 @@ module notched_circle(d,
                       y_cutouts_n=0,
                       center=false,
                       convexity=1,
-                      fn=360) {
+                      fn=40) {
   square_center_x = notched_circle_square_center_x(r=d / 2, cutout_w=cutout_w);
   linear_extrude(h=h, center=center, convexity=convexity) {
     difference() {
@@ -677,15 +674,73 @@ module tapered_box(base_size,
     }
   }
 }
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  cyl
+  ─────────────────────────────────────────────────────────────────────────────
 
-module cyl(h, d, d1, d2, $fn=20, anchor=[0, 0, 1]) {
+  Create a cylinder, cone, or frustum with orientation and per-axis anchoring.
+
+  **Parameters:**
+  - `h`: Axial height (default `0`). Supply a positive value for a solid.
+  - `d`: Common diameter used for either omitted end diameter. If `undef`,
+    falls back to `d1`, then `d2`. At least one diameter must be numeric.
+  - `d1`: Diameter at the bottom before rotation (`z=0`). Overrides `d` for
+    that end; defaults to the resolved `d`.
+  - `d2`: Diameter at the top before rotation (`z=h`). Overrides `d` for
+    that end; defaults to the resolved `d`. Set either end to `0` for a cone.
+  - `$fn`: Circumference fragment count (default `20`). Use `0` to let
+    OpenSCAD determine resolution from `$fa` and `$fs`.
+  - `anchor`: Placement on the final X/Y/Z axes (default `[0, 0, 1]`).
+    Each component is `1` to extend positively from the origin, `0` to
+    center, or `-1` to extend negatively. Explicit `undef`, or an `undef`
+    component, uses the corresponding default from `[1, 1, 1]`.
+  - `orientation`: Logical width/length/height on X/Y/Z, respectively
+    (default `"wlh"`; `undef` also uses `"wlh"`). Both width and length
+    are the larger resolved end diameter. The direction from `d1` to `d2` is:
+    - `"wlh"` or `"lwh"`: positive Z.
+    - `"whl"`: negative Y; `"lhw"`: positive Y.
+    - `"hlw"`: negative X; `"hwl"`: positive X.
+
+  **Behavior:**
+  Anchoring uses the rotated reference box based on the larger end diameter
+  and `h`, rather than either end face alone. The default anchor centers this
+  box on X/Y and places its minimum Z at `0` in every orientation.
+
+  A single supplied diameter produces a cylinder. Unequal end diameters
+  produce a taper, so orientations with opposite axial directions also
+  reverse which end is wider.
+
+  **Examples:**
+  ```scad
+  // Vertical cylinder centered on X/Y, from z=0 to z=10.
+  cyl(h=10, d=4);
+
+  // Horizontal cylinder from x=0 to x=10, centered on Y/Z.
+  cyl(h=10, d=4, orientation="hwl", anchor=[1, 0, 0]);
+
+  // Frustum with its wide end at y=0 and narrow end at y=10.
+  cyl(h=10, d1=8, d2=4, orientation="lhw", anchor=[0, 1, 0]);
+
+  // Cone centered on all axes, with its tip toward positive Z.
+  cyl(h=10, d1=8, d2=0, anchor=[0, 0, 0], $fn=48);
+  ```
+  */
+module cyl(h=0, d, d1, d2, $fn=20, anchor=[0, 0, 1], orientation ="wlh") {
+  assert(is_num(h), "cyl: h (height) must be provided");
+  assert(is_num(d) || is_num(d1) || is_num(d2),
+         "cyl: d, d1 or d2 must be provided");
+
   d = with_default(with_default(d, d1), d2);
   d1 = with_default(d1, d);
   d2 = with_default(d2, d);
 
   max_d = max(d2, d1);
 
-  with_anchor(anchor=anchor, size=[max_d, max_d, h], centered=true) {
+  with_orientation(from="wlh",
+                   to=orientation,
+                   anchor=anchor,
+                   size=[max_d, max_d, h]) {
     cylinder(d1=d1, d2=d2, h=h);
   }
 }
