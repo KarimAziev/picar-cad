@@ -338,6 +338,43 @@ function plist_merge(plist_a, plist_b) =
 
 /**
    ─────────────────────────────────────────────────────────────────────────────
+   plist_merge_all
+   ─────────────────────────────────────────────────────────────────────────────
+
+   Merge a list of property lists, giving later lists precedence.
+
+   **Parameters:**
+
+   `plists`: List of property lists to merge in order.
+
+   **Returns:**
+
+   A property list formed by applying `plist_merge` from left to right. Existing
+   keys keep their positions, and new keys are appended in their original order.
+   Values, including nested lists and `undef`, are replaced as a whole.
+   An empty input returns `[]`; a single property list is returned unchanged.
+
+   **Examples:**
+
+   ```scad
+   plist_merge_all([["a", 1, "b", 2],
+                    ["b", 20, "c", 30],
+                    ["a", 10, "d", 40]]);
+   // -> ["a", 10, "b", 20, "c", 30, "d", 40]
+
+   plist_merge_all([]); // -> []
+   ```
+*/
+function plist_merge_all(plists) =
+  len(plists) == 0 ? [] : _plist_merge_all(plists, 1, plists[0]);
+
+function _plist_merge_all(plists, idx, result) =
+  idx >= len(plists)
+  ? result
+  : _plist_merge_all(plists, idx + 1, plist_merge(result, plists[idx]));
+
+/**
+   ─────────────────────────────────────────────────────────────────────────────
    plist_maybe_from_percent
    ─────────────────────────────────────────────────────────────────────────────
 
