@@ -377,38 +377,6 @@ module rounded_rect_recess(size,
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
-  cube_center_y
-  ─────────────────────────────────────────────────────────────────────────────
-
-  Place a cube so it is centered on Y while still starting at `z = 0`.
-
-  **Parameters:**
-  - `size`: Cube size, either a scalar or `[x, y, z]`.
- */
-module cube_center_y(size) {
-  translate([0, -(is_num(size) ? size : size[1]) / 2, 0]) {
-    cube(size);
-  }
-}
-
-/**
-  ─────────────────────────────────────────────────────────────────────────────
-  cube_center_x
-  ─────────────────────────────────────────────────────────────────────────────
-
-  Place a cube so it is centered on X while still starting at `z = 0`.
-
-  **Parameters:**
-  - `size`: Cube size, either a scalar or `[x, y, z]`.
- */
-module cube_center_x(size) {
-  translate([-(is_num(size) ? size : size[0]) / 2, 0, 0]) {
-    cube(size);
-  }
-}
-
-/**
-  ─────────────────────────────────────────────────────────────────────────────
   cube_border
   ─────────────────────────────────────────────────────────────────────────────
 
