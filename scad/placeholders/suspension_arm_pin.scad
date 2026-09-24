@@ -111,11 +111,11 @@ module suspension_arm_pin(d,
           _main();
 
           translate([0, 0, z]) {
-            ring(outer_d=d + 1, d=groove_d, h=groove_w);
+            ring(od=d + 1, d=groove_d, h=groove_w);
           }
           if (is_all) {
             translate([0, 0, z_top]) {
-              ring(outer_d=d + 1, d=groove_d, h=groove_w);
+              ring(od=d + 1, d=groove_d, h=groove_w);
             }
           }
         }

@@ -572,13 +572,13 @@ module gearmotor_bracket(plist,
         translate(concat(take(bracket_gearbox_bolt_right_center, 2),
                          [resolved_bracket_thickness])) {
           ring(d=mount_bolt_d,
-               outer_d=mount_cbore_d,
+               od=mount_cbore_d,
                h=front_mount_ear_y_min - 0.1);
         }
         translate(concat(take(bracket_gearbox_bolt_left_center, 2),
                          [resolved_bracket_thickness])) {
           ring(d=mount_bolt_d,
-               outer_d=mount_cbore_d,
+               od=mount_cbore_d,
                h=rear_mount_ear_y_min - 0.2);
         }
         translate([-motor_outer_shaft_x_spacing, 0, 0]) {

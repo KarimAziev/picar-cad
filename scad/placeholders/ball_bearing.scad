@@ -69,7 +69,7 @@ module ball_bearing(bore_d,
 
       translate([0, 0, -0.1]) {
         ring(d=shoulder_d,
-             outer_d=od,
+             od=od,
              h=h,
              color=rubber_seal_color);
       }
@@ -102,16 +102,16 @@ module ball_bearing(bore_d,
                  h = ring_h) {
               translate([0, 0, h + 0.1]) {
                 ring(d=d,
-                     outer_d2=outer_recess_d,
-                     outer_d1=outer_recess_d / 2,
+                     od2=outer_recess_d,
+                     od1=outer_recess_d / 2,
                      h=h);
               }
 
               translate([0, 0, h - 0.1]) {
                 rotate([180, 0, 0]) {
                   ring(d=d,
-                       outer_d2=outer_recess_d,
-                       outer_d1=0,
+                       od2=outer_recess_d,
+                       od1=0,
                        h=h);
                 }
               }

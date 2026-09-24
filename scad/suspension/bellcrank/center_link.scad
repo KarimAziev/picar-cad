@@ -44,7 +44,7 @@ module center_link(length=steering_center_link_len,
         translate([bar_len / 2 + boss_od / 2,
                    0,
                    center_z_bar ? -boss_h / 2 : 0]) {
-          ring(outer_d=boss_od, d=hole_d, h=boss_h, fn=$preview ? 30 : 360);
+          ring(od=boss_od, d=hole_d, h=boss_h, fn=$preview ? 30 : 360);
         }
       }
     }

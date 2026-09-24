@@ -68,14 +68,14 @@ module wheel_hub_base(d=wheel_hub_outer_d,
     maybe_color(color) {
       union() {
         if (!spacer_at_top) {
-          ring(outer_d=d, d=spacer_d, h=spacer_h, fn=fn);
+          ring(od=d, d=spacer_d, h=spacer_h, fn=fn);
           translate([0, 0, spacer_h]) {
-            ring(outer_d=d, d=bearing_d + bearing_tolerance, h=base_h, fn=fn);
+            ring(od=d, d=bearing_d + bearing_tolerance, h=base_h, fn=fn);
           }
         } else {
-          ring(outer_d=d, d=bearing_d, h=base_h, fn=fn);
+          ring(od=d, d=bearing_d, h=base_h, fn=fn);
           translate([0, 0, base_h]) {
-            ring(outer_d=d, d=spacer_d, h=spacer_h, fn=fn);
+            ring(od=d, d=spacer_d, h=spacer_h, fn=fn);
           }
         }
 

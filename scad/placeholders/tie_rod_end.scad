@@ -151,13 +151,13 @@ module tie_rod_spherical_bushing(od,
 
       if (flat_d > 0 && flat_d > d) {
         translate([0, 0, -h / 2]) {
-          ring(d=d, outer_d=flat_d, h=h, fn=$fn, color=metallic_silver_9);
+          ring(d=d, od=flat_d, h=h, fn=$fn, color=metallic_silver_9);
         }
         if (is_num(cap_d) && is_num(cap_h)) {
           mirror_copy([0, 0, 1]) {
             translate([0, 0, -h / 2]) {
               ring(d=d,
-                   outer_d=cap_d,
+                   od=cap_d,
                    h=cap_h,
                    fn=$fn,
                    color=metallic_silver_9);
@@ -331,7 +331,7 @@ module tie_rod_end(eye_od=11.2,
                 translate([shank_translation_x, shank_translation_y, 0]) {
                   rotate([shank_rotation_x, shank_rotation_y, 0]) {
                     translate([0, 0, -shank_len / 2 - notch_w / 2]) {
-                      ring(outer_d=shank_od,
+                      ring(od=shank_od,
                            d=shank_bolt_d,
                            h=shank_len + notch_w,
                            fn=fn);

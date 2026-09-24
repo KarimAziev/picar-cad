@@ -427,9 +427,9 @@ module cube_border(size,
   - `d`: Inner diameter.
   - `d1`: Optional inner bottom diameter for a tapered inner cut.
   - `d2`: Optional inner top diameter for a tapered inner cut.
-  - `outer_d`: Outer diameter.
-  - `outer_d1`: Optional outer bottom diameter for a tapered outer wall.
-  - `outer_d2`: Optional outer top diameter for a tapered outer wall.
+  - `od`: Outer diameter.
+  - `od1`: Optional outer bottom diameter for a tapered outer wall.
+  - `od2`: Optional outer top diameter for a tapered outer wall.
   - `h`: Ring height.
   - `fn`: Fragment count for both cylinders.
   - `color`: Optional color value.
@@ -439,9 +439,9 @@ module cube_border(size,
 module ring(d,
             d1,
             d2,
-            outer_d,
-            outer_d1,
-            outer_d2,
+            od,
+            od1,
+            od2,
             h,
             fn=30,
             color,
@@ -451,10 +451,10 @@ module ring(d,
     difference() {
       if (!whole_color) {
         maybe_color(color) {
-          cylinder(d=outer_d, h=h, $fn=fn, outer_d1=d1, outer_d2=d2);
+          cylinder(d=od, h=h, $fn=fn, d1=d1, d2=d2);
         }
       } else {
-        cylinder(d=outer_d, d1=outer_d1, d2=outer_d2, h=h, $fn=fn);
+        cylinder(d=od, d1=od1, d2=od2, h=h, $fn=fn);
       }
 
       translate([0, 0, -0.05]) {

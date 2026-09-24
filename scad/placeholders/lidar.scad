@@ -181,7 +181,7 @@ module lidar(plist=rplidar_c1_plist,
         if (ring_h > 0 && ring_w > 0) {
           translate([0, 0, total_h - ring_h]) {
             let (d = top_round_d / 2) {
-              ring(outer_d=d, d=d - ring_w * 2, h=ring_h * 2, $fn=40);
+              ring(od=d, d=d - ring_w * 2, h=ring_h * 2, $fn=40);
             }
           }
         }

@@ -322,7 +322,8 @@ module gearbox(plist,
   mount_bolt_d = plist_get("mount_bolt_d", params);
   mount_cbore_d = plist_get("mount_cbore_d", params);
   mount_cbore_h = plist_get("mount_cbore_h", params);
-  motor_outer_shaft_x_spacing = plist_get("motor_outer_shaft_x_spacing", params);
+  motor_outer_shaft_x_spacing = plist_get("motor_outer_shaft_x_spacing",
+                                          params);
   side_ears_poses = plist_get("side_ears_poses", params);
   side_ear_thickness = plist_get("side_ear_thickness", params);
   side_ear_bolt_d = plist_get("side_ear_bolt_d", params);
@@ -476,7 +477,7 @@ module gearbox(plist,
         }
         // drive shaft bearing holder
         translate([0, outer_shaft_y_center, -bearing_boss_h]) {
-          ring(outer_d=gearbox_shaft_boss_d,
+          ring(od=gearbox_shaft_boss_d,
                d=bearing_od,
                h=thickness + bearing_boss_h * 2);
         }
@@ -507,7 +508,7 @@ module gearbox(plist,
     if (show_bearing) {
       color(metallic_silver_4, alpha=1) {
         translate([0, outer_shaft_y_center, thickness]) {
-          ring(outer_d=bearing_od,
+          ring(od=bearing_od,
                d=outer_shaft_d,
                h=bearing_w);
         }

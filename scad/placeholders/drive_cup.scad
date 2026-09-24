@@ -76,7 +76,7 @@ module drive_cup_base(plist, color) {
 
   render() {
     difference() {
-      ring(outer_d=od, d=d, h=h, color=color);
+      ring(od=od, d=d, h=h, color=color);
 
       if (bolt_d && bolt_n > 0) {
         for (i = [0 : bolt_n - 1]) {
@@ -112,7 +112,7 @@ module drive_cup_dogbone_cup(plist, color) {
                                           total=od - 0.1);
 
   difference() {
-    ring(outer_d=od, d=hole_d, h=h, color=color);
+    ring(od=od, d=hole_d, h=h, color=color);
     if (cutout_w && cutout_h) {
       translate([0, 0, cutout_h / 2 + h - cutout_h]) {
         cube([cutout_w, od, cutout_h + 0.1], center=true);

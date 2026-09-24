@@ -116,7 +116,7 @@ module front_upper_suspension_holder(l=front_upper_suspension_holder_l,
           translate([pin_hole_spacing / 2,
                      pin_d / 2,
                      -barrel_h + (barrel_h - thickness)]) {
-            ring(outer_d=barrel_d,
+            ring(od=barrel_d,
                  d=pin_d,
                  h=barrel_h,
                  fn=$preview ? 100 : 360);
