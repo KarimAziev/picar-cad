@@ -122,7 +122,7 @@ show_rear_unused_shaft                      = true;
 show_rear_differential_envelope             = false;
 show_middle_chassis_motor_slots             = true;
 
-show_middle_chassis                         = false;
+show_middle_chassis                         = true;
 show_middle_chassis_components              = true;
 show_middle_chassis_power_case              = true;
 show_middle_chassis_lipo_packs              = true;

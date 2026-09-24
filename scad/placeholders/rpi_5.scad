@@ -25,7 +25,7 @@ use <rpi_5_grid.scad>
 use <servo_driver_hat.scad>
 use <standoff.scad>
 
-show_standoffs              = false;
+show_standoffs              = true;
 show_ai_hat                 = false;
 show_motor_driver_hat       = false;
 show_servo_driver_hat       = false;

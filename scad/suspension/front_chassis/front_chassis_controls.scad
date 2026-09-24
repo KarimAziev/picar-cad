@@ -64,6 +64,7 @@ module front_chassis_rpi(slot_mode=false) {
           rotate_z_180=front_rpi_rotate_z_180,
           slot_thickness=front_chassis_thickness,
           bolt_visible_h=front_chassis_thickness - chassis_counterbore_h,
+          show_standoffs=true,
           slot_mode=slot_mode);
   }
 }
