@@ -13,6 +13,7 @@ use <../lib/wire.scad>
 use <../placeholders/atc_ato_blade_fuse_holder.scad>;
 use <../placeholders/atm_fuse_holder/atm_fuse_holder.scad>
 use <../placeholders/bolt.scad>
+use <../placeholders/lidar.scad>
 use <../placeholders/lipo_pack.scad>
 use <../placeholders/perf_board.scad>
 use <../placeholders/rpi_5.scad>
@@ -50,7 +51,9 @@ module slot_placeholders_assembly(plist,
                                   show_standoff=true,
                                   show_perf_board=true,
                                   show_atm_fuse_holders=true,
-                                  show_smd_battery_holder=true) {
+                                  show_lidar=true,
+                                  show_smd_battery_holder=true,
+                                  show_standoffs=true) {
   bolt_visible_h = with_default(bolt_visible_h, 0);
   placeholder = plist_get("placeholder", plist);
   if (show_voltmeter && placeholder == "voltmeter") {
@@ -64,6 +67,11 @@ module slot_placeholders_assembly(plist,
                                 show_bolt=show_bolt,
                                 plist=plist,
                                 stand_up=true);
+  } else if (show_lidar && placeholder == "lidar") {
+    lidar(plist=plist,
+          show_standoffs=show_standoffs,
+          parent_thickness=thickness,
+          anchor_z_to_base_height=false);
   } else if (show_xt90e && placeholder == "xt90e_m") {
     let (mounting_panel_size = plist_get("placeholder_size",
                                          plist,
