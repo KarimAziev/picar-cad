@@ -27,7 +27,7 @@ show_gearbox                  = true;
 show_motor                    = true;
 show_bearing                  = true;
 show_drive_shaft              = true;
-show_mount_bolts              = false;
+show_mount_bolts              = true;
 show_nuts                     = true;
 show_bracket                  = true;
 show_shaft_seeve              = true;
@@ -39,16 +39,6 @@ show_encoder_magnet           = true;
 show_min_parent_surface_width = false;
 
 debug_circle_color            = matte_black;
-
-bracket_thickness             = 6;
-
-gearbox_bracket_bolt_d        = m3_hole_dia;
-gearbox_bracket_bolt_pad_x    = 3;
-gearbox_bracket_bolt_pad_y    = 3;
-gearbox_bracket_ear_bolt_pad  = 3;
-gearbox_bracket_corner_r      = 1;
-gearbox_bracket_fillet_x_w    = 3;
-gearbox_bracket_fillet_y_w    = 3;
 
 function lerp(a, b, t) = a*(1-t) + b*t;
 

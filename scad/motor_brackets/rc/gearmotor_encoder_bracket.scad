@@ -1,12 +1,16 @@
 /**
   * Module: Removable encoder mount at the gearmotor's unused shaft end.
   * Uses the motor bracket's native shaft-centered coordinates.
+  *
+  * Author: Karim Aziiev <karim.aziiev@gmail.com>
+  * License: GPL-3.0-or-later
   */
 include <../../steering_params.scad>
 
 use <../../lib/functions.scad>
 use <../../lib/plist.scad>
 use <../../lib/shapes3d.scad>
+use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
 use <../../placeholders/bolt.scad>
 use <../../placeholders/motors/rc/gearbox.scad>
@@ -166,13 +170,12 @@ module gearmotor_encoder_bracket(params,
   wall_y = plist_get("wall_y", params);
   wall_t = plist_get("side_thickness", params);
   foot_r = plist_get("foot_r", params);
-  foot_x = plist_get("foot_x", params);
   wall_w = plist_get("pcb_w", params) + 2 * plist_get("pcb_padding", params);
   bolt_d = plist_get("mount_bolt_d", params);
   holes = plist_get("mount_holes", params);
   pcb_back = plist_get("pcb_back", params);
   pcb_rotation = plist_get("rotated", params) ? 90 : 0;
-
+  echo("bolt_d", bolt_d);
   translate(shift) {
     if (slot_mode) {
       for (p = holes) {
@@ -180,7 +183,7 @@ module gearmotor_encoder_bracket(params,
           cylinder(d=bolt_d, h=base_h + foot_h + 0.2, $fn=32);
           cylinder(d=plist_get("nut_pocket_d", params),
                    h=plist_get("nut_pocket_h", params) + 0.1,
-                   $fn=6);
+                   $fn=300);
         }
       }
     } else {
@@ -217,8 +220,12 @@ module gearmotor_encoder_bracket(params,
               }
             }
             for (p = holes) {
-              translate([p[0], p[1], base_h - 0.1]) {
-                cylinder(d=bolt_d, h=foot_h + 0.2, $fn=32);
+              translate([p[0], p[1], base_h]) {
+
+                counterbore(d=bolt_d,
+                            h=foot_h,
+                            teardrop_angle=45,
+                            teardrop_both_sides=true);
               }
             }
             translate([pcb_back[0], wall_y, pcb_back[2]]) {

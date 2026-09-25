@@ -1329,3 +1329,13 @@ multi_power_case_size                             = plist_get("size",
                                                               multi_power_case_props);
 
 chassis_body_min_w                                = multi_power_case_size[0];
+
+bracket_thickness                                 = 6;
+
+gearbox_bracket_bolt_d                            = m3_hole_dia;
+gearbox_bracket_bolt_pad_x                        = 3;
+gearbox_bracket_bolt_pad_y                        = 3;
+gearbox_bracket_ear_bolt_pad                      = 3;
+gearbox_bracket_corner_r                          = 1;
+gearbox_bracket_fillet_x_w                        = 3;
+gearbox_bracket_fillet_y_w                        = 3;
