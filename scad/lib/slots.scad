@@ -587,7 +587,8 @@ module four_corner_counterbores(size,
   - `plist`: Property list containing the same keys accepted by `rect_slot()`.
   - `center`: Forwarded to `rect_slot()`.
  */
-module rect_slot_from_plist(plist, center=false) {
+module rect_slot_from_plist(plist,
+                            center=false) {
   plist = with_default(plist, []);
   h = plist_get("h", plist);
   recess_h = plist_get("recess_h", plist);
@@ -672,17 +673,24 @@ module four_corner_counterbores_from_plist(plist, center=true) {
   - `plist`: Property list containing the same keys accepted by `counterbore()`.
   - `center`: Forwarded to `counterbore()`.
  */
-module counterbore_from_plist(plist, center=true) {
+module counterbore_from_plist(plist,
+                              bolt_d_key="d",
+                              h_key="h",
+                              bore_d_key="bore_d",
+                              bore_h_key="bore_h",
+                              default_sink=false,
+                              default_reverse=false,
+                              center=true) {
   plist = with_default(plist, []);
-  h = plist_get("h", plist);
-  d = plist_get("d", plist);
-  bore_d = plist_get("bore_d", plist);
-  bore_h = plist_get("bore_h", plist);
-  sink = plist_get("sink", plist, false);
+  h = plist_get(h_key, plist);
+  d = plist_get(bolt_d_key, plist);
+  bore_d = plist_get(bore_d_key, plist);
+  bore_h = plist_get(bore_h_key, plist);
+  sink = plist_get("sink", plist, default_sink);
   fn = plist_get("fn", plist, 60);
   no_bore = plist_get("no_bore", plist, false);
   autoscale_step = plist_get("autoscale_step", plist,  0.1);
-  reverse = plist_get("reverse", plist, false);
+  reverse = plist_get("reverse", plist, default_reverse);
   teardrop_angle = plist_get("teardrop_angle", plist);
   teardrop_both_sides = plist_get("teardrop_both_sides", plist, false);
   print_sink_angle = plist_get("print_sink_angle", plist, false);
