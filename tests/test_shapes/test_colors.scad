@@ -3,7 +3,7 @@
  *
  * The left specimen in each cell inherits blue through color=undef; the
  * right specimen sets orange directly. Ring's outer-only mode is included.
-*
+ *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */
