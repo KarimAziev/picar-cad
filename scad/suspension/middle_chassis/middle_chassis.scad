@@ -27,10 +27,14 @@ use <../../placeholders/lipo_pack.scad>
 
 show_middle_chassis               = true;
 show_middle_chassis_components    = true;
-show_middle_chassis_power_case    = true;
+show_middle_chassis_power_case    = false;
 show_middle_chassis_lipo_packs    = true;
 show_middle_chassis_lidar         = true;
 show_middle_chassis_lidar_support = true;
+show_lidar_standoffs              = true;
+
+lidar_rotate_z_180                = true;
+lidar_orientation                 = "wlh";
 
 module middle_chassis(power_case_plist=multi_lipo_packs_case,
                       color=white_off_1,
@@ -67,6 +71,9 @@ module middle_chassis_assembly(show_middle_chassis=show_middle_chassis,
                                show_middle_chassis_lidar=show_middle_chassis_lidar,
                                show_middle_chassis_lidar_support=show_middle_chassis_lidar_support,
                                power_case_plist=multi_lipo_packs_case,
+                               show_lidar_standoffs=show_lidar_standoffs,
+                               lidar_orientation=lidar_orientation,
+                               lidar_rotate_z_180=lidar_rotate_z_180,
                                color=white_off_1,
                                anchor=[0, -1, 1]) {
 
@@ -80,6 +87,8 @@ module middle_chassis_assembly(show_middle_chassis=show_middle_chassis,
   lipo_case_h = size[2];
 
   lidar_mount_h = lidar_h - lipo_case_h;
+
+  standoff_min_h = lidar_mount_h - plist_get("base_h", rplidar_c1_plist);
 
   with_anchor(anchor=anchor,
               size=size,
@@ -101,15 +110,19 @@ module middle_chassis_assembly(show_middle_chassis=show_middle_chassis,
           if (show_middle_chassis_lidar_support) {
             color(noir_1, alpha=1) {
               cuboid(size=concat(plist_get("size", rplidar_c1_plist),
-                                 [lidar_mount_h - plist_get("base_h", rplidar_c1_plist)]),
+                                 [lidar_mount_h
+                                  - plist_get("base_h", rplidar_c1_plist)]),
                      anchor=[0, 0, 1]);
             }
           }
-
           if (show_middle_chassis_lidar) {
-            translate([0, 0,  lidar_mount_h]) {
-              lidar(plist=rplidar_c1_plist, anchor=[0, 0, -1]);
-            }
+            lidar(plist=rplidar_c1_plist,
+                  target_h=standoff_min_h,
+                  anchor=[0, 0, 1],
+                  anchor_z_to_base_height=false,
+                  orientation=lidar_orientation,
+                  rotate_z_180=lidar_rotate_z_180,
+                  show_standoffs=show_lidar_standoffs);
           }
         }
       }

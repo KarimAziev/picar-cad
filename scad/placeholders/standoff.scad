@@ -11,6 +11,9 @@ include <../parameters.scad>
 use <../lib/functions.scad>
 use <../lib/placement.scad>
 use <../lib/plist.scad>
+use <../lib/shapes3d.scad>
+use <../lib/slots.scad>
+use <../lib/transforms.scad>
 use <bolt.scad>
 
 function standoff_heights(min_h,
@@ -36,9 +39,9 @@ function calc_standoff_params(d, min_h) =
   [found, standoffs];
 
 function standoff_real_h(min_h, d) =
-  let (standoffs=calc_standoff_params(min_h=standoff_h, d=bolt_d),
-       yy = y * y)
-  sqrt(xx + yy);
+  let (params=calc_standoff_params(min_h=min_h, d=d),
+       heights = params[1])
+  sum(heights);
 
 module standoff(thread_d=3,
                 thread_h=5,
@@ -302,8 +305,70 @@ module standoff_grid(sizes=[[3, 5.20, 5, [20, 15, 10, 9, 8, 6, 5], 6],
   }
 }
 
-standoff_grid();
+module four_corner_standoffs(h,
+                             parent_thickness=0,
+                             slot_mode=false,
+                             bolt_d=0,
+                             cbore_h=0,
+                             cbore_d=0,
+                             bolt_spacing,
+                             thread_at_top=true,
+                             sink=true,
+                             offsets_xy=[0, 0],
+                             z_anchor=1) {
 
+  standoffs_real_h = standoff_real_h(min_h=h, d=bolt_d);
+
+  show_bolt = !is_undef(parent_thickness);
+  offsets_xy = with_default(offsets_xy, [0, 0]);
+  offset_x = with_default(offsets_xy[0], 0);
+  offset_y = with_default(offsets_xy[1], 0);
+
+  with_anchor(anchor=[1, 1, z_anchor],
+              size=[0, 0, standoffs_real_h],
+              centered=true) {
+    translate([offset_x, offset_y, 0]) {
+      four_corner_children(size=bolt_spacing,
+                           center=true) {
+        if (slot_mode) {
+          counterbore(h=parent_thickness,
+                      d=bolt_d,
+                      sink=sink,
+                      bore_d=cbore_d,
+                      reverse=thread_at_top,
+                      bore_h=cbore_h);
+        } else {
+          standoffs_stack(d=bolt_d,
+                          bolt_h=parent_thickness,
+                          min_h=h,
+                          thread_at_top=thread_at_top,
+                          show_bolt=show_bolt,
+                          bolt_visible_h=parent_thickness);
+        }
+      }
+    }
+  }
+}
+
+// standoff_grid();
+
+four_corner_standoffs(h=20,
+                      parent_thickness=4,
+                      thread_at_top=false,
+                      z_anchor=1,
+                      bolt_d=2.5,
+                      bolt_spacing=[43.0, 43.0]);
+difference() {
+  cuboid([50.0, 50.0, 4]);
+  four_corner_standoffs(h=20,
+                        parent_thickness=4,
+                        cbore_d=7,
+                        cbore_h=2,
+                        z_anchor=1,
+                        slot_mode=true,
+                        bolt_d=2.5,
+                        bolt_spacing=[43.0, 43.0]);
+}
 // nut_pos = 0;
 // standoff(show_bolt=true,
 //          thread_at_top=false,
