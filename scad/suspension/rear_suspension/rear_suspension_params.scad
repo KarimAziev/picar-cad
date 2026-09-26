@@ -67,9 +67,32 @@ rear_suspension_chassis_transition_len     = 10;
 
 // Gap from the sleeve's outer end to the maintenance-hole center along +Y.
 // Without a sleeve, use the start of the output shaft's end flat.
-rc_motor_maintenance_hole_dist             = 16.9;
+rc_motor_maintenance_hole_dist             = -1.8;
 
 // Sides refer to the mounted bracket in chassis coordinates, after rotation.
-panel_stack_side                          = "auto"; // auto | left (-X) | right (+X)
+panel_stack_side                           = "auto"; // auto | left (-X) | right (+X)
 panel_stack_side_x_dist_from_motor         = 3; // edge-to-edge bracket/panel gap
-panel_stack_y_offset                      = 0; // from bracket footprint center, along chassis Y
+panel_stack_y_offset                       = 0; // from bracket footprint center, along chassis Y
+
+// Each entry is independent: type = control | fuse | stack, side = left | right
+// | auto. Auto chooses the smaller occupied side; later entries can use the
+// opposite side automatically. Repeated sides are placed successively outward.
+rear_panel_specs                           = [["type", "control", "side", "auto", "orientation", "wlh"],
+                                              ["type", "fuse", "side", "auto", "orientation", "lwh"]];
+
+// Optional per-panel keys: gap (edge-to-edge), y_offset (from motor center).
+// Set the power case to undef for the lower deck alone; [] removes all panels.
+// Move controls toward the suspension, within the existing full-width deck.
+// The low panel may remain beneath the case; tall levers drive the clearance.
+// Combined control/fuse stacks remain beside the motor. Per-entry outside_case overrides this.
+rear_control_outside_case                  = true;
+rear_control_case_gap                      = 3;
+
+rear_power_case_plist                      = multi_lipo_packs_case;
+rear_power_case_y_offset                   = -4;
+rear_power_case_clearance                  = 3;
+rear_power_case_headroom                   = 2; // beneath the provisional cover, above the pack
+rear_power_standoff_clearance              = 2;
+rear_lidar_plist                           = rplidar_c1_plist;
+rear_lidar_lid_thickness                   = 3;
+rear_lidar_standoff_h                      = 13;

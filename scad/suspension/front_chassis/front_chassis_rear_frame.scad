@@ -33,8 +33,8 @@ use <front_chassis_joint.scad>
 front_chassis_rear_frame_debug = true;
 show_front_controls_slots      = true;
 
-function front_chassis_pts() =
-  let (half_of_main_w = front_chassis_rear_frame_w / 2)
+function front_chassis_pts(width=front_chassis_rear_frame_w) =
+  let (half_of_main_w = width / 2)
   [[0, y_front_chassis_rear_frame_joint_1_start],
    [front_frame_x_end, y_front_chassis_rear_frame_joint_1_start],
    [half_of_main_w, y_front_chassis_rear_frame_main_start],
@@ -44,9 +44,14 @@ function front_chassis_pts() =
 module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
                                 color=white_smoke_1,
                                 debug_color=green_2,
-                                debug_font="Gill Sans:style=Bold") {
-
-  pts = front_chassis_pts();
+                                debug_font="Gill Sans:style=Bold",
+                                width=front_chassis_rear_frame_w) {
+  assert(width >= front_chassis_required_width(), "Frame width cannot exclude the front hardware");
+  rail_w = width - (front_chassis_joint_bolt_d + front_chassis_joint_bolt_pad) * 2;
+  edge_x = width / 2 - front_chassis_joint_bolt_pad - front_chassis_joint_bolt_d / 2;
+  bolt_xs = [for (i = [0:suspension_chassis_joint_wide_bolt_cols-1])
+    -edge_x + i * 2 * edge_x / (suspension_chassis_joint_wide_bolt_cols-1)];
+  pts = front_chassis_pts(width);
 
   module _debug(rotation) {
     let (x_size = polygon_x_len(pts) * 2,
@@ -82,7 +87,7 @@ module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
         }
         // remove rounded part at the end
         translate([0, front_chassis_y_joint_2_end, 0]) {
-          cuboid(size=[front_chassis_rear_frame_w,
+          cuboid(size=[width,
                        front_chassis_rear_frame_corner_r,
                        front_chassis_thickness],
                  anchor=[0, 1, 1]);
@@ -111,10 +116,10 @@ module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
 
     translate([0, front_chassis_y_joint_2_end + joint_l, 0]) {
       front_chassis_joint_female(color=color,
-                                 w=chassis_joint_wide_w,
-                                 rail_w=chassis_joint_wide_rail_w,
-                                 bolt_xs=chassis_joint_wide_bolt_xs,
-                                 pin_spacing=chassis_joint_wide_pin_spacing,
+                                 w=width,
+                                 rail_w=rail_w,
+                                 bolt_xs=bolt_xs,
+                                 pin_spacing=rail_w / 2,
                                  include_pin_holes=true,
                                  slot_mode=true,
                                  root_side=1);

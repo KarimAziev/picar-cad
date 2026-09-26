@@ -1292,15 +1292,15 @@ front_rpi_rotate_z_180                            = true; // 180-degree turn in 
 front_chassis_rear_frame_corner_r                 = 4;
 
 lipo_pack_base_pl                                 = ["size", [lipo_pack_width, lipo_pack_length, lipo_pack_height],
-                                                     "orientation", "lhw",
+                                                     "orientation", "lwh",
                                                      "top_cover", ["bg", "gold",
-                                                                   "texts", [["text", "2S",
+                                                                   "texts", [["text", "3S",
                                                                               "size", 10,
                                                                               "font", "DSEG14 Classic:style=Bold"]],
                                                                    "props", ["halign", "center", "color", "#28282B"]],
                                                      "side_cover", ["bg", "silver"]];
 
-lipo_packs                                        = [lipo_pack_base_pl, lipo_pack_base_pl];
+lipo_packs                                        = [lipo_pack_base_pl];
 
 basic_vent_spec                                   = ["vent_h", 2,
                                                      "vent_w", "20%",

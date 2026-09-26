@@ -62,7 +62,7 @@ motor = changed ? plist_put("gearbox", plist_put("mount_ear_x_dist", 30,
                      plist_get("gearbox", motor_plist)), motor_plist) : motor_plist;
 bracket = changed ? gearmotor_bracket_compute_params(motor, bolt_pad_y=5, fillet_x_w=5)
                   : gearmotor_bracket_compute_params(motor);
-layout = rear_suspension_layout(bracket=bracket, side=side,
+layout = rear_suspension_layout(panels=undef, power_case=undef, bracket=bracket, side=side,
                                 orientation=orientation, panel_y_offset=y_offset);
 size = rear_suspension_chassis_size(layout);
 center_y = (plist_get("min_y", layout) + plist_get("max_y", layout)) / 2;

@@ -18,6 +18,30 @@ use <../lib/transforms.scad>
 function toggle_switch_calc_desired_thickness(extra_thickness, nut_bore_h) =
   extra_thickness + nut_bore_h;
 
+// Shared by the physical lever and its clearance envelope.
+function toggle_switch_lever_angle(thread_d, thread_border_w, lever_dia_2, lever_h) =
+  let (r_inner = (thread_d - thread_border_w) / 2,
+       a = sqrt(lever_h * lever_h + (lever_dia_2 + r_inner) * (lever_dia_2 + r_inner)))
+  r_inner <= a ? asin(r_inner / a) - atan2(lever_dia_2 + r_inner, lever_h) : 0;
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  toggle_switch_lever_bounds
+  ─────────────────────────────────────────────────────────────────────────────
+  Return a conservative lever envelope covering both switch positions.
+  **Parameters:**
+  - `thread`: Thread specification `[diameter, height, border_width, ...]`.
+  - `lever`: Lever specification `[lower_diameter, upper_diameter, height]`.
+  **Returns:** `[minimum_xyz, maximum_xyz]` relative to the threaded stem's base.
+  The switch throws along X. Y includes the lever's full diameter.
+ */
+function toggle_switch_lever_bounds(thread, lever) =
+  let (angle = toggle_switch_lever_angle(thread[0], thread[2], lever[1], lever[2]),
+       radius = max(lever[0], lever[1]) / 2,
+       reach = abs(sin(angle)) * (thread[1]/2 + lever[2]) + radius)
+  [[-reach, -radius, cos(angle) * thread[1]/2 - radius],
+   [reach, radius, thread[1]/2 + lever[2] + radius]];
+
 module toggle_switch(size                               = toggle_switch_size,
                      thread_h                           = toggle_switch_thread_h,
                      thread_d                           = toggle_switch_thread_d,
@@ -33,16 +57,7 @@ module toggle_switch(size                               = toggle_switch_size,
                      center_y                           = true) {
   thread_inner_dia = thread_d - thread_border_w;
 
-  r_inner = thread_inner_dia / 2;
-
-  A   = sqrt(lever_h * lever_h + (lever_dia_2 + r_inner) *
-             (lever_dia_2 + r_inner));
-  phi = atan2((lever_dia_2 + r_inner), lever_h);
-
-  lever_angle =
-    (r_inner <= A)
-    ? asin(r_inner / A) - phi
-    : 0;
+  lever_angle = toggle_switch_lever_angle(thread_d, thread_border_w, lever_dia_2, lever_h);
 
   translate([center_x ? 0 : size[0] / 2,
              center_y ? 0 : size[1] / 2,

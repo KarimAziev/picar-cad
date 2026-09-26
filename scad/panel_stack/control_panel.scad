@@ -112,9 +112,77 @@ function control_panel_bolt_size() = panel_bolt_spacing;
 
   **Returns:** Structural height, excluding switches and fastener protrusions.
  */
-function control_panel_height(show_standoff=true) =
-  (show_standoff ? standoff_full_h - standoff_bore_h : 0)
+function control_panel_height(show_standoff=true, min_standoff_h=standoff_desired_body_h) =
+  (show_standoff ? standoff_real_h(min_standoff_h, panel_stack_bolt_dia) - standoff_bore_h : 0)
   + control_panel_thickness;
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  control_panel_oriented_size / control_panel_oriented_bolt_spacing
+  ─────────────────────────────────────────────────────────────────────────────
+  Return the oriented structural box or mounting-center spans as `[x, y, z]`.
+  `orientation` accepts the six axis conventions; `show_standoff` includes the
+  support height in the structural box. Installed hardware is excluded.
+ */
+function control_panel_oriented_size(orientation="wlh", show_standoff=true) =
+  orientation_size(orientation, [full_panel_width, full_panel_len,
+                                  control_panel_height(show_standoff)]);
+
+function control_panel_oriented_bolt_spacing(orientation="wlh") =
+  orientation_size(orientation, concat(panel_bolt_spacing, [0]));
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  control_panel_clearance_height
+  ─────────────────────────────────────────────────────────────────────────────
+  Return the installed hardware's upper envelope above the mounting plane.
+  `show_standoff` includes the supporting standoffs. Used for overhead clearance,
+  independently of hardware visibility in a preview.
+ */
+function control_panel_clearance_height(show_standoff=true) =
+  control_panel_height(show_standoff) - control_panel_thickness
+  + max(control_panel_thickness,
+        max([for (spec = control_panel_switch_button_specs)
+          let (thread = plist_get("thread", spec), lever = plist_get("lever", spec))
+          max(thread[1], thread[1] / 2 + lever[2] + max(lever[0], lever[1]) / 2)]));
+
+function _control_panel_switch_y(i, gap=control_panel_row_gap, center=true) =
+  gap * i + (i > 0 ? sum(y_sizes, i) : 0) + y_sizes[i]
+  - (center ? total_len / 2 + y_sizes[0] / 2 : 0);
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  control_panel_clearance_regions
+  ─────────────────────────────────────────────────────────────────────────────
+  Return separate low-panel and tall-lever envelopes for overhead placement.
+  **Parameters:**
+  - `orientation`: Horizontal mounting orientation, `"wlh"` or `"lwh"`.
+  **Returns:** A list of `[minimum_xyz, maximum_xyz]` bounds relative to the
+  panel's `[0, 0, 1]` anchor, including its standoffs. The first region covers
+  the low panel, switch stems, nuts and mounting hardware. Each later region
+  covers one lever in both switch positions. This allows an overhead case to
+  overlap the low part without being raised to the full lever height.
+ */
+function control_panel_clearance_regions(orientation="wlh") =
+  assert(orientation == "wlh" || orientation == "lwh",
+         "Control clearance regions require horizontal mounting")
+  let (z = control_panel_height() - control_panel_thickness,
+       low_h = max(standoff_real_h(standoff_desired_body_h, panel_stack_bolt_dia)
+                   + plist_get("thread_h", standoff_plist),
+                   z + max(control_panel_thickness,
+                        max([for (s = control_panel_switch_button_specs)
+                          max(plist_get("thread", s)[1], plist_get("nut", s)[1])]))),
+       low = [[-full_panel_width/2, -full_panel_len/2, 0],
+              [full_panel_width/2, full_panel_len/2, low_h]],
+       regions = concat([low],
+         [for (i = [0:len(control_panel_switch_button_specs)-1])
+           let (spec = control_panel_switch_button_specs[i],
+                bounds = toggle_switch_lever_bounds(plist_get("thread", spec), plist_get("lever", spec)),
+                pos = [0, _control_panel_switch_y(i), z])
+           [bounds[0] + pos, bounds[1] + pos]]))
+  orientation == "wlh" ? regions
+  : [for (b = regions) [[-b[1][1], b[0][0], b[0][2]],
+                        [-b[0][1], b[1][0], b[1][2]]]];
 
 module control_panel_slots(specs=control_panel_switch_button_specs,
                            gap=control_panel_row_gap,
@@ -142,9 +210,7 @@ module control_panel_slots(specs=control_panel_switch_button_specs,
            lever_h                            = lever_spec[2],
            terminal_size                      = terminal_spec,
            metallic_head_h                    = head_spec[0],
-           prev_y_size = i > 0 ? sum(y_sizes, i) : 0,
-           curr_size = y_sizes[i],
-           y = (gap * i) + prev_y_size + curr_size) {
+           y = _control_panel_switch_y(i, gap, center=false)) {
 
         translate([0, y, 0]) {
           if (!slot_mode) {
@@ -179,7 +245,93 @@ module control_panel_slots(specs=control_panel_switch_button_specs,
   }
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  control_panel
+  ─────────────────────────────────────────────────────────────────────────────
+  Render a standalone panel or its four matching chassis mounting cutters.
+
+  **Parameters:**
+  - `specs`: Switch hardware specifications.
+  - `gap`: Gap between switch rows.
+  - `show_buttons`: Display the switches.
+  - `show_standoff`: Include supporting standoffs.
+  - `center`: Legacy XY centering; used only when anchor is omitted.
+  - `min_standoff_h`: Minimum supporting standoff body length.
+  - `show_bolt`: Display the lower mounting screws.
+  - `show_nut`: Display nuts on the upper studs.
+  - `bolt_head_type`: Mounting screw head style.
+  - `bolt_color`: Fastener display color.
+  - `bolt_visible_h`: Length of screw outside the supporting standoff.
+  - `panel_color`: Printed panel color.
+  - `size`: Canonical panel footprint [width, length].
+  - `bolt_spacing`: Canonical mounting-hole center spacing [x, y].
+  - `anchor`: Final oriented reference-box anchor.
+  - `orientation`: One of the six with_orientation axis conventions.
+  - `anchor_mode`: Use the structural size or mounting-hole spans as the reference.
+  - `slot_mode`: Emit parent mounting cutters instead of the component.
+  - `slot_thickness`: Parent cutter depth along canonical Z.
+  - `slot_bore_h`: Parent counterbore depth.
+
+  The existing hardware, color, size and bolt-spacing arguments configure the
+  canonical panel. `center` is retained for older callers; an explicit `anchor`
+  takes precedence. With neither supplied, placement uses `[1, 1, 1]`.
+  `orientation` accepts the six `with_orientation` conventions. `anchor_mode`
+  selects the structural `"size"` box or the `"bolts"` box at the mounting plane.
+  `slot_mode` cuts the parent using `slot_thickness` and `slot_bore_h`; it retains
+  the solid's reference height and anchor regardless of cutter depth.
+ */
 module control_panel(specs=control_panel_switch_button_specs,
+                     gap=control_panel_row_gap,
+                     show_buttons=true,
+                     show_standoff=true,
+                     center=undef,
+                     min_standoff_h=standoff_desired_body_h,
+                     show_bolt=false,
+                     show_nut=false,
+                     bolt_head_type="hex",
+                     bolt_color=matte_black,
+                     bolt_visible_h=chassis_thickness - standoff_bore_h,
+                     panel_color = white_snow_1,
+                     size=[full_panel_width, full_panel_len],
+                     bolt_spacing=panel_bolt_spacing,
+                     anchor=undef,
+                     orientation="wlh",
+                     anchor_mode="size",
+                     slot_mode=false,
+                     slot_thickness=chassis_thickness,
+                     slot_bore_h=chassis_counterbore_h) {
+  assert(anchor_mode == "size" || anchor_mode == "bolts");
+  resolved_anchor = is_undef(anchor)
+    ? (is_undef(center) || !center ? [1, 1, 1] : [0, 0, 1]) : anchor;
+  reference = anchor_mode == "bolts" ? concat(bolt_spacing, [0])
+    : [size[0], size[1], control_panel_height(show_standoff, min_standoff_h)];
+  with_orientation(from="wlh", to=orientation, size=reference, anchor=resolved_anchor) {
+    if (slot_mode) {
+      four_corner_children(size=bolt_spacing, center=true) {
+        counterbore(d=panel_stack_bolt_dia, h=slot_thickness,
+                    bore_d=panel_stack_bolt_cbore_dia, bore_h=slot_bore_h);
+      }
+    } else {
+      _control_panel(specs=specs,
+                      gap=gap,
+                      show_buttons=show_buttons,
+                      show_standoff=show_standoff,
+                      min_standoff_h=min_standoff_h,
+                      show_bolt=show_bolt,
+                      show_nut=show_nut,
+                      bolt_head_type=bolt_head_type,
+                      bolt_color=bolt_color,
+                      bolt_visible_h=bolt_visible_h,
+                      panel_color=panel_color,
+                      size=size,
+                      bolt_spacing=bolt_spacing,
+                      center=true);
+    }
+  }
+}
+
+module _control_panel(specs=control_panel_switch_button_specs,
                      gap=control_panel_row_gap,
                      show_buttons=true,
                      show_standoff=true,
@@ -193,7 +345,7 @@ module control_panel(specs=control_panel_switch_button_specs,
                      panel_color = white_snow_1,
                      size=[full_panel_width, full_panel_len],
                      bolt_spacing=panel_bolt_spacing) {
-  panel_z = control_panel_height(show_standoff) - control_panel_thickness;
+  panel_z = control_panel_height(show_standoff, min_standoff_h) - control_panel_thickness;
   full_w = size[0];
   full_l = size[1];
 
@@ -208,6 +360,7 @@ module control_panel(specs=control_panel_switch_button_specs,
                          convexity=2) {
             rounded_rect(size=size,
                          center=true,
+                         fn=$fn > 0 ? ceil($fn / 4) * 4 : 32,
                          r_factor=panel_stack_corner_radius_factor);
           }
         }
@@ -228,12 +381,12 @@ module control_panel(specs=control_panel_switch_button_specs,
                             center=true);
       }
       if (show_buttons) {
-        control_panel_slots(slot_mode=false);
+        control_panel_slots(specs=specs, gap=gap, slot_mode=false);
       }
       if (show_standoff) {
         translate([0,
                    0,
-                   -standoff_full_h + standoff_bore_h]) {
+                   -standoff_real_h(min_standoff_h, panel_stack_bolt_dia) + standoff_bore_h]) {
           four_corner_children(size=bolt_spacing,
                                center=true) {
 

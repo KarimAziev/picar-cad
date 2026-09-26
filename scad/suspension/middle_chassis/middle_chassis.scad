@@ -38,17 +38,18 @@ lidar_orientation                 = "wlh";
 
 module middle_chassis(power_case_plist=multi_lipo_packs_case,
                       color=white_off_1,
-                      anchor=[0, -1, 1]) {
+                      anchor=[0, -1, 1],
+                      width=front_middle_chassis_max_w) {
   lipo_pack_case_props = multi_lipo_pack_props(plist=power_case_plist);
   lipo_pack_case_size     = plist_get("size", lipo_pack_case_props);
-  size = [front_middle_chassis_max_w,
+  size = [width,
           lipo_pack_case_size[1],
           chassis_thickness];
 
   with_anchor(anchor=anchor, size=size, centered=true) {
     difference() {
       maybe_color(color) {
-        cuboid(size=[front_middle_chassis_max_w,
+        cuboid(size=[width,
                      lipo_pack_case_size[1],
                      chassis_thickness],
                anchor=[0, 0, 1]);
@@ -75,12 +76,13 @@ module middle_chassis_assembly(show_middle_chassis=show_middle_chassis,
                                lidar_orientation=lidar_orientation,
                                lidar_rotate_z_180=lidar_rotate_z_180,
                                color=white_off_1,
-                               anchor=[0, -1, 1]) {
+                               anchor=[0, -1, 1],
+                               width=front_middle_chassis_max_w) {
 
   lidar_h = head_neck_max_z();
   lipo_pack_case_props = multi_lipo_pack_props(plist=power_case_plist);
   lipo_pack_case_size     = plist_get("size", lipo_pack_case_props);
-  size = [front_middle_chassis_max_w,
+  size = [width,
           lipo_pack_case_size[1],
           lipo_pack_case_size[2]];
 
@@ -95,6 +97,7 @@ module middle_chassis_assembly(show_middle_chassis=show_middle_chassis,
               centered=true) {
     if (show_middle_chassis) {
       middle_chassis(power_case_plist=power_case_plist,
+                     width=width,
                      anchor=[0, 0, 1],
                      color=color);
     }

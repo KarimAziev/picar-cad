@@ -16,9 +16,21 @@ use <../lib/slots.scad>
 use <../lib/transforms.scad>
 use <bolt.scad>
 
+// Memoize attainable minimum heights for integer hardware sizes. Enumerating
+// every permutation becomes impractical for the tall battery support columns.
+function _standoff_height_table(target, heights, n=1, table=[[]]) =
+  n > target ? table[target] :
+  let (candidates = [for (h = heights) concat([h], table[max(0, n-h)])],
+       best = best_list_by_lower_sum(candidates))
+  _standoff_height_table(target, heights, n+1, concat(table, [best]));
+
 function standoff_heights(min_h,
                           body_heights = [20, 15, 10, 9, 8, 6, 5]) =
-  best_height_combo(min_h, body_heights, ceil(min_h / min(body_heights)) + 1);
+  min_h <= 0 || len(body_heights) == 0 ? [] :
+  assert(min(body_heights) > 0, "Standoff body heights must be positive")
+  len([for (h = body_heights) if (h != floor(h)) h]) == 0
+  ? _standoff_height_table(ceil(min_h), body_heights)
+  : best_height_combo(min_h, body_heights, ceil(min_h / min(body_heights)) + 1);
 
 function calc_standoff_params(d, min_h) =
   let (norm_specs = [for (spec = standoff_specs)
@@ -305,6 +317,26 @@ module standoff_grid(sizes=[[3, 5.20, 5, [20, 15, 10, 9, 8, 6, 5], 6],
   }
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  four_corner_standoffs
+  ─────────────────────────────────────────────────────────────────────────────
+  Render four hardware stacks or their parent mounting holes.
+  **Parameters:**
+  - `h`: Minimum combined body length, rounded up to available hardware.
+  - `parent_thickness`: Parent plate thickness; undef hides mounting screws.
+  - `slot_mode`: Emit parent cutters instead of hardware.
+  - `bolt_d`: Standoff thread / parent hole diameter.
+  - `cbore_h`: Screw-head recess depth.
+  - `cbore_d`: Screw-head recess diameter.
+  - `bolt_spacing`: Hole-center spacing in X/Y.
+  - `thread_at_top`: Place the male studs at the top of each stack.
+  - `sink`: Countersunk heads/recesses when true, pan heads/counterbores otherwise.
+  - `offsets_xy`: Offset of the mounting pattern's center.
+  - `z_anchor`: Anchor on the body-height interval, excluding male studs.
+  Mounting screws enter the bottom standoff's threaded hole; countersunk heads
+  sit flush with the parent underside when its recess accommodates their height.
+ */
 module four_corner_standoffs(h,
                              parent_thickness=0,
                              slot_mode=false,
@@ -320,6 +352,12 @@ module four_corner_standoffs(h,
   standoffs_real_h = standoff_real_h(min_h=h, d=bolt_d);
 
   show_bolt = !is_undef(parent_thickness);
+  recess_h = with_default(cbore_h, 0);
+  // Seat a countersunk head flush, rather than lifting it into a deeper
+  // clearance cone (which would make its wider rim intersect the plate).
+  seat_h = sink ? min(recess_h, find_bolt_head_h(bolt_d, "countersunk")) : recess_h;
+  visible_h = show_bolt ? max(0, parent_thickness - seat_h) : 0;
+  engagement = plist_get("thread_h", calc_standoff_params(bolt_d, h)[0], 0);
   offsets_xy = with_default(offsets_xy, [0, 0]);
   offset_x = with_default(offsets_xy[0], 0);
   offset_y = with_default(offsets_xy[1], 0);
@@ -339,11 +377,12 @@ module four_corner_standoffs(h,
                       bore_h=cbore_h);
         } else {
           standoffs_stack(d=bolt_d,
-                          bolt_h=parent_thickness,
+                          bolt_h=visible_h + engagement,
                           min_h=h,
                           thread_at_top=thread_at_top,
                           show_bolt=show_bolt,
-                          bolt_visible_h=parent_thickness);
+                          bolt_head_type=sink ? "countersunk" : "pan",
+                          bolt_visible_h=visible_h);
         }
       }
     }

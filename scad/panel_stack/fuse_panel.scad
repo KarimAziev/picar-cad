@@ -78,7 +78,7 @@ upper_h                 = is_all_flipped
                            ? max_body_height
                            : is_flipped
                            ? max(max_body_height, max_lid_height)
-                           : max_body_height;
+                           : max_lid_height;
 
 standoff_desired_body_h = lower_h + chassis_thickness + 2;
 standoff_bore_h         = fuse_panel_thickness / 2;
@@ -120,6 +120,33 @@ function fuse_panel_standoff_upper_height() =
 function fuse_panel_height(show_standoff=true) =
   (show_standoff ? lower_standoff_height - standoff_bore_h : 0)
   + fuse_panel_thickness;
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  fuse_panel_oriented_size / fuse_panel_oriented_bolt_spacing
+  ─────────────────────────────────────────────────────────────────────────────
+  Return the oriented structural box or mounting-center spans as `[x, y, z]`.
+  `orientation` accepts the six axis conventions; `show_standoff` includes the
+  support height in the structural box. Installed hardware is excluded.
+ */
+function fuse_panel_oriented_size(orientation="wlh", show_standoff=true) =
+  orientation_size(orientation, [full_panel_width, full_panel_len,
+                                  fuse_panel_height(show_standoff)]);
+
+function fuse_panel_oriented_bolt_spacing(orientation="wlh") =
+  orientation_size(orientation, concat(panel_bolt_spacing, [0]));
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  fuse_panel_clearance_height
+  ─────────────────────────────────────────────────────────────────────────────
+  Return the installed hardware's upper envelope above the mounting plane.
+  `show_standoff` includes the supporting standoffs. Used for overhead clearance,
+  independently of hardware visibility in a preview.
+ */
+function fuse_panel_clearance_height(show_standoff=true) =
+  fuse_panel_height(show_standoff) - fuse_panel_thickness
+  + max(fuse_panel_thickness, upper_h);
 
 module fuse_panel_slots(slot_mode = true,
                         show_atm_fuse_holders = true,
@@ -166,7 +193,92 @@ module fuse_panel_slots(slot_mode = true,
   }
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  fuse_panel
+  ─────────────────────────────────────────────────────────────────────────────
+  Render a standalone panel or its four matching chassis mounting cutters.
+
+  **Parameters:**
+  - `show_fuses`: Display installed fuse holders.
+  - `show_standoff`: Include supporting standoffs.
+  - `center`: Legacy XY centering; used only when anchor is omitted.
+  - `show_cap`: Display the fuse-holder caps.
+  - `panel_color`: Printed panel color.
+  - `size`: Canonical panel footprint [width, length].
+  - `bolt_spacing`: Canonical mounting-hole center spacing [x, y].
+  - `show_bolt`: Display the lower mounting screws.
+  - `show_nut`: Display nuts on the upper studs.
+  - `bolt_head_type`: Mounting screw head style.
+  - `bolt_color`: Fastener display color.
+  - `bolt_visible_h`: Length of screw outside the supporting standoff.
+  - `corner_factor`: Panel corner radius as a fraction of its smaller dimension.
+  - `anchor`: Final oriented reference-box anchor.
+  - `orientation`: One of the six with_orientation axis conventions.
+  - `anchor_mode`: Use the structural size or mounting-hole spans as the reference.
+  - `slot_mode`: Emit parent mounting cutters instead of the component.
+  - `slot_thickness`: Parent cutter depth along canonical Z.
+  - `slot_bore_h`: Parent counterbore depth.
+
+  The existing hardware, color, size and bolt-spacing arguments configure the
+  canonical panel. `center` is retained for older callers; an explicit `anchor`
+  takes precedence. With neither supplied, placement uses `[1, 1, 1]`.
+  `orientation` accepts the six `with_orientation` conventions. `anchor_mode`
+  selects the structural `"size"` box or the `"bolts"` box at the mounting plane.
+  `slot_mode` cuts the parent using `slot_thickness` and `slot_bore_h`; it retains
+  the solid's reference height and anchor regardless of cutter depth.
+ */
 module fuse_panel(show_fuses=false,
+                  show_standoff=true,
+                  center=undef,
+                  show_cap=true,
+                  panel_color=white_snow_1,
+                  size=[full_panel_width, full_panel_len],
+                  bolt_spacing=panel_bolt_spacing,
+                  show_bolt=false,
+                  show_nut=false,
+                  bolt_head_type="hex",
+                  bolt_color=matte_black,
+                  bolt_visible_h=chassis_thickness - standoff_bore_h,
+                  corner_factor=panel_stack_corner_radius_factor,
+                     anchor=undef,
+                     orientation="wlh",
+                     anchor_mode="size",
+                     slot_mode=false,
+                     slot_thickness=chassis_thickness,
+                     slot_bore_h=chassis_counterbore_h) {
+  assert(anchor_mode == "size" || anchor_mode == "bolts");
+  resolved_anchor = is_undef(anchor)
+    ? (is_undef(center) || !center ? [1, 1, 1] : [0, 0, 1]) : anchor;
+  reference = anchor_mode == "bolts" ? concat(bolt_spacing, [0])
+    : [size[0], size[1], fuse_panel_height(show_standoff)];
+  with_orientation(from="wlh", to=orientation, size=reference, anchor=resolved_anchor) {
+    if (slot_mode) {
+      four_corner_children(size=bolt_spacing, center=true) {
+        counterbore(d=panel_stack_bolt_dia, h=slot_thickness,
+                    bore_d=panel_stack_bolt_cbore_dia, bore_h=slot_bore_h);
+      }
+    } else {
+      _fuse_panel(show_fuses=show_fuses,
+                      show_standoff=show_standoff,
+                      show_cap=show_cap,
+                      panel_color=panel_color,
+                      size=size,
+                      bolt_spacing=bolt_spacing,
+                      show_bolt=show_bolt,
+                      show_nut=show_nut,
+                      bolt_head_type=bolt_head_type,
+                      bolt_color=bolt_color,
+                      bolt_visible_h=bolt_visible_h,
+                      corner_factor=corner_factor,
+                      center=true, has_children=$children > 0) {
+        children();
+      }
+    }
+  }
+}
+
+module _fuse_panel(show_fuses=false,
                   show_standoff=true,
                   center=false,
                   show_cap=true,
@@ -178,7 +290,8 @@ module fuse_panel(show_fuses=false,
                   bolt_head_type="hex",
                   bolt_color=matte_black,
                   bolt_visible_h=chassis_thickness - standoff_bore_h,
-                  corner_factor=panel_stack_corner_radius_factor) {
+                  corner_factor=panel_stack_corner_radius_factor,
+                  has_children=false) {
 
   full_w = size[0];
   full_l = size[1];
@@ -200,6 +313,7 @@ module fuse_panel(show_fuses=false,
                              convexity=2) {
                 rounded_rect(size=size,
                              center=true,
+                             fn=$fn > 0 ? ceil($fn / 4) * 4 : 32,
                              r_factor=corner_factor);
               }
             }
@@ -239,7 +353,7 @@ module fuse_panel(show_fuses=false,
           }
         }
 
-        if ($children) {
+        if (has_children) {
           translate([0, 0, fuse_panel_thickness]) {
             if (show_standoff) {
               four_corner_children(size=bolt_spacing, center=true) {

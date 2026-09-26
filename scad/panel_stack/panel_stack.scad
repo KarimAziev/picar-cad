@@ -306,3 +306,59 @@ module panel_stack_print_plate(show_buttons_panel=true,
 }
 
 panel_stack(orientation=panel_stack_orientation, anchor=[1, 1, 1]);
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  panel_component_size / panel_component_bolt_spacing / panel_component_height
+  ─────────────────────────────────────────────────────────────────────────────
+  Query a standalone control, standalone fuse, or combined panel stack.
+  `type` is "control", "fuse", or "stack"; `orientation` is an axis convention.
+  Size is the structural reference box. Height includes installed hardware for
+  overhead clearance, and assumes the panels and standoffs are all present.
+ */
+function panel_component_size(type, orientation="wlh") =
+  assert(type == "control" || type == "fuse" || type == "stack", "Unknown panel type")
+  type == "control" ? control_panel_oriented_size(orientation)
+  : type == "fuse" ? fuse_panel_oriented_size(orientation)
+  : panel_stack_oriented_size(orientation);
+
+function panel_component_bolt_spacing(type, orientation="wlh") =
+  assert(type == "control" || type == "fuse" || type == "stack", "Unknown panel type")
+  type == "control" ? control_panel_oriented_bolt_spacing(orientation)
+  : type == "fuse" ? fuse_panel_oriented_bolt_spacing(orientation)
+  : panel_stack_oriented_bolt_spacing(orientation);
+
+function panel_component_height(type) =
+  assert(type == "control" || type == "fuse" || type == "stack", "Unknown panel type")
+  type == "control" ? control_panel_clearance_height()
+  : type == "fuse" ? fuse_panel_clearance_height()
+  : max(fuse_panel_clearance_height(),
+        fuse_panel_height() + fuse_panel_standoff_upper_height()
+        + control_panel_clearance_height());
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  panel_component
+  ─────────────────────────────────────────────────────────────────────────────
+  Render one installed panel component or its matching parent cutters.
+  **Parameters:**
+  - `type`: "control", "fuse", or "stack".
+  - `orientation`: Final axis convention.
+  - `anchor`: Structural reference-box anchor.
+  - `slot_mode`: Render parent mounting cutters only.
+  - `slot_thickness`: Parent plate thickness.
+ */
+module panel_component(type="stack", orientation="wlh", anchor=[0, 0, 1],
+                        slot_mode=false, slot_thickness=chassis_thickness) {
+  assert(type == "control" || type == "fuse" || type == "stack", "Unknown panel type");
+  if (type == "control") {
+    control_panel(orientation=orientation, anchor=anchor, slot_mode=slot_mode,
+                  slot_thickness=slot_thickness, show_buttons=true, show_bolt=true);
+  } else if (type == "fuse") {
+    fuse_panel(orientation=orientation, anchor=anchor, slot_mode=slot_mode,
+               slot_thickness=slot_thickness, show_fuses=true, show_bolt=true);
+  } else {
+    panel_stack(orientation=orientation, anchor=anchor, slot_mode=slot_mode,
+                slot_thickness=slot_thickness);
+  }
+}

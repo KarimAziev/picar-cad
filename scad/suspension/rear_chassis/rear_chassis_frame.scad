@@ -10,6 +10,7 @@ use <../../lib/transforms.scad>
 use <../../motor_brackets/rc/gearbox_bracket.scad>
 use <../../panel_stack/panel_stack.scad>
 use <../rear_suspension/rear_suspension_chassis.scad>
+use <rear_payload.scad>
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -35,7 +36,7 @@ function rear_chassis_size(layout=rear_suspension_layout()) =
   Render the rear chassis and the components at their shared mounting datums.
 
   **Parameters:**
-  - `show_panel_stack`: Display the controls and fuse stack.
+  - `show_panel_stack`: Display all configured control, fuse and combined panels.
   - `show_gearbox_bracket`: Display the printed motor bracket.
   - `show_gearbox`: Display the gearbox.
   - `show_motor`: Display the motor.
@@ -50,6 +51,11 @@ function rear_chassis_size(layout=rear_suspension_layout()) =
   - `show_motor_encoder_bracket`: Display the removable shaft encoder mount.
   - `show_motor_encoder`: Display its PCB.
   - `show_motor_encoder_magnet`: Display its shaft-end magnet.
+  - `show_power_case`: Display the raised battery case.
+  - `show_lipo_packs`: Display batteries within the case.
+  - `show_power_standoffs`: Display the four supporting columns.
+  - `show_lidar`: Display the lidar on the raised payload.
+  - `show_lidar_lid`: Display its provisional cover plate.
  */
 module rear_chassis(show_panel_stack=true,
                     show_gearbox_bracket=true,
@@ -65,12 +71,21 @@ module rear_chassis(show_panel_stack=true,
                     layout=rear_suspension_layout(),
                     show_motor_encoder_bracket=true,
                     show_motor_encoder=true,
-                    show_motor_encoder_magnet=true) {
+                    show_motor_encoder_magnet=true,
+                    show_power_case=true,
+                    show_lipo_packs=true,
+                    show_power_standoffs=true,
+                    show_lidar=true,
+                    show_lidar_lid=true) {
   size = rear_chassis_size(layout);
   center_y = (plist_get("min_y", layout) + plist_get("max_y", layout)) / 2;
   with_anchor(is_undef(anchor) ? [0, 0, 1] : anchor, size, centered=true) {
     translate([0, is_undef(anchor) ? 0 : -center_y, 0]) {
       rear_suspension_chassis(layout=layout);
+      rear_power_payload(plist_get("power_case", layout),
+                         show_case=show_power_case, show_packs=show_lipo_packs,
+                         show_standoffs=show_power_standoffs,
+                         show_lidar=show_lidar, show_lid=show_lidar_lid);
       translate([0, 0, size[2]]) {
         translate(plist_get("motor_pos", layout)) {
           rotate(plist_get("motor_rotation", layout)) {
@@ -91,10 +106,11 @@ module rear_chassis(show_panel_stack=true,
           }
         }
         if (show_panel_stack) {
-          translate(plist_get("panel_pos", layout)) {
-            panel_stack(orientation=plist_get("panel_orientation", layout),
-                        anchor=plist_get("panel_anchor", layout),
-                        anchor_mode="size");
+          for (panel = plist_get("panels", layout)) {
+            translate(plist_get("pos", panel)) {
+              panel_component(type=plist_get("type", panel),
+                              orientation=plist_get("orientation", panel));
+            }
           }
         }
       }

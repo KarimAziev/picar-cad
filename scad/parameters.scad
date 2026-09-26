@@ -2335,8 +2335,8 @@ control_panel_default_toggle_switch_spec             = ["size",
                                                         "head",
                                                         [toggle_switch_metallic_head_h]];
 
-control_panel_switch_button_specs                    = [control_panel_default_toggle_switch_spec,
-                                                        control_panel_default_toggle_switch_spec,];
+// One master switch for the shared battery supply.
+control_panel_switch_button_specs                    = [control_panel_default_toggle_switch_spec];
 
 control_panel_thickness                              = toggle_switch_nut_out_h + 2;
 

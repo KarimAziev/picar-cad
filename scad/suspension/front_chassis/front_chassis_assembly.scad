@@ -16,6 +16,8 @@ include <../../colors.scad>
 include <../../parameters.scad>
 include <../../steering_params.scad>
 include <computed_params.scad>
+use <../computed.scad>
+use <../rear_suspension/computed_params.scad>
 
 use <../../head/head_neck.scad>
 use <../../lib/debug.scad>
@@ -122,8 +124,14 @@ show_rear_unused_shaft                      = true;
 show_rear_differential_envelope             = false;
 show_middle_chassis_motor_slots             = true;
 
-show_middle_chassis                         = true;
-show_middle_chassis_components              = true;
+show_rear_power_case                       = true;
+show_rear_lipo_packs                       = true;
+show_rear_power_standoffs                  = true;
+show_rear_lidar                            = true;
+show_rear_lidar_lid                        = true;
+
+show_middle_chassis                         = false;
+show_middle_chassis_components              = false;
 show_middle_chassis_power_case              = true;
 show_middle_chassis_lipo_packs              = true;
 show_middle_chassis_lidar                   = true;
@@ -208,12 +216,19 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
                               show_rear_unused_shaft=show_rear_unused_shaft,
                               show_rear_differential_envelope=show_rear_differential_envelope,
                               show_middle_chassis_motor_slots=show_middle_chassis_motor_slots,
-                              show_front_rpi=show_front_rpi) {
+                              show_front_rpi=show_front_rpi,
+                              show_rear_power_case=show_rear_power_case,
+                              show_rear_lipo_packs=show_rear_lipo_packs,
+                              show_rear_power_standoffs=show_rear_power_standoffs,
+                              show_rear_lidar=show_rear_lidar,
+                              show_rear_lidar_lid=show_rear_lidar_lid) {
   lipo_pack_case_props = multi_lipo_pack_props(plist=multi_lipo_packs_case);
 
   full_lipo_pack_size = plist_get("size", lipo_pack_case_props);
+  body_width = suspension_chassis_width(include_middle=show_middle_chassis);
+  rear_layout = rear_suspension_layout(min_width=body_width);
 
-  front_chassis(show_front_frame=show_chassis_front_frame,
+  front_chassis(width=body_width, show_front_frame=show_chassis_front_frame,
                 show_rear_frame=show_chassis_rear_frame,
                 debug=false,
                 spacing=front_chassis_joint_spacing,
@@ -286,7 +301,7 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
   }
 
   translate([0, front_chassis_y_joint_2_end, 0]) {
-    middle_chassis_assembly(show_middle_chassis=show_middle_chassis,
+    middle_chassis_assembly(width=body_width, show_middle_chassis=show_middle_chassis,
                             show_middle_chassis_components=show_middle_chassis_components,
                             show_middle_chassis_power_case=show_middle_chassis_power_case,
                             show_middle_chassis_lipo_packs=show_middle_chassis_lipo_packs,
@@ -301,7 +316,12 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
                show_middle_chassis ? -full_lipo_pack_size[1] : 0,
                -front_chassis_thickness]) {
       rotate([0, 0, 180]) {
-        rear_chassis(anchor=[0, 1, 1]);
+        rear_chassis(anchor=[0, 1, 1], layout=rear_layout,
+                     show_power_case=show_rear_chassis_components && show_rear_power_case,
+                     show_lipo_packs=show_rear_lipo_packs,
+                     show_power_standoffs=show_rear_power_standoffs,
+                     show_lidar=show_rear_chassis_components && show_rear_lidar,
+                     show_lidar_lid=show_rear_chassis_components && show_rear_lidar_lid);
       }
     }
   }

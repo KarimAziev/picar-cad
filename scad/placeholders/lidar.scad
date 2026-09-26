@@ -20,7 +20,7 @@ use <standoff.scad>
 show_lidar_mount_holes   = true;
 show_standoffs           = true;
 
-lidar_default_standoff_h = 14;
+lidar_default_standoff_h = 13;
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -112,9 +112,8 @@ module lidar_standoffs(plist,
       four_corner_children(size=bolt_spacing, center=true) {
         counterbore(h=depth,
                     d=bolt_d,
-                    sink=sink,
-                    bore_d=bore_d,
-                    bore_h=bore_h);
+                    no_bore=true,
+                    autoscale_step=0);
       }
     }
   } else {
@@ -206,7 +205,6 @@ module lidar(plist=rplidar_c1_plist,
                             own_holes_mode=false,
                             z_anchor=1,
                             sink=sink,
-                            z_anchor=z_anchor,
                             parent_thickness=parent_thickness,
                             h=target_h) {
     lidar_standoffs(plist=plist,
@@ -231,7 +229,7 @@ module lidar(plist=rplidar_c1_plist,
                      rotate_z_180=rotate_z_180,
                      to=orientation) {
       if (slot_mode) {
-        _slot_or_standoffs(plist, slot=true);
+        _slot_or_standoffs(slot=true);
       } else {
         union() {
           difference() {

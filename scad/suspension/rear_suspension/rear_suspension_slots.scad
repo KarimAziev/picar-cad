@@ -11,6 +11,7 @@ use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
 use <../../motor_brackets/rc/gearbox_bracket.scad>
 use <../../panel_stack/panel_stack.scad>
+use <../rear_chassis/rear_payload.scad>
 use <../front_chassis/front_chassis_joint.scad>
 
 /**
@@ -76,12 +77,14 @@ module rear_suspension_slots(anchor=undef, layout=rear_suspension_layout()) {
         }
       }
 
-      translate(plist_get("panel_pos", layout)) {
-        panel_stack_bolt_holes(orientation=plist_get("panel_orientation", layout),
-                               anchor=plist_get("panel_anchor", layout),
-                               anchor_mode="size",
-                               slot_thickness=front_chassis_thickness);
+      for (panel = plist_get("panels", layout)) {
+        translate(plist_get("pos", panel)) {
+          panel_component(type=plist_get("type", panel),
+                          orientation=plist_get("orientation", panel),
+                          slot_mode=true, slot_thickness=front_chassis_thickness);
+        }
       }
+      rear_power_payload(plist_get("power_case", layout), slot_mode=true);
     }
   }
 }
