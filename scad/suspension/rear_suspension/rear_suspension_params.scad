@@ -71,14 +71,15 @@ rc_motor_maintenance_hole_dist             = -1.8;
 
 // Sides refer to the mounted bracket in chassis coordinates, after rotation.
 panel_stack_side                           = "auto"; // auto | left (-X) | right (+X)
-panel_stack_side_x_dist_from_motor         = 3; // edge-to-edge bracket/panel gap
+panel_stack_side_x_dist_from_motor         = 0; // edge-to-edge bracket/panel gap
 panel_stack_y_offset                       = 0; // from bracket footprint center, along chassis Y
 
 // Each entry is independent: type = control | fuse | stack, side = left | right
 // | auto. Auto chooses the smaller occupied side; later entries can use the
 // opposite side automatically. Repeated sides are placed successively outward.
 rear_panel_specs                           = [["type", "control", "side", "auto", "orientation", "wlh"],
-                                              ["type", "fuse", "side", "auto", "orientation", "lwh"]];
+                                              // ["type", "fuse", "side", "auto", "orientation", "lwh"]
+                                              ];
 
 // Optional per-panel keys: gap (edge-to-edge), y_offset (from motor center).
 // Set the power case to undef for the lower deck alone; [] removes all panels.

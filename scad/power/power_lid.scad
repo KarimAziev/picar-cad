@@ -23,6 +23,7 @@ use <../lib/transforms.scad>
 use <../lib/wire.scad>
 use <../placeholders/atc_ato_blade_fuse_holder.scad>;
 use <../placeholders/bolt.scad>
+use <../placeholders/lidar.scad>
 use <../placeholders/lipo_pack.scad>
 use <../placeholders/step-down-voltage-d24vxf5.scad>
 use <../placeholders/toggle_switch.scad>
@@ -33,14 +34,15 @@ use <power_case_rail.scad>
 // All these toggle parameters will show a placeholder only if they are defined
 // in slots: power_lid_left_slots, power_lid_right_slots, or
 // power_lid_side_slots.
-show_xt90e            = false;
-show_dc_regulator     = false;
-show_ato_fuse         = false;
-show_voltmeter        = false;
-show_bolt             = false;
-show_atm_fuse_holders = false;
-show_perf_board       = false;
-show_switch_button    = false;
+show_xt90e            = true;
+show_dc_regulator     = true;
+show_ato_fuse         = true;
+show_voltmeter        = true;
+show_bolt             = true;
+show_atm_fuse_holders = true;
+show_perf_board       = true;
+show_switch_button    = true;
+show_lidar            = true;
 
 bolt_visible_h        = power_lid_thickness + 4;
 
@@ -123,6 +125,9 @@ module power_lid(show_switch_button=show_switch_button,
                  show_atm_fuse_holders=show_atm_fuse_holders,
                  left_columns=power_lid_left_slots,
                  right_columns=power_lid_right_slots,
+                 lidar_target_h=20,
+                 show_lidar=show_lidar,
+                 lidar_plist=rplidar_c1_plist,
                  center=true) {
 
   maybe_translate([center ? 0 : power_lid_width / 2,
@@ -166,9 +171,25 @@ module power_lid(show_switch_button=show_switch_button,
                            show_atm_fuse_holders=show_atm_fuse_holders,
                            left_columns=left_columns,
                            right_columns=right_columns);
+            if (show_lidar && lidar_plist) {
+              lidar(plist=lidar_plist,
+                    slot_mode=false,
+                    orientation="lwh",
+                    parent_thickness=power_lid_thickness,
+                    show_standoffs=true,
+                    target_h=lidar_target_h);
+            }
           }
         }
       }
+      if (lidar_plist) {
+        lidar(plist=lidar_plist,
+              slot_mode=true,
+              orientation="lwh",
+              parent_thickness=power_lid_thickness,
+              target_h=0);
+      }
+
       mirror_copy([1, 0, 0]) {
         translate([power_lid_width / 2
                    - half_of_side_wall_w,
@@ -296,10 +317,11 @@ module power_lid_printable(center=true, color="white") {
             show_atm_fuse_holders=false,
             show_perf_board=false,
             show_switch_button=false,
+            show_lidar=false,
             lid_color=color,
             center=center);
 }
 
-// power_lid();
+power_lid();
 
-power_lid_printable();
+// power_lid_printable();

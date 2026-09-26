@@ -160,3 +160,40 @@ translate([460, 230, 0]) {
 }
 
 echo("PASS: smart pack layout and independent case orientation");
+
+// Wall dimensions are resolved independently of the pack reference height.
+wall_props = multi_lipo_pack_wall_props(
+  ["h", "125%", "l", "80%", "offset", "10%",
+   "cutouts", [["l", "25%", "h", "40%", "offset", "50%"],
+               ["l", 5]]], 100, 20);
+assert(plist_get("h", wall_props) == 25);
+assert(plist_get("l", wall_props) == 80);
+assert(plist_get("offset", wall_props) == 10);
+assert(plist_get("cutouts", wall_props)[0] == ["l", 20, "h", 10, "offset", 40]);
+assert(plist_get("cutouts", wall_props)[1] == ["l", 5, "h", 25, "offset", 0]);
+assert(plist_get("offset", multi_lipo_pack_wall_props(["l", 30], 100, 20)) == 35);
+
+custom_walls = plist_merge(walls,
+  ["front", ["t", 2, "h", 8, "l", "50%"],
+   "rear", ["t", 2, "h", 0],
+   "left", ["t", 2, "h", "50%"],
+   "right", ["t", 2, "h", "125%"],
+   "inner", ["t", 2, "h", 60]]);
+custom_case = plist_merge(wlh_case, ["walls", custom_walls, "top_clearance", 2]);
+custom_props = multi_lipo_pack_props(custom_case);
+assert(plist_get("body_size", custom_props)[2] == 63);
+assert(plist_get("inner_size", custom_props)[2] == logical_pack_size[2] + 2);
+assert(plist_get("h", plist_get("left", plist_get("wall_props", custom_props)))
+       == (logical_pack_size[2] + 2) / 2);
+assert(plist_get("pack_positions", custom_props) == wlh_positions);
+assert(plist_get("bolt_spacing", custom_props) == plist_get("bolt_spacing", wlh_props));
+
+single_case = plist_merge(custom_case, ["lipo_packs", [pack_plist()]]);
+single_props = multi_lipo_pack_props(single_case);
+assert(plist_get("body_size", single_props)[2] == 3 + (logical_pack_size[2] + 2) * 1.25,
+       "An unused divider must not inflate the case envelope");
+for (orientation = orientations) {
+  props = multi_lipo_pack_props(plist_merge(single_case, ["orientation", orientation]));
+  assert(plist_get("size", props) == orientation_size(orientation, plist_get("canonical_size", props)));
+}
+echo("PASS: custom wall heights, lengths, cutouts, and case envelope");

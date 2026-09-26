@@ -1330,12 +1330,23 @@ function merge_vent_spec(pl) = plist_merge(basic_vent_spec, pl);
 
 multi_lipo_packs_case                             = ["lipo_packs", lipo_packs,
                                                      "color", cobalt_blue_metallic,
+                                                     "corner_r", 3,
+                                                     "inner_corner_r", 0, // clearance for the pack's square end
                                                      "orientation", "wlh",
-                                                     "walls", ["front", merge_vent_spec(["t", 2]),
-                                                               "rear", merge_vent_spec(["t", 2]),
+                                                     "walls", ["front", merge_vent_spec(["t", 2, "l", "90%"]),
+                                                               "rear", merge_vent_spec(["t", 2, "l", "90%"]),
                                                                "bottom", ["t", 3],
-                                                               "left", merge_vent_spec(["t", 2]),
-                                                               "right", merge_vent_spec(["t", 2]),
+                                                               "left", merge_vent_spec(["t", 2, "h", "90%"]),
+                                                               // The pack uses lwh: both leads pass the +X end wall.
+                                                               // Retain the lower 30% beneath these top-open notches.
+                                                               "right", merge_vent_spec(["t", 2,
+                                                                                         "h", "90%",
+                                                                                         "cutouts", [["offset", 0,
+                                                                                                      "l", "15%",
+                                                                                                      "h", "70%"],
+                                                                                                     ["offset", "90%",
+                                                                                                      "l", "10%",
+                                                                                                      "h", "70%"]]]),
                                                                "inner", ["t", 2,]],
                                                      "bolt_pad_x", 10,
                                                      "bolt_pad_y", 5,

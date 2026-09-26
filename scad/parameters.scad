@@ -2273,7 +2273,7 @@ power_case_rail_height                               = 4;
 power_case_rail_bolt_dia                             = m25_hole_dia + 0.1;
 
 // Distance from the end of the rail and mounting holes
-power_case_rail_hole_distance_from_edge              = 7.25;
+power_case_rail_hole_distance_from_edge              = 30.25;
 
 // Internal side wall thickness computed from overall width and the bolt pattern.
 // This determines the width of the side wall between the central battery pocket and outer shell.
@@ -2287,7 +2287,7 @@ power_case_rail_tolerance                            = 0.4;
 
 power_case_rail_relief_depth                         = 0.12; // 0.12…0.15
 
-power_lid_height                                     = 12.5;
+power_lid_height                                     = 16.5;
 power_lid_width                                      = power_case_width + power_case_side_wall_thickness + power_case_rail_tolerance / 2;
 
 power_lid_thickness                                  = 2;
