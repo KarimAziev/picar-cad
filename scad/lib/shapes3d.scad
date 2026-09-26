@@ -69,7 +69,8 @@ use <transforms.scad>
     Percentages use the smallest X/Y dimension for the extruded version,
     or the smallest X/Y/Z dimension when `use_minkowski=true`.
 
-    If `undef` or `0`, no rounding is applied unless `r_factor` produces one.
+    When `undef`, use `r_factor`; `0` leaves bare side selections square.
+    Explicit radii in `side` pairs override this value in extruded mode.
 
   `r_factor`:
     Relative rounding radius factor.
@@ -94,6 +95,13 @@ use <transforms.scad>
     `"all"` (default behavior), `"top"`, `"left"`, `"right"`, `"bottom"`,
     `"top_left"`, `"top_right"`, `"bottom_left"`, or `"bottom_right"`.
     Corner names round only one corner of the XY profile; Z faces stay flat.
+    Top is +Y, bottom is -Y, left is -X, and right is +X.
+    Also accepts lists of names or `[name, radius]` pairs, including mixed
+    lists. Bare names use `r`/`r_factor` (zero when both are omitted). Pairs
+    use non-negative absolute radii or percentages of the smaller X/Y
+    dimension, capped at half that dimension. Later entries override earlier
+    ones at shared corners; zero leaves a corner square. `[]` selects none.
+    Ignored when `use_minkowski=true`.
 
   `fn`:
     Segment count used for spheres/circles when generating rounded geometry.
@@ -106,7 +114,8 @@ use <transforms.scad>
 
   - `center` only controls fallback placement for X and Y when `anchor` is
     omitted or partially `undef`.
-  - If both `r` and `r_factor` are `undef` or `0`, a plain `cube()` is created.
+  - If both `r` and `r_factor` are `undef` or `0`, the shape stays square
+    unless `side` pairs supply radii in extruded mode.
   - If rounding is requested and `use_minkowski=true`, all 3D edges/corners are
     rounded.
   - Otherwise, a rounded 2D profile is extruded along Z.
@@ -140,6 +149,9 @@ use <transforms.scad>
   // Round one exposed XY corner while keeping three junctions square.
   cuboid([20, 30, 10], r=2, side="top_left");
 
+  cuboid([20, 30, 10], r=2, side=["top_left", "bottom_right"]);
+  cuboid([20, 30, 10], side=[["top", 4], ["bottom", "10%"]]);
+
   // Fully 3D-rounded box
   cuboid([20, 30, 10], r=2, use_minkowski=true, fn=48);
   ```
@@ -166,7 +178,8 @@ module cuboid(size,
 
   maybe_color(color) {
     with_anchor(anchor=anchor, size=size) {
-      if ((is_undef(r) || r == 0) && (is_undef(r_factor) || r_factor == 0)) {
+      if ((is_undef(r) || r == 0) && (is_undef(r_factor) || r_factor == 0) &&
+          (use_minkowski || !is_list(side))) {
         cube(size);
       } else if (use_minkowski) {
         rad = min(is_undef(r) ? min(size[0], size[1], size[2]) * r_factor : r,
@@ -188,7 +201,7 @@ module cuboid(size,
                        side=side,
                        fn=fn,
                        r=r,
-                       r_factor=r_factor);
+                       r_factor=with_default(r_factor, 0));
         }
       }
     }

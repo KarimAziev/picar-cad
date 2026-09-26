@@ -5,6 +5,7 @@ Requires OpenSCAD with Manifold, textmetrics and roof support.
 """
 
 import itertools
+import math
 from pathlib import Path
 import struct
 import subprocess
@@ -138,11 +139,60 @@ def check_anchors(folder):
     print(f"PASS: rendered bounds for {len(cases) * len(anchors)} anchor cases", flush=True)
 
 
+def check_rounded_sides(folder):
+    # Check actual corner locations and volume, independently of the resolver.
+    # Radii are ordered bottom-left, bottom-right, top-right, top-left.
+    cases = [
+        ('r=3, side="top"', [0, 0, 3, 3]),
+        ('r=3, side=["top"]', [0, 0, 3, 3]),
+        ('r=3, side=["top_left", "bottom_right"]', [0, 3, 0, 3]),
+        ('r=3, side=["top", "left"]', [3, 0, 3, 3]),
+        ('r_factor=0.2, side=["top", "bottom"]', [4, 4, 4, 4]),
+        ('side=[["top", 4], ["bottom", "10%"]]', [2, 2, 4, 4]),
+        ('r=0, side=[["all", 4], ["top_left", 0]]', [4, 4, 4, 0]),
+        ('r=3, side=["top", ["left", "25"]]', [5, 0, 3, 5]),
+        ('side=[["top", 100], ["bottom", "200%"]]', [10, 10, 10, 10]),
+        ('r=3, side=[]', [0, 0, 0, 0]),
+        ('r=0, side=["all"]', [0, 0, 0, 0]),
+    ]
+    for i, (arguments, radii) in enumerate(cases):
+        for shape in ("rect", "cuboid"):
+            source = (
+                f"linear_extrude(height=6) {{ rounded_rect([40,20], {arguments}, "
+                "fn=32, center=true, anchor=[-1,0,1]); }"
+                if shape == "rect" else
+                f"cuboid([40,20,6], {arguments}, fn=32, anchor=[-1,0,1]);"
+            )
+            points = list(vertices(render(folder, f"sides-{shape}-{i}", source, "stl")))
+            for axis, bounds in enumerate([(-40, 0), (-10, 10), (0, 6)]):
+                assert abs(min(p[axis] for p in points) - bounds[0]) < 1e-5
+                assert abs(max(p[axis] for p in points) - bounds[1]) < 1e-5
+            for (x, y), radius in zip([(-40, -10), (0, -10), (0, 10), (-40, 10)], radii):
+                nearest = min(math.hypot(p[0] - x, p[1] - y) for p in points)
+                assert abs(nearest - (math.sqrt(2) - 1) * radius) < 1e-5, (
+                    shape, arguments, (x, y), nearest, radius)
+            volume = 0.0
+            for j in range(0, len(points), 3):
+                a, b, c = points[j:j + 3]
+                volume += (
+                    a[0] * (b[1] * c[2] - b[2] * c[1])
+                    + a[1] * (b[2] * c[0] - b[0] * c[2])
+                    + a[2] * (b[0] * c[1] - b[1] * c[0])
+                ) / 6
+            area = 800 - sum(r * r for r in radii) * (1 - 16 * math.sin(math.pi / 64))
+            assert abs(abs(volume) - 6 * area) < 0.002, (shape, arguments, volume, area)
+    # With no shared radius, bare names retain cuboid's square default.
+    plain = render(folder, "sides-default", 'cuboid([40,20,6], side=["top"]);', "stl")
+    assert len(list(vertices(plain))) == 36
+    print(f"PASS: {2 * len(cases) + 1} rounded-side meshes (corners, volume, bounds)", flush=True)
+
+
 def main() -> None:
     with tempfile.TemporaryDirectory(prefix="shape-helpers-") as directory:
         folder = Path(directory)
         check_percentages(folder)
         check_anchors(folder)
+        check_rounded_sides(folder)
 
 
 if __name__ == "__main__":

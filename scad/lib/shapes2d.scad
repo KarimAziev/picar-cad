@@ -39,6 +39,64 @@ function calc_corner_rad(size, r, r_factor=0.3) =
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
+  rounded_rect_corner_radii
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Resolve side selections to four independent corner radii.
+
+  **Parameters:**
+  - `size`: Profile dimensions `[width, length]` on X/Y.
+  - `side`: A side name, a list of names or `[name, radius]` pairs, or a mixed
+    list. Names are `"all"`, `"top"`, `"bottom"`, `"left"`, `"right"`,
+    `"top_left"`, `"top_right"`, `"bottom_left"`, and `"bottom_right"`.
+    `undef` selects all corners; an empty list selects none. Later entries
+    override earlier entries at shared corners. Unselected corners stay square.
+  - `r`: Shared radius for bare names, as a number or percentage string.
+  - `r_factor`: Fraction of the smaller dimension used when `r` is `undef`
+    (default `0.3`). Pair radii override both `r` and `r_factor` and must be
+    non-negative numbers or percentage strings, with an optional `%` suffix.
+    Percentages use the smaller X/Y dimension. Each radius is capped at half
+    that dimension; zero leaves a square corner.
+
+  **Returns:**
+  Radii in `[bottom_left, bottom_right, top_right, top_left]` order.
+
+  **Examples:**
+  ```scad
+  rounded_rect_corner_radii([40, 20], ["top", "bottom_left"], r=3);
+  // -> [3, 0, 3, 3]
+  rounded_rect_corner_radii([40, 20], [["all", "10%"], ["top_left", 0]]);
+  // -> [2, 2, 2, 0]
+  ```
+ */
+function rounded_rect_corner_radii(size, side, r=undef, r_factor=0.3) =
+  let (names = ["all", "top", "bottom", "left", "right",
+                "top_left", "top_right", "bottom_left", "bottom_right"],
+       selections = is_undef(side) ? ["all"] : is_list(side) ? side : [side],
+       entries = [for (entry = selections)
+           assert(is_string(entry) ||
+                  (is_list(entry) && len(entry) == 2 && is_string(entry[0]) &&
+                   (is_num(entry[1]) || is_string(entry[1]))),
+                  "side entries must be names or [name, radius] pairs")
+           let (name = is_string(entry) ? entry : entry[0],
+                radius = is_string(entry) ? r : entry[1],
+                resolved = maybe_percent_string_to_num(radius, min(size[0], size[1])))
+           assert(!is_list(side) || len(search([name], names, 0)[0]) > 0,
+                  str("Unknown rounded side: ", name))
+           assert(is_string(entry) || (is_num(resolved) && resolved >= 0),
+                  "side radius must be non-negative")
+           [name, calc_corner_rad(size, radius, r_factor)]],
+       corners = [["all", "bottom", "left", "bottom_left"],
+                  ["all", "bottom", "right", "bottom_right"],
+                  ["all", "top", "right", "top_right"],
+                  ["all", "top", "left", "top_left"]])
+  [for (corner = corners)
+      let (matches = [for (entry = entries)
+          if (len(search([entry[0]], corner, 0)[0]) > 0) entry[1]])
+      len(matches) == 0 ? 0 : matches[len(matches) - 1]];
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
   rounded_rect
   ─────────────────────────────────────────────────────────────────────────────
 
@@ -57,6 +115,12 @@ function calc_corner_rad(size, r, r_factor=0.3) =
   - `side`: Rounded side selection. Supported values are `"all"`, `"top"`,
     `"left"`, `"right"`, `"bottom"`, `"top_left"`, `"top_right"`,
     `"bottom_left"`, or `"bottom_right"`. Corner names round only that corner.
+    Also accepts lists of names or `[name, radius]` pairs, including mixed
+    lists. Bare names use `r`/`r_factor`; pairs override them with a
+    non-negative radius or percentage of the smaller X/Y dimension, capped
+    at half that dimension. Later entries win at shared corners. `undef`
+    selects all corners; `[]` selects none. Zero keeps a corner square.
+    Top is +Y, bottom is -Y, left is -X, and right is +X.
   - `anchor`: Per-axis placement as `[x, y, z]`. Each component is `1` to
     extend positively, `0` to center, or `-1` to extend negatively. Defaults
     to `[1, 1, 1]`, or `[0, 0, 1]` when `center=true`. Individual `undef`
@@ -68,6 +132,8 @@ function calc_corner_rad(size, r, r_factor=0.3) =
   rounded_rect([40, 20], r=3, center=true, fn=48);
   rounded_rect([100, 10], r_factor=0.25, side="top");
   rounded_rect([40, 20], r=3, anchor=[-1, 0, 1]);
+  rounded_rect([40, 20], r=3, side=["top_left", "bottom_right"]);
+  rounded_rect([40, 20], side=[["top", 4], ["bottom", "10%"]]);
   ```
  */
 module rounded_rect(size, r=undef, center=false, fn, r_factor=0.3, side, anchor) {
@@ -79,9 +145,9 @@ module rounded_rect(size, r=undef, center=false, fn, r_factor=0.3, side, anchor)
             with_default(anchor[2], 1)];
 
   with_anchor(anchor=anchor, size=[w, h, 0]) {
-    if (rad == 0) {
+    if (rad == 0 && !is_list(side)) {
       square(size);
-    } else if (is_string(side) && side != "all") {
+    } else if (is_list(side) || (is_string(side) && side != "all")) {
       rounded_rect_two(size=size,
                        r=r,
                        segments=is_undef(fn) ? 10 : fn,
@@ -112,8 +178,7 @@ module rounded_rect(size, r=undef, center=false, fn, r_factor=0.3, side, anchor)
   rounded_rect_two
   ─────────────────────────────────────────────────────────────────────────────
 
-  Create a rectangle with one corner or two adjacent corners rounded using a
-  custom polygon.
+  Create a rectangle with selectively rounded corners using a custom polygon.
 
   **Parameters:**
   - `size`: Rectangle size as `[width, height]`.
@@ -127,7 +192,9 @@ module rounded_rect(size, r=undef, center=false, fn, r_factor=0.3, side, anchor)
   - `fn`: Optional polygon fragment hint.
   - `side`: Which edge pair receives the rounded corners: `"top"`, `"left"`,
     `"right"`, or `"bottom"`. A single corner can be selected with `"top_left"`,
-    `"top_right"`, `"bottom_left"`, or `"bottom_right"`.
+    `"top_right"`, `"bottom_left"`, or `"bottom_right"`. Also accepts `"all"`
+    and the same lists of names or `[name, radius]` pairs as `rounded_rect()`;
+    later entries win at shared corners, and `[]` leaves all corners square.
   - `anchor`: Per-axis placement as `[x, y, z]`. Each component is `1` to
     extend positively, `0` to center, or `-1` to extend negatively. Defaults
     to `[1, 1, 1]`, or `[0, 0, 1]` when `center=true`. Individual `undef`
@@ -152,32 +219,31 @@ module rounded_rect_two(size,
 
   w = size[0];
   h = size[1];
-  rad = calc_corner_rad(size=size, r=r, r_factor=r_factor);
+  radii = rounded_rect_corner_radii(size, side, r, r_factor);
+  bl = radii[0];
+  br = radii[1];
+  tr = radii[2];
+  tl = radii[3];
 
   anchor = [with_default(anchor[0], center ? 0 : 1),
             with_default(anchor[1], center ? 0 : 1),
             with_default(anchor[2], 1)];
 
-  round_tl = side == "top" || side == "left" || side == "top_left";
-  round_tr = side == "top" || side == "right" || side == "top_right";
-  round_br = side == "bottom" || side == "right" || side == "bottom_right";
-  round_bl = side == "bottom" || side == "left" || side == "bottom_left";
-
-  function arc(cx, cy, a0, a1) =
+  function arc(cx, cy, rad, a0, a1) =
     [for (i = [1:segments])
         let (a = a0 + i * ((a1 - a0)/segments))
           [cx + rad*cos(a), cy + rad*sin(a)]];
 
   pts =
-    concat(round_bl ? [[rad, 0]] : [[0, 0]],
-           round_br ? [[w-rad, 0]] : [[w, 0]],
-           round_br ? arc(w-rad, rad, -90, 0) : [],
-           round_tr ? [[w, h-rad]] : [[w, h]],
-           round_tr ? arc(w-rad, h-rad, 0, 90) : [],
-           round_tl ? [[rad, h]] : [[0, h]],
-           round_tl ? arc(rad, h-rad, 90, 180) : [],
-           round_bl ? [[0, rad]] : [[0, 0]],
-           round_bl ? arc(rad, rad, 180, 270) : []);
+    concat([[bl, 0]],
+           [[w-br, 0]],
+           br > 0 ? arc(w-br, br, br, -90, 0) : [],
+           [[w, h-tr]],
+           tr > 0 ? arc(w-tr, h-tr, tr, 0, 90) : [],
+           [[tl, h]],
+           tl > 0 ? arc(tl, h-tl, tl, 90, 180) : [],
+           [[0, bl]],
+           bl > 0 ? arc(bl, bl, bl, 180, 270) : []);
 
   with_anchor(anchor=anchor, size=[w, h, 0]) {
     polygon(points = pts, $fn=fn);
