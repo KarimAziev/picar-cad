@@ -9,10 +9,13 @@ include <../colors.scad>
 include <../parameters.scad>
 
 use <../lib/functions.scad>
+use <../lib/placement.scad>
 use <../lib/plist.scad>
+use <../lib/shapes2d.scad>
 use <../lib/shapes3d.scad>
 use <../lib/text.scad>
 use <../lib/transforms.scad>
+use <t_plug.scad>
 
 lipo_power_wiring_size    = [9.6, 8, 16.5];
 lipo_wiring_balancer_size = [8.75, 8, 11.3];
@@ -290,6 +293,19 @@ function lipo_pack_oriented_size(plist) =
   orientation_size(plist_get("orientation", plist, "wlh"),
                    plist_get("size", plist));
 
+module lipo_pack_bent(angle, r, fn=100) {
+  rotate_extrude(angle=angle) {
+    translate([r, 0, 0]) {
+      circle(r=r, $fn=fn);
+    }
+  }
+}
+
+function lipo_pack_has_side_wiring(plist) =
+  in_list(plist_get("lead_exit", plist),
+          ["rear_side",
+           "front_side"]);
+
 /**
   ────────────────────────────────────────────────────────────────────────────
   lipo_pack_from_pl
@@ -308,7 +324,12 @@ module lipo_pack_from_pl(plist, anchor=[0, 1, 1]) {
   w = size[0];
   l = size[1];
   h = size[2];
-  corner_r = plist_get("corner_r", plist);
+  front_end_corner_r = plist_get("front_end_corner_r", plist);
+  rear_end_corner_r = plist_get("rear_end_corner_r", plist);
+
+  power_lead = plist_get("power_lead", plist, []);
+  balance_lead = plist_get("balance_lead", plist, []);
+
   orientation = plist_get("orientation", plist, "wlh");
 
   color = plist_get("color", plist, "#B51F2C");
@@ -317,10 +338,93 @@ module lipo_pack_from_pl(plist, anchor=[0, 1, 1]) {
 
   top_cover_box_bg = plist_get("bg", top_cover_box);
 
+  corner_end_sides = [for (v = [(is_undef(front_end_corner_r) ? undef :
+                                 ["top", front_end_corner_r]),
+                                (is_undef(rear_end_corner_r) ? undef :
+                                 ["bottom", rear_end_corner_r])])
+      if (v) v];
+
   function _from_percent_val(val, total) = is_string(val)
     ? percent_to_mm(parse_percent(val),
                     total=total)
     : val;
+
+  module _cube() {
+    rotate([0, 90, 0]) {
+      cuboid(size=[size[2], size[1], size[0]],
+             r=front_end_corner_r,
+             side=corner_end_sides,
+             anchor=[-1, 0, 0]);
+    }
+  }
+
+  module _cable_exit(color,
+                     d,
+                     wire_l,
+                     exit_l) {
+    let (r = d / 2,
+         l = exit_l - r) {
+      color(color, alpha=1) {
+        union() {
+          if (l > 0) {
+            cyl(d=d, h=l, orientation="hlw");
+          }
+
+          translate([(l > 0 ? -l : 0), -r, r]) {
+            rotate([0, 0, 90]) {
+              lipo_pack_bent(angle=90, r=r);
+            }
+          }
+
+          if (wire_l > 0) {
+            translate([0, -r, 0]) {
+              cyl(d=d,
+                  h=wire_l,
+                  orientation="whl",
+                  anchor=[-1, -1, 1]);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  module _wire_lead(lead_side,
+                    d,
+                    wire_l,
+                    exit_l,
+                    connector,
+                    cables) {
+    let (r = d / 2) {
+      mirror([lead_side == "left" ? 0 : 1, 0, 0]) {
+        translate([0, -(size[1] / 2 - r), 0]) {
+          translate([-(size[0] / 2),
+                     0,
+                     size[2] / 2 - r]) {
+
+            rotate([0, -90, 0]) {
+              columns_children(cols=len(cables), w=d, gap=0) {
+                _cable_exit(d=d,
+                            color=cables[$i],
+                            wire_l=wire_l,
+                            exit_l=exit_l);
+              }
+            }
+
+            translate([0, -wire_l, 0]) {
+              if (connector == "t-plug") {
+                rotate([0, -90, 0]) {
+                  t_plug_female(anchor=[1, -1, 1]);
+                }
+              } else if (connector == "xt-90") {
+                // todo
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 
   module _cover(pl,
                 total_w=w,
@@ -354,7 +458,8 @@ module lipo_pack_from_pl(plist, anchor=[0, 1, 1]) {
                                         pl,
                                         ["size",
                                          (cover_w * 0.9) / len(texts)]);
-        final_pl = plist_merge(plist_merge(["halign", "center", "valign", "center"],
+        final_pl = plist_merge(plist_merge(["halign", "center",
+                                            "valign", "center"],
                                            text_texts_defaults),
                                ["rotation", [0, 0, 0]]);
         rotate([0, 0, 90]) {
@@ -368,6 +473,7 @@ module lipo_pack_from_pl(plist, anchor=[0, 1, 1]) {
                    to=orientation,
                    size=size,
                    anchor=anchor) {
+
     if (top_cover_box_bg) {
       translate([0, 0, h]) {
         _cover(top_cover_box);
@@ -377,17 +483,42 @@ module lipo_pack_from_pl(plist, anchor=[0, 1, 1]) {
       mirror_copy([1, 0, 0]) {
         translate([w / 2, 0, 0]) {
           rotate([0, 90, 0]) {
-            _cover(side_cover_box,
-                   total_w=h,
-                   l_def="100%",
-                   anchor=[-1, 0, 1]);
+            intersection() {
+              _cover(side_cover_box,
+                     total_w=h,
+                     l_def="100%",
+                     anchor=[-1, 0, 1]);
+              _cube();
+            }
+          }
+        }
+      }
+    }
+
+    for (power_lead = [power_lead, balance_lead]) {
+      let (power_lead_d=plist_get("d", power_lead),
+           power_lead_exit_l=plist_get("exit_l", power_lead, 0),
+           power_lead_l=plist_get("l", power_lead, 0),
+           power_lead_side=plist_get("side", power_lead, "left"),
+           power_lead_connector=plist_get("connector", power_lead),
+           power_lead_colors=plist_get("colors", power_lead, ["red", "black"])) {
+        if (power_lead_d) {
+          if (lipo_pack_has_side_wiring(plist)) {
+            _wire_lead(lead_side=power_lead_side,
+                       d=power_lead_d,
+                       wire_l=power_lead_l,
+                       exit_l=power_lead_exit_l,
+                       cables=power_lead_colors,
+                       connector=power_lead_connector);
+          } else {
+            // TODO:
           }
         }
       }
     }
 
     color(color) {
-      cuboid(size=size, r=corner_r, anchor=[0, 0, 1]);
+      _cube();
     }
   }
 }
@@ -395,10 +526,20 @@ module lipo_pack_from_pl(plist, anchor=[0, 1, 1]) {
 lipo_pack_from_pl(plist=["size", [lipo_pack_width,
                                   lipo_pack_length,
                                   lipo_pack_height],
+                         "rear_end_corner_r", "50%",
+                         "lead_exit", "rear_side", // rear_side | front_side | front_end | rear_end
+                         "power_lead", ["side", "left",
+                                        "connector", "t-plug",
+                                        "d", 4.35,
+                                        "l", 40],
+                         "balance_lead", ["side", "right",
+                                          "d", 1.72,
+                                          "colors", ["red", "white", "black"],
+                                          "l", 40],
+                         "rear_end_corner_r", "5%",
                          "orientation", "wlh", // wlh (default) | lwh | lhw | whl | hlw | hwl
                          "top_cover", ["bg", "gold",
-
-                                       "texts", [["text", "2S",
+                                       "texts", [["text", "3S",
                                                   "size", 10,
                                                   "halign", "center",
                                                   "gap_before", 4],

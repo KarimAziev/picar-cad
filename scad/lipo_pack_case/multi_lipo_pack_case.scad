@@ -628,4 +628,4 @@ module multi_lipo_pack_case(pl,
   }
 }
 
-multi_lipo_pack_case(multi_lipo_packs_case, target_h=30);
+multi_lipo_pack_case(multi_lipo_packs_case, target_h=30, show_packs=true);

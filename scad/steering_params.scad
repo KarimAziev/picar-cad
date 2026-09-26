@@ -1291,12 +1291,31 @@ front_rpi_rotate_z_180                            = true; // 180-degree turn in 
 
 front_chassis_rear_frame_corner_r                 = 4;
 
-lipo_pack_base_pl                                 = ["size", [lipo_pack_width, lipo_pack_length, lipo_pack_height],
+lipo_pack_base_pl                                 = ["size", [lipo_pack_width,
+                                                              lipo_pack_length,
+                                                              lipo_pack_height],
                                                      "orientation", "lwh",
+                                                     "rear_end_corner_r", "50%",
+                                                     "lead_exit", "rear_side", // rear_side | front_side | front_end | rear_end
+                                                     "power_lead", ["side", "left",
+                                                                    "connector", "t-plug",
+                                                                    "d", 4.35,
+                                                                    "l", 40],
+                                                     "balance_lead", ["side", "right",
+                                                                      "d", 1.72,
+                                                                      "colors", ["red", "white", "black"],
+                                                                      "l", 40],
+                                                     "rear_end_corner_r", "5%",
+                                                     "orientation", "wlh", // wlh (default) | lwh | lhw | whl | hlw | hwl
                                                      "top_cover", ["bg", "gold",
                                                                    "texts", [["text", "3S",
                                                                               "size", 10,
-                                                                              "font", "DSEG14 Classic:style=Bold"]],
+                                                                              "halign", "center",
+                                                                              "gap_before", 4],
+                                                                             ["text", "5000MAH",
+                                                                              "size", 10,
+                                                                              "halign", "center",
+                                                                              "gap_before", 10]],
                                                                    "props", ["halign", "center", "color", "#28282B"]],
                                                      "side_cover", ["bg", "silver"]];
 
