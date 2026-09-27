@@ -1390,7 +1390,7 @@ multi_power_case_size                             = plist_get("size",
 
 chassis_body_min_w                                = multi_power_case_size[0];
 
-bracket_thickness                                 = 6.5;
+bracket_thickness                                 = 7.0;
 
 gearbox_bracket_bolt_d                            = m3_hole_dia;
 gearbox_bracket_bolt_pad_x                        = 3;
