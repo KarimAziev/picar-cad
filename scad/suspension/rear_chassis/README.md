@@ -35,7 +35,9 @@ should iterate the `panels` list.
 
 `rear_power_case_plist` selects the case; `undef` removes its supporting columns,
 mounting holes and contribution to the frame envelope. `rear_lidar_plist=undef`
-omits the lidar and provisional cover. Visibility toggles on `rear_chassis()`
+omits the lidar and leaves a plain sliding lid. Disabling the case's `rail`
+specification omits both the sliding lid and lidar, retaining the case and its
+mounting hardware. Visibility toggles on `rear_chassis()`
 and `front_chassis_assembly()` do not resize the configured layout.
 
 The case, lid and lidar are centered on chassis X=0, independently of the
@@ -79,13 +81,19 @@ remains -1.8 mm.
 The resolved case floor has recessed hex nuts to retain the standoffs' top studs.
 The nuts sit below the battery surface, with solid floor material beneath them.
 `rear_power_case_headroom` adds space above the pack for the cover (default 2 mm).
-The flat cover supports the lidar on its own standoffs and retains its fixed
-mounting-hole spacing. Its screws have underside recesses so they do not project
-into the battery. **The cover currently rests on the case rim; case fastening or
-latching belongs to the next power-case/lid design.**
+The sliding lid uses the case's shared dovetail profiles and transverse locking
+holes. It supports the lidar on its own standoffs with the hardware's fixed
+mounting-hole spacing and underside screw-head recesses. The lid's footprint
+and mounting height come from the case and rail properties; the rear layout
+uses that actual footprint when keeping the control levers clear.
+
+See [the multi-pack case interface](../../lipo_pack_case/README.md) for rail,
+clearance, lid, and preview settings. Export `rear_power_case_printable.scad`
+and `rear_power_lid_printable.scad` for the matched rear payload parts. The lid
+prints with its roof on the bed and its channels facing upward.
 
 The layout result's `power_case` plist exposes the adjusted case `plist`, `pos`,
-`size` (including ears), `body_size` (oriented cavity/wall envelope), `mount_holes`, `bolt_spacing`, `target_h`, `mount_z`, `standoff_h`, and
+`size` (including ears), `body_size` (oriented case envelope before mounting ears), `mount_holes`, `bolt_spacing`, `target_h`, `mount_z`, `standoff_h`, and
 `clearance_height`. `mount_z` is the battery floor above the chassis underside;
 `standoff_h` is the hardware body length above the chassis top.
 

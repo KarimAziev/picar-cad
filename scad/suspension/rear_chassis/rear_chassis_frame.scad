@@ -55,7 +55,7 @@ function rear_chassis_size(layout=rear_suspension_layout()) =
   - `show_lipo_packs`: Display batteries within the case.
   - `show_power_standoffs`: Display the four supporting columns.
   - `show_lidar`: Display the lidar on the raised payload.
-  - `show_lidar_lid`: Display its provisional cover plate.
+  - `show_lidar_lid`: Display its sliding power-case lid.
  */
 module rear_chassis(show_panel_stack=true,
                     show_gearbox_bracket=true,

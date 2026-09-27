@@ -8,6 +8,7 @@ include <rear_suspension_params.scad>
 
 use <../../lib/plist.scad>
 use <../../lipo_pack_case/multi_lipo_pack_case.scad>
+use <../../lipo_pack_case/multi_lipo_pack_lid.scad>
 use <../../motor_brackets/rc/gearbox_bracket.scad>
 use <../../panel_stack/panel_stack.scad>
 use <../../panel_stack/control_panel.scad>
@@ -76,7 +77,7 @@ function _rear_panel_layout(specs,
     `gap` and `y_offset`); [] omits panels. `undef` selects the legacy single
     stack controlled by the scalar panel arguments above.
   - `power_case`: Raised battery case plist, or `undef` to omit it.
-  - `lidar_plist`: Lidar on the provisional cover, or `undef` to omit it.
+  - `lidar_plist`: Lidar on the sliding lid, or `undef` to omit it.
   - `min_width`: Width required by adjoining chassis sections; zero measures
     the rear section alone. The default includes the front hardware.
   - `control_outside`: Move standalone controls toward the suspension within
@@ -145,10 +146,11 @@ function rear_suspension_layout(bracket=gearmotor_bracket_compute_params(motor_p
        mount = rear_power_case_mount(power_case, motor_bounds, rear_power_case_y_offset,
                                       panels=close_panels),
        case_size = is_undef(mount) ? [0, 0, 0] : plist_get("size", mount),
-       case_body = is_undef(mount) ? [0, 0, 0] : plist_get("body_size", mount),
-       lidar_envelope = is_undef(lidar_plist) ? [0, 0, 0] : lidar_size(lidar_plist),
-       lid_size = [max(case_body[0], lidar_envelope[0] + 4),
-                   max(case_body[1], lidar_envelope[1] + 4), rear_lidar_lid_thickness],
+       rail_enabled = !is_undef(mount)
+         && plist_get("enabled", plist_get("rail_props", multi_lipo_pack_props(plist_get("plist", mount)))),
+       lid_props = !rail_enabled ? undef
+         : multi_lipo_pack_lid_props(rear_power_lid_plist(plist_get("plist", mount), lidar_plist)),
+       lid_size = is_undef(lid_props) ? [0, 0, 0] : plist_get("size", lid_props),
        overhead = is_undef(mount) ? undef
        : [plist_get("pos", mount) - [max(case_size[0], lid_size[0])/2,
                                       max(case_size[1], lid_size[1])/2, 0],

@@ -21,6 +21,7 @@ use <../placeholders/bolt.scad>
 use <../placeholders/lipo_pack.scad>
 use <../placeholders/nut.scad>
 use <../placeholders/standoff.scad>
+use <multi_lipo_pack_rail.scad>
 
 function _multi_lipo_pack_sum_before(values, index) =
   index <= 0 ? 0 : sum([for (i = [0 : index - 1]) values[i]]);
@@ -218,6 +219,8 @@ function multi_lipo_pack_vent_props(wall, span, wall_h) =
   maximum X, before case orientation. End-wall lengths run along X; side
   lengths run along Y. Adjacent walls share corner material; cutouts remove
   the shared material too. The `inner` spec applies to every divider.
+  Optional `rail` properties enable matching lid rails; see
+  `multi_lipo_pack_rail_props()` for the shared dovetail interface.
   `inner_corner_r` optionally overrides the cavity corner radius; zero leaves
   room for square pack corners even when the case exterior is rounded.
   `mount_nut_pockets=true` seats retaining nuts below the floor's top surface
@@ -233,9 +236,11 @@ function multi_lipo_pack_vent_props(wall, span, wall_h) =
   A plist containing `size` (final oriented envelope), `canonical_size`,
   `body_size` (canonical case without ears), `inner_size`, `pack_sizes`,
   `pack_positions` (relative to the body minimum), `pack_layout`, `orientation`,
-  canonical `bolt_spacing`, `max_bolt_spacing`, and resolved `wall_props`.
+  canonical `bolt_spacing`, `max_bolt_spacing`, resolved `wall_props`,
+  `wall_size` (shell before rails), and `rail_props`. Case envelopes include
+  enabled rails; mounting ears still affect only the outer envelope.
   `inner_size[2]` is the reference pack height plus clearance; the case
-  envelope height follows the tallest enabled wall (including dividers only
+  shell height follows the tallest enabled wall (including dividers only
   when present), independently of visible pack placeholders.
  */
 function multi_lipo_pack_props(plist,
@@ -293,7 +298,12 @@ function multi_lipo_pack_props(plist,
                 let (wall = plist_get(name, wall_props))
                 (name != "inner" || pack_n > 1) && plist_get("l", wall) > 0
                 ? plist_get("h", wall) : 0]),
-            canonical_size = [body_w, body_l, bottom_t + wall_h],
+            wall_size = [body_w, body_l, bottom_t + wall_h],
+            rail_props = multi_lipo_pack_rail_props(plist, wall_size, wall_props),
+            canonical_size = [body_w, body_l,
+                              plist_get("enabled", rail_props)
+                              ? max(wall_size[2], plist_get("z", rail_props) + plist_get("h", rail_props))
+                              : wall_size[2]],
             case_orientation = assert_orientation(plist_get("orientation",
                                                             plist,
                                                             "wlh"),
@@ -345,6 +355,8 @@ function multi_lipo_pack_props(plist,
             ["size", orientation_size(case_orientation, envelope),
              "canonical_size", envelope,
              "body_size", canonical_size,
+             "wall_size", wall_size,
+             "rail_props", rail_props,
              "inner_size", inner_size,
              "wall_props", wall_props,
              "pack_sizes", pack_sizes,
@@ -455,7 +467,7 @@ module multi_lipo_pack_case(pl,
   l = body_size[1];
   ear_d = plist_get("mount_ear_d", pl, 0);
   wall_props = plist_get("wall_props", props);
-  wall_h = body_size[2] - bottom_t;
+  wall_h = plist_get("wall_size", props)[2] - bottom_t;
   pack_n = len(lipo_packs);
 
   bolt_d = plist_get("bolt_d", pl, 0);
@@ -571,6 +583,9 @@ module multi_lipo_pack_case(pl,
 
   module _solid_case() {
     union() {
+      color(case_color, alpha=1) {
+        multi_lipo_pack_rails(plist_get("rail_props", props));
+      }
       difference() {
         color(case_color, alpha=1) {
           union() {

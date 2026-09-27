@@ -26,10 +26,10 @@ use <servo_driver_hat.scad>
 use <standoff.scad>
 
 show_standoffs              = true;
-show_ai_hat                 = false;
-show_motor_driver_hat       = false;
-show_servo_driver_hat       = false;
-show_gpio_expansion_board   = false;
+show_ai_hat                 = true;
+show_motor_driver_hat       = true;
+show_servo_driver_hat       = true;
+show_gpio_expansion_board   = true;
 show_camera_ribbon_slot     = true;
 
 rpi_camera_ribbon_slot_size = [rpi_csi_size[1], 1.6];

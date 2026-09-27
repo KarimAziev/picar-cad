@@ -1,16 +1,12 @@
 /**
-  * Module: Raised rear battery mounting and provisional lidar cover.
+  * Module: Raised rear battery mounting and sliding lidar lid.
   * Coordinates match the native rear holder-row layout, below the chassis.
   */
 include <../rear_suspension/rear_suspension_params.scad>
 use <../../lib/functions.scad>
 use <../../lib/plist.scad>
-use <../../lib/shapes3d.scad>
-use <../../lib/slots.scad>
-use <../../lib/transforms.scad>
 use <../../lipo_pack_case/multi_lipo_pack_case.scad>
-use <../../placeholders/lidar.scad>
-use <../../placeholders/bolt.scad>
+use <../../lipo_pack_case/multi_lipo_pack_lid.scad>
 use <../../placeholders/standoff.scad>
 
 /**
@@ -87,19 +83,36 @@ function rear_motor_clearance_height(bracket) =
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
+  rear_power_lid_plist
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Apply the rear payload's lidar and roof settings to the shared sliding lid.
+
+  **Parameters:**
+
+  `pl`: Resolved case plist, including its mounting ears and floor thickness.
+  `lidar_pl`: Lidar hardware plist; undef keeps a plain sliding roof.
+ */
+function rear_power_lid_plist(pl, lidar_pl) =
+  plist_merge(pl, ["lid", plist_merge(plist_get("lid", pl, []),
+    ["lidar", lidar_pl, "t", rear_lidar_lid_thickness,
+     "lidar_target_h", rear_lidar_standoff_h])]);
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
   rear_power_payload
   ─────────────────────────────────────────────────────────────────────────────
-  Render the raised case, standoffs, and optional lidar on a provisional cover.
+  Render the raised case, standoffs, sliding lid, and optional lidar.
   **Parameters:**
   - `payload`: Resolved `power_case` entry from the rear layout.
   - `show_case`: Display the printed battery case.
   - `show_packs`: Display installed batteries.
   - `show_standoffs`: Display the four case support columns.
   - `show_lidar`: Display the lidar and its own mounting standoffs.
-  - `show_lid`: Display the flat cover with the fixed lidar mounting pattern.
+  - `show_lid`: Display the sliding lid with the shared rail and lidar mounting patterns.
   - `slot_mode`: Emit the four chassis mounting cutters only.
-  The cover rests on the case rim. Its case fastening/latching is intentionally
-  left for the later power-case/lid design; the lidar bolt pattern is functional.
+  The lid follows the case rail datums, including case orientation and mounting
+  ears. Its visibility does not alter either the case or lidar placement.
  */
 module rear_power_payload(payload, show_case=true, show_packs=true,
                            show_standoffs=true, show_lidar=true, show_lid=true,
@@ -107,7 +120,6 @@ module rear_power_payload(payload, show_case=true, show_packs=true,
   if (!is_undef(payload)) {
     pl = plist_get("plist", payload);
     pos = plist_get("pos", payload);
-    size = plist_get("size", payload);
     mount_z = plist_get("mount_z", payload);
     lidar_pl = plist_get("lidar", payload);
     translate(pos) {
@@ -127,31 +139,11 @@ module rear_power_payload(payload, show_case=true, show_packs=true,
                                 bolt_spacing=plist_get("bolt_spacing", payload));
         }
       }
-      if (!slot_mode && !is_undef(lidar_pl)) {
-        lid_size = plist_get("lid_size", payload);
-        lidar_d = plist_get("bolt_d", lidar_pl);
-        lidar_mount = plist_merge(lidar_pl,
-                         ["bore_d", find_bolt_head_d(lidar_d, "countersunk") + 0.2,
-                          "bore_h", find_bolt_head_h(lidar_d, "countersunk") + 0.15,
-                          "sink", true]);
-        translate([0, 0, mount_z + size[2]]) {
-          if (show_lid) {
-            difference() {
-              cuboid(lid_size, anchor=[0, 0, 1], r=2);
-              four_corner_children(size=plist_get("bolt_spacing", lidar_pl), center=true) {
-                counterbore(h=lid_size[2], d=lidar_d + 0.2,
-                            bore_d=plist_get("bore_d", lidar_mount),
-                            bore_h=plist_get("bore_h", lidar_mount),
-                            sink=true, reverse=true);
-              }
-            }
-          }
-          if (show_lidar) {
-            translate([0, 0, lid_size[2]]) {
-              lidar(plist=lidar_mount, target_h=rear_lidar_standoff_h,
-                    parent_thickness=lid_size[2], anchor=[0, 0, 1]);
-            }
-          }
+      if (!slot_mode && (show_lid || show_lidar)
+          && plist_get("enabled", plist_get("rail_props", multi_lipo_pack_props(pl)))) {
+        translate([0, 0, mount_z]) {
+          multi_lipo_pack_lid_on_case(rear_power_lid_plist(pl, lidar_pl),
+                                      show_lid=show_lid, show_lidar=show_lidar);
         }
       }
     }

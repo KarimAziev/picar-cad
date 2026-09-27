@@ -78,8 +78,7 @@ panel_stack_y_offset                       = 0; // from bracket footprint center
 // | auto. Auto chooses the smaller occupied side; later entries can use the
 // opposite side automatically. Repeated sides are placed successively outward.
 rear_panel_specs                           = [["type", "control", "side", "auto", "orientation", "wlh"],
-                                              // ["type", "fuse", "side", "auto", "orientation", "lwh"]
-                                              ];
+                                              ["type", "fuse", "side", "auto", "orientation", "lwh"]];
 
 // Optional per-panel keys: gap (edge-to-edge), y_offset (from motor center).
 // Set the power case to undef for the lower deck alone; [] removes all panels.
@@ -92,7 +91,7 @@ rear_control_case_gap                      = 3;
 rear_power_case_plist                      = multi_lipo_packs_case;
 rear_power_case_y_offset                   = -4;
 rear_power_case_clearance                  = 3;
-rear_power_case_headroom                   = 2; // beneath the provisional cover, above the pack
+rear_power_case_headroom                   = 2; // beneath the sliding lid, above the pack
 rear_power_standoff_clearance              = 2;
 rear_lidar_plist                           = rplidar_c1_plist;
 rear_lidar_lid_thickness                   = 3;
