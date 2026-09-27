@@ -3037,6 +3037,15 @@ usb_c_plist = ["plug_shell", ["size", [8.2, 7.4, 2.4],
                              "color", matte_black],
                "strain_relief", ["size", [5.9, 7, 5.8]]];
 
+wago_conductor_size = [6.9, 21.1, 9.8];
+wago_hole_size_xz   = [6.1, 5.15];
+wago_lid_l          = 16.0;
+wago_lid_t          = 1.3;
+wago_thickness      = 0.7;
+
+wago_n              = 5;
+wago_total_w        = 36.5;
+
 // Local Variables:
 // c-label-minimum-indentation: 53
 // End:
