@@ -169,8 +169,8 @@ wall_props = multi_lipo_pack_wall_props(
 assert(plist_get("h", wall_props) == 25);
 assert(plist_get("l", wall_props) == 80);
 assert(plist_get("offset", wall_props) == 10);
-assert(plist_get("cutouts", wall_props)[0] == ["l", 20, "h", 10, "offset", 40]);
-assert(plist_get("cutouts", wall_props)[1] == ["l", 5, "h", 25, "offset", 0]);
+assert(plist_get("cutouts", wall_props)[0] == ["l", 20, "h", 10, "offset", 40, "corner_r", 0]);
+assert(plist_get("cutouts", wall_props)[1] == ["l", 5, "h", 25, "offset", 0, "corner_r", 0]);
 assert(plist_get("offset", multi_lipo_pack_wall_props(["l", 30], 100, 20)) == 35);
 
 custom_walls = plist_merge(walls,
@@ -197,3 +197,32 @@ for (orientation = orientations) {
   assert(plist_get("size", props) == orientation_size(orientation, plist_get("canonical_size", props)));
 }
 echo("PASS: custom wall heights, lengths, cutouts, and case envelope");
+
+// Radii follow the side profile, not the wall thickness or full case footprint.
+rounded_wall = multi_lipo_pack_wall_props(
+  ["l", 40, "h", 20, "corner_r", "20%",
+   "cutouts", [["l", 10, "h", 8, "corner_r", "25%"]]], 100, 30);
+assert(plist_get("corner_r", rounded_wall) == 4);
+assert(plist_get("corner_r", plist_get("cutouts", rounded_wall)[0]) == 2);
+assert(plist_get("corner_r", multi_lipo_pack_wall_props(
+  ["l", 40, "h", 20, "corner_r", 4], 100, 30)) == 4);
+for (radius = [99, "100%"]) {
+  assert(plist_get("corner_r", multi_lipo_pack_wall_props(
+    ["l", 40, "h", 20, "corner_r", radius], 100, 30)) == 10);
+}
+assert(plist_get("corner_r", multi_lipo_pack_wall_props(
+  ["l", 0, "corner_r", "30%"], 100, 30)) == 0);
+echo("PASS: wall and cutout corner radii, percentage reference, and clamping");
+
+// Vent percentages refer to the resolved opening, independently of wall radii.
+for (radius = [0.8, "40%"]) {
+  vent = multi_lipo_pack_vent_props(
+    ["vent_w", "20%", "vent_h", 2, "vent_corner_r", radius], 100, 20);
+  assert(plist_get("slot_size", vent) == [20, 2]);
+  assert(plist_get("corner_r", vent) == 0.8);
+}
+assert(plist_get("corner_r", multi_lipo_pack_vent_props(
+  ["vent_w", 10, "vent_h", 2, "corner_r", 4], 100, 20)) == 0);
+assert(plist_get("corner_r", multi_lipo_pack_vent_props(
+  ["vent_w", 10, "vent_h", 2, "vent_corner_r", 20], 100, 20)) == 1);
+echo("PASS: vent radius units, clamping, and independence from wall corners");

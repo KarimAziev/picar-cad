@@ -78,7 +78,8 @@ panel_stack_y_offset                       = 0; // from bracket footprint center
 // | auto. Auto chooses the smaller occupied side; later entries can use the
 // opposite side automatically. Repeated sides are placed successively outward.
 rear_panel_specs                           = [["type", "control", "side", "auto", "orientation", "wlh"],
-                                              ["type", "fuse", "side", "auto", "orientation", "lwh"]];
+                                              // ["type", "fuse", "side", "auto", "orientation", "lwh"]
+                                              ];
 
 // Optional per-panel keys: gap (edge-to-edge), y_offset (from motor center).
 // Set the power case to undef for the lower deck alone; [] removes all panels.

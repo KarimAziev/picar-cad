@@ -14,6 +14,7 @@ include <../steering_params.scad>
 
 use <../lib/functions.scad>
 use <../lib/plist.scad>
+use <../lib/shapes2d.scad>
 use <../lib/shapes3d.scad>
 use <../lib/slots.scad>
 use <../lib/transforms.scad>
@@ -66,6 +67,13 @@ function _multi_lipo_pack_positions(pack_sizes,
            rear_t + l_clearance / 2 + _multi_lipo_pack_sum_before(y_steps, i),
            bottom_t]];
 
+// Match rounded_rect's percentage basis and clamp while rejecting negative radii.
+function _multi_lipo_pack_corner_r(spec, length, height) =
+  let (r = maybe_percent_string_to_num(spec, min(length, height)))
+  assert(is_num(r) && r >= 0,
+         "corner_r must be a nonnegative number or percentage")
+  calc_corner_rad([length, height], r);
+
 /**
   ─────────────────────────────────────────────────────────────────────────────
   multi_lipo_pack_wall_props
@@ -81,19 +89,24 @@ function _multi_lipo_pack_positions(pack_sizes,
   `cutouts` is a list of plists with required `l`, optional `h` (depth down
   from the wall top, default "100%"), and `offset` (default zero). Cutout
   lengths and offsets use the retained wall length; depths use its height.
+  Wall `corner_r` rounds only the upper corners; each cutout's `corner_r`
+  rounds only its lower corners. Both default to zero and accept mm or a
+  percentage of min(l, h), capped at half that dimension. Cutouts use their
+  own length and depth as the reference; dividers use the same interface.
   `span`: Full available wall length. Outer walls include the corner regions.
   `base_h`: Tallest oriented pack height plus the case's `top_clearance`.
 
   **Returns:**
 
-  A plist with resolved `h`, `l`, `offset`, and `cutouts` in millimeters.
+  A plist with resolved `h`, `l`, `offset`, `corner_r`, and `cutouts` in millimeters.
   Zero height or length disables a wall. Heights may exceed `base_h`.
   Cutouts remove wall material only; the floor remains intact.
  */
 function multi_lipo_pack_wall_props(wall, span, base_h) =
   let (h = maybe_percent_string_to_num(plist_get("h", wall, "100%"), base_h),
        length = maybe_percent_string_to_num(plist_get("l", wall, "100%"), span))
-  assert(is_num(h) && h >= 0, "wall h must be a nonnegative number or percentage")
+  assert(is_num(h) && h >= 0,
+         "wall h must be a nonnegative number or percentage")
   assert(is_num(length) && length >= 0 && length <= span + 0.000001,
          "wall l must fit its available span")
   let (l = min(length, span),
@@ -103,16 +116,20 @@ function multi_lipo_pack_wall_props(wall, span, base_h) =
          "wall offset and l must fit its available span")
   assert(is_list(cutouts), "wall cutouts must be a list of plists")
   ["h", h, "l", l, "offset", offset,
+   "corner_r", _multi_lipo_pack_corner_r(plist_get("corner_r", wall, 0), l, h),
    "cutouts", [for (cutout = cutouts)
-       let (cut_l = maybe_percent_string_to_num(plist_get("l", cutout), l),
-            cut_h = maybe_percent_string_to_num(plist_get("h", cutout, "100%"), h),
-            cut_offset = maybe_percent_string_to_num(plist_get("offset", cutout, 0), l))
-       assert(is_num(cut_l) && cut_l > 0, "cutout l must be positive")
-       assert(is_num(cut_h) && cut_h >= 0 && cut_h <= h,
-              "cutout h must be between zero and wall height")
-       assert(is_num(cut_offset) && cut_offset >= 0 && cut_offset + cut_l <= l + 0.000001,
-              "cutout offset and l must fit the retained wall length")
-       ["l", cut_l, "h", cut_h, "offset", cut_offset]]];
+        let (cut_l = maybe_percent_string_to_num(plist_get("l", cutout), l),
+             cut_h = maybe_percent_string_to_num(plist_get("h", cutout, "100%"), h),
+             cut_offset = maybe_percent_string_to_num(plist_get("offset", cutout, 0), l))
+          assert(is_num(cut_l) && cut_l > 0, "cutout l must be positive")
+          assert(is_num(cut_h) && cut_h >= 0 && cut_h <= h,
+                 "cutout h must be between zero and wall height")
+          assert(is_num(cut_offset) && cut_offset >= 0 && cut_offset + cut_l <= l + 0.000001,
+                 "cutout offset and l must fit the retained wall length")
+          ["l", cut_l, "h", cut_h, "offset", cut_offset,
+           "corner_r", _multi_lipo_pack_corner_r(plist_get("corner_r", cutout, 0),
+                                                 cut_l,
+                                                 cut_h)]]];
 
 /**
   ──────────────────────────────────────────────────────────────────────────────
@@ -124,7 +141,9 @@ function multi_lipo_pack_wall_props(wall, span, base_h) =
   `vent_pad` supplies the fallback for all four edges. The optional
   `vent_pad_left`, `vent_pad_right`, `vent_pad_bottom`, and `vent_pad_top`
   values override their respective edges. Horizontal percentages use `span`;
-  vertical percentages use `wall_h`.
+  vertical percentages use `wall_h`. `vent_corner_r` rounds all four corners
+  of each opening (default zero). It accepts mm or a percentage of the smaller
+  resolved slot dimension and is capped at half that dimension.
 
   **Parameters:**
 
@@ -134,7 +153,7 @@ function multi_lipo_pack_wall_props(wall, span, base_h) =
 
   **Returns:**
 
-  A plist with `enabled`, `slot_size`, `gap`, `padding`, `count`, and `start`.
+  A plist with `enabled`, `slot_size`, `corner_r`, `gap`, `padding`, `count`, and `start`.
   `padding` is `[left, right, bottom, top]`, `count` is `[columns, rows]`, and
   `start` is the first slot's span/Z position relative to the panel origin.
  */
@@ -187,11 +206,60 @@ function multi_lipo_pack_vent_props(wall, span, wall_h) =
                                                               z_start = bottom_pad + (available_h - used_h) / 2)
                                                               ["enabled", true,
                                                                "slot_size", [vent_w, vent_h],
+                                                               "corner_r", _multi_lipo_pack_corner_r(plist_get("vent_corner_r", wall, 0),
+                                                                                                     vent_w,
+                                                                                                     vent_h),
                                                                "gap", [col_gap, row_gap],
                                                                "padding", [left_pad, right_pad, bottom_pad, top_pad],
                                                                "available_size", [available_span, available_h],
                                                                "count", [cols, rows],
                                                                "start", [span_start, z_start]];
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  multi_lipo_pack_vents
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Emit a grid of vent cutters with optional rounding on all four corners.
+
+  **Parameters:**
+
+  `vent`: Resolved properties from `multi_lipo_pack_vent_props()`.
+  `depth`: Positive cutter depth through the wall or lid skirt.
+  `axis`: Direction of the vent rows, "x" or "y" (default "x").
+
+  **Notes:**
+
+  The grid starts at the origin plus its resolved `start` offset along the
+  row axis and Z. Cutter depth extends positively on the other horizontal
+  axis. The caller supplies any overshoot needed for through cuts.
+ */
+module multi_lipo_pack_vents(vent, depth, axis="x") {
+  assert(in_list(axis, ["x", "y"]) && is_num(depth) && depth > 0,
+         "Vent cutters require axis x/y and positive depth");
+  if (plist_get("enabled", vent, false)) {
+    count = plist_get("count", vent);
+    start = plist_get("start", vent);
+    gap = plist_get("gap", vent);
+    slot = plist_get("slot_size", vent);
+    if (count[0] > 0 && count[1] > 0) {
+      for (col = [0 : count[0] - 1], row = [0 : count[1] - 1]) {
+        along = start[0] + col * (slot[0] + gap[0]);
+        z = start[1] + row * (slot[1] + gap[1]);
+        translate([axis == "x" ? along : 0, axis == "y" ? along : depth, z]) {
+          rotate([90, 0, axis == "x" ? 0 : 90]) {
+            linear_extrude(height=depth) {
+              rounded_rect(slot,
+                           r=plist_get("corner_r", vent, 0),
+                           fn=40,
+                           anchor=[1, 1, 1]);
+            }
+          }
+        }
+      }
+    }
+  }
+}
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -275,97 +343,97 @@ function multi_lipo_pack_props(plist,
                                                   l_clearance,
                                                   w_clearance),
        requested_layout = plist_get("pack_layout", plist, "auto"))
-       assert(in_list(requested_layout, ["auto", "x", "y"]),
-              "pack_layout must be \"auto\", \"x\", or \"y\"")
-       let (layout_axis = requested_layout == "auto"
-            ? (_multi_lipo_pack_layout_score(x_inner_size)
-               <= _multi_lipo_pack_layout_score(y_inner_size) ? "x" : "y")
-            : requested_layout,
-            inner_size_2d = layout_axis == "x" ? x_inner_size : y_inner_size,
-            top_clearance = plist_get("top_clearance", plist, 0),
-            base_h = assert(top_clearance >= 0, "top_clearance must be nonnegative")
-            max(map_idx(pack_sizes, 2)) + top_clearance,
-            inner_size = concat(inner_size_2d, [base_h]),
-            body_w = left_t + inner_size[0] + right_t,
-            body_l = rear_t + inner_size[1] + front_t,
-            wall_props = [for (entry = [["front", front, body_w],
-                                        ["rear", rear, body_w],
-                                        ["left", left, body_l],
-                                        ["right", right, body_l],
-                                        ["inner", inner, inner_size[layout_axis == "x" ? 1 : 0]]])
-                each [entry[0], multi_lipo_pack_wall_props(entry[1], entry[2], base_h)]],
-            wall_h = max([for (name = ["front", "rear", "left", "right", "inner"])
-                let (wall = plist_get(name, wall_props))
-                (name != "inner" || pack_n > 1) && plist_get("l", wall) > 0
-                ? plist_get("h", wall) : 0]),
-            wall_size = [body_w, body_l, bottom_t + wall_h],
-            rail_props = multi_lipo_pack_rail_props(plist, wall_size, wall_props),
-            canonical_size = [body_w, body_l,
-                              plist_get("enabled", rail_props)
-                              ? max(wall_size[2], plist_get("z", rail_props) + plist_get("h", rail_props))
-                              : wall_size[2]],
-            case_orientation = assert_orientation(plist_get("orientation",
-                                                            plist,
-                                                            "wlh"),
-                                                  "case orientation"),
-            pack_positions = _multi_lipo_pack_positions(pack_sizes,
-                                                        layout_axis,
-                                                        inner_size,
-                                                        left_t,
-                                                        rear_t,
-                                                        bottom_t,
-                                                        inner_t,
-                                                        l_clearance,
-                                                        w_clearance),
-            bolt_d = plist_get("bolt_d", plist, 0),
-            bolt_pad_x = plist_get("bolt_pad_x", plist, 0),
-            bolt_pad_y = plist_get("bolt_pad_y", plist, 0),
-            max_bolt_spacing = [max(0,
-                                    inner_size[0]
-                                    - bolt_pad_x * 2
-                                    - bolt_d),
-                                max(0,
-                                    inner_size[1]
-                                    - bolt_pad_y * 2
-                                    - bolt_d)],
-            bolt_spacing_spec = plist_get("bolt_spacing", plist))
-            assert(is_undef(bolt_spacing_spec)
-                   || is_list(bolt_spacing_spec) && len(bolt_spacing_spec) == 2,
-                   "bolt_spacing must be [x, y]")
-            let (bolt_spacing_x = plist_get("bolt_spacing_x",
-                                            plist,
-                                            is_undef(bolt_spacing_spec)
-                                            ? max_bolt_spacing[0]
-                                            : bolt_spacing_spec[0]),
-                 bolt_spacing_y = plist_get("bolt_spacing_y",
-                                            plist,
-                                            is_undef(bolt_spacing_spec)
-                                            ? max_bolt_spacing[1]
-                                            : bolt_spacing_spec[1]),
-                 bolt_spacing = [maybe_percent_string_to_num(bolt_spacing_x,
-                                                             max_bolt_spacing[0]),
-                                 maybe_percent_string_to_num(bolt_spacing_y,
-                                                             max_bolt_spacing[1])])
-            let (ear_d = plist_get("mount_ear_d", plist, 0),
-                 envelope = ear_d > 0
-                 ? [max(canonical_size[0], bolt_spacing[0] + ear_d),
-                    max(canonical_size[1], bolt_spacing[1] + ear_d), canonical_size[2]]
-                 : canonical_size)
-            assert(ear_d >= 0, "Mounting ear diameter must be nonnegative")
-            ["size", orientation_size(case_orientation, envelope),
-             "canonical_size", envelope,
-             "body_size", canonical_size,
-             "wall_size", wall_size,
-             "rail_props", rail_props,
-             "inner_size", inner_size,
-             "wall_props", wall_props,
-             "pack_sizes", pack_sizes,
-             "pack_positions", pack_positions,
-             "pack_layout", layout_axis,
-             "orientation", case_orientation,
-             "bolt_spacing", bolt_spacing,
-             "max_bolt_spacing", max_bolt_spacing,
-             "pack_count", pack_n];
+  assert(in_list(requested_layout, ["auto", "x", "y"]),
+         "pack_layout must be \"auto\", \"x\", or \"y\"")
+  let (layout_axis = requested_layout == "auto"
+       ? (_multi_lipo_pack_layout_score(x_inner_size)
+          <= _multi_lipo_pack_layout_score(y_inner_size) ? "x" : "y")
+       : requested_layout,
+       inner_size_2d = layout_axis == "x" ? x_inner_size : y_inner_size,
+       top_clearance = plist_get("top_clearance", plist, 0),
+       base_h = assert(top_clearance >= 0, "top_clearance must be nonnegative")
+       max(map_idx(pack_sizes, 2)) + top_clearance,
+       inner_size = concat(inner_size_2d, [base_h]),
+       body_w = left_t + inner_size[0] + right_t,
+       body_l = rear_t + inner_size[1] + front_t,
+       wall_props = [for (entry = [["front", front, body_w],
+                                   ["rear", rear, body_w],
+                                   ["left", left, body_l],
+                                   ["right", right, body_l],
+                                   ["inner", inner, inner_size[layout_axis == "x" ? 1 : 0]]])
+           each [entry[0], multi_lipo_pack_wall_props(entry[1], entry[2], base_h)]],
+       wall_h = max([for (name = ["front", "rear", "left", "right", "inner"])
+                        let (wall = plist_get(name, wall_props))
+                          (name != "inner" || pack_n > 1) && plist_get("l", wall) > 0
+                          ? plist_get("h", wall) : 0]),
+       wall_size = [body_w, body_l, bottom_t + wall_h],
+       rail_props = multi_lipo_pack_rail_props(plist, wall_size, wall_props),
+       canonical_size = [body_w, body_l,
+                         plist_get("enabled", rail_props)
+                         ? max(wall_size[2], plist_get("z", rail_props) + plist_get("h", rail_props))
+                         : wall_size[2]],
+       case_orientation = assert_orientation(plist_get("orientation",
+                                                       plist,
+                                                       "wlh"),
+                                             "case orientation"),
+       pack_positions = _multi_lipo_pack_positions(pack_sizes,
+                                                   layout_axis,
+                                                   inner_size,
+                                                   left_t,
+                                                   rear_t,
+                                                   bottom_t,
+                                                   inner_t,
+                                                   l_clearance,
+                                                   w_clearance),
+       bolt_d = plist_get("bolt_d", plist, 0),
+       bolt_pad_x = plist_get("bolt_pad_x", plist, 0),
+       bolt_pad_y = plist_get("bolt_pad_y", plist, 0),
+       max_bolt_spacing = [max(0,
+                               inner_size[0]
+                               - bolt_pad_x * 2
+                               - bolt_d),
+                           max(0,
+                               inner_size[1]
+                               - bolt_pad_y * 2
+                               - bolt_d)],
+       bolt_spacing_spec = plist_get("bolt_spacing", plist))
+  assert(is_undef(bolt_spacing_spec)
+         || is_list(bolt_spacing_spec) && len(bolt_spacing_spec) == 2,
+         "bolt_spacing must be [x, y]")
+  let (bolt_spacing_x = plist_get("bolt_spacing_x",
+                                  plist,
+                                  is_undef(bolt_spacing_spec)
+                                  ? max_bolt_spacing[0]
+                                  : bolt_spacing_spec[0]),
+       bolt_spacing_y = plist_get("bolt_spacing_y",
+                                  plist,
+                                  is_undef(bolt_spacing_spec)
+                                  ? max_bolt_spacing[1]
+                                  : bolt_spacing_spec[1]),
+       bolt_spacing = [maybe_percent_string_to_num(bolt_spacing_x,
+                                                   max_bolt_spacing[0]),
+                       maybe_percent_string_to_num(bolt_spacing_y,
+                                                   max_bolt_spacing[1])])
+  let (ear_d = plist_get("mount_ear_d", plist, 0),
+       envelope = ear_d > 0
+       ? [max(canonical_size[0], bolt_spacing[0] + ear_d),
+          max(canonical_size[1], bolt_spacing[1] + ear_d), canonical_size[2]]
+       : canonical_size)
+  assert(ear_d >= 0, "Mounting ear diameter must be nonnegative")
+  ["size", orientation_size(case_orientation, envelope),
+   "canonical_size", envelope,
+   "body_size", canonical_size,
+   "wall_size", wall_size,
+   "rail_props", rail_props,
+   "inner_size", inner_size,
+   "wall_props", wall_props,
+   "pack_sizes", pack_sizes,
+   "pack_positions", pack_positions,
+   "pack_layout", layout_axis,
+   "orientation", case_orientation,
+   "bolt_spacing", bolt_spacing,
+   "max_bolt_spacing", max_bolt_spacing,
+   "pack_count", pack_n];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -487,7 +555,8 @@ module multi_lipo_pack_case(pl,
   assert(target_h == 0 || case_orientation == "wlh" || case_orientation == "lwh",
          "Raised LiPo mounting requires a horizontal case floor");
 
-  inner_corner_r = plist_get("inner_corner_r", pl,
+  inner_corner_r = plist_get("inner_corner_r",
+                             pl,
                              max(0, corner_r - max([front_t, rear_t, left_t, right_t])));
   assert(is_num(inner_corner_r) && inner_corner_r >= 0,
          "inner_corner_r must be nonnegative");
@@ -529,42 +598,36 @@ module multi_lipo_pack_case(pl,
                      x=0,
                      y=0) {
     vent = multi_lipo_pack_vent_props(wall, span, wall_h);
-
-    if (plist_get("enabled", vent, false)) {
-      slot_size = plist_get("slot_size", vent);
-      gap = plist_get("gap", vent);
-      count = plist_get("count", vent);
-      start = plist_get("start", vent);
-      vent_w = slot_size[0];
-      vent_h = slot_size[1];
-      col_gap = gap[0];
-      row_gap = gap[1];
-      cols = count[0];
-      rows = count[1];
-      span_start = start[0];
-      z_start = start[1];
-
-      if (cols > 0 && rows > 0) {
-        for (column = [0 : cols - 1], row = [0 : rows - 1]) {
-          along = span_start + column * (vent_w + col_gap);
-          z = z_start + row * (vent_h + row_gap);
-
-          translate([x + (span_axis == "x" ? along : 0),
-                     y + (span_axis == "y" ? along : 0),
-                     z]) {
-            cube(span_axis == "x"
-                 ? [vent_w, depth, vent_h]
-                 : [depth, vent_w, vent_h]);
-          }
-        }
-      }
+    translate([x, y, 0]) {
+      multi_lipo_pack_vents(vent, depth, axis=span_axis);
     }
   }
 
-  module _wall_box(axis, x, y, along, z, length, depth, height) {
+  module _wall_profile(axis,
+                       x,
+                       y,
+                       along,
+                       z,
+                       length,
+                       depth,
+                       height,
+                       r=0,
+                       side="top") {
     translate([x + (axis == "x" ? along : 0),
-               y + (axis == "y" ? along : 0), z]) {
-      cube(axis == "x" ? [length, depth, height] : [depth, length, height]);
+               y + (axis == "y" ? along : 0),
+               z]) {
+      if (r == 0) {
+        cube(axis == "x" ? [length, depth, height] : [depth, length, height]);
+      } else {
+        // The 2D profile's vertical axis becomes case Z; extrude through the wall.
+        translate([0, axis == "x" ? depth : 0, 0]) {
+          rotate([90, 0, axis == "x" ? 0 : 90]) {
+            linear_extrude(height=depth) {
+              rounded_rect([length, height], r=r, side=side, anchor=[1, 1, 1]);
+            }
+          }
+        }
+      }
     }
   }
 
@@ -572,11 +635,16 @@ module multi_lipo_pack_case(pl,
     for (cutout = plist_get("cutouts", wall)) {
       cut_h = plist_get("h", cutout);
       if (cut_h > 0) {
-        _wall_box(axis, x - (axis == "y" ? 0.1 : 0),
-                  y - (axis == "x" ? 0.1 : 0),
-                  plist_get("offset", wall) + plist_get("offset", cutout) - 0.001,
-                  plist_get("h", wall) - cut_h,
-                  plist_get("l", cutout) + 0.002, depth + 0.2, wall_h + 0.1);
+        _wall_profile(axis,
+                      x - (axis == "y" ? 0.1 : 0),
+                      y - (axis == "x" ? 0.1 : 0),
+                      plist_get("offset", wall) + plist_get("offset", cutout) - 0.001,
+                      plist_get("h", wall) - cut_h,
+                      plist_get("l", cutout) + 0.002,
+                      depth + 0.2,
+                      wall_h + 0.1,
+                      r=plist_get("corner_r", cutout),
+                      side="bottom");
       }
     }
   }
@@ -642,16 +710,23 @@ module multi_lipo_pack_case(pl,
                   cuboid(size=[w, l, wall_h], r=corner_r, anchor=[1, 1, 1]);
                   translate([left_t, rear_t, -0.01]) {
                     cuboid(size=[inner_size[0], inner_size[1], wall_h + 0.02],
-                           r=inner_corner_r, anchor=[1, 1, 1]);
+                           r=inner_corner_r,
+                           anchor=[1, 1, 1]);
                   }
                 }
                 union() {
                   for (panel = panels) {
                     wall = plist_get(panel[0], wall_props);
                     if (plist_get("h", wall) > 0 && plist_get("l", wall) > 0) {
-                      _wall_box(panel[2], panel[3], panel[4],
-                                plist_get("offset", wall), 0,
-                                plist_get("l", wall), panel[1], plist_get("h", wall));
+                      _wall_profile(panel[2],
+                                    panel[3],
+                                    panel[4],
+                                    plist_get("offset", wall),
+                                    0,
+                                    plist_get("l", wall),
+                                    panel[1],
+                                    plist_get("h", wall),
+                                    r=plist_get("corner_r", wall));
                     }
                   }
                 }
@@ -659,11 +734,14 @@ module multi_lipo_pack_case(pl,
               for (panel = panels) {
                 wall = plist_get(panel[0], wall_props);
                 start = max(panel[5], plist_get("offset", wall));
-                end = min(panel[6], plist_get("offset", wall) + plist_get("l", wall));
+                end = min(panel[6],
+                          plist_get("offset", wall) + plist_get("l", wall));
                 if (end > start && plist_get("h", wall) > 0) {
                   _wall_vents(plist_get(panel[0], walls),
-                              span=end - start, wall_h=plist_get("h", wall),
-                              depth=panel[1] + 0.2, span_axis=panel[2],
+                              span=end - start,
+                              wall_h=plist_get("h", wall),
+                              depth=panel[1] + 0.2,
+                              span_axis=panel[2],
                               x=panel[3] + (panel[2] == "x" ? start : -0.1),
                               y=panel[4] + (panel[2] == "y" ? start : -0.1));
                 }
@@ -695,8 +773,15 @@ module multi_lipo_pack_case(pl,
             color(case_color, alpha=1) {
               translate([0, 0, bottom_t]) {
                 difference() {
-                  _wall_box(axis, x, y, plist_get("offset", wall), 0,
-                            plist_get("l", wall), inner_t, plist_get("h", wall));
+                  _wall_profile(axis,
+                                x,
+                                y,
+                                plist_get("offset", wall),
+                                0,
+                                plist_get("l", wall),
+                                inner_t,
+                                plist_get("h", wall),
+                                r=plist_get("corner_r", wall));
                   _wall_cutouts(wall, inner_t, axis, x, y);
                 }
               }

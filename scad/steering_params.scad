@@ -1213,8 +1213,8 @@ motor_encoder_sleeve_mount_wall_thickness         = 1.0; // Wall thickness of th
 motor_encoder_sleeve_wall_thickness               = 1.2; // Wall thickness of the magnet holder
 motor_encoder_sleeve_d_clearance                  = 0.1; // Diametral shaft-bore clearance
 motor_encoder_magnet_d_clearance                  = 0.1; // Diametral magnet-pocket clearance
-motor_encoder_sleeve_h_clearance                  = 0.2; // Shaft tip to magnet pocket shoulder
-motor_encoder_magnet_h_clearance                  = -0.3; // Height clearance for the magnet; if negative, the magnet will protrude by this amount
+motor_encoder_sleeve_h_clearance                  = 0.4; // Shaft tip to magnet pocket shoulder
+motor_encoder_magnet_h_clearance                  = -0.5; // Height clearance for the magnet; if negative, the magnet will protrude by this amount
 motor_encoder_transition_h                        = 1.6; // Transition height for easier printing between the driveshaft cup and the start of the magnet holder
 
 motor_plist                                       = ["body", ["d", 24.3,
@@ -1249,12 +1249,12 @@ motor_plist                                       = ["body", ["d", 24.3,
                                                      "drive_shaft", ["d", 3.95,
                                                                      "bearing", ["od", 7,
                                                                                  "w", 2],
-                                                                     "rear_l", 13,
+                                                                     "rear_l", 14,
                                                                      "hole_edge_dist", 3.9,
                                                                      "flat_d", 3,
                                                                      "flat_both_sides", false,
                                                                      "hole_d", 2.1,
-                                                                     "l", 61.10,
+                                                                     "l", 61.1,
                                                                      "pad_l", 7.2],
                                                      "gearbox", ["side_ears", ["poses",
                                                                                [[-21.3, 2.84],
@@ -1337,6 +1337,7 @@ lipo_pack_base_pl                                 = ["size", [lipo_pack_width,
 lipo_packs                                        = [lipo_pack_base_pl];
 
 basic_vent_spec                                   = ["vent_h", 2,
+                                                     "vent_corner_r", "40%",
                                                      "vent_w", "20%",
                                                      "vent_col_gap", "5%",
                                                      "vent_pad", 5];
@@ -1354,29 +1355,41 @@ multi_lipo_packs_case                             = ["lipo_packs", lipo_packs,
                                                               "clearance", 0.2,
                                                               "bolt_d", m2_hole_dia],
                                                      "lid", ["t", 3,
+                                                             "corner_r", "5%",
+                                                             "adapter", ["t", 4,
+                                                                         "bolt_d", 3,
+                                                                         "corner_r", 3],
                                                              "side_t", 2,
                                                              "headroom", 10,
                                                              "color", blue_grey_carbon,
                                                              "lidar", rplidar_c1_plist,
                                                              "lidar_target_h", 13,
                                                              "vents", ["vent_w", "12%",
-                                                                       "vent_h", 2.5,
+                                                                       "vent_h", 4.5,
                                                                        "vent_col_gap", 5,
-                                                                       "vent_pad", 2]],
-                                                     "walls", ["front", merge_vent_spec(["t", 2, "l", "90%"]),
-                                                               "rear", merge_vent_spec(["t", 2, "l", "90%"]),
+                                                                       "corner_r", "40%",
+                                                                       "vent_pad", 1.5]],
+                                                     "walls", ["front", merge_vent_spec(["t", 2,
+                                                                                         "l", "90%",
+                                                                                         "corner_r", "20%"]),
+                                                               "rear", merge_vent_spec(["t", 2,
+                                                                                        "l", "90%",
+                                                                                        "corner_r", "20%"]),
                                                                "bottom", ["t", 3],
                                                                "left", merge_vent_spec(["t", 2, "h", "90%"]),
                                                      // The pack uses lwh: both leads pass the +X end wall.
                                                      // Retain the lower 30% beneath these top-open notches.
                                                                "right", merge_vent_spec(["t", 2,
                                                                                          "h", "90%",
+                                                                                         "corner_r", "50%",
                                                                                          "cutouts", [["offset", 0,
-                                                                                                      "l", "15%",
-                                                                                                      "h", "70%"],
+                                                                                                      "l", "10%",
+                                                                                                      "h", "70%",
+                                                                                                      "corner_r", "5%"],
                                                                                                      ["offset", "90%",
                                                                                                       "l", "10%",
-                                                                                                      "h", "70%"]]]),
+                                                                                                      "h", "70%",
+                                                                                                      "corner_r", "5%"]]]),
                                                                "inner", ["t", 2]],
                                                      "bolt_pad_x", 10,
                                                      "bolt_pad_y", 5,
@@ -1390,7 +1403,7 @@ multi_power_case_size                             = plist_get("size",
 
 chassis_body_min_w                                = multi_power_case_size[0];
 
-bracket_thickness                                 = 7.0;
+bracket_thickness                                 = 10.0;
 
 gearbox_bracket_bolt_d                            = m3_hole_dia;
 gearbox_bracket_bolt_pad_x                        = 3;

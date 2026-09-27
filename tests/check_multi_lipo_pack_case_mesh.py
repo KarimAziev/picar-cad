@@ -65,6 +65,44 @@ def main() -> None:
             render(f"intersection() {{ sample(); translate({point}) cube(0.2); }}", empty)
         print("PASS: shortened/taller walls, top-open relief, and intact floor")
 
+        # Sample both ends and both vertical edges of a rounded side profile.
+        # The same probes cover X/Y outer walls and X/Y internal dividers.
+        for wall, axis, cross in (("front", "x", 43), ("right", "y", 23),
+                                  ("inner", "x", 43), ("inner", "y", 23)):
+            for radius, cut_radius in (("4", "2"), ('"20%"', '"25%"')):
+                for along, z, empty in ((4.1, 22.6, True),   # upper start rounded away
+                                        (23.6, 22.6, True),  # upper end rounded away
+                                        (4.1, 3.1, False),   # square lower start
+                                        (23.6, 3.1, False),  # square lower end
+                                        (8.5, 22.6, False),  # flat top retained
+                                        (12.1, 15.1, False), # cutout lower start fillet
+                                        (19.6, 15.1, False), # cutout lower end fillet
+                                        (15, 15.1, True),    # bottom of opening
+                                        (12.1, 22.6, True),  # square upper opening
+                                        (19.6, 22.6, True),
+                                        (15, 14.5, False),   # material below opening
+                                        (15, 1, False)):     # intact floor
+                    profile_along = along - 2 if wall == "inner" else along
+                    point = [profile_along, cross, z] if axis == "x" else [cross, profile_along, z]
+                    render(f'''
+rounded_walls = ["bottom", ["t", 3],
+  "front", ["t", 2, "h", 0], "rear", ["t", 2, "h", 0],
+  "left", ["t", 2, "h", 0], "right", ["t", 2, "h", 0],
+  "inner", ["t", 2, "h", 0]];
+profile = ["t", 2, "h", 20, "l", 20, "offset", {0 if wall == "inner" else 4},
+           "corner_r", {radius},
+           "cutouts", [["offset", 8, "l", 8, "h", 8, "corner_r", {cut_radius}]]];
+intersection() {{
+  multi_lipo_pack_case(plist_merge(pl, ["bolt_d", 0,
+    "pack_layout", "{"y" if axis == "x" else "x"}",
+    "lipo_packs", [for (i = [0:{1 if wall == "inner" else 0}]) ["size", [20,40,10]]],
+    "walls", plist_merge(rounded_walls, ["{wall}", profile])]),
+    anchor=[1,1,1], l_clearance=0, w_clearance=0);
+  translate({point}) cube(0.2);
+}}
+''', empty)
+        print("PASS: numeric/percentage top-only wall and bottom-only cutout rounding on both axes and dividers")
+
         # Geometry bounds must follow the custom tallest wall through rotations.
         sizes = {"wlh": [24, 44, 18], "lwh": [44, 24, 18],
                  "whl": [24, 18, 44], "lhw": [44, 18, 24],

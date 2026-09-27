@@ -3,16 +3,23 @@
   *
   * The assembled lid has its roof above the channels. Printable mode places
   * the exterior roof face on the bed, with channels and skirts facing up.
+  *
+  * Author: Karim Aziiev <karim.aziiev@gmail.com>
+  * License: GPL-3.0-or-later
   */
 include <../steering_params.scad>
+
 use <../lib/functions.scad>
 use <../lib/plist.scad>
+use <../lib/shapes2d.scad>
 use <../lib/shapes3d.scad>
 use <../lib/slots.scad>
 use <../lib/transforms.scad>
 use <../placeholders/bolt.scad>
 use <../placeholders/lidar.scad>
 use <../placeholders/nut.scad>
+use <../placeholders/standoff.scad>
+use <multi_lipo_pack_adapter.scad>
 use <multi_lipo_pack_case.scad>
 use <multi_lipo_pack_rail.scad>
 
@@ -31,7 +38,12 @@ use <multi_lipo_pack_rail.scad>
   10). `lidar` is a hardware plist or undef for a plain roof. `lidar_offset`
   locates its center relative to the case center; `lidar_orientation` defaults
   to "wlh". `lidar_pad` (default 2) is the margin around its footprint.
-  `lidar_target_h` controls standoffs above the roof (default 13).
+  `corner_r` rounds the roof outline and skirt tips (default zero), in mm or
+  percent of the smaller roof dimension, capped at half that dimension.
+  `adapter` enables a separate captive-nut sensor plate; omit it for direct
+  mounting. Its interface is described by `multi_lipo_pack_adapter_props()`.
+  `lidar_target_h` is the minimum sensor-base height above the roof (default
+  13). With an adapter, its thickness is deducted before selecting standoffs.
   The roof expands symmetrically to accommodate the hardware and channels.
   `l_clearance`: Pack-cell Y clearance, shared with the case.
   `w_clearance`: Pack-cell X clearance, shared with the case.
@@ -41,13 +53,16 @@ use <multi_lipo_pack_rail.scad>
   `size` is the oriented lid envelope, `canonical_size` its unrotated size,
   `mount_z` the channel-bottom height above the case floor underside, and
   `case_props`/`rail_props` the shared mechanical references. Hardware is
-  excluded from the printed lid envelope.
+  excluded from the printed lid envelope, as is the separate adapter.
+  `adapter_props` resolves that plate; `lidar_base_z` includes its thickness
+  and the selected standoff height in the same lid-local frame.
  */
 function multi_lipo_pack_lid_props(pl, l_clearance=0.4, w_clearance=0.4) =
   let (case_props = multi_lipo_pack_props(pl, l_clearance, w_clearance),
        rails = plist_get("rail_props", case_props),
        spec = plist_get("lid", pl, []))
-  assert(plist_get("enabled", rails), "A sliding lid requires enabled case rails")
+  assert(plist_get("enabled", rails),
+         "A sliding lid requires enabled case rails")
   let (body = plist_get("body_size", case_props),
        axis = plist_get("axis", rails),
        clearance = plist_get("clearance", rails),
@@ -60,22 +75,38 @@ function multi_lipo_pack_lid_props(pl, l_clearance=0.4, w_clearance=0.4) =
        lidar_offset = plist_get("lidar_offset", spec, [0, 0]),
        lidar_pad = plist_get("lidar_pad", spec, 2),
        lidar_dims = is_undef(lidar_pl) ? [0, 0, 0]
-         : orientation_size(lidar_orientation, lidar_size(lidar_pl)),
+       : orientation_size(lidar_orientation, lidar_size(lidar_pl)),
        footprint = [for (i = [0:1]) max(body[i] + (i == (axis == "x" ? 1 : 0) ? 2 * (side_t + channel_pad) : 0),
-                           is_undef(lidar_pl) ? 0 : lidar_dims[i] + 2 * (lidar_pad + abs(lidar_offset[i])))],
+                                        is_undef(lidar_pl) ? 0 : lidar_dims[i] + 2 * (lidar_pad + abs(lidar_offset[i])))],
        mount_z = plist_get("z", rails),
        roof_z = max(plist_get("h", rails) + clearance + headroom, body[2] - mount_z + clearance + side_t),
        size = concat(footprint, [roof_z + t]),
        orientation = plist_get("orientation", case_props))
-  assert(t > 0 && side_t > 0 && headroom >= side_t && lidar_pad >= 0,
-         "Lid roof and side thickness must be positive; headroom must leave material above the channels")
-  assert(in_list(lidar_orientation, ["wlh", "lwh"]), "Lidar must remain upright on the roof")
+       assert(t > 0 && side_t > 0 && headroom >= side_t && lidar_pad >= 0,
+              "Lid roof and side thickness must be positive; headroom must leave material above the channels")
+       assert(in_list(lidar_orientation, ["wlh", "lwh"]),
+              "Lidar must remain upright on the roof")
   assert(is_list(lidar_offset) && len(lidar_offset) == 2 && is_num(lidar_offset[0]) && is_num(lidar_offset[1]),
          "lidar_offset must be a numeric XY vector")
-  ["size", orientation_size(orientation, size), "canonical_size", size,
-   "mount_z", mount_z, "roof_z", roof_z, "t", t, "side_t", side_t,
-   "case_props", case_props, "rail_props", rails,
-   "lidar", lidar_pl, "lidar_orientation", lidar_orientation, "lidar_offset", lidar_offset];
+       let (radius = maybe_percent_string_to_num(plist_get("corner_r", spec, 0), min(footprint)))
+       assert(is_num(radius) && radius >= 0,
+              "Lid corner_r must be nonnegative mm or percent")
+       let (base = ["size", orientation_size(orientation, size), "canonical_size", size,
+                    "mount_z", mount_z, "roof_z", roof_z, "t", t, "side_t", side_t,
+                    "case_props", case_props, "rail_props", rails,
+                    "lidar", lidar_pl, "lidar_orientation", lidar_orientation, "lidar_offset", lidar_offset,
+                    "corner_r", calc_corner_rad(footprint, radius)],
+            adapter = multi_lipo_pack_adapter_props(plist_get("adapter", spec), base),
+            adapter_h = plist_get("enabled", adapter, false) ? plist_get("size", adapter)[2] : 0,
+            target_h = plist_get("lidar_target_h", spec, 13),
+            standoff_target_h = max(0, target_h - adapter_h))
+       assert(is_undef(lidar_pl) || standoff_target_h > 0,
+              "lidar_target_h must exceed the adapter thickness to leave room for standoffs")
+       concat(base,
+              ["adapter_props", adapter, "adapter_h", adapter_h,
+               "standoff_target_h", standoff_target_h,
+               "lidar_base_z", is_undef(lidar_pl) ? undef : size[2] + adapter_h
+               + standoff_real_h(standoff_target_h, plist_get("bolt_d", lidar_pl))]);
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -90,19 +121,29 @@ function multi_lipo_pack_lid_props(pl, l_clearance=0.4, w_clearance=0.4) =
   `anchor`: Anchor on the final oriented printed lid envelope.
   `show_lid`: Display the printed lid.
   `show_lidar`: Display the lidar and its mounting standoffs, independent of lid visibility.
-  `show_bolts`: Display transverse rail-locking bolts and nuts.
-  `slot_mode`: Emit locking and lidar mounting cutters only, in the same frame.
+  `show_bolts`: Display rail-locking and adapter-to-lid bolts and nuts.
+  `show_adapter`: Display the separate adapter plate (default false).
+  `slot_mode`: Emit rail-locking and active lid mounting cutters (adapter or
+  direct lidar), in the same frame.
   `l_clearance`: Pack-cell Y clearance, shared with the case.
   `w_clearance`: Pack-cell X clearance, shared with the case.
 
   `lid.vents` accepts the same vent properties as a case wall. Vents occupy the
   skirt above the channels; the rail grooves and roof retain solid material.
+  In this dedicated `vents` plist, `corner_r` is an alias for `vent_corner_r`;
+  the explicit `vent_corner_r` takes precedence when both are provided.
   `lid.color` overrides the case color. Lid coordinates start at the channel
   bottom, with the roof above it; mounting height is returned separately.
  */
-module multi_lipo_pack_lid(pl, anchor=[0, 0, 1], show_lid=true,
-                            show_lidar=false, show_bolts=false, slot_mode=false,
-                            l_clearance=0.4, w_clearance=0.4) {
+module multi_lipo_pack_lid(pl,
+                           anchor=[0, 0, 1],
+                           show_lid=true,
+                           show_lidar=false,
+                           show_bolts=false,
+                           slot_mode=false,
+                           l_clearance=0.4,
+                           w_clearance=0.4,
+                           show_adapter=false) {
   props = multi_lipo_pack_lid_props(pl, l_clearance, w_clearance);
   spec = plist_get("lid", pl, []);
   case_props = plist_get("case_props", props);
@@ -121,21 +162,34 @@ module multi_lipo_pack_lid(pl, anchor=[0, 0, 1], show_lid=true,
   rail_h = plist_get("h", rails);
   lidar_pl = plist_get("lidar", props);
   lidar_offset = plist_get("lidar_offset", props);
+  adapter = plist_get("adapter_props", props);
+  adapter_h = plist_get("adapter_h", props);
   lid_color = plist_get("color", spec, plist_get("color", pl));
   // Canonical XY remains relative to the body minimum for shared rail datums.
   roof_min = [(body[0] - size[0]) / 2, (body[1] - size[1]) / 2];
 
-  module _lidar_slots() {
-    if (!is_undef(lidar_pl)) {
+  module _mount_slots() {
+    if (plist_get("enabled", adapter, false)) {
+      translate([body[0]/2 + lidar_offset[0],
+                 body[1]/2 + lidar_offset[1],
+                 roof_z]) {
+        multi_lipo_pack_adapter_lid_slots(adapter);
+      }
+    } else if (!is_undef(lidar_pl)) {
       d = plist_get("bolt_d", lidar_pl);
-      translate([body[0] / 2 + lidar_offset[0], body[1] / 2 + lidar_offset[1], roof_z]) {
+      translate([body[0] / 2 + lidar_offset[0],
+                 body[1] / 2 + lidar_offset[1],
+                 roof_z]) {
         rotate([0, 0, plist_get("lidar_orientation", props) == "lwh" ? 90 : 0]) {
           translate(concat(plist_get("offsets", lidar_pl, [0, 0]), [0])) {
-            four_corner_children(size=plist_get("bolt_spacing", lidar_pl), center=true) {
-              counterbore(h=t, d=d + 0.2,
+            four_corner_children(size=plist_get("bolt_spacing", lidar_pl),
+                                 center=true) {
+              counterbore(h=t,
+                          d=d + 0.2,
                           bore_d=find_bolt_head_d(d, "countersunk") + 0.2,
                           bore_h=find_bolt_head_h(d, "countersunk") + 0.15,
-                          sink=true, reverse=true);
+                          sink=true,
+                          reverse=true);
             }
           }
         }
@@ -144,7 +198,7 @@ module multi_lipo_pack_lid(pl, anchor=[0, 0, 1], show_lid=true,
   }
 
   module _slots() {
-    _lidar_slots();
+    _mount_slots();
     for (rail = plist_get("rails", rails)) {
       depth = plist_get("w", rail) + 2 * (channel_pad + side_t);
       multi_lipo_pack_rail_holes(rails, rail, depth + 0.2, z_offset=-mount_z);
@@ -153,22 +207,15 @@ module multi_lipo_pack_lid(pl, anchor=[0, 0, 1], show_lid=true,
 
   module _skirt_vents(rail, depth) {
     z = rail_h + clearance + side_t;
-    vent = multi_lipo_pack_vent_props(plist_get("vents", spec, []), size[slide_axis], max(0, roof_z - z));
-    if (plist_get("enabled", vent, false)) {
-      count = plist_get("count", vent);
-      start = plist_get("start", vent);
-      gap = plist_get("gap", vent);
-      slot = plist_get("slot_size", vent);
-      if (count[0] > 0 && count[1] > 0) {
-        for (col = [0:count[0] - 1], row = [0:count[1] - 1]) {
-          along = roof_min[slide_axis] + start[0] + col * (slot[0] + gap[0]);
-          cross = plist_get("cross", rail) - depth / 2 - 0.1;
-          translate([axis == "x" ? along : cross, axis == "x" ? cross : along,
-                     z + start[1] + row * (slot[1] + gap[1])]) {
-            cube(axis == "x" ? [slot[0], depth + 0.2, slot[1]] : [depth + 0.2, slot[0], slot[1]]);
-          }
-        }
-      }
+    vents = plist_get("vents", spec, []);
+    vent = multi_lipo_pack_vent_props(plist_merge(vents, ["vent_corner_r", plist_get("vent_corner_r", vents,
+                                                                                     plist_get("corner_r", vents, 0))]),
+                                      size[slide_axis],
+                                      max(0, roof_z - z));
+    along = roof_min[slide_axis];
+    cross = plist_get("cross", rail) - depth / 2 - 0.1;
+    translate([axis == "x" ? along : cross, axis == "x" ? cross : along, z]) {
+      multi_lipo_pack_vents(vent, depth + 0.2, axis=axis);
     }
   }
 
@@ -183,12 +230,16 @@ module multi_lipo_pack_lid(pl, anchor=[0, 0, 1], show_lid=true,
         bolt_l = ceil((depth + nut_h) / 2) * 2;
         cross = plist_get("cross", rail) + direction * (depth / 2 - bolt_l);
         for (along = plist_get("bolts", rail)) {
-          translate([axis == "x" ? along : cross, axis == "x" ? cross : along, plist_get("bolt_z", rails)]) {
+          translate([axis == "x" ? along : cross,
+                     axis == "x" ? cross : along,
+                     plist_get("bolt_z", rails)]) {
             rotate(axis == "x" ? [-direction * 90, 0, 0] : [0, direction * 90, 0]) {
               bolt(d=d, h=bolt_l, threaded=false, show_nut=false);
               translate([0, 0, bolt_l - depth - nut_h]) {
-                nut(d=d, outer_d=find_nut_prop("outer_dia", d) / cos(30),
-                    h=nut_h, show_text=false);
+                nut(d=d,
+                    outer_d=find_nut_prop("outer_dia", d) / cos(30),
+                    h=nut_h,
+                    show_text=false);
               }
             }
           }
@@ -197,7 +248,10 @@ module multi_lipo_pack_lid(pl, anchor=[0, 0, 1], show_lid=true,
     }
   }
 
-  with_orientation(from="wlh", to=plist_get("orientation", case_props), size=size, anchor=anchor) {
+  with_orientation(from="wlh",
+                   to=plist_get("orientation", case_props),
+                   size=size,
+                   anchor=anchor) {
     translate([-body[0] / 2, -body[1] / 2, 0]) {
       if (slot_mode) {
         _slots();
@@ -205,39 +259,66 @@ module multi_lipo_pack_lid(pl, anchor=[0, 0, 1], show_lid=true,
         if (show_lid) {
           color(lid_color) {
             difference() {
-              union() {
-                translate(concat(roof_min, [roof_z])) {
-                  cube([size[0], size[1], t]);
+              intersection() {
+                translate(concat(roof_min, [0])) {
+                  cuboid(size,
+                         r=plist_get("corner_r", props),
+                         anchor=[1, 1, 1]);
                 }
-                for (rail = plist_get("rails", rails)) {
-                  depth = plist_get("w", rail) + 2 * (channel_pad + side_t);
-                  cross = plist_get("cross", rail) - depth / 2;
-                  along = roof_min[slide_axis];
-                  translate([axis == "x" ? along : cross, axis == "x" ? cross : along, 0]) {
-                    cube(axis == "x" ? [size[0], depth, roof_z + 0.01] : [depth, size[1], roof_z + 0.01]);
+                union() {
+                  translate(concat(roof_min, [roof_z])) {
+                    cube([size[0], size[1], t]);
+                  }
+                  for (rail = plist_get("rails", rails)) {
+                    depth = plist_get("w", rail) + 2 * (channel_pad + side_t);
+                    cross = plist_get("cross", rail) - depth / 2;
+                    along = roof_min[slide_axis];
+                    translate([axis == "x" ? along : cross,
+                               axis == "x" ? cross : along,
+                               0]) {
+                      cube(axis == "x" ? [size[0], depth, roof_z + 0.01] : [depth, size[1], roof_z + 0.01]);
+                    }
                   }
                 }
               }
               for (rail = plist_get("rails", rails)) {
                 depth = plist_get("w", rail) + 2 * (channel_pad + side_t);
-                multi_lipo_pack_rail_shape(rails, rail, clearance=clearance,
+                multi_lipo_pack_rail_shape(rails,
+                                           rail,
+                                           clearance=clearance,
                                            start=roof_min[slide_axis] - 0.1,
-                                           l=size[slide_axis] + 0.2, z_offset=-mount_z);
+                                           l=size[slide_axis] + 0.2,
+                                           z_offset=-mount_z);
                 _skirt_vents(rail, depth);
               }
               _slots();
             }
           }
         }
+        if (plist_get("enabled", adapter, false) && (show_adapter || show_bolts)) {
+          translate([body[0]/2 + lidar_offset[0],
+                     body[1]/2 + lidar_offset[1],
+                     size[2]]) {
+            color(lid_color) {
+              multi_lipo_pack_adapter(adapter,
+                                      show_plate=show_adapter,
+                                      show_hardware=show_bolts);
+            }
+          }
+        }
         if (show_lidar && !is_undef(lidar_pl)) {
           d = plist_get("bolt_d", lidar_pl);
           mount_pl = plist_merge(lidar_pl,
-            ["bore_d", find_bolt_head_d(d, "countersunk") + 0.2,
-             "bore_h", find_bolt_head_h(d, "countersunk") + 0.15, "sink", true]);
-          translate([body[0] / 2 + lidar_offset[0], body[1] / 2 + lidar_offset[1], size[2]]) {
-            lidar(plist=mount_pl, parent_thickness=t,
+                                 ["bore_d", find_bolt_head_d(d, "countersunk") + 0.2,
+                                  "bore_h", find_bolt_head_h(d, "countersunk") + 0.15, "sink", true]);
+          translate([body[0] / 2 + lidar_offset[0],
+                     body[1] / 2 + lidar_offset[1],
+                     size[2] + adapter_h]) {
+            lidar(plist=mount_pl,
+                  parent_thickness=adapter_h > 0 ? adapter_h : t,
                   orientation=plist_get("lidar_orientation", props),
-                  target_h=plist_get("lidar_target_h", spec, 13), anchor=[0, 0, 1]);
+                  target_h=plist_get("standoff_target_h", props),
+                  anchor=[0, 0, 1]);
           }
         }
         if (show_bolts) {
@@ -263,24 +344,39 @@ module multi_lipo_pack_lid(pl, anchor=[0, 0, 1], show_lid=true,
   `lift`: Additional Z translation for an exploded preview.
   `show_lid`: Display the printed lid.
   `show_lidar`: Display the lidar and its standoffs.
-  `show_bolts`: Display the removable rail-locking bolts and nuts.
+  `show_bolts`: Display the removable rail-locking and adapter hardware.
+  `show_adapter`: Display the adapter plate (default true).
   `l_clearance`: Pack-cell Y clearance, shared with the case.
   `w_clearance`: Pack-cell X clearance, shared with the case.
  */
-module multi_lipo_pack_lid_on_case(pl, anchor=[0, 0, 1], slide=0, lift=0,
-                                    show_lid=true, show_lidar=true, show_bolts=false,
-                                    l_clearance=0.4, w_clearance=0.4) {
+module multi_lipo_pack_lid_on_case(pl,
+                                   anchor=[0, 0, 1],
+                                   slide=0,
+                                   lift=0,
+                                   show_lid=true,
+                                   show_lidar=true,
+                                   show_bolts=false,
+                                   l_clearance=0.4,
+                                   w_clearance=0.4,
+                                   show_adapter=true) {
   props = multi_lipo_pack_lid_props(pl, l_clearance, w_clearance);
   case_props = plist_get("case_props", props);
   axis = plist_get("axis", plist_get("rail_props", props));
-  with_orientation(from="wlh", to=plist_get("orientation", case_props),
-                   size=plist_get("canonical_size", case_props), anchor=anchor) {
-    translate([axis == "x" ? slide : 0, axis == "y" ? slide : 0,
+  with_orientation(from="wlh",
+                   to=plist_get("orientation", case_props),
+                   size=plist_get("canonical_size", case_props),
+                   anchor=anchor) {
+    translate([axis == "x" ? slide : 0,
+               axis == "y" ? slide : 0,
                plist_get("mount_z", props) + lift]) {
       multi_lipo_pack_lid(plist_merge(pl, ["orientation", "wlh"]),
-                          anchor=[0, 0, 1], show_lid=show_lid,
-                          show_lidar=show_lidar, show_bolts=show_bolts,
-                          l_clearance=l_clearance, w_clearance=w_clearance);
+                          anchor=[0, 0, 1],
+                          show_lid=show_lid,
+                          show_lidar=show_lidar,
+                          show_bolts=show_bolts,
+                          show_adapter=show_adapter,
+                          l_clearance=l_clearance,
+                          w_clearance=w_clearance);
     }
   }
 }
@@ -299,14 +395,20 @@ module multi_lipo_pack_lid_on_case(pl, anchor=[0, 0, 1], slide=0, lift=0,
   `l_clearance`: Pack-cell Y clearance, shared with the case.
   `w_clearance`: Pack-cell X clearance, shared with the case.
  */
-module multi_lipo_pack_lid_printable(pl, anchor=[0, 0, 1], l_clearance=0.4, w_clearance=0.4) {
+module multi_lipo_pack_lid_printable(pl,
+                                     anchor=[0, 0, 1],
+                                     l_clearance=0.4,
+                                     w_clearance=0.4) {
   canonical = plist_merge(pl, ["orientation", "wlh"]);
-  size = plist_get("canonical_size", multi_lipo_pack_lid_props(canonical, l_clearance, w_clearance));
+  size = plist_get("canonical_size",
+                   multi_lipo_pack_lid_props(canonical, l_clearance, w_clearance));
   with_anchor(anchor, size, centered=true) {
     translate([0, 0, size[2]]) {
       rotate([180, 0, 0]) {
-        multi_lipo_pack_lid(canonical, anchor=[0, 0, 1],
-                            l_clearance=l_clearance, w_clearance=w_clearance);
+        multi_lipo_pack_lid(canonical,
+                            anchor=[0, 0, 1],
+                            l_clearance=l_clearance,
+                            w_clearance=w_clearance);
       }
     }
   }

@@ -103,8 +103,9 @@ pl=plist_merge(multi_lipo_packs_case,
   "mount_ear_d", 10, "bolt_spacing", [50,80],
   "walls", ["bottom", ["t", 3], "inner", ["t", 3],
             "front", ["t", 3, "h", 12], "rear", ["t", 3, "h", 12],
-            "left", ["t", 3, "h", 20, "cutouts", [["offset", "45%", "l", "10%", "h", 8]]],
-            "right", ["t", 3, "h", 20]],
+            "left", ["t", 3, "h", 20, "corner_r", 5,
+                     "cutouts", [["offset", "45%", "l", "10%", "h", 8, "corner_r", "25%"]]],
+            "right", ["t", 3, "h", 20, "corner_r", "25%"]],
   "lid", ["t", 3, "headroom", 5], "orientation", "ORIENTATION"]);
 '''
         for orientation in ("wlh", "lwh", "whl", "lhw", "hlw", "hwl"):

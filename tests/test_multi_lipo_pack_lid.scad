@@ -17,9 +17,9 @@ assert(plist_get("canonical_size", lid)[1] >= plist_get("size", rplidar_c1_plist
 assert(plist_get("roof_z", lid) > plist_get("h", rails) + plist_get("clearance", rails));
 for (rail = plist_get("rails", rails)) {
   wall = plist_get(plist_get("wall", rail), plist_get("wall_props", props));
-  assert(plist_get("start", rail) >= plist_get("offset", wall));
+  assert(plist_get("start", rail) >= plist_get("offset", wall) + plist_get("corner_r", wall));
   assert(plist_get("start", rail) + plist_get("l", rail)
-         <= plist_get("offset", wall) + plist_get("l", wall));
+         <= plist_get("offset", wall) + plist_get("l", wall) - plist_get("corner_r", wall));
   assert(len(plist_get("bolts", rail)) == 2);
 }
 
@@ -53,3 +53,19 @@ echo("PASS: rail selection, supported spans, shared lid references, disabled rai
 rail_free_layout = rear_suspension_layout(power_case=plain);
 assert(plist_get("lid_size", plist_get("power_case", rail_free_layout)) == [0, 0, 0]);
 echo("PASS: disabling rails keeps the rear case and omits the sliding lid");
+
+// Even explicit zero end padding must keep rails off curved top corners.
+rounded = plist_merge(changed,
+  ["rail", ["end_pad", 0],
+   "walls", plist_merge(changed_walls,
+     ["left", ["t", 3, "h", 30, "corner_r", 8],
+      "right", ["t", 3, "h", 30, "corner_r", "20%"]])]);
+rounded_props = multi_lipo_pack_props(rounded);
+rounded_rails = plist_get("rails", plist_get("rail_props", rounded_props));
+assert(plist_get("start", rounded_rails[0]) == 8);
+assert(plist_get("start", rounded_rails[1]) == 6);
+for (rail = rounded_rails) {
+  wall = plist_get(plist_get("wall", rail), plist_get("wall_props", rounded_props));
+  assert(plist_get("l", rail) == plist_get("l", wall) - 2 * plist_get("corner_r", wall));
+}
+echo("PASS: dovetail rails stay on the flat tops of rounded walls");

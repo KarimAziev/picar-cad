@@ -1,5 +1,8 @@
 /**
   * Module: Removable gearbox mounting bosses and their base sockets.
+  *
+  * Author: Karim Aziiev <karim.aziiev@gmail.com>
+  * License: GPL-3.0-or-later
   */
 include <../../colors.scad>
 include <../../steering_params.scad>
@@ -30,8 +33,12 @@ use <util.scad>
   Slot mode uses the solid's anchor reference and extends 0.1 mm above the
   seating plane. A zero boss wall in `params` disables both modes.
  */
-module gearbox_boss(type="front", slot_mode=false, plist=motor_plist,
-                    params=undef, anchor=undef, color=cobalt_blue_metallic) {
+module gearbox_boss(type="front",
+                    slot_mode=false,
+                    plist=motor_plist,
+                    params=undef,
+                    anchor=undef,
+                    color=cobalt_blue_metallic) {
   assert(type == "front" || type == "rear", "Boss type must be front or rear");
   p = is_undef(params) ? gearmotor_bracket_compute_params(plist) : params;
   od = plist_get("boss_od", p);
@@ -44,19 +51,26 @@ module gearbox_boss(type="front", slot_mode=false, plist=motor_plist,
     translate(shift) {
       if (slot_mode) {
         translate([0, 0, -depth]) {
-          cylinder(d=plist_get("boss_pocket_od", p), h=depth + 0.1,
+          cylinder(d=plist_get("boss_pocket_od", p),
+                   h=depth + 0.1,
                    $fn=$preview ? 48 : 300);
         }
       } else {
         difference() {
           translate([0, 0, -depth]) {
-            ring(d=d, od=od, h=h, color=color, whole_color=false,
+            ring(d=d,
+                 od=od,
+                 h=h,
+                 color=color,
+                 whole_color=false,
                  fn=$preview ? 48 : 300);
           }
           // Clear the front bearing housing where it overhangs the support.
           g = plist_get("gearbox_params", p);
           xy = plist_get("gearbox_hole_positions", p)[type == "rear" ? 0 : 1];
-          translate([-xy[0], -xy[1] - 0.1, plist_get("outer_shaft_y_center", p)]) {
+          translate([-xy[0],
+                     -xy[1] - 0.1,
+                     plist_get("outer_shaft_y_center", p)]) {
             rotate([-90, 0, 0]) {
               cylinder(d=plist_get("gearbox_shaft_boss_d", g) + 0.2,
                        h=plist_get("bearing_boss_h", g) + 0.2,
@@ -82,14 +96,18 @@ module gearbox_boss(type="front", slot_mode=false, plist=motor_plist,
   - `params`: Resolved bracket dimensions, including hole centers and base height.
   - `color`: Support color.
  */
-module gearbox_bosses(plist=motor_plist, slot_mode=false, params=undef,
+module gearbox_bosses(plist=motor_plist,
+                      slot_mode=false,
+                      params=undef,
                       color=cobalt_blue_metallic) {
   p = is_undef(params) ? gearmotor_bracket_compute_params(plist) : params;
   holes = plist_get("gearbox_hole_positions", p);
   for (i = [0:1]) {
     translate(concat(holes[i], [plist_get("bracket_thickness", p)])) {
-      gearbox_boss(type=i == 0 ? "rear" : "front", params=p,
-                   slot_mode=slot_mode, color=color);
+      gearbox_boss(type=i == 0 ? "rear" : "front",
+                   params=p,
+                   slot_mode=slot_mode,
+                   color=color);
     }
   }
 }

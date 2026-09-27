@@ -69,19 +69,19 @@ pcb_back_y    = sensor_face_y + sensor_ic_height + pcb_thickness
 
 The default resolved dimensions are:
 
-| Dimension or datum | Value (mm) |
-| --- | ---: |
-| Shaft bore diameter / remaining flat thickness | 4.05 / 3.10 |
-| Shaft cup outer diameter | 6.05 |
-| Magnet pocket diameter / outer diameter | 5.10 / 7.50 |
-| Shaft tip to magnet pocket shoulder | 0.20 |
-| Printed sleeve height / magnet protrusion | 9.10 / 0.30 |
-| Sleeve cross-hole center above open end | 2.25 |
-| Assembly sleeve origin Y / shaft tip Y | 22.90 / 30.10 |
-| Assembly shaft and sensor axis Z | 17.15 |
-| Assembly cross-hole center Y | 25.15 |
-| Magnet face Y / sensor face Y | 32.30 / 32.80 |
-| PCB back Y | 35.38 |
+| Dimension or datum                             |    Value (mm) |
+| ---------------------------------------------- | ------------: |
+| Shaft bore diameter / remaining flat thickness |   4.05 / 3.10 |
+| Shaft cup outer diameter                       |          6.05 |
+| Magnet pocket diameter / outer diameter        |   5.10 / 7.50 |
+| Shaft tip to magnet pocket shoulder            |          0.20 |
+| Printed sleeve height / magnet protrusion      |   9.10 / 0.30 |
+| Sleeve cross-hole center above open end        |          2.25 |
+| Assembly sleeve origin Y / shaft tip Y         | 22.90 / 30.10 |
+| Assembly shaft and sensor axis Z               |         17.15 |
+| Assembly cross-hole center Y                   |         25.15 |
+| Magnet face Y / sensor face Y                  | 32.30 / 32.80 |
+| PCB back Y                                     |         35.38 |
 
 `gearmotor_bracket_compute_params()` in [`util.scad`](util.scad) includes the
 encoder mount in the bracket's bounds and parent mounting-surface requirements.

@@ -109,7 +109,7 @@ function gearmotor_bracket_compute_params(plist=motor_plist,
        motor_body = plist_get("body", plist),
        body_h = plist_get("h", motor_body),
        motor_body_full_h = rc_motor_body_full_h(plist),
-       carrier_w = motor_d,
+       carrier_w = motor_d - motor_carrier_clearance,
        x_left = motor_outer_shaft_x_spacing + motor_d / 2,
        x_right_1 = mid_bolt_x_center + gearbox_shaft_boss_d / 2,
 

@@ -1,6 +1,9 @@
 /**
   * Module: Rear-suspension, motor bracket and controls layout.
   * Native coordinates put the last holder row at Y=0; the joining edge is -Y.
+  *
+  * Author: Karim Aziiev <karim.aziiev@gmail.com>
+  * License: GPL-3.0-or-later
   */
 include <../../steering_params.scad>
 include <rear_suspension_params.scad>

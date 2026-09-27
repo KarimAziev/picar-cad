@@ -20,8 +20,8 @@ use <../../lib/transforms.scad>
 use <../../placeholders/motors/rc/brushed_motor.scad>
 use <../../placeholders/motors/rc/gearbox.scad>
 use <../../placeholders/motors/rc/gearmotor.scad>
-use <gearbox_boss.scad>
 use <driveshaft_magnet_sleeve.scad>
+use <gearbox_boss.scad>
 use <gearmotor_encoder_bracket.scad>
 use <util.scad>
 
@@ -232,6 +232,9 @@ module gearmotor_bracket(plist,
   min_y = plist_get("min_y", resolved);
   max_y = plist_get("max_y", resolved);
 
+  magnet_sleeve_mount = plist_get("sleeve", with_default(encoder_mount, []));
+  echo("magnet_sleeve_mount", magnet_sleeve_mount);
+
   anchor_x_modes = ["holes_center",
                     [-1, -min_hole_x,
                      1, -max_hole_x],
@@ -315,24 +318,29 @@ module gearmotor_bracket(plist,
           }
 
           translate([-motor_outer_shaft_x_spacing, 0, 0]) {
-            difference() {
-              cuboid(size=[carrier_w,
-                           body_h,
-                           resolved_bracket_thickness + motor_shaft_y],
-                     anchor=[0, 1, 1]);
+            let (sleeve_origin = plist_get("sleeve_origin", with_default(encoder_mount, [])),
+                 body_support_l = is_undef(sleeve_origin) ? body_h : sleeve_origin[1]) {
+              difference() {
+                cuboid(size=[carrier_w,
+                             body_support_l,
+                             resolved_bracket_thickness + motor_shaft_y],
+                       anchor=[0, 1, 1]);
 
-              translate([0, -0.5, resolved_bracket_thickness + motor_shaft_y]) {
-                rotate([-90, 0, 0]) {
-                  cylinder(d=motor_d
-                           + carrier_clearance,
-                           h=body_h + 1,
-                           $fn=$preview ? 30 : 300);
-                }
-                translate([0, 0, -motor_d * 0.2 - carrier_clearance]) {
-                  cuboid(size=[carrier_w + 1,
-                               body_h + 1,
-                               resolved_bracket_thickness + motor_shaft_y],
-                         anchor=[0, 1, 1]);
+                translate([0,
+                           -0.5,
+                           resolved_bracket_thickness + motor_shaft_y]) {
+                  rotate([-90, 0, 0]) {
+                    cylinder(d=motor_d
+                             + carrier_clearance,
+                             h=body_h + 1,
+                             $fn=$preview ? 30 : 300);
+                  }
+                  translate([0, 0, -motor_d * 0.23 - carrier_clearance]) {
+                    cuboid(size=[carrier_w + 1,
+                                 body_h + 1,
+                                 resolved_bracket_thickness + motor_shaft_y],
+                           anchor=[0, 1, 1]);
+                  }
                 }
               }
             }
@@ -346,7 +354,6 @@ module gearmotor_bracket(plist,
 
       if (!is_undef(encoder_mount)) {
         gearmotor_encoder_bracket(encoder_mount, slot_mode=true);
-
       }
 
       gearmotor(plist=motor,
@@ -400,7 +407,7 @@ module gearmotor_bracket(plist,
                                   color=color);
         translate(plist_get("sleeve_origin", encoder_mount)) {
           rotate(plist_get("sleeve_rotation", encoder_mount)) {
-            driveshaft_magnet_sleeve(params=plist_get("sleeve", encoder_mount),
+            driveshaft_magnet_sleeve(params=magnet_sleeve_mount,
                                      show_sleeve=show_encoder_sleeve,
                                      show_magnet=show_encoder_magnet);
           }
@@ -455,4 +462,5 @@ module gearmotor_bracket(plist,
 
 gearmotor_bracket(plist=motor_plist,
                   anchor_mode="size",
+                  anchor=[0, 0, 1],
                   debug=false);

@@ -1,5 +1,6 @@
 /**
   * Module: Measured rear-suspension mounting and maintenance cutters.
+  *
   * Author: Karim Aziiev <karim.aziiev@gmail.com>
   * License: GPL-3.0-or-later
   */
@@ -11,8 +12,8 @@ use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
 use <../../motor_brackets/rc/gearbox_bracket.scad>
 use <../../panel_stack/panel_stack.scad>
-use <../rear_chassis/rear_payload.scad>
 use <../front_chassis/front_chassis_joint.scad>
+use <../rear_chassis/rear_payload.scad>
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -81,7 +82,8 @@ module rear_suspension_slots(anchor=undef, layout=rear_suspension_layout()) {
         translate(plist_get("pos", panel)) {
           panel_component(type=plist_get("type", panel),
                           orientation=plist_get("orientation", panel),
-                          slot_mode=true, slot_thickness=front_chassis_thickness);
+                          slot_mode=true,
+                          slot_thickness=front_chassis_thickness);
         }
       }
       rear_power_payload(plist_get("power_case", layout), slot_mode=true);

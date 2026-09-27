@@ -3,6 +3,9 @@
   *
   * Rails use canonical case coordinates; their matching channels slide along
   * X or Y. Dimensions and locking holes are shared by both printed parts.
+  *
+  * Author: Karim Aziiev <karim.aziiev@gmail.com>
+  * License: GPL-3.0-or-later
   */
 use <../lib/functions.scad>
 use <../lib/plist.scad>
@@ -12,9 +15,11 @@ use <../placeholders/bolt.scad>
 function _lipo_rail_segments(segments, cuts, i=0) =
   i >= len(cuts) ? segments :
   _lipo_rail_segments([for (s = segments) each
-    cuts[i][1] <= s[0] || cuts[i][0] >= s[1] ? [s] :
-    concat(cuts[i][0] > s[0] ? [[s[0], cuts[i][0]]] : [],
-           cuts[i][1] < s[1] ? [[cuts[i][1], s[1]]] : [])], cuts, i + 1);
+                                            cuts[i][1] <= s[0] || cuts[i][0] >= s[1] ? [s] :
+                                            concat(cuts[i][0] > s[0] ? [[s[0], cuts[i][0]]] : [],
+                                                   cuts[i][1] < s[1] ? [[cuts[i][1], s[1]]] : [])],
+                      cuts,
+                      i + 1);
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -31,7 +36,8 @@ function _lipo_rail_segments(segments, cuts, i=0) =
   Both supporting walls must share the highest outer-wall height. `h` defaults
   to 4 mm, `angle` to 12 degrees, and `clearance` to 0.2 mm per mating face.
   `end_pad` is an inset at both wall ends (mm or percentage of retained length),
-  defaulting to the exterior corner radius. Rails stop at all top-open cutouts.
+  defaulting to the exterior corner radius. The inset grows to clear rounded
+  wall-top corners. Rails stop at all top-open cutouts.
   Optional `bolt_d` enables transverse locking holes (zero disables them).
   Hole height leaves clearance for the matching nut above the case rim.
   `bolt_pad` locates two holes from the ends of each rail's longest continuous
@@ -50,14 +56,15 @@ function multi_lipo_pack_rail_props(pl, size, walls) =
   is_undef(spec) || !plist_get("enabled", spec, true) ? ["enabled", false] :
   let (names = ["rear", "front", "left", "right"],
        heights = [for (name = names) let (wall = plist_get(name, walls))
-         plist_get("l", wall) > 0 ? plist_get("h", wall) : 0],
+                                       plist_get("l", wall) > 0 ? plist_get("h", wall) : 0],
        lengths = [for (name = names) plist_get("l", plist_get(name, walls))],
        x_h = min(heights[0], heights[1]),
        y_h = min(heights[2], heights[3]),
        request = plist_get("axis", spec, "auto"))
-  assert(in_list(request, ["auto", "x", "y"]), "rail axis must be auto, x, or y")
+  assert(in_list(request, ["auto", "x", "y"]),
+         "rail axis must be auto, x, or y")
   let (axis = request != "auto" ? request :
-         x_h > y_h || (x_h == y_h && min(lengths[0], lengths[1]) >= min(lengths[2], lengths[3])) ? "x" : "y",
+       x_h > y_h || (x_h == y_h && min(lengths[0], lengths[1]) >= min(lengths[2], lengths[3])) ? "x" : "y",
        chosen = axis == "x" ? ["rear", "front"] : ["left", "right"],
        wall_h = axis == "x" ? x_h : y_h,
        all_walls = plist_get("walls", pl),
@@ -78,27 +85,32 @@ function multi_lipo_pack_rail_props(pl, size, walls) =
    "clearance_w", clearance * (1 / cos(angle) + tan(angle)),
    "bolt_d", bolt_d, "bolt_z", bolt_z,
    "rails", [for (i = [0:1])
-     let (name = chosen[i], wall = plist_get(name, walls),
-          t = plist_get(str(name, "_t"), pl, plist_get("t", plist_get(name, all_walls))),
-          pad = maybe_percent_string_to_num(plist_get("end_pad", spec, plist_get("corner_r", pl, 0)), plist_get("l", wall)),
-          start = plist_get("offset", wall) + pad,
-          end = plist_get("offset", wall) + plist_get("l", wall) - pad,
-          cuts = [for (cut = plist_get("cutouts", wall))
-            if (plist_get("h", cut) > 0)
-              [plist_get("offset", wall) + plist_get("offset", cut),
-               plist_get("offset", wall) + plist_get("offset", cut) + plist_get("l", cut)]],
-          segments = _lipo_rail_segments([[start, end]], cuts))
-     assert(pad >= 0 && end > start && len(segments) > 0, "No supported rail remains on the wall")
-     assert(t - h * tan(angle) > 0.5, "Rail waist must exceed 0.5 mm; increase wall thickness or reduce rail h/angle")
-     assert(2 * clearance < h * tan(angle), "Rail clearance removes the dovetail's retaining shoulders")
-     let (longest = sort_by_idx([for (s = segments) [s[1] - s[0], s]], asc=false)[0][1],
-          bolt_pad = maybe_percent_string_to_num(plist_get("bolt_pad", spec, "20%"), longest[1] - longest[0]),
-          cross = i == 0 ? t / 2 : size[axis == "x" ? 1 : 0] - t / 2)
-     assert(bolt_d == 0 || (bolt_pad >= bolt_d / 2 + 1
-                            && 2 * bolt_pad + bolt_d < longest[1] - longest[0]),
-            "Locking holes must fit inside a continuous rail segment")
-     ["wall", name, "w", t, "cross", cross, "start", start, "l", end - start,
-      "segments", segments, "bolts", bolt_d == 0 ? [] : [longest[0] + bolt_pad, longest[1] - bolt_pad]]]];
+        let (name = chosen[i],
+             wall = plist_get(name, walls),
+             t = plist_get(str(name, "_t"), pl, plist_get("t", plist_get(name, all_walls))),
+             pad = maybe_percent_string_to_num(plist_get("end_pad", spec, plist_get("corner_r", pl, 0)), plist_get("l", wall)),
+             inset = max(pad, plist_get("corner_r", wall, 0)),
+             start = plist_get("offset", wall) + inset,
+             end = plist_get("offset", wall) + plist_get("l", wall) - inset,
+             cuts = [for (cut = plist_get("cutouts", wall))
+                 if (plist_get("h", cut) > 0)
+                   [plist_get("offset", wall) + plist_get("offset", cut),
+                    plist_get("offset", wall) + plist_get("offset", cut) + plist_get("l", cut)]],
+             segments = _lipo_rail_segments([[start, end]], cuts))
+          assert(pad >= 0 && end > start && len(segments) > 0,
+                 "No supported rail remains on the wall")
+          assert(t - h * tan(angle) > 0.5,
+                 "Rail waist must exceed 0.5 mm; increase wall thickness or reduce rail h/angle")
+          assert(2 * clearance < h * tan(angle),
+                 "Rail clearance removes the dovetail's retaining shoulders")
+          let (longest = sort_by_idx([for (s = segments) [s[1] - s[0], s]], asc=false)[0][1],
+               bolt_pad = maybe_percent_string_to_num(plist_get("bolt_pad", spec, "20%"), longest[1] - longest[0]),
+               cross = i == 0 ? t / 2 : size[axis == "x" ? 1 : 0] - t / 2)
+          assert(bolt_d == 0 || (bolt_pad >= bolt_d / 2 + 1
+                                 && 2 * bolt_pad + bolt_d < longest[1] - longest[0]),
+                 "Locking holes must fit inside a continuous rail segment")
+          ["wall", name, "w", t, "cross", cross, "start", start, "l", end - start,
+           "segments", segments, "bolts", bolt_d == 0 ? [] : [longest[0] + bolt_pad, longest[1] - bolt_pad]]]];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -116,7 +128,12 @@ function multi_lipo_pack_rail_props(pl, size, walls) =
   `l`: Optional extrusion length; defaults to the rail's full retained span.
   `z_offset`: Additional vertical translation, useful for lid-local coordinates.
  */
-module multi_lipo_pack_rail_shape(props, rail, clearance=0, start, l, z_offset=0) {
+module multi_lipo_pack_rail_shape(props,
+                                  rail,
+                                  clearance=0,
+                                  start,
+                                  l,
+                                  z_offset=0) {
   axis = plist_get("axis", props);
   along = is_undef(start) ? plist_get("start", rail) : start;
   length = is_undef(l) ? plist_get("l", rail) : l;
@@ -127,8 +144,11 @@ module multi_lipo_pack_rail_shape(props, rail, clearance=0, start, l, z_offset=0
     rotate([90, 0, axis == "x" ? 90 : 180]) {
       linear_extrude(height=length, convexity=4) {
         offset(delta=clearance) {
-          dovetail_rib(w=plist_get("w", rail), h=plist_get("h", props),
-                       angle=plist_get("angle", props), r=0, center=true);
+          dovetail_rib(w=plist_get("w", rail),
+                       h=plist_get("h", props),
+                       angle=plist_get("angle", props),
+                       r=0,
+                       center=true);
         }
       }
     }
@@ -179,10 +199,15 @@ module multi_lipo_pack_rails(props) {
       difference() {
         union() {
           for (segment = plist_get("segments", rail)) {
-            multi_lipo_pack_rail_shape(props, rail, start=segment[0], l=segment[1] - segment[0]);
+            multi_lipo_pack_rail_shape(props,
+                                       rail,
+                                       start=segment[0],
+                                       l=segment[1] - segment[0]);
           }
         }
-        multi_lipo_pack_rail_holes(props, rail, depth=plist_get("w", rail) + 0.2);
+        multi_lipo_pack_rail_holes(props,
+                                   rail,
+                                   depth=plist_get("w", rail) + 0.2);
       }
     }
   }

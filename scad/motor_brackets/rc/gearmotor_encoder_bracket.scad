@@ -9,8 +9,8 @@ include <../../steering_params.scad>
 
 use <../../lib/functions.scad>
 use <../../lib/plist.scad>
-use <../../lib/shapes3d.scad>
 use <../../lib/shapes2d.scad>
+use <../../lib/shapes3d.scad>
 use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
 use <../../placeholders/bolt.scad>
@@ -113,8 +113,8 @@ function gearmotor_encoder_params(motor,
               "Encoder PCB is too low for a separate foot; reduce foot thickness or revise the mount")
        assert(sleeve_origin_y > plist_get("bearing_boss_h", gearbox),
               "Encoder sleeve reaches the gearbox bearing boss")
-       assert(plist_get("size", sleeve)[2] - plist_get("magnet_face_z", sleeve) < magnet_distance,
-              "Recessed magnet leaves no clearance between sleeve lip and sensor")
+  assert(plist_get("size", sleeve)[2] - plist_get("magnet_face_z", sleeve) < magnet_distance,
+         "Recessed magnet leaves no clearance between sleeve lip and sensor")
        ["encoder", encoder_plist,
         "sleeve", sleeve,
         "sleeve_origin", [0, sleeve_origin_y, axis_z],
@@ -200,7 +200,7 @@ module gearmotor_encoder_bracket(params,
           cylinder(d=bolt_d, h=base_h + foot_h + 0.2, $fn=32);
           cylinder(d=plist_get("nut_pocket_d", params),
                    h=plist_get("nut_pocket_h", params) + 0.1,
-                   $fn=300);
+                   $fn=6);
         }
       }
     } else {
@@ -228,11 +228,14 @@ module gearmotor_encoder_bracket(params,
                       p = holes[i];
                       translate([p[0] - foot_r, bounds[0][1]]) {
                         rounded_rect(size=[2 * foot_r, 2 * foot_r],
-                                     r_factor=0.5, fn=36,
+                                     r_factor=0.5,
+                                     fn=36,
                                      side=i == 0 ? "left" : "right");
                         translate([0, foot_r]) {
                           rounded_rect(size=[2 * foot_r, foot_r],
-                                       r_factor=0.5, fn=36, side="top");
+                                       r_factor=0.5,
+                                       fn=36,
+                                       side="top");
                         }
                       }
                     }
