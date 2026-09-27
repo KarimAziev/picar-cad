@@ -14,10 +14,10 @@ params = gearbox_compute_params(motor_plist);
 holes = plist_get("mount_hole_positions", params);
 
 // Measured preset: rear first, front second, in the unrotated gearbox frame.
-near(holes[0], [-13.025, 0, 22.4]);
-near(holes[1], [6.775, 0, -3.2]);
-near(plist_get("rear_mount_ear_y_min", params), 10.73);
-near(plist_get("rear_mount_ear_y_max", params), 13.97);
+near(holes[0], [-13.025, 0, 22.6]);
+near(holes[1], [6.775, 0, -3.4]);
+near(plist_get("rear_mount_ear_y_min", params), 10.63);
+near(plist_get("rear_mount_ear_y_max", params), 13.87);
 near(plist_get("front_mount_ear_y_min", params), 9.03);
 near(plist_get("front_mount_ear_y_max", params), 12.27);
 near(plist_get("gearbox_shaft_boss_d", params), 9.1);

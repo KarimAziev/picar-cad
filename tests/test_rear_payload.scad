@@ -111,13 +111,14 @@ assert(near(plist_get("motor_pos",default_layout)[1]
             plist_get("maintenance_y",default_layout) - rc_motor_maintenance_hole_dist));
 
 
-// The default uses the existing deck on the suspension side, with partial overlap.
+// The revised motor envelope lets the default controls clear the case.
+// Keep the no-deck-extension and lever-clearance contracts independent of overlap.
 under_layout = rear_suspension_layout(control_outside=false);
 control = plist_get("panels", default_layout)[0];
 control_bounds = plist_get("bounds", control);
 lever_bounds = plist_get("clearance_regions", control)[1];
 cover_edge = plist_get("pos", default_payload)[1] + plist_get("lid_size", default_payload)[1]/2;
-assert(control_bounds[0][1] < plist_get("bounds", default_payload)[1][1]);
+assert(control_bounds[0][1] >= cover_edge + rear_control_case_gap - 0.00001);
 assert(lever_bounds[0][1] >= cover_edge + rear_control_case_gap - 0.00001);
 assert(plist_get("pos", control)[1] > plist_get("pos", default_payload)[1]);
 assert(near(plist_get("size", default_layout), plist_get("size", under_layout)));
@@ -129,7 +130,7 @@ roomy_payload = plist_get("power_case", roomy);
 assert(plist_get("bounds", plist_get("panels", roomy)[0])[0][1]
        >= plist_get("pos", roomy_payload)[1] + plist_get("lid_size", roomy_payload)[1]/2
        + rear_control_case_gap - 0.00001);
-tight = rear_suspension_layout(panels=[["type", "control", "orientation", "lwh"],
+tight = rear_suspension_layout(motor_dist=-5, panels=[["type", "control", "orientation", "lwh"],
                                       ["type", "fuse", "orientation", "lwh"]]);
 assert(plist_get("standoff_h", plist_get("power_case", tight))
        >= plist_get("standoff_h", under_payload));
@@ -138,4 +139,4 @@ for (to = ["wlh", "lwh"]) {
   assert(len(regions) == 1 + len(control_panel_switch_button_specs));
   assert(max([for (b = regions) b[1][2]]) == control_panel_clearance_height());
 }
-echo("PASS: suspension-side partial overlap, lever clearance, unchanged deck and safe height fallback");
+echo("PASS: suspension-side controls, lever clearance, unchanged deck and safe height fallback");

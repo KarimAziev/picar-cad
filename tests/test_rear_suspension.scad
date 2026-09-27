@@ -26,7 +26,7 @@ for (i = [1:len(pts)-1]) {
 }
 echo("PASS: measured rear suspension edge gaps and nonduplicated outline");
 
-use <../scad/motor_brackets/rc/gearbox_bracket.scad>
+use <../scad/motor_brackets/rc/util.scad>
 use <../scad/panel_stack/panel_stack.scad>
 use <../scad/suspension/rear_chassis/rear_chassis_frame.scad>
 
@@ -38,7 +38,7 @@ bracket = gearmotor_bracket_compute_params(motor_plist);
 bounds = plist_get("bounds", bracket);
 encoder_bounds = plist_get("bounds", plist_get("encoder_mount", bracket));
 near(plist_get("side_widths", bracket), [35.75, encoder_bounds[1][0]]);
-near(plist_get("base_bounds", bracket)[1], [14.325, 44.3, 19.94]);
+near(plist_get("base_bounds", bracket)[1], [14.325, 44.3, 18.44]);
 near([plist_get("drive_end_y", bracket)], [-48]);
 near(plist_get("size", bracket), bounds[1] - bounds[0]);
 assert(plist_get("min_parent_surface_size", bracket)[0] == 71.5);
@@ -95,7 +95,7 @@ assert(plist_get("size", changed)[1] > plist_get("size", layout)[1]);
 // placeholder; removing the sleeve uses the bare shaft's end-flat shoulder.
 no_sleeve_motor = plist_remove("drive_seeve", motor_plist);
 no_sleeve = gearmotor_bracket_compute_params(no_sleeve_motor);
-near([plist_get("drive_end_y", no_sleeve)], [-22.2]);
+near([plist_get("drive_end_y", no_sleeve)], [-18 - 13 + plist_get("pad_l", plist_get("drive_shaft", motor_plist))]);
 no_sleeve_layout = rear_suspension_layout(panels=undef, power_case=undef, bracket=no_sleeve);
 near([plist_get("motor_pos", no_sleeve_layout)[1]
       - plist_get("drive_end_y", no_sleeve)],

@@ -1205,6 +1205,17 @@ motor_encoder_clearance                           = 0.6; // bolt-head and PCB cl
 motor_encoder_magnet_distance                     = 0.5; // IC package face to magnet face
 motor_encoder_magnet_d                            = 5;
 motor_encoder_magnet_h                            = 2;
+// ─────────────────────────────────────────────────────────────────────────────
+// Driveshaft magnet sleeve
+// ─────────────────────────────────────────────────────────────────────────────
+// Keyed shaft cup, open magnet pocket and retaining lip; dimensions are in mm.
+motor_encoder_sleeve_mount_wall_thickness         = 1.0; // Wall thickness of the driveshaft cup
+motor_encoder_sleeve_wall_thickness               = 1.2; // Wall thickness of the magnet holder
+motor_encoder_sleeve_d_clearance                  = 0.1; // Diametral shaft-bore clearance
+motor_encoder_magnet_d_clearance                  = 0.1; // Diametral magnet-pocket clearance
+motor_encoder_sleeve_h_clearance                  = 0.2; // Shaft tip to magnet pocket shoulder
+motor_encoder_magnet_h_clearance                  = -0.3; // Height clearance for the magnet; if negative, the magnet will protrude by this amount
+motor_encoder_transition_h                        = 1.6; // Transition height for easier printing between the driveshaft cup and the start of the magnet holder
 
 motor_plist                                       = ["body", ["d", 24.3,
                                                               "h", 27.7,
@@ -1238,9 +1249,13 @@ motor_plist                                       = ["body", ["d", 24.3,
                                                      "drive_shaft", ["d", 3.95,
                                                                      "bearing", ["od", 7,
                                                                                  "w", 2],
-                                                                     "rear_l", 11,
-                                                                     "l", 61.42,
-                                                                     "pad_l", 6.8,],
+                                                                     "rear_l", 13,
+                                                                     "hole_edge_dist", 3.9,
+                                                                     "flat_d", 3,
+                                                                     "flat_both_sides", false,
+                                                                     "hole_d", 2.1,
+                                                                     "l", 61.10,
+                                                                     "pad_l", 7.2],
                                                      "gearbox", ["side_ears", ["poses",
                                                                                [[-21.3, 2.84],
                                                                                 [-26, 29.5],
@@ -1260,7 +1275,7 @@ motor_plist                                       = ["body", ["d", 24.3,
                                                                  "motor_x_shift", 16.0, // left
                                                                  "outer_shaft_y_center", 10.65,
                                                                  "front_mount_ear_y_center", 10.65,
-                                                                 "rear_mount_ear_y_center", 12.35,
+                                                                 "rear_mount_ear_y_center", 12.25,
                                                                  "mount_bolt_d", m3_hole_dia,
                                                                  "mount_ears", ["boss_d", 8.6,
                                                                 // "ear_l", 6.7,
@@ -1271,8 +1286,8 @@ motor_plist                                       = ["body", ["d", 24.3,
                                                                                 "front_boss_h", 0.0],
                                                                  "mount_ear_x_dist", 3.2,
                                                      // "mount_ear_x_dist", 13.0,
-                                                                 "mount_ear_y_shift", 1.6,
-                                                                 "mount_ear_y_spacing", 25.6,
+                                                                 "mount_ear_y_shift", 1.8,
+                                                                 "mount_ear_y_spacing", 26.0,
                                                      // "mount_ear_y_spacing", 25.6,
                                                                  "mount_ear_x_spacing", 19.8,
                                                                  "mount_cbore_h", 4,
@@ -1352,8 +1367,8 @@ multi_lipo_packs_case                             = ["lipo_packs", lipo_packs,
                                                                "rear", merge_vent_spec(["t", 2, "l", "90%"]),
                                                                "bottom", ["t", 3],
                                                                "left", merge_vent_spec(["t", 2, "h", "90%"]),
-                                                               // The pack uses lwh: both leads pass the +X end wall.
-                                                               // Retain the lower 30% beneath these top-open notches.
+                                                     // The pack uses lwh: both leads pass the +X end wall.
+                                                     // Retain the lower 30% beneath these top-open notches.
                                                                "right", merge_vent_spec(["t", 2,
                                                                                          "h", "90%",
                                                                                          "cutouts", [["offset", 0,
@@ -1362,7 +1377,7 @@ multi_lipo_packs_case                             = ["lipo_packs", lipo_packs,
                                                                                                      ["offset", "90%",
                                                                                                       "l", "10%",
                                                                                                       "h", "70%"]]]),
-                                                               "inner", ["t", 2,]],
+                                                               "inner", ["t", 2]],
                                                      "bolt_pad_x", 10,
                                                      "bolt_pad_y", 5,
                                                      "bolt_d", m3_hole_dia,
@@ -1375,7 +1390,7 @@ multi_power_case_size                             = plist_get("size",
 
 chassis_body_min_w                                = multi_power_case_size[0];
 
-bracket_thickness                                 = 6;
+bracket_thickness                                 = 6.5;
 
 gearbox_bracket_bolt_d                            = m3_hole_dia;
 gearbox_bracket_bolt_pad_x                        = 3;
@@ -1384,3 +1399,14 @@ gearbox_bracket_ear_bolt_pad                      = 3;
 gearbox_bracket_corner_r                          = 1;
 gearbox_bracket_fillet_x_w                        = 3;
 gearbox_bracket_fillet_y_w                        = 3;
+
+// The wall thickness of the bracket boss; the outer diameter is
+// motor_plist.gearbox.mount_bolt_d + gearbox_bracket_boss_thickness * 2.
+gearbox_bracket_boss_thickness                    = 1.4;
+
+// clearance for the motor holder cylindric cutout.
+gearbox_bracket_motor_carrier_clearance           = 2.0;
+
+gearbox_bracket_boss_pocket_clearance             = 2.0; // Diametral socket allowance
+gearbox_bracket_boss_pocket_depth                 = 2.0;
+gearbox_bracket_boss_pocket_h_clearances          = ["front", 0.1, "rear", 0.2];

@@ -3,13 +3,14 @@
 Run: python3 tests/check_rear_chassis_mesh.py
 Requires OpenSCAD; uses only the Python standard library.
 """
+
 import ast
 import math
-from pathlib import Path
 import re
 import struct
 import subprocess
 import tempfile
+from pathlib import Path
 
 from scad_test_support import OPENSCAD
 
@@ -20,8 +21,10 @@ def read_triangles(path):
     data = path.read_bytes()
     count = struct.unpack_from("<I", data, 80)[0]
     assert len(data) == 84 + count * 50
-    return [[record[3:6], record[6:9], record[9:12]]
-            for record in struct.iter_unpack("<12fH", data[84:])]
+    return [
+        [record[3:6], record[6:9], record[9:12]]
+        for record in struct.iter_unpack("<12fH", data[84:])
+    ]
 
 
 def ray_hits(triangles, x, y):
@@ -38,15 +41,21 @@ def ray_hits(triangles, x, y):
 
 
 def main() -> None:
-    cases = [(side, orientation, [0, 1, 1], False, 0)
-             for side in ("auto", "left", "right") for orientation in ("wlh", "lwh")]
-    cases += [("auto", "wlh", [-1, 0, -1], False, -20),
-              ("auto", "lwh", [1, -1, 0], True, 10)]
+    cases = [
+        (side, orientation, [0, 1, 1], False, 0)
+        for side in ("auto", "left", "right")
+        for orientation in ("wlh", "lwh")
+    ]
+    cases += [
+        ("auto", "wlh", [-1, 0, -1], False, -20),
+        ("auto", "lwh", [1, -1, 0], True, 10),
+    ]
     with tempfile.TemporaryDirectory(prefix="rear-chassis-mesh-") as folder:
         source = Path(folder) / "fixture.scad"
         mesh = Path(folder) / "fixture.stl"
-        source.write_text(f'''
+        source.write_text(f"""
 include <{ROOT}/scad/suspension/rear_suspension/computed_params.scad>
+use <{ROOT}/scad/motor_brackets/rc/util.scad>
 use <{ROOT}/scad/lib/plist.scad>
 use <{ROOT}/scad/lib/functions.scad>
 use <{ROOT}/scad/motor_brackets/rc/gearbox_bracket.scad>
@@ -88,16 +97,34 @@ holes = concat(
   [[0, plist_get("maintenance_y",layout), rear_chassis_maintenance_hole_d/2+0.5]]);
 echo(size=size, shift=shift, holes=holes);
 rear_suspension_chassis(anchor=anchor, layout=layout);
-''')
+""")
         for side, orientation, anchor, changed, offset in cases:
-            command = [OPENSCAD, "--backend=Manifold", "--enable=textmetrics", "--hardwarnings",
-                       "--export-format", "binstl", "-o", str(mesh),
-                       "-D", f'side="{side}"', "-D", f'orientation="{orientation}"',
-                       "-D", f"anchor={anchor}", "-D", f"changed={str(changed).lower()}",
-                       "-D", f"y_offset={offset}", str(source)]
+            command = [
+                OPENSCAD,
+                "--backend=Manifold",
+                "--enable=textmetrics",
+                "--hardwarnings",
+                "--export-format",
+                "binstl",
+                "-o",
+                str(mesh),
+                "-D",
+                f'side="{side}"',
+                "-D",
+                f'orientation="{orientation}"',
+                "-D",
+                f"anchor={anchor}",
+                "-D",
+                f"changed={str(changed).lower()}",
+                "-D",
+                f"y_offset={offset}",
+                str(source),
+            ]
             result = subprocess.run(command, text=True, capture_output=True)
             log = result.stdout + result.stderr
-            assert result.returncode == 0 and "WARNING:" not in log and "ERROR:" not in log, log
+            assert (
+                result.returncode == 0 and "WARNING:" not in log and "ERROR:" not in log
+            ), log
             values = re.search(r"ECHO: size = (.*), shift = (.*), holes = (.*)", log)
             assert values is not None, log
             size, shift, holes = map(ast.literal_eval, values.groups())
@@ -107,17 +134,36 @@ rear_suspension_chassis(anchor=anchor, layout=layout);
             high = [max(p[i] for p in points) for i in range(3)]
             expected_low = [(anchor[i] - 1) * size[i] / 2 for i in range(3)]
             expected_high = [expected_low[i] + size[i] for i in range(3)]
-            assert all(abs(a-b) < 0.002 for a,b in zip(low+high, expected_low+expected_high)), (low, high, size)
+            assert all(
+                abs(a - b) < 0.002
+                for a, b in zip(low + high, expected_low + expected_high)
+            ), (low, high, size)
             for x, y, radius in holes:
                 x += shift[0]
                 y += shift[1]
-                assert not ray_hits(triangles, x, y), (side, orientation, "blocked hole", x, y)
+                assert not ray_hits(triangles, x, y), (
+                    side,
+                    orientation,
+                    "blocked hole",
+                    x,
+                    y,
+                )
                 for angle in range(0, 360, 45):
                     rx = x + radius * math.cos(math.radians(angle))
                     ry = y + radius * math.sin(math.radians(angle))
-                    assert ray_hits(triangles, rx, ry), (side, orientation, "missing land", x, y, angle)
-            print(f"PASS {side}/{orientation}, anchor={anchor}, changed={changed}: "
-                  f"bounds and {len(holes)} through-holes with surrounding lands", flush=True)
+                    assert ray_hits(triangles, rx, ry), (
+                        side,
+                        orientation,
+                        "missing land",
+                        x,
+                        y,
+                        angle,
+                    )
+            print(
+                f"PASS {side}/{orientation}, anchor={anchor}, changed={changed}: "
+                f"bounds and {len(holes)} through-holes with surrounding lands",
+                flush=True,
+            )
 
 
 if __name__ == "__main__":

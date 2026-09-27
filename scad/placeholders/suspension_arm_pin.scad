@@ -8,8 +8,35 @@ include <../colors.scad>
 
 use <../lib/functions.scad>
 use <../lib/shapes3d.scad>
+use <../lib/transforms.scad>
 use <e_clip.scad>
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  suspension_arm_pin
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Model a cylindrical pin with optional end flats and retaining-clip grooves.
+
+  **Parameters:**
+  - `d`, `l`: Full pin diameter and length, with the axis at X=Y=0 and Z=0..l.
+  - `fn`: Fragment count; defaults to 30.
+  - `color`: Hardware color.
+  - `show_e_clip`: Display retaining clips at the selected groove positions.
+  - `e_clip_thickness`: Clip thickness used to center clips within the grooves.
+  - `groove_d`: Groove root diameter; defaults to `d - 0.4`.
+  - `groove_side`: `"top"`, `"bottom"`, or `"all"` selects grooved ends.
+  - `pad_side`: `"top"`, `"bottom"`, or `"all"` selects flattened ends;
+    other values omit flats.
+  - `pad_horizontal_one_side`: Cut only +Y when true; otherwise cut opposing flats.
+  - `pad_l`: Flat length at each selected end; zero or `undef` omits flats.
+  - `pad_w`: Remaining Y thickness of the flattened profile; zero or `undef`
+    omits flats. A single flat is measured from the original -Y tangent.
+  - `groove_w`: Groove axial width; defaults to 0.4.
+  - `groove_offset`: End-to-groove edge distance; zero or `undef` omits grooves.
+
+  Flats preserve the full pin length and do not fill grooves that cross them.
+ */
 module suspension_arm_pin(d,
                           l,
                           fn,
@@ -19,6 +46,7 @@ module suspension_arm_pin(d,
                           groove_d,
                           groove_side="all", // "top" | "bottom" | "all"
                           pad_side="all",    // "top" | "bottom" | "all"
+                          pad_horizontal_one_side=false,
                           pad_l,
                           pad_w,
                           groove_w,
@@ -37,58 +65,32 @@ module suspension_arm_pin(d,
   groove_d = with_default(groove_d, d - 0.4);
   groove_w = with_default(groove_w, 0.4);
 
-  module _pad() {
-    color(color, alpha=1) {
-      intersection() {
-        cylinder(d=d, h=pad_l, $fn=fn);
-        cuboid([d, pad_w, pad_l]);
-      }
-    }
-  }
-
-  // at_bottom=true  -> pad at z=0
-  // at_bottom=false -> pad at z=l-pad_l
-  module _with_single_pad(at_bottom=true) {
-    if (pad_l > 0 && pad_w > 0) {
-      pad_z = at_bottom ? -0.01 : l - pad_l + 0.01;
-
-      union() {
-        difference() {
-          children();
-          translate([0, 0, pad_z]) {
-            cuboid([d + 0.02, d + 0.02, pad_l]);
-          }
-        }
-        translate([0, 0, pad_z]) {
-          _pad();
-        }
-      }
-    } else {
-      children();
-    }
-  }
-
+  // Cut the flats from the complete pin so single-end and disabled pads
+  // retain the full length, and grooves remain present inside the pads.
   module _with_pad() {
-    if (pad_l > 0 && pad_w > 0) {
-      if (pad_is_all) {
-        _with_single_pad(true) {
-          _with_single_pad(false) {
-            children();
+    difference() {
+      children();
+      if (pad_l > 0 && pad_w > 0) {
+        for (bottom = [true, false]) {
+          if (pad_is_all || (bottom ? pad_is_bottom : pad_is_top)) {
+            translate([0, 0, bottom ? 0 : l - pad_l]) {
+              difference() {
+                translate([-d, -d, -0.01]) {
+                  cube([2 * d, 2 * d, pad_l + 0.02]);
+                }
+                translate([0, 0, -0.02]) {
+                  flatted_cyl(d=d,
+                              h=pad_l + 0.04,
+                              flat_d=pad_w,
+                              both_sides=!pad_horizontal_one_side,
+                              $fn=fn,
+                              color=color);
+                }
+              }
+            }
           }
         }
-      } else if (pad_is_bottom) {
-        _with_single_pad(true) {
-          children();
-        }
-      } else if (pad_is_top) {
-        _with_single_pad(false) {
-          children();
-        }
-      } else {
-        children();
       }
-    } else {
-      children();
     }
   }
 
@@ -141,10 +143,10 @@ module suspension_arm_pin(d,
   }
 }
 
-suspension_arm_pin(d=3,
+suspension_arm_pin(d=4,
                    l=39.5,
                    pad_l=5.5,
-                   pad_w=2.5,
+                   pad_w=3.0,
                    pad_side="all",
                    color=undef,
                    groove_side="all",

@@ -3,17 +3,17 @@
   * Native coordinates put the last holder row at Y=0; the joining edge is -Y.
   */
 include <../../steering_params.scad>
-use <../front_chassis/layout_params.scad>
 include <rear_suspension_params.scad>
 
 use <../../lib/plist.scad>
 use <../../lipo_pack_case/multi_lipo_pack_case.scad>
 use <../../lipo_pack_case/multi_lipo_pack_lid.scad>
-use <../../motor_brackets/rc/gearbox_bracket.scad>
-use <../../panel_stack/panel_stack.scad>
+use <../../motor_brackets/rc/util.scad>
 use <../../panel_stack/control_panel.scad>
+use <../../panel_stack/panel_stack.scad>
 use <../../placeholders/lidar.scad>
 use <../../placeholders/standoff.scad>
+use <../front_chassis/layout_params.scad>
 use <../rear_chassis/rear_payload.scad>
 
 function _rear_bounds_overlap(a, b) =
@@ -115,7 +115,8 @@ function rear_suspension_layout(bracket=gearmotor_bracket_compute_params(motor_p
          "A chassis-mounted panel stack must use wlh or lwh")
   assert(is_undef(panels) || is_list(panels),
          "panels must be a list of panel plists")
-  assert(is_num(min_width) && min_width >= 0, "Minimum chassis width must be nonnegative")
+  assert(is_num(min_width) && min_width >= 0,
+         "Minimum chassis width must be nonnegative")
   assert(rear_control_case_gap >= 0, "Control-to-case gap must be nonnegative")
   assert(rear_power_case_clearance >= 0 && rear_power_case_headroom >= 0,
          "Battery clearances must be nonnegative")
@@ -144,56 +145,56 @@ function rear_suspension_layout(bracket=gearmotor_bracket_compute_params(motor_p
        close_panels = _rear_panel_layout(panel_specs, motor_bounds, motor_bounds,
                                          panel_gap, panel_y_offset, orientation),
        mount = rear_power_case_mount(power_case, motor_bounds, rear_power_case_y_offset,
-                                      panels=close_panels),
+                                     panels=close_panels),
        case_size = is_undef(mount) ? [0, 0, 0] : plist_get("size", mount),
        rail_enabled = !is_undef(mount)
-         && plist_get("enabled", plist_get("rail_props", multi_lipo_pack_props(plist_get("plist", mount)))),
+       && plist_get("enabled", plist_get("rail_props", multi_lipo_pack_props(plist_get("plist", mount)))),
        lid_props = !rail_enabled ? undef
-         : multi_lipo_pack_lid_props(rear_power_lid_plist(plist_get("plist", mount), lidar_plist)),
+       : multi_lipo_pack_lid_props(rear_power_lid_plist(plist_get("plist", mount), lidar_plist)),
        lid_size = is_undef(lid_props) ? [0, 0, 0] : plist_get("size", lid_props),
        overhead = is_undef(mount) ? undef
        : [plist_get("pos", mount) - [max(case_size[0], lid_size[0])/2,
-                                      max(case_size[1], lid_size[1])/2, 0],
+                                     max(case_size[1], lid_size[1])/2, 0],
           plist_get("pos", mount) + [max(case_size[0], lid_size[0])/2,
-                                      max(case_size[1], lid_size[1])/2, 0]],
+                                     max(case_size[1], lid_size[1])/2, 0]],
        clearance_bounds = is_undef(overhead) ? undef
        : [overhead[0] - [rear_control_case_gap, rear_control_case_gap, 0],
           overhead[1] + [rear_control_case_gap, rear_control_case_gap, 0]],
        transition_start = bh_2 - spacing_2[1] / 2 - r - pad,
-       // Reserve the existing taper; relocating controls must not shorten it.
+// Reserve the existing taper; relocating controls must not shorten it.
        fixed_bounds = concat([motor_bounds], is_undef(overhead) ? [] : [overhead],
-                              [for (p = close_panels) plist_get("bounds", p)]),
+                             [for (p = close_panels) plist_get("bounds", p)]),
        deck_end = max(transition_start - rear_suspension_chassis_transition_len,
-                       max([for (b = fixed_bounds) b[1][1]]) + pad),
+                      max([for (b = fixed_bounds) b[1][1]]) + pad),
        panel_layout = [for (i = [0:1:len(close_panels)-1])
-         let (p = close_panels[i], b = plist_get("bounds", p),
-              control = plist_get("type", p) == "control",
-              regions = control ? control_panel_clearance_regions(plist_get("orientation", p))
-              : [],
-              outside = !is_undef(mount) && control
-              && plist_get("outside_case", panel_specs[i], control_outside),
-              pos = plist_get("pos", p),
-              half_y = plist_get("size", p)[1]/2,
-              max_y = deck_end - pad - half_y,
-              full_y = outside ? max(pos[1], overhead[1][1] + rear_control_case_gap + half_y) : pos[1],
-              lever_y = outside ? max(pos[1], overhead[1][1] + rear_control_case_gap
-                                      - min([for (j = [1:len(regions)-1]) regions[j][0][1]])) : pos[1],
-              y = !outside ? pos[1] : full_y <= max_y ? full_y : min(max_y, lever_y),
-              shift = [0, y - pos[1], 0],
-              new_pos = pos + shift,
-              new_bounds = [b[0] + shift, b[1] + shift],
-              clearances = control
-              ? [for (region = regions) [region[0] + new_pos, region[1] + new_pos]]
-              : [[new_bounds[0], [new_bounds[1][0], new_bounds[1][1], plist_get("height", p)]]])
-         plist_merge(p, ["pos", new_pos, "bounds", new_bounds,
-                          "clearance_regions", clearances, "outside_case", outside])],
+           let (p = close_panels[i], b = plist_get("bounds", p),
+                control = plist_get("type", p) == "control",
+                regions = control ? control_panel_clearance_regions(plist_get("orientation", p))
+                : [],
+                outside = !is_undef(mount) && control
+                && plist_get("outside_case", panel_specs[i], control_outside),
+                pos = plist_get("pos", p),
+                half_y = plist_get("size", p)[1]/2,
+                max_y = deck_end - pad - half_y,
+                full_y = outside ? max(pos[1], overhead[1][1] + rear_control_case_gap + half_y) : pos[1],
+                lever_y = outside ? max(pos[1], overhead[1][1] + rear_control_case_gap
+                                        - min([for (j = [1:len(regions)-1]) regions[j][0][1]])) : pos[1],
+                y = !outside ? pos[1] : full_y <= max_y ? full_y : min(max_y, lever_y),
+                shift = [0, y - pos[1], 0],
+                new_pos = pos + shift,
+                new_bounds = [b[0] + shift, b[1] + shift],
+                clearances = control
+                ? [for (region = regions) [region[0] + new_pos, region[1] + new_pos]]
+                : [[new_bounds[0], [new_bounds[1][0], new_bounds[1][1], plist_get("height", p)]]])
+             plist_merge(p, ["pos", new_pos, "bounds", new_bounds,
+                             "clearance_regions", clearances, "outside_case", outside])],
        first = len(panel_layout) > 0 ? panel_layout[0] : [],
        resolved_side = plist_get("side", first),
        panel_size = plist_get("size", first, [0, 0, 0]),
        occupied_h = max(concat([rear_motor_clearance_height(bracket)],
                                [for (p = panel_layout, region = plist_get("clearance_regions", p))
-                                 if (is_undef(clearance_bounds) || _rear_bounds_overlap(region, clearance_bounds))
-                                   region[1][2]])),
+                                   if (is_undef(clearance_bounds) || _rear_bounds_overlap(region, clearance_bounds))
+                                     region[1][2]])),
        target_h = front_chassis_thickness + occupied_h + rear_power_case_clearance,
        mount_z = is_undef(mount) ? 0
        : multi_lipo_pack_mount_height(plist_get("plist", mount), target_h, front_chassis_thickness),

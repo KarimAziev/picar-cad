@@ -10,12 +10,14 @@ include <../../steering_params.scad>
 use <../../lib/functions.scad>
 use <../../lib/plist.scad>
 use <../../lib/shapes3d.scad>
+use <../../lib/shapes2d.scad>
 use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
 use <../../placeholders/bolt.scad>
 use <../../placeholders/motors/rc/gearbox.scad>
 use <../../placeholders/nut.scad>
 use <../../placeholders/rotary_encoder.scad>
+use <driveshaft_magnet_sleeve.scad>
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -39,7 +41,9 @@ use <../../placeholders/rotary_encoder.scad>
   - `clearance`: Separation from bolt heads and the encoder PCB.
   - `magnet_distance`: Gap between the magnet and sensor IC package faces.
   - `magnet_d`: Shaft-end magnet diameter.
-  - `magnet_h`: Shaft-end magnet thickness; modeled bonded directly to the end.
+  - `magnet_h`: Shaft-end magnet thickness.
+  - `sleeve_params`: Optional resolved sleeve dimensions; defaults derive from
+    the motor shaft and magnet dimensions. When supplied, owns magnet sizing.
 
   **Returns:**
   `undef`, or a plist in the gearbox bracket's native coordinates. `shaft_tip`
@@ -63,9 +67,14 @@ function gearmotor_encoder_params(motor,
                                   clearance=motor_encoder_clearance,
                                   magnet_distance=motor_encoder_magnet_distance,
                                   magnet_d=motor_encoder_magnet_d,
-                                  magnet_h=motor_encoder_magnet_h) =
+                                  magnet_h=motor_encoder_magnet_h,
+                                  sleeve_params=undef) =
   is_undef(encoder_plist) ? undef :
   let (gearbox = gearbox_compute_params(motor),
+       sleeve = is_undef(sleeve_params)
+       ? driveshaft_magnet_sleeve_params(plist_get("drive_shaft", motor),
+                                         magnet_d=magnet_d, magnet_h=magnet_h)
+       : sleeve_params,
        pcb = plist_get("size", encoder_plist),
        rotated = pcb[0] < pcb[1],
        pcb_w = max(pcb[0], pcb[1]),
@@ -76,7 +85,9 @@ function gearmotor_encoder_params(motor,
        - plist_get("outer_shaft_rear_len", gearbox),
        axis_z = base_h + axis_h,
        ic_h = plist_get("chip_size", plist_get("sensor_ic", encoder_plist))[2],
-       pcb_back_y = shaft_tip_y + magnet_h + magnet_distance + pcb[2] + ic_h,
+       sleeve_origin_y = shaft_tip_y - plist_get("shaft_tip_z", sleeve),
+       magnet_face_y = sleeve_origin_y + plist_get("magnet_face_z", sleeve),
+       pcb_back_y = magnet_face_y + magnet_distance + pcb[2] + ic_h,
        wall_y = pcb_back_y + side_thickness,
        nut_af = find_nut_prop("outer_dia", mount_bolt_d),
        nut_h = find_nut_prop("height", mount_bolt_d),
@@ -100,7 +111,14 @@ function gearmotor_encoder_params(motor,
               "Invalid encoder mount dimensions or unused shaft length")
        assert(axis_h - pcb_h / 2 >= bottom_thickness + clearance,
               "Encoder PCB is too low for a separate foot; reduce foot thickness or revise the mount")
+       assert(sleeve_origin_y > plist_get("bearing_boss_h", gearbox),
+              "Encoder sleeve reaches the gearbox bearing boss")
+       assert(plist_get("size", sleeve)[2] - plist_get("magnet_face_z", sleeve) < magnet_distance,
+              "Recessed magnet leaves no clearance between sleeve lip and sensor")
        ["encoder", encoder_plist,
+        "sleeve", sleeve,
+        "sleeve_origin", [0, sleeve_origin_y, axis_z],
+        "sleeve_rotation", [90, 0, 180],
         "rotated", rotated,
         "pcb_w", pcb_w,
         "pcb_h", pcb_h,
@@ -109,10 +127,10 @@ function gearmotor_encoder_params(motor,
         "bottom_thickness", bottom_thickness,
         "side_thickness", side_thickness,
         "shaft_tip", [0, shaft_tip_y, axis_z],
-        "magnet_d", magnet_d,
-        "magnet_h", magnet_h,
-        "magnet_face", [0, shaft_tip_y + magnet_h, axis_z],
-        "sensor_face", [0, shaft_tip_y + magnet_h + magnet_distance, axis_z],
+        "magnet_d", plist_get("magnet_d", sleeve),
+        "magnet_h", plist_get("magnet_h", sleeve),
+        "magnet_face", [0, magnet_face_y, axis_z],
+        "sensor_face", [0, magnet_face_y + magnet_distance, axis_z],
         "pcb_back", [0, pcb_back_y, axis_z],
         "wall_y", wall_y,
         "foot_r", foot_r,
@@ -175,7 +193,6 @@ module gearmotor_encoder_bracket(params,
   holes = plist_get("mount_holes", params);
   pcb_back = plist_get("pcb_back", params);
   pcb_rotation = plist_get("rotated", params) ? 90 : 0;
-  echo("bolt_d", bolt_d);
   translate(shift) {
     if (slot_mode) {
       for (p = holes) {
@@ -191,28 +208,32 @@ module gearmotor_encoder_bracket(params,
         color(color) {
           difference() {
             union() {
-              translate([0, wall_y, base_h]) {
+              // Keep the upright back slightly inside the foot. Coincident
+              // back faces can collapse to non-manifold edges in float32 STL.
+              // The PCB-facing surface stays at pcb_back[1].
+              translate([0, wall_y - 0.01, base_h]) {
                 rotate([90, 0, 0]) {
-                  cuboid([wall_w, wall_h, wall_t],
+                  cuboid([wall_w, wall_h, wall_t - 0.01],
                          anchor=[0, 1, 1],
                          r_factor=0.5,
                          side="top");
                 }
               }
-              hull() {
-                for (i = [0 : len(holes) - 1]) {
-                  let (p = holes[i],
-                       side = i == 0 ? "left" : "right") {
-                    translate([p[0] - foot_r, bounds[0][1], base_h]) {
-                      cuboid(size=[2 * foot_r, 2 * foot_r, foot_h],
-                             anchor=[1, 1, 1],
-                             r_factor=0.5,
-                             side=side);
-                      translate([0, foot_r, 0]) {
-                        cuboid(size=[2 * foot_r, foot_r, foot_h],
-                               side="top",
-                               r_factor=0.5,
-                               anchor=[1, 1, 1]);
+              // Hull the footprint before extrusion to avoid nearly coincident
+              // triangles along the bottom and back of the joined foot.
+              translate([0, 0, base_h]) {
+                linear_extrude(height=foot_h) {
+                  hull() {
+                    for (i = [0 : len(holes) - 1]) {
+                      p = holes[i];
+                      translate([p[0] - foot_r, bounds[0][1]]) {
+                        rounded_rect(size=[2 * foot_r, 2 * foot_r],
+                                     r_factor=0.5, fn=36,
+                                     side=i == 0 ? "left" : "right");
+                        translate([0, foot_r]) {
+                          rounded_rect(size=[2 * foot_r, foot_r],
+                                       r_factor=0.5, fn=36, side="top");
+                        }
                       }
                     }
                   }

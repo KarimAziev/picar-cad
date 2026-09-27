@@ -304,8 +304,14 @@ module cyl(h=0, d, d1, d2, $fn=20, anchor=[0, 0, 1], orientation="wlh", color) {
     circle's diameter on both axes; the flats rotate with the body.
   - `color`: Optional OpenSCAD color; `undef` inherits the enclosing color.
  */
-module cylinder_cut(h=10, r=5, cut_w=1, center=true, fn,
-                    anchor, orientation="wlh", color) {
+module cylinder_cut(h=10,
+                    r=5,
+                    cut_w=1,
+                    center=true,
+                    fn,
+                    anchor,
+                    orientation="wlh",
+                    color) {
   anchor = with_default(anchor, center ? [0, 0, 0] : [0, 0, 1]);
   maybe_color(color) {
     with_orientation(to=orientation, anchor=anchor, size=[r * 2, r * 2, h]) {
@@ -631,7 +637,11 @@ module ring(d,
   y_chamfered_cube([30, 20, 10], chamfer="10%", anchor=[0, 0, 1]);
   ```
  */
-module y_chamfered_cube(size, chamfer, anchor=[1, 1, 1], lower_chamfer=false, color) {
+module y_chamfered_cube(size,
+                        chamfer,
+                        anchor=[1, 1, 1],
+                        lower_chamfer=false,
+                        color) {
   x_size = size[0];
   y_size = size[1];
   z_size = size[2];
@@ -839,6 +849,40 @@ module tapered_box(base_size,
                          r=r_top,
                          side=r_top_side);
           }
+        }
+      }
+    }
+  }
+}
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  flatted_cyl
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Create a shaft profile with one flat on +Y or two opposing flats.
+
+  **Parameters:**
+  - `d`: Original cylinder diameter.
+  - `h`: Height along +Z.
+  - `flat_d`: Remaining Y thickness: from -d/2 to the flat for one side,
+    or the distance between flats for two sides. Must be in (0, d].
+  - `both_sides`: Center two flats about Y=0 instead of cutting only +Y.
+  - `$fn`: Cylinder fragment count.
+  - `color`: Optional color.
+  - `anchor`: Anchor of the original cylinder box, not the trimmed bounds.
+    `[0, 0, 1]` preserves the shaft axis at X=Y=0 and the bottom at Z=0.
+ */
+module flatted_cyl(d, h, flat_d, both_sides=false, $fn=20, color,
+                   anchor=[0, 0, 1]) {
+  assert(d > 0 && h > 0 && flat_d > 0 && flat_d <= d,
+         "Flat thickness must be positive and no greater than the shaft diameter");
+  with_anchor(size=[d, d, h], anchor=anchor, centered=true) {
+    maybe_color(color) {
+      intersection() {
+        cylinder(d=d, h=h, $fn=$fn);
+        translate([-d / 2, both_sides ? -flat_d / 2 : -d / 2, 0]) {
+          cube([d, flat_d, h]);
         }
       }
     }

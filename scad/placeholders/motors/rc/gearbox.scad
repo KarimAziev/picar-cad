@@ -99,6 +99,8 @@ function gearbox_compute_params(plist) =
        outer_shaft_pad_l=plist_get("pad_l", drive_shaft),
        outer_shaft_l=plist_get("l", drive_shaft),
        outer_shaft_rear_len=plist_get("rear_l", drive_shaft),
+       outer_shaft_hole_d=plist_get("hole_d", drive_shaft),
+       outer_shaft_hole_edge_dist=plist_get("hole_edge_dist", drive_shaft),
        outer_shaft_bearing=plist_get("bearing", drive_shaft),
        bearing_od=plist_get("od", outer_shaft_bearing, 7),
        bearing_w=plist_get("w", outer_shaft_bearing, 2),
@@ -234,6 +236,8 @@ function gearbox_compute_params(plist) =
         "outer_shaft_pad_l", outer_shaft_pad_l,
         "outer_shaft_l", outer_shaft_l,
         "outer_shaft_rear_len", outer_shaft_rear_len,
+        "outer_shaft_hole_edge_dist", outer_shaft_hole_edge_dist,
+        "outer_shaft_hole_d", outer_shaft_hole_d,
         "bearing_od", bearing_od,
         "bearing_w", bearing_w,
         "mount_ear_x_dist", mount_ear_x_dist,
@@ -332,6 +336,8 @@ module gearbox(plist,
   outer_shaft_pad_l = plist_get("outer_shaft_pad_l", params);
   outer_shaft_l = plist_get("outer_shaft_l", params);
   outer_shaft_rear_len = plist_get("outer_shaft_rear_len", params);
+  outer_shaft_hole_d = plist_get("outer_shaft_hole_d", params);
+  outer_shaft_hole_edge_dist = plist_get("outer_shaft_hole_edge_dist", params);
   bearing_od = plist_get("bearing_od", params);
   bearing_w = plist_get("bearing_w", params);
   mount_ear_boss_d = plist_get("mount_ear_boss_d", params);
@@ -527,7 +533,11 @@ module gearbox(plist,
                  + outer_shaft_rear_len]) {
         motor_drive_shaft(d=outer_shaft_d,
                           l=outer_shaft_l,
-                          pad_l=outer_shaft_pad_l);
+                          hole_d=outer_shaft_hole_d,
+                          hole_edge_dist=outer_shaft_hole_edge_dist,
+                          pad_l=outer_shaft_pad_l,
+                          pad_w=plist_get("flat_d", plist_get("drive_shaft", plist), outer_shaft_d / 2),
+                          pad_horizontal_one_side=!plist_get("flat_both_sides", plist_get("drive_shaft", plist), false));
       }
     }
 
@@ -538,7 +548,7 @@ module gearbox(plist,
 
       translate([0, outer_shaft_y_center, seeve_dist]) {
         if (show_shaft_seeve && drive_seeve_od && drive_seeve_h) {
-          color(metallic_silver_3) {
+          color(metallic_silver_3, alpha=0.7) {
             cylinder(d=drive_seeve_od, h=drive_seeve_h);
           }
         }

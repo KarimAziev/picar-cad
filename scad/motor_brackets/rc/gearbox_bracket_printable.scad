@@ -23,6 +23,8 @@ module gearbox_printable() {
                     show_encoder_bracket=false,
                     show_encoder=false,
                     show_encoder_magnet=false,
+                    show_encoder_sleeve=false,
+                    show_gearbox_bosses=false,
                     debug=false,
                     anchor_mode="size");
 }

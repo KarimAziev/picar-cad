@@ -101,6 +101,10 @@ applies to Python checks. To run a single mesh check, use, for example,
 `.venv/bin/python tests/check_plate_joint_mesh.py`. CI installs the same development
 dependencies and runs these checks through `make all`.
 
+The current single RC gearmotor assembly has a separate
+[bracket, shaft magnet sleeve and encoder workflow](scad/motor_brackets/rc/README.md),
+including its own five-part print plate and dimensional calculations.
+
 ### Configurations
 
 Two main presets are supported: the default LiPo power case stack and the UPS S3 option. Both assume two battery holders. Jump to the BOMs for details: [Full BOM (default preset)](#full-bom-default-preset) or [Full BOM (with UPS module S3)](#full-bom-with-ups-module-s3).
