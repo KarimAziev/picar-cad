@@ -296,8 +296,6 @@ front_chassis_joint_pin_d                         = 3.1;
 front_chassis_joint_pin_pad_l                     = 5.5;
 front_chassis_joint_pin_pad_w                     = 2.5;
 
-front_chassis_joint_edge_land                     = 0.45;
-front_chassis_joint_relief_depth                  = 0.4;
 front_chassis_joint_clearance                     = 0.4;
 front_chassis_joint_boolean_overlap               = 0.02;
 
@@ -310,12 +308,8 @@ front_chassis_head_wire_land                      = 3.0;
 // ─────────────────────────────────────────────────────────────────────────────
 // Middle chassis
 // ─────────────────────────────────────────────────────────────────────────────
-middle_chassis_thickness                          = front_chassis_thickness;
-middle_chassis_component_gap                      = 8.0;
 middle_chassis_mount_land                         = 3.0;
-middle_chassis_edge_rail_w                        = 10.0;
-middle_chassis_diagonal_w                         = 6.0;
-middle_chassis_corner_r                           = 3.0;
+
 suspension_chassis_joint_wide_bolt_cols           = 5;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -486,10 +480,6 @@ front_upper_arm_ball_stud_insert_out_depth        = 1;
 
 // The length of the pin which inserted into arm hinges
 front_upper_arm_pin_len                           = 39.5;
-
-front_upper_arm_pin_washer_od                     = 5.5;
-front_upper_arm_pin_washer_thickness              = 0.5;
-front_upper_arm_pin_washer_d                      = 3.1;
 
 front_upper_arm_y_offset                          = -0.0;
 
@@ -1085,9 +1075,7 @@ servo_tie_rod_a_bushing_flat_d                    = 4.4;
 
 servo_tie_rod_a_bushing_color                     = metallic_silver_9;
 
-servo_tie_rod_a_eye_bolt_through_h                = 1;
 servo_tie_rod_a_eye_bolt_h                        = 17;
-servo_tie_rod_a_y_angle                           = 0;
 
 servo_tie_rod_a_eye_bolt_lock_nut                 = true;
 
@@ -1116,10 +1104,9 @@ servo_tie_rod_b_neck_h                            = 5;
 servo_tie_rod_b_eye_bolt_color                    = matte_black;
 servo_tie_rod_b_bushing_color                     = metallic_silver_8;
 servo_tie_rod_b_eye_bolt_head_d                   = 6.62;
-servo_tie_rod_b_show_eye_bolt                     = false;
+
 servo_tie_rod_b_reverse_bolt                      = false;
-servo_tie_rod_b_bushing_rotation                  = [0, 0, 0];
-servo_tie_rod_b_y_angle                           = 0;
+
 servo_tie_rod_b_screw_out_depth                   = 0;
 servo_tie_rod_b_color                             = cobalt_blue_metallic;
 
@@ -1173,22 +1160,6 @@ upper_steering_panel_boss_od                      = 6;
 upper_steering_panel_bulkhead_bore_d              = 4.6;
 upper_steering_panel_bulkhead_bore_h              = 1;
 upper_steering_panel_bulkhead_spacing             = 21;
-
-// Rear ladder frame: packaging allowances, not measured suspension interfaces.
-rear_chassis_rail_w                               = 12;
-rear_chassis_rail_h                               = 12;
-rear_chassis_cross_w                              = 12;
-rear_chassis_clearance                            = 2;
-rear_chassis_fit_clearance                        = 0.4;
-rear_chassis_carrier_h                            = 4;
-rear_chassis_mount_land                           = 3;
-rear_chassis_mount_bolt_d                         = m3_hole_dia;
-rear_chassis_strap_w                              = 5;
-rear_chassis_strap_h                              = 2;
-rear_chassis_diff_size                            = [54, 38, 32];
-rear_chassis_diff_input_l                         = 12;
-// Measured from the chassis top mounting surface to the differential input axis.
-rear_chassis_diff_input_h                         = 20;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Gearmotor shaft encoder, opposite the sleeve (near the motor contacts)

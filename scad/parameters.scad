@@ -603,7 +603,6 @@ front_panel_connector_bolt_spacing                   = [constraint(10,
                                                                    front_panel_connector_bolt_bore_dia * 2 + 3,
                                                                    front_panel_connector_width), 0];
 
-front_panel_connector_bolt_offsets                   = [[4, 3], [-4, 3]];
 front_panel_bolt_dia                                 = m25_hole_dia;
 
 // diameter of each mounting hole ("eye") for the ultrasonic sensors
@@ -639,7 +638,6 @@ front_panel_rear_panel_ring_width                    = 2;
 // ─────────────────────────────────────────────────────────────────────────────
 
 head_camera_bolt_dia                                 = m2_hole_dia;
-head_camera_bolt_head_type                           = "pan";
 
 head_camera_lens_width                               = 14;
 head_camera_lens_height                              = 23;
@@ -2751,11 +2749,6 @@ wheel_rim_bend                                       = 0.8;
 // ─────────────────────────────────────────────────────────────────────────────
 // Front wheels
 // ─────────────────────────────────────────────────────────────────────────────
-wheel_shoulder_bolt_d                                = 6;
-wheel_shoulder_bolt_threaded_l                       = 10;
-wheel_shoulder_bolt_unthreaded_l                     = 30;
-wheel_shoulder_bolt_head_h                           = 5.5;
-wheel_shoulder_bolt_head_d                           = 13;
 
 wheel_bearing_bore_d                                 = 8;
 wheel_bearing_shoulder_d                             = 12.15;
@@ -2763,13 +2756,9 @@ wheel_bearing_outer_recess_d                         = 19.2;
 wheel_bearing_w                                      = 7;
 wheel_bearing_outer_d                                = 22;
 
-wheel_hub_bearing_width                              = 7;
-
 wheel_hub_outer_d                                    = wheel_dia - (wheel_thickness * 2) - 2;
 
 wheel_hub_bolt_offset                                = 0.7;
-
-wheel_hub_h                                          = 7.2;
 
 wheel_hub_h_tolerance                                = 0.2;
 wheel_hub_inner_rim_h                                = 1.4;
@@ -2788,18 +2777,12 @@ wheel_hub_wheel_spacer_h                             = 1.4 + wheel_hub_wheel_bol
 
 wheel_hub_bolt_boss_d                                = wheel_hub_bolt_d + 2;
 
-knuckle_bearing_hole_d                               = wheel_bearing_bore_d + 0.40;
-
 knuckle_h                                            = (wheel_hub_inner_rim_h + (wheel_hub_h_tolerance + wheel_bearing_w));
-
-knuckle_narrow_h                                     = 6.5;
 knuckle_base_h                                       = knuckle_h - 2;
 
 knuckle_narrow_d                                     = wheel_bearing_shoulder_d;
 knuckle_base_d                                       = knuckle_narrow_d + 2;
 knuckle_max_d                                        = knuckle_base_d + 4;
-
-knuckle_upper_arm_mount_extra_len                    = 5;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Rear wheels
@@ -3016,10 +2999,6 @@ front_chassis_head_ribbon_slot_gap                = chassis_pan_servo_rib_slots_
 front_chassis_head_side_slot_w                    = chassis_trapezoid_hole_width;
 front_chassis_head_side_slot_l                    = chassis_trapezoid_hole_len;
 front_chassis_head_side_slot_rows                 = 2;
-middle_chassis_camera_slot_w                      = 32;
-middle_chassis_camera_slot_l                      = 5;
-middle_chassis_camera_slot_rows                   = 3;
-middle_chassis_camera_slot_r                      = 1;
 
 usb_a_plist = ["plug_shell", ["size", [12.0, 12.52, 4.4],
                                                      "color", metallic_silver_3],
