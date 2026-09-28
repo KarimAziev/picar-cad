@@ -328,19 +328,25 @@ module gearmotor_bracket(plist,
   }
 
   module _slot(extra_thickness=0) {
-    union() {
-      gearmotor(plist=motor,
-                slot_mode=true,
-                parent_thickness=resolved_bracket_thickness + extra_thickness);
-      _slot_holes(h=resolved_bracket_thickness + outer_shaft_y_center + extra_thickness,
-                  holes=gearbox_mount_holes,
-                  sink=true,
-                  bore_d=mount_cbore_d,
-                  bore_h=resolved_bracket_thickness,
-                  d=mount_bolt_d);
-      _slot_holes(holes=bracket_mount_holes,
-                  h=resolved_bracket_thickness + outer_shaft_y_center + extra_thickness,
-                  d=resolved_bolt_d);
+    let (slot_h = resolved_bracket_thickness
+         + outer_shaft_y_center
+         + extra_thickness,
+         motor_parent_thickness = resolved_bracket_thickness
+         + extra_thickness) {
+      union() {
+        gearmotor(plist=motor,
+                  slot_mode=true,
+                  parent_thickness=motor_parent_thickness);
+        _slot_holes(h=slot_h,
+                    holes=gearbox_mount_holes,
+                    sink=true,
+                    bore_d=mount_cbore_d,
+                    bore_h=resolved_bracket_thickness,
+                    d=mount_bolt_d);
+        _slot_holes(holes=bracket_mount_holes,
+                    h=slot_h,
+                    d=resolved_bolt_d);
+      }
     }
   }
 
@@ -366,27 +372,25 @@ module gearmotor_bracket(plist,
           }
 
           translate([-motor_outer_shaft_x_spacing, 0, 0]) {
-            let (sleeve_origin = plist_get("sleeve_origin", with_default(encoder_mount, [])),
-                 body_support_l = is_undef(sleeve_origin) ? body_h : sleeve_origin[1]) {
+            let (sleeve_origin = plist_get("sleeve_origin",
+                                           with_default(encoder_mount, [])),
+                 body_support_l = is_undef(sleeve_origin)
+                 ? body_h
+                 : sleeve_origin[1],
+                 size_z = resolved_bracket_thickness + motor_shaft_y,
+                 eps = 1) {
               difference() {
-                cuboid(size=[carrier_w,
-                             body_support_l,
-                             resolved_bracket_thickness + motor_shaft_y],
+                cuboid(size=[carrier_w, body_support_l, size_z],
                        anchor=[0, 1, 1]);
 
-                translate([0,
-                           -0.5,
-                           resolved_bracket_thickness + motor_shaft_y]) {
+                translate([0, -0.5, size_z]) {
                   rotate([-90, 0, 0]) {
-                    cylinder(d=motor_d
-                             + carrier_clearance,
-                             h=body_h + 1,
+                    cylinder(d=motor_d + carrier_clearance,
+                             h=body_h + eps,
                              $fn=$preview ? 30 : 300);
                   }
                   translate([0, 0, -motor_d * 0.23 - carrier_clearance]) {
-                    cuboid(size=[carrier_w + 1,
-                                 body_h + 1,
-                                 resolved_bracket_thickness + motor_shaft_y],
+                    cuboid(size=[carrier_w + eps, body_h + eps, size_z],
                            anchor=[0, 1, 1]);
                   }
                 }
@@ -427,6 +431,7 @@ module gearmotor_bracket(plist,
     if (slot_mode) {
       _slot(extra_thickness=chassis_thickness);
     } else {
+
       if (show_bracket) {
         _bracket();
       }
@@ -440,7 +445,8 @@ module gearmotor_bracket(plist,
                    plist_get("parent_surface_y_bounds", resolved)[0],
                    0]) {
           color(cobalt_blue_metallic, alpha=1) {
-            cuboid(size=concat(plist_get("min_parent_surface_size", resolved),
+            cuboid(size=concat(plist_get("min_parent_surface_size",
+                                         resolved),
                                [1]),
                    anchor=[1, 1, 1]);
           }
