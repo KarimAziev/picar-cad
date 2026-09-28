@@ -6,9 +6,10 @@
   * License: GPL-3.0-or-later
   */
 include <../parameters.scad>
+
 use <../lib/plist.scad>
-use <../lib/transforms.scad>
 use <../lib/shapes3d.scad>
+use <../lib/transforms.scad>
 use <../placeholders/bolt.scad>
 use <../placeholders/wago/wago_221.scad>
 
@@ -62,12 +63,14 @@ function wago_bracket_props(pl=[]) =
          "Clip overlap must fit the measured side shoulder; set clip_overlap=0 for a plain cradle")
   assert(d > 0 && dc >= 0 && ear >= head_d + 2*wall && ear <= l,
          "Mounting ears must contain the bolt heads and a wall margin")
-  assert(mount_side == "rear" || mount_side == "sides", "mount_side must be rear or sides")
-  assert(sides || tray_w > 2*ear, "Rear ears need a wider connector; use mount_side=sides")
+  assert(mount_side == "rear" || mount_side == "sides",
+         "mount_side must be rear or sides")
+  assert(sides || tray_w > 2*ear,
+         "Rear ears need a wider connector; use mount_side=sides")
   ["size", [tray_w + (sides ? 2*ear : 0), l + (sides ? 0 : ear), h], "wago", hardware, "wago_size", ws,
    "wago_pos", [(sides ? ear : 0) + wall + c, wall + c, t],
    "mount_holes", sides ? [[ear/2, l/2], [ear + tray_w + ear/2, l/2]]
-   : [[ear/2, l+ear/2], [tray_w-ear/2, l+ear/2]],
+   : [[ear/2, l + ear/2], [tray_w-ear/2, l + ear/2]],
    "mount_side", mount_side, "tray_l", l, "tray_x", sides ? ear : 0,
    "tray_w", tray_w, "ear_d", ear, "base_t", t, "wall_t", wall,
    "clearance", c, "top_clearance", zc, "clip_l", clip_l,
@@ -94,9 +97,14 @@ function wago_bracket_props(pl=[]) =
   and lever bank remain open; the small front stops only touch side shoulders.
   Flexible clip fit requires a physical coupon; lever details are approximate.
  */
-module wago_bracket(pl=[], anchor=[1, 1, 1], slot_mode=false, slot_h=undef,
-                     show_wago=false, show_bolts=false, show_bracket=true,
-                     bolt_l=8) {
+module wago_bracket(pl=[],
+                    anchor=[1, 1, 1],
+                    slot_mode=false,
+                    slot_h=undef,
+                    show_wago=false,
+                    show_bolts=false,
+                    show_bracket=true,
+                    bolt_l=8) {
   p = wago_bracket_props(pl);
   size = plist_get("size", p);
   ws = plist_get("wago_size", p);
@@ -115,7 +123,8 @@ module wago_bracket(pl=[], anchor=[1, 1, 1], slot_mode=false, slot_h=undef,
   rise = plist_get("clip_rise", p);
   zlip = t + ws[2] + plist_get("top_clearance", p);
   depth = is_undef(slot_h) ? t : slot_h;
-  assert(depth > 0 && bolt_l > 0, "Wago cutter depth and bolt length must be positive");
+  assert(depth > 0 && bolt_l > 0,
+         "Wago cutter depth and bolt length must be positive");
 
   module _holes(h) {
     for (xy = plist_get("mount_holes", p)) {
@@ -140,8 +149,10 @@ module wago_bracket(pl=[], anchor=[1, 1, 1], slot_mode=false, slot_h=undef,
               for (xy = plist_get("mount_holes", p)) {
                 hull() {
                   for (point = [xy, sides
-                                  ? [xy[0] < size[0]/2 ? ear + wall : ear + tw - wall, xy[1]]
-                                  : [xy[0], tl-wall]]) {
+                                ? [xy[0] < size[0] / 2
+                                   ? ear + wall
+                                   : ear + tw - wall, xy[1]]
+                                : [xy[0], tl-wall]]) {
                     translate(concat(point, [0])) {
                       cylinder(d=ear, h=t, $fn=48);
                     }
@@ -154,7 +165,7 @@ module wago_bracket(pl=[], anchor=[1, 1, 1], slot_mode=false, slot_h=undef,
                 translate([x, (tl-cl)/2, t - 0.01]) {
                   cube([wall, cl, zlip-t + 0.01]);
                 }
-                for (y = [0, (tl+cl)/2 + gap]) {
+                for (y = [0, (tl + cl)/2 + gap]) {
                   guide_l = (tl-cl)/2 - gap;
                   translate([x, y, t - 0.01]) {
                     cube([wall, guide_l, plist_get("stop_h", p) + 0.01]);
@@ -163,27 +174,28 @@ module wago_bracket(pl=[], anchor=[1, 1, 1], slot_mode=false, slot_h=undef,
                 if (lip > 0) {
                   // Relieved root and sloping insertion face.
                   // The lip underside is above the measured housing top.
-                  translate([right ? x + wall : x, (tl+cl)/2, zlip]) {
+                  translate([right ? x + wall : x, (tl + cl)/2, zlip]) {
                     rotate([90, 0, 0]) {
                       linear_extrude(height=cl) {
                         polygon(right
-                          ? [[0,-c-lip], [-wall,-c-lip], [-wall-c,0],
-                             [-wall-c-lip,0], [-wall,rise], [0,rise]]
-                          : [[0,-c-lip], [wall,-c-lip], [wall+c,0],
-                             [wall+c+lip,0], [wall,rise], [0,rise]]);
+                                ? [[0,-c-lip], [-wall,-c-lip], [-wall-c, 0],
+                                   [-wall-c-lip, 0], [-wall, rise], [0, rise]]
+                                : [[0,-c-lip], [wall,-c-lip], [wall + c, 0],
+                                   [wall + c + lip, 0], [wall, rise], [0, rise]]);
                       }
                     }
                   }
                 }
                 // Front stops reach only across the outer body shoulders.
-                translate([right ? wp[0]+ws[0]-min(0.6, plist_get("shoulder", p)) : tx,
-                           0, t - 0.01]) {
-                  cube([wall+c+min(0.6, plist_get("shoulder", p)), wall,
-                        plist_get("stop_h", p)+0.01]);
+                translate([right ? wp[0] + ws[0]-min(0.6, plist_get("shoulder", p)) : tx,
+                           0,
+                           t - 0.01]) {
+                  cube([wall + c + min(0.6, plist_get("shoulder", p)), wall,
+                        plist_get("stop_h", p) + 0.01]);
                 }
               }
               translate([tx, tl-wall, t - 0.01]) {
-                cube([tw, wall, plist_get("stop_h", p)+0.01]);
+                cube([tw, wall, plist_get("stop_h", p) + 0.01]);
               }
             }
             _holes(t);
@@ -198,7 +210,10 @@ module wago_bracket(pl=[], anchor=[1, 1, 1], slot_mode=false, slot_h=undef,
       if (show_bolts) {
         for (xy = plist_get("mount_holes", p)) {
           translate(concat(xy, [t-bolt_l])) {
-            bolt(d=plist_get("bolt_d", p), h=bolt_l, threaded=false, head_type="pan");
+            bolt(d=plist_get("bolt_d", p),
+                 h=bolt_l,
+                 threaded=false,
+                 head_type="pan");
           }
         }
       }
