@@ -9,6 +9,7 @@ include <../../steering_params.scad>
 include <rear_suspension_params.scad>
 
 use <../../lib/plist.scad>
+use <../../wago/wago_mounts.scad>
 use <../../lipo_pack_case/multi_lipo_pack_case.scad>
 use <../../lipo_pack_case/multi_lipo_pack_lid.scad>
 use <../../motor_brackets/rc/util.scad>
@@ -89,6 +90,9 @@ function _rear_panel_layout(specs,
     Per-panel `outside_case` overrides this setting. If even the levers cannot
     clear, the overlapping hardware still contributes to the case height.
 
+  - `wago_mounts`: Optional Wago mounting specs for wago_chassis_mounts.
+    Brackets may extend the joining edge; battery mounting holes stay fixed.
+
   **Returns:**
   A plist in holder-row coordinates, with Z=0 below the plate. `size` and
   `bounds` describe the plate only; `min_y` is its flat joining edge and `join_w`
@@ -111,7 +115,8 @@ function rear_suspension_layout(bracket=gearmotor_bracket_compute_params(motor_p
                                 power_case=rear_power_case_plist,
                                 lidar_plist=rear_lidar_plist,
                                 min_width=front_chassis_required_width(),
-                                control_outside=rear_control_outside_case) =
+                                control_outside=rear_control_outside_case,
+                                wago_mounts=rear_wago_mounts) =
   assert(side == "auto" || side == "left" || side == "right",
          "panel_stack_side must be auto, left or right")
   assert(orientation == "wlh" || orientation == "lwh",
@@ -206,7 +211,15 @@ function rear_suspension_layout(bracket=gearmotor_bracket_compute_params(motor_p
                              "standoff_h", mount_z-front_chassis_thickness,
                              "clearance_height", occupied_h,
                              "lidar", lidar_plist, "lid_size", lid_size]),
-       component_bounds = concat([motor_bounds], [for (p = panel_layout) plist_get("bounds", p)],
+       wagos = wago_chassis_mounts(wago_mounts, payload,
+         concat([motor_bounds,
+                 [[-rear_chassis_maintenance_hole_d/2,
+                   maintenance_y-rear_chassis_maintenance_hole_d/2, 0],
+                  [rear_chassis_maintenance_hole_d/2,
+                   maintenance_y+rear_chassis_maintenance_hole_d/2, 0]]],
+                [for (p = panel_layout) plist_get("bounds", p)]), front_chassis_thickness),
+       component_bounds = concat([for (w = wagos) plist_get("bounds", w)],
+                                 [motor_bounds], [for (p = panel_layout) plist_get("bounds", p)],
                                  is_undef(mount) ? [] : [overhead]),
        component_min_y = min([for (b = component_bounds) b[0][1]]),
        component_max_y = max([for (b = component_bounds) b[1][1]]),
@@ -259,6 +272,7 @@ function rear_suspension_layout(bracket=gearmotor_bracket_compute_params(motor_p
         "drive_connection_y", maintenance_y - motor_dist,
         "panel_side", resolved_side,
         "panels", panel_layout,
+        "wago_mounts", wagos,
         "power_case", payload,
         "clearance_height", occupied_h,
         "panel_pos", plist_get("pos", first),

@@ -39,11 +39,13 @@ use <steering_system/steering_pinion.scad>
 use <steering_system/steering_servo_mount.scad>
 use <steering_system/tie_rod.scad>
 use <steering_system/tie_rod_shaft.scad>
+use <wago/wago_bracket.scad>
 use <wheels/front_wheel.scad>
 use <wheels/rear_wheel.scad>
 use <wheels/tire.scad>
 use <wheels/wheel_hub.scad>
 
+show_wago_bracket     = true;
 show_chasssis         = true;
 show_power_case_stack = true;
 show_front_panel      = true;
@@ -68,6 +70,12 @@ show_buttons_panel    = true;
 show_fuse_panel       = true;
 
 module printable(spacing=5) {
+  if (show_wago_bracket) {
+    translate([0, chassis_body_len + chassis_upper_len + ir_case_height
+               + head_plate_height + 4*spacing, 0]) {
+      wago_bracket(anchor=[0, 1, 1]);
+    }
+  }
   half_of_chassis_len = chassis_len / 2;
   half_of_chassis_width = chassis_body_w / 2;
 

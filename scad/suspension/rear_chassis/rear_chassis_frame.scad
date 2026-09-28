@@ -6,6 +6,7 @@ include <../../steering_params.scad>
 include <../rear_suspension/computed_params.scad>
 
 use <../../lib/plist.scad>
+use <../../wago/wago_mounts.scad>
 use <../../lib/transforms.scad>
 use <../../motor_brackets/rc/gearbox_bracket.scad>
 use <../../panel_stack/panel_stack.scad>
@@ -56,6 +57,8 @@ function rear_chassis_size(layout=rear_suspension_layout()) =
   - `show_power_standoffs`: Display the four supporting columns.
   - `show_lidar`: Display the lidar on the raised payload.
   - `show_lidar_lid`: Display its sliding power-case lid.
+  - `show_wago_brackets`: Display configured deck brackets; holes remain present.
+  - `show_wagos`: Display connectors in those brackets.
  */
 module rear_chassis(show_panel_stack=true,
                     show_gearbox_bracket=true,
@@ -76,12 +79,18 @@ module rear_chassis(show_panel_stack=true,
                     show_lipo_packs=true,
                     show_power_standoffs=true,
                     show_lidar=true,
-                    show_lidar_lid=true) {
+                    show_lidar_lid=true,
+                    show_wago_brackets=true,
+                    show_wagos=true) {
   size = rear_chassis_size(layout);
   center_y = (plist_get("min_y", layout) + plist_get("max_y", layout)) / 2;
   with_anchor(is_undef(anchor) ? [0, 0, 1] : anchor, size, centered=true) {
     translate([0, is_undef(anchor) ? 0 : -center_y, 0]) {
       rear_suspension_chassis(layout=layout);
+      if (show_wago_brackets) {
+        wago_mounts(plist_get("wago_mounts", layout, []), show_wago=show_wagos,
+                     parent_t=size[2]);
+      }
       rear_power_payload(plist_get("power_case", layout),
                          show_case=show_power_case, show_packs=show_lipo_packs,
                          show_standoffs=show_power_standoffs,

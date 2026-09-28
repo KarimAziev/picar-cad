@@ -8,6 +8,7 @@ include <../../steering_params.scad>
 include <computed_params.scad>
 
 use <../../lib/plist.scad>
+use <../../wago/wago_mounts.scad>
 use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
 use <../../motor_brackets/rc/gearbox_bracket.scad>
@@ -86,6 +87,8 @@ module rear_suspension_slots(anchor=undef, layout=rear_suspension_layout()) {
                           slot_thickness=front_chassis_thickness);
         }
       }
+      wago_mounts(plist_get("wago_mounts", layout, []), slot_mode=true,
+                   parent_t=front_chassis_thickness);
       rear_power_payload(plist_get("power_case", layout), slot_mode=true);
     }
   }

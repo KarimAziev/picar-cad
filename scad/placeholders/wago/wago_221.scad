@@ -10,9 +10,53 @@ include <../../parameters.scad>
 
 use <../../lib/functions.scad>
 use <../../lib/placement.scad>
+use <../../lib/plist.scad>
 use <../../lib/shapes2d.scad>
 use <../../lib/shapes3d.scad>
 use <../../lib/transforms.scad>
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  wago_size
+  ─────────────────────────────────────────────────────────────────────────────
+  Return the measured body envelope, excluding the approximate lever detail.
+  **Parameters:**
+  - `n`: Positive integer number of conductors.
+  - `conductor_size`: Measured conductor pitch, body length and body height.
+  - `total_w`: Measured total width; undef uses the sum of conductor widths.
+ */
+function wago_size(n=wago_n, conductor_size=wago_conductor_size,
+                   total_w=wago_total_w) =
+  assert(is_num(n) && n >= 1 && n == floor(n), "Wago n must be a positive integer")
+  assert(is_list(conductor_size) && len(conductor_size) == 3
+         && min(conductor_size) > 0, "Wago conductor_size must contain three positive dimensions")
+  let (w = is_undef(total_w) ? n * conductor_size[0] : total_w)
+  assert(is_num(w) && w >= n * conductor_size[0], "Wago total_w is smaller than its conductors")
+  [w, conductor_size[1], conductor_size[2]];
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  wago_from_plist
+  ─────────────────────────────────────────────────────────────────────────────
+  Render a connector from measured dimensions and optional visual detail.
+  **Parameters:**
+  - `pl`: Keys n, conductor_size, total_w, hole_size_xz, lid_l, lid_t, thickness.
+    Omitted total_w uses the shared measured default; explicit undef uses n*pitch.
+  - `orientation`: Axis permutation accepted by with_orientation.
+  - `anchor`: Anchor on the body envelope; lever detail is approximate.
+ */
+module wago_from_plist(pl=[], orientation="wlh", anchor=[1, 1, 1]) {
+  size = wago_size(plist_get("n", pl, wago_n),
+                   plist_get("conductor_size", pl, wago_conductor_size),
+                   plist_get("total_w", pl, wago_total_w));
+  wago(n=plist_get("n", pl, wago_n),
+        wago_conductor_size=plist_get("conductor_size", pl, wago_conductor_size),
+        wago_hole_size_xz=plist_get("hole_size_xz", pl, wago_hole_size_xz),
+        wago_lid_l=plist_get("lid_l", pl, wago_lid_l),
+        wago_lid_t=plist_get("lid_t", pl, wago_lid_t),
+        wago_thickness=plist_get("thickness", pl, wago_thickness),
+        total_w=size[0], orientation=orientation, anchor=anchor);
+}
 
 module wago_conductor(lid_color="#F07F24",
                       wago_conductor_size=wago_conductor_size,
@@ -89,13 +133,15 @@ module wago_conductor(lid_color="#F07F24",
   }
 }
 
-module wago(wago_conductor_size=wago_conductor_size,
+module wago(n=5,
+            wago_conductor_size=wago_conductor_size,
             wago_hole_size_xz=wago_hole_size_xz,
             wago_lid_l=wago_lid_l,
             wago_lid_t=wago_lid_t,
             wago_thickness=wago_thickness,
             total_w,
-            n=5) {
+            orientation="wlh",
+            anchor=[0, 0, 1]) {
   w = wago_conductor_size[0];
   l = wago_conductor_size[1];
   h = wago_conductor_size[2];
@@ -111,23 +157,28 @@ module wago(wago_conductor_size=wago_conductor_size,
                    wago_thickness=wago_thickness);
   }
 
-  if (!is_undef(total_w)) {
-    side_thicknesss = is_undef(total_w) ? 0 : ((total_w - computed_total) / 2);
+  with_orientation(from="wlh",
+                   to=orientation,
+                   anchor=anchor,
+                   size=[with_default(total_w, computed_total), l, h]) {
+    if (!is_undef(total_w)) {
+      side_thicknesss = is_undef(total_w) ? 0 : ((total_w - computed_total) / 2);
 
-    mirror_copy([1, 0, 0]) {
-      translate([computed_total / 2, 0, 0]) {
-        color(metallic_silver_1, alpha=0.5) {
-          cuboid(size=[side_thicknesss, l, h], anchor=[1, 0, 1]);
+      mirror_copy([1, 0, 0]) {
+        translate([computed_total / 2, 0, 0]) {
+          color(metallic_silver_1, alpha=0.5) {
+            cuboid(size=[side_thicknesss, l, h], anchor=[1, 0, 1]);
+          }
         }
       }
     }
-  }
 
-  columns_children(gap=0,
-                   cols=n,
-                   w=wago_conductor_size[0],
-                   center=true) {
-    _wago_conductor();
+    columns_children(gap=0,
+                     cols=n,
+                     w=wago_conductor_size[0],
+                     center=true) {
+      _wago_conductor();
+    }
   }
 }
 

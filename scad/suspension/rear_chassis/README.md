@@ -140,3 +140,10 @@ for the front and middle frame modules when writing another orchestrator.
 The existing `chassis_body_min_w` remains a configured lower bound even when
 the middle section is absent. Selecting a middle payload as a candidate is
 conditional on its presence, independently of that lower bound.
+
+## Optional Wago mounts
+
+The rear layout accepts `wago_mounts`, defaulting to `rear_wago_mounts=[]`.
+Automatic placement uses available space beneath the battery before adding a
+row toward the flat joining edge. Existing battery mounting datums stay fixed.
+See [Wago bracket configuration and examples](../../wago/README.md).

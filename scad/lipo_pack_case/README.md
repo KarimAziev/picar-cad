@@ -235,3 +235,9 @@ anchor. Its `slot_mode` emits the lidar and locking-hole cutters in that same
 frame. `multi_lipo_pack_lid_printable()` turns the roof onto the bed and hides
 all hardware. Pass the same pack clearances to matching case/lid modules when
 overriding their 0.4 mm defaults.
+
+## Optional Wago brackets on the lid
+
+Add bracket specs to `lid.wago_mounts` for mounting holes on the existing roof.
+Positions are canonical roof-center XY offsets, with independent Z rotations.
+See [Wago bracket configuration and examples](../wago/README.md).

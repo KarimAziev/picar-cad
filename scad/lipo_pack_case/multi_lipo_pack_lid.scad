@@ -9,6 +9,7 @@
   */
 include <../steering_params.scad>
 
+use <../wago/wago_mounts.scad>
 use <../lib/functions.scad>
 use <../lib/plist.scad>
 use <../lib/shapes2d.scad>
@@ -110,6 +111,52 @@ function multi_lipo_pack_lid_props(pl, l_clearance=0.4, w_clearance=0.4) =
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
+  multi_lipo_pack_lid_wago_mounts
+  ─────────────────────────────────────────────────────────────────────────────
+  Validate bracket footprints on the existing roof without moving its hardware.
+  **Parameters:**
+  - `pl`: Case plist; lid.wago_mounts is a list of bracket mount specs.
+    Each requires XY `pos` from the canonical roof center; optional `rotation`
+    is a Z angle, `bracket` its component plist, and `gap` a 2 mm margin.
+  - `props`: Resolved lid properties from multi_lipo_pack_lid_props.
+  **Returns:**
+  The mount list, after checking roof edges, neighboring brackets and the full
+  lidar/adapter XY envelope. Coordinates rotate with the case orientation.
+ */
+function multi_lipo_pack_lid_wago_mounts(pl, props) =
+  let (mounts = plist_get("wago_mounts", plist_get("lid", pl, []), []),
+       size = plist_get("canonical_size", props),
+       sensor = plist_get("lidar", props),
+       adapter = plist_get("adapter_props", props),
+       sensor_size = is_undef(sensor) ? [0,0,0]
+       : orientation_size(plist_get("lidar_orientation", props), lidar_size(sensor)),
+       adapter_size = plist_get("size", adapter, [0,0,0]),
+       occupied = [for (i=[0:2]) max(sensor_size[i], adapter_size[i])],
+       sensor_box = _wago_bounds(concat(plist_get("lidar_offset", props), [0]), occupied),
+       boxes = [for (m = mounts)
+         let (pos = plist_get("pos", m), gap = plist_get("gap", m, 2))
+         assert(is_list(pos) && len(pos) == 2 && is_num(pos[0]) && is_num(pos[1]),
+                "Lid Wago pos must be a canonical XY roof-center offset")
+         assert(is_num(gap) && gap >= 0, "Lid Wago gap must be nonnegative")
+         _wago_bounds(concat(pos, [0]), wago_mount_size(m), gap)],
+       radius = plist_get("corner_r", props),
+       roof = [[-size[0]/2, -size[1]/2, 0], [size[0]/2, size[1]/2, 0]],
+       outside_corners = [for (b = boxes, x = [b[0][0], b[1][0]], y = [b[0][1], b[1][1]])
+         if (norm([max(0, abs(x)-size[0]/2+radius),
+                   max(0, abs(y)-size[1]/2+radius)]) > radius + 0.000001) 1])
+  assert(is_list(mounts), "lid.wago_mounts must be a list")
+  assert(len(outside_corners) == 0
+         && len([for (b = boxes) if (!_wago_inside(b, roof)) 1]) == 0,
+         "Wago bracket and margin must fit the existing lid roof")
+  assert(is_undef(sensor) || len([for (b = boxes) if (_wago_overlap(b, sensor_box)) 1]) == 0,
+         "Wago bracket overlaps the lidar or adapter envelope")
+  assert(len([for (i=[0:1:len(boxes)-1], j=[0:1:i-1])
+              if (_wago_overlap(boxes[i], boxes[j])) 1]) == 0,
+         "Wago brackets overlap on the lid")
+  mounts;
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
   multi_lipo_pack_lid
   ─────────────────────────────────────────────────────────────────────────────
 
@@ -128,10 +175,14 @@ function multi_lipo_pack_lid_props(pl, l_clearance=0.4, w_clearance=0.4) =
   `l_clearance`: Pack-cell Y clearance, shared with the case.
   `w_clearance`: Pack-cell X clearance, shared with the case.
 
+  `show_wago_brackets`: Display configured brackets (default false for printing).
+  `show_wagos`: Display connectors in shown brackets (default true).
+
   `lid.vents` accepts the same vent properties as a case wall. Vents occupy the
   skirt above the channels; the rail grooves and roof retain solid material.
   In this dedicated `vents` plist, `corner_r` is an alias for `vent_corner_r`;
   the explicit `vent_corner_r` takes precedence when both are provided.
+  `lid.wago_mounts` adds bracket holes; see multi_lipo_pack_lid_wago_mounts.
   `lid.color` overrides the case color. Lid coordinates start at the channel
   bottom, with the roof above it; mounting height is returned separately.
  */
@@ -143,9 +194,12 @@ module multi_lipo_pack_lid(pl,
                            slot_mode=false,
                            l_clearance=0.4,
                            w_clearance=0.4,
-                           show_adapter=false) {
+                           show_adapter=false,
+                           show_wago_brackets=false,
+                           show_wagos=true) {
   props = multi_lipo_pack_lid_props(pl, l_clearance, w_clearance);
   spec = plist_get("lid", pl, []);
+  wagos = multi_lipo_pack_lid_wago_mounts(pl, props);
   case_props = plist_get("case_props", props);
   body = plist_get("body_size", case_props);
   size = plist_get("canonical_size", props);
@@ -169,6 +223,9 @@ module multi_lipo_pack_lid(pl,
   roof_min = [(body[0] - size[0]) / 2, (body[1] - size[1]) / 2];
 
   module _mount_slots() {
+    translate([body[0]/2, body[1]/2, 0]) {
+      wago_mounts(wagos, z=size[2], slot_mode=true, parent_t=t);
+    }
     if (plist_get("enabled", adapter, false)) {
       translate([body[0]/2 + lidar_offset[0],
                  body[1]/2 + lidar_offset[1],
@@ -321,6 +378,12 @@ module multi_lipo_pack_lid(pl,
                   anchor=[0, 0, 1]);
           }
         }
+        if (show_wago_brackets) {
+          translate([body[0]/2, body[1]/2, 0]) {
+            wago_mounts(wagos, z=size[2], parent_t=t,
+                         show_wago=show_wagos, show_bolts=show_bolts);
+          }
+        }
         if (show_bolts) {
           _locking_bolts();
         }
@@ -345,9 +408,11 @@ module multi_lipo_pack_lid(pl,
   `show_lid`: Display the printed lid.
   `show_lidar`: Display the lidar and its standoffs.
   `show_bolts`: Display the removable rail-locking and adapter hardware.
-  `show_adapter`: Display the adapter plate (default true).
   `l_clearance`: Pack-cell Y clearance, shared with the case.
   `w_clearance`: Pack-cell X clearance, shared with the case.
+  `show_adapter`: Display the adapter plate (default true).
+  `show_wago_brackets`: Display configured roof brackets (default true).
+  `show_wagos`: Display connectors in roof brackets (default true).
  */
 module multi_lipo_pack_lid_on_case(pl,
                                    anchor=[0, 0, 1],
@@ -358,7 +423,9 @@ module multi_lipo_pack_lid_on_case(pl,
                                    show_bolts=false,
                                    l_clearance=0.4,
                                    w_clearance=0.4,
-                                   show_adapter=true) {
+                                   show_adapter=true,
+                                   show_wago_brackets=true,
+                                   show_wagos=true) {
   props = multi_lipo_pack_lid_props(pl, l_clearance, w_clearance);
   case_props = plist_get("case_props", props);
   axis = plist_get("axis", plist_get("rail_props", props));
@@ -375,6 +442,8 @@ module multi_lipo_pack_lid_on_case(pl,
                           show_lidar=show_lidar,
                           show_bolts=show_bolts,
                           show_adapter=show_adapter,
+                          show_wago_brackets=show_wago_brackets,
+                          show_wagos=show_wagos,
                           l_clearance=l_clearance,
                           w_clearance=w_clearance);
     }

@@ -577,3 +577,10 @@ Fuse routing: UPS -> fuse -> RPi; dedicated fuses feed the motor and servo HATs.
 | IR case                         | M2×7+ (2), M2×10+ (2)                           | 4    | —                                                                 |
 | Ultrasonic bracket              | M2.5×6+ (2), M2.5×10+ (2)                       | 4    | —                                                                 |
 | Wheel hubs (pair)               | M2.5×12+ (12)                                   | 12   | Use M3 for tighter fit                                            |
+
+### Wago 221 brackets
+
+The [Wago bracket guide](scad/wago/README.md) covers the measured five-conductor
+cradle, M3 mounting holes, rear-chassis placement below or beyond the battery,
+and optional brackets on the sliding multi-LiPo lid. Open
+[`demo/wago/placements.scad`](demo/wago/placements.scad) for working examples.
