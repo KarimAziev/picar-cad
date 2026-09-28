@@ -24,8 +24,14 @@ function wago_mount_size(spec) =
    abs(sin(a)) * s[0] + abs(cos(a)) * s[1], s[2]];
 
 function _wago_bounds(pos, size, pad=0) =
-  [[pos[0] - size[0] / 2 - pad, pos[1] - size[1] / 2 - pad, pos[2]],
-   [pos[0] + size[0] / 2 + pad, pos[1] + size[1] / 2 + pad, pos[2] + size[2]]];
+  let (px = pos[0],
+       py = pos[1],
+       pz = pos[2],
+       hx = size[0] / 2,
+       hy = size[1] / 2,
+       sz = size[2])
+  [[px - hx - pad, py - hy - pad, pz],
+   [px + hx + pad, py + hy + pad, pz + sz]];
 
 function _wago_overlap(a, b) =
   a[0][0] < b[1][0] && a[1][0] > b[0][0]
