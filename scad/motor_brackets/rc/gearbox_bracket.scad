@@ -81,18 +81,66 @@ module loft_slices(pts1, pts2, h, steps=20, r=0) {
   }
 }
 
-module loft_polyhedron(pts1, pts2, h) {
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  loft_polyhedron
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Loft corresponding polygon vertices from Z=0 to Z=h.
+
+  **Parameters:**
+  - `pts1`: Bottom outline; each entry starts with numeric X/Y coordinates.
+  - `pts2`: Top outline with the same vertex count, winding, and correspondence.
+  - `h`: Positive height.
+  - `steps`: Positive integer number of interpolated side bands. Increase for
+    nonplanar sides; one band suffices for planar sides.
+
+  **Behavior:**
+  Either clockwise or counterclockwise outlines are accepted. Extra point
+  metadata is ignored. Outlines and their interpolations must be simple,
+  nondegenerate polygons without duplicate adjacent vertices or crossed sides.
+  Concavities are preserved. Unlike `loft_slices()`, this does not convexify
+  the outline or round its corners.
+ */
+module loft_polyhedron(pts1, pts2, h, steps=1) {
+  assert(is_list(pts1) && is_list(pts2), "Loft outlines must be lists");
   n = len(pts1);
-  points = concat([for (p = pts1) [p[0], p[1], 0]],
-                  [for (p = pts2) [p[0], p[1], h]]);
+  assert(n >= 3 && len(pts2) == n,
+         "Loft outlines need the same number of vertices (at least three)");
+  assert(is_num(h) && h > 0, "Loft height must be positive");
+  assert(is_num(steps) && steps >= 1 && steps == floor(steps),
+         "Loft steps must be a positive integer");
+  for (pts = [pts1, pts2]) {
+    for (p = pts) {
+      assert(is_list(p) && len(p) >= 2 && is_num(p[0]) && is_num(p[1]),
+             "Loft vertices need numeric X/Y coordinates");
+    }
+    for (i = [0:n-1]) {
+      assert(norm([pts[i][0] - pts[(i + 1)%n][0],
+                   pts[i][1] - pts[(i + 1)%n][1]]) > 0,
+             "Loft outlines must not repeat adjacent vertices");
+    }
+  }
+  area1 = polygon_signed_area(pts1);
+  area2 = polygon_signed_area(pts2);
+  assert(area1 * area2 > 0, "Loft outlines must have matching nonzero winding");
 
-  faces = concat([[for (i=[0:n-1]) i]],                 // bottom
-                 [[for (i=[0:n-1]) n + (n-1-i)]],       // top reversed
-                 [for (i=[0:n-1])
-                     let (j=(i + 1)%n)
-                       [i, j, n + j, n + i]]);
-
-  polyhedron(points=points, faces=faces, convexity=10);
+  points = [for (k = [0:steps])
+      for (p = lerp_pts(pts1, pts2, k/steps))
+        [p[0], p[1], h*k/steps]];
+  // For CCW outlines OpenSCAD wants the bottom in forward order, the top
+  // reversed, and side edges opposite their neighboring cap edges.
+  // Triangles avoid nonplanar quads when corresponding edges are not parallel.
+  faces = concat([[for (i = [0:n-1]) i]],
+                 [[for (i = [n-1:-1:0]) steps*n + i]],
+                 [for (k = [0:steps-1], i = [0:n-1])
+                     let (j = (i + 1)%n,
+                          a = k*n + i, b = k*n + j,
+                          c = (k + 1)*n + j, d = (k + 1)*n + i)
+                       each [[a, d, c], [a, c, b]]]);
+  polyhedron(points=points,
+             faces=area1 > 0 ? faces : [for (face = faces) reverse(face)],
+             convexity=10);
 }
 
 /**
