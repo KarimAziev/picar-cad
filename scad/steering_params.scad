@@ -1200,7 +1200,7 @@ motor_encoder_side_thickness                      = 3;
 motor_encoder_pcb_padding                         = 1;
 motor_encoder_mount_bolt_d                        = m3_hole_dia;
 motor_encoder_mount_wall                          = 1.5;
-motor_encoder_nut_clearance                       = 0.2; // radial and axial pocket clearance
+motor_encoder_nut_clearance                       = 0.4; // radial and axial pocket clearance
 motor_encoder_clearance                           = 0.6; // bolt-head and PCB clearance
 motor_encoder_magnet_distance                     = 0.5; // IC package face to magnet face
 motor_encoder_magnet_d                            = 5;
@@ -1403,7 +1403,7 @@ multi_power_case_size                             = plist_get("size",
 
 chassis_body_min_w                                = multi_power_case_size[0];
 
-bracket_thickness                                 = 10.0;
+bracket_thickness                                 = 8.5;
 
 gearbox_bracket_bolt_d                            = m3_hole_dia;
 gearbox_bracket_bolt_pad_x                        = 3;
