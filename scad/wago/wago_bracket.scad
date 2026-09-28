@@ -67,15 +67,28 @@ function wago_bracket_props(pl=[]) =
          "mount_side must be rear or sides")
   assert(sides || tray_w > 2*ear,
          "Rear ears need a wider connector; use mount_side=sides")
-  ["size", [tray_w + (sides ? 2*ear : 0), l + (sides ? 0 : ear), h], "wago", hardware, "wago_size", ws,
+  ["size", [tray_w + (sides ? 2*ear : 0), l + (sides ? 0 : ear), h],
+   "wago", hardware,
+   "wago_size", ws,
    "wago_pos", [(sides ? ear : 0) + wall + c, wall + c, t],
    "mount_holes", sides ? [[ear/2, l/2], [ear + tray_w + ear/2, l/2]]
    : [[ear/2, l + ear/2], [tray_w-ear/2, l + ear/2]],
-   "mount_side", mount_side, "tray_l", l, "tray_x", sides ? ear : 0,
-   "tray_w", tray_w, "ear_d", ear, "base_t", t, "wall_t", wall,
-   "clearance", c, "top_clearance", zc, "clip_l", clip_l,
-   "clip_overlap", overlap, "clip_rise", rise, "flex_gap", flex,
-   "stop_h", stop, "bolt_d", d, "hole_d", d + dc,
+   "mount_side", mount_side,
+   "tray_l", l,
+   "tray_x", sides ? ear : 0,
+   "tray_w", tray_w,
+   "ear_d", ear,
+   "base_t", t,
+   "wall_t", wall,
+   "clearance", c,
+   "top_clearance", zc,
+   "clip_l", clip_l,
+   "clip_overlap", overlap,
+   "clip_rise", rise,
+   "flex_gap", flex,
+   "stop_h", stop,
+   "bolt_d", d,
+   "hole_d", d + dc,
    "shoulder", shoulder];
 
 /**
@@ -221,4 +234,4 @@ module wago_bracket(pl=[],
   }
 }
 
-wago_bracket(show_wago=true);
+wago_bracket(show_wago=false);

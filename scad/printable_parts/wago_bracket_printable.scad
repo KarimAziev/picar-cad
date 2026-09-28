@@ -4,5 +4,7 @@
   * Author: Karim Aziiev <karim.aziiev@gmail.com>
   * License: GPL-3.0-or-later
   */
-use <../wago/wago_bracket.scad>
-wago_bracket();
+
+use <../wago/wago_bracket_printable.scad>
+
+wago_bracket_printable();
