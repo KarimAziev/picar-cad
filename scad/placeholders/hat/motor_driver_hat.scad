@@ -6,18 +6,18 @@
  * License: GPL-3.0-or-later
  */
 
-include <../colors.scad>
-include <../parameters.scad>
+include <../../colors.scad>
+include <../../parameters.scad>
 
-use <../core/pcb_grid.scad>
-use <../lib/holes.scad>
-use <../lib/plist.scad>
-use <../lib/shapes2d.scad>
-use <../lib/shapes3d.scad>
-use <../lib/transforms.scad>
-use <pad_hole.scad>
-use <pin_header.scad>
-use <standoff.scad>
+use <../../core/pcb_grid.scad>
+use <../../lib/holes.scad>
+use <../../lib/plist.scad>
+use <../../lib/shapes2d.scad>
+use <../../lib/shapes3d.scad>
+use <../../lib/transforms.scad>
+use <../pad_hole.scad>
+use <../pin_header.scad>
+use <../standoff.scad>
 
 module motor_driver_hat(plist=motor_driver_grid,
                         show_upper_pin_header=true,

@@ -17,12 +17,12 @@ use <../lib/shapes2d.scad>
 use <../lib/shapes3d.scad>
 use <../lib/slots.scad>
 use <../lib/transforms.scad>
-use <ai_hat.scad>
-use <gpio_expansion_board.scad>
-use <motor_driver_hat.scad>
+use <hat/ai_hat.scad>
+use <hat/gpio_expansion_board.scad>
+use <hat/motor_driver_hat.scad>
+use <hat/servo_driver_hat.scad>
 use <pad_hole.scad>
 use <rpi_5_grid.scad>
-use <servo_driver_hat.scad>
 use <standoff.scad>
 
 show_standoffs              = true;
