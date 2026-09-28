@@ -44,6 +44,8 @@ light_grey               = "#e6e6e6";
 dark_gold_1              = "#B59410";
 dark_gold_2              = "#b8860b";
 
+orange_1                 = "#F07F24";
+
 green_1                  = "#6CC04A";
 green_2                  = "#1da760";
 green_3                  = "#037739";

@@ -25,13 +25,17 @@ use <../../lib/transforms.scad>
   - `conductor_size`: Measured conductor pitch, body length and body height.
   - `total_w`: Measured total width; undef uses the sum of conductor widths.
  */
-function wago_size(n=wago_n, conductor_size=wago_conductor_size,
+function wago_size(n=wago_n,
+                   conductor_size=wago_conductor_size,
                    total_w=wago_total_w) =
-  assert(is_num(n) && n >= 1 && n == floor(n), "Wago n must be a positive integer")
+  assert(is_num(n) && n >= 1 && n == floor(n),
+         "Wago n must be a positive integer")
   assert(is_list(conductor_size) && len(conductor_size) == 3
-         && min(conductor_size) > 0, "Wago conductor_size must contain three positive dimensions")
+         && min(conductor_size) > 0,
+         "Wago conductor_size must contain three positive dimensions")
   let (w = is_undef(total_w) ? n * conductor_size[0] : total_w)
-  assert(is_num(w) && w >= n * conductor_size[0], "Wago total_w is smaller than its conductors")
+  assert(is_num(w) && w >= n * conductor_size[0],
+         "Wago total_w is smaller than its conductors")
   [w, conductor_size[1], conductor_size[2]];
 
 /**
@@ -50,15 +54,17 @@ module wago_from_plist(pl=[], orientation="wlh", anchor=[1, 1, 1]) {
                    plist_get("conductor_size", pl, wago_conductor_size),
                    plist_get("total_w", pl, wago_total_w));
   wago(n=plist_get("n", pl, wago_n),
-        wago_conductor_size=plist_get("conductor_size", pl, wago_conductor_size),
-        wago_hole_size_xz=plist_get("hole_size_xz", pl, wago_hole_size_xz),
-        wago_lid_l=plist_get("lid_l", pl, wago_lid_l),
-        wago_lid_t=plist_get("lid_t", pl, wago_lid_t),
-        wago_thickness=plist_get("thickness", pl, wago_thickness),
-        total_w=size[0], orientation=orientation, anchor=anchor);
+       wago_conductor_size=plist_get("conductor_size", pl, wago_conductor_size),
+       wago_hole_size_xz=plist_get("hole_size_xz", pl, wago_hole_size_xz),
+       wago_lid_l=plist_get("lid_l", pl, wago_lid_l),
+       wago_lid_t=plist_get("lid_t", pl, wago_lid_t),
+       wago_thickness=plist_get("thickness", pl, wago_thickness),
+       total_w=size[0],
+       orientation=orientation,
+       anchor=anchor);
 }
 
-module wago_conductor(lid_color="#F07F24",
+module wago_conductor(lid_color=orange_1,
                       wago_conductor_size=wago_conductor_size,
                       wago_hole_size_xz=wago_hole_size_xz,
                       wago_lid_l=wago_lid_l,
