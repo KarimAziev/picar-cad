@@ -6,10 +6,10 @@ include <../../steering_params.scad>
 include <../rear_suspension/computed_params.scad>
 
 use <../../lib/plist.scad>
-use <../../wago/wago_mounts.scad>
 use <../../lib/transforms.scad>
 use <../../motor_brackets/rc/gearbox_bracket.scad>
 use <../../panel_stack/panel_stack.scad>
+use <../../wago/wago_mounts.scad>
 use <../rear_suspension/rear_suspension_chassis.scad>
 use <rear_payload.scad>
 
@@ -88,13 +88,16 @@ module rear_chassis(show_panel_stack=true,
     translate([0, is_undef(anchor) ? 0 : -center_y, 0]) {
       rear_suspension_chassis(layout=layout);
       if (show_wago_brackets) {
-        wago_mounts(plist_get("wago_mounts", layout, []), show_wago=show_wagos,
-                     parent_t=size[2]);
+        wago_mounts(plist_get("wago_mounts", layout, []),
+                    show_wago=show_wagos,
+                    parent_t=size[2]);
       }
       rear_power_payload(plist_get("power_case", layout),
-                         show_case=show_power_case, show_packs=show_lipo_packs,
+                         show_case=show_power_case,
+                         show_packs=show_lipo_packs,
                          show_standoffs=show_power_standoffs,
-                         show_lidar=show_lidar, show_lid=show_lidar_lid);
+                         show_lidar=show_lidar,
+                         show_lid=show_lidar_lid);
       translate([0, 0, size[2]]) {
         translate(plist_get("motor_pos", layout)) {
           rotate(plist_get("motor_rotation", layout)) {

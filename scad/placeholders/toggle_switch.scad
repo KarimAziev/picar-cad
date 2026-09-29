@@ -19,7 +19,10 @@ function toggle_switch_calc_desired_thickness(extra_thickness, nut_bore_h) =
   extra_thickness + nut_bore_h;
 
 // Shared by the physical lever and its clearance envelope.
-function toggle_switch_lever_angle(thread_d, thread_border_w, lever_dia_2, lever_h) =
+function toggle_switch_lever_angle(thread_d,
+                                   thread_border_w,
+                                   lever_dia_2,
+                                   lever_h) =
   let (r_inner = (thread_d - thread_border_w) / 2,
        a = sqrt(lever_h * lever_h + (lever_dia_2 + r_inner) * (lever_dia_2 + r_inner)))
   r_inner <= a ? asin(r_inner / a) - atan2(lever_dia_2 + r_inner, lever_h) : 0;
@@ -57,7 +60,10 @@ module toggle_switch(size                               = toggle_switch_size,
                      center_y                           = true) {
   thread_inner_dia = thread_d - thread_border_w;
 
-  lever_angle = toggle_switch_lever_angle(thread_d, thread_border_w, lever_dia_2, lever_h);
+  lever_angle = toggle_switch_lever_angle(thread_d,
+                                          thread_border_w,
+                                          lever_dia_2,
+                                          lever_h);
 
   translate([center_x ? 0 : size[0] / 2,
              center_y ? 0 : size[1] / 2,
@@ -142,6 +148,8 @@ module toggle_switch_counterbore(thread_d                           = toggle_swi
                                  autoscale_step                     = 0.1,
                                  $fn                                = 60,
                                  reverse                            = false,
+                                 teardrop_angle,
+                                 teardrop_both_sides,
                                  total_thickness,
                                  center) {
 
@@ -158,7 +166,9 @@ module toggle_switch_counterbore(thread_d                           = toggle_swi
               sink=sink,
               fn=$fn,
               autoscale_step=autoscale_step,
-              reverse=reverse);
+              teardrop_both_sides=teardrop_both_sides,
+              reverse=reverse,
+              teardrop_angle=teardrop_angle);
 }
 
 module toggle_switch_from_plist(plist, center_x=false, center_y=false) {

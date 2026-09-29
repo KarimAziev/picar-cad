@@ -1307,6 +1307,30 @@ lipo_pack_base_pl                                 = ["size", [lipo_pack_width,
 
 lipo_packs                                        = [lipo_pack_base_pl];
 
+button_switch_default_plist                       = ["body_size", toggle_switch_size,
+                                                            "thread_h", toggle_switch_thread_h,
+                                                            "thread_d", toggle_switch_thread_d,
+                                                            "nut_d", toggle_switch_nut_d,
+                                                            "nut_bore_h", toggle_switch_nut_out_h,
+                                                            "lever_dia_1", toggle_switch_lever_dia_1,
+                                                            "lever_dia_2", toggle_switch_lever_dia_2,
+                                                            "lever_h", toggle_switch_lever_h,
+                                                            "terminal_size", toggle_switch_terminal_size,
+                                                            "thread_border_w", toggle_switch_thread_border_w,
+                                                            "metallic_head_h", toggle_switch_metallic_head_h,];
+
+toggle_switch_bracket_plist                       = ["button", button_switch_default_plist,
+                                                                   "bolt_d", m3_hole_dia,
+                                                                   "bottom_t", 3,
+                                                                   "vertical_r", 2,
+                                                                   "bottom_r", 2,
+                                                                   "vertical_extra_t", 2,
+                                                                   "vertical_top_pad", 2,
+                                                                   "d_tolerance", toggle_switch_slot_d_tolerance,
+                                                                   "side_pad", 4,
+                                                                   "bolt_pad", 5,
+                                                                   "color", white_smoke_1];
+
 basic_vent_spec                                   = ["vent_h", 2,
                                                      "vent_corner_r", "40%",
                                                      "vent_w", "20%",
@@ -1372,7 +1396,7 @@ multi_lipo_packs_case                             = ["lipo_packs", lipo_packs,
                                                      "bolt_pad_y", 5,
                                                      "bolt_d", m3_hole_dia,
                                                      "bore_d", front_chassis_bellcrank_bolt_bore_d,
-                                                     "bore_h", front_chassis_bellcrank_bolt_bore_h,];
+                                                     "bore_h", front_chassis_bellcrank_bolt_bore_h];
 
 multi_power_case_props                            = multi_lipo_pack_props(plist=multi_lipo_packs_case);
 multi_power_case_size                             = plist_get("size",
