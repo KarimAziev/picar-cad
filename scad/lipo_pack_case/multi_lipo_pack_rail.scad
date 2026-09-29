@@ -10,6 +10,7 @@
 use <../lib/functions.scad>
 use <../lib/plist.scad>
 use <../lib/slider.scad>
+use <../lib/slots.scad>
 use <../placeholders/bolt.scad>
 
 function _lipo_rail_segments(segments, cuts, i=0) =
@@ -172,11 +173,18 @@ module multi_lipo_pack_rail_shape(props,
 module multi_lipo_pack_rail_holes(props, rail, depth, z_offset=0) {
   axis = plist_get("axis", props);
   for (along = plist_get("bolts", rail)) {
-    translate([axis == "x" ? along : plist_get("cross", rail),
-               axis == "x" ? plist_get("cross", rail) : along,
-               plist_get("z", props) + plist_get("bolt_z", props) + z_offset]) {
-      rotate(axis == "x" ? [90, 0, 0] : [0, 90, 0]) {
-        cylinder(d=plist_get("bolt_d", props), h=depth, center=true, $fn=32);
+    let (bolt_d = plist_get("bolt_d", props)) {
+      translate([axis == "x" ? along : plist_get("cross", rail),
+                 axis == "x" ? plist_get("cross", rail) : along,
+                 plist_get("z", props) + plist_get("bolt_z", props) + z_offset]) {
+        rotate(axis == "x" ? [90, 0, 0] : [0, 90, 0]) {
+          translate([0, 0, -depth / 2]) {
+            counterbore(h=depth,
+                        d=bolt_d,
+                        teardrop_angle=45,
+                        teardrop_both_sides=true);
+          }
+        }
       }
     }
   }

@@ -535,6 +535,7 @@ module multi_lipo_pack_case(pl,
   l = body_size[1];
   ear_d = plist_get("mount_ear_d", pl, 0);
   wall_props = plist_get("wall_props", props);
+
   wall_h = plist_get("wall_size", props)[2] - bottom_t;
   pack_n = len(lipo_packs);
 
@@ -546,7 +547,9 @@ module multi_lipo_pack_case(pl,
   nut_d = mount_nut_pockets ? find_nut_prop("outer_dia", bolt_d) / cos(30) : 0;
   stud_h = mount_nut_pockets ? plist_get("thread_h",
                                          calc_standoff_params(bolt_d, 5)[0]) : 0;
+
   nut_z = stud_h - nut_h;
+
   assert(!mount_nut_pockets || (bottom_t > stud_h && nut_z > 0),
          "Nut pockets require a floor above the stud ends and solid material beneath the nuts");
 
@@ -631,7 +634,7 @@ module multi_lipo_pack_case(pl,
     }
   }
 
-  module _wall_cutouts(wall, depth, axis, x=0, y=0) {
+  module _wall_cutouts(wall, depth, axis, x=0, y=0, side="bottom") {
     for (cutout = plist_get("cutouts", wall)) {
       cut_h = plist_get("h", cutout);
       if (cut_h > 0) {
@@ -644,7 +647,7 @@ module multi_lipo_pack_case(pl,
                       depth + 0.2,
                       wall_h + 0.1,
                       r=plist_get("corner_r", cutout),
-                      side="bottom");
+                      side=side);
       }
     }
   }
@@ -661,13 +664,17 @@ module multi_lipo_pack_case(pl,
             if (ear_d > 0) {
               for (x = [-1, 1], y = [-1, 1]) {
                 hull() {
-                  translate([w/2 + x*bolt_spacing[0]/2,
-                             l/2 + y*bolt_spacing[1]/2,
+                  translate([w / 2 + x * bolt_spacing[0] / 2,
+                             l / 2 + y * bolt_spacing[1] / 2,
                              0]) {
                     cylinder(d=ear_d, h=bottom_t);
                   }
-                  translate([constraint(w/2 + x*bolt_spacing[0]/2, ear_d/2, w-ear_d/2),
-                             constraint(l/2 + y*bolt_spacing[1]/2, ear_d/2, l-ear_d/2),
+                  translate([constraint(w / 2 + x * bolt_spacing[0] / 2,
+                                        ear_d / 2,
+                                        w - ear_d / 2),
+                             constraint(l/2 + y * bolt_spacing[1] / 2,
+                                        ear_d / 2 ,
+                                        l - ear_d / 2),
                              0]) {
                     cylinder(d=ear_d, h=bottom_t);
                   }
@@ -685,9 +692,11 @@ module multi_lipo_pack_case(pl,
                                    bore_d=bore_d,
                                    no_bore=mount_nut_pockets);
           if (mount_nut_pockets) {
-            four_corner_children(size=bolt_spacing, center=true) {
-              translate([0, 0, nut_z]) {
-                cylinder(d=nut_d + 0.3, h=bottom_t - nut_z + 0.1, $fn=6);
+            let (pocket_h = bottom_t - nut_z + 0.2) {
+              four_corner_children(size=bolt_spacing, center=true) {
+                translate([0, 0, nut_z]) {
+                  cylinder(d=nut_d + 0.3, h=pocket_h, $fn=6);
+                }
               }
             }
           }
@@ -824,4 +833,7 @@ module multi_lipo_pack_case(pl,
   }
 }
 
-multi_lipo_pack_case(multi_lipo_packs_case, target_h=30, show_packs=true);
+multi_lipo_pack_case(multi_lipo_packs_case,
+                     target_h=30,
+                     show_packs=false,
+                     show_standoffs=false);

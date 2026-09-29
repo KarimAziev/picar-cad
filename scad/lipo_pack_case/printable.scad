@@ -31,16 +31,16 @@ module multi_lipo_pack_printable(pl=multi_lipo_packs_case, spacing=8) {
   lid_size = plist_get("canonical_size", lid_props);
   adapter = plist_get("adapter_props", lid_props);
   multi_lipo_pack_case(canonical, anchor=[0, 0, 1], show_standoffs=false);
-  translate([(case_size[0] + lid_size[0]) / 2 + spacing, 0, 0]) {
-    multi_lipo_pack_lid_printable(canonical);
-  }
-  if (plist_get("enabled", adapter, false)) {
-    translate([case_size[0]/2 + lid_size[0] + plist_get("size", adapter)[0]/2 + 2*spacing,
-               0,
-               0]) {
-      multi_lipo_pack_adapter_printable(adapter);
-    }
-  }
+  // translate([(case_size[0] + lid_size[0]) / 2 + spacing, 0, 0]) {
+  //   multi_lipo_pack_lid_printable(canonical);
+  // }
+  // if (plist_get("enabled", adapter, false)) {
+  //   translate([case_size[0]/2 + lid_size[0] + plist_get("size", adapter)[0]/2 + 2*spacing,
+  //              0,
+  //              0]) {
+  //     multi_lipo_pack_adapter_printable(adapter);
+  //   }
+  // }
 }
 
 multi_lipo_pack_printable();

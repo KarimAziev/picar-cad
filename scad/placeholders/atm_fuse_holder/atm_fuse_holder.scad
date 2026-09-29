@@ -181,14 +181,12 @@ module atm_fuse_holder_from_spec(plist,
   }
 }
 
-spin = -20;
-atm_fuse_holder_from_spec(plist=[],
-                          spin=spin,
-                          slot_mode=true,
-                          center=false);
+spin = 0;
+// atm_fuse_holder_from_spec(plist=[],
+//                           spin=spin,
+//                           slot_mode=true,
+//                           center=false);
 
-atm_fuse_holder_from_spec(plist=["show_cap", false, "reverse", true],
-
-                          spin=spin,
+atm_fuse_holder_from_spec(plist=["show_cap", true],
                           slot_mode=false,
                           center=false);
