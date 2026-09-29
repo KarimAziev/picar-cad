@@ -101,5 +101,4 @@ rear_lidar_standoff_h                      = 13;
 // Optional Wago brackets: auto tries beneath the case, then extends toward -Y.
 // Each entry accepts placement, rotation (degrees), gap, service_h, bracket.
 // Example: [["placement", "auto", "rotation", 90], ["placement", "after"]]
-rear_wago_mounts                           = [["placement", "auto",  "rotation", 270],
-                                              ["placement", "auto", "rotation", 180]];
+rear_wago_mounts                           = [["placement", "auto",  "rotation", 270],];
