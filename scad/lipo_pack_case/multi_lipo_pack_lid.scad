@@ -9,7 +9,6 @@
   */
 include <../steering_params.scad>
 
-use <../wago/wago_mounts.scad>
 use <../lib/functions.scad>
 use <../lib/plist.scad>
 use <../lib/shapes2d.scad>
@@ -18,8 +17,8 @@ use <../lib/slots.scad>
 use <../lib/transforms.scad>
 use <../placeholders/bolt.scad>
 use <../placeholders/lidar.scad>
-use <../placeholders/nut.scad>
 use <../placeholders/standoff.scad>
+use <../wago/wago_mounts.scad>
 use <multi_lipo_pack_adapter.scad>
 use <multi_lipo_pack_case.scad>
 use <multi_lipo_pack_rail.scad>
@@ -128,32 +127,32 @@ function multi_lipo_pack_lid_wago_mounts(pl, props) =
        size = plist_get("canonical_size", props),
        sensor = plist_get("lidar", props),
        adapter = plist_get("adapter_props", props),
-       sensor_size = is_undef(sensor) ? [0,0,0]
+       sensor_size = is_undef(sensor) ? [0, 0, 0]
        : orientation_size(plist_get("lidar_orientation", props), lidar_size(sensor)),
-       adapter_size = plist_get("size", adapter, [0,0,0]),
+       adapter_size = plist_get("size", adapter, [0, 0, 0]),
        occupied = [for (i=[0:2]) max(sensor_size[i], adapter_size[i])],
        sensor_box = _wago_bounds(concat(plist_get("lidar_offset", props), [0]), occupied),
        boxes = [for (m = mounts)
-         let (pos = plist_get("pos", m), gap = plist_get("gap", m, 2))
-         assert(is_list(pos) && len(pos) == 2 && is_num(pos[0]) && is_num(pos[1]),
-                "Lid Wago pos must be a canonical XY roof-center offset")
-         assert(is_num(gap) && gap >= 0, "Lid Wago gap must be nonnegative")
-         _wago_bounds(concat(pos, [0]), wago_mount_size(m), gap)],
+           let (pos = plist_get("pos", m), gap = plist_get("gap", m, 2))
+             assert(is_list(pos) && len(pos) == 2 && is_num(pos[0]) && is_num(pos[1]),
+                    "Lid Wago pos must be a canonical XY roof-center offset")
+             assert(is_num(gap) && gap >= 0, "Lid Wago gap must be nonnegative")
+             _wago_bounds(concat(pos, [0]), wago_mount_size(m), gap)],
        radius = plist_get("corner_r", props),
        roof = [[-size[0]/2, -size[1]/2, 0], [size[0]/2, size[1]/2, 0]],
        outside_corners = [for (b = boxes, x = [b[0][0], b[1][0]], y = [b[0][1], b[1][1]])
-         if (norm([max(0, abs(x)-size[0]/2+radius),
-                   max(0, abs(y)-size[1]/2+radius)]) > radius + 0.000001) 1])
-  assert(is_list(mounts), "lid.wago_mounts must be a list")
-  assert(len(outside_corners) == 0
-         && len([for (b = boxes) if (!_wago_inside(b, roof)) 1]) == 0,
-         "Wago bracket and margin must fit the existing lid roof")
-  assert(is_undef(sensor) || len([for (b = boxes) if (_wago_overlap(b, sensor_box)) 1]) == 0,
-         "Wago bracket overlaps the lidar or adapter envelope")
-  assert(len([for (i=[0:1:len(boxes)-1], j=[0:1:i-1])
-              if (_wago_overlap(boxes[i], boxes[j])) 1]) == 0,
-         "Wago brackets overlap on the lid")
-  mounts;
+           if (norm([max(0, abs(x)-size[0]/2 + radius),
+                     max(0, abs(y)-size[1]/2 + radius)]) > radius + 0.000001) 1])
+                     assert(is_list(mounts), "lid.wago_mounts must be a list")
+                     assert(len(outside_corners) == 0
+                            && len([for (b = boxes) if (!_wago_inside(b, roof)) 1]) == 0,
+                            "Wago bracket and margin must fit the existing lid roof")
+                     assert(is_undef(sensor) || len([for (b = boxes) if (_wago_overlap(b, sensor_box)) 1]) == 0,
+                            "Wago bracket overlaps the lidar or adapter envelope")
+                     assert(len([for (i=[0:1:len(boxes)-1], j=[0:1:i-1])
+                                    if (_wago_overlap(boxes[i], boxes[j])) 1]) == 0,
+                            "Wago brackets overlap on the lid")
+                     mounts;
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -169,6 +168,7 @@ function multi_lipo_pack_lid_wago_mounts(pl, props) =
   `show_lid`: Display the printed lid.
   `show_lidar`: Display the lidar and its mounting standoffs, independent of lid visibility.
   `show_bolts`: Display rail-locking and adapter-to-lid bolts and nuts.
+  Rail-locking heads face inward; their nuts seat on the exterior skirts.
   `show_adapter`: Display the separate adapter plate (default false).
   `slot_mode`: Emit rail-locking and active lid mounting cutters (adapter or
   direct lidar), in the same frame.
@@ -212,7 +212,6 @@ module multi_lipo_pack_lid(pl,
   t = plist_get("t", props);
   side_t = plist_get("side_t", props);
   clearance = plist_get("clearance", rails);
-  channel_pad = plist_get("clearance_w", rails);
   rail_h = plist_get("h", rails);
   lidar_pl = plist_get("lidar", props);
   lidar_offset = plist_get("lidar_offset", props);
@@ -257,7 +256,7 @@ module multi_lipo_pack_lid(pl,
   module _slots() {
     _mount_slots();
     for (rail = plist_get("rails", rails)) {
-      depth = plist_get("w", rail) + 2 * (channel_pad + side_t);
+      depth = plist_get("locking_depth", rail);
       multi_lipo_pack_rail_holes(rails, rail, depth + 0.2, z_offset=-mount_z);
     }
   }
@@ -265,8 +264,10 @@ module multi_lipo_pack_lid(pl,
   module _skirt_vents(rail, depth) {
     z = rail_h + clearance + side_t;
     vents = plist_get("vents", spec, []);
-    vent = multi_lipo_pack_vent_props(plist_merge(vents, ["vent_corner_r", plist_get("vent_corner_r", vents,
-                                                                                     plist_get("corner_r", vents, 0))]),
+    vent = multi_lipo_pack_vent_props(plist_merge(vents,
+                                                  ["vent_corner_r",
+                                                   plist_get("vent_corner_r", vents,
+                                                             plist_get("corner_r", vents, 0))]),
                                       size[slide_axis],
                                       max(0, roof_z - z));
     along = roof_min[slide_axis];
@@ -277,31 +278,11 @@ module multi_lipo_pack_lid(pl,
   }
 
   module _locking_bolts() {
-    d = plist_get("bolt_d", rails);
-    if (d > 0) {
-      for (i = [0:1]) {
-        rail = plist_get("rails", rails)[i];
-        direction = i == 0 ? -1 : 1;
-        depth = plist_get("w", rail) + 2 * (channel_pad + side_t);
-        nut_h = find_nut_prop("height", d);
-        bolt_l = ceil((depth + nut_h) / 2) * 2;
-        cross = plist_get("cross", rail) + direction * (depth / 2 - bolt_l);
-        for (along = plist_get("bolts", rail)) {
-          translate([axis == "x" ? along : cross,
-                     axis == "x" ? cross : along,
-                     plist_get("bolt_z", rails)]) {
-            rotate(axis == "x" ? [-direction * 90, 0, 0] : [0, direction * 90, 0]) {
-              bolt(d=d, h=bolt_l, threaded=false, show_nut=false);
-              translate([0, 0, bolt_l - depth - nut_h]) {
-                nut(d=d,
-                    outer_d=find_nut_prop("outer_dia", d) / cos(30),
-                    h=nut_h,
-                    show_text=false);
-              }
-            }
-          }
-        }
-      }
+    for (rail = plist_get("rails", rails)) {
+      multi_lipo_packs_rail_bolts(rails,
+                                  rail,
+                                  z_offset=-mount_z,
+                                  show_nuts=true);
     }
   }
 
@@ -327,7 +308,7 @@ module multi_lipo_pack_lid(pl,
                     cube([size[0], size[1], t]);
                   }
                   for (rail = plist_get("rails", rails)) {
-                    depth = plist_get("w", rail) + 2 * (channel_pad + side_t);
+                    depth = plist_get("locking_depth", rail);
                     cross = plist_get("cross", rail) - depth / 2;
                     along = roof_min[slide_axis];
                     translate([axis == "x" ? along : cross,
@@ -339,7 +320,7 @@ module multi_lipo_pack_lid(pl,
                 }
               }
               for (rail = plist_get("rails", rails)) {
-                depth = plist_get("w", rail) + 2 * (channel_pad + side_t);
+                depth = plist_get("locking_depth", rail);
                 multi_lipo_pack_rail_shape(rails,
                                            rail,
                                            clearance=clearance,
@@ -380,8 +361,11 @@ module multi_lipo_pack_lid(pl,
         }
         if (show_wago_brackets) {
           translate([body[0]/2, body[1]/2, 0]) {
-            wago_mounts(wagos, z=size[2], parent_t=t,
-                         show_wago=show_wagos, show_bolts=show_bolts);
+            wago_mounts(wagos,
+                        z=size[2],
+                        parent_t=t,
+                        show_wago=show_wagos,
+                        show_bolts=show_bolts);
           }
         }
         if (show_bolts) {

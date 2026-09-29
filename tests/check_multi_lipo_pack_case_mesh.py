@@ -22,7 +22,8 @@ pl = ["lipo_packs", [["size", [20,40,10]]],
                 "right", ["t", 2, "h", 12]],
       "bolt_d", 3, "bore_d", 5, "bore_h", 1];
 module sample() {{
-  multi_lipo_pack_case(pl, anchor=[1,1,1], l_clearance=0, w_clearance=0);
+  multi_lipo_pack_case(pl, anchor=[1,1,1], show_packs=false, show_rail_bolts=false,
+    l_clearance=0, w_clearance=0);
 }}
 '''
 
@@ -97,11 +98,92 @@ intersection() {{
     "pack_layout", "{"y" if axis == "x" else "x"}",
     "lipo_packs", [for (i = [0:{1 if wall == "inner" else 0}]) ["size", [20,40,10]]],
     "walls", plist_merge(rounded_walls, ["{wall}", profile])]),
-    anchor=[1,1,1], l_clearance=0, w_clearance=0);
+    anchor=[1,1,1], show_packs=false, show_rail_bolts=false,
+    l_clearance=0, w_clearance=0);
   translate({point}) cube(0.2);
 }}
 ''', empty)
         print("PASS: numeric/percentage top-only wall and bottom-only cutout rounding on both axes and dividers")
+
+        # The new profiles and their openings share one local span/Z interface
+        # across both outer-wall axes and both divider orientations.
+        for wall, axis, cross in (("front", "x", 43), ("right", "y", 23),
+                                  ("inner", "x", 43), ("inner", "y", 23)):
+            for kind, extras, probes in (
+                ("trapezoid", '"t", "50%",',
+                 [(0.5, 1, False), (0.5, 8, True), (10, 12, False)]),
+                ("trapezoid_rounded_top", '"t", "50%", "corner_r", 2,',
+                 [(5.1, 12.7, True), (10, 12.7, False), (0.5, 1, False)]),
+                ("custom", '"points", [[0,0], ["100%",0], ["50%","100%"]],',
+                 [(1, 11, True), (9.8, 12, False), (0.5, 1, False)]),
+                ("rect", '"slots", [["pos", [4,2], "d", 4], '
+                         '["pos", [12,2], "size", [4,4], "corner_r", 1]],',
+                 [(6, 7, True), (14, 7, True), (12.05, 5.05, False),
+                  (2, 7, False), (6, 1, False)]),
+                ("rect", '"vent_props", ["vent_w", 4, "vent_h", 4, '
+                         '"vent_pad", 1, "vent_col_gap", 4, "vent_row_gap", 20],',
+                 [(6, 8, True), (10, 8, False), (6, 1, False)]),
+            ):
+                for along, height, empty in probes:
+                    origin = 2 if wall == "inner" else 4
+                    point = ([origin + along, cross, 3 + height] if axis == "x"
+                             else [cross, origin + along, 3 + height])
+                    render(f'''
+profile_walls = ["bottom", ["t", 3],
+  "front", ["t", 2, "h", 0], "rear", ["t", 2, "h", 0],
+  "left", ["t", 2, "h", 0], "right", ["t", 2, "h", 0],
+  "inner", ["t", 2, "h", 0]];
+profile = ["t", 2, "l", 20, "offset", {0 if wall == "inner" else 4},
+           "h", 3, "shape", "{kind}", "shape_props", [{extras} "h", 10]];
+intersection() {{
+  multi_lipo_pack_case(plist_merge(pl, ["bolt_d", 0,
+    "pack_layout", "{"y" if axis == "x" else "x"}",
+    "lipo_packs", [for (i = [0:{1 if wall == "inner" else 0}]) ["size", [20,40,10]]],
+    "walls", plist_merge(profile_walls, ["{wall}", profile])]),
+    anchor=[1,1,1], show_packs=false, show_rail_bolts=false,
+    l_clearance=0, w_clearance=0);
+  translate({point}) cube(0.1);
+}}
+''', empty)
+        print("PASS: wall profiles, polygon percentages, local holes/slots and vents on both axes and dividers")
+
+        # Per-side override radii still work with corner_r=0; the top of a
+        # cutout uses its own height, not the tallest wall's cutter height.
+        for side, radius, probes in (
+            ('[["right", "25%"]]', 0, [(10.1, 12.1, True), (17.7, 12.1, False),
+                                     (17.7, 19.7, False), (14, 19.7, True)]),
+            ('["bottom_left", "top_right"]', 2,
+             [(10.1, 12.1, False), (17.7, 19.7, False), (17.7, 12.1, True)]),
+        ):
+            for along, height, empty in probes:
+                render(f'''
+intersection() {{
+  multi_lipo_pack_case(plist_merge(pl, ["bolt_d", 0, "walls",
+    plist_merge(plist_get("walls", pl), ["front", ["t", 2, "h", 20,
+      "cutouts", [["l", 8, "h", 8, "offset", 10,
+                   "corner_r", {radius}, "sides", {side}]]]])]),
+    anchor=[1,1,1], show_packs=false, show_rail_bolts=false,
+    l_clearance=0, w_clearance=0);
+  translate([{along}, 43, {3 + height}]) cube(0.1);
+}}
+''', empty)
+        print("PASS: selected cutout sides and percentage pair radii with a zero default radius")
+
+        for along, height, empty in ((4.1, 0.1, True), (4.1, 19.7, False),
+                                      (19.7, 19.7, True), (19.7, 0.1, False),
+                                      (10, 7, True), (10, 3, False)):
+            render(f'''
+intersection() {{
+  multi_lipo_pack_case(plist_merge(pl, ["bolt_d", 0, "walls",
+    plist_merge(plist_get("walls", pl), ["front", ["t", 2, "h", 20,
+      "l", 16, "offset", 4, "sides", [["bottom_left", 3], ["top_right", 3]],
+      "slots", [["pos", [4,5], "d", 4]]]])]),
+    anchor=[1,1,1], show_packs=false, show_rail_bolts=false,
+    l_clearance=0, w_clearance=0);
+  translate([{along}, 43, {3 + height}]) cube(0.1);
+}}
+''', empty)
+        print("PASS: wall side overrides and wall-local holes without an upper profile")
 
         # Geometry bounds must follow the custom tallest wall through rotations.
         sizes = {"wlh": [24, 44, 18], "lwh": [44, 24, 18],
@@ -111,7 +193,8 @@ intersection() {{
             for anchor in ([1, 1, 1], [0, 0, 0], [-1, -1, -1]):
                 data = render(f'''
 multi_lipo_pack_case(plist_merge(pl, ["orientation", "{orientation}"]),
-                    anchor={anchor}, l_clearance=0, w_clearance=0);
+                    anchor={anchor}, show_packs=false, show_rail_bolts=false,
+                    l_clearance=0, w_clearance=0);
 ''')
                 points = [triangle[start:start + 3]
                           for triangle in struct.iter_unpack("<12fH", data[84:])
@@ -133,7 +216,8 @@ divider_walls = plist_merge(plist_get("walls", pl),
 intersection() {{
   multi_lipo_pack_case(plist_merge(pl,
     ["pack_layout", "{axis}", "lipo_packs", [["size", [20,40,10]], ["size", [20,40,10]]],
-     "walls", divider_walls]), anchor=[1,1,1], l_clearance=0, w_clearance=0);
+     "walls", divider_walls]), anchor=[1,1,1], show_packs=false, show_rail_bolts=false,
+    l_clearance=0, w_clearance=0);
   translate({point}) cube(0.2);
 }}
 ''', empty)
@@ -145,7 +229,8 @@ intersection() {{
             render(f'''
 props = multi_lipo_pack_props(multi_lipo_packs_case);
 intersection() {{
-  multi_lipo_pack_case(multi_lipo_packs_case, anchor=[1,1,1]);
+  multi_lipo_pack_case(multi_lipo_packs_case, anchor=[1,1,1],
+                      show_packs=false, show_rail_bolts=false);
   translate(plist_get("pack_positions", props)[0] + [0,0,{lift}]) {{
     lipo_pack_from_pl(lipo_pack_base_pl, anchor=[1,1,1]);
   }}

@@ -12,17 +12,25 @@ include <../bolt_parameters.scad>
 include <../colors.scad>
 include <../steering_params.scad>
 
+use <../lib/debug.scad>
 use <../lib/functions.scad>
 use <../lib/plist.scad>
+use <../lib/polygon_util.scad>
 use <../lib/shapes2d.scad>
 use <../lib/shapes3d.scad>
 use <../lib/slots.scad>
 use <../lib/transforms.scad>
+use <../lib/trapezoids.scad>
 use <../placeholders/bolt.scad>
 use <../placeholders/lipo_pack.scad>
 use <../placeholders/nut.scad>
 use <../placeholders/standoff.scad>
 use <multi_lipo_pack_rail.scad>
+
+show_packs      = true;
+show_standoffs  = true;
+show_rail_bolts = true;
+show_rail_nuts  = true;
 
 function _multi_lipo_pack_sum_before(values, index) =
   index <= 0 ? 0 : sum([for (i = [0 : index - 1]) values[i]]);
@@ -74,49 +82,209 @@ function _multi_lipo_pack_corner_r(spec, length, height) =
          "corner_r must be a nonnegative number or percentage")
   calc_corner_rad([length, height], r);
 
+// Freeze pair radii against the intended profile, before cutter overshoot.
+function _multi_lipo_pack_sides(spec, size, r, fallback) =
+  let (side = plist_get("side", spec, plist_get("sides", spec, fallback)),
+       radii = rounded_rect_corner_radii(size,
+                                         is_string(side) ? [side] : side,
+                                         r),
+       names = ["bottom_left", "bottom_right", "top_right", "top_left"])
+  [for (i = [0 : 3]) [names[i], radii[i]]];
+
+function _multi_lipo_pack_slots(slots, size) =
+  assert(is_list(slots), "slots must be a list of plists")
+  [for (slot = slots)
+      assert(plist_is(slot), "each slot must be a plist")
+        let (pos_spec = plist_get("pos", slot, [0, 0]),
+             size_spec = plist_get("size", slot),
+             d_spec = plist_get("d", slot))
+        assert(is_list(pos_spec) && len(pos_spec) == 2,
+               "slot pos must be [x, z]")
+        assert(is_undef(d_spec) != is_undef(size_spec),
+               "slot needs either d or size")
+        assert(is_undef(size_spec) || is_list(size_spec) && len(size_spec) == 2,
+               "slot size must be [length, height]")
+        let (d = is_undef(d_spec) ? 0 : maybe_percent_string_to_num(d_spec, min(size)),
+             dims = is_undef(size_spec) ? [d, d]
+             : [for (i = [0 : 1]) maybe_percent_string_to_num(size_spec[i], size[i])],
+             pos = [for (i = [0 : 1]) maybe_percent_string_to_num(pos_spec[i], size[i])])
+        assert(is_num(d) && d >= 0 && is_num(dims[0]) && is_num(dims[1])
+               && min(dims) > 0,
+               "slot dimensions must be positive")
+        assert(is_num(pos[0]) && is_num(pos[1]) && min(pos) >= 0
+               && pos[0] + dims[0] <= size[0] && pos[1] + dims[1] <= size[1],
+               "slot must fit its wall/profile reference box")
+        let (r = _multi_lipo_pack_corner_r(plist_get("corner_r", slot, 0), dims[0], dims[1]))
+        ["pos", pos, "size", dims, "d", d, "corner_r", r,
+         "side", _multi_lipo_pack_sides(slot, dims, r, "all")]];
+
+function _multi_lipo_pack_shape_props(wall, length, base_h) =
+  let (kind = plist_get("shape", wall),
+       spec = plist_get("shape_props", wall, []))
+  assert(is_undef(kind) || in_list(kind, ["rect", "trapezoid",
+                                          "trapezoid_rounded_top", "custom"]),
+         "wall shape must be rect, trapezoid, trapezoid_rounded_top, or custom")
+  assert(plist_is(spec), "shape_props must be a plist")
+  is_undef(kind) ? ["h", 0] :
+  let (h = maybe_percent_string_to_num(plist_get("h", spec, "100%"), base_h),
+       top = maybe_percent_string_to_num(plist_get("t", spec, "50%"), length),
+       points = plist_get("points", spec, []))
+  assert(is_num(h) && h >= 0, "shape h must be nonnegative")
+  assert(is_num(top) && top >= 0 && top <= length,
+         "shape t must fit wall length")
+  assert(kind != "trapezoid_rounded_top" || length == 0 || h == 0 || top > 0,
+         "rounded-top trapezoid needs positive t")
+  assert(is_list(points) && (kind != "custom" || len(points) >= 3),
+         "custom shape needs at least three points")
+  let (pts = kind != "custom" ? [] : [for (p = points)
+           assert(is_list(p) && len(p) >= 2 && len(p) <= 4,
+                  "shape points must be [x, z] with optional debug annotations")
+             let (x = maybe_percent_string_to_num(p[0], length),
+                  z = maybe_percent_string_to_num(p[1], h))
+             assert(is_num(x) && is_num(z) && x >= 0 && x <= length && z >= 0 && z <= h,
+                    "shape points must fit its length/height reference box")
+             concat([x, z], len(p) > 2 ? [for (i = [2 : len(p) - 1]) p[i]] : [])],
+       requested_r = _multi_lipo_pack_corner_r(plist_get("corner_r", spec,
+                                                         plist_get("corner_r", wall, 0)), length, h),
+       r = kind == "trapezoid_rounded_top"
+       ? (length == 0 ? 0 : min(requested_r, top / 2, top * h / (top + length)))
+       : requested_r,
+       vents = plist_get("vent_props", spec, []),
+       debug = plist_get("debug", spec, false),
+       round_bottom = plist_get("round_bottom", spec, true),
+       radius_specs = plist_get("corner_radii", spec,
+                                [for (p = pts) undef]))
+  assert(is_bool(debug) && is_bool(round_bottom),
+         "shape debug and round_bottom must be booleans")
+  assert(kind != "custom" || is_list(radius_specs) && len(radius_specs) == len(pts),
+         "custom corner_radii must have one entry per point")
+  assert(kind != "custom" || h == 0 || length == 0 || abs(polygon_signed_area(pts)) > 0,
+         "custom shape must have nonzero area")
+  assert(plist_is(vents), "shape vent_props must be a plist")
+  let (radii = kind != "custom" ? [] : [for (i = [0 : len(pts) - 1])
+           let (radius = maybe_percent_string_to_num(is_undef(radius_specs[i]) ? requested_r : radius_specs[i],
+                                                     min(length, h)))
+             assert(is_num(radius) && radius >= 0,
+                    "custom corner radii must be nonnegative numbers or percentages")
+             !round_bottom && abs(pts[i][1] - polygon_min_y(pts)) < 0.000001
+             ? 0 : radius])
+  ["kind", kind, "h", h, "t", top, "points", pts, "corner_r", r,
+   "corner_radii", radii, "debug", debug,
+   "side", _multi_lipo_pack_sides(spec,
+                                  [length, h],
+                                  r,
+                                  plist_get("side", wall, plist_get("sides", wall, "top"))),
+   "vent_props", vents,
+   "slots", _multi_lipo_pack_slots(plist_get("slots", spec, []), [length, h])];
+
 /**
   ─────────────────────────────────────────────────────────────────────────────
   multi_lipo_pack_wall_props
   ─────────────────────────────────────────────────────────────────────────────
 
-  Resolve a wall's height, retained length, and top-open wiring cutouts.
+  Resolve a wall's bottom band, upper profile, and openings.
 
   **Parameters:**
 
-  `wall`: Wall plist. `h` defaults to "100%" of `base_h`; `l` defaults to
-  "100%" of `span`. `offset` locates the retained segment from the minimum
-  span coordinate and defaults to centering it. All accept mm or percentages.
-  `cutouts` is a list of plists with required `l`, optional `h` (depth down
-  from the wall top, default "100%"), and `offset` (default zero). Cutout
-  lengths and offsets use the retained wall length; depths use its height.
-  Wall `corner_r` rounds only the upper corners; each cutout's `corner_r`
-  rounds only its lower corners. Both default to zero and accept mm or a
-  percentage of min(l, h), capped at half that dimension. Cutouts use their
-  own length and depth as the reference; dividers use the same interface.
-  `span`: Full available wall length. Outer walls include the corner regions.
+  `wall`: Wall plist. With no `shape`, `h` defaults to "100%" of `base_h`.
+  With `shape`, `h` is the full-width bottom band's height (default zero),
+  and `shape_props.h` adds profile height (default "100%" of `base_h`).
+  `l` defaults to "100%" of `span`; `offset` defaults to centering the wall.
+  Length and offset percentages use `span`. All dimensions accept mm.
+
+  `corner_r` rounds the bottom band (or the entire unshaped wall), default
+  zero. `side` (alias `sides`) accepts rounded_rect side names, lists, and
+  `[name, radius]` pairs; default "top". Radius percentages use min(l, h).
+  Side names refer to the local span/Z plane: right increases span, top is +Z.
+
+  `shape` accepts "rect", "trapezoid", "trapezoid_rounded_top", or "custom".
+  `shape_props` accepts `h`, `corner_r` (inherits wall radius), and:
+  - `t`: Trapezoid top width, default "50%" of retained wall length. The
+    bottom width is the full retained length. Plain trapezoids stay sharp.
+  - `side`/`sides`: Rectangle rounding, inheriting the wall selection.
+  - `corner_radii`: Custom-polygon radii in original vertex order. Each entry
+    is mm, a percentage of min(retained length, profile height), or `undef`
+    to inherit `corner_r`. Zero keeps that vertex sharp. Adjacent fillets
+    shrink locally to fit their common edges.
+  - `round_bottom`: For custom polygons, false forces the lowest vertices to
+    radius zero; default true. This keeps the mounting edge square without
+    adding patches. Other vertices still follow corner_r/corner_radii.
+  - `debug`: For custom polygons, true overlays original vertex indices using
+    debug_polygon_text. Default false. Markers are preview-only background
+    geometry, outside wall booleans, and never enter STL/3MF or slot mode.
+  - `points`: Custom polygon [span, height] coordinates, numbers or percentages
+    of retained length/profile height. Points must fit that reference box.
+    Optional third/fourth point fields carry debug_polygon_text annotations.
+    Selected corners use tangent arcs, including concave corners, in either
+    winding order. Choose radii that clear nonadjacent edges in narrow shapes.
+  - `vent_props`: Independent vent grid using the existing vent_* properties,
+    measured within the profile box above the band. Default [] disables it.
+  - `slots`: Profile-local openings. Wall-level slots use the whole wall box.
+
+  Each slot has `pos=[span, height]` at its bounding-box minimum (default [0,0]),
+  and either `size=[length, height]` or circular `d`. Percentages use the
+  corresponding reference-box axis; diameter uses its smaller dimension.
+  Rectangles accept `corner_r` and `side`/`sides` (default "all"). Slots must
+  fit the reference box; their intersection with the wall is removed.
+
+  `cutouts` contains plists with required `l`, optional `h` (depth down from
+  the total wall top, default "100%"), and `offset` (default zero). Lengths
+  and offsets use retained wall length; depths use total wall height.
+  Each cutout accepts `corner_r` (default zero) and `side`/`sides` (default
+  "bottom"). Radius percentages use its own min(length, depth), including
+  per-side overrides. Wall-level vent properties retain their existing
+  whole-wall reference. Openings never cut the floor.
+
+  `edge_r` rounds the finished wall rim through its thickness, after its
+  profile, slots, cutouts, and vents are combined, preserving its floor
+  attachment outline. Default zero; positive mm
+  must be smaller than half the extrusion depth. It removes material and can
+  erase features narrower than twice the radius. This is independent of the
+  polygon's in-plane corner radii. The case footprint still clips the wall;
+  keep a rounded free end clear of shared/case corners if it must remain round.
+
+  `span`: Full available wall length, including outer corner regions.
   `base_h`: Tallest oriented pack height plus the case's `top_clearance`.
 
   **Returns:**
 
-  A plist with resolved `h`, `l`, `offset`, `corner_r`, and `cutouts` in millimeters.
-  Zero height or length disables a wall. Heights may exceed `base_h`.
-  Cutouts remove wall material only; the floor remains intact.
+  A resolved plist with total `h`, `band_h`, `l`, `offset`, `corner_r`, `side`,
+  `shape_props`, `slots`, and `cutouts`. Zero total height or length disables
+  the wall. The same interface applies to internal dividers. Case envelopes
+  use the profile reference box, even when a polygon or rounding occupies less
+  of it. Lid rails require rectangular upper profiles on their supporting walls.
+
+  **Examples:**
+  ```scad
+  multi_lipo_pack_wall_props(
+    ["h", "20%", "shape", "trapezoid_rounded_top",
+     "shape_props", ["h", "50%", "t", "60%", "corner_r", 2,
+                     "slots", [["pos", ["45%", "20%"], "d", 3]]]], 80, 30);
+  ```
  */
 function multi_lipo_pack_wall_props(wall, span, base_h) =
-  let (h = maybe_percent_string_to_num(plist_get("h", wall, "100%"), base_h),
+  let (band_h = maybe_percent_string_to_num(plist_get("h", wall,
+                                                      is_undef(plist_get("shape", wall)) ? "100%" : 0), base_h),
        length = maybe_percent_string_to_num(plist_get("l", wall, "100%"), span))
-  assert(is_num(h) && h >= 0,
+  assert(is_num(band_h) && band_h >= 0,
          "wall h must be a nonnegative number or percentage")
   assert(is_num(length) && length >= 0 && length <= span + 0.000001,
          "wall l must fit its available span")
   let (l = min(length, span),
+       shape = _multi_lipo_pack_shape_props(wall, l, base_h),
+       h = band_h + plist_get("h", shape),
+       r = _multi_lipo_pack_corner_r(plist_get("corner_r", wall, 0), l, band_h),
        offset = maybe_percent_string_to_num(plist_get("offset", wall, (span - l) / 2), span),
-       cutouts = plist_get("cutouts", wall, []))
+       cutouts = plist_get("cutouts", wall, []),
+       edge_r = plist_get("edge_r", wall, 0))
   assert(is_num(offset) && offset >= 0 && offset + l <= span + 0.000001,
          "wall offset and l must fit its available span")
   assert(is_list(cutouts), "wall cutouts must be a list of plists")
-  ["h", h, "l", l, "offset", offset,
-   "corner_r", _multi_lipo_pack_corner_r(plist_get("corner_r", wall, 0), l, h),
+  assert(is_num(edge_r) && edge_r >= 0, "wall edge_r must be nonnegative mm")
+  ["h", h, "l", l, "offset", offset, "band_h", band_h, "shape_props", shape,
+   "corner_r", r, "edge_r", edge_r,
+   "side", _multi_lipo_pack_sides(wall, [l, band_h], r, "top"),
+   "slots", _multi_lipo_pack_slots(plist_get("slots", wall, []), [l, h]),
    "cutouts", [for (cutout = cutouts)
         let (cut_l = maybe_percent_string_to_num(plist_get("l", cutout), l),
              cut_h = maybe_percent_string_to_num(plist_get("h", cutout, "100%"), h),
@@ -129,7 +297,11 @@ function multi_lipo_pack_wall_props(wall, span, base_h) =
           ["l", cut_l, "h", cut_h, "offset", cut_offset,
            "corner_r", _multi_lipo_pack_corner_r(plist_get("corner_r", cutout, 0),
                                                  cut_l,
-                                                 cut_h)]]];
+                                                 cut_h),
+           "side", _multi_lipo_pack_sides(cutout,
+                                          [cut_l, cut_h],
+                                          _multi_lipo_pack_corner_r(plist_get("corner_r", cutout, 0), cut_l, cut_h),
+                                          "bottom")]]];
 
 /**
   ──────────────────────────────────────────────────────────────────────────────
@@ -237,6 +409,16 @@ function multi_lipo_pack_vent_props(wall, span, wall_h) =
 module multi_lipo_pack_vents(vent, depth, axis="x") {
   assert(in_list(axis, ["x", "y"]) && is_num(depth) && depth > 0,
          "Vent cutters require axis x/y and positive depth");
+  translate([0, axis == "x" ? depth : 0, 0]) {
+    rotate([90, 0, axis == "x" ? 0 : 90]) {
+      linear_extrude(height=depth) {
+        _multi_lipo_pack_vents_2d(vent);
+      }
+    }
+  }
+}
+
+module _multi_lipo_pack_vents_2d(vent) {
   if (plist_get("enabled", vent, false)) {
     count = plist_get("count", vent);
     start = plist_get("start", vent);
@@ -244,17 +426,11 @@ module multi_lipo_pack_vents(vent, depth, axis="x") {
     slot = plist_get("slot_size", vent);
     if (count[0] > 0 && count[1] > 0) {
       for (col = [0 : count[0] - 1], row = [0 : count[1] - 1]) {
-        along = start[0] + col * (slot[0] + gap[0]);
-        z = start[1] + row * (slot[1] + gap[1]);
-        translate([axis == "x" ? along : 0, axis == "y" ? along : depth, z]) {
-          rotate([90, 0, axis == "x" ? 0 : 90]) {
-            linear_extrude(height=depth) {
-              rounded_rect(slot,
-                           r=plist_get("corner_r", vent, 0),
-                           fn=40,
-                           anchor=[1, 1, 1]);
-            }
-          }
+        translate(start + [col * (slot[0] + gap[0]), row * (slot[1] + gap[1])]) {
+          rounded_rect(slot,
+                       r=plist_get("corner_r", vent, 0),
+                       fn=40,
+                       anchor=[1, 1, 1]);
         }
       }
     }
@@ -281,7 +457,7 @@ module multi_lipo_pack_vents(vent, depth, axis="x") {
   diameter and per-axis bolt padding. `bolt_spacing_x` and `bolt_spacing_y`
   override the corresponding vector entries when present. `top_clearance`
   sets the reference height above the tallest oriented pack (default zero).
-  Each wall's `h`, `l`, `offset`, and `cutouts` are resolved by
+  Wall dimensions, profiles, slots, and cutouts are resolved by
   `multi_lipo_pack_wall_props()`. Wall heights start at the floor's top.
   `front` is maximum Y, `rear` minimum Y, `left` minimum X, and `right`
   maximum X, before case orientation. End-wall lengths run along X; side
@@ -479,6 +655,8 @@ function multi_lipo_pack_mount_height(pl, target_h=0, parent_thickness=6) =
   requires wlh/lwh. Other Z anchors shift the case and parent reference together.
   `show_standoffs`: Display supporting hardware; does not alter case placement.
   `thread_at_top`: Standoff thread direction (raised mounting uses top studs).
+  `show_rail_bolts`: Display rail-locking bolts sized for the matching lid.
+  `show_rail_nuts`: Include exterior nuts when `show_rail_bolts` is true.
   `show_packs`: Whether to render the pack placeholders.
   `slot_mode`: Whether to emit only mounting cutters.
 
@@ -496,9 +674,11 @@ module multi_lipo_pack_case(pl,
                             w_clearance=0.4,
                             parent_thickness=6,
                             target_h=0,
-                            show_standoffs=true,
+                            show_standoffs=show_standoffs,
+                            show_rail_bolts=show_rail_bolts,
+                            show_packs=show_packs,
+                            show_rail_nuts=show_rail_nuts,
                             thread_at_top=true,
-                            show_packs=false,
                             slot_mode=false) {
   walls = plist_get("walls", pl);
   lipo_packs = plist_get("lipo_packs", pl);
@@ -606,27 +786,135 @@ module multi_lipo_pack_case(pl,
     }
   }
 
-  module _wall_profile(axis,
-                       x,
-                       y,
-                       along,
-                       z,
-                       length,
-                       depth,
-                       height,
-                       r=0,
-                       side="top") {
-    translate([x + (axis == "x" ? along : 0),
-               y + (axis == "y" ? along : 0),
+  // Work in a span/Z plane before applying the same X/Y wall placement.
+  module _wall_plane(wall,
+                     depth,
+                     axis,
+                     x,
+                     y,
+                     z=0,
+                     overshoot=0,
+                     edge_r=0) {
+    along = plist_get("offset", wall);
+    assert(edge_r == 0 || 2 * edge_r < depth,
+           "wall edge_r must be smaller than half the profile extrusion depth");
+    translate([x + (axis == "x" ? along : -overshoot),
+               y + (axis == "y" ? along : depth + overshoot),
                z]) {
-      if (r == 0) {
-        cube(axis == "x" ? [length, depth, height] : [depth, length, height]);
-      } else {
-        // The 2D profile's vertical axis becomes case Z; extrude through the wall.
-        translate([0, axis == "x" ? depth : 0, 0]) {
-          rotate([90, 0, axis == "x" ? 0 : 90]) {
+      rotate([90, 0, axis == "x" ? 0 : 90]) {
+        if (edge_r > 0) {
+          // Erode the finished outline before adding the round cross-section.
+          // This removes material at rims without growing into the pack space.
+          intersection() {
             linear_extrude(height=depth) {
-              rounded_rect([length, height], r=r, side=side, anchor=[1, 1, 1]);
+              children();
+            }
+            translate([0, 0, edge_r]) {
+              minkowski() {
+                linear_extrude(height=depth - 2 * edge_r) {
+                  offset(delta=-edge_r) {
+                    union() {
+                      children();
+                      // Carry the floor attachment below Z=0 while rounding;
+                      // the outer intersection restores the exact base outline.
+                      translate([0, -2 * edge_r]) {
+                        square([plist_get("l", wall), 2 * edge_r]);
+                      }
+                    }
+                  }
+                }
+                // OpenSCAD's sampled sphere falls short on every cardinal axis.
+                // Compensate that chord error so the wall meets the floor.
+                sphere(r=edge_r / cos(180 / 32), $fn=32);
+              }
+            }
+          }
+        } else {
+          linear_extrude(height=depth + 2 * overshoot) {
+            children();
+          }
+        }
+      }
+    }
+  }
+
+  module _wall_solid(wall,
+                     depth,
+                     axis,
+                     x,
+                     y,
+                     vent=[],
+                     vent_offset=0) {
+    length = plist_get("l", wall);
+    band_h = plist_get("band_h", wall);
+    shape = plist_get("shape_props", wall);
+    h = plist_get("h", shape);
+    kind = plist_get("kind", shape);
+    r = plist_get("corner_r", shape, 0);
+    _wall_plane(wall, depth, axis, x, y, edge_r=plist_get("edge_r", wall)) {
+      difference() {
+        union() {
+          if (band_h > 0) {
+            rounded_rect([length, band_h],
+                         r=plist_get("corner_r", wall),
+                         side=plist_get("side", wall),
+                         anchor=[1, 1, 1]);
+          }
+          if (h > 0) {
+            translate([0, band_h]) {
+              if (kind == "rect") {
+                rounded_rect([length, h], r=r, side=plist_get("side", shape));
+              } else if (kind == "trapezoid") {
+                trapezoid(b=length, t=plist_get("t", shape), h=h);
+              } else if (kind == "trapezoid_rounded_top") {
+                // The helper centers its bottom around half the top width.
+                translate([length / 2, h / 2]) {
+                  trapezoid_rounded_top(b=length,
+                                        t=plist_get("t", shape),
+                                        h=h,
+                                        r=r,
+                                        center=true,
+                                        $fn=40);
+                }
+              } else if (kind == "custom") {
+                polygon(rounded_polygon_points(plist_get("points", shape),
+                                               plist_get("corner_radii", shape),
+                                               segments=16));
+              }
+            }
+          }
+        }
+        _wall_cutouts_2d(wall);
+        _wall_openings_2d(wall);
+        translate([vent_offset, 0]) {
+          _multi_lipo_pack_vents_2d(vent);
+        }
+      }
+    }
+  }
+
+  module _wall_debug(wall, depth, axis, x, y, opposite=false) {
+    shape = plist_get("shape_props", wall);
+    if ($preview && plist_get("debug", shape, false)
+        && plist_get("kind", shape) == "custom") {
+      along = plist_get("offset", wall);
+      length = plist_get("l", wall);
+      points = plist_get("points", shape);
+      labels = opposite ? [for (p = points)
+          concat([length - p[0], p[1]],
+                 len(p) > 2 ? [for (i = [2 : len(p) - 1]) p[i]] : [])] : points;
+      // Background annotations sit outside the wall face and outside all CSG.
+      translate([x + (axis == "x" ? along : opposite ? -0.05 : depth + 0.05),
+                 y + (axis == "y" ? along : opposite ? depth + 0.05 : -0.05),
+                 bottom_t + plist_get("band_h", wall)]) {
+        rotate([90, 0, axis == "x" ? 0 : 90]) {
+          translate([opposite ? length : 0, 0, 0]) {
+            rotate([0, opposite ? 180 : 0, 0]) {
+              %debug_polygon_text(labels,
+                                  font_size=2,
+                                  offset_x=2,
+                                  offset_y=2,
+                                  h=0.4);
             }
           }
         }
@@ -634,29 +922,70 @@ module multi_lipo_pack_case(pl,
     }
   }
 
-  module _wall_cutouts(wall, depth, axis, x=0, y=0, side="bottom") {
+  module _wall_openings_2d(wall) {
+    shape = plist_get("shape_props", wall);
+    band_h = plist_get("band_h", wall);
+    for (entry = [[wall, 0], [shape, band_h]]) {
+      translate([0, entry[1]]) {
+        for (slot = plist_get("slots", entry[0], [])) {
+          pos = plist_get("pos", slot);
+          size = plist_get("size", slot);
+          translate(pos) {
+            if (plist_get("d", slot) > 0) {
+              translate(size / 2) {
+                circle(d=plist_get("d", slot), $fn=40);
+              }
+            } else {
+              rounded_rect(size,
+                           r=plist_get("corner_r", slot),
+                           side=plist_get("side", slot));
+            }
+          }
+        }
+      }
+    }
+    if (plist_get("h", shape) > 0) {
+      translate([0, band_h]) {
+        _multi_lipo_pack_vents_2d(multi_lipo_pack_vent_props(plist_get("vent_props", shape), plist_get("l", wall),
+                                                             plist_get("h", shape)));
+      }
+    }
+  }
+
+  module _wall_openings(wall, depth, axis, x, y) {
+    _wall_plane(wall, depth, axis, x, y, overshoot=0.1) {
+      _wall_openings_2d(wall);
+    }
+  }
+
+  module _wall_cutouts_2d(wall) {
     for (cutout = plist_get("cutouts", wall)) {
       cut_h = plist_get("h", cutout);
       if (cut_h > 0) {
-        _wall_profile(axis,
-                      x - (axis == "y" ? 0.1 : 0),
-                      y - (axis == "x" ? 0.1 : 0),
-                      plist_get("offset", wall) + plist_get("offset", cutout) - 0.001,
-                      plist_get("h", wall) - cut_h,
-                      plist_get("l", cutout) + 0.002,
-                      depth + 0.2,
-                      wall_h + 0.1,
-                      r=plist_get("corner_r", cutout),
-                      side=side);
+        translate([plist_get("offset", cutout) - 0.001,
+                   plist_get("h", wall) - cut_h]) {
+          rounded_rect([plist_get("l", cutout) + 0.002, cut_h + 0.001],
+                       r=plist_get("corner_r", cutout),
+                       side=plist_get("side", cutout),
+                       anchor=[1, 1, 1]);
+        }
       }
+    }
+  }
+
+  module _wall_cutouts(wall, depth, axis, x=0, y=0) {
+    _wall_plane(wall, depth, axis, x, y, overshoot=0.1) {
+      _wall_cutouts_2d(wall);
     }
   }
 
   module _solid_case() {
     union() {
-      color(case_color, alpha=1) {
-        multi_lipo_pack_rails(plist_get("rail_props", props));
-      }
+      multi_lipo_pack_rails(plist_get("rail_props", props),
+                            color=case_color,
+                            show_bolts=show_rail_bolts,
+                            show_nuts=show_rail_nuts);
+
       difference() {
         color(case_color, alpha=1) {
           union() {
@@ -727,15 +1056,19 @@ module multi_lipo_pack_case(pl,
                   for (panel = panels) {
                     wall = plist_get(panel[0], wall_props);
                     if (plist_get("h", wall) > 0 && plist_get("l", wall) > 0) {
-                      _wall_profile(panel[2],
-                                    panel[3],
-                                    panel[4],
-                                    plist_get("offset", wall),
-                                    0,
-                                    plist_get("l", wall),
-                                    panel[1],
-                                    plist_get("h", wall),
-                                    r=plist_get("corner_r", wall));
+                      start = max(panel[5], plist_get("offset", wall));
+                      end = min(panel[6],
+                                plist_get("offset", wall) + plist_get("l", wall));
+                      vent = multi_lipo_pack_vent_props(plist_get(panel[0], walls),
+                                                        max(0, end - start),
+                                                        plist_get("h", wall));
+                      _wall_solid(wall,
+                                  panel[1],
+                                  panel[2],
+                                  panel[3],
+                                  panel[4],
+                                  vent=vent,
+                                  vent_offset=start - plist_get("offset", wall));
                     }
                   }
                 }
@@ -755,10 +1088,20 @@ module multi_lipo_pack_case(pl,
                               y=panel[4] + (panel[2] == "y" ? start : -0.1));
                 }
                 _wall_cutouts(wall, panel[1], panel[2], panel[3], panel[4]);
+                _wall_openings(wall, panel[1], panel[2], panel[3], panel[4]);
               }
             }
           }
         }
+      }
+
+      for (panel = panels) {
+        _wall_debug(plist_get(panel[0], wall_props),
+                    panel[1],
+                    panel[2],
+                    panel[3],
+                    panel[4],
+                    opposite=in_list(panel[0], ["front", "left"]));
       }
 
       for (i = [0 : pack_n - 1]) {
@@ -778,20 +1121,14 @@ module multi_lipo_pack_case(pl,
             ? pack_position[0] + pack_size[0] + w_clearance / 2 : left_t;
           y = layout_axis == "y"
             ? pack_position[1] + pack_size[1] + l_clearance / 2 : rear_t;
+          _wall_debug(wall, inner_t, axis, x, y);
           if (plist_get("h", wall) > 0 && plist_get("l", wall) > 0) {
             color(case_color, alpha=1) {
               translate([0, 0, bottom_t]) {
                 difference() {
-                  _wall_profile(axis,
-                                x,
-                                y,
-                                plist_get("offset", wall),
-                                0,
-                                plist_get("l", wall),
-                                inner_t,
-                                plist_get("h", wall),
-                                r=plist_get("corner_r", wall));
+                  _wall_solid(wall, inner_t, axis, x, y);
                   _wall_cutouts(wall, inner_t, axis, x, y);
+                  _wall_openings(wall, inner_t, axis, x, y);
                 }
               }
             }
@@ -835,5 +1172,5 @@ module multi_lipo_pack_case(pl,
 
 multi_lipo_pack_case(multi_lipo_packs_case,
                      target_h=30,
-                     show_packs=false,
+                     show_packs=true,
                      show_standoffs=false);

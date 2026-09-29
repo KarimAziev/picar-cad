@@ -1,9 +1,10 @@
 """Check dovetail attachment, sliding fit, hardware, and roof-down printing."""
+import ast
 from pathlib import Path
 import subprocess
 import tempfile
 
-from scad_test_support import OPENSCAD
+from scad_test_support import OPENSCAD, echo_value
 from check_gearmotor_encoder_mesh import connected_components, mesh_volume
 from check_panel_stack_mesh import bounds, close, vertices
 
@@ -15,9 +16,10 @@ use <{ROOT}/scad/lipo_pack_case/multi_lipo_pack_case.scad>
 use <{ROOT}/scad/lipo_pack_case/multi_lipo_pack_lid.scad>
 use <{ROOT}/scad/lipo_pack_case/multi_lipo_pack_rail.scad>
 use <{ROOT}/scad/placeholders/lipo_pack.scad>
+use <{ROOT}/scad/placeholders/bolt.scad>
 $fn=32;
 pl=multi_lipo_packs_case;
-module case_body() {{ multi_lipo_pack_case(pl, anchor=[0,0,1]); }}
+module case_body() {{ multi_lipo_pack_case(pl, anchor=[0,0,1], show_packs=false, show_rail_bolts=false); }}
 module lid_body(slide=0, lift=0) {{
   multi_lipo_pack_lid_on_case(pl, slide=slide, lift=lift, show_lidar=false);
 }}
@@ -26,7 +28,7 @@ module pack() {{
   body=plist_get("body_size",props);
   translate([-body[0]/2,-body[1]/2,0]) {{
     translate(plist_get("pack_positions",props)[0]) {{
-      lipo_pack_from_pl(lipo_pack_base_pl, anchor=[1,1,1]);
+      lipo_pack_from_pl(plist_get("lipo_packs",pl)[0], anchor=[1,1,1]);
     }}
   }}
 }}
@@ -38,7 +40,7 @@ def main() -> None:
         source = Path(folder) / "fixture.scad"
         mesh = Path(folder) / "fixture.stl"
 
-        def render(code: str, empty: bool = False, common: str = COMMON) -> None:
+        def render(code: str, empty: bool = False, common: str = COMMON) -> str:
             source.write_text(common + code)
             result = subprocess.run(
                 [OPENSCAD, "--backend=Manifold", "--enable=textmetrics", "--hardwarnings",
@@ -47,10 +49,11 @@ def main() -> None:
             log = result.stdout + result.stderr
             assert "ERROR:" not in log and "WARNING:" not in log, log
             if empty and "Current top level object is empty" in log:
-                return
+                return log
             assert result.returncode == 0, log
             if empty:
                 assert mesh_volume(mesh) < 0.00001, (mesh_volume(mesh), log)
+            return log
 
         for label, code in (("case and attached rails", "case_body();"),
                             ("sliding lid", "lid_body();"),
@@ -100,7 +103,7 @@ def main() -> None:
         changed = '''
 pl=plist_merge(multi_lipo_packs_case,
  ["lipo_packs", [["size", [25,60,15]]],
-  "mount_ear_d", 10, "bolt_spacing", [50,80],
+  "mount_ear_d", 10, "bolt_spacing", [50,80], "mount_nut_pockets", false,
   "walls", ["bottom", ["t", 3], "inner", ["t", 3],
             "front", ["t", 3, "h", 12], "rear", ["t", 3, "h", 12],
             "left", ["t", 3, "h", 20, "corner_r", 5,
@@ -108,13 +111,52 @@ pl=plist_merge(multi_lipo_packs_case,
             "right", ["t", 3, "h", 20, "corner_r", "25%"]],
   "lid", ["t", 3, "headroom", 5], "orientation", "ORIENTATION"]);
 '''
+        # Check each nut in isolation: its entire axial extent must sit beyond
+        # the outside skirt, with its near face exactly on the bearing surface.
+        for axis, common in (
+                ("x", COMMON),
+                ("y", COMMON.replace("pl=multi_lipo_packs_case;",
+                                     changed.replace("ORIENTATION", "wlh")))):
+            for index in (0, 1):
+                log = render(f'''
+props=multi_lipo_pack_props(pl);
+rails=plist_get("rail_props",props);
+rail=plist_get("rails",rails)[{index}];
+assert(plist_get("axis",rails)=="{axis}");
+echo(cross=plist_get("cross",rail));
+echo(grip=plist_get("locking_depth",rail));
+echo(nut_h=find_nut_prop("height",plist_get("bolt_d",rails)));
+multi_lipo_packs_rail_bolts(rails,rail,show_bolts=false,show_nuts=true);
+''', common=common)
+                cross, grip, nut_h = [float(ast.literal_eval(echo_value(log, name)))
+                                      for name in ("cross", "grip", "nut_h")]
+                cross_axis = 1 if axis == "x" else 0
+                actual = bounds(vertices(mesh))
+                expected = ([cross - grip / 2 - nut_h, cross - grip / 2]
+                            if index == 0 else
+                            [cross + grip / 2, cross + grip / 2 + nut_h])
+                close([actual[0][cross_axis], actual[1][cross_axis]], expected)
+                assert connected_components(mesh) == 2
+            render('''intersection() {
+  union() { case_body(); lid_body(); pack(); }
+  props=multi_lipo_pack_props(pl);
+  body=plist_get("body_size",props);
+  rails=plist_get("rail_props",props);
+  translate([-body[0]/2,-body[1]/2,0]) {
+    for (rail=plist_get("rails",rails)) {
+      multi_lipo_packs_rail_bolts(rails,rail,show_nuts=true);
+    }
+  }
+}''', empty=True, common=common)
+        print("PASS nuts seat outside both opposing skirts on X and Y rails; hardware clears case, lid, and pack", flush=True)
+
         for orientation in ("wlh", "lwh", "whl", "lhw", "hlw", "hwl"):
             common = COMMON.replace("pl=multi_lipo_packs_case;", changed.replace("ORIENTATION", orientation))
             render("case_body();", common=common)
             assert connected_components(mesh) == 1
             for anchor in ("[0,0,1]", "[-1,1,0]", "[1,-1,-1]"):
                 render(f'''intersection() {{
-  multi_lipo_pack_case(pl, anchor={anchor});
+  multi_lipo_pack_case(pl, anchor={anchor}, show_packs=false, show_rail_bolts=false);
   multi_lipo_pack_lid_on_case(pl, anchor={anchor}, show_lidar=false);
 }}''', empty=True, common=common)
             if orientation == "wlh":

@@ -7,7 +7,8 @@ module multi_lipo_pack_case_printable(pl=multi_lipo_packs_case) {
                        target_h=0,
                        show_packs=false,
                        slot_mode=false,
-                       show_standoffs=false);
+                       show_standoffs=false,
+                       show_rail_bolts=false);
 }
 
 multi_lipo_pack_case_printable();

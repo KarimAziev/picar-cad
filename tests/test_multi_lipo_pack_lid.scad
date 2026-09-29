@@ -21,6 +21,9 @@ for (rail = plist_get("rails", rails)) {
   assert(plist_get("start", rail) + plist_get("l", rail)
          <= plist_get("offset", wall) + plist_get("l", wall) - plist_get("corner_r", wall));
   assert(len(plist_get("bolts", rail)) == 2);
+  assert(abs(plist_get("locking_depth", rail)
+             - (plist_get("w", rail) + 2 * (plist_get("clearance_w", rails)
+                                           + plist_get("side_t", lid)))) < 0.000001);
 }
 
 plain = plist_merge(multi_lipo_packs_case, ["rail", ["enabled", false]]);
@@ -69,3 +72,15 @@ for (rail = rounded_rails) {
   assert(plist_get("l", rail) == plist_get("l", wall) - 2 * plist_get("corner_r", wall));
 }
 echo("PASS: dovetail rails stay on the flat tops of rounded walls");
+
+// Rail lands follow explicit top-corner radii on the uppermost profile.
+profile_rails = multi_lipo_pack_props(plist_merge(rounded,
+  ["walls", plist_merge(changed_walls,
+    ["left", ["t", 3, "h", 10, "shape", "rect", "corner_r", 8,
+              "shape_props", ["h", 20, "sides", [["top_right", 4]]]],
+     "right", ["t", 3, "h", 30,
+               "sides", [["top_left", 7], ["bottom_right", 10]]]])]));
+profile_rail_list = plist_get("rails", plist_get("rail_props", profile_rails));
+assert(plist_get("start", profile_rail_list[0]) == 4);
+assert(plist_get("start", profile_rail_list[1]) == 7);
+echo("PASS: rail lands use upper-profile and per-side corner radii");

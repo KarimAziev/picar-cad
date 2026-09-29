@@ -223,3 +223,74 @@ function polygon_vertex_outward_dir(pts, i) =
   avg_len == 0
   ? n1
   : v_unit(avg);
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  rounded_polygon_points
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Replace selected polygon vertices with tangent circular arcs.
+
+  **Parameters:**
+  - `points`: Ordered vertices of a simple polygon, clockwise or anticlockwise.
+    Each entry supplies at least X/Y; extra annotation fields are ignored.
+    Do not repeat the first point at the end or use consecutive duplicates.
+  - `radii`: One nonnegative radius in mm, or one radius per input vertex.
+    Zero preserves that vertex exactly. Both convex and concave corners round.
+  - `segments`: Number of straight segments per arc, positive integer.
+
+  **Returns:**
+  A list of XY polygon vertices. Radii shrink locally when adjacent fillets
+  would overlap along an edge. Collinear forward vertices stay unchanged.
+  This local limit does not detect collisions with nonadjacent edges; choose
+  radii that fit narrow features in concave polygons.
+
+  **Examples:**
+  ```scad
+  rounded_polygon_points([[0,0], [30,0], [25,20], [5,20]], [0,0,3,3]);
+  ```
+ */
+function rounded_polygon_points(points, radii=0, segments=12) =
+  assert(is_list(points) && len(points) >= 3,
+         "rounded polygon needs at least three vertices")
+  assert(is_num(segments) && segments >= 1 && floor(segments) == segments,
+         "polygon arc segments must be a positive integer")
+  let (pts = [for (p = points)
+          assert(is_list(p) && len(p) >= 2 && is_num(p[0]) && is_num(p[1]),
+                 "polygon vertices must contain numeric X/Y coordinates")
+          [p[0], p[1]]],
+       n = len(pts),
+       rs = is_list(radii) ? radii : [for (p = pts) radii])
+  assert(len(rs) == n, "corner radii must match the polygon vertex count")
+  let (corners = [for (i = [0 : n - 1])
+          let (a = pts[(i + n - 1) % n] - pts[i],
+               b = pts[(i + 1) % n] - pts[i],
+               la = norm(a), lb = norm(b))
+          assert(la > 0 && lb > 0, "polygon must not repeat adjacent vertices")
+          assert(is_num(rs[i]) && rs[i] >= 0, "polygon radii must be nonnegative")
+          let (u = a / la, v = b / lb,
+               cosine = max(-1, min(1, u * v)),
+               half = acos(cosine) / 2)
+          assert(half > 0.000001, "polygon edges must not double back")
+          let (distance = half > 89.999999 ? 0 : rs[i] / tan(half))
+          [u, v, la, lb, half, distance]],
+       distances = [for (i = [0 : n - 1])
+           let (c = corners[i],
+                before = corners[(i + n - 1) % n][5] + c[5],
+                after = corners[(i + 1) % n][5] + c[5])
+           c[5] * min(1, before > 0 ? c[2] / before : 1,
+                         after > 0 ? c[3] / after : 1)])
+  let (result = [for (i = [0 : n - 1])
+      each let (c = corners[i], d = distances[i])
+      d <= 0.000001 ? [pts[i]] :
+      let (radius = d * tan(c[4]),
+           center = pts[i] + v_unit(c[0] + c[1]) * radius / sin(c[4]),
+           start = pts[i] + c[0] * d - center,
+           end = pts[i] + c[1] * d - center,
+           angle = atan2(start[1], start[0]),
+           sweep = atan2(start[0] * end[1] - start[1] * end[0], start * end))
+      [for (j = [0 : segments])
+          center + radius * [cos(angle + sweep * j / segments),
+                             sin(angle + sweep * j / segments)]]])
+  [for (i = [0 : len(result) - 1])
+      if (norm(result[i] - result[(i + len(result) - 1) % len(result)]) > 0.000000001)
+        result[i]];

@@ -40,7 +40,8 @@ vent=["t", 2, "vent_w", 12, "vent_h", 8, "vent_corner_r", {radius},
       "vent_col_gap", 100, "vent_row_gap", 100];
 module body() {{
  multi_lipo_pack_case(plist_merge(pl,["walls",plist_merge(plist_get("walls",pl),["{wall}",vent])]),
-                     anchor=[1,1,1], l_clearance=0, w_clearance=0);
+                     anchor=[1,1,1], show_packs=false, show_rail_bolts=false,
+                     l_clearance=0, w_clearance=0);
 }}
 module probe(along,z) {{
  translate([{"along" if axis == "x" else cross},{cross if axis == "x" else "along"},z]) {{ cube(0.2); }}

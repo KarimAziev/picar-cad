@@ -12,15 +12,21 @@ use <../lib/plist.scad>
 use <../lib/slider.scad>
 use <../lib/slots.scad>
 use <../placeholders/bolt.scad>
+use <../placeholders/nut.scad>
 
 function _lipo_rail_segments(segments, cuts, i=0) =
-  i >= len(cuts) ? segments :
-  _lipo_rail_segments([for (s = segments) each
-                                            cuts[i][1] <= s[0] || cuts[i][0] >= s[1] ? [s] :
-                                            concat(cuts[i][0] > s[0] ? [[s[0], cuts[i][0]]] : [],
-                                                   cuts[i][1] < s[1] ? [[cuts[i][1], s[1]]] : [])],
-                      cuts,
-                      i + 1);
+  i >= len(cuts)
+  ? segments
+  : _lipo_rail_segments([for (s = segments)
+                            each cuts[i][1] <= s[0] || cuts[i][0] >= s[1]
+                              ? [s]
+                              : concat(cuts[i][0] > s[0]
+                                       ? [[s[0], cuts[i][0]]]
+                                       : [], cuts[i][1] < s[1]
+                                       ? [[cuts[i][1], s[1]]]
+                                       : [])],
+                        cuts,
+                        i + 1);
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -38,7 +44,9 @@ function _lipo_rail_segments(segments, cuts, i=0) =
   to 4 mm, `angle` to 12 degrees, and `clearance` to 0.2 mm per mating face.
   `end_pad` is an inset at both wall ends (mm or percentage of retained length),
   defaulting to the exterior corner radius. The inset grows to clear rounded
-  wall-top corners. Rails stop at all top-open cutouts.
+  wall-top corners, including per-side radii on a rectangular upper profile.
+  Tapered/custom upper profiles are unsupported on rail-bearing walls.
+  Rails stop at all top-open cutouts.
   Optional `bolt_d` enables transverse locking holes (zero disables them).
   Hole height leaves clearance for the matching nut above the case rim.
   `bolt_pad` locates two holes from the ends of each rail's longest continuous
@@ -51,6 +59,8 @@ function _lipo_rail_segments(segments, cuts, i=0) =
   A plist with `enabled`, `axis`, `h`, `z`, `angle`, `clearance`, `bolt_d`, and
   `rails`. Each rail describes its wall, width, transverse center, start,
   length, supported segments, and locking-hole coordinates along the slide.
+  Each rail also provides `locking_depth`: the grip through both lid skirts
+  and the rail, derived from `lid.side_t` (default 2) and channel clearance.
  */
 function multi_lipo_pack_rail_props(pl, size, walls) =
   let (spec = plist_get("rail", pl))
@@ -64,15 +74,21 @@ function multi_lipo_pack_rail_props(pl, size, walls) =
        request = plist_get("axis", spec, "auto"))
   assert(in_list(request, ["auto", "x", "y"]),
          "rail axis must be auto, x, or y")
-  let (axis = request != "auto" ? request :
-       x_h > y_h || (x_h == y_h && min(lengths[0], lengths[1]) >= min(lengths[2], lengths[3])) ? "x" : "y",
+  let (axis = request != "auto"
+       ? request
+       : x_h > y_h || (x_h == y_h && min(lengths[0], lengths[1]) >= min(lengths[2], lengths[3]))
+       ? "x"
+       : "y",
        chosen = axis == "x" ? ["rear", "front"] : ["left", "right"],
        wall_h = axis == "x" ? x_h : y_h,
        all_walls = plist_get("walls", pl),
-       floor_t = plist_get("bottom_t", pl, plist_get("t", plist_get("bottom", all_walls))),
+       floor_t = plist_get("bottom_t", pl,
+                           plist_get("t", plist_get("bottom", all_walls))),
        h = plist_get("h", spec, 4),
        angle = plist_get("angle", spec, 12),
        clearance = plist_get("clearance", spec, 0.2),
+       channel_pad = clearance * (1 / cos(angle) + tan(angle)),
+       side_t = plist_get("side_t", plist_get("lid", pl, []), 2),
        bolt_d = plist_get("bolt_d", spec, 0),
        bolt_z = bolt_d > 0 ? max(h / 2, find_nut_prop("outer_dia", bolt_d) / 2 + clearance) : h / 2)
   assert(wall_h > 0 && abs(wall_h - max(heights)) < 0.000001,
@@ -81,16 +97,25 @@ function multi_lipo_pack_rail_props(pl, size, walls) =
          "Invalid rail height, angle, clearance, or bolt diameter")
   assert(bolt_d == 0 || (bolt_z >= bolt_d / 2 + 0.5 && h - bolt_z >= bolt_d / 2 + 0.5),
          "Increase rail height: locking holes need 0.5 mm lands and their nuts must clear the pack")
+
   ["enabled", true, "axis", axis, "h", h, "z", floor_t + wall_h,
    "angle", angle, "clearance", clearance,
-   "clearance_w", clearance * (1 / cos(angle) + tan(angle)),
+   "clearance_w", channel_pad,
    "bolt_d", bolt_d, "bolt_z", bolt_z,
    "rails", [for (i = [0:1])
         let (name = chosen[i],
              wall = plist_get(name, walls),
              t = plist_get(str(name, "_t"), pl, plist_get("t", plist_get(name, all_walls))),
-             pad = maybe_percent_string_to_num(plist_get("end_pad", spec, plist_get("corner_r", pl, 0)), plist_get("l", wall)),
-             inset = max(pad, plist_get("corner_r", wall, 0)),
+             pad = maybe_percent_string_to_num(val=plist_get("end_pad",
+                                                             spec,
+                                                             plist_get("corner_r", pl, 0)),
+                                               total=plist_get("l", wall)),
+             shape = plist_get("shape_props", wall),
+             top_profile = plist_get("h", shape, 0) > 0 ? shape : wall,
+             sides = plist_get("side", top_profile),
+             top_r = is_undef(sides) ? plist_get("corner_r", top_profile, 0)
+             : max(sides[2][1], sides[3][1]),
+             inset = max(pad, top_r),
              start = plist_get("offset", wall) + inset,
              end = plist_get("offset", wall) + plist_get("l", wall) - inset,
              cuts = [for (cut = plist_get("cutouts", wall))
@@ -98,6 +123,10 @@ function multi_lipo_pack_rail_props(pl, size, walls) =
                    [plist_get("offset", wall) + plist_get("offset", cut),
                     plist_get("offset", wall) + plist_get("offset", cut) + plist_get("l", cut)]],
              segments = _lipo_rail_segments([[start, end]], cuts))
+          assert(is_undef(plist_get("kind", plist_get("shape_props", wall)))
+                 || plist_get("h", plist_get("shape_props", wall), 0) == 0
+                 || plist_get("kind", plist_get("shape_props", wall)) == "rect",
+                 "Rail-bearing walls require a rectangular upper profile")
           assert(pad >= 0 && end > start && len(segments) > 0,
                  "No supported rail remains on the wall")
           assert(t - h * tan(angle) > 0.5,
@@ -111,6 +140,7 @@ function multi_lipo_pack_rail_props(pl, size, walls) =
                                  && 2 * bolt_pad + bolt_d < longest[1] - longest[0]),
                  "Locking holes must fit inside a continuous rail segment")
           ["wall", name, "w", t, "cross", cross, "start", start, "l", end - start,
+           "locking_depth", t + 2 * (channel_pad + side_t),
            "segments", segments, "bolts", bolt_d == 0 ? [] : [longest[0] + bolt_pad, longest[1] - bolt_pad]]]];
 
 /**
@@ -139,6 +169,7 @@ module multi_lipo_pack_rail_shape(props,
   along = is_undef(start) ? plist_get("start", rail) : start;
   length = is_undef(l) ? plist_get("l", rail) : l;
   cross = plist_get("cross", rail);
+
   translate([axis == "x" ? along : cross,
              axis == "x" ? cross : along,
              plist_get("z", props) + z_offset + plist_get("h", props) / 2]) {
@@ -150,6 +181,92 @@ module multi_lipo_pack_rail_shape(props,
                        angle=plist_get("angle", props),
                        r=0,
                        center=true);
+        }
+      }
+    }
+  }
+}
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  with_multi_lipo_pack_rail_holes
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Place children at each transverse locking-hole center.
+
+  **Parameters:**
+
+  `props`: Resolved rail properties, in canonical case coordinates.
+  `rail`: One resolved rail; disabled locking holes emit no children.
+  `z_offset`: Vertical translation, e.g. minus the rail base for lid coordinates.
+
+  Child Z follows the hole axis: -Y for X rails, +X for Y rails.
+ */
+module with_multi_lipo_pack_rail_holes(props, rail, z_offset=0) {
+  axis = plist_get("axis", props);
+  for (along = plist_get("bolts", rail)) {
+    translate([axis == "x" ? along : plist_get("cross", rail),
+               axis == "x" ? plist_get("cross", rail) : along,
+               plist_get("z", props) + plist_get("bolt_z", props) + z_offset]) {
+      rotate(axis == "x" ? [90, 0, 0] : [0, 90, 0]) {
+        children();
+      }
+    }
+  }
+}
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  multi_lipo_packs_rail_bolts
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Show locking bolts with their heads inside and retaining nuts outside.
+
+  **Parameters:**
+
+  `props`: Resolved rail properties, in canonical case coordinates.
+  `rail`: One resolved rail; its wall selects the outward direction.
+  `depth`: Grip between the head and nut bearing faces. Defaults to the shared
+  `locking_depth`, including both lid skirts and channel clearance.
+  `z_offset`: Vertical translation from canonical case coordinates.
+  `show_nuts`: Display full-size hex nuts against the outside skirt.
+  `show_bolts`: Display bolt placeholders (default true).
+
+  Bolt shanks use nominal diameter and a length rounded up to 2 mm increments,
+  leaving at least 0.5 mm beyond the nut. Hex flats stay parallel to the rim.
+ */
+module multi_lipo_packs_rail_bolts(props,
+                                   rail,
+                                   depth=undef,
+                                   z_offset=0,
+                                   show_nuts=false,
+                                   show_bolts=true) {
+  bolt_d = plist_get("bolt_d", props);
+  if (bolt_d > 0) {
+    axis = plist_get("axis", props);
+    wall = plist_get("wall", rail);
+    grip = is_undef(depth) ? plist_get("locking_depth", rail) : depth;
+    nut_h = find_nut_prop("height", bolt_d);
+    bolt_l = ceil((grip + nut_h + 0.5) / 2) * 2;
+    // The bolt helper's head is at +Z. Aim it toward the case interior.
+    flip = wall == "rear" || wall == "right";
+    assert(grip > 0, "Locking hardware requires a positive grip depth");
+    with_multi_lipo_pack_rail_holes(props, rail, z_offset=z_offset) {
+      rotate([0, flip ? 180 : 0, 0]) {
+        translate([0, 0, grip / 2 - bolt_l]) {
+          if (show_bolts) {
+            bolt(d=bolt_d, h=bolt_l, threaded=false, thread_depth=0);
+          }
+          if (show_nuts) {
+            translate([0, 0, bolt_l - grip - nut_h]) {
+              rotate([0, 0, axis == "y" ? 30 : 0]) {
+                nut(d=snap_bolt_d(bolt_d),
+                    outer_d=find_nut_prop("outer_dia", bolt_d) / cos(30),
+                    h=nut_h,
+                    show_text=false);
+              }
+            }
+          }
         }
       }
     }
@@ -171,21 +288,13 @@ module multi_lipo_pack_rail_shape(props,
   `z_offset`: Vertical translation from canonical case coordinates.
  */
 module multi_lipo_pack_rail_holes(props, rail, depth, z_offset=0) {
-  axis = plist_get("axis", props);
-  for (along = plist_get("bolts", rail)) {
-    let (bolt_d = plist_get("bolt_d", props)) {
-      translate([axis == "x" ? along : plist_get("cross", rail),
-                 axis == "x" ? plist_get("cross", rail) : along,
-                 plist_get("z", props) + plist_get("bolt_z", props) + z_offset]) {
-        rotate(axis == "x" ? [90, 0, 0] : [0, 90, 0]) {
-          translate([0, 0, -depth / 2]) {
-            counterbore(h=depth,
-                        d=bolt_d,
-                        teardrop_angle=45,
-                        teardrop_both_sides=true);
-          }
-        }
-      }
+  bolt_d = plist_get("bolt_d", props);
+  with_multi_lipo_pack_rail_holes(props=props, rail=rail, z_offset=z_offset) {
+    translate([0, 0, -depth / 2]) {
+      counterbore(h=depth,
+                  d=bolt_d,
+                  teardrop_angle=45,
+                  teardrop_both_sides=true);
     }
   }
 }
@@ -200,22 +309,35 @@ module multi_lipo_pack_rail_holes(props, rail, depth, z_offset=0) {
   **Parameters:**
 
   `props`: Resolved rail properties. Disabled rails emit no geometry.
+  `color`: Printed rail color.
+  `show_bolts`: Display locking bolts, sized for the assembled lid.
+  `show_nuts`: Include exterior nuts when `show_bolts` is true.
  */
-module multi_lipo_pack_rails(props) {
+
+module multi_lipo_pack_rails(props, color, show_bolts=false, show_nuts=false) {
   if (plist_get("enabled", props, false)) {
     for (rail = plist_get("rails", props)) {
-      difference() {
-        union() {
-          for (segment = plist_get("segments", rail)) {
-            multi_lipo_pack_rail_shape(props,
+      let (depth = plist_get("w", rail) + 0.2) {
+        color(color) {
+          difference() {
+            union() {
+              for (segment = plist_get("segments", rail)) {
+                multi_lipo_pack_rail_shape(props,
+                                           rail,
+                                           start=segment[0],
+                                           l=segment[1] - segment[0]);
+              }
+            }
+            multi_lipo_pack_rail_holes(props,
                                        rail,
-                                       start=segment[0],
-                                       l=segment[1] - segment[0]);
+                                       depth=depth);
           }
         }
-        multi_lipo_pack_rail_holes(props,
-                                   rail,
-                                   depth=plist_get("w", rail) + 0.2);
+        if (show_bolts) {
+          multi_lipo_packs_rail_bolts(props,
+                                      rail,
+                                      show_nuts=show_nuts);
+        }
       }
     }
   }

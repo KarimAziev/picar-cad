@@ -169,8 +169,10 @@ wall_props = multi_lipo_pack_wall_props(
 assert(plist_get("h", wall_props) == 25);
 assert(plist_get("l", wall_props) == 80);
 assert(plist_get("offset", wall_props) == 10);
-assert(plist_get("cutouts", wall_props)[0] == ["l", 20, "h", 10, "offset", 40, "corner_r", 0]);
-assert(plist_get("cutouts", wall_props)[1] == ["l", 5, "h", 25, "offset", 0, "corner_r", 0]);
+assert(plist_get("cutouts", wall_props)[0] == ["l", 20, "h", 10, "offset", 40, "corner_r", 0,
+  "side", [["bottom_left", 0], ["bottom_right", 0], ["top_right", 0], ["top_left", 0]]]);
+assert(plist_get("cutouts", wall_props)[1] == ["l", 5, "h", 25, "offset", 0, "corner_r", 0,
+  "side", [["bottom_left", 0], ["bottom_right", 0], ["top_right", 0], ["top_left", 0]]]);
 assert(plist_get("offset", multi_lipo_pack_wall_props(["l", 30], 100, 20)) == 35);
 
 custom_walls = plist_merge(walls,
@@ -226,3 +228,37 @@ assert(plist_get("corner_r", multi_lipo_pack_vent_props(
 assert(plist_get("corner_r", multi_lipo_pack_vent_props(
   ["vent_w", 10, "vent_h", 2, "vent_corner_r", 20], 100, 20)) == 1);
 echo("PASS: vent radius units, clamping, and independence from wall corners");
+
+// Profile and band heights have independent pack-height percentage bases.
+shaped_wall = multi_lipo_pack_wall_props(
+  ["h", "20%", "l", "80%", "shape", "trapezoid_rounded_top",
+   "shape_props", ["h", "50%", "t", "60%", "corner_r", "10%",
+                   "slots", [["pos", ["40%", "20%"], "d", "20%"]]],
+   "cutouts", [["l", "25%", "h", "50%", "corner_r", 0,
+                "sides", [["right", "20%"], ["top_right", 0]]]]], 100, 40);
+assert(plist_get("band_h", shaped_wall) == 8);
+assert(plist_get("h", shaped_wall) == 28);
+shape = plist_get("shape_props", shaped_wall);
+assert(plist_get("h", shape) == 20 && plist_get("t", shape) == 48);
+assert(plist_get("corner_r", shape) == 2);
+assert(plist_get("pos", plist_get("slots", shape)[0]) == [32, 4]);
+assert(plist_get("d", plist_get("slots", shape)[0]) == 4);
+assert(plist_get("side", plist_get("cutouts", shaped_wall)[0]) ==
+       [["bottom_left", 0], ["bottom_right", 2.8], ["top_right", 0], ["top_left", 0]]);
+for (band = [[], ["h", 0]]) {
+  pure_shape = multi_lipo_pack_wall_props(concat(band,
+    ["shape", "rect", "corner_r", "20%", "shape_props", ["h", "50%"]]), 80, 40);
+  assert(plist_get("band_h", pure_shape) == 0);
+  assert(plist_get("h", pure_shape) == 20);
+  assert(plist_get("corner_r", plist_get("shape_props", pure_shape)) == 4);
+}
+polygon_wall = multi_lipo_pack_wall_props(
+  ["shape", "custom", "shape_props", ["h", 20,
+    "points", [[0, 0], ["100%", 0], ["75%", "100%"], [10, "50%"]]]], 80, 40);
+assert(plist_get("points", plist_get("shape_props", polygon_wall)) ==
+       [[0, 0], [80, 0], [60, 20], [10, 10]]);
+shape_case = plist_merge(single_case,
+  ["walls", plist_merge(custom_walls,
+    ["right", ["t", 2, "h", 10, "shape", "rect", "shape_props", ["h", 50]]])]);
+assert(plist_get("body_size", multi_lipo_pack_props(shape_case))[2] == 63);
+echo("PASS: wall profiles, independent heights, percentage polygon points, slots, and side overrides");
