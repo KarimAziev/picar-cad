@@ -66,6 +66,28 @@ function button_bracket_props(pl) =
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
+  button_bracket_wire_ports
+  ─────────────────────────────────────────────────────────────────────────────
+  Return the two crimp barrel mouths in the bracket's centered mounting frame.
+  **Parameters:**
+  - `pl`: Bracket plist with crimp_terminal.props; the same hardware is used
+    by the preview. Ports are ordered local +X, -X and face toward local -Y.
+  **Returns:** Two XYZ points at the outer ends of the crimp insulation.
+ */
+function button_bracket_wire_ports(pl) =
+  let (b = plist_get("button", pl), body = plist_get("body_size", b),
+       terminal = plist_get("terminal_size", b), c = plist_get("crimp_terminal", pl),
+       ring = ring_terminal_props(plist_get("props", c)),
+       size = plist_get("size", button_bracket_props(pl)),
+       x = body[0] / 2 + terminal[0] / 2 - plist_get("t", ring) / 2 - 0.1,
+       y = -terminal[2] - size[1] / 2 + plist_get("od", ring) / 2
+           + plist_get("z_offset", c, 0) - plist_get("total_l", ring),
+       z = max(plist_get("d_tolerance", pl) + plist_get("nut_d", b), body[1]) / 2
+           + plist_get("bottom_t", pl))
+  [for (side = [1, -1]) [side * x, y, z]];
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
   button_bracket
   ─────────────────────────────────────────────────────────────────────────────
   Render the switch bracket or matching parent mounting and wiring cutters.

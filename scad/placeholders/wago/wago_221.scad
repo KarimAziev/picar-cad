@@ -40,6 +40,22 @@ function wago_size(n=wago_n,
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
+  wago_wire_ports
+  ─────────────────────────────────────────────────────────────────────────────
+  Return conductor entry centers in the centered XY, bottom-Z hardware frame.
+  **Parameters:**
+  - `pl`: Hardware plist accepted by wago_from_plist. Entries face local -Y.
+  **Returns:** XYZ points ordered from -X to +X.
+ */
+function wago_wire_ports(pl=[]) =
+  let (n = plist_get("n", pl, wago_n),
+       s = plist_get("conductor_size", pl, wago_conductor_size),
+       hole = plist_get("hole_size_xz", pl, wago_hole_size_xz),
+       t = plist_get("thickness", pl, wago_thickness))
+  [for (i = [0:n - 1]) [(i - (n - 1) / 2) * s[0], -s[1] / 2, t + hole[1] / 2]];
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
   wago_from_plist
   ─────────────────────────────────────────────────────────────────────────────
   Render a connector from measured dimensions and optional visual detail.

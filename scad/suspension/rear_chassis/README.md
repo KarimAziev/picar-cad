@@ -147,3 +147,25 @@ The rear layout accepts `wago_mounts`, defaulting to `rear_wago_mounts=[]`.
 Automatic placement uses available space beneath the battery before adding a
 row toward the flat joining edge. Existing battery mounting datums stay fixed.
 See [Wago bracket configuration and examples](../../wago/README.md).
+
+## Power-case wiring preview
+
+The rear payload displays the shared power harness automatically when the
+selected case has `wiring.enabled=true` and its lid or lidar is visible. The
+harness uses the resolved rear case and lid settings, including floor thickness,
+case orientation, lid thickness and raised mounting height.
+
+`rear_power_payload(..., show_wiring=false)` hides the added harness.
+For an internal inspection, use `show_lid=false, show_lidar=false,
+show_wiring=true`; roof equipment and its wiring remain visible.
+`report_wire_lengths=true` prints lengths for the actual rear configuration.
+At the rear chassis level, the equivalent visibility option is
+`rear_chassis(..., show_power_wiring=true)` (or false to hide it).
+With the wiring option omitted, hiding both lid and lidar also hides the harness.
+Slot mode always emits only chassis mounting cutters.
+
+The wiring follows the configured lid headroom; visibility does not enlarge
+that space. The shared harness passed fuse-clearance checks at 16.5 mm lid
+headroom. At 12.5 mm, its current switched-positive route intersects the
+concealed fuse holder, so that reduced setting needs a revised route or more
+headroom before printing. See the [wiring settings](../../lipo_pack_case/README.md#routed-standalone-wiring).

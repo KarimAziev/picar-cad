@@ -1286,11 +1286,13 @@ lipo_pack_base_pl                                 = ["size", [lipo_pack_width,
                                                      "power_lead", ["side", "left",
                                                                     "connector", "t-plug",
                                                                     "d", 4.35,
-                                                                    "l", 40],
+                                                                    "l", 80,
+                                                                    "routing", "top"],
                                                      "balance_lead", ["side", "right",
                                                                       "d", 1.72,
                                                                       "colors", ["red", "white", "black"],
-                                                                      "l", 40],
+                                                                      "l", 40,
+                                                                      "routing", "top"],
                                                      "rear_end_corner_r", "5%",
                                                      "orientation", "wlh", // wlh (default) | lwh | lhw | whl | hlw | hwl
                                                      "top_cover", ["bg", "gold",
@@ -1340,7 +1342,7 @@ toggle_switch_bracket_plist                       = ["button", button_switch_def
                                                                          "insulate", ["color", "#3771E1",
                                                                                       "l", 10.5,
                                                                                       "d", 5.9]],
-                                                                        "insulate_colors", [red_1, matte_black], "z_offset", 5,]];
+                                                                        "z_offset", 5]];
 
 basic_vent_spec                                   = ["vent_h", 2,
                                                      "vent_corner_r", "40%",
@@ -1381,6 +1383,8 @@ multi_lipo_lid_equipment                          = assert(multi_lipo_lid_equipm
                                                      multi_lipo_lid_equipment_presets);
 
 multi_lipo_packs_case                             = ["lipo_packs", lipo_packs,
+                                                     "wiring", ["enabled", multi_lipo_lid_equipment_preset == "dual_wago",
+                                                                "d", 3.8, "cut_allowance", 20],
                                                      "color", cobalt_blue_metallic,
                                                      "corner_r", 3,
                                                      "inner_corner_r", 0, // clearance for the pack's square end
@@ -1400,7 +1404,7 @@ multi_lipo_packs_case                             = ["lipo_packs", lipo_packs,
                                                                          "corner_r", 3,
                                                                          "standoff_h", 4],
                                                              "side_t", 2,
-                                                             "headroom", 16.5,
+                                                             "headroom", 12.5,
                                                              "color", cobalt_blue_metallic,
                                                              "lidar", rplidar_c1_plist,
                                                              "lidar_target_h", 17,

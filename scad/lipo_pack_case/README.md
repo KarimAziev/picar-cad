@@ -390,3 +390,80 @@ The switch bracket also exposes `button_bracket_props(pl)` with its printed
 uses the same anchors and orientation as the solid and cuts downward through
 `parent_thickness`. The standalone bracket print entry point is
 `../components/button_bracket/printable.scad`.
+
+## Routed standalone wiring
+
+[`wiring_example.scad`](wiring_example.scad) shows the battery, mating T-plugs,
+fuse, switch crimps and both Wagos with the roof hidden. Set `show_roof=true`
+to inspect the closed case. The normal `standalone_assembly.scad` also includes
+the harness; printed exports contain no wiring or connectors.
+
+The electrical path follows the two separate connectors:
+
+- Battery female T-plug mates with the harness male on top of the battery.
+- Male negative goes through the shared roof opening to the −Y Wago.
+- Male positive goes through the concealed ATM fuse, then the switch's local
+  +X crimp. The other crimp returns through the switch slot, runs under the
+  lid, and exits through the shared opening to the +Y Wago.
+
+The Wago sides refer to the pair's local coordinates before its assembly
+rotation. The external leads turn around the inner sides of the cradles to
+reach their outward-facing wire entries. The unused Wago ports remain open.
+The balance leads are folded onto the battery separately, without being
+connected to the power circuit.
+
+Each LiPo lead plist accepts `routing="top"`. The placeholder retains its
+existing side-exit positions and solves the return-loop extent to preserve
+its specified free length: **80 mm per power lead** and the existing
+**40 mm per balance lead**. `connector_pos=[x,y,z]` can override the connector's
+mating-plane position in the logical pack frame (centered XY, bottom Z=0,
+before the pack's orientation). Omitting `routing` retains the older straight
+lead preview. `lipo_pack_from_pl(..., show_wiring=false)` hides leads and the
+female connector while keeping the battery body.
+
+The harness is enabled through `multi_lipo_packs_case.wiring`:
+
+```scad
+"wiring", ["enabled", true,
+           "d", 3.8,
+           "cut_allowance", 20]
+```
+
+`d` is the modeled insulation diameter, taken here from the fuse-holder lead;
+it does not specify a conductor gauge. The `meter` preset disables this
+particular circuit because it has no separate ground Wago. The connected
+harness requires one pack, one crimp-equipped switch, the concealed fuse and
+one Wago pair. Multi-pack electrical connections are not inferred.
+
+The preview echoes these lengths for the current preset:
+
+| Added lead | Routed centerline | Suggested starting cut |
+| --- | ---: | ---: |
+| Male T-plug negative → GND Wago | 127.5 mm | 150 mm |
+| Male T-plug positive → fuse socket | 41.6 mm | 65 mm |
+| Fuse socket → switch input crimp | 71.8 mm | 95 mm |
+| Switch output crimp → positive Wago | 270.1 mm | 295 mm |
+
+Centerlines run between exposed connector/socket/barrel mouths. Suggested
+cuts add `cut_allowance` (20 mm total per lead), then round up to the next
+5 mm for termination and trimming. These are starting lengths to adjust during
+assembly, not exact cut requirements. Fuse leads are measured from the holder's
+socket tips; retain the required length from its existing leads. The pack's
+80 mm leads are fixed and should not be cut to the added-lead schedule.
+
+`multi_lipo_pack_case_assembly(..., report_wire_lengths=true)` regenerates the
+schedule. `show_wiring=false` hides the added harness. Sliding or lifting the
+lid omits the connected harness from the exploded preview: the model represents
+the seated circuit, not flexible-wire motion. The folded battery leads remain
+with the pack and clear the lid throughout its tested sliding travel.
+
+Endpoints come from reusable T-plug, fuse, Wago and crimp-terminal interfaces.
+The route template targets the configured standalone arrangement; it does not
+search arbitrary obstacles. `wiring.paths` can override any route using its
+printed name as a plist key and XYZ waypoints as its value, in the case-body
+centered XY/bottom-Z frame. Overrides must retain their first and last terminal
+points. `wiring.bend_trim` controls corner smoothing (default twice `d`).
+`rounded_wire_points()` in `lib/wire.scad` rounds these corners without spline
+overshoot, and `wire_path(mode="none")` renders the same sampled centerline
+used for the length report. The rounding value is not a specified minimum bend
+radius for the actual cable.

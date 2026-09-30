@@ -59,6 +59,8 @@ function rear_chassis_size(layout=rear_suspension_layout()) =
   - `show_lidar_lid`: Display its sliding power-case lid.
   - `show_wago_brackets`: Display configured deck brackets; holes remain present.
   - `show_wagos`: Display connectors in those brackets.
+  - `show_power_wiring`: Undef follows lid/lidar visibility; true shows the
+    configured power harness even in a roof-hidden inspection view.
  */
 module rear_chassis(show_panel_stack=true,
                     show_gearbox_bracket=true,
@@ -81,7 +83,8 @@ module rear_chassis(show_panel_stack=true,
                     show_lidar=true,
                     show_lidar_lid=true,
                     show_wago_brackets=true,
-                    show_wagos=true) {
+                    show_wagos=true,
+                    show_power_wiring=undef) {
   size = rear_chassis_size(layout);
   center_y = (plist_get("min_y", layout) + plist_get("max_y", layout)) / 2;
   with_anchor(is_undef(anchor) ? [0, 0, 1] : anchor, size, centered=true) {
@@ -97,7 +100,8 @@ module rear_chassis(show_panel_stack=true,
                          show_packs=show_lipo_packs,
                          show_standoffs=show_power_standoffs,
                          show_lidar=show_lidar,
-                         show_lid=show_lidar_lid);
+                         show_lid=show_lidar_lid,
+                         show_wiring=show_power_wiring);
       translate([0, 0, size[2]]) {
         translate(plist_get("motor_pos", layout)) {
           rotate(plist_get("motor_rotation", layout)) {

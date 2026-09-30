@@ -16,6 +16,7 @@ use <../lib/shapes3d.scad>
 use <../lib/text.scad>
 use <../lib/transforms.scad>
 use <t_plug.scad>
+use <lipo_pack_wiring.scad>
 
 lipo_power_wiring_size    = [9.6, 8, 16.5];
 lipo_wiring_balancer_size = [8.75, 8, 11.3];
@@ -318,8 +319,11 @@ function lipo_pack_has_side_wiring(plist) =
   `plist`: Pack properties. `size` is logical `[width, length, height]` and
   `orientation` defaults to `"wlh"`.
   `anchor`: Anchor of the final oriented bounding box.
+  `show_wiring`: Include leads and their connector. Each lead accepts
+  `routing="top"` to fold its measured `l` back over the pack, without moving
+  its exit. Omitted routing preserves the original straight preview.
  */
-module lipo_pack_from_pl(plist, anchor=[0, 1, 1]) {
+module lipo_pack_from_pl(plist, anchor=[0, 1, 1], show_wiring=true) {
   size = plist_get("size", plist);
   w = size[0];
   l = size[1];
@@ -495,15 +499,18 @@ module lipo_pack_from_pl(plist, anchor=[0, 1, 1]) {
       }
     }
 
-    for (power_lead = [power_lead, balance_lead]) {
+    for (lead_key = ["power_lead", "balance_lead"]) {
+      power_lead = plist_get(lead_key, plist, []);
       let (power_lead_d=plist_get("d", power_lead),
            power_lead_exit_l=plist_get("exit_l", power_lead, 0),
            power_lead_l=plist_get("l", power_lead, 0),
            power_lead_side=plist_get("side", power_lead, "left"),
            power_lead_connector=plist_get("connector", power_lead),
            power_lead_colors=plist_get("colors", power_lead, ["red", "black"])) {
-        if (power_lead_d) {
-          if (lipo_pack_has_side_wiring(plist)) {
+        if (show_wiring && power_lead_d) {
+          if (plist_get("routing", power_lead) == "top") {
+            lipo_pack_top_wiring(lipo_pack_top_wiring_props(plist, lead_key));
+          } else if (lipo_pack_has_side_wiring(plist)) {
             _wire_lead(lead_side=power_lead_side,
                        d=power_lead_d,
                        wire_l=power_lead_l,
@@ -531,7 +538,7 @@ lipo_pack_from_pl(plist=["size", [lipo_pack_width,
                          "power_lead", ["side", "left",
                                         "connector", "t-plug",
                                         "d", 4.35,
-                                        "l", 40],
+                                        "l", 80],
                          "balance_lead", ["side", "right",
                                           "d", 1.72,
                                           "colors", ["red", "white", "black"],

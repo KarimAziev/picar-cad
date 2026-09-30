@@ -9,6 +9,7 @@ include <../colors.scad>
 
 use <../lib/debug.scad>
 use <../lib/functions.scad>
+use <../lib/plist.scad>
 use <../lib/shapes3d.scad>
 use <../lib/transforms.scad>
 
@@ -45,7 +46,7 @@ module t_plug_female(body_size=t_plug_body_size,
   with_orientation(from="wlh",
                    to=orientation,
                    anchor=anchor,
-                   size=[w, body_size[1], max(plus_h, minus_h)],
+                   size=[body_size[0], body_size[1], max(plus_h, minus_h)],
                    spin=spin) {
     translate([0, -body_size[1] / 2, 0]) {
       translate([-plus_body_size[0] / 2, 0, plus_h / 2]) {
@@ -78,7 +79,7 @@ module t_plug_female(body_size=t_plug_body_size,
   }
 }
 
-module t_plug_male(body_size=t_plug_body_size,
+module t_plug_male(body_size=t_plug_male_body_size,
                    color="#96484D",
                    t_plug_depth=t_plug_depth,
                    t_plug_hole_w=t_plug_hole_w,
@@ -107,4 +108,42 @@ t_plug_female(orientation="lwh", anchor=[1, 0, 1], spin=180);
 
 translate([-10, 0, 0]) {
   t_plug_male(orientation="lwh", anchor=[-1, 0, 1]);
+}
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  t_plug_mated_props
+  ─────────────────────────────────────────────────────────────────────────────
+  Return mating and solder datums for the default keyed connector pair.
+  **Returns:** Female body on +Y, male body on -Y, mating plane Y=0 and
+  bottom Z=0. Ports are ordered positive, negative, in both halves.
+ */
+function t_plug_mated_props() =
+  ["female_size", t_plug_body_size, "male_size", t_plug_male_body_size,
+   "female_ports", [for (x = [-1, 1])
+       [x * t_plug_body_size[0] / 4, t_plug_body_size[1], t_plug_body_size[2] / 2]],
+   "male_ports", [for (x = [-1, 1])
+       [x * t_plug_body_size[0] / 4, -t_plug_male_body_l, t_plug_body_size[2] / 2]]];
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  t_plug_mated
+  ─────────────────────────────────────────────────────────────────────────────
+  Display a keyed, connected pair in the t_plug_mated_props frame.
+  **Parameters:**
+  - `show_female`: Display the battery half.
+  - `show_male`: Display the harness half, including inserted contact blades.
+ */
+module t_plug_mated(show_female=true, show_male=true) {
+  if (show_female) {
+    translate([0, t_plug_body_size[1] / 2, 0]) {
+      t_plug_female();
+    }
+  }
+  if (show_male) {
+    translate([0, -t_plug_male_body_l / 2, 0]) {
+      mirror([0, 1, 0]) {
+        t_plug_male();
+      }
+    }
+  }
 }

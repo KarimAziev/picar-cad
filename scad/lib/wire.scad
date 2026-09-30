@@ -30,6 +30,30 @@ function total_wire_length(points) =
   len(points) < 2 ? 0 :
   sum([for (i = [0 : len(points) - 2]) vlen(points[i + 1] - points[i])]);
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  rounded_wire_points
+  ─────────────────────────────────────────────────────────────────────────────
+  Round polyline corners without spline overshoot outside adjacent segments.
+  **Parameters:**
+  - `points`: XYZ routing waypoints, including fixed connection endpoints.
+  - `trim`: Desired distance trimmed from each adjacent segment (default 6 mm).
+    Short segments limit trimming to 45 percent of their length.
+  - `steps`: Samples per quadratic corner (default 12).
+  **Returns:** Sampled centerline for wire_path(mode="none") and length checks.
+  Trim is a routing control, not a certified minimum bend radius.
+ */
+function rounded_wire_points(points, trim=6, steps=12) =
+  let (p = drop_consecutive_dups(points), n = len(p))
+  assert(n >= 2 && trim >= 0 && steps >= 2, "Wire route needs two points and valid rounding")
+  concat([p[0]], [for (i = [1:1:n - 2]) each
+    let (a = p[i - 1] - p[i], b = p[i + 1] - p[i],
+         t = min(trim, norm(a) * 0.45, norm(b) * 0.45),
+         start = p[i] + a * t / norm(a), end = p[i] + b * t / norm(b))
+    [for (j = [0:steps]) let (u = j / steps)
+        (1 - u) * (1 - u) * start + 2 * (1 - u) * u * p[i] + u * u * end]],
+    [p[n - 1]]);
+
 function suffix_lengths(pts) =
   let (n=len(pts))
   n < 2 ? [] :

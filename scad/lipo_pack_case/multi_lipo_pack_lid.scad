@@ -19,9 +19,9 @@ use <../placeholders/bolt.scad>
 use <../placeholders/lidar.scad>
 use <../placeholders/standoff.scad>
 use <../wago/wago_mounts.scad>
-use <multi_lipo_pack_adapter.scad>
 use <lid_equipment.scad>
 use <lid_fuse.scad>
+use <multi_lipo_pack_adapter.scad>
 use <multi_lipo_pack_case.scad>
 use <multi_lipo_pack_rail.scad>
 
@@ -78,8 +78,12 @@ function multi_lipo_pack_lid_props(pl, l_clearance=0.4, w_clearance=0.4) =
        lidar_pad = plist_get("lidar_pad", spec, 2),
        lidar_dims = is_undef(lidar_pl) ? [0, 0, 0]
        : orientation_size(lidar_orientation, lidar_size(lidar_pl)),
-       footprint = [for (i = [0:1]) max(body[i] + (i == (axis == "x" ? 1 : 0) ? 2 * (side_t + channel_pad) : 0),
-                                        is_undef(lidar_pl) ? 0 : lidar_dims[i] + 2 * (lidar_pad + abs(lidar_offset[i])))],
+       footprint = [for (i = [0:1]) max(body[i] + (i == (axis == "x" ? 1 : 0)
+                                                   ? 2 * (side_t + channel_pad)
+                                                   : 0),
+                                        is_undef(lidar_pl)
+                                        ? 0
+                                        : lidar_dims[i] + 2 * (lidar_pad + abs(lidar_offset[i])))],
        mount_z = plist_get("z", rails),
        roof_z = max(plist_get("h", rails) + clearance + headroom, body[2] - mount_z + clearance + side_t),
        size = concat(footprint, [roof_z + t]),
@@ -88,8 +92,8 @@ function multi_lipo_pack_lid_props(pl, l_clearance=0.4, w_clearance=0.4) =
               "Lid roof and side thickness must be positive; headroom must leave material above the channels")
        assert(in_list(lidar_orientation, ["wlh", "lwh"]),
               "Lidar must remain upright on the roof")
-  assert(is_list(lidar_offset) && len(lidar_offset) == 2 && is_num(lidar_offset[0]) && is_num(lidar_offset[1]),
-         "lidar_offset must be a numeric XY vector")
+       assert(is_list(lidar_offset) && len(lidar_offset) == 2 && is_num(lidar_offset[0]) && is_num(lidar_offset[1]),
+              "lidar_offset must be a numeric XY vector")
        let (radius = maybe_percent_string_to_num(plist_get("corner_r", spec, 0), min(footprint)))
        assert(is_num(radius) && radius >= 0,
               "Lid corner_r must be nonnegative mm or percent")
@@ -210,8 +214,9 @@ module multi_lipo_pack_lid(pl,
   fuse_props = lid_fuse_props(plist_get("fuse", spec), props);
   wago_boxes = [for (m = wagos)
       _wago_bounds(concat(plist_get("pos", m), [0]), wago_mount_size(m))];
-  equipment = lid_equipment_layout(plist_get("equipment", spec, []), props,
-                                    concat(wago_boxes, _lid_fuse_tie_bounds(fuse_props)));
+  equipment = lid_equipment_layout(plist_get("equipment", spec, []),
+                                   props,
+                                   concat(wago_boxes, _lid_fuse_tie_bounds(fuse_props)));
   fuse = lid_fuse_validate(fuse_props, props, equipment, wago_boxes);
   case_props = plist_get("case_props", props);
   body = plist_get("body_size", case_props);
@@ -371,7 +376,8 @@ module multi_lipo_pack_lid(pl,
         }
         if (show_adapter && adapter_gap > 0) {
           translate([body[0] / 2 + lidar_offset[0],
-                     body[1] / 2 + lidar_offset[1], size[2]]) {
+                     body[1] / 2 + lidar_offset[1],
+                     size[2]]) {
             multi_lipo_pack_adapter_spacers(adapter);
           }
         }
@@ -496,7 +502,9 @@ module multi_lipo_pack_lid_printable(pl,
                                      w_clearance=0.4) {
   canonical = plist_merge(pl, ["orientation", "wlh"]);
   size = plist_get("canonical_size",
-                   multi_lipo_pack_lid_props(canonical, l_clearance, w_clearance));
+                   multi_lipo_pack_lid_props(canonical,
+                                             l_clearance,
+                                             w_clearance));
   with_anchor(anchor, size, centered=true) {
     translate([0, 0, size[2]]) {
       rotate([180, 0, 0]) {

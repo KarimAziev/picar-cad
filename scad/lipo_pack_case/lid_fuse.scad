@@ -9,6 +9,7 @@
   */
 include <../parameters.scad>
 use <../lib/plist.scad>
+use <../lib/functions.scad>
 use <../lib/shapes3d.scad>
 use <../placeholders/atm_fuse_holder/atm_fuse_holder.scad>
 use <lid_equipment.scad>
@@ -187,3 +188,22 @@ function lid_fuse_validate(props, lid, equipment, obstacles=[]) =
   assert(len([for (b = slots) if (!_wago_clear(b, cuts)) 1]) == 0,
          "Fuse tie slots overlap mounting holes; move or rotate the fuse")
   props;
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  lid_fuse_wire_ports
+  ─────────────────────────────────────────────────────────────────────────────
+  Return the socket tips of the installed flat holder.
+  **Parameters:**
+  - `props`: lid_fuse_props result.
+  **Returns:** Two XYZ points relative to the interior roof face, in local
+  +X, -X socket order before the configured fuse rotation.
+ */
+function lid_fuse_wire_ports(props) =
+  let (holder = plist_get("holder", props), body = plist_get("size", plist_get("body", holder)),
+       wiring = plist_get("wiring", holder), size = plist_get("size", props),
+       x = body[0] / 2 + plist_get("socket_type_len", wiring, 4))
+  [for (side = [1, -1])
+      concat(plist_get("pos", props), [0])
+      + rotZ([side * x, -size[1] / 2 + body[2] / 2,
+              -size[2] / 2 - plist_get("clearance", props)], plist_get("rotation", props))];
