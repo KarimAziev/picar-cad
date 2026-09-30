@@ -1384,7 +1384,8 @@ multi_lipo_lid_equipment                          = assert(multi_lipo_lid_equipm
 
 multi_lipo_packs_case                             = ["lipo_packs", lipo_packs,
                                                      "wiring", ["enabled", multi_lipo_lid_equipment_preset == "dual_wago",
-                                                                "d", 3.8, "cut_allowance", 20],
+                                                                "d", 3.8,
+                                                                "cut_allowance", 20],
                                                      "color", cobalt_blue_metallic,
                                                      "corner_r", 3,
                                                      "inner_corner_r", 0, // clearance for the pack's square end

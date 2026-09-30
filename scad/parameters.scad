@@ -242,7 +242,7 @@ panel_stack_padding_y                                = 1;
 
 fuse_panel_plist_specs                               = concat(repeat(plist_merge(atm_fuse_default_plist, ["gap_after", 4,
                                                                                                           "cap_to_bottom", true]),
-                                                                     2));
+                                                                     3));
 
 chassis_panel_stack_x_offset                         = 0;
 chassis_panel_stack_y_offset                         = 1;

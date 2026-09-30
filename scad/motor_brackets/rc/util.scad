@@ -129,7 +129,7 @@ function gearmotor_bracket_compute_params(plist=motor_plist,
        - ear_bolt_pad,
 
 // holes near the motor contacts
-       motor_cap_bolt_left = [-x_left, motor_body_full_h],
+       motor_cap_bolt_left = [-x_left + bolt_d, motor_body_full_h],
        motor_cap_bolt_right = [-x_left + motor_d, motor_body_full_h],
 
        motor_cap_bolt_left_y = motor_cap_bolt_left[1],
@@ -183,9 +183,9 @@ function gearmotor_bracket_compute_params(plist=motor_plist,
               [motor_cap_bolt_right_x_max, motor_cap_bolt_right_y],
               [motor_cap_bolt_right_x_max, motor_cap_bolt_right_y
                + bolt_r + bolt_pad_y],
-              [motor_cap_bolt_left_x - bolt_r - bolt_pad_x,
+              [motor_cap_bolt_left_x,
                motor_cap_bolt_left_y + bolt_r + bolt_pad_y],
-              [motor_cap_bolt_left_x - bolt_r - bolt_pad_x, motor_cap_bolt_left_y],
+              [motor_cap_bolt_left_x - bolt_pad_x, motor_cap_bolt_left_y],
               [-x_left, body_h_with_cup],
               [-x_left, 0],
               [x_end, 0],

@@ -9,7 +9,6 @@ include <../../steering_params.scad>
 include <rear_suspension_params.scad>
 
 use <../../lib/plist.scad>
-use <../../wago/wago_mounts.scad>
 use <../../lipo_pack_case/multi_lipo_pack_case.scad>
 use <../../lipo_pack_case/multi_lipo_pack_lid.scad>
 use <../../motor_brackets/rc/util.scad>
@@ -17,6 +16,7 @@ use <../../panel_stack/control_panel.scad>
 use <../../panel_stack/panel_stack.scad>
 use <../../placeholders/lidar.scad>
 use <../../placeholders/standoff.scad>
+use <../../wago/wago_mounts.scad>
 use <../front_chassis/layout_params.scad>
 use <../rear_chassis/rear_payload.scad>
 
@@ -152,7 +152,9 @@ function rear_suspension_layout(bracket=gearmotor_bracket_compute_params(motor_p
        ? [["type", "stack", "side", side, "orientation", orientation]] : panels,
        close_panels = _rear_panel_layout(panel_specs, motor_bounds, motor_bounds,
                                          panel_gap, panel_y_offset, orientation),
-       mount = rear_power_case_mount(power_case, motor_bounds, rear_power_case_y_offset,
+       mount = rear_power_case_mount(power_case,
+                                     motor_bounds=motor_bounds,
+                                     y_offset=rear_power_case_y_offset,
                                      panels=close_panels),
        case_size = is_undef(mount) ? [0, 0, 0] : plist_get("size", mount),
        rail_enabled = !is_undef(mount)
@@ -212,12 +214,12 @@ function rear_suspension_layout(bracket=gearmotor_bracket_compute_params(motor_p
                              "clearance_height", occupied_h,
                              "lidar", lidar_plist, "lid_size", lid_size]),
        wagos = wago_chassis_mounts(wago_mounts, payload,
-         concat([motor_bounds,
-                 [[-rear_chassis_maintenance_hole_d/2,
-                   maintenance_y-rear_chassis_maintenance_hole_d/2, 0],
-                  [rear_chassis_maintenance_hole_d/2,
-                   maintenance_y+rear_chassis_maintenance_hole_d/2, 0]]],
-                [for (p = panel_layout) plist_get("bounds", p)]), front_chassis_thickness),
+                                   concat([motor_bounds,
+                                           [[-rear_chassis_maintenance_hole_d/2,
+                                             maintenance_y-rear_chassis_maintenance_hole_d/2, 0],
+                                            [rear_chassis_maintenance_hole_d/2,
+                                             maintenance_y + rear_chassis_maintenance_hole_d/2, 0]]],
+                                          [for (p = panel_layout) plist_get("bounds", p)]), front_chassis_thickness),
        component_bounds = concat([for (w = wagos) plist_get("bounds", w)],
                                  [motor_bounds], [for (p = panel_layout) plist_get("bounds", p)],
                                  is_undef(mount) ? [] : [overhead]),

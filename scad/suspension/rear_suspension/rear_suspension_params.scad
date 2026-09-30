@@ -77,7 +77,7 @@ panel_stack_y_offset                       = 0; // from bracket footprint center
 // Each entry is independent: type = control | fuse | stack, side = left | right
 // | auto. Auto chooses the smaller occupied side; later entries can use the
 // opposite side automatically. Repeated sides are placed successively outward.
-rear_panel_specs                           = [["type", "control", "side", "auto", "orientation", "wlh"],
+rear_panel_specs                           = [["type", "fuse", "side", "right", "orientation", "wlh"],
                                               // ["type", "fuse", "side", "auto", "orientation", "lwh"]
                                               ];
 
@@ -101,4 +101,4 @@ rear_lidar_standoff_h                      = 13;
 // Optional Wago brackets: auto tries beneath the case, then extends toward -Y.
 // Each entry accepts placement, rotation (degrees), gap, service_h, bracket.
 // Example: [["placement", "auto", "rotation", 90], ["placement", "after"]]
-rear_wago_mounts                           = [["placement", "auto",  "rotation", 270],];
+rear_wago_mounts                           = [];
