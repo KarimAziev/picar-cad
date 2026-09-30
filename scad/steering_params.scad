@@ -1386,7 +1386,7 @@ multi_lipo_packs_case                             = ["lipo_packs", lipo_packs,
                                                                "rear", merge_vent_spec(["t", 2,
                                                                                         "l", "90%",
                                                                                         "corner_r", "20%"]),
-                                                               "bottom", ["t", 5.2],
+                                                               "bottom", ["t", 6.2],
                                                                "left", merge_vent_spec(["t", 2, "h", "90%"]),
                                                      // One continuous outline avoids lips where wiring cutouts met the band.
                                                      // Keep the rim clear of the case's rounded plan-view corners.
