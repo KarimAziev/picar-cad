@@ -21,7 +21,8 @@ $fn=32;
 pl=multi_lipo_packs_case;
 module case_body() {{ multi_lipo_pack_case(pl, anchor=[0,0,1], show_packs=false, show_rail_bolts=false); }}
 module lid_body(slide=0, lift=0) {{
-  multi_lipo_pack_lid_on_case(pl, slide=slide, lift=lift, show_lidar=false);
+  multi_lipo_pack_lid_on_case(pl, slide=slide, lift=lift, show_lidar=false,
+                              show_adapter=false, show_equipment=false);
 }}
 module pack() {{
   props=multi_lipo_pack_props(pl);

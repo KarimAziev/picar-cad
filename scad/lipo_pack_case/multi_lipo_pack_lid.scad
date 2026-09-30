@@ -20,6 +20,8 @@ use <../placeholders/lidar.scad>
 use <../placeholders/standoff.scad>
 use <../wago/wago_mounts.scad>
 use <multi_lipo_pack_adapter.scad>
+use <lid_equipment.scad>
+use <lid_fuse.scad>
 use <multi_lipo_pack_case.scad>
 use <multi_lipo_pack_rail.scad>
 
@@ -98,14 +100,15 @@ function multi_lipo_pack_lid_props(pl, l_clearance=0.4, w_clearance=0.4) =
                     "corner_r", calc_corner_rad(footprint, radius)],
             adapter = multi_lipo_pack_adapter_props(plist_get("adapter", spec), base),
             adapter_h = plist_get("enabled", adapter, false) ? plist_get("size", adapter)[2] : 0,
+            adapter_gap = plist_get("standoff_h", adapter, 0),
             target_h = plist_get("lidar_target_h", spec, 13),
-            standoff_target_h = max(0, target_h - adapter_h))
+            standoff_target_h = max(0, target_h - adapter_h - adapter_gap))
        assert(is_undef(lidar_pl) || standoff_target_h > 0,
-              "lidar_target_h must exceed the adapter thickness to leave room for standoffs")
+              "lidar_target_h must exceed adapter thickness plus its spacers")
        concat(base,
-              ["adapter_props", adapter, "adapter_h", adapter_h,
+              ["adapter_props", adapter, "adapter_h", adapter_h, "adapter_gap", adapter_gap,
                "standoff_target_h", standoff_target_h,
-               "lidar_base_z", is_undef(lidar_pl) ? undef : size[2] + adapter_h
+               "lidar_base_z", is_undef(lidar_pl) ? undef : size[2] + adapter_h + adapter_gap
                + standoff_real_h(standoff_target_h, plist_get("bolt_d", lidar_pl))]);
 
 /**
@@ -177,6 +180,9 @@ function multi_lipo_pack_lid_wago_mounts(pl, props) =
 
   `show_wago_brackets`: Display configured brackets (default false for printing).
   `show_wagos`: Display connectors in shown brackets (default true).
+  `show_equipment`: Show configured roof equipment and the concealed fuse.
+  `lid.equipment` accepts the lid_equipment_layout interface. `lid.fuse`
+  accepts lid_fuse_props; holes and bearing pads are part of the printed lid.
 
   `lid.vents` accepts the same vent properties as a case wall. Vents occupy the
   skirt above the channels; the rail grooves and roof retain solid material.
@@ -196,10 +202,17 @@ module multi_lipo_pack_lid(pl,
                            w_clearance=0.4,
                            show_adapter=false,
                            show_wago_brackets=false,
-                           show_wagos=true) {
+                           show_wagos=true,
+                           show_equipment=false) {
   props = multi_lipo_pack_lid_props(pl, l_clearance, w_clearance);
   spec = plist_get("lid", pl, []);
   wagos = multi_lipo_pack_lid_wago_mounts(pl, props);
+  fuse_props = lid_fuse_props(plist_get("fuse", spec), props);
+  wago_boxes = [for (m = wagos)
+      _wago_bounds(concat(plist_get("pos", m), [0]), wago_mount_size(m))];
+  equipment = lid_equipment_layout(plist_get("equipment", spec, []), props,
+                                    concat(wago_boxes, _lid_fuse_tie_bounds(fuse_props)));
+  fuse = lid_fuse_validate(fuse_props, props, equipment, wago_boxes);
   case_props = plist_get("case_props", props);
   body = plist_get("body_size", case_props);
   size = plist_get("canonical_size", props);
@@ -217,11 +230,18 @@ module multi_lipo_pack_lid(pl,
   lidar_offset = plist_get("lidar_offset", props);
   adapter = plist_get("adapter_props", props);
   adapter_h = plist_get("adapter_h", props);
+  adapter_gap = plist_get("adapter_gap", props);
   lid_color = plist_get("color", spec, plist_get("color", pl));
   // Canonical XY remains relative to the body minimum for shared rail datums.
   roof_min = [(body[0] - size[0]) / 2, (body[1] - size[1]) / 2];
 
   module _mount_slots() {
+    translate([body[0] / 2, body[1] / 2, roof_z]) {
+      lid_fuse(fuse, t, slot_mode=true);
+    }
+    translate([body[0] / 2, body[1] / 2, size[2]]) {
+      lid_equipment(equipment, t, slot_mode=true);
+    }
     translate([body[0]/2, body[1]/2, 0]) {
       wago_mounts(wagos, z=size[2], slot_mode=true, parent_t=t);
     }
@@ -297,26 +317,31 @@ module multi_lipo_pack_lid(pl,
         if (show_lid) {
           color(lid_color) {
             difference() {
-              intersection() {
-                translate(concat(roof_min, [0])) {
-                  cuboid(size,
-                         r=plist_get("corner_r", props),
-                         anchor=[1, 1, 1]);
-                }
-                union() {
-                  translate(concat(roof_min, [roof_z])) {
-                    cube([size[0], size[1], t]);
+              union() {
+                intersection() {
+                  translate(concat(roof_min, [0])) {
+                    cuboid(size,
+                           r=plist_get("corner_r", props),
+                           anchor=[1, 1, 1]);
                   }
-                  for (rail = plist_get("rails", rails)) {
-                    depth = plist_get("locking_depth", rail);
-                    cross = plist_get("cross", rail) - depth / 2;
-                    along = roof_min[slide_axis];
-                    translate([axis == "x" ? along : cross,
-                               axis == "x" ? cross : along,
-                               0]) {
-                      cube(axis == "x" ? [size[0], depth, roof_z + 0.01] : [depth, size[1], roof_z + 0.01]);
+                  union() {
+                    translate(concat(roof_min, [roof_z])) {
+                      cube([size[0], size[1], t]);
+                    }
+                    for (rail = plist_get("rails", rails)) {
+                      depth = plist_get("locking_depth", rail);
+                      cross = plist_get("cross", rail) - depth / 2;
+                      along = roof_min[slide_axis];
+                      translate([axis == "x" ? along : cross,
+                                 axis == "x" ? cross : along,
+                                 0]) {
+                        cube(axis == "x" ? [size[0], depth, roof_z + 0.01] : [depth, size[1], roof_z + 0.01]);
+                      }
                     }
                   }
+                }
+                translate([body[0] / 2, body[1] / 2, roof_z]) {
+                  lid_fuse_supports(fuse);
                 }
               }
               for (rail = plist_get("rails", rails)) {
@@ -336,12 +361,26 @@ module multi_lipo_pack_lid(pl,
         if (plist_get("enabled", adapter, false) && (show_adapter || show_bolts)) {
           translate([body[0]/2 + lidar_offset[0],
                      body[1]/2 + lidar_offset[1],
-                     size[2]]) {
+                     size[2] + adapter_gap]) {
             color(lid_color) {
               multi_lipo_pack_adapter(adapter,
                                       show_plate=show_adapter,
                                       show_hardware=show_bolts);
             }
+          }
+        }
+        if (show_adapter && adapter_gap > 0) {
+          translate([body[0] / 2 + lidar_offset[0],
+                     body[1] / 2 + lidar_offset[1], size[2]]) {
+            multi_lipo_pack_adapter_spacers(adapter);
+          }
+        }
+        if (show_equipment) {
+          translate([body[0] / 2, body[1] / 2, roof_z]) {
+            lid_fuse(fuse, t);
+          }
+          translate([body[0] / 2, body[1] / 2, size[2]]) {
+            lid_equipment(equipment, t);
           }
         }
         if (show_lidar && !is_undef(lidar_pl)) {
@@ -351,7 +390,7 @@ module multi_lipo_pack_lid(pl,
                                   "bore_h", find_bolt_head_h(d, "countersunk") + 0.15, "sink", true]);
           translate([body[0] / 2 + lidar_offset[0],
                      body[1] / 2 + lidar_offset[1],
-                     size[2] + adapter_h]) {
+                     size[2] + adapter_h + adapter_gap]) {
             lidar(plist=mount_pl,
                   parent_thickness=adapter_h > 0 ? adapter_h : t,
                   orientation=plist_get("lidar_orientation", props),
@@ -397,6 +436,7 @@ module multi_lipo_pack_lid(pl,
   `show_adapter`: Display the adapter plate (default true).
   `show_wago_brackets`: Display configured roof brackets (default true).
   `show_wagos`: Display connectors in roof brackets (default true).
+  `show_equipment`: Display standalone roof equipment and the concealed fuse.
  */
 module multi_lipo_pack_lid_on_case(pl,
                                    anchor=[0, 0, 1],
@@ -409,7 +449,8 @@ module multi_lipo_pack_lid_on_case(pl,
                                    w_clearance=0.4,
                                    show_adapter=true,
                                    show_wago_brackets=true,
-                                   show_wagos=true) {
+                                   show_wagos=true,
+                                   show_equipment=true) {
   props = multi_lipo_pack_lid_props(pl, l_clearance, w_clearance);
   case_props = plist_get("case_props", props);
   axis = plist_get("axis", plist_get("rail_props", props));
@@ -428,6 +469,7 @@ module multi_lipo_pack_lid_on_case(pl,
                           show_adapter=show_adapter,
                           show_wago_brackets=show_wago_brackets,
                           show_wagos=show_wagos,
+                          show_equipment=show_equipment,
                           l_clearance=l_clearance,
                           w_clearance=w_clearance);
     }

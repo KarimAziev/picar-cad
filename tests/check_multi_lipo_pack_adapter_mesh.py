@@ -21,7 +21,7 @@ a=plist_get("adapter_props",p);
 o=plist_get("lidar_offset",p);
 s=plist_get("canonical_size",p);
 module adapter() {{
- translate([o[0],o[1],s[2]]) {{ multi_lipo_pack_adapter(a); }}
+ translate([o[0],o[1],s[2] + plist_get("adapter_gap",p)]) {{ multi_lipo_pack_adapter(a); }}
 }}
 '''
 
@@ -49,9 +49,9 @@ def main() -> None:
         close(bounds(vertices(mesh))[0],[-27.8,-27.8,0])
         close(bounds(vertices(mesh))[1],[27.8,27.8,4])
         render("multi_lipo_pack_printable();")
-        assert connected_components(mesh)==3
+        assert connected_components(mesh)==9
         close([bounds(vertices(mesh))[0][2]],[0])
-        print("PASS: adapter is one solid on the bed; combined layout has three separate parts",flush=True)
+        print("PASS: adapter is one solid on the bed; combined layout has nine separate parts",flush=True)
 
         render('''intersection() {
  adapter();
@@ -59,7 +59,7 @@ def main() -> None:
 }''',empty=True)
         render('''intersection() {
  multi_lipo_pack_lid(pl);
- translate([o[0],o[1],s[2]]) {
+ translate([o[0],o[1],s[2] + plist_get("adapter_gap",p)]) {
   multi_lipo_pack_adapter(a,show_plate=false,show_hardware=true);
  }
 }''',empty=True)
@@ -122,6 +122,7 @@ def main() -> None:
            "front",["t",3,"h",15],"rear",["t",3,"h",15],
            "left",["t",3,"h",20],"right",["t",3,"h",20]],
  "lid",plist_merge(plist_get("lid",multi_lipo_packs_case),[
+   "equipment",[],"fuse",undef,
    "lidar_orientation","lwh","lidar_offset",[3,-2],
    "lidar",plist_merge(rplidar_c1_plist,["size",[62,58],"bolt_spacing",[46,40],"offsets",[1,-2]])])]);'''
         alt=COMMON.replace("pl=multi_lipo_packs_case;",altered)

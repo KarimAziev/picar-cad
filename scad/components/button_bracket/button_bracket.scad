@@ -16,8 +16,73 @@ use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
 use <../../placeholders/toggle_switch.scad>
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  button_bracket_props
+  ─────────────────────────────────────────────────────────────────────────────
+  Resolve the printed bracket and the installed switch envelope.
+  **Parameters:**
+  - `pl`: Bracket plist, including the switch's `button` hardware plist.
+    `terminal_extension` reserves additional terminal length in mm (default 0)
+    and moves the wiring opening that far toward local -Y. It leaves the
+    measured switch placeholder and the opening's dimensions unchanged.
+  **Returns:**
+  `size` is the printed reference box, centered on XY with its base at Z=0.
+  `bounds` includes terminals, both lever positions and the wiring opening.
+  `mount_holes` and `wire_pos` use this same frame.
+ */
+function button_bracket_props(pl) =
+  let (b = plist_get("button", pl),
+       body = plist_get("body_size", b),
+       terminal = plist_get("terminal_size", b),
+       extension = plist_get("terminal_extension", pl, 0),
+       tol = plist_get("d_tolerance", pl),
+       wall_t = plist_get("vertical_extra_t", pl) + plist_get("nut_bore_h", b),
+       wall_w = max(tol + plist_get("nut_d", b), body[0]),
+       wall_h = max(tol + plist_get("nut_d", b), body[1]),
+       t = plist_get("bottom_t", pl),
+       pitch = wall_w + 2 * plist_get("bolt_pad", pl),
+       size = [pitch + 2 * plist_get("side_pad", pl), body[2] + wall_t,
+               t + wall_h + plist_get("vertical_top_pad", pl, 0)],
+       lever = toggle_switch_lever_bounds(
+         [plist_get("thread_d", b), plist_get("thread_h", b),
+          plist_get("thread_border_w", b)],
+         [plist_get("lever_dia_1", b), plist_get("lever_dia_2", b),
+          plist_get("lever_h", b)]),
+       wire = plist_get("wire_size", pl, [body[0] * 0.6, terminal[2] + 2]),
+       wire_y = -size[1] / 2 - terminal[2] / 2 - extension,
+       half_w = max(size[0] / 2, lever[1][0], wire[0] / 2),
+       bounds = [[-half_w, min(-size[1] / 2 - terminal[2] - extension, wire_y - wire[1] / 2), 0],
+                 [half_w, max(size[1] / 2,
+                              body[2] - size[1] / 2
+                              + max(lever[1][2], plist_get("thread_h", b))), size[2]]])
+  assert(is_num(extension) && extension >= 0,
+         "Button terminal_extension must be nonnegative mm")
+  assert(min(size) > 0 && plist_get("bolt_d", pl) > 0
+         && min(wire) > 0, "Button bracket dimensions must be positive")
+  ["size", size, "bounds", bounds, "wire_size", wire,
+   "wire_pos", [0, wire_y], "mount_holes", [[-pitch / 2, 0], [pitch / 2, 0]]];
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  button_bracket
+  ─────────────────────────────────────────────────────────────────────────────
+  Render the switch bracket or matching parent mounting and wiring cutters.
+  **Parameters:**
+  - `plist`: Component dimensions accepted by button_bracket_props.
+  - `anchor`: Oriented printed-envelope anchor, shared by solid and slot modes.
+  - `parent_thickness`: Parent depth below the mounting plane in slot mode.
+  - `debug`: Label the base polygon.
+  - `orientation`: Axis convention accepted by with_orientation.
+  - `show_bracket`: Display printed material.
+  - `show_button`: Display switch hardware.
+  - `slot_mode`: Cut parent holes downward from the base, with underside sinks.
+  - `rotate_z_180`: Reverse the bracket around the oriented Z axis.
+  - `color`: Fallback material color; the plist can override it.
+ */
 module button_bracket(plist,
                       anchor=[0, 0, 1],
+                      parent_thickness=4,
                       debug=false,
                       orientation="wlh",
                       show_bracket=true,
@@ -32,7 +97,8 @@ module button_bracket(plist,
   side_pad = plist_get("side_pad", plist);
   bolt_pad = plist_get("bolt_pad", plist);
   d_tolerance= plist_get("d_tolerance", plist);
-  color = plist_get("color", plist);
+  resolved_color = plist_get("color", plist, color);
+  props = button_bracket_props(plist);
   vertical_r = plist_get("vertical_r", plist);
   bottom_r = plist_get("bottom_r", plist);
   vertical_top_pad = plist_get("vertical_top_pad", plist, 0);
@@ -55,14 +121,6 @@ module button_bracket(plist,
   body_h = body_size[2];
   terminal_h = terminal_size[2];
   full_body_h = body_h + terminal_h;
-
-  thread_spec = [thread_d, thread_h, thread_border_w];
-  lever_spec = [lever_dia_1, lever_dia_2, lever_h];
-
-  bounds = toggle_switch_lever_bounds(thread_spec, lever_spec);
-  lever_full_h = bounds[1][2] - bounds[1][1]; // not sure whether it is correct
-
-  full_h = lever_full_h + full_body_h; // probably worth to move to function
 
   vertical_wall_t = vertical_extra_t + nut_bore_h;
 
@@ -88,7 +146,7 @@ module button_bracket(plist,
          [vertical_wall_w / 2, -bottom_wall_l],];
 
   // rotated size
-  bracket_size = [mount_w, bottom_wall_l, bottom_t];
+  bracket_size = plist_get("size", props);
 
   module _bottom_wall() {
     if (debug) {
@@ -97,7 +155,7 @@ module button_bracket(plist,
       }
     }
     difference() {
-      color(color, alpha=1) {
+      color(resolved_color, alpha=1) {
         union() {
           cuboid([vertical_wall_w, bottom_wall_l, bottom_t],
                  anchor=[0, -1, -1],
@@ -117,8 +175,8 @@ module button_bracket(plist,
         four_corner_children(size=[bolt_spacing_x, 0], center=true) {
           counterbore(h=bottom_t,
                       d=bolt_d,
-                      fn=100,
-                      reverse=false);
+                      no_bore=true,
+                      fn=60);
         }
       }
     }
@@ -132,7 +190,7 @@ module button_bracket(plist,
                   vertical_wall_l
                   + vertical_top_pad,
                   vertical_wall_t],
-                 color=color,
+                 color=resolved_color,
                  r=vertical_r,
                  side="bottom");
         }
@@ -161,26 +219,23 @@ module button_bracket(plist,
                -terminal_h - bottom_wall_l / 2,
                vertical_wall_l / 2 + bottom_t]) {
       rotate([-90, 0, 0]) {
-        if (slot_mode) {
-        } else {
-          if (show_bracket) {
-            translate([0, 0, full_body_h]) {
-              _bracket();
-            }
+        if (show_bracket) {
+          translate([0, 0, full_body_h]) {
+            _bracket();
           }
-          if (show_button) {
-            toggle_switch(size=body_size,
-                          thread_h=thread_h,
-                          thread_d=thread_d,
-                          nut_d=nut_d,
-                          nut_bore_h=nut_bore_h,
-                          lever_dia_1=lever_dia_1,
-                          lever_dia_2=lever_dia_2,
-                          lever_h=lever_h,
-                          terminal_size=terminal_size,
-                          thread_border_w=thread_border_w,
-                          metallic_head_h=metallic_head_h);
-          }
+        }
+        if (show_button) {
+          toggle_switch(size=body_size,
+                        thread_h=thread_h,
+                        thread_d=thread_d,
+                        nut_d=nut_d,
+                        nut_bore_h=nut_bore_h,
+                        lever_dia_1=lever_dia_1,
+                        lever_dia_2=lever_dia_2,
+                        lever_h=lever_h,
+                        terminal_size=terminal_size,
+                        thread_border_w=thread_border_w,
+                        metallic_head_h=metallic_head_h);
         }
       }
     }
@@ -191,7 +246,34 @@ module button_bracket(plist,
                    anchor=anchor,
                    size=bracket_size,
                    rotate_z_180=rotate_z_180) {
-    _main();
+    if (slot_mode) {
+      assert(parent_thickness >= plist_get("bore_h", plist, 1.8) + 0.4,
+             "Button mounting countersinks need material above their heads");
+      for (xy = plist_get("mount_holes", props)) {
+        translate(concat(xy, [-parent_thickness])) {
+          counterbore(h=parent_thickness,
+                      d=bolt_d,
+                      bore_d=plist_get("bore_d", plist, 6.4),
+                      bore_h=plist_get("bore_h", plist, 1.8),
+                      sink=true,
+                      reverse=true);
+        }
+      }
+      _wire_slot(parent_thickness);
+    } else {
+      difference() {
+        _main();
+        _wire_slot(0);
+      }
+    }
+  }
+
+  module _wire_slot(depth) {
+    wire = plist_get("wire_size", props);
+    translate(concat(plist_get("wire_pos", props), [-depth - 0.01])) {
+      cuboid([wire[0], wire[1], depth + bottom_t + 0.02],
+             anchor=[0, 0, 1], r=min(wire) / 4);
+    }
   }
 }
 

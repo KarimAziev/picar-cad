@@ -14,6 +14,28 @@ use <../../lib/transforms.scad>
 use <atm_fuse_holder_body.scad>
 use <atm_fuse_holder_cap.scad>
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  atm_fuse_holder_size
+  ─────────────────────────────────────────────────────────────────────────────
+  Return the upright holder envelope, including ribs and wire sockets.
+  **Parameters:**
+  - `pl`: Hardware plist (default atm_fuse_default_plist). Free wire paths are
+    excluded; the body and cap dimensions remain linked to the placeholder.
+  **Returns:** `[width, thickness, height]`, centered on XY with Z starting at 0.
+ */
+function atm_fuse_holder_size(pl=atm_fuse_default_plist) =
+  let (body = plist_get("size", plist_get("body", pl)),
+       cap = plist_get("size", plist_get("cap", pl)),
+       rib = plist_get("thickness", plist_get("rib", plist_get("body", pl)), 1),
+       cap_rib = plist_get("thickness", plist_get("rib", plist_get("cap", pl)), 1),
+       wire = plist_get("wiring", pl),
+       wire_l = plist_get("socket_type_len", wire, 5),
+       wire_d = plist_get("base_d", wire, min(body[1], body[2]) * 0.8),
+       sphere = plist_get("socket_type", wire, "cylinder") == "sphere")
+  [max(body[0], body[3], cap[0], cap[3]) + 2 * wire_l + (sphere ? wire_d : 0),
+   max(body[1] + 2 * rib, cap[1] + 2 * cap_rib), body[2] + cap[2]];
+
 module atm_fuse_holder_from_spec(plist,
                                  align_x = -1,
                                  align_y = -1,

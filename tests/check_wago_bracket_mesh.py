@@ -87,7 +87,8 @@ intersection() {{
 
         lid_common = '''
 lid=plist_merge(plist_get("lid",multi_lipo_packs_case),
- ["wago_mounts",[["pos",[-54,0]],["pos",[54,0],"rotation",180]]]);
+ ["equipment",[],"fuse",undef,
+  "wago_mounts",[["pos",[-54,0]],["pos",[54,0],"rotation",180]]]);
 pl=plist_merge(multi_lipo_packs_case,["lid",lid]);
 '''
         render(lid_common + 'multi_lipo_pack_lid_printable(pl);')
@@ -124,7 +125,7 @@ intersection() {
                     '["ear_d",3]', '["wago",["n",6]]'):
             render(f'wago_bracket(pl={bad});', reject=True)
         render(lid_common.replace('[-54,0]', '[0,0]') + 'multi_lipo_pack_lid(pl);', reject=True)
-        rounded = lid_common.replace('["wago_mounts",', '["corner_r",25,"wago_mounts",')
+        rounded = lid_common.replace('"wago_mounts",', '"corner_r",25,"wago_mounts",')
         render(rounded.replace('[-54,0]', '[-54,10]') + 'multi_lipo_pack_lid(pl);', reject=True)
         render('''echo(wago_chassis_mounts([["placement","under"]],undef,[],3)); cube(1);''', reject=True)
         print("PASS invalid fits and colliding placements fail explicitly", flush=True)

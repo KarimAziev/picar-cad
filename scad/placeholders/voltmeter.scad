@@ -370,3 +370,67 @@ voltmeter_from_plist(center=false,
                                         plist_merge(plist_get("wiring",
                                                               voltmeter_default_spec),
                                                     ["path", []])],));
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  voltmeter_mount_props
+  ─────────────────────────────────────────────────────────────────────────────
+  Resolve a surface-mounted meter from its hardware plist.
+  **Parameters:**
+  - `pl`: Voltmeter plist; defaults to the project's meter. `standoff_body_h`
+    is the minimum clearance below its PCB; `wire_d` defaults to 4 mm.
+  **Returns:** `size`, `bolt_spacing`, `bolt_d`, and the actual `standoff_h`.
+  Bounds include the mounting ears and display, centered on XY at Z=0.
+ */
+function voltmeter_mount_props(pl=[]) =
+  let (board = plist_get("placeholder_size", pl,
+                         [voltmeter_board_w, voltmeter_board_len, voltmeter_board_h]),
+       display = plist_get("size", plist_get("display", pl, []),
+                           [voltmeter_display_w, voltmeter_display_len, voltmeter_display_h]),
+       pitch = plist_get("slot_size", pl, voltmeter_bolt_spacing),
+       d = plist_get("d", pl, voltmeter_bolt_dia),
+       pad = plist_get("bolt_padding", pl, 2),
+       h = standoff_real_h(plist_get("standoff_body_h", pl, voltmeter_pin_h), d),
+       size = [max(board[0], display[0], pitch[0] + d + pad),
+               max(board[1], display[1], pitch[1] + d + pad),
+               h + board[2] + display[2]])
+  assert(min(size) > 0 && min(pitch) >= 0 && d > 0,
+         "Voltmeter dimensions must be positive")
+  ["size", size, "bolt_spacing", pitch, "bolt_d", d, "standoff_h", h];
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  voltmeter_mount
+  ─────────────────────────────────────────────────────────────────────────────
+  Render a meter on standoffs or its matching parent mounting cutters.
+  **Parameters:**
+  - `pl`: Hardware plist accepted by voltmeter_mount_props.
+  - `parent_t`: Parent thickness below the Z=0 mounting plane.
+  - `anchor`: Shared equipment-envelope anchor.
+  - `slot_mode`: Emit parent holes, underside countersinks and a wire passage.
+  - `show_hardware`: Display the board, display and standoffs.
+ */
+module voltmeter_mount(pl=[],
+                        parent_t=3,
+                        anchor=[0, 0, 1],
+                        slot_mode=false,
+                        show_hardware=true) {
+  p = voltmeter_mount_props(pl);
+  d = plist_get("bolt_d", p);
+  with_anchor(anchor, plist_get("size", p), centered=true) {
+    if (slot_mode) {
+      translate([0, 0, -parent_t]) {
+        four_corner_children(size=plist_get("bolt_spacing", p), center=true) {
+          counterbore(h=parent_t, d=d + 0.2,
+                      bore_d=d * 2, bore_h=min(parent_t - 0.8, d * 0.6),
+                      sink=true, reverse=true);
+        }
+        cylinder(d=plist_get("wire_d", pl, 4), h=parent_t + 0.1, $fn=32);
+      }
+    } else if (show_hardware) {
+      voltmeter_from_plist(plist_merge(pl,
+        ["wiring", plist_merge(plist_get("wiring", pl, []), ["path", []])]),
+                           center=true, stand_up=true);
+    }
+  }
+}

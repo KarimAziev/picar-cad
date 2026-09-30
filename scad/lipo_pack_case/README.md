@@ -124,12 +124,13 @@ change when rails are enabled.
         "corner_r", "5%",
         "adapter", ["t", 4,
                     "bolt_d", 3,
-                    "corner_r", 3],
+                    "corner_r", 3,
+                    "standoff_h", 4],
         "side_t", 2,
-        "headroom", 10,
+        "headroom", 16.5,
         "color", blue_grey_carbon,
         "lidar", rplidar_c1_plist,
-        "lidar_target_h", 13,
+        "lidar_target_h", 17,
         "vents", ["vent_w", "12%",
                   "vent_h", 2.5,
                   "vent_col_gap", 5,
@@ -180,14 +181,16 @@ Adapter options:
 - `edge_pad`: minimum mounting-feature land/access margin (default 1.5 mm).
 - `access_d`: diameter reserved for straight screw/tool access beneath the
   removed lid (default at least 6 mm and larger than the screw head).
+- `standoff_h`: separate spacer height below the adapter (default zero; the
+  current case preset uses 4 mm).
 - `bolt_l`: countersunk screw's **total length including the head**. The
-  default rounds roof plus plate thickness up to the next even mm. Screws
+  default rounds roof plus spacer plus plate thickness up to the next even mm. Screws
   must engage the full nut and protrude at most 1.5 mm above the plate.
 
-The current preset takes **four M3 × 8 mm countersunk screws and four M3 hex
+The current preset takes **four M3 × 12 mm countersunk screws and four M3 hex
 nuts** for adapter-to-lid attachment. Hex pockets open from the **top** of the
 adapter, leaving a solid shoulder underneath each nut so tightening clamps
-the plate to the roof. Sensor mounting uses the existing M2.5 standoff interface
+the plate and its four spacers to the roof. Sensor mounting uses the existing M2.5 standoff interface
 and underside countersinks on the adapter.
 
 Assembly order:
@@ -196,19 +199,19 @@ Assembly order:
    while handling the separate plate if needed.
 2. Attach the lidar and its standoffs to the adapter, inserting their mounting
    screws through the adapter from below while that face is accessible.
-3. Place the sensor/adapter unit on the removed lid. Install its four M3 screws
-   upward from the lid underside into the captured nuts.
+3. Place the four printed spacers and sensor/adapter unit on the removed lid.
+   Install its four M3 screws upward from the lid underside into the captured nuts.
 4. Slide the complete lid onto the case and fit the transverse rail locks.
 
 `lidar_target_h` remains the minimum sensor-base height **above the roof**.
-The plate thickness is deducted before choosing available standoffs. For the
-preset, the 4 mm plate plus 9 mm standoffs keeps the sensor base 13 mm above
-the roof. Different dimensions can round up to the available standoff sizes.
+The plate and adapter-spacer thicknesses are deducted before choosing sensor
+standoffs. For the preset, 4 mm adapter spacers plus the 4 mm plate and 9 mm
+sensor standoffs keep the sensor base 17 mm above the roof. Different dimensions can round up to the available standoff sizes.
 
 The plain roof, adapter, and their hardware have separate visibility controls.
 Standalone lid printing omits the adapter; print the adapter separately with
 its underside on the bed and nut pockets up. The shared printable entry includes
-all three printed parts. Straight insertion checks supplement final-position
+the case, equipped lid, adapter, four spacers, button bracket, and Wago cradle. Straight insertion checks supplement final-position
 interference tests, addressing the original sensor holes' blocked access near
 the channel skirts.
 
@@ -241,3 +244,113 @@ overriding their 0.4 mm defaults.
 Add bracket specs to `lid.wago_mounts` for mounting holes on the existing roof.
 Positions are canonical roof-center XY offsets, with independent Z rotations.
 See [Wago bracket configuration and examples](../wago/README.md).
+
+## Standalone power case
+
+Open `standalone_assembly.scad` for the assembled case, `lid_example.scad`
+for the equipped lid alone, or `standalone_printable.scad` for the complete
+hardware-free print plate. The arrangement is configured directly in
+`multi_lipo_packs_case` in `../steering_params.scad`, so the regular case assembly,
+lid, and printable entry points use the same equipment and slots.
+`standalone_parameters.scad` provides aliases for the example entry points;
+it does not maintain a separate preset. To omit the equipment, override
+`lid.equipment=[]` and `lid.fuse=undef` in a custom case plist.
+
+The preset includes a concealed **ATM inline fuse holder**, a horizontal toggle
+switch, a Wago cradle, meters in the remaining space, and an optional centered
+lidar adapter. The fuse lies flat beneath the roof, on two shallow bearing pads.
+Two cable ties pass through four roof slots around its body, leaving the cap
+accessible after sliding the lid off. The holder dimensions come from the ATM
+placeholder; this preset does not represent the larger ATC/ATO holder.
+
+`lid.equipment` is an ordered list of component plists:
+
+```scad
+["kind", "button",
+ "component", toggle_switch_bracket_plist,
+ "placement", "right",
+ "rotation", 180]
+
+["kind", "wago",
+ "component", [],
+ "placement", "left",
+ "rotation", -90]
+
+["kind", "voltmeter",
+ "component", voltmeter_default_spec,
+ "placement", "auto",
+ "count", "fit"]
+```
+
+- `placement` accepts `auto`, `left`, `right`, `front`, or `rear`. These refer
+  to canonical lid axes: left/right are −X/+X and rear/front are −Y/+Y.
+  Placements rotate with the assembled case; they are not viewport directions.
+- `pos=[x,y]` overrides automatic placement, relative to the roof center.
+  It places the component's mounting datum, not the center of an asymmetric
+  hardware envelope. `rotation` is applied about this datum before translation.
+- `gap` is the minimum edge-to-edge clearance, default 1 mm.
+- `enabled=false` omits both equipment and its holes.
+- `count="fit"` repeats a component until no further copy fits. Put these
+  entries last. The default roof has room for one meter alongside the lidar.
+  With `lid.lidar=undef`, the lidar and adapter holes disappear and meters
+  repack around the fuse retaining ties. Omitting the fuse frees that area for
+  additional meters. Omit `count` to require exactly one component.
+
+The solver tests roof and obstacle boundaries in list order; it is a
+conservative rectangular packing strategy, not an exhaustive nesting solver.
+A requested placement that cannot fit reports an assertion. It checks the
+rounded roof outline, component envelopes, and underside tool access between
+rail skirts. The switch lever may overhang a roof edge, as in the illustration;
+its sweep is still reserved against other equipment. Its base, terminals, and
+wire opening stay on the roof. All positions use component dimensions rather
+than offsets derived from the battery's nominal size.
+
+Mounting holes use underside countersinks. Wiring has separate passages beneath
+the switch terminals, beneath each meter, and between the Wago's mounting ears.
+The Wago passage is outside the connector's occupied tray. `wire_size` in the
+button component changes its rectangular wiring opening. `terminal_extension`
+reserves extra length for terminal attachments without changing the measured
+switch placeholder or opening size. The current button mount sets it to one
+terminal length (9.7 mm), allowing terminals and attachments totaling 19.4 mm.
+This moves the bracket 9.7 mm toward −Y while the wiring opening retains its
+previous roof position. `wire_d` in a Wago
+mount or meter component changes that component's round passage.
+
+`lid.fuse` accepts `holder` (the ATM hardware plist), `pos`, `rotation`,
+`clearance` (default 1 mm), and `tie_size=[width,thickness]` (default `[3,1.2]`).
+The holder must fit between the skirts and above the battery, and its tie slots
+must clear mounting holes and roof equipment. Set `lid.fuse=undef` or
+`enabled=false` to omit its slots and bearing pads. Retaining-tie heads should
+sit below the lid, beside the holder. Route the internal wires with enough slack
+for lid removal; the assembly preview shows hardware and passages, not a routed
+wiring harness.
+
+The adapter's `standoff_h` sets the height of four separate printed spacers.
+The standalone preset uses 4 mm, with 12 mm M3 countersunk adapter screws;
+spacer centers, bores, and screw lengths derive from the adapter's mounting
+interface. The plate keeps its existing captive nuts. `lidar_target_h` measures
+the sensor base height above the roof, including the spacers and adapter.
+The print plate includes the case, equipped lid, adapter, four spacers, switch
+bracket, and Wago cradle. The meter and fuse holder are purchased hardware.
+
+For example, swap the switch and Wago sides without hand-positioning them:
+
+```scad
+swapped = [
+  plist_merge(standalone_lid_equipment[0],
+              ["placement", "left", "rotation", 0]),
+  plist_merge(standalone_lid_equipment[1],
+              ["placement", "right", "rotation", 90]),
+  standalone_lid_equipment[2]
+];
+custom_case = plist_merge(standalone_lipo_case,
+  ["lid", plist_merge(plist_get("lid", standalone_lipo_case),
+                      ["equipment", swapped])]);
+multi_lipo_pack_case_assembly(custom_case);
+```
+
+The switch bracket also exposes `button_bracket_props(pl)` with its printed
+`size`, installed `bounds`, mounting holes, and wire opening. Its `slot_mode`
+uses the same anchors and orientation as the solid and cuts downward through
+`parent_thickness`. The standalone bracket print entry point is
+`../components/button_bracket/printable.scad`.

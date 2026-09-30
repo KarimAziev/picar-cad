@@ -33,6 +33,7 @@ use <../placeholders/nut.scad>
   the lid-side center spacing in canonical XY. Auto uses the sensor spacing
   along the rails and at most 65% across them, reduced to preserve access and
   separation from the sensor countersinks.
+  `standoff_h` raises the plate on separate printed spacers (default zero).
   `bolt_l` is the total countersunk screw length, including its head; its
   default rounds the combined roof/plate thickness up to the next even mm.
   `lid`: Resolved lid properties, before adding `adapter_props`.
@@ -68,7 +69,8 @@ function multi_lipo_pack_adapter_props(spec, lid) =
        sensor_d = plist_get("bolt_d", sensor),
        sensor_head_r = (find_bolt_head_d(sensor_d, "countersunk") + 0.2)/2,
        roof_t = plist_get("t", lid),
-       bolt_l = plist_get("bolt_l", spec, 2*ceil((roof_t + t)/2)),
+       gap = plist_get("standoff_h", spec, 0),
+       bolt_l = plist_get("bolt_l", spec, 2 * ceil((roof_t + gap + t) / 2)),
        rails = plist_get("rail_props", lid),
        cross = plist_get("axis", rails) == "x" ? 1 : 0,
        pattern_half = pitch[cross]/2,
@@ -96,7 +98,8 @@ function multi_lipo_pack_adapter_props(spec, lid) =
               "Adapter mounting pattern must leave screw-head access between the skirts")
        assert(roof_t >= find_bolt_head_h(d,"countersunk") + 0.2,
               "Lid roof is too thin for the adapter countersinks")
-       assert(bolt_l >= roof_t + t - 0.1 && bolt_l <= roof_t + t + 1.5,
+       assert(gap >= 0 && bolt_l >= roof_t + gap + t - 0.1
+              && bolt_l <= roof_t + gap + t + 1.5,
               "Adapter screws must engage the whole nut and extend at most 1.5 mm above the plate")
        assert(min([for (p=holes) min(p[cross] + offset[cross]-inner[0], inner[1]-p[cross]-offset[cross])])
               >= access_d/2 + edge - 0.000001,
@@ -115,7 +118,7 @@ function multi_lipo_pack_adapter_props(spec, lid) =
               "Adapter footprint must fit the lid roof")
        ["enabled", true, "size", concat(dims,[t]), "corner_r", r,
         "holes", holes, "sensor_holes", sensor_holes, "sensor_d", sensor_d,
-        "bolt_d", d, "bolt_l", bolt_l, "roof_t", roof_t, "clearance", clearance,
+        "bolt_d", d, "bolt_l", bolt_l, "roof_t", roof_t, "standoff_h", gap, "clearance", clearance,
         "nut_h", nut_h, "nut_z", t-nut_h-0.2, "nut_d", nut_d, "pocket_d", pocket_d,
         "access_d", access_d, "offset", offset];
 
@@ -217,7 +220,7 @@ module multi_lipo_pack_adapter(props,
                   h=plist_get("nut_h", props),
                   show_text=false);
             }
-            translate(concat(p,[-plist_get("roof_t", props)])) {
+            translate(concat(p,[-plist_get("roof_t", props) - plist_get("standoff_h", props, 0)])) {
               bolt(d=d,
                    h=plist_get("bolt_l", props)-find_bolt_head_h(d,"countersunk"),
                    head_type="countersunk",
@@ -246,4 +249,29 @@ module multi_lipo_pack_adapter(props,
  */
 module multi_lipo_pack_adapter_printable(props, anchor=[0, 0, 1]) {
   multi_lipo_pack_adapter(props, anchor=anchor);
+}
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  multi_lipo_pack_adapter_spacers
+  ─────────────────────────────────────────────────────────────────────────────
+  Render four separate through-bored spacers below the adapter plate.
+  **Parameters:**
+  - `props`: Resolved adapter properties; the spacer bottoms are at Z=0.
+ */
+module multi_lipo_pack_adapter_spacers(props) {
+  h = plist_get("standoff_h", props, 0);
+  if (plist_get("enabled", props, false) && h > 0) {
+    for (p = plist_get("holes", props)) {
+      translate(concat(p, [0])) {
+        difference() {
+          cylinder(d=plist_get("pocket_d", props), h=h, $fn=48);
+          translate([0, 0, -0.01]) {
+            cylinder(d=plist_get("bolt_d", props) + plist_get("clearance", props),
+                     h=h + 0.02, $fn=40);
+          }
+        }
+      }
+    }
+  }
 }
