@@ -245,7 +245,7 @@ module button_bracket(plist,
         }
         toggle_switch_counterbore(thread_d=thread_d,
                                   nut_d=nut_d,
-                                  reverse=true,
+                                  reverse=false,
                                   sink=true,
                                   center=true,
                                   nut_bore_h=nut_bore_h,
