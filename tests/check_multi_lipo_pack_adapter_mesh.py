@@ -49,9 +49,9 @@ def main() -> None:
         close(bounds(vertices(mesh))[0],[-27.8,-27.8,0])
         close(bounds(vertices(mesh))[1],[27.8,27.8,4])
         render("multi_lipo_pack_printable();")
-        assert connected_components(mesh)==9
+        assert connected_components(mesh)==10
         close([bounds(vertices(mesh))[0][2]],[0])
-        print("PASS: adapter is one solid on the bed; combined layout has nine separate parts",flush=True)
+        print("PASS: adapter is one solid on the bed; combined layout has ten separate parts",flush=True)
 
         render('''intersection() {
  adapter();

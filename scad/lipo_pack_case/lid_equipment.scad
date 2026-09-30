@@ -16,6 +16,7 @@ use <../lib/transforms.scad>
 use <../placeholders/bolt.scad>
 use <../placeholders/voltmeter.scad>
 use <../wago/wago_bracket.scad>
+use <../wago/wago_pair.scad>
 use <../wago/wago_mounts.scad>
 
 // Rear-ear brackets leave a free wiring land between the mounting ears.
@@ -54,26 +55,30 @@ function _lid_roof_contains(b, size, r) =
   ─────────────────────────────────────────────────────────────────────────────
   Return rotated equipment bounds and shared mounting information.
   **Parameters:**
-  - `spec`: `kind` is "button", "wago" or "voltmeter"; `component` holds
+  - `spec`: `kind` is "button", "wago", "wago_pair" or "voltmeter"; `component` holds
     that component's plist. `rotation` rotates its local frame about Z.
   **Returns:**
   `bounds` includes installed hardware; `roof_bounds` includes mounting and
-  wire openings. The switch lever alone may extend past the roof edge.
+  wire openings. Switch levers and a Wago pair's explicitly allowed cradle
+  overhang may extend past the roof edge; their full bounds exclude neighbors.
  */
 function lid_equipment_props(spec) =
   let (kind = plist_get("kind", spec),
        pl = plist_get("component", spec, []),
        a = plist_get("rotation", spec, 0))
-  assert(kind == "button" || kind == "wago" || kind == "voltmeter",
+  assert(kind == "button" || kind == "wago" || kind == "wago_pair"
+         || kind == "voltmeter",
          str("Unknown lid equipment: ", kind))
   assert(is_num(a), "Equipment rotation must be numeric")
   let (p = kind == "button" ? button_bracket_props(pl)
-           : kind == "wago" ? wago_bracket_props(pl) : voltmeter_mount_props(pl),
+           : kind == "wago" ? wago_bracket_props(pl)
+           : kind == "wago_pair" ? wago_pair_props(pl) : voltmeter_mount_props(pl),
        size = plist_get("size", p),
        b = kind == "button" ? plist_get("bounds", p)
            : _wago_bounds([0, 0, 0], size),
        roof = kind == "button"
-           ? [[b[0][0], b[0][1], 0], [b[1][0], size[1] / 2, size[2]]] : b,
+           ? [[b[0][0], b[0][1], 0], [b[1][0], size[1] / 2, size[2]]]
+           : kind == "wago_pair" ? plist_get("roof_bounds", p) : b,
        result = plist_merge(spec, ["bounds", _lid_rotate_bounds(b, a),
                                    "roof_bounds", _lid_rotate_bounds(roof, a),
                                    "props", p]),
@@ -88,19 +93,22 @@ function _lid_equipment_cuts(p) =
        props = plist_get("props", p),
        size = plist_get("size", props),
        pl = plist_get("component", p, []),
-       holes = kind == "button" ? plist_get("mount_holes", props)
+       holes = kind == "button" || kind == "wago_pair"
+           ? plist_get("mount_holes", props)
            : kind == "wago" ? [for (xy = plist_get("mount_holes", props))
                                   xy - [size[0] / 2, size[1] / 2]]
            : [for (x = [-1, 1], y = [-1, 1])
                  [x * plist_get("bolt_spacing", props)[0] / 2,
                   y * plist_get("bolt_spacing", props)[1] / 2]],
        d = kind == "button" ? plist_get("bore_d", pl, 6.4)
+           : kind == "wago_pair" ? plist_get("bore_d", props)
            : kind == "wago" ? find_bolt_head_d(plist_get("bolt_d", props), "countersunk") + 0.3
            : plist_get("bolt_d", props) * 2,
        wire_d = plist_get("wire_d", kind == "wago" ? p : pl, 4),
        wire_pos = kind == "button" ? plist_get("wire_pos", props)
            : kind == "wago" ? _lid_wago_wire(props) : [0, 0],
-       wire_size = kind == "button" ? concat(plist_get("wire_size", props), [0])
+       wire_size = kind == "button" || kind == "wago_pair"
+           ? concat(plist_get("wire_size", props), [0])
            : [wire_d, wire_d, 0],
        cuts = concat([for (xy = holes) _wago_bounds(concat(xy, [0]), [d, d, 0])],
                      [_wago_bounds(concat(wire_pos, [0]), wire_size)]))
@@ -121,6 +129,11 @@ function _lid_cut_access(cuts, pos, lid) =
   len([for (b = cuts)
          if (b[0][cross] + pos[cross] < limits[1] - 0.000001
              || b[1][cross] + pos[cross] > limits[2] + 0.000001) 1]) == 0;
+
+// Available edge at both corners of a rectangular footprint on a rounded roof.
+function _lid_edge_limit(cross_min, cross_max, span, cross_span, r) =
+  let (d = max(0, max(abs(cross_min), abs(cross_max)) - cross_span / 2 + r))
+  span / 2 - r + sqrt(max(0, r * r - d * d));
 
 function _lid_equipment_place(spec, lid, obstacles) =
   let (p = lid_equipment_props(spec),
@@ -146,9 +159,17 @@ function _lid_equipment_place(spec, lid, obstacles) =
                                                o[1][1] - b[0][1] + gap]]),
        candidates = !is_undef(pos) ? [pos]
            : mode == "left" || mode == "right"
-           ? [for (y = ys) [mode == "left" ? lo[0] : hi[0], y]]
+           ? [for (y = ys)
+                let (edge = _lid_edge_limit(y + roof[0][1] - gap,
+                                           y + roof[1][1] + gap, size[0], size[1], r))
+                [mode == "left" ? max(lo[0], -edge - roof[0][0] + gap)
+                 : min(hi[0], edge - roof[1][0] - gap), y]]
            : mode == "front" || mode == "rear"
-           ? [for (x = xs) [x, mode == "front" ? hi[1] : lo[1]]]
+           ? [for (x = xs)
+                let (edge = _lid_edge_limit(x + roof[0][0] - gap,
+                                           x + roof[1][0] + gap, size[1], size[0], r))
+                [x, mode == "front" ? min(hi[1], edge - roof[1][1] - gap)
+                 : max(lo[1], -edge - roof[0][1] + gap)]]
            : [for (x = xs, y = ys) [x, y]],
        fits = [for (xy = candidates)
            if (_lid_roof_contains(_lid_move_bounds(roof, xy, gap), size,
@@ -227,6 +248,9 @@ module lid_equipment(mounts, parent_t, slot_mode=false, show_hardware=true) {
         if (kind == "button") {
           button_bracket(pl, parent_thickness=parent_t,
                          slot_mode=slot_mode, show_button=show_hardware);
+        } else if (kind == "wago_pair") {
+          wago_pair(pl, parent_t=parent_t, slot_mode=slot_mode,
+                     show_wago=show_hardware);
         } else if (kind == "voltmeter") {
           voltmeter_mount(pl, parent_t=parent_t, slot_mode=slot_mode,
                           show_hardware=show_hardware);
@@ -242,8 +266,8 @@ module lid_equipment(mounts, parent_t, slot_mode=false, show_hardware=true) {
             }
           }
           // Accessible wire passage beside the connector cradle.
-          translate(concat(_lid_wago_wire(p), [-parent_t])) {
-            cylinder(d=plist_get("wire_d", m, 4), h=parent_t + 0.1, $fn=32);
+          translate(concat(_lid_wago_wire(p), [-parent_t - 0.01])) {
+            cylinder(d=plist_get("wire_d", m, 4), h=parent_t + 0.02, $fn=32);
           }
         } else {
           wago_bracket(pl, anchor=[0, 0, 1], show_wago=show_hardware);

@@ -1,7 +1,7 @@
 /**
   * Module: Standalone power lid with geometrically placed equipment.
   *
-  * Configure components and placement in standalone_parameters.scad.
+  * Configure components and placement in ../steering_params.scad.
   * The exterior roof face is Z=0; the fuse holder is concealed below it.
   *
   * Author: Karim Aziiev <karim.aziiev@gmail.com>

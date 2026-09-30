@@ -10,16 +10,17 @@ use <../scad/lipo_pack_case/lid_equipment.scad>
 use <../scad/lipo_pack_case/lid_fuse.scad>
 use <../scad/lipo_pack_case/multi_lipo_pack_lid.scad>
 use <../scad/components/button_bracket/button_bracket.scad>
+use <../scad/wago/wago_pair.scad>
 
 assert(standalone_lipo_case == multi_lipo_packs_case);
 assert(standalone_lid_equipment == plist_get("equipment", plist_get("lid", multi_lipo_packs_case)));
 lid = multi_lipo_pack_lid_props(standalone_lipo_case);
 spec = plist_get("lid", standalone_lipo_case);
 mounts = lid_equipment_layout(plist_get("equipment", spec), lid);
-assert(len(mounts) == 3);
-assert(plist_get("pos", mounts[0])[0] > 0);
-assert(plist_get("pos", mounts[1])[0] < 0);
-assert(plist_get("pos", mounts[2])[0] < 0);
+assert(len(mounts) == 2);
+assert(plist_get("pos", mounts[0])[0] < 0);
+assert(plist_get("pos", mounts[1])[0] > 0);
+assert(plist_get("kind", mounts[1]) == "wago_pair");
 assert(plist_get("canonical_size", lid)
        == plist_get("canonical_size", multi_lipo_pack_lid_props(multi_lipo_packs_case)));
 assert(plist_get("adapter_gap", lid) == 4);
@@ -32,14 +33,13 @@ echo("PASS: standalone equipment fits the unchanged roof with centered raised ad
 
 // Swapping sides changes component placement without moving mechanical datums.
 swapped = [plist_merge(standalone_lid_equipment[0],
-                       ["placement", "left", "rotation", 0]),
+                       ["placement", "right", "rotation", 180]),
            plist_merge(standalone_lid_equipment[1],
-                       ["placement", "right", "rotation", 90]),
-           standalone_lid_equipment[2]];
+                       ["placement", "left", "rotation", 0])];
 mirrored = lid_equipment_layout(swapped, lid);
-assert(len(mirrored) == 3);
-assert(plist_get("pos", mirrored[0])[0] < 0);
-assert(plist_get("pos", mirrored[1])[0] > 0);
+assert(len(mirrored) == 2);
+assert(plist_get("pos", mirrored[0])[0] > 0);
+assert(plist_get("pos", mirrored[1])[0] < 0);
 fixed = lid_equipment_layout([for (m = mounts)
   plist_merge(m, ["pos", plist_get("pos", m), "count", 1])], lid);
 assert([for (m = fixed) plist_get("pos", m)] == [for (m = mounts) plist_get("pos", m)]);
@@ -49,8 +49,11 @@ echo("PASS: swapped sides and explicit XY placements use shared geometry");
 plain = plist_merge(standalone_lipo_case,
   ["lid", plist_merge(spec, ["lidar", undef, "fuse", undef])]);
 plain_props = multi_lipo_pack_lid_props(plain);
-more = lid_equipment_layout(standalone_lid_equipment, plain_props);
-assert(len(more) > len(mounts));
+meter_specs = plist_get("meter", multi_lipo_lid_equipment_presets);
+meter_mounts = lid_equipment_layout(meter_specs, lid);
+assert(len(meter_mounts) == 3);
+more = lid_equipment_layout(meter_specs, plain_props);
+assert(len(more) > len(meter_mounts));
 assert(!plist_get("enabled", plist_get("adapter_props", plain_props)));
 assert(len(lid_equipment_layout([["kind", "wago", "enabled", false]], lid)) == 0);
 echo("PASS: optional lidar, disabled equipment and fill-to-fit meters");
@@ -91,3 +94,18 @@ assert(norm(plist_get("pos", button_mount)
 assert(plist_get("wire_size", button_props) == plist_get("wire_size", original_props));
 assert(plist_get("size", button_props) == plist_get("size", original_props));
 echo("PASS: doubled terminal allowance shifts the button by one terminal length and preserves the roof wire slot");
+
+// Pair spacing and opening dimensions follow the selected connector and ears.
+pair = plist_get("props", mounts[1]);
+assert(norm(plist_get("wire_size", pair) - [16.7, 19]) < 0.000001);
+assert(len(plist_get("mount_holes", pair)) == 4);
+wide_pair = wago_pair_props(["spacing", 4]);
+assert(plist_get("wire_size", wide_pair)[1] == plist_get("wire_size", pair)[1] + 2);
+small_pair = wago_pair_props(["bracket", ["wago", ["n", 3, "total_w", 22.7]]]);
+assert(plist_get("wire_size", small_pair)[0] < plist_get("wire_size", pair)[0]);
+assert(plist_get("wire_r", small_pair) <= min(plist_get("wire_size", small_pair)) / 2);
+assert(_lid_roof_contains(plist_get("roof_bounds", mounts[1]),
+                         plist_get("canonical_size", lid), plist_get("corner_r", lid)));
+assert(!_lid_roof_contains(plist_get("bounds", mounts[1]),
+                          plist_get("canonical_size", lid), plist_get("corner_r", lid)));
+echo("PASS: opposing Wagos reserve supported lands and derive their shared opening from hardware");

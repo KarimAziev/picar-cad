@@ -1339,6 +1339,36 @@ basic_vent_spec                                   = ["vent_h", 2,
 
 function merge_vent_spec(pl) = plist_merge(basic_vent_spec, pl);
 
+// Select "dual_wago" for separate power/GND connectors, or "meter" for a display.
+multi_lipo_lid_equipment_preset                   = "dual_wago";
+multi_lipo_lid_button_mount                       = ["kind", "button",
+                                                     "component", plist_merge(toggle_switch_bracket_plist,
+                                                                              ["terminal_extension",
+                                                                               plist_get("terminal_size", button_switch_default_plist)[2]]),
+                                                     "placement", "left",
+                                                     "rotation", 0];
+multi_lipo_lid_equipment_presets                  = ["meter", [multi_lipo_lid_button_mount,
+                                                               ["kind", "wago",
+                                                                "placement", "right",
+                                                                "rotation", 90],
+                                                               ["kind", "voltmeter",
+                                                                "component", voltmeter_default_spec,
+                                                                "placement", "auto",
+                                                                "count", "fit"]],
+                                                     "dual_wago", [multi_lipo_lid_button_mount,
+                                                                   ["kind", "wago_pair",
+                                                                    "component", ["spacing", 2,
+                                                                                  "overhang", 7.9,
+                                                                                  "wire_pad", 1.5,
+                                                                                  "wire_r", 3],
+                                                                    "placement", "right",
+                                                                    "rotation", 0]]];
+multi_lipo_lid_equipment                          = assert(multi_lipo_lid_equipment_preset == "meter"
+                                                            || multi_lipo_lid_equipment_preset == "dual_wago",
+                                                            "Unknown multi-LiPo lid equipment preset")
+                                                     plist_get(multi_lipo_lid_equipment_preset,
+                                                               multi_lipo_lid_equipment_presets);
+
 multi_lipo_packs_case                             = ["lipo_packs", lipo_packs,
                                                      "color", cobalt_blue_metallic,
                                                      "corner_r", 3,
@@ -1352,19 +1382,7 @@ multi_lipo_packs_case                             = ["lipo_packs", lipo_packs,
                                                               "bolt_d", m2_hole_dia],
                                                      "lid", ["t", 3,
                                                              "corner_r", "5%",
-                                                             "equipment", [["kind", "button",
-                                                                            "component", plist_merge(toggle_switch_bracket_plist,
-                                                                                                     ["terminal_extension",
-                                                                                                      plist_get("terminal_size", button_switch_default_plist)[2]]),
-                                                                            "placement", "left",
-                                                                            "rotation", 0],
-                                                                           ["kind", "wago",
-                                                                            "placement", "right",
-                                                                            "rotation", 90],
-                                                                           ["kind", "voltmeter",
-                                                                            "component", voltmeter_default_spec,
-                                                                            "placement", "auto",
-                                                                            "count", "fit"]],
+                                                             "equipment", multi_lipo_lid_equipment,
                                                              "fuse", ["holder", atm_fuse_default_plist],
                                                              "adapter", ["t", 4,
                                                                          "bolt_d", 3,

@@ -10,6 +10,7 @@ use <../lib/plist.scad>
 use <../lib/functions.scad>
 use <../components/button_bracket/button_bracket.scad>
 use <../wago/wago_bracket.scad>
+use <../wago/wago_pair.scad>
 use <lid_equipment.scad>
 use <lid_fuse.scad>
 use <../wago/wago_mounts.scad>
@@ -74,6 +75,8 @@ module multi_lipo_pack_printable(pl=multi_lipo_packs_case, spacing=8) {
                -max(case_size[1], lid_size[1]) / 2 - spacing - size[1] / 2, 0]) {
       if (plist_get("kind", m) == "button") {
         button_bracket(plist_get("component", m), show_button=false);
+      } else if (plist_get("kind", m) == "wago_pair") {
+        wago_pair(plist_get("component", m, []));
       } else {
         wago_bracket(plist_get("component", m, []), anchor=[0, 0, 1]);
       }

@@ -57,8 +57,12 @@ def main() -> None:
                 assert mesh_volume(mesh) < 0.00001, (mesh_volume(mesh), log)
 
         render("multi_lipo_pack_printable(pl);")
-        assert connected_components(mesh) == 9
+        assert connected_components(mesh) == 10
         close([bounds(vertices(mesh))[0][2]], [0])
+        render('''meter_case=plist_merge(pl,["lid",plist_merge(spec,
+  ["equipment",plist_get("meter",multi_lipo_lid_equipment_presets)])]);
+multi_lipo_pack_printable(meter_case);''')
+        assert connected_components(mesh) == 9
         render("multi_lipo_pack_lid_printable(pl);")
         assert connected_components(mesh) == 1
         close([bounds(vertices(mesh))[0][2]], [0])
@@ -84,6 +88,27 @@ def main() -> None:
   multi_lipo_pack_lid(pl,show_lid=false,show_adapter=true,show_bolts=true);
 }''', empty=True)
         print("PASS roof holes align and installed equipment clears lid and fuse", flush=True)
+
+        # The large opening passes through the actual roof without hidden membranes.
+        render('''m=equipment[1];
+wire=plist_get("wire_size",plist_get("props",m));
+intersection() {
+  multi_lipo_pack_lid(pl);
+  translate(concat(plist_get("pos",m),[plist_get("roof_z",p)+plist_get("t",p)/2])) {
+    cube([wire[0]-6,wire[1]-6,plist_get("t",p)+0.02],center=true);
+  }
+}''', empty=True)
+        # Probe both faces slightly beyond the roof: cutters need real overlap.
+        for kind in ("wago", "wago_pair"):
+            render(f'''m=lid_equipment_props(["kind","{kind}"]);
+q="{kind}"=="wago" ? _lid_wago_wire(plist_get("props",m)) : [0,0];
+difference() {{
+  for(z=[-3.005,0.005]) {{
+    translate(concat(q,[z])) {{ cube([1,1,0.005],center=true); }}
+  }}
+  lid_equipment([plist_merge(m,["pos",[0,0]])],3,slot_mode=true);
+}}''', empty=True)
+        print("PASS shared wire opening is clear and both Wago cutters overlap both roof faces", flush=True)
 
         render('''no_sensor=plist_merge(pl,["lid",plist_merge(spec,["lidar",undef])]);
 multi_lipo_pack_lid_printable(no_sensor);''')
