@@ -1,3 +1,10 @@
+/**
+  * Module: T-Plug placeholders
+  *
+  * Author: Karim Aziiev <karim.aziiev@gmail.com>
+  * License: GPL-3.0-or-later
+  */
+
 include <../colors.scad>
 
 use <../lib/debug.scad>
@@ -14,12 +21,20 @@ t_plug_depth          = 5;
 t_plug_hole_l         = 5.2;
 t_plug_hole_w         = 2.9;
 
+t_plug_male_body_l    = 6.5;
+
+t_plug_male_body_size = [t_plug_body_size[0],
+                         t_plug_male_body_l,
+                         t_plug_body_size[2],
+                         t_plug_body_size[3]];
+
 module t_plug_female(body_size=t_plug_body_size,
                      color="#96484D",
                      t_plug_depth=t_plug_depth,
                      t_plug_hole_w=t_plug_hole_w,
                      t_plug_hole_l=t_plug_hole_l,
                      anchor=[0, 0, 1],
+                     spin,
                      orientation="wlh") {
   w = body_size[0] / 2;
   plus_h = body_size[2];
@@ -30,15 +45,20 @@ module t_plug_female(body_size=t_plug_body_size,
   with_orientation(from="wlh",
                    to=orientation,
                    anchor=anchor,
-                   size=[w, body_size[1], max(plus_h, minus_h)]) {
+                   size=[w, body_size[1], max(plus_h, minus_h)],
+                   spin=spin) {
     translate([0, -body_size[1] / 2, 0]) {
       translate([-plus_body_size[0] / 2, 0, plus_h / 2]) {
+
         difference() {
           cuboid(size=plus_body_size, anchor=[0, 1, 0], color=color);
           translate([0, -0.1, 0]) {
             cuboid(size=[t_plug_hole_w, t_plug_depth + 0.1, t_plug_hole_l],
                    anchor=[0, 1, 0]);
           }
+        }
+        if ($children > 0) {
+          children(0);
         }
       }
 
@@ -50,9 +70,41 @@ module t_plug_female(body_size=t_plug_body_size,
                    anchor=[0, 1, 0]);
           }
         }
+        if ($children > 1) {
+          children(1);
+        }
       }
     }
   }
 }
 
-t_plug_female(orientation="wlh");
+module t_plug_male(body_size=t_plug_body_size,
+                   color="#96484D",
+                   t_plug_depth=t_plug_depth,
+                   t_plug_hole_w=t_plug_hole_w,
+                   t_plug_hole_l=t_plug_hole_l,
+                   anchor=[0, 0, 1],
+                   spin,
+                   orientation="wlh") {
+  t_plug_female(orientation=orientation,
+                body_size=body_size,
+                spin=spin,
+                anchor=anchor,
+                color=color,
+                t_plug_depth=t_plug_depth,
+                t_plug_hole_w=t_plug_hole_w,
+                t_plug_hole_l=t_plug_hole_l) {
+    cuboid(size=[t_plug_hole_w / 2, t_plug_depth * 2, t_plug_hole_l],
+           anchor=[0, 0, 0],
+           color=metallic_gold_2);
+    cuboid(size=[t_plug_hole_l, t_plug_depth * 2, t_plug_hole_w / 2],
+           anchor=[0, 0, 0],
+           color=metallic_gold_2);
+  }
+}
+
+t_plug_female(orientation="lwh", anchor=[1, 0, 1], spin=180);
+
+translate([-10, 0, 0]) {
+  t_plug_male(orientation="lwh", anchor=[-1, 0, 1]);
+}

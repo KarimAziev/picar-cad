@@ -1329,7 +1329,18 @@ toggle_switch_bracket_plist                       = ["button", button_switch_def
                                                      "d_tolerance", toggle_switch_slot_d_tolerance,
                                                      "side_pad", 4,
                                                      "bolt_pad", 5,
-                                                     "color", white_smoke_1];
+                                                     "color", white_smoke_1,
+                                                     "crimp_terminal", ["props",
+                                                                        ["d", 4.33,
+                                                                         "od", 6.61,
+                                                                         "w", 3.35,
+                                                                         "l", 9.1,
+                                                                         "t", 0.62,
+                                                                         "color", metallic_silver_5,
+                                                                         "insulate", ["color", "#3771E1",
+                                                                                      "l", 10.5,
+                                                                                      "d", 5.9]],
+                                                                        "insulate_colors", [red_1, matte_black], "z_offset", 5,]];
 
 basic_vent_spec                                   = ["vent_h", 2,
                                                      "vent_corner_r", "40%",
@@ -1364,10 +1375,10 @@ multi_lipo_lid_equipment_presets                  = ["meter", [multi_lipo_lid_bu
                                                                     "placement", "right",
                                                                     "rotation", 0]]];
 multi_lipo_lid_equipment                          = assert(multi_lipo_lid_equipment_preset == "meter"
-                                                            || multi_lipo_lid_equipment_preset == "dual_wago",
-                                                            "Unknown multi-LiPo lid equipment preset")
+                                                           || multi_lipo_lid_equipment_preset == "dual_wago",
+                                                           "Unknown multi-LiPo lid equipment preset")
                                                      plist_get(multi_lipo_lid_equipment_preset,
-                                                               multi_lipo_lid_equipment_presets);
+                                                     multi_lipo_lid_equipment_presets);
 
 multi_lipo_packs_case                             = ["lipo_packs", lipo_packs,
                                                      "color", cobalt_blue_metallic,
@@ -1429,7 +1440,7 @@ multi_lipo_packs_case                             = ["lipo_packs", lipo_packs,
                                                      "bolt_pad_y", 5,
                                                      "bolt_d", m3_hole_dia,
                                                      "bore_d", front_chassis_bellcrank_bolt_bore_d,
-                                                     "bore_h", front_chassis_bellcrank_bolt_bore_h];
+                                                     "bore_h", front_chassis_bellcrank_bolt_bore_h,];
 
 multi_power_case_props                            = multi_lipo_pack_props(plist=multi_lipo_packs_case);
 multi_power_case_size                             = plist_get("size",

@@ -14,6 +14,7 @@ use <../../lib/plist.scad>
 use <../../lib/shapes3d.scad>
 use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
+use <../../placeholders/crimp_terminals/ring_terminal.scad>
 use <../../placeholders/toggle_switch.scad>
 
 /**
@@ -44,11 +45,10 @@ function button_bracket_props(pl) =
        pitch = wall_w + 2 * plist_get("bolt_pad", pl),
        size = [pitch + 2 * plist_get("side_pad", pl), body[2] + wall_t,
                t + wall_h + plist_get("vertical_top_pad", pl, 0)],
-       lever = toggle_switch_lever_bounds(
-         [plist_get("thread_d", b), plist_get("thread_h", b),
-          plist_get("thread_border_w", b)],
-         [plist_get("lever_dia_1", b), plist_get("lever_dia_2", b),
-          plist_get("lever_h", b)]),
+       lever = toggle_switch_lever_bounds([plist_get("thread_d", b), plist_get("thread_h", b),
+                                           plist_get("thread_border_w", b)],
+                                          [plist_get("lever_dia_1", b), plist_get("lever_dia_2", b),
+                                           plist_get("lever_h", b)]),
        wire = plist_get("wire_size", pl, [body[0] * 0.6, terminal[2] + 2]),
        wire_y = -size[1] / 2 - terminal[2] / 2 - extension,
        half_w = max(size[0] / 2, lever[1][0], wire[0] / 2),
@@ -59,7 +59,8 @@ function button_bracket_props(pl) =
   assert(is_num(extension) && extension >= 0,
          "Button terminal_extension must be nonnegative mm")
   assert(min(size) > 0 && plist_get("bolt_d", pl) > 0
-         && min(wire) > 0, "Button bracket dimensions must be positive")
+         && min(wire) > 0,
+         "Button bracket dimensions must be positive")
   ["size", size, "bounds", bounds, "wire_size", wire,
    "wire_pos", [0, wire_y], "mount_holes", [[-pitch / 2, 0], [pitch / 2, 0]]];
 
@@ -86,6 +87,7 @@ module button_bracket(plist,
                       debug=false,
                       orientation="wlh",
                       show_bracket=true,
+                      show_crimp_terminal=true,
                       show_button=true,
                       slot_mode=false,
                       rotate_z_180=false,
@@ -134,6 +136,16 @@ module button_bracket(plist,
 
   half_w = mount_w / 2;
 
+  crimp_terminal = plist_get("crimp_terminal", plist, []);
+
+  crimp_terminal_plist = plist_get("props", crimp_terminal);
+  insulate_colors = plist_get("insulate_colors", crimp_terminal, []);
+  z_offset = plist_get("z_offset", crimp_terminal, 0);
+
+  crimp_terminal_props = !is_undef(crimp_terminal_plist)
+    ? ring_terminal_props(crimp_terminal_plist)
+    : undef;
+
   pts = [[-vertical_wall_w / 2, -bottom_wall_l],
          [-half_w, -bottom_wall_l / 2 - bolt_d],
          [-half_w, -bottom_wall_l / 2],
@@ -147,6 +159,43 @@ module button_bracket(plist,
 
   // rotated size
   bracket_size = plist_get("size", props);
+
+  module _button() {
+    toggle_switch(size=body_size,
+                  thread_h=thread_h,
+                  thread_d=thread_d,
+                  nut_d=nut_d,
+                  nut_bore_h=nut_bore_h,
+                  lever_dia_1=lever_dia_1,
+                  lever_dia_2=lever_dia_2,
+                  lever_h=lever_h,
+                  terminal_size=terminal_size,
+                  thread_border_w=thread_border_w,
+                  metallic_head_h=metallic_head_h);
+    if (show_crimp_terminal && crimp_terminal_props) {
+      t = plist_get("t", crimp_terminal_props);
+      od = plist_get("od", crimp_terminal_props);
+      insulate = plist_get("insulate", crimp_terminal_props);
+      insulate_color = plist_get("insulate_color", crimp_terminal_props);
+
+      let (half_t = t / 2,
+           half_body_w = body_w / 2,
+           half_terminal_t =  terminal_size[0] / 2,
+           x_poses = [half_body_w + half_terminal_t - half_t - 0.1,
+                      -half_body_w + half_t - half_terminal_t + 0.1]) {
+        for (i = [0 : 1]) {
+          let (merged_insulate = plist_merge(insulate,
+                                             ["color", with_default(insulate_colors[i],
+                                                                    insulate_color)]),
+               merged_pl = plist_merge(crimp_terminal_plist, ["insulate", merged_insulate])) {
+            translate([x_poses[i], 0, od / 2 + z_offset]) {
+              ring_terminal(merged_pl, anchor=[0, 0, -1], spin=90);
+            }
+          }
+        }
+      }
+    }
+  }
 
   module _bottom_wall() {
     if (debug) {
@@ -225,17 +274,7 @@ module button_bracket(plist,
           }
         }
         if (show_button) {
-          toggle_switch(size=body_size,
-                        thread_h=thread_h,
-                        thread_d=thread_d,
-                        nut_d=nut_d,
-                        nut_bore_h=nut_bore_h,
-                        lever_dia_1=lever_dia_1,
-                        lever_dia_2=lever_dia_2,
-                        lever_h=lever_h,
-                        terminal_size=terminal_size,
-                        thread_border_w=thread_border_w,
-                        metallic_head_h=metallic_head_h);
+          _button();
         }
       }
     }
@@ -272,7 +311,8 @@ module button_bracket(plist,
     wire = plist_get("wire_size", props);
     translate(concat(plist_get("wire_pos", props), [-depth - 0.01])) {
       cuboid([wire[0], wire[1], depth + bottom_t + 0.02],
-             anchor=[0, 0, 1], r=min(wire) / 4);
+             anchor=[0, 0, 1],
+             r=min(wire) / 4);
     }
   }
 }
