@@ -209,11 +209,9 @@ dsservo_text                                      = [["20KG", "size", 9,
 dsservo_text_size                                 = 2;
 dsservo_text_plist                                = ["font", "Lucida Grande:style=Bold",
                                                      "text_both_sides", true,
-                                                     "background",
-                                                     ["color",
-                                                      pink_1,
-                                                      "pad_left", -0.1,
-                                                      "pad_right", -0.1,]];
+                                                     "background", ["color", pink_1,
+                                                                    "pad_left", -0.1,
+                                                                    "pad_right", -0.1,]];
 
 dsservo_gearbox_h                                 = 0;
 dsservo_gearbox_size                              = [[1, 12.95, matte_black, 20],
@@ -1227,10 +1225,9 @@ motor_plist                                       = ["body", ["d", 24.3,
                                                                      "hole_d", 2.1,
                                                                      "l", 61.1,
                                                                      "pad_l", 7.2],
-                                                     "gearbox", ["side_ears", ["poses",
-                                                                               [[-21.3, 2.84],
-                                                                                [-26, 29.5],
-                                                                                [11.8, 17.63]],
+                                                     "gearbox", ["side_ears", ["poses", [[-21.3, 2.84],
+                                                                                         [-26, 29.5],
+                                                                                         [11.8, 17.63]],
                                                                                "thickness", 8,
                                                                                "bolt_d", m2_hole_dia,
                                                                                "d", 5],
@@ -1304,7 +1301,8 @@ lipo_pack_base_pl                                 = ["size", [lipo_pack_width,
                                                                               "size", 10,
                                                                               "halign", "center",
                                                                               "gap_before", 10]],
-                                                                   "props", ["halign", "center", "color", "#28282B"]],
+                                                                   "props", ["halign", "center",
+                                                                             "color", "#28282B"]],
                                                      "side_cover", ["bg", "silver"]];
 
 lipo_packs                                        = [lipo_pack_base_pl];
@@ -1332,16 +1330,15 @@ toggle_switch_bracket_plist                       = ["button", button_switch_def
                                                      "side_pad", 4,
                                                      "bolt_pad", 5,
                                                      "color", white_smoke_1,
-                                                     "crimp_terminal", ["props",
-                                                                        ["d", 4.33,
-                                                                         "od", 6.61,
-                                                                         "w", 3.35,
-                                                                         "l", 9.1,
-                                                                         "t", 0.62,
-                                                                         "color", metallic_silver_5,
-                                                                         "insulate", ["color", "#3771E1",
-                                                                                      "l", 10.5,
-                                                                                      "d", 5.9]],
+                                                     "crimp_terminal", ["props", ["d", 4.33,
+                                                                                  "od", 6.61,
+                                                                                  "w", 3.35,
+                                                                                  "l", 9.1,
+                                                                                  "t", 0.62,
+                                                                                  "color", metallic_silver_5,
+                                                                                  "insulate", ["color", "#3771E1",
+                                                                                               "l", 10.5,
+                                                                                               "d", 5.9]],
                                                                         "z_offset", 5]];
 
 basic_vent_spec                                   = ["vent_h", 2,
@@ -1421,7 +1418,8 @@ multi_lipo_packs_case                             = ["lipo_packs", lipo_packs,
                                                                                         "l", "90%",
                                                                                         "corner_r", "20%"]),
                                                                "bottom", ["t", 6.2],
-                                                               "left", merge_vent_spec(["t", 2, "h", "90%"]),
+                                                               "left", merge_vent_spec(["t", 2,
+                                                                                        "h", "90%"]),
                                                      // One continuous outline avoids lips where wiring cutouts met the band.
                                                      // Keep the rim clear of the case's rounded plan-view corners.
                                                                "right", ["t", 2,
@@ -1456,12 +1454,18 @@ chassis_body_min_w                                = multi_power_case_size[0];
 bracket_thickness                                 = 8.5;
 
 gearbox_bracket_bolt_d                            = m3_hole_dia;
-gearbox_bracket_bolt_pad_x                        = 3;
-gearbox_bracket_bolt_pad_y                        = 3;
+gearbox_bracket_bolt_pad_x                        = 2.4;
+gearbox_bracket_bolt_pad_y                        = 2.5;
 gearbox_bracket_ear_bolt_pad                      = 3;
 gearbox_bracket_corner_r                          = 1;
-gearbox_bracket_fillet_x_w                        = 3;
-gearbox_bracket_fillet_y_w                        = 3;
+gearbox_bracket_fillet_x_w                        = 0.5;
+gearbox_bracket_fillet_y_w                        = 0;
+gearbox_bracket_bolt_dist_from_cap                = 2.6;
+
+gearbox_bracket_bolt_dist_y_ear_bolt              = 3.0;
+
+gearbox_bracket_nut_pocket_clearance              = 0.4;
+gearbox_bracket_nut_pocket_h_clearance            = 0.5;
 
 // The wall thickness of the bracket boss; the outer diameter is
 // motor_plist.gearbox.mount_bolt_d + gearbox_bracket_boss_thickness * 2.
@@ -1472,4 +1476,5 @@ gearbox_bracket_motor_carrier_clearance           = 2.0;
 
 gearbox_bracket_boss_pocket_clearance             = 2.0; // Diametral socket allowance
 gearbox_bracket_boss_pocket_depth                 = 2.0;
-gearbox_bracket_boss_pocket_h_clearances          = ["front", 0.1, "rear", 0.2];
+gearbox_bracket_boss_pocket_h_clearances          = ["front", 0.1,
+                                                     "rear", 0.2];

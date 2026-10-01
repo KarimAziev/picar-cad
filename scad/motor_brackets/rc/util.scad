@@ -72,7 +72,10 @@ function gearmotor_bracket_compute_params(plist=motor_plist,
                                           boss_pocket_clearance=gearbox_bracket_boss_pocket_clearance,
                                           boss_pocket_depth=gearbox_bracket_boss_pocket_depth,
                                           boss_h_clearances=gearbox_bracket_boss_pocket_h_clearances,
-                                          motor_carrier_clearance=gearbox_bracket_motor_carrier_clearance) =
+                                          motor_carrier_clearance=gearbox_bracket_motor_carrier_clearance,
+                                          bolt_dist_from_cap=gearbox_bracket_bolt_dist_from_cap,
+                                          nut_pocket_clearance=gearbox_bracket_nut_pocket_clearance,
+                                          bolt_dist_y_ear_bolt=gearbox_bracket_bolt_dist_y_ear_bolt) =
   assert(bolt_d > 0 && bracket_thickness > 0,
          "Bracket hole diameter and thickness must be positive")
   assert(min(bolt_pad_x, bolt_pad_y, ear_bolt_pad, corner_r,
@@ -108,36 +111,37 @@ function gearmotor_bracket_compute_params(plist=motor_plist,
        contact_cup_h = plist_get("h", contact_cup),
        motor_body = plist_get("body", plist),
        body_h = plist_get("h", motor_body),
+       body_h_with_cup = body_h + contact_cup_h,
        motor_body_full_h = rc_motor_body_full_h(plist),
        carrier_w = motor_d - motor_carrier_clearance,
        x_left = motor_outer_shaft_x_spacing + motor_d / 2,
        x_right_1 = mid_bolt_x_center + gearbox_shaft_boss_d / 2,
 
        front_ear_y_end = front_ear_bolt_y_center + mount_cbore_d / 2 + ear_bolt_pad,
-       mid_mount_hole_center_y = front_ear_y_end + bolt_pad_y + bolt_r,
-       front_ear_y_extra_bolt_end = mid_mount_hole_center_y + bolt_r + bolt_pad_y,
+       mid_mount_hole_center_y = front_ear_y_end + bolt_dist_y_ear_bolt + bolt_r,
+       front_ear_y_extra_bolt_end = mid_mount_hole_center_y + bolt_r,
 
+// hole near the motor cap and contacts
+       motor_cap_bolt_left_y = body_h_with_cup
+       + bolt_r
+       + bolt_dist_from_cap,
+       motor_cap_bolt_left_x = -x_left + bolt_r + bolt_pad_x + nut_pocket_clearance,
+       motor_cap_bolt_left = [motor_cap_bolt_left_x,
+                              motor_cap_bolt_left_y],
+       motor_cap_bolt_right = [-x_left + motor_d, motor_body_full_h],
+
+       motor_cap_bolt_right_x = motor_cap_bolt_right[0],
+       motor_cap_bolt_right_x_max = motor_cap_bolt_right_x + bolt_r + bolt_pad_x,
+// hole near gearbox
        rear_bolt_x_left = rear_bolt_pos_x_center - mount_cbore_d / 2,
        rear_bolt_x_left_with_pad = rear_bolt_x_left - ear_bolt_pad,
 
        x_straight_end = -bottom_straight_w - motor_pad,
        x_end = min(rear_bolt_x_left_with_pad, x_straight_end),
 
-       bolt_mount_near_rear_gearbox_left_x = x_end - bolt_pad_x,
-       bolt_mount_near_rear_gearbox_left_x_min = x_end - bolt_pad_x * 2 - bolt_r,
-       rear_ear_bolt_y_end = rear_ear_bolt_y_center - mount_cbore_d / 2
-       - ear_bolt_pad,
-
-// holes near the motor contacts
-       motor_cap_bolt_left = [-x_left + bolt_d, motor_body_full_h],
-       motor_cap_bolt_right = [-x_left + motor_d, motor_body_full_h],
-
-       motor_cap_bolt_left_y = motor_cap_bolt_left[1],
-       motor_cap_bolt_right_y = motor_cap_bolt_right[1],
-
-       motor_cap_bolt_left_x = motor_cap_bolt_left[0],
-       motor_cap_bolt_right_x = motor_cap_bolt_right[0],
-       motor_cap_bolt_right_x_max = motor_cap_bolt_right_x + bolt_r + bolt_pad_x,
+       bolt_mount_near_rear_gearbox_left_x = min(motor_cap_bolt_left_x,
+                                                 x_end - bolt_pad_x),
+       rear_ear_bolt_y_end = rear_ear_bolt_y_center - mount_cbore_d / 2 - ear_bolt_pad,
 
        bracket_gearbox_bolt_right_center = [mid_bolt_x_center,
                                             front_ear_bolt_y_center,
@@ -152,62 +156,40 @@ function gearmotor_bracket_compute_params(plist=motor_plist,
 // holes for mounting on chassis
        bracket_mount_holes = [[mid_bolt_x_center, mid_mount_hole_center_y,
                                "Mid mount hole"],
-                              [bolt_mount_near_rear_gearbox_left_x, rear_ear_bolt_y_center,
-                               "Rear mount bolt", ["rotation", [0, 0, 70]]],
-                              concat(motor_cap_bolt_left,
-                                     ["Back motor bolt left", ["rotation", [0, 0, 90]]]),
-// concat(motor_cap_bolt_right,
-//        ["Back motor bolt right", ["rotation", [0, 0, 90]]])
-                             ],
-
+                              [bolt_mount_near_rear_gearbox_left_x,
+                               rear_ear_bolt_y_center,
+                               "Rear mount bolt", ["rotation", [0, 0, 50]]],
+                              concat(motor_cap_bolt_left, ["Back motor bolt left",
+                                                           ["rotation", [0, 0, 40]]])],
 // holes for gearbox to bracket itself
        gearbox_mount_holes = [bracket_gearbox_bolt_left_center,
                               bracket_gearbox_bolt_right_center],
        all_holes = concat(bracket_mount_holes, gearbox_mount_holes),
 
-       body_h_with_cup = body_h + contact_cup_h,
-
-       motor_d_bolt_pad_x = motor_d + bolt_pad_x,
-
        x_right_bolt_x_end = x_right_1 - mount_ear_boss_d,
-
-       bolt_chassis_x_right = -x_left + motor_d_bolt_pad_x,
+       cap_bolt_y_end = motor_cap_bolt_left_y + bolt_r + bolt_pad_y,
 
        pts = [[x_right_1, 0],
-              [x_right_1, mid_mount_hole_center_y],
-              [x_right_1, front_ear_y_extra_bolt_end],
-              [x_right_bolt_x_end, front_ear_y_extra_bolt_end],
-              [bolt_chassis_x_right, body_h_with_cup],
-              [bolt_chassis_x_right, motor_cap_bolt_right_y - bolt_r],
-              [motor_cap_bolt_right_x_max, motor_cap_bolt_right_y - bolt_r],
-              [motor_cap_bolt_right_x_max, motor_cap_bolt_right_y],
-              [motor_cap_bolt_right_x_max, motor_cap_bolt_right_y
-               + bolt_r + bolt_pad_y],
-              [motor_cap_bolt_left_x,
-               motor_cap_bolt_left_y + bolt_r + bolt_pad_y],
-              [motor_cap_bolt_left_x - bolt_pad_x, motor_cap_bolt_left_y],
-              [-x_left, body_h_with_cup],
-              [-x_left, 0],
-              [x_end, 0],
-              [bolt_mount_near_rear_gearbox_left_x_min, -gearbox_thickness],
-              [bolt_mount_near_rear_gearbox_left_x_min,
-               rear_ear_bolt_y_center - mount_cbore_d / 2],
-              [x_end - bolt_pad_x - bolt_r, rear_ear_bolt_y_end, ["text",
-                                                                  "Rear bolt Y end",
-                                                                  "halign", "right",
-                                                                  "offset_x", -10]],
-              [rear_bolt_pos_x_center + ear_bolt_pad,
-               rear_ear_bolt_y_end],
-
-              [rear_bolt_pos_x_center + mount_cbore_d / 2 + ear_bolt_pad,
-               rear_ear_bolt_y_center - mount_cbore_d / 2],
-              [0, -gearbox_thickness]],
+              [x_right_1, front_ear_y_extra_bolt_end - bolt_r],
+              [x_right_1 - bolt_r, front_ear_y_extra_bolt_end],
+              [x_right_bolt_x_end, front_ear_y_extra_bolt_end + bolt_r],
+              [max(x_right_bolt_x_end, motor_cap_bolt_right_x_max), cap_bolt_y_end],
+              [motor_cap_bolt_left_x, cap_bolt_y_end],
+              [-x_left, cap_bolt_y_end - bolt_r - nut_pocket_clearance],
+              [-x_left, rear_ear_bolt_y_end],
+              [rear_bolt_pos_x_center + mount_cbore_d / 2 + ear_bolt_pad, rear_ear_bolt_y_end]],
 
        pts_2 = [for (v = pts) let (x = v[0], y = v[1])
-                                [x == 0 ? fillet_x_w : x > 0
-                                 ? x + fillet_x_w : x - fillet_x_w,
-                                 y == 0 ? 0 : y > 0
-                                 ? y + fillet_y_w : y - fillet_y_w]],
+                                [x == 0
+                                 ? fillet_x_w
+                                 : x > 0
+                                 ? x + fillet_x_w
+                                 : x - fillet_x_w,
+                                 y == 0
+                                 ? 0
+                                 : y > 0
+                                 ? y + fillet_y_w
+                                 : y - fillet_y_w]],
 
        min_hole_x = polygon_min_x(all_holes),
        max_hole_x = polygon_max_x(all_holes),

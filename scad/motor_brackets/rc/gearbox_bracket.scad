@@ -232,7 +232,11 @@ module gearmotor_bracket(plist,
                          boss_pocket_clearance=gearbox_bracket_boss_pocket_clearance,
                          boss_pocket_depth=gearbox_bracket_boss_pocket_depth,
                          boss_h_clearances=gearbox_bracket_boss_pocket_h_clearances,
-                         show_encoder_sleeve=show_encoder_sleeve) {
+                         show_encoder_sleeve=show_encoder_sleeve,
+                         bolt_dist_from_cap=gearbox_bracket_bolt_dist_from_cap,
+                         nut_pocket_clearance=gearbox_bracket_nut_pocket_clearance,
+                         nut_pocket_h_clearance=gearbox_bracket_nut_pocket_h_clearance,
+                         use_polyhedron=false) {
   resolved = is_undef(params)
     ? gearmotor_bracket_compute_params(plist=plist,
                                        bolt_pad_x=bolt_pad_x,
@@ -248,7 +252,9 @@ module gearmotor_bracket(plist,
                                        boss_pocket_clearance=boss_pocket_clearance,
                                        boss_pocket_depth=boss_pocket_depth,
                                        boss_h_clearances=boss_h_clearances,
-                                       motor_carrier_clearance=motor_carrier_clearance)
+                                       motor_carrier_clearance=motor_carrier_clearance,
+                                       bolt_dist_from_cap=bolt_dist_from_cap,
+                                       nut_pocket_clearance=nut_pocket_clearance)
     : params;
   motor = plist_get("motor", resolved);
   encoder_mount = plist_get("encoder_mount", resolved);
@@ -281,20 +287,15 @@ module gearmotor_bracket(plist,
   max_y = plist_get("max_y", resolved);
 
   magnet_sleeve_mount = plist_get("sleeve", with_default(encoder_mount, []));
-  echo("magnet_sleeve_mount", magnet_sleeve_mount);
 
-  anchor_x_modes = ["holes_center",
-                    [-1, -min_hole_x,
-                     1, -max_hole_x],
-                    "size",
-                    [-1, -min_x,
-                     1, -max_x]];
-  anchor_y_modes = ["holes_center",
-                    [-1, -min_hole_y,
-                     1, -max_hole_y],
-                    "size",
-                    [-1, -min_y,
-                     1, -max_y]];
+  anchor_x_modes = ["holes_center", [-1, -min_hole_x,
+                                     1, -max_hole_x],
+                    "size", [-1, -min_x,
+                             1, -max_x]];
+  anchor_y_modes = ["holes_center", [-1, -min_hole_y,
+                                     1, -max_hole_y],
+                    "size", [-1, -min_y,
+                             1, -max_y]];
 
   total_l = abs(max_y) + abs(min_y);
 
@@ -310,18 +311,24 @@ module gearmotor_bracket(plist,
                      d=resolved_bolt_d,
                      bore_d,
                      bore_h,
-                     sink=false) {
+                     sink=false,
+                     pocket=false) {
+
     for (pair = holes) {
       let (x = pair[0],
            y = pair[1]) {
         translate([x, y, 0]) {
-          counterbore(h=h,
-                      d=d,
-                      sink=sink,
-                      bore_d=bore_d,
-                      bore_h=bore_h,
-                      fn=$preview ? 16 : 300,
-                      reverse=true);
+          if ($children) {
+            children();
+          } else {
+            counterbore(h=h,
+                        d=d,
+                        sink=sink,
+                        bore_d=bore_d,
+                        bore_h=bore_h,
+                        fn=$preview ? 16 : 300,
+                        reverse=true);
+          }
         }
       }
     }
@@ -343,6 +350,7 @@ module gearmotor_bracket(plist,
                     bore_d=mount_cbore_d,
                     bore_h=resolved_bracket_thickness,
                     d=mount_bolt_d);
+
         _slot_holes(holes=bracket_mount_holes,
                     h=slot_h,
                     d=resolved_bolt_d);
@@ -355,11 +363,19 @@ module gearmotor_bracket(plist,
       union() {
         maybe_color(color) {
           union() {
-            loft_slices(pts_2,
-                        pts,
-                        resolved_bracket_thickness,
-                        steps=24,
-                        r=resolved_corner_r);
+            if (use_polyhedron) {
+              loft_polyhedron(pts_2,
+                              pts,
+                              h=resolved_bracket_thickness,
+                              steps=24);
+            } else {
+              loft_slices(pts_2,
+                          pts,
+                          h=resolved_bracket_thickness,
+                          steps=24,
+                          r=resolved_corner_r);
+            }
+
             if (!is_undef(encoder_mount)) {
               land = plist_get("base_extension_bounds", encoder_mount);
               translate(land[0]) {
@@ -412,15 +428,16 @@ module gearmotor_bracket(plist,
                 slot_mode=true,
                 parent_thickness=resolved_bracket_thickness);
 
-      for (pair = bracket_mount_holes) {
-        let (x = pair[0],
-             y = pair[1]) {
-          translate([x, y, 0]) {
-            counterbore(h=resolved_bracket_thickness + outer_shaft_y_center,
+      let (slot_h = resolved_bracket_thickness) {
+        _slot_holes(holes=bracket_mount_holes,
+                    h=slot_h,
+                    d=resolved_bolt_d) {
+          rotate([0, 0, 90]) {
+            pocket_slot(h=slot_h,
+                        h_clearance=nut_pocket_h_clearance,
                         d=resolved_bolt_d,
-                        sink=false,
-                        fn=$preview ? 16 : 300,
-                        reverse=false);
+                        fn=$preview ? 16 : 200,
+                        clearance=nut_pocket_clearance);
           }
         }
       }
@@ -517,4 +534,9 @@ module gearmotor_bracket(plist,
 gearmotor_bracket(plist=motor_plist,
                   anchor_mode="size",
                   anchor=[0, 0, 1],
-                  debug=false);
+                  debug=false,
+                  show_gearbox=false,
+                  show_motor=true,
+                  show_encoder_bracket=false,
+                  show_encoder=false,
+                  use_polyhedron=false);

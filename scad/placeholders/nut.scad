@@ -30,11 +30,7 @@ module nut(d,
     if (show_text) {
       let (txt = with_default(txt, str("M", d)),
            spacing = 0.9,
-           size = h / 2,
-           tm = textmetrics(text=txt,
-                            spacing=spacing,
-                            halign="center",
-                            size=size)) {
+           size = h / 2) {
 
         color(text_color, alpha=1) {
           translate([0,

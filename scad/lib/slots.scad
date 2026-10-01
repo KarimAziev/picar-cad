@@ -5,6 +5,7 @@
  * License: GPL-3.0-or-later
  */
 
+use <../placeholders/bolt.scad>
 use <functions.scad>
 use <plist.scad>
 use <shapes2d.scad>
@@ -248,7 +249,8 @@ module counterbore(h,
                    reverse=false,
                    teardrop_angle,
                    teardrop_both_sides=false,
-                   print_sink_angle=false) {
+                   print_sink_angle=false,
+                   cbore_fn) {
 
   is_teardrop = !is_undef(teardrop_angle) && teardrop_angle != 0;
   inhibit_bore = is_no_bore(no_bore=no_bore, bore_h=bore_h, bore_d=bore_d);
@@ -256,6 +258,8 @@ module counterbore(h,
   bore_r = (is_undef(bore_d) ? d * 2.8 : bore_d) / 2;
   auto_scale = !is_undef(autoscale_step) && autoscale_step != 0;
   cbore_h = auto_scale ? bore_h + autoscale_step : bore_h;
+
+  cbore_fn = with_default(cbore_fn, fn);
 
   max_d = inhibit_bore ? d : bore_r * 2;
 
@@ -308,7 +312,7 @@ module counterbore(h,
                    r1=r1,
                    r2=r2,
                    center=false,
-                   $fn=fn);
+                   $fn=cbore_fn);
         }
       }
     } else {
@@ -323,7 +327,7 @@ module counterbore(h,
         cylinder(h=cbore_h,
                  r=bore_r,
                  center=false,
-                 $fn=fn);
+                 $fn=cbore_fn);
       }
     }
   }
@@ -834,8 +838,11 @@ module pcb_mount_slots(props, parent_t) {
   assert(parent_t > 0.8, "PCB parent must leave material above screw recesses");
   translate([0, 0, -parent_t]) {
     four_corner_children(size=plist_get("bolt_spacing", props), center=true) {
-      counterbore(h=parent_t, d=d + 0.2, bore_d=2 * d,
-                  bore_h=min(parent_t - 0.8, d * 0.6), reverse=true);
+      counterbore(h=parent_t,
+                  d=d + 0.2,
+                  bore_d=2 * d,
+                  bore_h=min(parent_t - 0.8, d * 0.6),
+                  reverse=true);
     }
     if (wire_d > 0) {
       translate([0, 0, -0.1]) {
@@ -843,4 +850,42 @@ module pcb_mount_slots(props, parent_t) {
       }
     }
   }
+}
+
+module pocket_slot(h,
+                   d,
+                   bore_d,
+                   bore_h,
+                   clearance,
+                   h_clearance,
+                   center=true,
+                   sink=false,
+                   fn=60,
+                   no_bore=false,
+                   autoscale_step=0.1,
+                   reverse=false,
+                   teardrop_angle,
+                   teardrop_both_sides=false,
+                   print_sink_angle=false) {
+  nut_spec = with_default(find_nut_spec(inner_d=d), []);
+
+  clearance = with_default(clearance, 0.3);
+  h_clearance = with_default(clearance, 0.3);
+  bore_d = with_default(bore_d, plist_get("outer_dia", nut_spec));
+  bore_h = with_default(bore_h, plist_get("height", nut_spec));
+
+  counterbore(h=h,
+              d=d,
+              bore_d=is_undef(bore_d) ? bore_d : bore_d + clearance,
+              bore_h=is_undef(bore_h) ? bore_h : bore_h + h_clearance,
+              center=center,
+              cbore_fn=6,
+              sink=sink,
+              fn=fn,
+              no_bore=no_bore,
+              autoscale_step=autoscale_step,
+              reverse=reverse,
+              teardrop_angle=teardrop_angle,
+              teardrop_both_sides=teardrop_both_sides,
+              print_sink_angle=print_sink_angle);
 }

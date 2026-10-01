@@ -224,9 +224,10 @@ module multi_lipo_pack_adapter(props,
                  $fn=40);
       }
       translate(concat(p, [plist_get("nut_z", props)])) {
-        cylinder(d=plist_get("pocket_d", props),
-                 h=plist_get("nut_h", props) + 0.24,
-                 $fn=6);
+        echo("pocket_d", plist_get("pocket_d", props))
+          cylinder(d=plist_get("pocket_d", props),
+                   h=plist_get("nut_h", props) + 0.24,
+                   $fn=6);
       }
     }
   }
@@ -252,7 +253,7 @@ module multi_lipo_pack_adapter(props,
             translate(concat(p, [-plist_get("roof_t", props)
                                  - plist_get("standoff_h", props, 0)])) {
               bolt(d=d,
-                   h=plist_get("bolt_l", props)-find_bolt_head_h(d,"countersunk"),
+                   h=plist_get("bolt_l", props) - find_bolt_head_h(d,"countersunk"),
                    head_type="countersunk",
                    reverse=true,
                    threaded=false,
