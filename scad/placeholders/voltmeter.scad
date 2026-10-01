@@ -304,7 +304,8 @@ module voltmeter_from_plist(plist,
   hide_board = plist_get("hide_board", plist, false);
   hide_display = plist_get("hide_display", plist, false);
 
-  slot_plist = plist_merge(["d", bolt_dia,
+  slot_plist = plist_merge(["slot_size", slot_size,
+                            "d", bolt_dia,
                             "bore_d", bolt_dia * 2,
                             "bore_h", thickness / 2],
                            plist_merge(plist, ["h", thickness]));
@@ -391,8 +392,15 @@ function voltmeter_mount_props(pl=[]) =
        d = plist_get("d", pl, voltmeter_bolt_dia),
        pad = plist_get("bolt_padding", pl, 2),
        h = standoff_real_h(plist_get("standoff_body_h", pl, voltmeter_pin_h), d),
-       size = [max(board[0], display[0], pitch[0] + d + pad),
-               max(board[1], display[1], pitch[1] + d + pad),
+       wiring = plist_get("wiring", pl, []),
+       wire_r = plist_get("d", wiring, 3) / 2,
+       wire_y = board[1] / 2 - wire_r
+                - plist_get("distance", wiring, voltmeter_wiring_distance),
+       wire_y2 = wire_y - 2 * wire_r
+                 - plist_get("gap", wiring, voltmeter_wiring_gap),
+       size = [max(board[0] + 0.4 * wire_r, display[0], pitch[0] + d + pad),
+               max(board[1], display[1], pitch[1] + d + pad,
+                   2 * (max(abs(wire_y), abs(wire_y2)) + 1.2 * wire_r)),
                h + board[2] + display[2]])
   assert(min(size) > 0 && min(pitch) >= 0 && d > 0,
          "Voltmeter dimensions must be positive")

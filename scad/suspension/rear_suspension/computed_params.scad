@@ -19,6 +19,7 @@ use <../../placeholders/standoff.scad>
 use <../../wago/wago_mounts.scad>
 use <../front_chassis/layout_params.scad>
 use <../rear_chassis/rear_payload.scad>
+use <../rear_chassis/rear_equipment.scad>
 
 function _rear_bounds_overlap(a, b) =
   a[0][0] < b[1][0] - 0.000001 && a[1][0] > b[0][0] + 0.000001
@@ -92,6 +93,10 @@ function _rear_panel_layout(specs,
 
   - `wago_mounts`: Optional Wago mounting specs for wago_chassis_mounts.
     Brackets may extend the joining edge; battery mounting holes stay fixed.
+  - `equipment`: Independent deck component plists; [] leaves both zones empty.
+  - `equipment_edge_margin`: Inset from the existing deck edges and taper.
+  - `equipment_gap`: Separation from hardware and clearance beneath the case.
+    Equipment never changes chassis dimensions or the battery mounting height.
 
   **Returns:**
   A plist in holder-row coordinates, with Z=0 below the plate. `size` and
@@ -116,7 +121,10 @@ function rear_suspension_layout(bracket=gearmotor_bracket_compute_params(motor_p
                                 lidar_plist=rear_lidar_plist,
                                 min_width=front_chassis_required_width(),
                                 control_outside=rear_control_outside_case,
-                                wago_mounts=rear_wago_mounts) =
+                                wago_mounts=rear_wago_mounts,
+                                equipment=rear_equipment_specs,
+                                equipment_edge_margin=rear_equipment_edge_margin,
+                                equipment_gap=rear_equipment_gap) =
   assert(side == "auto" || side == "left" || side == "right",
          "panel_stack_side must be auto, left or right")
   assert(orientation == "wlh" || orientation == "lwh",
@@ -250,7 +258,7 @@ function rear_suspension_layout(bracket=gearmotor_bracket_compute_params(motor_p
        assert(rear_suspension_chassis_transition_len > 0
               && transition_y_start > transition_y_end,
               "Motor/panel placement overlaps the suspension transition; move it toward -Y")
-       ["bulkhead_1_y", bh_1,
+       let (base_layout = ["bulkhead_1_y", bh_1,
         "bulkhead_2_y", bh_2,
         "rect_y", rect_y,
         "maintenance_y", maintenance_y,
@@ -283,7 +291,15 @@ function rear_suspension_layout(bracket=gearmotor_bracket_compute_params(motor_p
         "panel_size", panel_size,
         "panel_bounds", plist_get("bounds", first),
         "candidate_half_widths", candidate_half_widths,
-        "max_half_w", max_half_w];
+        "max_half_w", max_half_w])
+       assert(equipment_edge_margin >= rear_suspension_chassis_corner_r,
+              "Equipment edge margin must cover the rounded deck corners")
+       plist_merge(base_layout,
+                   ["equipment_zones", rear_equipment_zones(base_layout,
+                                       equipment_edge_margin, equipment_gap),
+                    "equipment_gap", equipment_gap,
+                    "equipment", rear_equipment_layout(equipment, base_layout,
+                                   equipment_edge_margin, equipment_gap)]);
 
 /**
   ─────────────────────────────────────────────────────────────────────────────

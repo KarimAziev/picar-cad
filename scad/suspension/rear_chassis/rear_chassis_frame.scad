@@ -9,9 +9,12 @@ use <../../lib/plist.scad>
 use <../../lib/transforms.scad>
 use <../../motor_brackets/rc/gearbox_bracket.scad>
 use <../../panel_stack/panel_stack.scad>
+use <../../placeholders/step-down-voltage-d24vxf5.scad>
+use <../../placeholders/voltmeter.scad>
 use <../../wago/wago_mounts.scad>
 use <../rear_suspension/rear_suspension_chassis.scad>
 use <rear_payload.scad>
+use <rear_equipment.scad>
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -61,6 +64,8 @@ function rear_chassis_size(layout=rear_suspension_layout()) =
   - `show_wagos`: Display connectors in those brackets.
   - `show_power_wiring`: Undef follows lid/lidar visibility; true shows the
     configured power harness even in a roof-hidden inspection view.
+  - `show_equipment`: Display configured deck electronics; holes remain present.
+  - `show_equipment_zones`: Overlay available side corridors for placement.
  */
 module rear_chassis(show_panel_stack=true,
                     show_gearbox_bracket=true,
@@ -80,16 +85,20 @@ module rear_chassis(show_panel_stack=true,
                     show_power_case=true,
                     show_lipo_packs=true,
                     show_power_standoffs=true,
-                    show_lidar=true,
+                    show_lidar=false,
                     show_lidar_lid=true,
                     show_wago_brackets=true,
-                    show_wagos=true,
-                    show_power_wiring=undef) {
+                    show_wagos=false,
+                    show_power_wiring=undef,
+                    show_equipment=true,
+                    show_equipment_zones=false) {
   size = rear_chassis_size(layout);
   center_y = (plist_get("min_y", layout) + plist_get("max_y", layout)) / 2;
   with_anchor(is_undef(anchor) ? [0, 0, 1] : anchor, size, centered=true) {
     translate([0, is_undef(anchor) ? 0 : -center_y, 0]) {
       rear_suspension_chassis(layout=layout);
+      rear_equipment(layout, show_hardware=show_equipment,
+                      show_zones=show_equipment_zones);
       if (show_wago_brackets) {
         wago_mounts(plist_get("wago_mounts", layout, []),
                     show_wago=show_wagos,

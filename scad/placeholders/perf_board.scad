@@ -3,6 +3,7 @@ include <../parameters.scad>
 use <../lib/holes.scad>
 use <../lib/plist.scad>
 use <../lib/shapes2d.scad>
+use <../lib/slots.scad>
 use <../lib/transforms.scad>
 use <standoff.scad>
 
@@ -196,3 +197,72 @@ module perf_bord_from_plist(plist,
 }
 
 perf_bord_from_plist();
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  perf_board_mount_props
+  ─────────────────────────────────────────────────────────────────────────────
+  Resolve board, mounting hardware and optional populated-board headroom.
+  **Parameters:**
+  - `pl`: Existing perf-board plist; component_h reserves space above the PCB.
+  **Returns:** Centered XY `size`, bolt_spacing, bolt_d, standoff_h and wire_d.
+  The legacy default board is 20 × 80 mm with a 16 × 76 mm mounting pattern.
+ */
+function perf_board_mount_props(pl=[]) =
+  let (board = plist_get("size", pl, [20, 80, 1.6]),
+       pitch = plist_get("slot_size", pl, [16, 76]),
+       d = plist_get("d", pl, 2),
+       h = standoff_real_h(plist_get("standoff_h", pl, 2), d),
+       hardware = calc_standoff_params(d, h)[0],
+       wire_d = plist_get("wire_d", pl, 0),
+       component_h = plist_get("component_h", pl, 0),
+       pad_d = plist_get("pad_dia", pl, 1.9),
+       spacing = plist_get("spacing", pl, 0.54),
+       counts = [plist_get("cols", pl, 6), plist_get("rows", pl, 28)],
+       grid_size = [for (n = counts) max(0, n * pad_d + (n - 1) * spacing)],
+       bus_n = plist_get("bus_pad_cols", pl, 4),
+       bus_w = bus_n * plist_get("bus_pad_rx", pl, 1.9)
+               + max(0, bus_n - 1) * plist_get("bus_pad_spacing", pl, 0.8),
+       mount_d = max(2 * d, plist_get("body_d", hardware)),
+       size = [max(board[0], pitch[0] + mount_d, wire_d),
+               max(board[1], pitch[1] + mount_d, wire_d),
+               h + max(board[2] + component_h,
+                       plist_get("thread_h", hardware)) + 0.1])
+  assert(len(board) == 3 && min(board) > 0 && min(pitch) > 0 && d > 0,
+         "Invalid perf-board dimensions")
+  assert(pitch[0] + d <= board[0] && pitch[1] + d <= board[1],
+         "Perf-board mounting holes must fit inside its PCB")
+  assert(grid_size[0] <= board[0] && grid_size[1] <= board[1]
+         && bus_w <= board[0],
+         "Perf-board copper grid must fit its PCB; adjust rows/cols/bus_pad_cols")
+  assert(h > 0 && component_h >= 0 && wire_d >= 0,
+         "Perf board needs standoffs and nonnegative component/wire clearance")
+  ["size", size, "bolt_spacing", pitch, "bolt_d", d,
+   "standoff_h", h, "wire_d", wire_d];
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  perf_board_mount
+  ─────────────────────────────────────────────────────────────────────────────
+  Render a perf board on standoffs or its parent mounting cutouts.
+  **Parameters:**
+  - `pl`: Hardware plist accepted by perf_board_mount_props.
+  - `parent_t`: Parent thickness below Z=0.
+  - `anchor`: Shared envelope anchor; centered on XY by default.
+  - `slot_mode`: Emit mounting holes and optional center wire passage.
+  - `show_hardware`: Display board and standoffs in solid mode.
+ */
+module perf_board_mount(pl=[],
+                         parent_t=3,
+                         anchor=[0, 0, 1],
+                         slot_mode=false,
+                         show_hardware=true) {
+  p = perf_board_mount_props(pl);
+  with_anchor(anchor, plist_get("size", p), centered=true) {
+    if (slot_mode) {
+      pcb_mount_slots(p, parent_t);
+    } else if (show_hardware) {
+      perf_bord_from_plist(pl, bolt_visible_h=parent_t,
+                          show_bolt=false, show_nut=false);
+    }
+  }
+}

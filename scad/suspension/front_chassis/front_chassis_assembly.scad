@@ -16,8 +16,6 @@ include <../../colors.scad>
 include <../../parameters.scad>
 include <../../steering_params.scad>
 include <computed_params.scad>
-use <../computed.scad>
-use <../rear_suspension/computed_params.scad>
 
 use <../../head/head_neck.scad>
 use <../../lib/debug.scad>
@@ -41,9 +39,11 @@ use <../bellcrank_steering_assembly.scad>
 use <../bellcrank_steering_slots.scad>
 use <../bulkhead/front_bulkhead_chassis.scad>
 use <../bulkhead/front_bulkhead_housing.scad>
+use <../computed.scad>
 use <../front_suspension_assembly.scad>
 use <../middle_chassis/middle_chassis.scad>
 use <../rear_chassis/rear_chassis_frame.scad>
+use <../rear_suspension/computed_params.scad>
 use <../steering_servo_bracket/steering_servo_bracket_assembly.scad>
 use <../steering_servo_bracket/steering_servo_chassis_slots.scad>
 use <../wishbone_arms/front_lower_arm.scad>
@@ -124,11 +124,11 @@ show_rear_unused_shaft                      = true;
 show_rear_differential_envelope             = false;
 show_middle_chassis_motor_slots             = true;
 
-show_rear_power_case                       = true;
-show_rear_lipo_packs                       = true;
-show_rear_power_standoffs                  = true;
-show_rear_lidar                            = true;
-show_rear_lidar_lid                        = true;
+show_rear_power_case                        = true;
+show_rear_lipo_packs                        = true;
+show_rear_power_standoffs                   = true;
+show_rear_lidar                             = true;
+show_rear_lidar_lid                         = true;
 
 show_middle_chassis                         = false;
 show_middle_chassis_components              = false;
@@ -228,7 +228,8 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
   body_width = suspension_chassis_width(include_middle=show_middle_chassis);
   rear_layout = rear_suspension_layout(min_width=body_width);
 
-  front_chassis(width=body_width, show_front_frame=show_chassis_front_frame,
+  front_chassis(width=body_width,
+                show_front_frame=show_chassis_front_frame,
                 show_rear_frame=show_chassis_rear_frame,
                 debug=false,
                 spacing=front_chassis_joint_spacing,
@@ -301,7 +302,8 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
   }
 
   translate([0, front_chassis_y_joint_2_end, 0]) {
-    middle_chassis_assembly(width=body_width, show_middle_chassis=show_middle_chassis,
+    middle_chassis_assembly(width=body_width,
+                            show_middle_chassis=show_middle_chassis,
                             show_middle_chassis_components=show_middle_chassis_components,
                             show_middle_chassis_power_case=show_middle_chassis_power_case,
                             show_middle_chassis_lipo_packs=show_middle_chassis_lipo_packs,
@@ -316,7 +318,8 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
                show_middle_chassis ? -full_lipo_pack_size[1] : 0,
                -front_chassis_thickness]) {
       rotate([0, 0, 180]) {
-        rear_chassis(anchor=[0, 1, 1], layout=rear_layout,
+        rear_chassis(anchor=[0, 1, 1],
+                     layout=rear_layout,
                      show_power_case=show_rear_chassis_components && show_rear_power_case,
                      show_lipo_packs=show_rear_lipo_packs,
                      show_power_standoffs=show_rear_power_standoffs,

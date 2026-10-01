@@ -194,6 +194,7 @@ default_dc_screw_terminal_props = ["thickness", step_down_voltage_screw_terminal
                                    "pin_thickness", step_down_voltage_screw_terminal_pin_thickness,
                                    "pin_h", step_down_voltage_screw_terminal_pin_h,
                                    "wall_thickness", step_down_voltage_screw_terminal_wall_thickness,];
+
 module step_down_voltage_regulator(plist = [],
                                    bolt_visible_h=power_lid_thickness,
                                    show_bolt=true,
@@ -326,9 +327,9 @@ module step_down_voltage_regulator(plist = [],
           difference() {
             color("green", alpha=1) {
               cuboid([length,
-                       w,
-                       thickness],
-                      center=true);
+                      w,
+                      thickness],
+                     center=true);
             }
             four_corner_children(size=bolt_spacing, center=true) {
               counterbore(d=bolt_dia + 0.3, h=thickness);
@@ -368,7 +369,7 @@ module step_down_voltage_regulator(plist = [],
           if (show_standoff && !is_undef(standoff_h) && standoff_h > 0) {
             translate([0, 0, -standoff_real_h]) {
               four_corner_children(size=bolt_spacing, center=true) {
-                standoffs_stack(d=bolt_dia + 0.3,
+                standoffs_stack(d=bolt_dia,
                                 show_bolt=show_bolt,
                                 nut_pos=standoff_h,
                                 bolt_visible_h=bolt_visible_h,
@@ -434,3 +435,92 @@ module step_down_voltage_regulator(plist = [],
 step_down_voltage_regulator(center=true,
                             stand_up=true,
                             slot_mode=false);
+
+// Conservative XY reach of a populated terminal about the board origin.
+function _step_down_terminal_reach(pl, board, input=false) =
+  let (r = plist_get("rotation_z", pl, input ? 90 : -90),
+       w = screw_terminal_width_from_plist(pl),
+       t = plist_get("thickness", pl),
+       quarter = abs(r) == 90,
+       x = (input ? -1 : 1) * (board[0] / 2
+           - (quarter ? t : w) / 2 - plist_get("x_offset", pl, 0)),
+       y = (quarter ? 0 : board[1] / 2 - t / 2)
+           - plist_get("y_offset", pl, 0))
+  [abs(x) + (abs(cos(r)) * w + abs(sin(r)) * t) / 2,
+   abs(y) + (abs(sin(r)) * w + abs(cos(r)) * t) / 2];
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  step_down_mount_props
+  ─────────────────────────────────────────────────────────────────────────────
+  Resolve the populated regulator envelope and standoff mounting pattern.
+  **Parameters:**
+  - `pl`: Regulator plist; wire_d adds an optional central wiring passage.
+  **Returns:** Centered XY size, bolt_spacing, bolt_d, standoff_h and wire_d.
+  Includes terminal offsets/rotations, pin clearance and mounting screw heads.
+ */
+function step_down_mount_props(pl=[]) =
+  let (board = plist_get("placeholder_size", pl,
+                         [step_down_voltage_regulator_len,
+                          step_down_voltage_regulator_w,
+                          step_down_voltage_regulator_thickness]),
+       pitch = plist_get("bolt_spacing", pl, [35.55, 15.2]),
+       d = plist_get("d", pl, step_down_voltage_bolt_hole_dia),
+       h = standoff_real_h(plist_get("standoff_h", pl,
+                                     step_down_voltage_regulator_standoff_h), d),
+       terminals = [for (input = [true, false])
+           let (t = plist_merge(default_dc_screw_terminal_props,
+                                plist_get(input ? "vin" : "vout", pl, [])))
+           if (plist_get(input ? "show_terminal_vin" : "show_terminal_vout",
+                         t, !input))
+             [t, _step_down_terminal_reach(t, board, input)]],
+       wire_d = plist_get("wire_d", pl, 0),
+       size = [max(concat([board[0], pitch[0] + 2 * d, wire_d],
+                          [for (t = terminals) 2 * t[1][0]])),
+               max(concat([board[1], pitch[1] + 2 * d, wire_d],
+                          [for (t = terminals) 2 * t[1][1]])),
+               h + board[2] + max(concat(
+                 [step_down_voltage_power_inductor_size[2]],
+                 [for (c = step_down_voltage_can_capacitors)
+                     plist_get("base_h", c) + plist_get("h", c)],
+                 [for (t = terminals)
+                     plist_get("base_h", t[0]) + plist_get("top_h", t[0])]))])
+  assert(board[0] >= step_down_voltage_regulator_len
+         && board[1] >= step_down_voltage_regulator_w && board[2] > 0,
+         "Regulator PCB must contain its fixed component layout")
+  assert(min(pitch) > 0 && d > 0 && wire_d >= 0 && h > 0,
+         "Invalid regulator mount dimensions")
+  assert(pitch[0] + d <= board[0] && pitch[1] + d <= board[1],
+         "Regulator holes must fit inside its PCB")
+  assert(len([for (t = terminals)
+               if (plist_get("pin_h", t[0]) > h + board[2]) 1]) == 0,
+         "Regulator terminal pins need taller standoffs")
+  ["size", size, "bolt_spacing", pitch, "bolt_d", d,
+   "standoff_h", h, "wire_d", wire_d];
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  step_down_mount
+  ─────────────────────────────────────────────────────────────────────────────
+  Render a regulator on standoffs or its parent mounting cutouts.
+  **Parameters:**
+  - `pl`: Hardware plist accepted by step_down_mount_props.
+  - `parent_t`: Parent thickness below Z=0.
+  - `anchor`: Shared envelope anchor; centered on XY by default.
+  - `slot_mode`: Emit mounting holes and optional center wire passage.
+  - `show_hardware`: Display regulator and standoffs in solid mode.
+ */
+module step_down_mount(pl=[],
+                        parent_t=3,
+                        anchor=[0, 0, 1],
+                        slot_mode=false,
+                        show_hardware=true) {
+  p = step_down_mount_props(pl);
+  with_anchor(anchor, plist_get("size", p), centered=true) {
+    if (slot_mode) {
+      pcb_mount_slots(p, parent_t);
+    } else if (show_hardware) {
+      step_down_voltage_regulator(pl, bolt_visible_h=parent_t, show_bolt=false);
+    }
+  }
+}

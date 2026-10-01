@@ -240,8 +240,9 @@ panel_stack_bolt_padding                             = 2;
 panel_stack_padding_x                                = 2;
 panel_stack_padding_y                                = 1;
 
-fuse_panel_plist_specs                               = concat(repeat(plist_merge(atm_fuse_default_plist, ["gap_after", 4,
-                                                                                                          "cap_to_bottom", true]),
+fuse_panel_plist_specs                               = concat(repeat(plist_merge(atm_fuse_default_plist,
+                                                                                 ["gap_after", 4,
+                                                                                  "cap_to_bottom", false]),
                                                                      3));
 
 chassis_panel_stack_x_offset                         = 0;
@@ -3024,6 +3025,19 @@ wago_thickness      = 0.7;
 
 wago_n              = 5;
 wago_total_w        = 36.0;
+
+// Rear deck electronics. Sides use chassis coordinates: left=-X, right=+X.
+// See docs/rear-equipment.md for placement, clearance and custom hardware.
+rear_equipment_mixed = [["kind", "voltmeter", "zone", "right", "rotation", 90],
+                        ["kind", "perf_board", "zone", "left", "rotation", 0],
+                        ["kind", "step_down", "zone", "left", "rotation", -90],
+                        ["kind", "voltmeter", "zone", "auto", "rotation", 90, "count", 2]];
+rear_equipment_meters = [["kind", "voltmeter", "zone", "auto", "rotation", 90, "count", 2],
+                         ["kind", "step_down", "zone", "left", "rotation", 0]];
+// Choose [], rear_equipment_mixed, rear_equipment_meters, or a custom list.
+rear_equipment_specs = rear_equipment_mixed;
+rear_equipment_edge_margin = 3;
+rear_equipment_gap = 3;
 
 // Local Variables:
 // c-label-minimum-indentation: 53

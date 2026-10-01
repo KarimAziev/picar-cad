@@ -1,5 +1,6 @@
 include <colors.scad>
 
+
 m1_hole_dia              = 1.2; // M1 bolt hole diameter
 m2_hole_dia              = 2.4; // M2 bolt hole diameter
 m25_hole_dia             = 2.6; // M2.5 bolt hole diameter
@@ -41,7 +42,7 @@ m6_socket_head_h         = 6.0;
 
 m1_countersunk_head_dia  = 2.60;
 m2_countersunk_head_dia  = 3.5;
-m25_countersunk_head_dia = 4.04;
+m25_countersunk_head_dia = 4.13;
 m3_countersunk_head_dia  = 5.8;
 m6_countersunk_head_dia  = 14.44;
 m1_countersunk_head_h    = 0.8;

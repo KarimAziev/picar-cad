@@ -818,3 +818,29 @@ module teardrop(d, r1, r2, h, ang=45, fn=30, both_sides=false) {
 //                          h=thickness,
 //                          bore_h=bore_h,
 //                          reverse=true);
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  pcb_mount_slots
+  ─────────────────────────────────────────────────────────────────────────────
+  Cut a PCB's corner mounts with underside screw recesses and optional wiring.
+  **Parameters:**
+  - `props`: Resolved bolt_spacing, bolt_d and optional wire_d.
+  - `parent_t`: Thickness below the centered XY, Z=0 mounting plane.
+ */
+module pcb_mount_slots(props, parent_t) {
+  d = plist_get("bolt_d", props);
+  wire_d = plist_get("wire_d", props, 0);
+  assert(parent_t > 0.8, "PCB parent must leave material above screw recesses");
+  translate([0, 0, -parent_t]) {
+    four_corner_children(size=plist_get("bolt_spacing", props), center=true) {
+      counterbore(h=parent_t, d=d + 0.2, bore_d=2 * d,
+                  bore_h=min(parent_t - 0.8, d * 0.6), reverse=true);
+    }
+    if (wire_d > 0) {
+      translate([0, 0, -0.1]) {
+        cylinder(d=wire_d, h=parent_t + 0.2, $fn=32);
+      }
+    }
+  }
+}

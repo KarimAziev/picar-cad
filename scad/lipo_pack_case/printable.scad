@@ -6,14 +6,14 @@
   */
 include <../steering_params.scad>
 
-use <../lib/plist.scad>
-use <../lib/functions.scad>
 use <../components/button_bracket/button_bracket.scad>
+use <../lib/functions.scad>
+use <../lib/plist.scad>
 use <../wago/wago_bracket.scad>
+use <../wago/wago_mounts.scad>
 use <../wago/wago_pair.scad>
 use <lid_equipment.scad>
 use <lid_fuse.scad>
-use <../wago/wago_mounts.scad>
 use <multi_lipo_pack_adapter.scad>
 use <multi_lipo_pack_case.scad>
 use <multi_lipo_pack_lid.scad>
@@ -37,11 +37,13 @@ module multi_lipo_pack_printable(pl=multi_lipo_packs_case, spacing=8) {
   lid_props = multi_lipo_pack_lid_props(canonical);
   lid_size = plist_get("canonical_size", lid_props);
   adapter = plist_get("adapter_props", lid_props);
+
   multi_lipo_pack_case(canonical,
                        anchor=[0, 0, 1],
                        show_standoffs=false,
                        show_packs=false,
                        show_rail_bolts=false);
+
   translate([(case_size[0] + lid_size[0]) / 2 + spacing, 0, 0]) {
     multi_lipo_pack_lid_printable(canonical);
   }
@@ -55,16 +57,20 @@ module multi_lipo_pack_printable(pl=multi_lipo_packs_case, spacing=8) {
   if (plist_get("standoff_h", adapter, 0) > 0) {
     translate([case_size[0] / 2 + lid_size[0]
                + plist_get("size", adapter)[0] / 2 + 2 * spacing,
-               plist_get("size", adapter)[1] + spacing, 0]) {
+               plist_get("size", adapter)[1] + spacing,
+               0]) {
       multi_lipo_pack_adapter_spacers(adapter);
     }
   }
   lid_spec = plist_get("lid", pl, []);
   fuse = lid_fuse_props(plist_get("fuse", lid_spec), lid_props);
   wagos = multi_lipo_pack_lid_wago_mounts(pl, lid_props);
-  equipment = lid_equipment_layout(plist_get("equipment", lid_spec, []), lid_props,
-    concat(_lid_fuse_tie_bounds(fuse),
-           [for (m = wagos) _wago_bounds(concat(plist_get("pos", m), [0]), wago_mount_size(m))]));
+  equipment = lid_equipment_layout(plist_get("equipment", lid_spec, []),
+                                   lid_props,
+                                   concat(_lid_fuse_tie_bounds(fuse),
+                                          [for (m = wagos)
+                                              _wago_bounds(concat(plist_get("pos", m), [0]),
+                                                           wago_mount_size(m))]));
   printed = [for (m = equipment) if (plist_get("kind", m) != "voltmeter") m];
   widths = [for (m = printed) plist_get("size", plist_get("props", m))[0]];
   for (i = [0:1:len(printed) - 1]) {
@@ -72,7 +78,8 @@ module multi_lipo_pack_printable(pl=multi_lipo_packs_case, spacing=8) {
     size = plist_get("size", plist_get("props", m));
     preceding = i == 0 ? 0 : sum([for (j = [0:i - 1]) widths[j] + spacing]);
     translate([preceding + size[0] / 2 - case_size[0] / 2,
-               -max(case_size[1], lid_size[1]) / 2 - spacing - size[1] / 2, 0]) {
+               -max(case_size[1], lid_size[1]) / 2 - spacing - size[1] / 2,
+               0]) {
       if (plist_get("kind", m) == "button") {
         button_bracket(plist_get("component", m), show_button=false);
       } else if (plist_get("kind", m) == "wago_pair") {
@@ -82,7 +89,6 @@ module multi_lipo_pack_printable(pl=multi_lipo_packs_case, spacing=8) {
       }
     }
   }
-
 }
 
 multi_lipo_pack_printable();

@@ -15,6 +15,7 @@ use <../../motor_brackets/rc/gearbox_bracket.scad>
 use <../../panel_stack/panel_stack.scad>
 use <../front_chassis/front_chassis_joint.scad>
 use <../rear_chassis/rear_payload.scad>
+use <../rear_chassis/rear_equipment.scad>
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -90,6 +91,7 @@ module rear_suspension_slots(anchor=undef, layout=rear_suspension_layout()) {
       wago_mounts(plist_get("wago_mounts", layout, []), slot_mode=true,
                    parent_t=front_chassis_thickness);
       rear_power_payload(plist_get("power_case", layout), slot_mode=true);
+      rear_equipment(layout, slot_mode=true);
     }
   }
 }

@@ -80,10 +80,15 @@ function multi_lipo_pack_adapter_props(spec, lid) =
            plist_get("w", r)/2 + plist_get("clearance_w", rails) + plist_get("side_t", lid)],
        inner = [centers[0] + half_widths[0], centers[1]-half_widths[1]],
        offset = plist_get("lidar_offset", lid),
-       safe_half = min(offset[cross]-inner[0], inner[1]-offset[cross]) - access_d/2 - edge,
+       safe_half = min(offset[cross]-inner[0], inner[1]-offset[cross]) - access_d / 2 - edge,
        spacing = plist_get("bolt_spacing", spec,
-                           [for (i=[0:1]) i == cross ? min(pitch[i]*0.65, 2*safe_half,
-                                                           2*(pattern_half-abs(sensor_offset[cross])-pocket_d/2-sensor_head_r-edge)) : pitch[i]]),
+                           [for (i=[0:1])
+                               i == cross
+                                 ? min(pitch[i] * 0.65,
+                                       safe_half * 2,
+                                       (pattern_half -abs(sensor_offset[cross])
+                                        -pocket_d / 2 - sensor_head_r - edge) * 2)
+                                 : pitch[i]]),
        holes = [for (x=[-1, 1], y=[-1, 1]) [x*spacing[0]/2, y*spacing[1]/2]],
        radius = maybe_percent_string_to_num(plist_get("corner_r", spec, 3), min(dims)),
        r = calc_corner_rad(dims, radius))
@@ -116,11 +121,23 @@ function multi_lipo_pack_adapter_props(spec, lid) =
               "Reduce adapter corner_r to preserve mounting lands")
        assert(min([for (i=[0:1]) plist_get("canonical_size", lid)[i]/2-abs(offset[i])-dims[i]/2]) >= 0,
               "Adapter footprint must fit the lid roof")
-       ["enabled", true, "size", concat(dims,[t]), "corner_r", r,
-        "holes", holes, "sensor_holes", sensor_holes, "sensor_d", sensor_d,
-        "bolt_d", d, "bolt_l", bolt_l, "roof_t", roof_t, "standoff_h", gap, "clearance", clearance,
-        "nut_h", nut_h, "nut_z", t-nut_h-0.2, "nut_d", nut_d, "pocket_d", pocket_d,
-        "access_d", access_d, "offset", offset];
+       ["enabled", true,
+        "size", concat(dims,[t]),
+        "corner_r", r,
+        "holes", holes,
+        "sensor_holes", sensor_holes,
+        "sensor_d", sensor_d,
+        "bolt_d", d,
+        "bolt_l", bolt_l,
+        "roof_t", roof_t,
+        "standoff_h", gap,
+        "clearance", clearance,
+        "nut_h", nut_h,
+        "nut_z", t-nut_h-0.2,
+        "nut_d", nut_d,
+        "pocket_d", pocket_d,
+        "access_d", access_d,
+        "offset", offset];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -141,14 +158,22 @@ module multi_lipo_pack_adapter_lid_slots(props, access_h) {
     for (p=plist_get("holes", props)) {
       translate(concat(p,[is_undef(access_h) ? 0 : -access_h])) {
         if (is_undef(access_h)) {
-          counterbore(h=plist_get("roof_t", props),
-                      d=d + plist_get("clearance", props),
-                      bore_d=find_bolt_head_d(d,"countersunk") + plist_get("clearance", props),
-                      bore_h=find_bolt_head_h(d,"countersunk") + 0.15,
-                      sink=true,
-                      reverse=true);
+          let (clearance = plist_get("clearance", props),
+               bolt_head_d = find_bolt_head_d(d, "countersunk"),
+               bore_d = bolt_head_d + clearance,
+               bore_h = find_bolt_head_h(d, "countersunk") + 0.15,
+               hole_d = d + plist_get("clearance", props)) {
+            counterbore(h=plist_get("roof_t", props),
+                        d=hole_d,
+                        bore_d=bore_d,
+                        bore_h=bore_h,
+                        sink=true,
+                        reverse=true);
+          }
         } else {
-          cylinder(d=plist_get("access_d", props), h=access_h,$fn=40);
+          cylinder(d=plist_get("access_d", props),
+                   h=access_h,
+                   $fn=40);
         }
       }
     }
@@ -173,30 +198,34 @@ module multi_lipo_pack_adapter_lid_slots(props, access_h) {
 module multi_lipo_pack_adapter(props,
                                anchor=[0, 0, 1],
                                show_plate=true,
-
                                show_hardware=false,
                                slot_mode=false) {
   size=plist_get("size", props);
   d=plist_get("bolt_d", props);
   sensor_d=plist_get("sensor_d", props);
+
   module slots() {
+    // lidar holes
     for (p=plist_get("sensor_holes", props)) {
       translate(concat(p,[0])) {
         counterbore(h=size[2],
                     d=sensor_d + 0.2,
-                    bore_d=find_bolt_head_d(sensor_d,"countersunk") + 0.2,
-                    bore_h=find_bolt_head_h(sensor_d,"countersunk") + 0.15,
-                    sink=true,
+                    bore_d=find_bolt_head_d(sensor_d, "pan") + 0.4,
+                    bore_h=find_bolt_head_h(sensor_d, "pan") + 0.4,
+                    sink=false,
                     reverse=true);
       }
     }
+    // lid holes
     for (p=plist_get("holes", props)) {
-      translate(concat(p,[-0.01])) {
-        cylinder(d=d + plist_get("clearance", props), h=size[2] + 0.02,$fn=40);
+      translate(concat(p, [-0.01])) {
+        cylinder(d=d + plist_get("clearance", props),
+                 h=size[2] + 0.02,
+                 $fn=40);
       }
-      translate(concat(p,[plist_get("nut_z", props)])) {
+      translate(concat(p, [plist_get("nut_z", props)])) {
         cylinder(d=plist_get("pocket_d", props),
-                 h=plist_get("nut_h", props) + 0.21,
+                 h=plist_get("nut_h", props) + 0.24,
                  $fn=6);
       }
     }
@@ -220,7 +249,8 @@ module multi_lipo_pack_adapter(props,
                   h=plist_get("nut_h", props),
                   show_text=false);
             }
-            translate(concat(p,[-plist_get("roof_t", props) - plist_get("standoff_h", props, 0)])) {
+            translate(concat(p, [-plist_get("roof_t", props)
+                                 - plist_get("standoff_h", props, 0)])) {
               bolt(d=d,
                    h=plist_get("bolt_l", props)-find_bolt_head_h(d,"countersunk"),
                    head_type="countersunk",
@@ -268,7 +298,8 @@ module multi_lipo_pack_adapter_spacers(props) {
           cylinder(d=plist_get("pocket_d", props), h=h, $fn=48);
           translate([0, 0, -0.01]) {
             cylinder(d=plist_get("bolt_d", props) + plist_get("clearance", props),
-                     h=h + 0.02, $fn=40);
+                     h=h + 0.02,
+                     $fn=40);
           }
         }
       }

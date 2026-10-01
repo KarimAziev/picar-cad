@@ -10,5 +10,9 @@ use <../lib/plist.scad>
 use <multi_lipo_pack_adapter.scad>
 use <multi_lipo_pack_lid.scad>
 
-props = multi_lipo_pack_lid_props(multi_lipo_packs_case);
-multi_lipo_pack_adapter_printable(plist_get("adapter_props", props));
+module multi_lipo_pack_lidar_adapter_printable() {
+  props = multi_lipo_pack_lid_props(multi_lipo_packs_case);
+  multi_lipo_pack_adapter_printable(plist_get("adapter_props", props));
+}
+
+multi_lipo_pack_lidar_adapter_printable();
