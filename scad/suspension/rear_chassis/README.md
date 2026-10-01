@@ -1,7 +1,7 @@
 # Rear payload layouts
 
 The rear frame is configured in
-[`../rear_suspension/rear_suspension_params.scad`](../rear_suspension/rear_suspension_params.scad).
+[`rear_chassis_params.scad`](rear_chassis_params.scad).
 The default has one standalone control panel and one standalone fuse panel on
 opposite sides of the motor, with the LiPo case and lidar above them.
 
@@ -27,9 +27,39 @@ Each entry accepts:
 
 Use `rear_panel_specs=[]` for no panels. Two combined stacks are simply two
 entries with `type="stack"`. For the old single-stack API, call
-`rear_suspension_layout(panels=undef, power_case=undef, side="auto")`.
+`rear_chassis_layout(panels=undef, power_case=undef, side="auto")`.
 The legacy `panel_*` result entries refer to the first panel; new consumers
 should iterate the `panels` list.
+
+## Connection to the front chassis
+
+The flat edge of `rear_chassis_frame()` has a male tongue that fits the wide
+female socket in `front_chassis_rear_frame()`. Both use
+`front_chassis_body_joint()` in
+[`front_chassis_joint.scad`](../front_chassis/front_chassis_joint.scad), a chassis
+preset built on the reusable `plate_joint`. Width, bolt positions, and pin spacing
+come from the same preset. The compact front joint also uses this shared geometry.
+
+The rear plate's original joining edge remains at native `min_y`. With
+`anchor=[0, 1, 1]`, that edge is at Y=0 and the tongue projects along -Y.
+The vehicle assembly rotates the rear chassis 180 degrees around Z and places
+that edge at `front_chassis_y_joint_2_end`. The tongue occupies the existing
+socket; it does not increase the assembled chassis length. The anchor reference
+and `rear_chassis_size()` describe the original plate envelope, excluding the
+tongue projection.
+
+In [`front_chassis_assembly.scad`](../front_chassis/front_chassis_assembly.scad),
+leave `show_middle_chassis=false` for the direct connection. Set
+`rear_chassis_joint_spacing=0` for the fitted position, or increase it to slide
+the rear chassis rearward for inspection. The rear chassis also follows
+`front_chassis_joint_spacing`. With the optional middle deck enabled, the
+assembly selects `front_joint=false` to retain its existing flat rear interface.
+
+For a geometry-only view, open
+[`front_rear_chassis_joint.scad`](../../../tests/fixtures/front_rear_chassis_joint.scad)
+and change `spacing` between 0 and 25 mm. Export
+[`rear_chassis_frame_printable.scad`](rear_chassis_frame_printable.scad) to print
+the rear frame with its top face and both male tongues facing the bed.
 
 ## Raised battery and lidar
 

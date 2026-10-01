@@ -9,15 +9,12 @@
   */
 
 include <../../colors.scad>
-include <../../parameters.scad>
 include <../../steering_params.scad>
-include <computed_params.scad>
+include <layout_params.scad>
 
-use <../../lib/shapes3d.scad>
-use <../../lib/slider.scad>
-use <../../lib/slots.scad>
+use <../../components/plate_joint/plate_joint.scad>
+use <../../lib/functions.scad>
 use <../../lib/transforms.scad>
-use <../../placeholders/suspension_arm_pin.scad>
 
 joint_preview_spacing = 0; // [0:1:30]
 
@@ -25,99 +22,154 @@ joint_preview_spacing = 0; // [0:1:30]
   ─────────────────────────────────────────────────────────────────────────────
   front_chassis_joint_default_bolt_xs
   ─────────────────────────────────────────────────────────────────────────────
-
   Return the compact three-bolt pattern centered across the joint.
-
   **Parameters:**
-  - spacing: Center-to-center distance between the outer bolts.
-
-  **Returns:**
-  - Bolt-center X coordinates.
+  - `spacing`: Center-to-center distance between the outer bolts.
+  **Returns:** Bolt-center X coordinates.
  */
-function front_chassis_joint_default_bolt_xs(spacing=front_chassis_joint_bolt_spacing) = [-spacing / 2, 0, spacing / 2];
+function front_chassis_joint_default_bolt_xs(
+  spacing=front_chassis_joint_bolt_spacing) = [-spacing / 2, 0, spacing / 2];
 
-module front_chassis_joint_base(color=cobalt_blue_light_3,
-                                w=joint_w,
-                                l=joint_l,
-                                thickness=chassis_thickness,
-                                base_h=joint_base_h,
-                                rail_w=joint_rail_w,
-                                rail_h=joint_rail_h,
-                                rail_angle=front_chassis_joint_rail_angle,
-                                rail_corner_r=front_chassis_joint_rail_corner_r,
-                                dovetail_rib=front_chassis_joint_use_dovetail_rib,
-                                extra_h=0.0,
-                                extra_w=0.0,
-                                extra_l=0.0,
-                                clearance=0,
-                                edge_land,
-                                relief_depth) {
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_joint
+  ─────────────────────────────────────────────────────────────────────────────
+  Build the front chassis preset using the shared plate joint.
+  **Parameters:**
+  - `mode`: `"male"` or `"female"`.
+  - `color`: Optional body color.
+  - `w`: Nominal width along X.
+  - `l`: Nominal length along Y.
+  - `rail_w`: Rail width.
+  - `bolt_xs`: Bolt-center X coordinates; `[]` omits bolts.
+  - `pin_spacing`: Pin-center span; undef retains the compact front pattern.
+  - `include_pin_holes`: Include the longitudinal reinforcing-pin passages.
+  - `root_side`: Parent edge, `1` at Y=0 or `-1` at Y=-l; undef uses mode defaults.
+  - `eps`: Attachment overlap in millimeters.
+  - `slot_mode`: Emit the full parent cutters instead of a solid.
+  - `anchor`: Nominal envelope anchor; default spans Y=-l..0.
+  **Behavior:** Retains the front joint's sag-compensated pins and bolt through holes.
+  Parent calls must subtract
+  slot mode from the complete plate so pin passages continue into the parent.
+ */
+module front_chassis_joint(mode="male",
+                           color,
+                           w=joint_w,
+                           l=joint_l,
+                           rail_w=joint_rail_w,
+                           bolt_xs=front_chassis_joint_default_bolt_xs(),
+                           pin_spacing,
+                           include_pin_holes=true,
+                           root_side,
+                           eps=front_chassis_joint_boolean_overlap,
+                           slot_mode=false,
+                           anchor=[0, -1, 1]) {
+  anchor = normalize_anchor(anchor);
+  spacing = is_undef(pin_spacing)
+      ? rail_w / 2 + joint_recess_w / 2
+      : pin_spacing;
 
-  _base_h = base_h + extra_h;
-  base_w = w + extra_w;
+  module _profile() {
+    // Keep the established explicit bolt pattern below; the shared
+    // component owns the rail, socket, root overlap, clearance and pin passages.
+    plate_joint(plate_h=chassis_thickness,
+                bolt_d=front_chassis_joint_bolt_d,
+                w=w,
+                l=l,
+                rail_w=rail_w,
+                rail_h=joint_rail_h,
+                base_h=joint_base_h,
+                angle=front_chassis_joint_rail_angle,
+                rail_corner_r=front_chassis_joint_rail_corner_r,
+                dovetail_rib=front_chassis_joint_use_dovetail_rib,
+                clearance=front_chassis_joint_clearance,
+                boolean_overlap=eps,
+                bolt_n_center=0,
+                include_pin_holes=include_pin_holes,
+                pin_d=front_chassis_joint_pin_d,
+                pin_l=front_chassis_joint_pin_l,
+                pin_spacing=spacing,
+                pin_z=joint_base_h + (joint_base_h + joint_rail_h) / 2,
+                pin_use_pad=false,
+                mode=mode,
+                root_side=root_side,
+                slot_mode=slot_mode,
+                anchor=anchor,
+                color=color);
+  }
 
-  translate([0, -l - extra_l / 2, thickness + extra_h]) {
-    rotate([-90, 0, 0]) {
-      maybe_color(color) {
-        linear_extrude(height=l + extra_l, center=false) {
-          offset(delta=clearance) {
-            slider_dovetail_rail_2d(base_w=base_w,
-                                    base_h=_base_h,
-                                    w=rail_w,
-                                    h=rail_h,
-                                    angle=rail_angle,
-                                    r=rail_corner_r,
-                                    center_y=false,
-                                    center_x=true,
-                                    reverse=true,
-                                    use_dovetail_rib=dovetail_rib,
-                                    edge_land=dovetail_rib ? edge_land : undef,
-                                    relief_depth=relief_depth);
-          }
-        }
+  module _bolts() {
+    with_anchor(anchor=anchor, size=[w, l, chassis_thickness], centered=true) {
+      translate([0, l / 2, 0]) {
+        plate_joint_bolt_holes(bolt_d=front_chassis_joint_bolt_d,
+                               plate_h=chassis_thickness,
+                               l=l,
+                               bolt_xs=bolt_xs,
+                               no_bore=true);
       }
     }
   }
-}
 
-module front_chassis_joint_bolt_holes(bolt_xs=front_chassis_joint_default_bolt_xs(),
-                                      l=joint_l,
-                                      reverse=false) {
-  for (x = bolt_xs) {
-    translate([x, -l / 2, 0]) {
-      counterbore(d=front_chassis_joint_bolt_d,
-                  h=chassis_thickness,
-                  reverse=reverse);
+  if (slot_mode) {
+    _profile();
+    _bolts();
+  } else {
+    difference() {
+      _profile();
+      _bolts();
     }
   }
 }
 
-module front_chassis_pin_joint_hole(direction=-1,
-                                    use_pad=false,
-                                    pad_side="bottom") {
-  fn = $preview ? 16 : 100;
-  rotate([direction == 1 ? -90 : 90, 0, 0]) {
-    if (use_pad) {
-      let (groove_side = (pad_side == "bottom") == (direction == -1)
-           ? "bottom"
-           : "top") {
-        suspension_arm_pin(d=front_chassis_joint_pin_d,
-                           l=front_chassis_joint_pin_l,
-                           pad_l=front_chassis_joint_pin_pad_l,
-                           pad_w=front_chassis_joint_pin_pad_w,
-                           color=undef,
-                           fn=fn,
-                           groove_side=groove_side,
-                           show_e_clip=false);
-      }
-    } else {
-      sag_compensated_hole(d=front_chassis_joint_pin_d,
-                           h=front_chassis_joint_pin_l,
-                           fn=fn);
-    }
-  }
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_body_joint
+  ─────────────────────────────────────────────────────────────────────────────
+  Build either half of the wide front-to-rear chassis connection.
+  **Parameters:**
+  - `mode`: `"male"` or `"female"`.
+  - `w`: Shared width of the adjoining chassis edges.
+  - `color`: Optional body color.
+  - `slot_mode`: Emit socket/bolt/pin cutters for the parent plate.
+  - `anchor`: Nominal envelope anchor; default spans Y=-joint_l..0.
+  **Behavior:** Both local parents meet Y=0. In assembly the rear chassis and
+  its male tongue rotate 180 degrees around Z to face the front's female socket.
+ */
+module front_chassis_body_joint(mode,
+                                w,
+                                color,
+                                slot_mode=false,
+                                anchor=[0, -1, 1]) {
+  rail_w = w - (front_chassis_joint_bolt_d + front_chassis_joint_bolt_pad) * 2;
+  edge_x = w / 2 - front_chassis_joint_bolt_pad - front_chassis_joint_bolt_d / 2;
+  n = suspension_chassis_joint_wide_bolt_cols;
+  assert(n >= 2 && floor(n) == n, "Wide joint needs at least two bolt columns");
+  bolt_xs = [for (i = [0:n - 1]) -edge_x + i * 2 * edge_x / (n - 1)];
+  front_chassis_joint(mode=mode,
+                      color=color,
+                      w=w,
+                      rail_w=rail_w,
+                      bolt_xs=bolt_xs,
+                      pin_spacing=rail_w / 2,
+                      root_side=1,
+                      slot_mode=slot_mode,
+                      anchor=anchor);
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_pin_joint_holes
+  ─────────────────────────────────────────────────────────────────────────────
+  Emit the front joint's pin passages at its existing directional datum.
+  **Parameters:**
+  - `direction`: Passage direction along Y, -1 or 1.
+  - `use_pad`: Select pin end flats instead of sag compensation.
+  - `center`: Center across the joint in the selected direction; false starts at Y=0.
+  - `pad_side`: End flat side, `"bottom"` or `"top"`.
+  - `l`: Nominal joint length.
+  - `rail_w`: Rail width for the default pin span.
+  - `pin_spacing`: Explicit pin-center span; undef uses the compact front pattern.
+ */
 module front_chassis_pin_joint_holes(direction=-1,
                                      use_pad=false,
                                      center=true,
@@ -125,18 +177,22 @@ module front_chassis_pin_joint_holes(direction=-1,
                                      l=joint_l,
                                      rail_w=joint_rail_w,
                                      pin_spacing) {
-  default_spacing = rail_w / 2 + joint_recess_w / 2;
-  spacing = is_undef(pin_spacing) ? default_spacing : pin_spacing;
-  depth = (front_chassis_joint_pin_l - l) / 2;
-  y = center ? depth * -direction : 0;
-  jz = joint_base_h + (joint_base_h + joint_rail_h) / 2;
-
-  mirror_copy([1, 0, 0]) {
-    translate([spacing / 2, y, jz]) {
-      front_chassis_pin_joint_hole(direction=direction,
-                                   pad_side=pad_side,
-                                   use_pad=use_pad);
-    }
+  spacing = is_undef(pin_spacing)
+      ? rail_w / 2 + joint_recess_w / 2
+      : pin_spacing;
+  // The old +Y entry is referenced from the other end of the joint.
+  translate([0, center && direction == 1 ? l : 0, 0]) {
+    plate_joint_pin_holes(d=front_chassis_joint_pin_d,
+                          pin_l=front_chassis_joint_pin_l,
+                          l=l,
+                          spacing=spacing,
+                          z=joint_base_h + (joint_base_h + joint_rail_h) / 2,
+                          direction=direction,
+                          center=center,
+                          use_pad=use_pad,
+                          pad_l=front_chassis_joint_pin_pad_l,
+                          pad_w=front_chassis_joint_pin_pad_w,
+                          pad_side=pad_side);
   }
 }
 
@@ -167,33 +223,9 @@ module front_chassis_joint_male(color=cobalt_blue_light_3,
                                 pin_spacing,
                                 root_side=1,
                                 anchor=[0, -1, 1]) {
-  eps = front_chassis_joint_boolean_overlap;
-  axial_clearance = front_chassis_joint_clearance;
-  assert(abs(root_side) == 1, "Joint root side must be -1 or 1");
-  with_anchor(anchor=anchor,
-              size=[w, l, chassis_thickness],
-              centered=true) {
-    translate([0, l / 2, 0]) {
-      render() {
-        difference() {
-          translate([0, root_side == 1 ? eps : -axial_clearance, 0]) {
-            front_chassis_joint_base(color=color,
-                                     w=w,
-                                     l=l + eps - axial_clearance,
-                                     rail_w=rail_w);
-          }
-          front_chassis_pin_joint_holes(use_pad=false,
-                                        direction=-1,
-                                        l=l,
-                                        rail_w=rail_w,
-                                        pin_spacing=pin_spacing);
-          front_chassis_joint_bolt_holes(bolt_xs=bolt_xs,
-                                         l=l,
-                                         reverse=true);
-        }
-      }
-    }
-  }
+  front_chassis_joint(mode="male", color=color, w=w, l=l, rail_w=rail_w,
+                      bolt_xs=bolt_xs, pin_spacing=pin_spacing,
+                      root_side=root_side, anchor=anchor);
 }
 
 /**
@@ -224,46 +256,13 @@ module front_chassis_joint_female(color,
                                   pin_spacing,
                                   include_pin_holes=false,
                                   root_side=-1,
-                                  eps = front_chassis_joint_boolean_overlap,
+                                  eps=front_chassis_joint_boolean_overlap,
                                   slot_mode=false,
                                   anchor=[0, -1, 1]) {
-  assert(abs(root_side) == 1, "Joint root side must be -1 or 1");
-  module _slots() {
-    front_chassis_joint_base(w=w,
-                             l=l,
-                             rail_w=rail_w,
-                             clearance=front_chassis_joint_clearance,
-                             extra_l=eps * 4,
-                             color=undef);
-    front_chassis_joint_bolt_holes(bolt_xs=bolt_xs, l=l);
-    if (include_pin_holes) {
-      front_chassis_pin_joint_holes(use_pad=false,
-                                    direction=-1,
-                                    l=l,
-                                    rail_w=rail_w,
-                                    pin_spacing=pin_spacing);
-    }
-  }
-
-  with_anchor(anchor=anchor,
-              size=[w, l, chassis_thickness],
-              centered=true) {
-    translate([0, l / 2, 0]) {
-      if (slot_mode) {
-        _slots();
-      } else {
-        difference() {
-          color(color, alpha=1) {
-            translate([0, -l / 2 + root_side * eps / 2, 0]) {
-              cuboid([w, l + eps, chassis_thickness],
-                     anchor=[0, 0, 1]);
-            }
-          }
-          _slots();
-        }
-      }
-    }
-  }
+  front_chassis_joint(mode="female", color=color, w=w, l=l, rail_w=rail_w,
+                      bolt_xs=bolt_xs, pin_spacing=pin_spacing,
+                      include_pin_holes=include_pin_holes, root_side=root_side,
+                      eps=eps, slot_mode=slot_mode, anchor=anchor);
 }
 
 union() {

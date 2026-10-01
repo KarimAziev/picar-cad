@@ -301,7 +301,7 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
     }
   }
 
-  translate([0, front_chassis_y_joint_2_end, 0]) {
+  translate([0, front_chassis_y_joint_2_end - front_chassis_joint_spacing, 0]) {
     middle_chassis_assembly(width=body_width,
                             show_middle_chassis=show_middle_chassis,
                             show_middle_chassis_components=show_middle_chassis_components,
@@ -312,14 +312,15 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
                             power_case_plist=multi_lipo_packs_case);
   }
 
-  translate([0, front_chassis_y_joint_2_end, chassis_thickness]) {
-    // Join the rear plate to the battery's rear edge
-    translate([0,
-               show_middle_chassis ? -full_lipo_pack_size[1] : 0,
-               -chassis_thickness]) {
+  if (show_rear_chassis) {
+    // The tongue fills the existing front socket; the rear deck starts at its lip.
+    translate([0, front_chassis_y_joint_2_end - front_chassis_joint_spacing
+               - (show_middle_chassis ? full_lipo_pack_size[1] : 0)
+               - rear_chassis_joint_spacing, 0]) {
       rotate([0, 0, 180]) {
         rear_chassis(anchor=[0, 1, 1],
                      layout=rear_layout,
+                     front_joint=!show_middle_chassis,
                      show_power_case=show_rear_chassis_components && show_rear_power_case,
                      show_lipo_packs=show_rear_lipo_packs,
                      show_power_standoffs=show_rear_power_standoffs,

@@ -15,6 +15,7 @@ use <../../lib/plist.scad>
 use <../../lib/polygon_util.scad>
 use <../../lib/shapes2d.scad>
 use <../../lib/transforms.scad>
+use <../front_chassis/front_chassis_joint.scad>
 use <../rear_suspension/rear_suspension_joint.scad>
 use <../rear_suspension/rear_suspension_mount.scad>
 use <rear_chassis_slots.scad>
@@ -37,16 +38,16 @@ module rear_chassis_outline(layout=rear_chassis_layout()) {
     offset_vertices_2d(r=r) {
       polygon(rear_chassis_outline_points(layout));
     }
-    translate([plist_get("join_w", layout) / 2 - r,
-               plist_get("min_y", layout)]) {
-      square([r, r]);
-    }
+  }
+  // Keep the complete attachment edge square, including the mirrored center.
+  translate([-plist_get("join_w", layout) / 2, plist_get("min_y", layout)]) {
+    square([plist_get("join_w", layout), r]);
   }
 }
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
-  rear_suspension_chassis
+  rear_chassis_frame
   ─────────────────────────────────────────────────────────────────────────────
   Build the measured mounting plate, independently of the ladder frame.
   **Parameters:**
@@ -55,8 +56,14 @@ module rear_chassis_outline(layout=rear_chassis_layout()) {
   - `debug_color`: Color for vertex labels.
   - `color`: Body color; `undef` inherits the caller's color.
   - `slot_mode`: Emit only the shared mounting cutters.
-  - `anchor`: Envelope anchor; `undef` retains the original holder row at Y=0.
+  - `anchor`: Original plate-envelope anchor; `undef` retains the holder row at Y=0.
+  - `rear_suspension_mount_slide_l`: Suspension mount separation along native +Y.
   - `layout`: Resolved rear layout shared with components and cutters.
+  - `show_rear_suspension_mount`: Display the separate suspension mount.
+  - `front_joint`: Include the tongue for direct connection to the front frame.
+  **Behavior:** The front joining edge remains at `min_y`. Its male tongue
+  projects toward -Y into the front frame's existing socket; the anchor envelope
+  excludes that projection and the assembled chassis length stays unchanged.
  */
 module rear_chassis_frame(debug=false,
                           debug_font="Gill Sans:style=Bold",
@@ -66,7 +73,8 @@ module rear_chassis_frame(debug=false,
                           anchor=undef,
                           rear_suspension_mount_slide_l=rear_suspension_mount_slide_l,
                           layout=rear_chassis_layout(),
-                          show_rear_suspension_mount=false) {
+                          show_rear_suspension_mount=false,
+                          front_joint=true) {
   pts = rear_chassis_outline_points(layout);
   size = plist_get("size", layout);
   transition_y_start = plist_get("transition_y_start", layout);
@@ -74,16 +82,28 @@ module rear_chassis_frame(debug=false,
   joint_l = transition_y_start - transition_y_end;
 
   suspension_w = plist_get("suspension_w", layout);
+  join_w = plist_get("join_w", layout);
+  min_y = plist_get("min_y", layout);
   center_y = (plist_get("min_y", layout) + plist_get("max_y", layout)) / 2;
 
   with_anchor(is_undef(anchor) ? [0, 0, 1] : anchor, size, centered=true) {
     translate([0, is_undef(anchor) ? 0 : -center_y, 0]) {
       if (slot_mode) {
         rear_chassis_slots(layout=layout);
+        if (front_joint) {
+          translate([0, min_y, 0]) {
+            front_chassis_body_joint(mode="male", w=join_w, slot_mode=true);
+          }
+        }
       } else {
         maybe_color(color) {
           difference() {
             union() {
+              if (front_joint) {
+                translate([0, min_y, 0]) {
+                  front_chassis_body_joint(mode="male", w=join_w);
+                }
+              }
               linear_extrude(height=chassis_thickness, convexity=3) {
                 difference() {
                   rear_chassis_outline(layout);
@@ -109,6 +129,11 @@ module rear_chassis_frame(debug=false,
             }
 
             rear_chassis_slots(layout=layout);
+            if (front_joint) {
+              translate([0, min_y, 0]) {
+                front_chassis_body_joint(mode="male", w=join_w, slot_mode=true);
+              }
+            }
           }
         }
       }

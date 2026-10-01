@@ -70,6 +70,7 @@ function rear_chassis_size(layout=rear_chassis_layout()) =
     configured power harness even in a roof-hidden inspection view.
   - `show_equipment`: Display configured deck electronics; holes remain present.
   - `show_equipment_zones`: Overlay available side corridors for placement.
+  - `front_joint`: Include the direct front-frame tongue; false retains a flat edge.
  */
 module rear_chassis(show_panel_stack=true,
                     show_gearbox_bracket=true,
@@ -97,16 +98,17 @@ module rear_chassis(show_panel_stack=true,
                     show_equipment=true,
                     show_equipment_zones=false,
                     rear_suspension_mount_slide_l=rear_suspension_mount_slide_l,
-                    show_rear_suspension_mount=show_rear_suspension_mount) {
+                    show_rear_suspension_mount=show_rear_suspension_mount,
+                    front_joint=true) {
   size = rear_chassis_size(layout);
   center_y = (plist_get("min_y", layout) + plist_get("max_y", layout)) / 2;
   with_anchor(is_undef(anchor) ? [0, 0, 1] : anchor, size, centered=true) {
     translate([0, is_undef(anchor) ? 0 : -center_y, 0]) {
       union() {
-        rear_chassis_frame(layout=layout);
+        rear_chassis_frame(layout=layout, front_joint=front_joint);
         if (show_rear_suspension_mount) {
           translate([0, rear_suspension_mount_slide_l, 0]) {
-            rear_suspension_mount();
+            rear_suspension_mount(layout=layout);
           }
         }
       }

@@ -47,10 +47,6 @@ module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
                                 debug_font="Gill Sans:style=Bold",
                                 width=front_chassis_rear_frame_w) {
   assert(width >= front_chassis_required_width(), "Frame width cannot exclude the front hardware");
-  rail_w = width - (front_chassis_joint_bolt_d + front_chassis_joint_bolt_pad) * 2;
-  edge_x = width / 2 - front_chassis_joint_bolt_pad - front_chassis_joint_bolt_d / 2;
-  bolt_xs = [for (i = [0:suspension_chassis_joint_wide_bolt_cols-1])
-    -edge_x + i * 2 * edge_x / (suspension_chassis_joint_wide_bolt_cols-1)];
   pts = front_chassis_pts(width);
 
   module _debug(rotation) {
@@ -115,14 +111,7 @@ module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
     }
 
     translate([0, front_chassis_y_joint_2_end + joint_l, 0]) {
-      front_chassis_joint_female(color=color,
-                                 w=width,
-                                 rail_w=rail_w,
-                                 bolt_xs=bolt_xs,
-                                 pin_spacing=rail_w / 2,
-                                 include_pin_holes=true,
-                                 slot_mode=true,
-                                 root_side=1);
+      front_chassis_body_joint(mode="female", w=width, slot_mode=true);
     }
   }
 
