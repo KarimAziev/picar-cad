@@ -46,7 +46,7 @@ module front_chassis_front_frame_probe(color=white_smoke_1,
   difference() {
     front_chassis_front_frame(debug=false, color=color);
     translate([0, y_end + pin_hole_depth + probe_len, -0.5]) {
-      cuboid([x, l, front_chassis_thickness + 1], anchor=[0, 1, 1]);
+      cuboid([x, l, chassis_thickness + 1], anchor=[0, 1, 1]);
     }
   }
 }
@@ -62,8 +62,8 @@ module front_chassis_rear_frame_probe(debug=false, probe_len=2) {
     front_chassis_rear_frame(debug=debug);
     translate([0,
                y_start - cube_len - pin_hole_depth - probe_len + cube_len / 2,
-               front_chassis_thickness / 2]) {
-      cube([servo_slot_min_w * 2 + 1, cube_len, front_chassis_thickness + 1],
+               chassis_thickness / 2]) {
+      cube([servo_slot_min_w * 2 + 1, cube_len, chassis_thickness + 1],
            center=true);
     }
   }

@@ -34,7 +34,11 @@ show_joint_sizes        = false;
 // The male tongue and female socket occupy Y=-joint_l..0.
 // Positive assembly spacing slides plate B along -Y for inspection.
 
-module common_plate_joint(mode, slot_mode=false, show_bolts=false, anchor, show_sizes) {
+module common_plate_joint(mode,
+                          slot_mode=false,
+                          show_bolts=false,
+                          anchor,
+                          show_sizes) {
   plate_joint(plate_h=plate_thickness,
               bolt_d=bolt_d,
               pin_d=pin_d,
@@ -68,10 +72,12 @@ module plate_a() {
             }
           }
         }
-        common_plate_joint(mode="male", show_bolts=show_joint_bolts, show_sizes=show_joint_sizes);
+        common_plate_joint(mode="male",
+                           show_bolts=show_joint_bolts,
+                           show_sizes=show_joint_sizes);
       }
       // Subtract at parent scope: pins continue beyond the tongue into plate A.
-      common_plate_joint(mode="male", slot_mode=true);
+      #common_plate_joint(mode="male", slot_mode=true);
     }
   }
 }
@@ -99,9 +105,9 @@ module plate_b() {
 
 module assembly_example() {
   plate_a();
-  translate([0, -plates_assembly_spacing, 0]) {
-    plate_b();
-  }
+  // translate([0, -plates_assembly_spacing, 0]) {
+  //   plate_b();
+  // }
 }
 
 assembly_example();

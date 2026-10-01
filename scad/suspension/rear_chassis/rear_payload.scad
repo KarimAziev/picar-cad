@@ -2,13 +2,13 @@
   * Module: Raised rear battery mounting and sliding lidar lid.
   * Coordinates match the native rear holder-row layout, below the chassis.
   */
-include <../rear_suspension/rear_suspension_params.scad>
+include <rear_chassis_params.scad>
 
 use <../../lib/functions.scad>
 use <../../lib/plist.scad>
+use <../../lipo_pack_case/lid_wiring.scad>
 use <../../lipo_pack_case/multi_lipo_pack_case.scad>
 use <../../lipo_pack_case/multi_lipo_pack_lid.scad>
-use <../../lipo_pack_case/lid_wiring.scad>
 use <../../placeholders/standoff.scad>
 
 /**
@@ -39,7 +39,8 @@ function rear_power_case_mount(pl,
        bottom_t = max(plist_get("bottom_t", pl,
                                 plist_get("t", plist_get("bottom", plist_get("walls", pl)))),
                       plist_get("thread_h", spec) + 0.2),
-       thick_pl = plist_merge(pl, ["bottom_t", bottom_t, "mount_nut_pockets", true,
+       thick_pl = plist_merge(pl, ["bottom_t", bottom_t,
+                                   "mount_nut_pockets", true,
                                    "top_clearance", max(plist_get("top_clearance", pl, 0),
                                                         rear_power_case_headroom)]),
        props = multi_lipo_pack_props(thick_pl),
@@ -56,20 +57,27 @@ function rear_power_case_mount(pl,
        canonical_span = orientation == "lwh" ? [span[1], span[0]] : span,
        ear_d = 2 * (radius + clearance),
        adjusted = plist_merge(plist_remove("bolt_spacing_x", plist_remove("bolt_spacing_y", thick_pl)),
-                              ["bolt_spacing", canonical_span, "mount_ear_d", ear_d]),
+                              ["bolt_spacing", canonical_span,
+                               "mount_ear_d", ear_d]),
        size = plist_get("size", multi_lipo_pack_props(adjusted)),
        holes = [for (x = [-1, 1], y = [-1, 1])
            [center[0] + x * span[0] / 2, center[1] + y * span[1] / 2]],
        bounds = [center - [size[0]/2, size[1]/2, 0],
                  center + [size[0]/2, size[1]/2, size[2]]])
-  assert(orientation == "wlh" || orientation == "lwh",
-         "Rear battery floor must be horizontal")
+                 assert(orientation == "wlh" || orientation == "lwh",
+                        "Rear battery floor must be horizontal")
   assert(clearance >= 0 && span[1] > 2 * radius,
          "Battery case needs nonnegative support clearance and separated support rows")
-  ["plist", adjusted, "size", size, "body_size", body_size, "pos", center, "bounds", bounds,
-   "bolt_spacing", span, "mount_holes", holes, "radius", radius,
-   "keepout", [[center[0] - span[0]/2 - radius - clearance, bounds[0][1], 0],
-               [center[0] + span[0]/2 + radius + clearance, bounds[1][1], 0]]];
+                 ["plist", adjusted,
+                  "size", size,
+                  "body_size", body_size,
+                  "pos", center,
+                  "bounds", bounds,
+                  "bolt_spacing", span,
+                  "mount_holes", holes,
+                  "radius", radius,
+                  "keepout", [[center[0] - span[0]/2 - radius - clearance, bounds[0][1], 0],
+                              [center[0] + span[0]/2 + radius + clearance, bounds[1][1], 0]]];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -102,7 +110,8 @@ function rear_motor_clearance_height(bracket) =
 function rear_power_lid_plist(pl, lidar_pl) =
   plist_merge(pl,
               ["lid", plist_merge(plist_get("lid", pl, []),
-                                  ["lidar", lidar_pl, "t", rear_lidar_lid_thickness,
+                                  ["lidar", lidar_pl,
+                                   "t", rear_lidar_lid_thickness,
                                    "lidar_target_h", rear_lidar_standoff_h])]);
 
 /**
@@ -140,20 +149,20 @@ module rear_power_payload(payload,
     lidar_pl = plist_get("lidar", payload);
     lid_pl = rear_power_lid_plist(pl, lidar_pl);
     wired = (is_undef(show_wiring) ? show_lid || show_lidar : show_wiring)
-        && plist_get("enabled", plist_get("wiring", lid_pl, []), false);
+      && plist_get("enabled", plist_get("wiring", lid_pl, []), false);
     translate(pos) {
       if (slot_mode || show_case) {
         multi_lipo_pack_case(pl,
                              anchor=[0, 0, 1],
                              target_h=plist_get("target_h", payload),
-                             parent_thickness=front_chassis_thickness,
+                             parent_thickness=chassis_thickness,
                              show_standoffs=show_standoffs,
                              show_packs=show_packs,
                              slot_mode=slot_mode);
       } else if (show_standoffs) {
-        translate([0, 0, front_chassis_thickness]) {
+        translate([0, 0, chassis_thickness]) {
           four_corner_standoffs(h=plist_get("standoff_h", payload),
-                                parent_thickness=front_chassis_thickness,
+                                parent_thickness=chassis_thickness,
                                 bolt_d=plist_get("bolt_d", pl),
                                 cbore_d=plist_get("bore_d", pl),
                                 cbore_h=plist_get("bore_h", pl),

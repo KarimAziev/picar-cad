@@ -1,141 +1,133 @@
 /**
-  * Module: Rear chassis plate with its shaft-centered motor and controls.
-  * The default origin is the center of the flat joining edge, below the plate.
+  * Module: Rear-suspension mounting plate with a flat chassis joining edge.
+  *
+  * Author: Karim Aziiev <karim.aziiev@gmail.com>
+  * License: GPL-3.0-or-later
   */
+include <../../colors.scad>
 include <../../steering_params.scad>
-include <../rear_suspension/computed_params.scad>
+include <computed_params.scad>
+include <rear_chassis_params.scad>
 
+use <../../lib/debug.scad>
+use <../../lib/functions.scad>
 use <../../lib/plist.scad>
+use <../../lib/polygon_util.scad>
+use <../../lib/shapes2d.scad>
 use <../../lib/transforms.scad>
-use <../../motor_brackets/rc/gearbox_bracket.scad>
-use <../../panel_stack/panel_stack.scad>
-use <../../placeholders/step-down-voltage-d24vxf5.scad>
-use <../../placeholders/voltmeter.scad>
-use <../../wago/wago_mounts.scad>
-use <../rear_suspension/rear_suspension_chassis.scad>
-use <rear_payload.scad>
-use <rear_equipment.scad>
+use <../rear_suspension/rear_suspension_joint.scad>
+use <../rear_suspension/rear_suspension_mount.scad>
+use <rear_chassis_slots.scad>
+
+rear_suspension_mount_slide_l = 20; // [0:1:100]
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
-  rear_chassis_size
+  rear_chassis_outline
   ─────────────────────────────────────────────────────────────────────────────
-
-  Return `[width, length, thickness]` of the rear chassis plate for assembly.
-
+  Emit the native 2D plate outline for standalone or shared frame extrusion.
   **Parameters:**
-  - `layout`: Resolved rear layout, shared with `rear_chassis`.
-
-  Hardware above the plate is excluded. With the default `[0, 1, 1]` anchor,
-  the joining edge is at Y=0 and the suspension extends toward +Y.
+  - `layout`: Resolved rear layout.
+  **Notes:** Only the free boundary is rounded; the joining edge stays square.
  */
-function rear_chassis_size(layout=rear_suspension_layout()) =
-  rear_suspension_chassis_size(layout);
+module rear_chassis_outline(layout=rear_chassis_layout()) {
+
+  r = rear_suspension_chassis_corner_r;
+  mirror_copy([1, 0, 0]) {
+    offset_vertices_2d(r=r) {
+      polygon(rear_chassis_outline_points(layout));
+    }
+    translate([plist_get("join_w", layout) / 2 - r,
+               plist_get("min_y", layout)]) {
+      square([r, r]);
+    }
+  }
+}
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
-  rear_chassis
+  rear_suspension_chassis
   ─────────────────────────────────────────────────────────────────────────────
-
-  Render the rear chassis and the components at their shared mounting datums.
-
+  Build the measured mounting plate, independently of the ladder frame.
   **Parameters:**
-  - `show_panel_stack`: Display all configured control, fuse and combined panels.
-  - `show_gearbox_bracket`: Display the printed motor bracket.
-  - `show_gearbox`: Display the gearbox.
-  - `show_motor`: Display the motor.
-  - `show_bearing`: Display drive-shaft bearings.
-  - `show_drive_shaft`: Display the gearbox's drive shaft.
-  - `show_mount_bolts`: Display motor mounting bolts.
-  - `show_nuts`: Display motor mounting nuts.
-  - `show_shaft_seeve`: Display the shaft sleeve.
-  - `show_extra_drive_shaft`: Display the shaft extending from the sleeve.
-  - `anchor`: Plate envelope anchor, or `undef` for native holder-row coordinates.
-  - `layout`: Resolved rear layout; display toggles do not change its dimensions.
-  - `show_motor_encoder_bracket`: Display the removable shaft encoder mount.
-  - `show_motor_encoder`: Display its PCB.
-  - `show_motor_encoder_magnet`: Display its shaft-end magnet.
-  - `show_power_case`: Display the raised battery case.
-  - `show_lipo_packs`: Display batteries within the case.
-  - `show_power_standoffs`: Display the four supporting columns.
-  - `show_lidar`: Display the lidar on the raised payload.
-  - `show_lidar_lid`: Display its sliding power-case lid.
-  - `show_wago_brackets`: Display configured deck brackets; holes remain present.
-  - `show_wagos`: Display connectors in those brackets.
-  - `show_power_wiring`: Undef follows lid/lidar visibility; true shows the
-    configured power harness even in a roof-hidden inspection view.
-  - `show_equipment`: Display configured deck electronics; holes remain present.
-  - `show_equipment_zones`: Overlay available side corridors for placement.
+  - `debug`: Display outline vertices above the part.
+  - `debug_font`: Font for vertex labels.
+  - `debug_color`: Color for vertex labels.
+  - `color`: Body color; `undef` inherits the caller's color.
+  - `slot_mode`: Emit only the shared mounting cutters.
+  - `anchor`: Envelope anchor; `undef` retains the original holder row at Y=0.
+  - `layout`: Resolved rear layout shared with components and cutters.
  */
-module rear_chassis(show_panel_stack=true,
-                    show_gearbox_bracket=true,
-                    show_gearbox=true,
-                    show_motor=true,
-                    show_bearing=true,
-                    show_drive_shaft=true,
-                    show_mount_bolts=true,
-                    show_nuts=true,
-                    show_shaft_seeve=true,
-                    show_extra_drive_shaft=true,
-                    anchor=[0, 1, 1],
-                    layout=rear_suspension_layout(),
-                    show_motor_encoder_bracket=true,
-                    show_motor_encoder=true,
-                    show_motor_encoder_magnet=true,
-                    show_power_case=true,
-                    show_lipo_packs=true,
-                    show_power_standoffs=true,
-                    show_lidar=false,
-                    show_lidar_lid=true,
-                    show_wago_brackets=true,
-                    show_wagos=false,
-                    show_power_wiring=undef,
-                    show_equipment=true,
-                    show_equipment_zones=false) {
-  size = rear_chassis_size(layout);
+module rear_chassis_frame(debug=false,
+                          debug_font="Gill Sans:style=Bold",
+                          debug_color=green_2,
+                          color=white_smoke_1,
+                          slot_mode=false,
+                          anchor=undef,
+                          rear_suspension_mount_slide_l=rear_suspension_mount_slide_l,
+                          layout=rear_chassis_layout(),
+                          show_rear_suspension_mount=false) {
+  pts = rear_chassis_outline_points(layout);
+  size = plist_get("size", layout);
+  transition_y_start = plist_get("transition_y_start", layout);
+  transition_y_end = plist_get("transition_y_end", layout);
+  joint_l = transition_y_start - transition_y_end;
+
+  suspension_w = plist_get("suspension_w", layout);
   center_y = (plist_get("min_y", layout) + plist_get("max_y", layout)) / 2;
+
   with_anchor(is_undef(anchor) ? [0, 0, 1] : anchor, size, centered=true) {
     translate([0, is_undef(anchor) ? 0 : -center_y, 0]) {
-      rear_suspension_chassis(layout=layout);
-      rear_equipment(layout, show_hardware=show_equipment,
-                      show_zones=show_equipment_zones);
-      if (show_wago_brackets) {
-        wago_mounts(plist_get("wago_mounts", layout, []),
-                    show_wago=show_wagos,
-                    parent_t=size[2]);
-      }
-      rear_power_payload(plist_get("power_case", layout),
-                         show_case=show_power_case,
-                         show_packs=show_lipo_packs,
-                         show_standoffs=show_power_standoffs,
-                         show_lidar=show_lidar,
-                         show_lid=show_lidar_lid,
-                         show_wiring=show_power_wiring);
-      translate([0, 0, size[2]]) {
-        translate(plist_get("motor_pos", layout)) {
-          rotate(plist_get("motor_rotation", layout)) {
-            gearmotor_bracket(params=plist_get("bracket", layout),
-                              anchor=plist_get("motor_anchor", layout),
-                              show_bracket=show_gearbox_bracket,
-                              show_gearbox=show_gearbox,
-                              show_motor=show_motor,
-                              show_bearing=show_bearing,
-                              show_drive_shaft=show_drive_shaft,
-                              show_mount_bolts=show_mount_bolts,
-                              show_nuts=show_nuts,
-                              show_shaft_seeve=show_shaft_seeve,
-                              show_extra_drive_shaft=show_extra_drive_shaft,
-                              show_encoder_bracket=show_motor_encoder_bracket,
-                              show_encoder=show_motor_encoder,
-                              show_encoder_magnet=show_motor_encoder_magnet);
+      if (slot_mode) {
+        rear_chassis_slots(layout=layout);
+      } else {
+        maybe_color(color) {
+          difference() {
+            union() {
+              linear_extrude(height=chassis_thickness, convexity=3) {
+                difference() {
+                  rear_chassis_outline(layout);
+                  translate([-suspension_w / 2,
+                             transition_y_end,
+                             0]) {
+                    square([suspension_w, joint_l + 0.1], center=false);
+                  }
+                }
+              }
+              translate([0, transition_y_start, 0]) {
+                rear_suspension_chassis_joint(anchor=[0, -1, 1],
+                                              layout=layout,
+                                              mode="male");
+              }
+            }
+
+            translate([0, transition_y_start, 0]) {
+              rear_suspension_chassis_joint(anchor=[0, -1, 1],
+                                            layout=layout,
+                                            mode="male",
+                                            slot_mode=true);
+            }
+
+            rear_chassis_slots(layout=layout);
           }
         }
-        if (show_panel_stack) {
-          for (panel = plist_get("panels", layout)) {
-            translate(plist_get("pos", panel)) {
-              panel_component(type=plist_get("type", panel),
-                              orientation=plist_get("orientation", panel));
-            }
+      }
+
+      if (show_rear_suspension_mount) {
+        translate([0, rear_suspension_mount_slide_l, 0]) {
+          rear_suspension_mount(layout=layout);
+        }
+      }
+      if (debug && !slot_mode) {
+        translate([0,
+                   0,
+                   chassis_thickness + front_chassis_joint_boolean_overlap]) {
+          mirror_copy([1, 0, 0]) {
+            debug_polygon_text(pts,
+                               circle_color="red",
+                               font_size=constraint(size[0] * 0.08, 1, 5),
+                               font=debug_font,
+                               color=debug_color);
           }
         }
       }
@@ -143,4 +135,4 @@ module rear_chassis(show_panel_stack=true,
   }
 }
 
-rear_chassis();
+rear_chassis_frame(debug=false);

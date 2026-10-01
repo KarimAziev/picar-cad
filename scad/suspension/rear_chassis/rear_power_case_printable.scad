@@ -1,12 +1,12 @@
 /**
   * Module: Rear battery case with its layout-generated mounting pattern.
   */
-include <../rear_suspension/computed_params.scad>
+include <computed_params.scad>
 
 use <../../lib/plist.scad>
 use <../../lipo_pack_case/multi_lipo_pack_case.scad>
 
-payload = plist_get("power_case", rear_suspension_layout());
+payload = plist_get("power_case", rear_chassis_layout());
 
 if (!is_undef(payload)) {
   multi_lipo_pack_case(plist_get("plist", payload),

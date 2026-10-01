@@ -39,7 +39,7 @@ function front_chassis_joint_default_bolt_xs(spacing=front_chassis_joint_bolt_sp
 module front_chassis_joint_base(color=cobalt_blue_light_3,
                                 w=joint_w,
                                 l=joint_l,
-                                thickness=front_chassis_thickness,
+                                thickness=chassis_thickness,
                                 base_h=joint_base_h,
                                 rail_w=joint_rail_w,
                                 rail_h=joint_rail_h,
@@ -86,7 +86,7 @@ module front_chassis_joint_bolt_holes(bolt_xs=front_chassis_joint_default_bolt_x
   for (x = bolt_xs) {
     translate([x, -l / 2, 0]) {
       counterbore(d=front_chassis_joint_bolt_d,
-                  h=front_chassis_thickness,
+                  h=chassis_thickness,
                   reverse=reverse);
     }
   }
@@ -171,7 +171,7 @@ module front_chassis_joint_male(color=cobalt_blue_light_3,
   axial_clearance = front_chassis_joint_clearance;
   assert(abs(root_side) == 1, "Joint root side must be -1 or 1");
   with_anchor(anchor=anchor,
-              size=[w, l, front_chassis_thickness],
+              size=[w, l, chassis_thickness],
               centered=true) {
     translate([0, l / 2, 0]) {
       render() {
@@ -246,7 +246,7 @@ module front_chassis_joint_female(color,
   }
 
   with_anchor(anchor=anchor,
-              size=[w, l, front_chassis_thickness],
+              size=[w, l, chassis_thickness],
               centered=true) {
     translate([0, l / 2, 0]) {
       if (slot_mode) {
@@ -255,7 +255,7 @@ module front_chassis_joint_female(color,
         difference() {
           color(color, alpha=1) {
             translate([0, -l / 2 + root_side * eps / 2, 0]) {
-              cuboid([w, l + eps, front_chassis_thickness],
+              cuboid([w, l + eps, chassis_thickness],
                      anchor=[0, 0, 1]);
             }
           }

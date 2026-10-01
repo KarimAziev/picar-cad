@@ -31,7 +31,7 @@ function front_chassis_head_front_ribbon_y() =
   - `thickness`: Frame thickness crossed by the passage.
   - `anchor`: Anchor on the head mounting-pad envelope, matching the horn slots.
  */
-module front_chassis_head_front_ribbon_slot(thickness=front_chassis_thickness,
+module front_chassis_head_front_ribbon_slot(thickness=chassis_thickness,
                                            anchor=[0, 0, 1]) {
   head = front_chassis_head_mount_size();
   eps = front_chassis_joint_boolean_overlap;
@@ -69,7 +69,7 @@ module front_chassis_access_slots(head_y) {
       translate([side * (head[0] / 2 + land),
                  head_y + (row - (rows - 1) / 2) * (l + land), 0]) {
         scale([side, 1, 1]) {
-          linear_extrude(height=front_chassis_thickness + eps * 2) {
+          linear_extrude(height=chassis_thickness + eps * 2) {
             polygon([[0, -l / 2], [w, -l / 2], [w, l / 2], [w / 2, l / 2]]);
           }
         }

@@ -206,4 +206,5 @@ bolt_specs               = [[1,
                                        "countersunk", ["dia", m6_countersunk_head_dia,
                                                        "height", m6_countersunk_head_h]],
                               "heights", [8, 10, 12, 14, 16, 30],
-                              "shoulder", ["dia", 8, "heights", [16, 20, 30]]]]];
+                              "shoulder", ["dia", 8,
+                                           "heights", [16, 20, 30]]]]];

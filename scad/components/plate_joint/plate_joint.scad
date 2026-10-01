@@ -11,8 +11,8 @@ use <../../lib/plist.scad>
 use <../../lib/shapes3d.scad>
 use <../../lib/slider.scad>
 use <../../lib/slots.scad>
-use <../../lib/transforms.scad>
 use <../../lib/text.scad>
+use <../../lib/transforms.scad>
 use <../../placeholders/bolt.scad>
 use <../../placeholders/suspension_arm_pin.scad>
 
@@ -105,7 +105,7 @@ module plate_joint(plate_h,
                    pin_l,
                    pin_spacing,
                    pin_z,
-                   pin_use_pad=false,
+                   pin_use_pad=true,
                    pin_pad_l,
                    pin_pad_w,
                    pin_direction=-1,
@@ -164,7 +164,12 @@ module plate_joint(plate_h,
                              bolt_head_type=bolt_head_type,
                              bolt_cut_overlap=bolt_cut_overlap);
   if (mode == "male") {
-    plate_joint_male(p, color=color, root_side=side, anchor=anchor, flip=flip, slot_mode=slot_mode);
+    plate_joint_male(p,
+                     color=color,
+                     root_side=side,
+                     anchor=anchor,
+                     flip=flip,
+                     slot_mode=slot_mode);
   } else {
     plate_joint_female(p,
                        color=color,
@@ -177,12 +182,15 @@ module plate_joint(plate_h,
     %plate_joint_bolts(p, anchor=anchor, flip=flip);
   }
   if ($preview && show_sizes && !slot_mode) {
-    %plate_joint_sizes(p, anchor=anchor, mode=mode,
-                       min_wall=sizes_min_wall, text_size=sizes_text_size,
-                       offset=sizes_offset, flip=flip);
+    %plate_joint_sizes(p,
+                       anchor=anchor,
+                       mode=mode,
+                       min_wall=sizes_min_wall,
+                       text_size=sizes_text_size,
+                       offset=sizes_offset,
+                       flip=flip);
   }
 }
-
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -232,7 +240,9 @@ module plate_joint_base(color=undef,
   _base_h = base_h + extra_h;
   base_w = w + extra_w;
 
-  with_anchor(anchor=_plate_joint_anchor_value(anchor), size=[w, l, plate_h], centered=true) {
+  with_anchor(anchor=_plate_joint_anchor_value(anchor),
+              size=[w, l, plate_h],
+              centered=true) {
     _plate_joint_flip(plate_h, flip=flip) {
       translate([0, -l / 2 - extra_l / 2, plate_h + extra_h]) {
         rotate([-90, 0, 0]) {
@@ -240,17 +250,17 @@ module plate_joint_base(color=undef,
             linear_extrude(height=l + extra_l, center=false) {
               offset(delta=clearance) {
                 slider_dovetail_rail_2d(base_w=base_w,
-                                       base_h=_base_h,
-                                       w=rail_w,
-                                       h=rail_h,
-                                       angle=angle,
-                                       r=rail_corner_r,
-                                       center_y=false,
-                                       center_x=true,
-                                       reverse=true,
-                                       use_dovetail_rib=dovetail_rib,
-                                       edge_land=dovetail_rib ? edge_land : undef,
-                                       relief_depth=relief_depth);
+                                        base_h=_base_h,
+                                        w=rail_w,
+                                        h=rail_h,
+                                        angle=angle,
+                                        r=rail_corner_r,
+                                        center_y=false,
+                                        center_x=true,
+                                        reverse=true,
+                                        use_dovetail_rib=dovetail_rib,
+                                        edge_land=dovetail_rib ? edge_land : undef,
+                                        relief_depth=relief_depth);
               }
             }
           }
@@ -292,13 +302,24 @@ module _plate_joint_flip(plate_h, flip=false) {
   - `reverse`: Put counterbores on the bottom instead of the top.
   - `eps`: Cutter extension beyond the plate faces.
  */
-module plate_joint_bolt_holes(bolt_d, plate_h, l, bolt_xs=[],
-                              bore_d, bore_h, no_bore=true,
-                              reverse=false, eps=0.1) {
+module plate_joint_bolt_holes(bolt_d,
+                              plate_h,
+                              l,
+                              bolt_xs=[],
+                              bore_d,
+                              bore_h,
+                              no_bore=true,
+                              reverse=false,
+                              eps=0.1) {
   for (x = bolt_xs) {
     translate([x, -l / 2, 0]) {
-      counterbore(d=bolt_d, h=plate_h, bore_d=bore_d, bore_h=bore_h,
-                  no_bore=no_bore, reverse=reverse, autoscale_step=eps);
+      counterbore(d=bolt_d,
+                  h=plate_h,
+                  bore_d=bore_d,
+                  bore_h=bore_h,
+                  no_bore=no_bore,
+                  reverse=reverse,
+                  autoscale_step=eps);
     }
   }
 }
@@ -321,18 +342,30 @@ module plate_joint_bolt_holes(bolt_d, plate_h, l, bolt_xs=[],
   - `compensation`: Sag compensation width, used without an end flat.
   - `fn`: Curve fragment count.
  */
-module plate_joint_pin_hole(d, l, direction=-1, use_pad=false,
-                            pad_l=0, pad_w=0, pad_side="bottom",
-                            compensation=0.4, fn) {
+module plate_joint_pin_hole(d,
+                            l,
+                            direction=-1,
+                            use_pad=false,
+                            pad_l=0,
+                            pad_w=0,
+                            pad_side="bottom",
+                            compensation=0.4,
+                            fn) {
   fn = with_default(fn, $preview ? 16 : 100);
   assert(direction == -1 || direction == 1, "Pin direction must be -1 or 1");
   assert(pad_side == "bottom" || pad_side == "top", "Invalid pad_side");
   rotate([direction == 1 ? -90 : 90, 0, 0]) {
     if (use_pad) {
       groove_side = (pad_side == "bottom") == (direction == -1) ? "bottom" : "top";
-      suspension_arm_pin(d=d, l=l, pad_l=pad_l, pad_w=pad_w,
-                         color=undef, fn=fn, groove_side=groove_side,
-                         show_e_clip=false, groove_w=0);
+      suspension_arm_pin(d=d,
+                         l=l,
+                         pad_l=pad_l,
+                         pad_w=pad_w,
+                         color=undef,
+                         fn=fn,
+                         groove_side=groove_side,
+                         show_e_clip=false,
+                         groove_w=0);
     } else {
       sag_compensated_hole(d=d, h=l, fn=fn, compensation=compensation);
     }
@@ -361,16 +394,31 @@ module plate_joint_pin_hole(d, l, direction=-1, use_pad=false,
   - `compensation`: Sag compensation width.
   - `fn`: Curve fragment count.
  */
-module plate_joint_pin_holes(d, pin_l, l, spacing, z,
-                             direction=-1, center=true, use_pad=false,
-                             pad_l=0, pad_w=0, pad_side="bottom",
-                             compensation=0.4, fn) {
+module plate_joint_pin_holes(d,
+                             pin_l,
+                             l,
+                             spacing,
+                             z,
+                             direction=-1,
+                             center=true,
+                             use_pad=false,
+                             pad_l=0,
+                             pad_w=0,
+                             pad_side="bottom",
+                             compensation=0.4,
+                             fn) {
   y = center ? -l / 2 - direction * pin_l / 2 : 0;
   for (x = [-spacing / 2, spacing / 2]) {
     translate([x, y, z]) {
-      plate_joint_pin_hole(d=d, l=pin_l, direction=direction,
-                           use_pad=use_pad, pad_l=pad_l, pad_w=pad_w,
-                           pad_side=pad_side, compensation=compensation, fn=fn);
+      plate_joint_pin_hole(d=d,
+                           l=pin_l,
+                           direction=direction,
+                           use_pad=use_pad,
+                           pad_l=pad_l,
+                           pad_w=pad_w,
+                           pad_side=pad_side,
+                           compensation=compensation,
+                           fn=fn);
     }
   }
 }
@@ -390,7 +438,11 @@ module plate_joint_pin_holes(d, pin_l, l, spacing, z,
   - `flip`: Mirror in Z within the nominal plate envelope; preserve the anchor.
   - `slot_mode`: Emit full-length pin passages and bolt cutters for subtraction from a parent.
  */
-module plate_joint_male(params, color, root_side=1, anchor=[0, -1, 1], flip=false,
+module plate_joint_male(params,
+                        color,
+                        root_side=1,
+                        anchor=[0, -1, 1],
+                        flip=false,
                         slot_mode=false) {
   p = params;
   l = plist_get("l", p);
@@ -469,36 +521,52 @@ module plate_joint_female(params,
 // Internal adapters consume the validated property list from plate_joint_parameters().
 // Their unanchored geometry spans Y=-l..0 and Z=0..plate_h.
 module _plate_joint_profile(p, l, extra_l=0, clearance=0) {
-  plate_joint_base(w=plist_get("w", p), l=l,
-                   plate_h=plist_get("plate_h", p), base_h=plist_get("base_h", p),
-                   rail_w=plist_get("rail_w", p), rail_h=plist_get("rail_h", p),
-                   angle=plist_get("angle", p), rail_corner_r=plist_get("rail_corner_r", p),
+  plate_joint_base(w=plist_get("w", p),
+                   l=l,
+                   plate_h=plist_get("plate_h", p),
+                   base_h=plist_get("base_h", p),
+                   rail_w=plist_get("rail_w", p),
+                   rail_h=plist_get("rail_h", p),
+                   angle=plist_get("angle", p),
+                   rail_corner_r=plist_get("rail_corner_r", p),
                    dovetail_rib=plist_get("dovetail_rib", p),
                    edge_land=plist_get("relief_depth", p) > 0 ? plist_get("edge_land", p) : undef,
                    relief_depth=plist_get("relief_depth", p),
-                   extra_l=extra_l, clearance=clearance);
+                   extra_l=extra_l,
+                   clearance=clearance);
 }
 
 module _plate_joint_holes(p, reverse=false) {
-  plate_joint_bolt_holes(bolt_d=plist_get("bolt_d", p), plate_h=plist_get("plate_h", p),
-                         l=plist_get("l", p), bolt_xs=plist_get("bolt_xs", p),
-                         bore_d=plist_get("bolt_bore_d", p), bore_h=plist_get("bolt_bore_h", p),
-                         no_bore=plist_get("bolt_no_bore", p), reverse=reverse,
+  plate_joint_bolt_holes(bolt_d=plist_get("bolt_d", p),
+                         plate_h=plist_get("plate_h", p),
+                         l=plist_get("l", p),
+                         bolt_xs=plist_get("bolt_xs", p),
+                         bore_d=plist_get("bolt_bore_d", p),
+                         bore_h=plist_get("bolt_bore_h", p),
+                         no_bore=plist_get("bolt_no_bore", p),
+                         reverse=reverse,
                          eps=plist_get("bolt_cut_overlap", p));
   if (plist_get("include_pin_holes", p)) {
-    plate_joint_pin_holes(d=plist_get("pin_d", p), pin_l=plist_get("pin_l", p),
-                          l=plist_get("l", p), spacing=plist_get("pin_spacing", p),
-                          z=plist_get("pin_z", p), direction=plist_get("pin_direction", p),
-                          center=plist_get("pin_center", p), use_pad=plist_get("pin_use_pad", p),
-                          pad_l=plist_get("pin_pad_l", p), pad_w=plist_get("pin_pad_w", p),
+    plate_joint_pin_holes(d=plist_get("pin_d", p),
+                          pin_l=plist_get("pin_l", p),
+                          l=plist_get("l", p),
+                          spacing=plist_get("pin_spacing", p),
+                          z=plist_get("pin_z", p),
+                          direction=plist_get("pin_direction", p),
+                          center=plist_get("pin_center", p),
+                          use_pad=plist_get("pin_use_pad", p),
+                          pad_l=plist_get("pin_pad_l", p),
+                          pad_w=plist_get("pin_pad_w", p),
                           pad_side=plist_get("pin_pad_side", p),
                           compensation=plist_get("pin_compensation", p));
   }
 }
 
 module _plate_joint_anchor(p, anchor, flip=false) {
-  with_anchor(anchor=_plate_joint_anchor_value(anchor), size=[plist_get("w", p), plist_get("l", p),
-                                  plist_get("plate_h", p)], centered=true) {
+  with_anchor(anchor=_plate_joint_anchor_value(anchor),
+              size=[plist_get("w", p), plist_get("l", p),
+                    plist_get("plate_h", p)],
+              centered=true) {
     translate([0, plist_get("l", p) / 2, 0]) {
       _plate_joint_flip(plist_get("plate_h", p), flip=flip) {
         children();
@@ -531,9 +599,12 @@ module plate_joint_bolts(params, anchor=[0, -1, 1], flip=false) {
     for (x = plist_get("bolt_xs", p)) {
       depth = plist_get("bolt_no_bore", p) ? 0 : bore_h;
       translate([x, -plist_get("l", p) / 2, -depth]) {
-        bolt(d=plist_get("bolt_d", p), h=h, threaded=false,
+        bolt(d=plist_get("bolt_d", p),
+             h=h,
+             threaded=false,
              head_type=plist_get("bolt_head_type", p),
-             head_d=plist_get("bolt_head_d", p), head_h=plist_get("bolt_head_h", p));
+             head_d=plist_get("bolt_head_d", p),
+             head_h=plist_get("bolt_head_h", p));
       }
     }
   }
@@ -544,7 +615,6 @@ function _plate_joint_anchor_value(anchor) =
   let (defaults = [0, -1, 1])
   is_undef(anchor) ? defaults
   : [for (i = [0:2]) with_default(anchor[i], defaults[i])];
-
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -565,26 +635,38 @@ function _plate_joint_anchor_value(anchor) =
   Text stays upright when the solid is flipped. THIN labels are dimensional
   diagnostics; they do not certify a joint's mechanical strength.
  */
-module plate_joint_sizes(params, anchor, mode="male", min_wall=1.6,
-                         text_size=3, offset=[0, 0, 0], flip=false) {
+module plate_joint_sizes(params,
+                         anchor,
+                         mode="male",
+                         min_wall=1.6,
+                         text_size=3,
+                         offset=[0, 0, 0],
+                         flip=false) {
   p = params;
   threshold = with_default(min_wall, 1.6);
   size = with_default(text_size, 3);
   rows = plate_joint_size_report(p, flip=flip);
-  labels = concat([
-    ["text", str("PLATE JOINT / ", with_default(mode, "male")), "color", "black"],
-    ["text", str("THIN < ", threshold, " mm"), "color", "firebrick"]
-  ], [for (row = rows)
-    let (thin = row[2] && row[1] < threshold)
-    ["text", str(thin ? "! THIN  " : "", row[0], ": ", round(row[1] * 100) / 100, " mm"),
-     "color", thin ? "firebrick" : "black"]]);
+  labels = concat([["text", str("PLATE JOINT / ", with_default(mode, "male")),
+                    "color", "black"],
+                   ["text", str("THIN < ", threshold, " mm"),
+                    "color", "firebrick"]],
+                  [for (row = rows)
+                      let (thin = row[2] && row[1] < threshold)
+                        ["text", str(thin ? "! THIN  " : "", row[0], ": ", round(row[1] * 100) / 100, " mm"),
+                         "color", thin ? "firebrick" : "black"]]);
   if ($preview) {
     _plate_joint_anchor(p, anchor) {
-      translate([plist_get("w", p) / 2 + size * 4, -plist_get("l", p) / 2, plist_get("plate_h", p) + 0.5]) {
+      translate([plist_get("w", p) / 2 + size * 4,
+                 -plist_get("l", p) / 2,
+                 plist_get("plate_h", p) + 0.5]) {
         translate(with_default(offset, [0, 0, 0])) {
-          text_rows(labels, default_size=size, default_halign="left",
-                    default_height=0.1, gap=size * 0.35,
-                    center_x=false, center_y=true);
+          text_rows(labels,
+                    default_size=size,
+                    default_halign="left",
+                    default_height=0.1,
+                    gap=size * 0.35,
+                    center_x=false,
+                    center_y=true);
         }
       }
     }

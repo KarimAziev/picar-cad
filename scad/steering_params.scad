@@ -231,11 +231,6 @@ dsservo_socket_z_offset                           = 3.0;
 dsservo_socket_side                               = -1;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Front chassis
-// ─────────────────────────────────────────────────────────────────────────────
-front_chassis_thickness                           = chassis_thickness;
-
-// ─────────────────────────────────────────────────────────────────────────────
 // Bulkhead slots
 // ─────────────────────────────────────────────────────────────────────────────
 // The upper spacing above the bulkhead slots
@@ -1464,7 +1459,7 @@ gearbox_bracket_bolt_dist_from_cap                = 2.6;
 
 gearbox_bracket_bolt_dist_y_ear_bolt              = 3.0;
 
-gearbox_bracket_nut_pocket_clearance              = 0.4;
+gearbox_bracket_nut_pocket_clearance              = 0.3;
 gearbox_bracket_nut_pocket_h_clearance            = 0.5;
 
 // The wall thickness of the bracket boss; the outer diameter is

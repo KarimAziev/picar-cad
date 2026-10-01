@@ -42,8 +42,8 @@ use <../bulkhead/front_bulkhead_housing.scad>
 use <../computed.scad>
 use <../front_suspension_assembly.scad>
 use <../middle_chassis/middle_chassis.scad>
-use <../rear_chassis/rear_chassis_frame.scad>
-use <../rear_suspension/computed_params.scad>
+use <../rear_chassis/computed_params.scad>
+use <../rear_chassis/rear_chassis.scad>
 use <../steering_servo_bracket/steering_servo_bracket_assembly.scad>
 use <../steering_servo_bracket/steering_servo_chassis_slots.scad>
 use <../wishbone_arms/front_lower_arm.scad>
@@ -226,7 +226,7 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
 
   full_lipo_pack_size = plist_get("size", lipo_pack_case_props);
   body_width = suspension_chassis_width(include_middle=show_middle_chassis);
-  rear_layout = rear_suspension_layout(min_width=body_width);
+  rear_layout = rear_chassis_layout(min_width=body_width);
 
   front_chassis(width=body_width,
                 show_front_frame=show_chassis_front_frame,
@@ -243,7 +243,7 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
 
   if (show_front_chassis_components) {
     if (show_steering_assembly) {
-      translate([0, 0, front_chassis_thickness]) {
+      translate([0, 0, chassis_thickness]) {
         front_suspension_assembly(show_front_lower_arm=show_front_lower_arm,
                                   show_front_upper_arm=show_front_upper_arm,
                                   show_knuckle_bushing=show_knuckle_bushing,
@@ -267,7 +267,7 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
 
     translate([0,
                -bellcrank_y_distance_from_bulkhead,
-               front_chassis_thickness]) {
+               chassis_thickness]) {
       bellcrank_steering_assembly(show_bellcrank_drive=show_bellcrank_drive,
                                   show_bellcrank_drive_idler_lever=show_bellcrank_drive_idler_lever,
                                   show_bellcrank_drive_servo_lever=show_bellcrank_drive_servo_lever,
@@ -312,11 +312,11 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
                             power_case_plist=multi_lipo_packs_case);
   }
 
-  translate([0, front_chassis_y_joint_2_end, front_chassis_thickness]) {
+  translate([0, front_chassis_y_joint_2_end, chassis_thickness]) {
     // Join the rear plate to the battery's rear edge
     translate([0,
                show_middle_chassis ? -full_lipo_pack_size[1] : 0,
-               -front_chassis_thickness]) {
+               -chassis_thickness]) {
       rotate([0, 0, 180]) {
         rear_chassis(anchor=[0, 1, 1],
                      layout=rear_layout,

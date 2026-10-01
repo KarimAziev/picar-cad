@@ -871,12 +871,13 @@ module pocket_slot(h,
 
   clearance = with_default(clearance, 0.3);
   h_clearance = with_default(clearance, 0.3);
-  bore_d = with_default(bore_d, plist_get("outer_dia", nut_spec));
+  pocket_d = (find_nut_prop("outer_dia", d) + clearance) / cos(30);
+  bore_d = with_default(bore_d, pocket_d);
   bore_h = with_default(bore_h, plist_get("height", nut_spec));
 
   counterbore(h=h,
               d=d,
-              bore_d=is_undef(bore_d) ? bore_d : bore_d + clearance,
+              bore_d=bore_d,
               bore_h=is_undef(bore_h) ? bore_h : bore_h + h_clearance,
               center=center,
               cbore_fn=6,

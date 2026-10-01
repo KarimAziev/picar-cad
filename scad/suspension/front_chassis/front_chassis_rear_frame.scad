@@ -69,7 +69,7 @@ module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
   difference() {
     maybe_color(color) {
       union() {
-        linear_extrude(height=front_chassis_thickness,
+        linear_extrude(height=chassis_thickness,
                        center=false,
                        convexity=2) {
           mirror_copy([1, 0, 0]) {
@@ -82,14 +82,14 @@ module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
         translate(concat(take(pts[0], 2), [0])) {
           cuboid(size=[front_chassis_rear_frame_corner_r * 2,
                        front_chassis_rear_frame_corner_r,
-                       front_chassis_thickness],
+                       chassis_thickness],
                  anchor=[0, -1, 1]);
         }
         // remove rounded part at the end
         translate([0, front_chassis_y_joint_2_end, 0]) {
           cuboid(size=[width,
                        front_chassis_rear_frame_corner_r,
-                       front_chassis_thickness],
+                       chassis_thickness],
                  anchor=[0, 1, 1]);
         }
       }
@@ -127,7 +127,7 @@ module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
   }
 
   if (debug) {
-    translate([0, 0, front_chassis_thickness + 0.1]) {
+    translate([0, 0, chassis_thickness + 0.1]) {
       _debug();
       mirror([1, 0, 0]) {
         _debug(rotation=[0, 180, 0]);

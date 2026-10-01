@@ -80,7 +80,7 @@ function front_chassis_head_center_y() =
   - Head-neck placement coordinate on Z.
  */
 function front_chassis_head_mount_z() =
-  front_chassis_thickness - chassis_pan_servo_slot_recess;
+  chassis_thickness - chassis_pan_servo_slot_recess;
 
 function front_chassis_ear_pts() =
   let (ear_y = front_chassis_ear_w / 2,
@@ -156,7 +156,7 @@ module front_chassis_front_frame(debug=front_chassis_front_frame_debug,
   union() {
     difference() {
       maybe_color(color) {
-        linear_extrude(height=front_chassis_thickness,
+        linear_extrude(height=chassis_thickness,
                        center=false,
                        convexity=2) {
           mirror_copy([1, 0, 0]) {
@@ -191,7 +191,7 @@ module front_chassis_front_frame(debug=front_chassis_front_frame_debug,
                  - front_bumper_bolt_d / 2
                  - front_bumper_bolt_pad_y,
                  0]) {
-        counterbore(h=front_chassis_thickness,
+        counterbore(h=chassis_thickness,
                     d=front_bumper_bolt_d);
       }
 
@@ -205,7 +205,7 @@ module front_chassis_front_frame(debug=front_chassis_front_frame_debug,
         four_corner_counterbores(size=[front_bumper_bolt_spacing_x, 0],
                                  center=true,
                                  d=front_bumper_bolt_d,
-                                 h=front_chassis_thickness);
+                                 h=chassis_thickness);
       }
 
       translate([0, head_center_y, 0]) {
@@ -222,7 +222,7 @@ module front_chassis_front_frame(debug=front_chassis_front_frame_debug,
     }
   }
   if (debug) {
-    translate([0, 0, front_chassis_thickness + 0.1]) {
+    translate([0, 0, chassis_thickness + 0.1]) {
       _debug();
       mirror([1, 0, 0]) {
         _debug(rotation=[0, 180, 0]);

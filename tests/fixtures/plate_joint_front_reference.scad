@@ -13,7 +13,7 @@ module reference() {
   }
 }
 module candidate() {
-  plate_joint(plate_h=front_chassis_thickness, bolt_d=front_chassis_joint_bolt_d,
+  plate_joint(plate_h=chassis_thickness, bolt_d=front_chassis_joint_bolt_d,
               w=joint_w, l=joint_l, rail_w=joint_rail_w,
               bolt_n_center=0, include_pin_holes=true, mode=part);
 }

@@ -34,7 +34,7 @@ function front_chassis_head_mount_size() =
        front_chassis_head_ribbon_slot_w)
    + front_chassis_head_wire_land * 2,
    head_neck_full_w() + front_chassis_head_mount_padding * 2,
-   front_chassis_thickness];
+   chassis_thickness];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -102,7 +102,7 @@ function front_chassis_head_rear_reach() =
   **Notes:** Defaults preserve the old chassis's three 20 × 3 mm openings and
   two 3 mm strips. These are functional ribbon-routing features, not vents.
  */
-module front_chassis_head_ribbon_slots(thickness=front_chassis_thickness,
+module front_chassis_head_ribbon_slots(thickness=chassis_thickness,
                                        anchor=[0, 0, 1]) {
   size = front_chassis_head_mount_size();
   eps = front_chassis_joint_boolean_overlap;
@@ -131,7 +131,7 @@ module front_chassis_head_ribbon_slots(thickness=front_chassis_thickness,
   - recess_h: Depth of the horn-arm recess from the top face.
   - anchor: Anchor vector for the mount-pad envelope.
  */
-module front_chassis_head_slots(thickness=front_chassis_thickness,
+module front_chassis_head_slots(thickness=chassis_thickness,
                                 recess_h=chassis_pan_servo_slot_recess,
                                 anchor=[0, 0, 1]) {
   size = front_chassis_head_mount_size();

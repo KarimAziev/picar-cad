@@ -22,7 +22,7 @@ function front_chassis_controls_pos() =
   assert(size[1] + land * 2 <= front_y - rear_y,
          "Controls do not fit between the steering mechanism and rear joint")
   [servo_slot_min_w - land - size[0] / 2,
-   rear_y + land + size[1] / 2, front_chassis_thickness];
+   rear_y + land + size[1] / 2, chassis_thickness];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -40,7 +40,7 @@ module front_chassis_controls(slot_mode=false) {
                 show_buttons=true,
                 show_standoff=true,
                 slot_mode=slot_mode,
-                slot_thickness=front_chassis_thickness);
+                slot_thickness=chassis_thickness);
   }
 }
 
@@ -62,8 +62,8 @@ module front_chassis_rpi(slot_mode=false) {
     rpi_5(anchor=[1, -1, 1],
           orientation=front_rpi_orientation,
           rotate_z_180=front_rpi_rotate_z_180,
-          slot_thickness=front_chassis_thickness,
-          bolt_visible_h=front_chassis_thickness - chassis_counterbore_h,
+          slot_thickness=chassis_thickness,
+          bolt_visible_h=chassis_thickness - chassis_counterbore_h,
           show_standoffs=true,
           slot_mode=slot_mode);
   }

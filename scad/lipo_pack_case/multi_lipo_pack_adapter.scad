@@ -224,10 +224,9 @@ module multi_lipo_pack_adapter(props,
                  $fn=40);
       }
       translate(concat(p, [plist_get("nut_z", props)])) {
-        echo("pocket_d", plist_get("pocket_d", props))
-          cylinder(d=plist_get("pocket_d", props),
-                   h=plist_get("nut_h", props) + 0.24,
-                   $fn=6);
+        cylinder(d=plist_get("pocket_d", props),
+                 h=plist_get("nut_h", props) + 0.24,
+                 $fn=6);
       }
     }
   }
