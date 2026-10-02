@@ -13,7 +13,7 @@ include <../colors.scad>
 include <../parameters.scad>
 
 use <../placeholders/servo.scad>
-use <../placeholders/steering_servo.scad>
+use <simple_steering_servo.scad>
 use <ackermann_geometry_triangle.scad>
 use <knuckle.scad>
 use <rack.scad>

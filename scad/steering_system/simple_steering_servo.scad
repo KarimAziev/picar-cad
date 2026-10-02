@@ -1,5 +1,5 @@
 /**
- * Module: A dummy mockup of the steering servo.
+ * Module: A dummy mockup of the steering servo for deprecated simple steering.
  *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
@@ -8,7 +8,7 @@
 include <../colors.scad>
 include <../parameters.scad>
 
-use <servo.scad>
+use <../placeholders/servo.scad>
 
 function steering_servo_full_height() =
   servo_full_height(steering_servo_size[2],

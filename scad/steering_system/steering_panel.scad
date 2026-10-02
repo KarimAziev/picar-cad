@@ -60,7 +60,7 @@ use <../lib/slots.scad>
 use <../lib/text.scad>
 use <../lib/transforms.scad>
 use <../placeholders/bolt.scad>
-use <../placeholders/steering_servo.scad>
+use <simple_steering_servo.scad>
 use <bearing_shaft.scad>
 use <knuckle_connector.scad>
 use <rack.scad>

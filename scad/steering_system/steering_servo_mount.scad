@@ -20,7 +20,7 @@ use <../lib/plist.scad>
 use <../lib/transforms.scad>
 use <../placeholders/bolt.scad>
 use <../placeholders/servo.scad>
-use <../placeholders/steering_servo.scad>
+use <simple_steering_servo.scad>
 use <rack_util.scad>
 use <steering_pinion.scad>
 
