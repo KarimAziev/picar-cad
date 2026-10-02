@@ -1,7 +1,8 @@
 /**
   * Module: Neutral steering datum audit.
   *
-  * Extracts nominal hole axes and displayed rod centers without modifying parts.
+  * Extracts hole axes and displayed rod centers for the legacy unlinked pose.
+  * This does not describe the solved linkage in rc_robot_assembly.scad.
   * Coordinates use the bellcrank midpoint at chassis-top height as the origin;
   * X is across the chassis, Y points forward, Z points up. Dimensions are mm.
   */
@@ -97,7 +98,7 @@ function steering_audit_servo_point(p) =
 function steering_audit_datums() =
   assert($t == 0, "Neutral audit requires animation time zero")
   assert(knuckle_tie_rod_angle == 0 && knuckle_tie_tilt_shift == 0,
-         "Neutral audit requires unrotated wheel tie-rod placeholders")
+         "Legacy audit requires zero tie-rod yaw and tilt-shift overrides")
   let (outer_r = bellcrank_arm_l - bellcrank_arm_bolt_d / 2 - bellcrank_arm_bolt_edge_offset,
        inner_r = outer_r - bellcrank_arm_bolt_spacing,
        plate_r = bellcrank_arm_l - bellcrank_arm_bolt_edge_offset
@@ -114,9 +115,16 @@ function steering_audit_datums() =
        rod_z = steering_arm_bolt_pos_from_planar(planar),
        rod_h = max(knuckle_tie_rod_bushing_h, knuckle_tie_rod_eye_od, knuckle_tie_rod_link_od),
        rod_l = knuckle_tie_rod_eye_od + 2 * knuckle_tie_rod_shank_len + knuckle_tie_rod_link_len,
-       rod_a = [arm_x, -knuckle_arm_thickness / 2 - rod_h,
-                rod_z] + [0, rod_h / 2, 0],
-       rod_b = rod_a + [rod_l, 0, 0],
+       rod_angles = knuckle_tie_rod_angles,
+       rod_bbox = rotated_bbox([for (i = [0:2]) knuckle_tie_rod_eye_od], rod_angles),
+       rod_shift = [-rod_bbox[0] / 2, -knuckle_tie_rod_eye_od / 2, 0],
+       rod_origin = [arm_x, -knuckle_arm_thickness / 2 - rod_h, rod_z],
+       rod_centers = [for (end = [0, 1])
+           rod_origin + rotate_euler_xyz(rod_shift + rotate_euler_xyz(
+             [knuckle_tie_rod_eye_od / 2 + end * rod_l,
+              knuckle_tie_rod_eye_od / 2, rod_h / 2], rod_angles), [-90, 0, 0])],
+       rod_a = rod_centers[0],
+       rod_b = rod_centers[1],
        servo_dims = tie_rod_full_len(shaft_body_len=steering_servo_tie_rod_body_len,
          shaft_thread_len=steering_servo_tie_rod_thread_len,
          shaft_thread_d=steering_servo_tie_rod_thread_d, show_shaft_nuts=true,

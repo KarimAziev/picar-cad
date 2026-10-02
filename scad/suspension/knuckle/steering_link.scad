@@ -26,6 +26,21 @@ function steering_link_full_len(eye_od=knuckle_tie_rod_eye_od,
   let (tie_rod_len = eye_od + shank_len)
   center_link_len + tie_rod_len * 2;
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  steering_link_ball_spacing
+  ─────────────────────────────────────────────────────────────────────────────
+  Return installed ball-center spacing, excluding the outer eye radii.
+  **Parameters:**
+  - `eye_od`: Rod-end eye outside diameter.
+  - `shank_len`: Shank length of each end, including its neck.
+  - `center_link_len`: Exposed center shaft body length.
+ */
+function steering_link_ball_spacing(eye_od=knuckle_tie_rod_eye_od,
+                                    shank_len=knuckle_tie_rod_shank_len,
+                                    center_link_len=knuckle_tie_rod_link_len) =
+  eye_od + 2 * shank_len + center_link_len;
+
 module steering_tie_rod_link(eye_od=knuckle_tie_rod_eye_od,
                              eye_h=knuckle_tie_rod_eye_h,
                              shank_od=knuckle_tie_rod_shank_od,
@@ -175,7 +190,7 @@ module steering_link(knuckle_arm_len=knuckle_arm_base_len,
                      center_link_thread_d=knuckle_tie_rod_link_thread_d,
                      center_link_color=knuckle_tie_rod_link_color,
                      show_eye_bolt=true,
-                     angles=[0, 6, 0],
+                     angles=knuckle_tie_rod_angles,
                      tilt_shift=knuckle_tie_tilt_shift,
                      right_end_bushing_angles=[0, 0, 0],
                      left_end_bushing_angles=[0, 0, 0],

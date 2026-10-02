@@ -102,16 +102,18 @@ def audit(data):
             {
                 "side": "negative_x" if side == 0 else "positive_x",
                 "rod_center_length_mm": math.dist(a, b),
-                "minimum_mount_distance_xy_mm": math.dist(holes[0][:2], target[:2]),
+                "minimum_mount_distance_xy_mm": min(
+                    math.dist(p[:2], target[:2]) for p in holes
+                ),
                 "inner_endpoint_axis_gap_xy_mm": math.dist(b[:2], target[:2]),
                 "outer_endpoint_nearest_hole_gap_xy_mm": min(
                     math.dist(a[:2], p[:2]) for p in holes
                 ),
-                "note": "First knuckle hole is the nearest modeled attachment; ball stack heights unconfirmed.",
+                "note": "Legacy unlinked reference pose; minimum across all knuckle holes.",
             }
         )
     return {
-        "status": "NEUTRAL_CLOSURE_UNCONFIRMED_NOT_A_CALIBRATION",
+        "status": "LEGACY_REFERENCE_POSE_NOT_A_CALIBRATION",
         "center_plate_pitch_mm": data["center_link_l"],
         "bellcrank_pivot_pitch_mm": math.dist(*data["bellcrank_pivots"]),
         "center_plate_axis_gaps_xy_mm": [
@@ -186,7 +188,8 @@ def main() -> None:
     print(json.dumps(report, indent=2))
     print(f"Outputs: {out}")
     print(
-        "No servo-to-wheel curve or Ackermann percentage exported: neutral closure requires confirmation."
+        "Legacy unlinked pose only; see articulated.scad for rigid wheel-linkage closure. "
+        "No servo-to-wheel calibration or Ackermann percentage exported."
     )
 
 

@@ -125,7 +125,7 @@ module front_bulkhead_housing(color=cobalt_blue_metallic,
           }
         }
       }
-      if (show_front_lower_arm) {
+      if (show_front_lower_arm || show_front_lower_arm_pin) {
         lower_arm_x = front_bulkhead_w / 2
           + barrel_w
           - pin_hole_offset
@@ -144,12 +144,14 @@ module front_bulkhead_housing(color=cobalt_blue_metallic,
           - barrel_len;
 
         mirror_copy([1, 0, 0]) {
-          translate([lower_arm_x,
-                     arm_min_y
-                     + (min(front_lower_arm_y_offset,
-                            step)),
-                     (barrel_thickness - front_lower_arm_thickness) / 2]) {
-            front_lower_arm(show_ball_stud=show_front_lower_arm_ball_stud);
+          if (show_front_lower_arm) {
+            translate([lower_arm_x,
+                       arm_min_y
+                       + (min(front_lower_arm_y_offset,
+                              step)),
+                       (barrel_thickness - front_lower_arm_thickness) / 2]) {
+              front_lower_arm(show_ball_stud=show_front_lower_arm_ball_stud);
+            }
           }
           if (show_front_lower_arm_pin) {
             translate([front_bulkhead_w / 2 + barrel_w - pin_hole_offset

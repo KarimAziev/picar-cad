@@ -905,6 +905,9 @@ knuckle_tie_rod_bushing_cap_h                      = 5;
 // Z-rotation angle of the tie rod placeholder relative to the steering arm (0 means the shank is parallel to the X-axis of the steering arm)
 knuckle_tie_rod_angle                              = 0;
 
+// Legacy unconstrained rod display. Solved linkage placement derives its angles.
+knuckle_tie_rod_angles                             = [0, 6, 0];
+
 knuckle_tie_tilt_shift                             = 0;
 
 // Height of the tie rod neck

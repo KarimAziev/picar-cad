@@ -152,6 +152,12 @@ show_middle_camera_slots                    = true;
 show_middle_chassis_power_case_slots        = true;
 show_middle_chassis_rpi_slots               = true;
 
+// Prescribed suspension pose; positive arm angle lowers the wheel.
+// This closes the wheel linkages, not the servo/center-bar calibration.
+solve_front_linkage                         = true;
+front_lower_arm_angle                       = 0; // [-15:1:25]
+front_steering_hole                         = 0; // [0,1]
+
 // Steering angle
 steering_servo_angle                        = 0; // [-25:1:25]
 
@@ -198,6 +204,9 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
                               show_bellcrank_drive_servo_lever=show_bellcrank_drive_servo_lever,
                               show_bellcrank_drive_upper_cap=show_bellcrank_drive_upper_cap,
                               steering_servo_angle=steering_servo_angle,
+                              solve_front_linkage=solve_front_linkage,
+                              front_lower_arm_angle=front_lower_arm_angle,
+                              front_steering_hole=front_steering_hole,
                               show_chassis_front_frame=show_chassis_front_frame,
                               show_chassis_rear_frame=show_chassis_rear_frame,
                               show_head=show_head,
@@ -256,7 +265,11 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
   if (show_front_chassis_components) {
     if (show_steering_assembly) {
       translate([0, 0, chassis_thickness]) {
-        front_suspension_assembly(show_front_lower_arm=show_front_lower_arm,
+        front_suspension_assembly(solve_linkage=solve_front_linkage,
+                                  lower_arm_angle=front_lower_arm_angle,
+                                  bellcrank_angle=steering_servo_angle,
+                                  steering_hole=front_steering_hole,
+                                  show_front_lower_arm=show_front_lower_arm,
                                   show_front_upper_arm=show_front_upper_arm,
                                   show_knuckle_bushing=show_knuckle_bushing,
                                   show_knuckle_inner_bearing=show_knuckle_inner_bearing,

@@ -1,8 +1,79 @@
-# Steering characterization: neutral closure first
+# Steering inspection: articulated assembly and legacy reference
 
-This is an inspection tool, not a replacement steering assembly. No production
-part, mounting position, installed rod length or `picar-x-racer` setting is changed.
-The current output is **not a servo-to-wheel calibration or a verified Ackermann curve**.
+## Articulated wheel linkages
+
+Open `articulated.scad` to inspect the front suspension with rigid joint
+constraints. `lower_arm_angle` prescribes the lower wishbone angle: positive
+angles lower the wheel; `10` degrees is an illustrative drooped pose, not a
+measurement inferred from photographs. `bellcrank_angle` sets the displayed
+bellcrank angle. `steering_hole` selects the knuckle attachment (0 is the ear-tip
+hole). `show_suspension=false` exposes the rods, and `show_joint_centers=true`
+adds markers. `solve_linkage=false` shows the old independently placed assembly.
+
+The RC vehicle entry `scad/rc_robot_assembly.scad` enables `solve_front_linkage`
+by default, with `front_lower_arm_angle=0` as a reference pose and
+`front_steering_hole=0`. Change the arm angle to inspect travel. Standalone
+`front_suspension_assembly()` callers retain the old placement unless they pass
+`solve_linkage=true`, so the legacy datum overlay remains reproducible.
+
+`front_linkage.scad` resolves the following without resizing any hardware:
+
+1. Lower-arm ball center follows a circle about its actual fixed hinge axis.
+2. Upper-arm radius and the knuckle's ball-seat spacing determine the upper
+   ball center. The two arms can have different angles; the upright can tilt.
+3. The knuckle rotates around the line through those two balls until the
+   selected steering attachment reaches the fixed-length wheel tie rod.
+4. The rod follows the resulting endpoints, and its spherical bushings align
+   with the two mounting-hole axes independently.
+
+The model uses both rod ends below their mounting faces, with the modeled
+bushing half-height setting the ball-center offset. This mounting convention
+matches the supplied hardware photographs; exact installed heights still need
+physical confirmation. Knuckle seats follow the spherical cavities of the
+modeled bushings. The two fixed hinge axes retain their modeled Y offset.
+
+At zero displayed bellcrank angle and 10 degrees lower-arm droop, the existing
+39.7 mm rods connect with approximately 3.9 degrees of outward wheel heading
+on each side. At a horizontal lower arm, the solution is approximately 4.5
+degrees outward. These are **CAD kinematic results**, not measured toe settings
+or an assertion that the physical car has those exact angles. Vertical droop
+alone is insufficient to explain the previous mismatch; upright rotation is
+also involved. Keeping the same physical dimensions does not require keeping
+all assembly angles zero.
+
+The solver chooses the outboard upper-arm intersection and the steering branch
+nearest straight ahead; unreachable poses assert instead of stretching a rod.
+It replaces the independent legacy `knuckle_angles` / `knuckle_z_shift` controls
+for this mode, which must remain zero. Input ranges are diagnostic, not verified
+joint limits. There is no spring/load equilibrium, shock travel, collision or
+ball-articulation validation here. The existing servo and center-bar display
+remain separate; this is **not a verified servo-to-wheel calibration or
+Ackermann curve**.
+
+Validation:
+
+```sh
+make tests
+.venv/bin/python tests/check_front_linkage_assembly.py
+```
+
+The SCAD test checks four rigid lengths and rotation invariants across 24 poses.
+The Python assembly check inserts markers into temporary source copies at the
+actual spheres and hole cutters, then reads evaluated CSG transforms. It checks
+four suspension balls against their actual sockets, both rod lengths and
+attachment centers, bushing-axis alignment, and stationary hinge axes across
+four poses including both steering holes. This is independent of the solver's
+own reported endpoint residuals. It does not test material strength or collision.
+
+## Legacy unlinked reference audit
+
+`neutral.scad` and `tests/steering_characterization.py` inspect the old pose with
+horizontal arms and independently positioned, zero-angle knuckles. This is
+useful for diagnosing placement formulas; its mismatch is **not a failure of
+the new articulated RC assembly or proof that the physical rod is too short**.
+The audit includes the legacy rod's default 6-degree tilt and compares all
+knuckle holes when reporting the shortest mounting-axis distance. No
+`picar-x-racer` settings are changed.
 
 ## Reproduce
 
@@ -30,7 +101,7 @@ top face. X is across the vehicle, Y forward, Z up. The normal whole-chassis fra
 is recovered by adding `[0, -bellcrank_y_distance_from_bulkhead, front_chassis_thickness]`.
 Negative/positive X labels avoid assuming left/right viewing conventions.
 
-## Findings at current defaults
+## Findings in the legacy reference pose
 
 | Feature                                        | Nominal CAD result         | Interpretation                                                                         |
 | ---------------------------------------------- | -------------------------- | -------------------------------------------------------------------------------------- |
@@ -40,13 +111,13 @@ Negative/positive X labels avoid assuming left/right viewing conventions.
 | Displayed bar's forward displacement           | 12.30 mm                   | Current assembly's placement formula                                                   |
 | Bar-hole to lever-axis mismatch                | 0.158 mm at each end in XY | Not proof of physical interference; bores/clearance may accommodate it                 |
 | Each wheel tie rod, ball-center spacing        | 39.7 mm                    | Not the 48.6 mm outside envelope returned by `steering_link_full_len()`                |
-| Neutral knuckle-to-bellcrank mounting distance | 42.616 mm in XY            | A lower bound on 3D ball-center distance for the nearest knuckle hole                  |
-| Displayed wheel rod to bellcrank axis          | 4.317 mm in XY             | Both sides; the current drawing does not close this connection                         |
-| Displayed wheel rod to nearest knuckle hole    | 0.050 mm in XY             | Small difference in the helper and physical hole formulas                              |
+| Neutral knuckle-to-bellcrank mounting distance | 42.537 mm in XY            | A lower bound on 3D ball-center distance for the nearest of both knuckle holes                  |
+| Displayed wheel rod to bellcrank axis          | 4.409 mm in XY             | Both sides; the current drawing does not close this connection                         |
+| Displayed wheel rod to nearest knuckle hole    | 0.093 mm in XY             | Legacy helper offset plus rotation about its display origin                              |
 | Servo rod, ball-center spacing                 | 59.18 mm                   | Derived from rod-end and shaft/nut geometry                                            |
 | Displayed servo rod to nearest lever hole      | 0.050 mm in XY             | Matches the outermost servo-lever hole approximately; Z stack still needs confirmation |
 
-The wheel rods would need at least about 2.916 mm more ball-center spacing to
+With those fixed legacy mounting positions, the wheel rods would need at least about 2.837 mm more ball-center spacing to
 reach the neutral mounting axes **at those positions**, even before a Z difference
 is included. This is not an instruction to lengthen the hardware: check the installed
 length, selected holes, static toe and CAD placements first. Pivoting the existing
@@ -69,7 +140,8 @@ the outside envelope for the ball-center length to make the numbers agree.
   `steering_servo_bracket/steering_servo_bracket_assembly.scad`: servo output and rod transforms.
 
 The audit currently accepts the default neutral pose only: no knuckle camber,
-caster, steering, suspension displacement, tie-rod tilt or OpenSCAD animation.
+caster, steering, suspension displacement or OpenSCAD animation. The rod
+display angles follow `knuckle_tie_rod_angles` (default `[0,6,0]`).
 The simplified export is rounded by OpenSCAD's echo precision; reported microns
 are not measurement accuracy. Updating production placement code requires updating
 this extractor and checking the overlay. Numerical regression tests alone cannot

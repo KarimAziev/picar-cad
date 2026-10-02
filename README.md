@@ -105,6 +105,12 @@ The current single RC gearmotor assembly has a separate
 [bracket, shaft magnet sleeve and encoder workflow](scad/motor_brackets/rc/README.md),
 including its own five-part print plate and dimensional calculations.
 
+The suspension vehicle entry is `scad/rc_robot_assembly.scad`. Its front wheel
+linkages now have a [rigid articulated assembly mode](scad/suspension/steering_characterization/README.md):
+wishbones rotate about their pins, the knuckles follow their ball joints, and
+fixed-length rods determine wheel heading. `front_lower_arm_angle` prescribes
+the suspension pose; it does not simulate spring compression under vehicle weight.
+
 ### Configurations
 
 Two main presets are supported: the default LiPo power case stack and the UPS S3 option. Both assume two battery holders. Jump to the BOMs for details: [Full BOM (default preset)](#full-bom-default-preset) or [Full BOM (with UPS module S3)](#full-bom-with-ups-module-s3).
