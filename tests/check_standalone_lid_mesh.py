@@ -60,8 +60,23 @@ def main() -> None:
         render(f"include <{ROOT}/scad/suspension/rear_chassis/rear_power_lid_printable.scad>",
                prelude="")
         assert connected_components(mesh) == 1
-        close([bounds(vertices(mesh))[0][2], bounds(vertices(mesh))[1][2]], [0, 18.1])
+        close([bounds(vertices(mesh))[0][2], bounds(vertices(mesh))[1][2]], [0, 18.2])
         print("PASS actual rear-power lid entry prints with both meter mounting lands", flush=True)
+
+        # The two entry paths must produce identical printed lids, not just fit.
+        render(f'''use <{ROOT}/scad/suspension/rear_chassis/computed_params.scad>
+use <{ROOT}/scad/suspension/rear_chassis/rear_payload.scad>
+payload=plist_get("power_case",rear_chassis_layout());
+rear_pl=rear_power_lid_plist(plist_get("plist",payload),plist_get("lidar",payload));
+difference() {{
+  multi_lipo_pack_lid_printable(rear_pl);
+  multi_lipo_pack_lid_printable(pl);
+}}
+difference() {{
+  multi_lipo_pack_lid_printable(pl);
+  multi_lipo_pack_lid_printable(rear_pl);
+}}''', empty=True)
+        print("PASS rear and standalone printed lids have identical geometry", flush=True)
 
         render("multi_lipo_pack_printable(pl);")
         assert connected_components(mesh) == 6

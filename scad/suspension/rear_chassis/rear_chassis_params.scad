@@ -45,11 +45,7 @@ rear_control_case_gap                  = 3;
 rear_power_case_plist                  = multi_lipo_packs_case;
 rear_power_case_y_offset               = -4;
 rear_power_case_clearance              = 3;
-rear_power_case_headroom               = 2; // beneath the sliding lid, above the pack
 rear_power_standoff_clearance          = 2;
-rear_lidar_plist                       = rplidar_c1_plist;
-rear_lidar_lid_thickness               = 3;
-rear_lidar_standoff_h                  = 13;
 
 // Optional Wago brackets: auto tries beneath the case, then extends toward -Y.
 // Each entry accepts placement, rotation (degrees), gap, service_h, bracket.

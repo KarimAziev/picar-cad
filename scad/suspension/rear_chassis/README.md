@@ -64,8 +64,9 @@ the rear frame with its top face and both male tongues facing the bed.
 ## Raised battery and lidar
 
 `rear_power_case_plist` selects the case; `undef` removes its supporting columns,
-mounting holes and contribution to the frame envelope. `rear_lidar_plist=undef`
-omits the lidar and leaves a plain sliding lid. Disabling the case's `rail`
+mounting holes and contribution to the frame envelope. The selected case's
+`lid.lidar` setting selects the sensor; `undef` leaves a plain sliding lid.
+`rear_chassis_layout(lidar_plist=undef)` also permits an explicit sensor-free variant. Disabling the case's `rail`
 specification omits both the sliding lid and lidar, retaining the case and its
 mounting hardware. Visibility toggles on `rear_chassis()`
 and `front_chassis_assembly()` do not resize the configured layout.
@@ -110,7 +111,11 @@ remains -1.8 mm.
 
 The resolved case floor has recessed hex nuts to retain the standoffs' top studs.
 The nuts sit below the battery surface, with solid floor material beneath them.
-`rear_power_case_headroom` adds space above the pack for the cover (default 2 mm).
+The rear mount preserves the selected case's `top_clearance` and its complete
+`lid` configuration. Set roof thickness, automatic or numeric headroom, lidar
+hardware, and `lidar_target_h` in the shared case plist in `scad/rc_params.scad`.
+There is no additional rear-only pack clearance or lidar-height preset. With the
+default case, the rear and standalone lid entry points produce identical geometry.
 The sliding lid uses the case's shared dovetail profiles and transverse locking
 holes. It supports the lidar on its own standoffs with the hardware's fixed
 mounting-hole spacing and underside screw-head recesses. The lid's footprint
@@ -194,8 +199,8 @@ At the rear chassis level, the equivalent visibility option is
 With the wiring option omitted, hiding both lid and lidar also hides the harness.
 Slot mode always emits only chassis mounting cutters.
 
-The wiring follows the configured lid headroom; visibility does not enlarge
-that space. The shared harness passed fuse-clearance checks at 16.5 mm lid
-headroom. At 12.5 mm, its current switched-positive route intersects the
-concealed fuse holder, so that reduced setting needs a revised route or more
-headroom before printing. See the [wiring settings](../../lipo_pack_case/README.md#routed-standalone-wiring).
+The wiring follows the shared enclosure settings; visibility does not enlarge
+that space. The switched-positive route passes beside the concealed fuse holder.
+The default case uses automatic headroom and the same local harness geometry
+in the standalone and rear-mounted configurations. See the
+[wiring settings](../../lipo_pack_case/README.md#routed-standalone-wiring).

@@ -86,7 +86,8 @@ function _rear_panel_layout(specs,
     `gap` and `y_offset`); [] omits panels. `undef` selects the legacy single
     stack controlled by the scalar panel arguments above.
   - `power_case`: Raised battery case plist, or `undef` to omit it.
-  - `lidar_plist`: Lidar on the sliding lid, or `undef` to omit it.
+  - `lidar_plist`: `"case"` (default) uses the selected power case's `lid.lidar`.
+    An explicit plist overrides the sensor; explicit `undef` omits it.
   - `min_width`: Width required by adjoining chassis sections; zero measures
     the rear section alone. The default includes the front hardware.
   - `control_outside`: Move standalone controls toward the suspension within
@@ -122,7 +123,7 @@ function rear_chassis_layout(bracket=gearmotor_bracket_compute_params(motor_plis
                              motor_dist=rc_motor_maintenance_hole_dist,
                              panels=rear_panel_specs,
                              power_case=rear_power_case_plist,
-                             lidar_plist=rear_lidar_plist,
+                             lidar_plist="case",
                              min_width=front_chassis_required_width(),
                              control_outside=rear_control_outside_case,
                              wago_mounts=rear_wago_mounts,
@@ -138,9 +139,11 @@ function rear_chassis_layout(bracket=gearmotor_bracket_compute_params(motor_plis
   assert(is_num(min_width) && min_width >= 0,
          "Minimum chassis width must be nonnegative")
   assert(rear_control_case_gap >= 0, "Control-to-case gap must be nonnegative")
-  assert(rear_power_case_clearance >= 0 && rear_power_case_headroom >= 0,
-         "Battery clearances must be nonnegative")
-  let (d = rear_suspension_chassis_bolt_bore_d,
+  assert(rear_power_case_clearance >= 0,
+         "Battery mounting clearance must be nonnegative")
+  let (case_lid = is_undef(power_case) ? [] : plist_get("lid", power_case, []),
+       lidar = lidar_plist == "case" ? plist_get("lidar", case_lid) : lidar_plist,
+       d = rear_suspension_chassis_bolt_bore_d,
        r = d / 2,
        pad = rear_suspension_chassis_bolt_pad,
        spacing_1 = rear_bulkhead_bolt_spacing_1,
@@ -174,7 +177,7 @@ function rear_chassis_layout(bracket=gearmotor_bracket_compute_params(motor_plis
        rail_enabled = !is_undef(mount)
        && plist_get("enabled", plist_get("rail_props", multi_lipo_pack_props(plist_get("plist", mount)))),
        lid_props = !rail_enabled ? undef
-       : multi_lipo_pack_lid_props(rear_power_lid_plist(plist_get("plist", mount), lidar_plist)),
+       : multi_lipo_pack_lid_props(rear_power_lid_plist(plist_get("plist", mount), lidar)),
        lid_size = is_undef(lid_props) ? [0, 0, 0] : plist_get("size", lid_props),
        overhead = is_undef(mount) ? undef
        : [plist_get("pos", mount) - [max(case_size[0], lid_size[0])/2,
@@ -229,7 +232,7 @@ function rear_chassis_layout(bracket=gearmotor_bracket_compute_params(motor_plis
                              "mount_z", mount_z,
                              "standoff_h", mount_z-chassis_thickness,
                              "clearance_height", occupied_h,
-                             "lidar", lidar_plist,
+                             "lidar", lidar,
                              "lid_size", lid_size]),
        wagos = wago_chassis_mounts(wago_mounts, payload,
                                    concat([motor_bounds,

@@ -11,6 +11,8 @@ use <../scad/lipo_pack_case/lid_fuse.scad>
 use <../scad/lipo_pack_case/multi_lipo_pack_lid.scad>
 use <../scad/components/button_bracket/button_bracket.scad>
 use <../scad/wago/wago_pair.scad>
+use <../scad/suspension/rear_chassis/computed_params.scad>
+use <../scad/suspension/rear_chassis/rear_payload.scad>
 
 assert(standalone_lipo_case == multi_lipo_packs_case);
 assert(standalone_lid_equipment == plist_get("equipment", plist_get("lid", multi_lipo_packs_case)));
@@ -152,3 +154,28 @@ assert(lid_voltmeter_headroom([], plist_get("rail_props", lid), 2, 3) == 2);
 assert(lid_voltmeter_headroom([["enabled", false]],
                               plist_get("rail_props", lid), 2, 3) == 2);
 echo("PASS: automatic height fits side meters with raised case rails and explicit mounting heights");
+
+// Rear mounting must inherit the selected enclosure, including custom lid settings.
+for (shared = [standalone_lipo_case,
+                plist_merge(standalone_lipo_case,
+                  ["top_clearance", 3,
+                   "lid", plist_merge(spec, ["t", 4, "headroom", 14,
+                                              "lidar_target_h", 21])])]) {
+  payload = plist_get("power_case", rear_chassis_layout(power_case=shared, equipment=[]));
+  mounted = plist_get("plist", payload);
+  rear = rear_power_lid_plist(mounted, plist_get("lidar", payload));
+  assert(plist_get("top_clearance", mounted, 0) == plist_get("top_clearance", shared, 0));
+  assert(plist_get("lid", rear) == plist_get("lid", shared));
+  a = multi_lipo_pack_lid_props(shared);
+  b = multi_lipo_pack_lid_props(rear);
+  for (key = ["canonical_size", "roof_z", "headroom", "lidar_base_z", "adapter_props"]) {
+    assert(plist_get(key, a) == plist_get(key, b));
+  }
+}
+no_sensor_case = plist_merge(standalone_lipo_case,
+  ["lid", plist_merge(spec, ["lidar", undef])]);
+assert(is_undef(plist_get("lidar", plist_get("power_case",
+  rear_chassis_layout(power_case=no_sensor_case, equipment=[])))));
+assert(is_undef(plist_get("lidar", plist_get("power_case",
+  rear_chassis_layout(lidar_plist=undef, equipment=[])))));
+echo("PASS: rear mounting preserves shared enclosure and lidar settings, including custom cases");

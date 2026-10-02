@@ -40,9 +40,7 @@ function rear_power_case_mount(pl,
                                 plist_get("t", plist_get("bottom", plist_get("walls", pl)))),
                       plist_get("thread_h", spec) + 0.2),
        thick_pl = plist_merge(pl, ["bottom_t", bottom_t,
-                                   "mount_nut_pockets", true,
-                                   "top_clearance", max(plist_get("top_clearance", pl, 0),
-                                                        rear_power_case_headroom)]),
+                                   "mount_nut_pockets", true]),
        props = multi_lipo_pack_props(thick_pl),
        orientation = plist_get("orientation", props),
        body_size = plist_get("size", props),
@@ -100,7 +98,7 @@ function rear_motor_clearance_height(bracket) =
   rear_power_lid_plist
   ─────────────────────────────────────────────────────────────────────────────
 
-  Apply the rear payload's lidar and roof settings to the shared sliding lid.
+  Apply an explicit lidar selection while preserving the shared lid settings.
 
   **Parameters:**
 
@@ -110,9 +108,7 @@ function rear_motor_clearance_height(bracket) =
 function rear_power_lid_plist(pl, lidar_pl) =
   plist_merge(pl,
               ["lid", plist_merge(plist_get("lid", pl, []),
-                                  ["lidar", lidar_pl,
-                                   "t", rear_lidar_lid_thickness,
-                                   "lidar_target_h", rear_lidar_standoff_h])]);
+                                  ["lidar", lidar_pl])]);
 
 /**
   ─────────────────────────────────────────────────────────────────────────────

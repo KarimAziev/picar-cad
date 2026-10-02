@@ -83,7 +83,7 @@ for (specs = variants) {
   props = multi_lipo_pack_props(resolved_case);
   assert(orientation_size(plist_get("orientation", props), concat(plist_get("bolt_spacing", props),[0]))
          == concat(plist_get("bolt_spacing", payload),[0]));
-  assert(plist_get("bolt_spacing", rear_lidar_plist) == [43, 43]);
+  assert(plist_get("bolt_spacing", plist_get("lidar", payload)) == [43, 43]);
  }
 plain = rear_chassis_layout(panels=[], power_case=undef);
 assert(len(plist_get("panels", plain)) == 0 && is_undef(plist_get("power_case", plain)));
