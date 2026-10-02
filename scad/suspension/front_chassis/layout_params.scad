@@ -91,11 +91,35 @@ function front_chassis_rpi_bounds(orientation=front_rpi_orientation,
        y = y_front_chassis_rear_frame_main_start + y_offset)
   [[x_offset, y - size[1], 0], [x_offset + size[0], y, size[2]]];
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_rpi_mount_bounds
+  ─────────────────────────────────────────────────────────────────────────────
+  Return the RPi mounting footprint including the chassis material margin.
+  **Parameters:**
+  - `orientation`: Flat PCB orientation, `"wlh"` or `"lwh"`.
+  - `x_offset`: Minimum X of the complete reference box.
+  - `y_offset`: Maximum Y relative to the rear frame's main-section start.
+  - `rotate_z_180`: Turn the PCB while preserving its reference box placement.
+  **Returns:** `[minimum_xyz, maximum_xyz]` on the chassis mounting plane.
+ */
+function front_chassis_rpi_mount_bounds(orientation=front_rpi_orientation,
+                                        x_offset=front_rpi_x_offset,
+                                        y_offset=front_rpi_y_offset,
+                                        rotate_z_180=front_rpi_rotate_z_180) =
+  let (bounds = rpi_5_mount_bounds(orientation=orientation,
+                                   anchor=[1, -1, 1],
+                                   rotate_z_180=rotate_z_180,
+                                   pad=front_rpi_mount_pad),
+       pos = [x_offset, y_front_chassis_rear_frame_main_start + y_offset, 0])
+  [bounds[0] + pos, bounds[1] + pos];
+
 front_rpi_bounds                        = front_chassis_rpi_bounds();
+front_rpi_mount_bounds                  = front_chassis_rpi_mount_bounds();
 front_chassis_required_w                 = max(chassis_body_min_w,
                                                servo_slot_min_w * 2,
-                                               2 * max(abs(front_rpi_bounds[0][0]),
-                                                       abs(front_rpi_bounds[1][0])));
+                                               2 * max(abs(front_rpi_mount_bounds[0][0]),
+                                                       abs(front_rpi_mount_bounds[1][0])));
 
 /**
   ─────────────────────────────────────────────────────────────────────────────

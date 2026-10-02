@@ -51,7 +51,6 @@ front_chassis_rear_frame(debug=false);
             triangles = read_triangles(mesh)
             oriented_w, oriented_l = (reference[:2] if orientation == "wlh"
                                       else reference[1::-1])
-            assert x_offset >= -width / 2 and x_offset + oriented_w <= width / 2
             points = [p for tri in triangles for p in tri]
             assert abs(min(p[0] for p in points) + width / 2) < 0.001
             assert abs(max(p[0] for p in points) - width / 2) < 0.001
@@ -67,6 +66,7 @@ front_chassis_rear_frame(debug=false);
                         x, y = -y, x
                     x += x_offset + oriented_w / 2
                     y += front_y - oriented_l / 2
+                    assert -width / 2 <= x - radius and x + radius <= width / 2
                     assert not ray_hits(triangles, x, y), (orientation, reverse, x_offset, "blocked hole", x, y)
                     for angle in range(0, 360, 45):
                         rx = x + radius * math.cos(math.radians(angle))

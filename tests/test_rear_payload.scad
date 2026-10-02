@@ -63,7 +63,7 @@ for (specs = variants) {
     }
     if (plist_get("outside_case", panel)) {
       assert(plist_get("type", panel) == "control");
-      assert(plist_get("bounds", panel)[1][1] + rear_suspension_chassis_bolt_pad
+      assert(plist_get("bounds", panel)[1][1] + rear_chassis_edge_pad
              <= plist_get("transition_y_end", layout) + 0.00001);
     }
     for (hole=holes) {

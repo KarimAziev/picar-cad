@@ -37,7 +37,8 @@ module assembly() {
 }
 
 module pin_probes() {
-  rail_w = w - (front_chassis_joint_bolt_d + front_chassis_joint_bolt_pad) * 2;
+  rail_w = w - (front_chassis_joint_bolt_d + front_chassis_joint_bolt_pad
+                + front_chassis_joint_rail_bolt_clearance) * 2;
   pin_z = joint_base_h + (joint_base_h + joint_rail_h) / 2;
   for (x = [-rail_w / 4, rail_w / 4]) {
     translate([x, edge_y + joint_l / 2, pin_z]) {

@@ -72,10 +72,10 @@ for (side = ["left", "right", "auto"],
   assert(plist_get("join_w", current) == 2 * plist_get("max_half_w", current));
   assert(plist_get("size", current)[0] >= plist_get("join_w", current));
   for (part = [motor, panel]) {
-    assert(part[0][0] >= -plist_get("max_half_w", current) + rear_suspension_chassis_bolt_pad - tol);
-    assert(part[1][0] <= plist_get("max_half_w", current) - rear_suspension_chassis_bolt_pad + tol);
-    assert(part[0][1] >= plist_get("min_y", current) + rear_suspension_chassis_bolt_pad - tol);
-    assert(part[1][1] <= plist_get("transition_y_end", current) - rear_suspension_chassis_bolt_pad + tol);
+    assert(part[0][0] >= -plist_get("max_half_w", current) + rear_chassis_edge_pad - tol);
+    assert(part[1][0] <= plist_get("max_half_w", current) - rear_chassis_edge_pad + tol);
+    assert(part[0][1] >= plist_get("min_y", current) + rear_chassis_edge_pad - tol);
+    assert(part[1][1] <= plist_get("transition_y_end", current) - rear_chassis_edge_pad + tol);
   }
   if (side == "auto") {
     near([plist_get("max_half_w", current)],

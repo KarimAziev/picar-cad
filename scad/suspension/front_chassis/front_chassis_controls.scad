@@ -54,7 +54,8 @@ module front_chassis_controls(slot_mode=false) {
 
   `front_rpi_orientation` selects the flat layout; `front_rpi_rotate_z_180` turns
   the board 180 degrees in its plane. Both keep the configured minimum X and
-  maximum Y of its reference box fixed. The frame uses the same reference bounds.
+  maximum Y of its reference box fixed. Chassis width follows the mounting
+  footprint; connector overhang does not require supporting plate material.
  */
 module front_chassis_rpi(slot_mode=false) {
   bounds = front_chassis_rpi_bounds();

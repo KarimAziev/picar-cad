@@ -33,7 +33,7 @@ rear_suspension_joint_spacing = 20; // [0:1:100]
  */
 module rear_chassis_outline(layout=rear_chassis_layout()) {
 
-  r = rear_suspension_chassis_corner_r;
+  r = rear_chassis_corner_r;
   mirror_copy([1, 0, 0]) {
     offset_vertices_2d(r=r) {
       polygon(rear_chassis_outline_points(layout));

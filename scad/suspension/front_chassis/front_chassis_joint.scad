@@ -139,7 +139,8 @@ module front_chassis_body_joint(mode,
                                 color,
                                 slot_mode=false,
                                 anchor=[0, -1, 1]) {
-  rail_w = w - (front_chassis_joint_bolt_d + front_chassis_joint_bolt_pad) * 2;
+  rail_w = w - (front_chassis_joint_bolt_d + front_chassis_joint_bolt_pad
+                + front_chassis_joint_rail_bolt_clearance) * 2;
   edge_x = w / 2 - front_chassis_joint_bolt_pad - front_chassis_joint_bolt_d / 2;
   n = suspension_chassis_joint_wide_bolt_cols;
   assert(n >= 2 && floor(n) == n, "Wide joint needs at least two bolt columns");

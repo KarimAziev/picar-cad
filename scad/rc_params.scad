@@ -281,6 +281,8 @@ front_chassis_joint_rail_angle                     = 20;
 front_chassis_joint_rail_corner_r                  = 0.4;
 front_chassis_joint_bolt_d                         = 3;
 front_chassis_joint_bolt_pad                       = 2;
+// Keep the wide rail clear of tangent bolt cutters, including binary STL export.
+front_chassis_joint_rail_bolt_clearance             = 0.05;
 front_chassis_joint_bolt_spacing                   = 42.8;
 front_chassis_joint_use_dovetail_rib               = true;
 
@@ -1298,6 +1300,8 @@ front_rpi_y_offset                                 = 0;
 front_rpi_x_offset                                 = -5;
 front_rpi_orientation                              = "lwh"; // wlh | lwh (flat PCB)
 front_rpi_rotate_z_180                             = true; // 180-degree turn in the PCB plane
+// Material beyond the RPi standoffs/counterbores; connectors may overhang.
+front_rpi_mount_pad                                = 2;
 
 front_chassis_rear_frame_corner_r                  = 4;
 

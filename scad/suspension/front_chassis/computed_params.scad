@@ -11,7 +11,8 @@ front_chassis_rear_frame_w     = plist_get("join_w", rear_chassis_layout());
 chassis_joint_wide_w           = front_chassis_rear_frame_w;
 chassis_joint_wide_rail_w      = chassis_joint_wide_w
                                   - (front_chassis_joint_bolt_d
-                                  + front_chassis_joint_bolt_pad) * 2;
+                                  + front_chassis_joint_bolt_pad
+                                  + front_chassis_joint_rail_bolt_clearance) * 2;
 chassis_joint_wide_bolt_edge_x = chassis_joint_wide_w / 2
                                   - front_chassis_joint_bolt_pad
                                   - front_chassis_joint_bolt_d / 2;

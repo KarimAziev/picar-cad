@@ -70,6 +70,53 @@ function rpi_5_oriented_size(orientation="wlh",
                              usb_a_y_offset=rpi_usb_y_offset) =
   orientation_size(orientation, rpi_5_size(size, usb_a_y_offset));
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  rpi_5_mount_bounds
+  ─────────────────────────────────────────────────────────────────────────────
+  Return the support footprint in the flat PCB's anchored reference frame.
+  **Parameters:**
+  - `orientation`: Flat PCB orientation, `"wlh"` or `"lwh"`.
+  - `anchor`: Anchor of the complete USB-inclusive reference box.
+  - `rotate_z_180`: Turn the PCB about its reference center before anchoring.
+  - `size`: Canonical PCB width, length and thickness.
+  - `usb_a_y_offset`: Connector overhang used for placement, not support size.
+  - `bolt_spacing`: Mounting-hole center spacing in canonical X/Y.
+  - `bolt_offset`: Mounting-hole inset from the canonical PCB origin.
+  - `mount_d`: Envelope diameter of each standoff/counterbore.
+  - `pad`: Extra supporting material beyond each mounting envelope.
+  **Returns:** `[minimum_xyz, maximum_xyz]` on the mounting plane, Z=0.
+  Uses the same placement as `rpi_5`; connector and PCB edges may overhang.
+ */
+function rpi_5_mount_bounds(orientation="wlh",
+                            anchor=[1, 1, 1],
+                            rotate_z_180=false,
+                            size=[rpi_width, rpi_len, rpi_thickness],
+                            usb_a_y_offset=rpi_usb_y_offset,
+                            bolt_spacing=rpi_bolt_spacing,
+                            bolt_offset=rpi_bolts_offset,
+                            mount_d=max(rpi_bolt_cbore_dia,
+                                        plist_get("body_d", calc_standoff_params(m2_hole_dia,
+                                                                                 rpi_standoff_height)[0])),
+                            pad=0) =
+  assert(orientation == "wlh" || orientation == "lwh",
+         "RPi mounting bounds require a flat PCB")
+  assert(mount_d > 0 && pad >= 0, "Invalid RPi support diameter or padding")
+  let (reference = rpi_5_size(size, usb_a_y_offset),
+       oriented = orientation_size(orientation, reference),
+       shift = to_anchor(normalize_anchor(anchor), oriented, centered=true),
+       sign = rotate_z_180 ? -1 : 1,
+       centers = [for (x = [0, bolt_spacing[0]], y = [0, bolt_spacing[1]])
+           let (p = orientation_matrix(orientation)
+                    * [bolt_offset + x - reference[0] / 2,
+                       bolt_offset + y - reference[1] / 2, 0, 1])
+             [sign * p[0] + shift[0], sign * p[1] + shift[1]]],
+       r = mount_d / 2 + pad)
+  [[min([for (p = centers) p[0]]) - r,
+    min([for (p = centers) p[1]]) - r, 0],
+   [max([for (p = centers) p[0]]) + r,
+    max([for (p = centers) p[1]]) + r, 0]];
+
 module rpi_standoffs(standoff_height=rpi_standoff_height,
                      bolt_visible_h,
                      bolt_spacing=rpi_bolt_spacing,

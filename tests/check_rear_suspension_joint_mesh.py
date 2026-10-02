@@ -61,12 +61,14 @@ if (part == "frame") {{
 }}
 """)
         for changed in (False, True):
+            # Synthetic joint dimensions do not carry the stock deck's harness.
+            wiring_args = ["-D", 'rear_power_wiring=["enabled", false]'] if changed else []
             for part in ("frame", "mount", "female_root", "collision"):
                 result = subprocess.run(
                     [OPENSCAD, "--backend=Manifold", "--enable=textmetrics",
                      "--hardwarnings", "--export-format", "binstl",
                      "-o", str(output), "-D", f'part="{part}"',
-                     "-D", f"changed={str(changed).lower()}", str(source)],
+                     "-D", f"changed={str(changed).lower()}", *wiring_args, str(source)],
                     capture_output=True, text=True,
                 )
                 log = result.stdout + result.stderr

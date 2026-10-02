@@ -102,6 +102,8 @@ function _rear_panel_layout(specs,
   - `equipment_edge_margin`: Inset from the existing deck edges and taper.
   - `equipment_gap`: Separation from hardware and clearance beneath the case.
     Equipment never changes chassis dimensions or the battery mounting height.
+  - `edge_pad`: Deck material outside mounted hardware and battery supports.
+    The raised case sets an unpadded width floor; its lid may overhang the deck.
 
   **Returns:**
   A plist in holder-row coordinates, with Z=0 below the plate. `size` and
@@ -129,7 +131,8 @@ function rear_chassis_layout(bracket=gearmotor_bracket_compute_params(motor_plis
                              wago_mounts=rear_wago_mounts,
                              equipment=rear_equipment_specs,
                              equipment_edge_margin=rear_equipment_edge_margin,
-                             equipment_gap=rear_equipment_gap) =
+                             equipment_gap=rear_equipment_gap,
+                             edge_pad=rear_chassis_edge_pad) =
   assert(side == "auto" || side == "left" || side == "right",
          "panel_stack_side must be auto, left or right")
   assert(orientation == "wlh" || orientation == "lwh",
@@ -138,6 +141,8 @@ function rear_chassis_layout(bracket=gearmotor_bracket_compute_params(motor_plis
          "panels must be a list of panel plists")
   assert(is_num(min_width) && min_width >= 0,
          "Minimum chassis width must be nonnegative")
+  assert(is_num(edge_pad) && edge_pad >= 0,
+         "Rear chassis edge padding must be nonnegative")
   assert(rear_control_case_gap >= 0, "Control-to-case gap must be nonnegative")
   assert(rear_power_case_clearance >= 0,
          "Battery mounting clearance must be nonnegative")
@@ -145,7 +150,8 @@ function rear_chassis_layout(bracket=gearmotor_bracket_compute_params(motor_plis
        lidar = lidar_plist == "case" ? plist_get("lidar", case_lid) : lidar_plist,
        d = rear_suspension_chassis_bolt_bore_d,
        r = d / 2,
-       pad = rear_suspension_chassis_bolt_pad,
+       suspension_pad = rear_suspension_chassis_bolt_pad,
+       pad = edge_pad,
        spacing_1 = rear_bulkhead_bolt_spacing_1,
        spacing_2 = rear_bulkhead_bolt_spacing_2,
        bh_1 = -d - rear_bulkhead_bolt_spacing_1_holder_dist,
@@ -187,7 +193,7 @@ function rear_chassis_layout(bracket=gearmotor_bracket_compute_params(motor_plis
        clearance_bounds = is_undef(overhead) ? undef
        : [overhead[0] - [rear_control_case_gap, rear_control_case_gap, 0],
           overhead[1] + [rear_control_case_gap, rear_control_case_gap, 0]],
-       transition_start = bh_2 - spacing_2[1] / 2 - r - pad,
+       transition_start = bh_2 - spacing_2[1] / 2 - r - suspension_pad,
 // Reserve the existing taper; relocating controls must not shorten it.
        fixed_bounds = concat([motor_bounds], is_undef(overhead) ? [] : [overhead],
                              [for (p = close_panels) plist_get("bounds", p)]),
@@ -241,26 +247,31 @@ function rear_chassis_layout(bracket=gearmotor_bracket_compute_params(motor_plis
                                             [rear_chassis_maintenance_hole_d/2,
                                              maintenance_y + rear_chassis_maintenance_hole_d/2, 0]]],
                                           [for (p = panel_layout) plist_get("bounds", p)]), chassis_thickness),
-       component_bounds = concat([for (w = wagos) plist_get("bounds", w)],
-                                 [motor_bounds], [for (p = panel_layout) plist_get("bounds", p)],
+       deck_bounds = concat([for (w = wagos) plist_get("bounds", w)],
+                            [motor_bounds], [for (p = panel_layout) plist_get("bounds", p)]),
+       component_bounds = concat(deck_bounds,
                                  is_undef(mount) ? [] : [overhead]),
        component_min_y = min([for (b = component_bounds) b[0][1]]),
        component_max_y = max([for (b = component_bounds) b[1][1]]),
-       suspension_half_w = max(spacing_1[0], spacing_2[0]) / 2 + r + pad,
+       suspension_half_w = max(spacing_1[0], spacing_2[0]) / 2 + r + suspension_pad,
        ear_x = suspension_half_w + r,
-       ear_start_y = -r - pad,
-       ear_end_y = bh_1 + spacing_1[1] / 2 + r + pad,
+       ear_start_y = -r - suspension_pad,
+       ear_end_y = bh_1 + spacing_1[1] / 2 + r + suspension_pad,
        candidate_half_widths = [for (reach = side_widths)
            max(suspension_half_w,
                max(side_widths) + pad,
                reach + panel_gap + panel_size[0] + pad)],
-       max_half_w = max(concat([suspension_half_w, min_width / 2],
-                               [for (b = component_bounds)
+       support_half_w = is_undef(mount) ? 0
+       : max([for (p = plist_get("mount_holes", mount)) abs(p[0])])
+         + plist_get("radius", mount) + pad,
+       max_half_w = max(concat([suspension_half_w, min_width / 2,
+                                case_size[0] / 2, support_half_w],
+                               [for (b = deck_bounds)
                                    max(abs(b[0][0]), abs(b[1][0])) + pad])),
        min_y = min(component_min_y,
                    maintenance_y - rear_chassis_maintenance_hole_d / 2) - pad,
-       max_y = r + pad,
-       holder_max_x = rear_suspension_holder_bolt_spacing_x / 2 + d + pad,
+       max_y = r + suspension_pad,
+       holder_max_x = rear_suspension_holder_bolt_spacing_x / 2 + d + suspension_pad,
        half_w = max(ear_x, max_half_w, holder_max_x),
        transition_y_start = transition_start,
        transition_y_end = max(transition_y_start - rear_suspension_chassis_transition_len,
@@ -305,7 +316,7 @@ function rear_chassis_layout(bracket=gearmotor_bracket_compute_params(motor_plis
                            "panel_bounds", plist_get("bounds", first),
                            "candidate_half_widths", candidate_half_widths,
                            "max_half_w", max_half_w])
-                           assert(equipment_edge_margin >= rear_suspension_chassis_corner_r,
+                           assert(equipment_edge_margin >= rear_chassis_corner_r,
                                   "Equipment edge margin must cover the rounded deck corners")
   plist_merge(base_layout,
               ["equipment_zones", rear_equipment_zones(base_layout,
@@ -328,7 +339,7 @@ function rear_suspension_chassis_size(layout=rear_chassis_layout()) =
   plist_get("size", layout);
 
 function rear_chassis_outline_points(layout=rear_chassis_layout()) =
-  let (corner_r = rear_suspension_chassis_corner_r,
+  let (corner_r = rear_chassis_corner_r,
        min_y = plist_get("min_y", layout),
 
        max_half_w = plist_get("max_half_w", layout),
