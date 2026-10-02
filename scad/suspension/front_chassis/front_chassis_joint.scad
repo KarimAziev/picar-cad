@@ -9,7 +9,7 @@
   */
 
 include <../../colors.scad>
-include <../../steering_params.scad>
+include <../../rc_params.scad>
 include <layout_params.scad>
 
 use <../../components/plate_joint/plate_joint.scad>
@@ -27,8 +27,7 @@ joint_preview_spacing = 0; // [0:1:30]
   - `spacing`: Center-to-center distance between the outer bolts.
   **Returns:** Bolt-center X coordinates.
  */
-function front_chassis_joint_default_bolt_xs(
-  spacing=front_chassis_joint_bolt_spacing) = [-spacing / 2, 0, spacing / 2];
+function front_chassis_joint_default_bolt_xs(spacing=front_chassis_joint_bolt_spacing) = [-spacing / 2, 0, spacing / 2];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -66,8 +65,8 @@ module front_chassis_joint(mode="male",
                            anchor=[0, -1, 1]) {
   anchor = normalize_anchor(anchor);
   spacing = is_undef(pin_spacing)
-      ? rail_w / 2 + joint_recess_w / 2
-      : pin_spacing;
+    ? rail_w / 2 + joint_recess_w / 2
+    : pin_spacing;
 
   module _profile() {
     // Keep the established explicit bolt pattern below; the shared
@@ -178,8 +177,8 @@ module front_chassis_pin_joint_holes(direction=-1,
                                      rail_w=joint_rail_w,
                                      pin_spacing) {
   spacing = is_undef(pin_spacing)
-      ? rail_w / 2 + joint_recess_w / 2
-      : pin_spacing;
+    ? rail_w / 2 + joint_recess_w / 2
+    : pin_spacing;
   // The old +Y entry is referenced from the other end of the joint.
   translate([0, center && direction == 1 ? l : 0, 0]) {
     plate_joint_pin_holes(d=front_chassis_joint_pin_d,
@@ -223,9 +222,15 @@ module front_chassis_joint_male(color=cobalt_blue_light_3,
                                 pin_spacing,
                                 root_side=1,
                                 anchor=[0, -1, 1]) {
-  front_chassis_joint(mode="male", color=color, w=w, l=l, rail_w=rail_w,
-                      bolt_xs=bolt_xs, pin_spacing=pin_spacing,
-                      root_side=root_side, anchor=anchor);
+  front_chassis_joint(mode="male",
+                      color=color,
+                      w=w,
+                      l=l,
+                      rail_w=rail_w,
+                      bolt_xs=bolt_xs,
+                      pin_spacing=pin_spacing,
+                      root_side=root_side,
+                      anchor=anchor);
 }
 
 /**
@@ -259,10 +264,18 @@ module front_chassis_joint_female(color,
                                   eps=front_chassis_joint_boolean_overlap,
                                   slot_mode=false,
                                   anchor=[0, -1, 1]) {
-  front_chassis_joint(mode="female", color=color, w=w, l=l, rail_w=rail_w,
-                      bolt_xs=bolt_xs, pin_spacing=pin_spacing,
-                      include_pin_holes=include_pin_holes, root_side=root_side,
-                      eps=eps, slot_mode=slot_mode, anchor=anchor);
+  front_chassis_joint(mode="female",
+                      color=color,
+                      w=w,
+                      l=l,
+                      rail_w=rail_w,
+                      bolt_xs=bolt_xs,
+                      pin_spacing=pin_spacing,
+                      include_pin_holes=include_pin_holes,
+                      root_side=root_side,
+                      eps=eps,
+                      slot_mode=slot_mode,
+                      anchor=anchor);
 }
 
 union() {

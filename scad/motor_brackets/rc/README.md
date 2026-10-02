@@ -6,7 +6,7 @@ bracket, a shaft magnet sleeve, and separate front/rear gearbox supports. Open
 [`printable.scad`](printable.scad) for all five parts separated on Z=0.
 
 The hardware preset and fit allowances live in
-[`steering_params.scad`](../../steering_params.scad). The default hardware preset
+[`rc_params.scad`](../../rc_params.scad). The default hardware preset
 uses a 61.10 mm shaft, a 13 mm drive-side extension, 7.2 mm end flats, a 3.95 mm
 shaft diameter, a 3 mm single-flat thickness, and 2.1 mm cross-holes. The bracket
 base is 6.5 mm thick. These measured values belong to the hardware plist; the

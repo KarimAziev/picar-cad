@@ -8,7 +8,7 @@
   */
 
 include <../../colors.scad>
-include <../../steering_params.scad>
+include <../../rc_params.scad>
 
 use <../../lib/functions.scad>
 use <../../lib/shapes3d.scad>

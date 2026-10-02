@@ -4,7 +4,7 @@
   * Author: Karim Aziiev <karim.aziiev@gmail.com>
   * License: GPL-3.0-or-later
   */
-include <../../steering_params.scad>
+include <../../rc_params.scad>
 
 
 function bellcrank_idler_arm_z_end(thickness=bellcrank_arm_thickness,

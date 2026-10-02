@@ -5,7 +5,7 @@
   * Author: Karim Aziiev <karim.aziiev@gmail.com>
   * License: GPL-3.0-or-later
   */
-include <../../steering_params.scad>
+include <../../rc_params.scad>
 include <rear_chassis_params.scad>
 
 use <../../lib/plist.scad>

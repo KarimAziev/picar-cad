@@ -10,7 +10,7 @@
   */
 include <../../colors.scad>
 include <../../parameters.scad>
-include <../../steering_params.scad>
+include <../../rc_params.scad>
 include <computed_params.scad>
 
 use <front_chassis_front_frame.scad>
@@ -46,7 +46,8 @@ module front_chassis(show_front_frame=true,
   }
   if (is_undef(show_head_frame) ? show_front_frame : show_head_frame) {
     translate([0, head_spacing, 0]) {
-      front_chassis_head_frame(debug=debug, show_access_slots=show_access_slots);
+      front_chassis_head_frame(debug=debug,
+                               show_access_slots=show_access_slots);
     }
   }
   if (show_rear_frame) {

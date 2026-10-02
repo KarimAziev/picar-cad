@@ -6,7 +6,7 @@
  */
 
 include <../../colors.scad>
-include <../../steering_params.scad>
+include <../../rc_params.scad>
 
 use <../../lib/transforms.scad>
 

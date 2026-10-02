@@ -5,7 +5,7 @@
   * Magenta lines expose top-view mismatch without assuming ball stack height.
   * This is an audit overlay, not an animated or corrected mechanism.
   */
-include <../../steering_params.scad>
+include <../../rc_params.scad>
 use <../../lib/plist.scad>
 use <datums.scad>
 use <../front_suspension_assembly.scad>

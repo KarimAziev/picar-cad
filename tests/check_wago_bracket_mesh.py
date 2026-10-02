@@ -13,7 +13,7 @@ from check_panel_stack_mesh import bounds, close, vertices
 
 ROOT = Path(__file__).resolve().parents[1]
 COMMON = f'''
-include <{ROOT}/scad/steering_params.scad>
+include <{ROOT}/scad/rc_params.scad>
 use <{ROOT}/scad/lib/plist.scad>
 use <{ROOT}/scad/wago/wago_bracket.scad>
 use <{ROOT}/scad/wago/wago_mounts.scad>

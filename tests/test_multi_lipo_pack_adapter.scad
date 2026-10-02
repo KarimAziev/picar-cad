@@ -1,4 +1,4 @@
-include <../scad/steering_params.scad>
+include <../scad/rc_params.scad>
 use <../scad/lib/plist.scad>
 use <../scad/lipo_pack_case/multi_lipo_pack_lid.scad>
 use <../scad/lipo_pack_case/multi_lipo_pack_adapter.scad>

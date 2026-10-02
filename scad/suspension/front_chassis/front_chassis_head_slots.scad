@@ -9,7 +9,7 @@
   */
 
 include <../../parameters.scad>
-include <../../steering_params.scad>
+include <../../rc_params.scad>
 
 use <../../head/head_neck.scad>
 use <../../lib/functions.scad>
@@ -164,7 +164,9 @@ module front_chassis_head_slots(thickness=chassis_thickness,
       translate([0, 0, thickness - recess_h]) {
         linear_extrude(height=recess_h + eps, center=false) {
           mirror_copy([0, 1, 0]) {
-            translate([-front_chassis_head_pan_servo_recess_thickness / 2, 0, 0]) {
+            translate([-front_chassis_head_pan_servo_recess_thickness / 2,
+                       0,
+                       0]) {
               trapezoid_rounded_top(b=front_chassis_head_pan_servo_slot_dia,
                                     t=front_chassis_head_pan_servo_recess_thickness,
                                     h=recess_w / 2,
@@ -174,7 +176,9 @@ module front_chassis_head_slots(thickness=chassis_thickness,
           }
           rotate([0, 0, 90]) {
             mirror_copy([0, 1, 0]) {
-              translate([-front_chassis_head_pan_servo_recess_thickness / 2, 0, 0]) {
+              translate([-front_chassis_head_pan_servo_recess_thickness / 2,
+                         0,
+                         0]) {
                 trapezoid_rounded_top(b=front_chassis_head_pan_servo_slot_dia,
                                       t=front_chassis_head_pan_servo_recess_thickness,
                                       h=recess_l / 2,

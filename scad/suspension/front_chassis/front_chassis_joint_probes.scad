@@ -11,7 +11,7 @@
 
 include <../../colors.scad>
 include <../../parameters.scad>
-include <../../steering_params.scad>
+include <../../rc_params.scad>
 include <computed_params.scad>
 
 use <../../lib/debug.scad>

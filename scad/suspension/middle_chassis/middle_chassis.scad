@@ -12,7 +12,7 @@
 
 include <../../colors.scad>
 include <../../parameters.scad>
-include <../../steering_params.scad>
+include <../../rc_params.scad>
 include <../computed.scad>
 include <../front_chassis/computed_params.scad>
 

@@ -2,7 +2,7 @@
   * Module: Rear chassis plate with its shaft-centered motor and controls.
   * The default origin is the center of the flat joining edge, below the plate.
   */
-include <../../steering_params.scad>
+include <../../rc_params.scad>
 include <computed_params.scad>
 
 use <../../lib/plist.scad>

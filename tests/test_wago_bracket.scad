@@ -4,7 +4,7 @@
   * Author: Karim Aziiev <karim.aziiev@gmail.com>
   * License: GPL-3.0-or-later
   */
-include <../scad/steering_params.scad>
+include <../scad/rc_params.scad>
 
 use <../scad/lib/plist.scad>
 use <../scad/lipo_pack_case/multi_lipo_pack_lid.scad>
@@ -27,7 +27,10 @@ payload = ["bounds", [[-70,-60, 0],[70, 60, 20]],
            "mount_holes", [[-60,-50],[60,-50],[-60, 50],[60, 50]],
            "radius", 3];
 u       = wago_chassis_mounts([["placement", "under",
-                                "pos", [0, 0]]], payload,[], 6);
+                                "pos", [0, 0]]],
+                              payload,
+                              [],
+                              6);
 assert(plist_get("placement", u[0]) == "under");
 assert(plist_get("pos", u[0]) == [0, 0, 6]);
 low     = plist_merge(payload,["mount_z", 10]);
@@ -47,8 +50,8 @@ assert(plist_get("min_y", changed) < plist_get("min_y", base));
 assert(plist_get("max_y", changed) == plist_get("max_y", base));
 
 lid     = plist_merge(plist_get("lid", multi_lipo_packs_case),
-                  ["wago_mounts",[["pos",[-54, 0]],["pos", [54, 0],
-                                                    "rotation", 180]]]);
+                      ["wago_mounts",[["pos",[-54, 0]],["pos", [54, 0],
+                                                        "rotation", 180]]]);
 lpl     = plist_merge(multi_lipo_packs_case,["lid", lid]);
 lprops  = multi_lipo_pack_lid_props(lpl);
 assert(len(multi_lipo_pack_lid_wago_mounts(lpl, lprops)) == 2);

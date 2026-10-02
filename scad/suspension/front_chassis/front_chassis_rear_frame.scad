@@ -7,7 +7,7 @@
 
 include <../../colors.scad>
 include <../../parameters.scad>
-include <../../steering_params.scad>
+include <../../rc_params.scad>
 include <computed_params.scad>
 
 use <../../lib/debug.scad>
@@ -46,7 +46,8 @@ module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
                                 debug_color=green_2,
                                 debug_font="Gill Sans:style=Bold",
                                 width=front_chassis_rear_frame_w) {
-  assert(width >= front_chassis_required_width(), "Frame width cannot exclude the front hardware");
+  assert(width >= front_chassis_required_width(),
+         "Frame width cannot exclude the front hardware");
   pts = front_chassis_pts(width);
 
   module _debug(rotation) {

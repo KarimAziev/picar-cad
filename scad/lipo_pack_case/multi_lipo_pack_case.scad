@@ -10,7 +10,7 @@
 
 include <../bolt_parameters.scad>
 include <../colors.scad>
-include <../steering_params.scad>
+include <../rc_params.scad>
 
 use <../lib/debug.scad>
 use <../lib/functions.scad>
@@ -88,7 +88,8 @@ function _multi_lipo_pack_sides(spec, size, r, fallback) =
        radii = rounded_rect_corner_radii(size,
                                          is_string(side) ? [side] : side,
                                          r),
-       names = ["bottom_left", "bottom_right", "top_right", "top_left"])
+       names = ["bottom_left", "bottom_right",
+                "top_right", "top_left"])
   [for (i = [0 : 3]) [names[i], radii[i]]];
 
 function _multi_lipo_pack_slots(slots, size) =
@@ -115,7 +116,10 @@ function _multi_lipo_pack_slots(slots, size) =
                && pos[0] + dims[0] <= size[0] && pos[1] + dims[1] <= size[1],
                "slot must fit its wall/profile reference box")
         let (r = _multi_lipo_pack_corner_r(plist_get("corner_r", slot, 0), dims[0], dims[1]))
-        ["pos", pos, "size", dims, "d", d, "corner_r", r,
+        ["pos", pos,
+         "size", dims,
+         "d", d,
+         "corner_r", r,
          "side", _multi_lipo_pack_sides(slot, dims, r, "all")]];
 
 function _multi_lipo_pack_shape_props(wall, length, base_h) =
@@ -168,8 +172,13 @@ function _multi_lipo_pack_shape_props(wall, length, base_h) =
                     "custom corner radii must be nonnegative numbers or percentages")
              !round_bottom && abs(pts[i][1] - polygon_min_y(pts)) < 0.000001
              ? 0 : radius])
-  ["kind", kind, "h", h, "t", top, "points", pts, "corner_r", r,
-   "corner_radii", radii, "debug", debug,
+  ["kind", kind,
+   "h", h,
+   "t", top,
+   "points", pts,
+   "corner_r", r,
+   "corner_radii", radii,
+   "debug", debug,
    "side", _multi_lipo_pack_sides(spec,
                                   [length, h],
                                   r,
@@ -281,8 +290,13 @@ function multi_lipo_pack_wall_props(wall, span, base_h) =
          "wall offset and l must fit its available span")
   assert(is_list(cutouts), "wall cutouts must be a list of plists")
   assert(is_num(edge_r) && edge_r >= 0, "wall edge_r must be nonnegative mm")
-  ["h", h, "l", l, "offset", offset, "band_h", band_h, "shape_props", shape,
-   "corner_r", r, "edge_r", edge_r,
+  ["h", h,
+   "l", l,
+   "offset", offset,
+   "band_h", band_h,
+   "shape_props", shape,
+   "corner_r", r,
+   "edge_r", edge_r,
    "side", _multi_lipo_pack_sides(wall, [l, band_h], r, "top"),
    "slots", _multi_lipo_pack_slots(plist_get("slots", wall, []), [l, h]),
    "cutouts", [for (cutout = cutouts)
@@ -294,7 +308,9 @@ function multi_lipo_pack_wall_props(wall, span, base_h) =
                  "cutout h must be between zero and wall height")
           assert(is_num(cut_offset) && cut_offset >= 0 && cut_offset + cut_l <= l + 0.000001,
                  "cutout offset and l must fit the retained wall length")
-          ["l", cut_l, "h", cut_h, "offset", cut_offset,
+          ["l", cut_l,
+           "h", cut_h,
+           "offset", cut_offset,
            "corner_r", _multi_lipo_pack_corner_r(plist_get("corner_r", cutout, 0),
                                                  cut_l,
                                                  cut_h),

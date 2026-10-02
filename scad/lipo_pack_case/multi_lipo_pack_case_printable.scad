@@ -1,4 +1,4 @@
-include <../steering_params.scad>
+include <../rc_params.scad>
 
 use <multi_lipo_pack_case.scad>
 

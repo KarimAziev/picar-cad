@@ -4,7 +4,7 @@
   * Author: Karim Aziiev <karim.aziiev@gmail.com>
   * License: GPL-3.0-or-later
   */
-include <../../steering_params.scad>
+include <../../rc_params.scad>
 
 use <../../lib/plist.scad>
 use <gearbox_bracket.scad>
@@ -12,15 +12,15 @@ use <gearmotor_encoder_bracket.scad>
 use <util.scad>
 
 module gearbox_encoder_bracket_printable(plist=motor_plist,
-                                          bolt_pad_x=gearbox_bracket_bolt_pad_x,
-                                          bolt_pad_y=gearbox_bracket_bolt_pad_y,
-                                          ear_bolt_pad=gearbox_bracket_ear_bolt_pad,
-                                          bolt_d=gearbox_bracket_bolt_d,
-                                          bracket_thickness=bracket_thickness,
-                                          corner_r=gearbox_bracket_corner_r,
-                                          fillet_x_w=gearbox_bracket_fillet_x_w,
-                                          fillet_y_w=gearbox_bracket_fillet_y_w,
-                                          encoder_plist=motor_encoder_plist) {
+                                         bolt_pad_x=gearbox_bracket_bolt_pad_x,
+                                         bolt_pad_y=gearbox_bracket_bolt_pad_y,
+                                         ear_bolt_pad=gearbox_bracket_ear_bolt_pad,
+                                         bolt_d=gearbox_bracket_bolt_d,
+                                         bracket_thickness=bracket_thickness,
+                                         corner_r=gearbox_bracket_corner_r,
+                                         fillet_x_w=gearbox_bracket_fillet_x_w,
+                                         fillet_y_w=gearbox_bracket_fillet_y_w,
+                                         encoder_plist=motor_encoder_plist) {
 
   params = gearmotor_bracket_compute_params(plist=plist,
                                             bolt_pad_x=bolt_pad_x,

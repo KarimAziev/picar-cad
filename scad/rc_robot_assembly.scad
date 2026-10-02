@@ -14,7 +14,7 @@
   */
 include <colors.scad>
 include <parameters.scad>
-include <steering_params.scad>
+include <rc_params.scad>
 include <suspension/front_chassis/computed_params.scad>
 
 use <head/head_neck.scad>
@@ -40,6 +40,9 @@ use <suspension/bellcrank_steering_slots.scad>
 use <suspension/bulkhead/front_bulkhead_chassis.scad>
 use <suspension/bulkhead/front_bulkhead_housing.scad>
 use <suspension/computed.scad>
+use <suspension/front_chassis/front_chassis.scad>
+use <suspension/front_chassis/front_chassis_controls.scad>
+use <suspension/front_chassis/front_chassis_front_frame.scad>
 use <suspension/front_suspension_assembly.scad>
 use <suspension/middle_chassis/middle_chassis.scad>
 use <suspension/rear_chassis/computed_params.scad>
@@ -47,9 +50,6 @@ use <suspension/rear_chassis/rear_chassis.scad>
 use <suspension/steering_servo_bracket/steering_servo_bracket_assembly.scad>
 use <suspension/steering_servo_bracket/steering_servo_chassis_slots.scad>
 use <suspension/wishbone_arms/front_lower_arm.scad>
-use <suspension/front_chassis/front_chassis.scad>
-use <suspension/front_chassis/front_chassis_controls.scad>
-use <suspension/front_chassis/front_chassis_front_frame.scad>
 
 show_chassis_front_frame                    = true;
 show_chassis_rear_frame                     = true;

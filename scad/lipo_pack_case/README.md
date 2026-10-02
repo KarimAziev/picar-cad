@@ -1,7 +1,7 @@
 # Multi-pack power case and sliding lid
 
 The case, rails, and lid share the `multi_lipo_packs_case` plist in
-[`../steering_params.scad`](../steering_params.scad). Pack sizes and orientations
+[`../rc_params.scad`](../rc_params.scad). Pack sizes and orientations
 determine the cavity. Wall heights, lengths, and wiring cutouts determine the
 supporting rim; the rails and matching lid follow those dimensions. An optional
 removable plate adapts the lidar mounting pattern to accessible lid fasteners.
@@ -250,7 +250,7 @@ See [Wago bracket configuration and examples](../wago/README.md).
 Open `standalone_assembly.scad` for the assembled case, `lid_example.scad`
 for the equipped lid alone, or `standalone_printable.scad` for the complete
 hardware-free print plate. The arrangement is configured directly in
-`multi_lipo_packs_case` in `../steering_params.scad`, so the regular case assembly,
+`multi_lipo_packs_case` in `../rc_params.scad`, so the regular case assembly,
 lid, and printable entry points use the same equipment and slots.
 `standalone_parameters.scad` provides aliases for the example entry points;
 it does not maintain a separate preset. To omit the equipment, override
@@ -259,7 +259,7 @@ it does not maintain a separate preset. To omit the equipment, override
 The preset includes a concealed **ATM inline fuse holder**, a horizontal toggle
 switch, two opposing Wago cradles for power and ground, and an optional centered
 lidar adapter. Set `multi_lipo_lid_equipment_preset` in
-[`steering_params.scad`](../steering_params.scad) to `"dual_wago"` (the default)
+[`rc_params.scad`](../rc_params.scad) to `"dual_wago"` (the default)
 or `"meter"` (one Wago and meters in the remaining space). Both presets retain
 the same switch clearance and concealed fuse mounting. The fuse lies flat beneath the roof, on two shallow bearing pads.
 Two cable ties pass through four roof slots around its body, leaving the cap
@@ -437,12 +437,12 @@ one Wago pair. Multi-pack electrical connections are not inferred.
 
 The preview echoes these lengths for the current preset:
 
-| Added lead | Routed centerline | Suggested starting cut |
-| --- | ---: | ---: |
-| Male T-plug negative → GND Wago | 127.5 mm | 150 mm |
-| Male T-plug positive → fuse socket | 41.6 mm | 65 mm |
-| Fuse socket → switch input crimp | 71.8 mm | 95 mm |
-| Switch output crimp → positive Wago | 270.1 mm | 295 mm |
+| Added lead                          | Routed centerline | Suggested starting cut |
+| ----------------------------------- | ----------------: | ---------------------: |
+| Male T-plug negative → GND Wago     |          127.5 mm |                 150 mm |
+| Male T-plug positive → fuse socket  |           41.6 mm |                  65 mm |
+| Fuse socket → switch input crimp    |           71.8 mm |                  95 mm |
+| Switch output crimp → positive Wago |          270.1 mm |                 295 mm |
 
 Centerlines run between exposed connector/socket/barrel mouths. Suggested
 cuts add `cut_allowance` (20 mm total per lead), then round up to the next

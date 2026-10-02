@@ -5,7 +5,7 @@
   * License: GPL-3.0-or-later
   */
 include <../../colors.scad>
-include <../../steering_params.scad>
+include <../../rc_params.scad>
 
 use <../../lib/plist.scad>
 use <../../lib/shapes3d.scad>

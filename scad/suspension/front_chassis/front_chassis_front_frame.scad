@@ -11,7 +11,7 @@
 
 include <../../colors.scad>
 include <../../parameters.scad>
-include <../../steering_params.scad>
+include <../../rc_params.scad>
 include <computed_params.scad>
 
 use <../../lib/debug.scad>
@@ -34,8 +34,8 @@ use <../bulkhead/front_bulkhead_housing.scad>
 use <../bulkhead/util.scad>
 use <../wishbone_arms/front_lower_arm.scad>
 use <front_chassis_access_slots.scad>
-use <front_chassis_head_slots.scad>
 use <front_chassis_head_joint.scad>
+use <front_chassis_head_slots.scad>
 use <front_chassis_joint.scad>
 
 front_chassis_front_frame_debug = true;
@@ -99,10 +99,10 @@ function front_chassis_ear_pts() =
   concat(pts, mirrored_pts);
 
 module _front_chassis_front_frame_unsplit(debug=front_chassis_front_frame_debug,
-                                 show_access_slots=show_front_access_slots,
-                                 debug_font="Gill Sans:style=Bold",
-                                 debug_color=green_2,
-                                 color=white_smoke_1) {
+                                          show_access_slots=show_front_access_slots,
+                                          debug_font="Gill Sans:style=Bold",
+                                          debug_color=green_2,
+                                          color=white_smoke_1) {
 
   start_y0 = front_chassis_front_frame_start_y();
   head_mount_size = front_chassis_head_mount_size();
@@ -294,8 +294,10 @@ module front_chassis_head_frame(debug=false,
           union() {
             // Stay off the outline vertex plane to avoid zero-thickness slivers.
             // The tongue's root overlap still reaches this head body.
-            translate([-500, plist_get("root_y", p)
-                       + front_chassis_joint_boolean_overlap / 2, -1]) {
+            translate([-500,
+                       plist_get("root_y", p)
+                       + front_chassis_joint_boolean_overlap / 2,
+                       -1]) {
               cube([1000, 1000, chassis_thickness + 10]);
             }
             translate([-plist_get("tab_w", p) / 2, plist_get("end_y", p), -1]) {

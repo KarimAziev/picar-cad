@@ -1,6 +1,6 @@
 
 include <../../parameters.scad>
-include <../../steering_params.scad>
+include <../../rc_params.scad>
 include <../rear_suspension/rear_suspension_params.scad>
 
 
@@ -32,7 +32,7 @@ rear_panel_specs                       = [["type", "fuse",
                                            "side", "right",
                                            "orientation", "wlh"],
                                           // ["type", "fuse", "side", "auto", "orientation", "lwh"]
-                                             ];
+                                          ];
 
 // Optional per-panel keys: gap (edge-to-edge), y_offset (from motor center).
 // Set the power case to undef for the lower deck alone; [] removes all panels.

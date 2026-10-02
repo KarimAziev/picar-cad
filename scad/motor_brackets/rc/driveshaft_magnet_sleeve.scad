@@ -8,7 +8,7 @@
   * License: GPL-3.0-or-later
   */
 include <../../colors.scad>
-include <../../steering_params.scad>
+include <../../rc_params.scad>
 
 use <../../lib/plist.scad>
 use <../../lib/shapes3d.scad>
@@ -71,7 +71,8 @@ function driveshaft_magnet_sleeve_params(drive_shaft=plist_get("drive_shaft", mo
          "Sleeve walls and hardware must be positive; fit clearances nonnegative")
   assert(lip_h > 0 && transition_h >= 0 && transition_h <= cup_h,
          "Magnet lip must be positive and transition must fit within the cup")
-  assert(magnet_od > bore_d, "Magnet holder must connect to the shaft cup wall")
+  assert(magnet_od > bore_d,
+         "Magnet holder must connect to the shaft cup wall")
   assert(hole_d >= 0 && edge >= 0 && (hole_d == 0 || edge + hole_d < pad_l),
          "Cross-hole must leave material at both ends of the shaft cup")
   ["drive_shaft", drive_shaft,

@@ -6,7 +6,7 @@
  */
 
 include <../colors.scad>
-include <../steering_params.scad>
+include <../rc_params.scad>
 
 use <../components/encoder_l_bracket.scad>
 use <../lib/debug.scad>

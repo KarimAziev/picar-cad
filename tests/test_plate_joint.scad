@@ -1,5 +1,5 @@
 include <../scad/parameters.scad>
-include <../scad/steering_params.scad>
+include <../scad/rc_params.scad>
 include <../scad/suspension/front_chassis/computed_params.scad>
 use <../scad/components/plate_joint/plate_joint.scad>
 use <../scad/lib/plist.scad>

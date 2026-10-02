@@ -6,7 +6,7 @@
   * Gear positions use a provisional pitch model, not a manufacturing drawing.
   */
 include <../../../parameters.scad>
-include <../../../steering_params.scad>
+include <../../../rc_params.scad>
 
 use <../../../lib/functions.scad>
 use <../../../lib/plist.scad>

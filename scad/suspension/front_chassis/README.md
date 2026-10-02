@@ -31,7 +31,7 @@ the component rejects lengths that enter the bulkhead mounting keepout.
 No frame length, head position, or bulkhead hole position changes.
 
 The pin length, passage diameter, pin spacing, and rail width are configured in
-`scad/steering_params.scad` under `front_chassis_head_joint_*`. Placement and
+`scad/rc_params.scad` under `front_chassis_head_joint_*`. Placement and
 clearance checks live in `front_chassis_head_joint.scad` and derive the taper
 and mounting-hole limits from the existing hardware interfaces.
 

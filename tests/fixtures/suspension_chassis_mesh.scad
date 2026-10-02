@@ -1,6 +1,6 @@
 // Current chassis solids and interfaces for independent mesh checks.
 include <../../scad/parameters.scad>
-include <../../scad/steering_params.scad>
+include <../../scad/rc_params.scad>
 include <../../scad/suspension/front_chassis/computed_params.scad>
 
 use <../../scad/suspension/front_chassis/front_chassis.scad>

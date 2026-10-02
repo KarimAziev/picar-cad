@@ -12,7 +12,7 @@
 
 include <../../../bolt_parameters.scad>
 include <../../../colors.scad>
-include <../../../steering_params.scad>
+include <../../../rc_params.scad>
 
 use <../../../lib/debug.scad>
 use <../../../lib/functions.scad>

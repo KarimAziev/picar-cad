@@ -5,7 +5,7 @@
   * Coordinates use the bellcrank midpoint at chassis-top height as the origin;
   * X is across the chassis, Y points forward, Z points up. Dimensions are mm.
   */
-include <../../steering_params.scad>
+include <../../rc_params.scad>
 use <../../lib/functions.scad>
 use <../../placeholders/dservo.scad>
 use <../../placeholders/tie_rod.scad>

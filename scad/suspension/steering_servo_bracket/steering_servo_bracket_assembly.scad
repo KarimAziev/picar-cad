@@ -10,7 +10,7 @@
 
 include <../../colors.scad>
 include <../../parameters.scad>
-include <../../steering_params.scad>
+include <../../rc_params.scad>
 
 use <../../lib/slots.scad>
 use <../../lib/transforms.scad>

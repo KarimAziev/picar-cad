@@ -1,4 +1,4 @@
-include <../scad/steering_params.scad>
+include <../scad/rc_params.scad>
 
 use <../scad/lib/functions.scad>
 use <../scad/lib/plist.scad>

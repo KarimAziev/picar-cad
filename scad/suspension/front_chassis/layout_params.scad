@@ -5,7 +5,7 @@
   * License: GPL-3.0-or-later
   */
 
-include <../../steering_params.scad>
+include <../../rc_params.scad>
 
 use <../../placeholders/dservo.scad>
 use <../../placeholders/rpi_5.scad>

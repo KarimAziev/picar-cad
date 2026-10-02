@@ -8,7 +8,7 @@
   * License: GPL-3.0-or-later
   */
 
-include <../../steering_params.scad>
+include <../../rc_params.scad>
 
 use <servo_bracket.scad>
 

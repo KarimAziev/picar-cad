@@ -1,9 +1,9 @@
-include <../steering_params.scad>
+include <../rc_params.scad>
 include <front_chassis/computed_params.scad>
 
-use <rear_chassis/computed_params.scad>
 use <../lib/plist.scad>
 use <../lipo_pack_case/multi_lipo_pack_case.scad>
+use <rear_chassis/computed_params.scad>
 
 lipo_pack_case_plist       = multi_lipo_pack_props(plist=multi_lipo_packs_case);
 lipo_pack_case_size        = plist_get("size", lipo_pack_case_plist);
@@ -23,8 +23,9 @@ front_middle_chassis_max_w = max(front_chassis_rear_frame_w, lipo_pack_case_w);
   Pass the result to each frame when composing a custom vehicle configuration.
  */
 function suspension_chassis_width(include_middle=false,
-                                    middle_case=multi_lipo_packs_case,
-                                    rear_layout=rear_chassis_layout(),
-                                    front_width=front_chassis_required_width()) =
-  max(front_width, plist_get("join_w", rear_layout),
+                                  middle_case=multi_lipo_packs_case,
+                                  rear_layout=rear_chassis_layout(),
+                                  front_width=front_chassis_required_width()) =
+  max(front_width,
+      plist_get("join_w", rear_layout),
       include_middle ? plist_get("size", multi_lipo_pack_props(middle_case))[0] : 0);

@@ -4,7 +4,7 @@
   * Author: Karim Aziiev <karim.aziiev@gmail.com>
   * License: GPL-3.0-or-later
   */
-include <../../steering_params.scad>
+include <../../rc_params.scad>
 use <front_chassis_front_frame.scad>
 
 translate([0, 0, chassis_thickness]) {

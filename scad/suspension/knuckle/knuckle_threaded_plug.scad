@@ -5,7 +5,7 @@
   * License: GPL-3.0-or-later
   */
 include <../../colors.scad>
-include <../../steering_params.scad>
+include <../../rc_params.scad>
 
 use <../../lib/threading/threaded_plug_hex_socket.scad>
 use <../../lib/threading/threads.scad>
