@@ -41,10 +41,10 @@ assert(plist_get("mount_hole_positions", plain) == plist_get("mount_hole_positio
 // The unused shaft tip follows the actual shaft length, gearbox depth and
 // sleeve-side protrusion; changing base thickness shifts Z only.
 changed_motor   = plist_put("drive_shaft",
-                          plist_merge(plist_get("drive_shaft", motor_plist),
-                                      ["l", 63.42,
-                                       "rear_l", 12]),
-                          motor_plist);
+                            plist_merge(plist_get("drive_shaft", motor_plist),
+                                        ["l", 63.42,
+                                         "rear_l", 12]),
+                            motor_plist);
 changed = plist_get("encoder_mount",
                     gearmotor_bracket_compute_params(changed_motor,
                                                      bracket_thickness=8));
@@ -59,9 +59,9 @@ assert(!plist_get("rotated", wide));
 assert(plist_get("pcb_w", wide) == 18 && plist_get("pcb_h", wide) == 14);
 // A low shaft remains possible with a thinner detachable foot, when specified.
 low_motor       = plist_put("gearbox",
-                          plist_put("outer_shaft_y_center", 9.2,
-                                    plist_get("gearbox", motor_plist)),
-                          motor_plist);
+                            plist_put("outer_shaft_y_center", 9.2,
+                                      plist_get("gearbox", motor_plist)),
+                            motor_plist);
 low             = gearmotor_encoder_params(low_motor, 6, bottom_thickness=1.2);
 assert(!is_undef(low));
 echo("PASS: shaft encoder alignment, removable-mount height, dimensions, opt-out and hardware changes");
@@ -82,22 +82,23 @@ near([plist_get("magnet_face_z", s) - plist_get("size", s)[2]],
      [-motor_encoder_magnet_h_clearance]);
 // Cup length changes the shoulder datum without moving the shaft-end magnet.
 long_pad_motor  = plist_put("drive_shaft",
-                           plist_put("pad_l", 8, plist_get("drive_shaft", motor_plist)),
-                           motor_plist);
-long_pad        = gearmotor_encoder_params(long_pad_motor, bracket_thickness);
+                            plist_put("pad_l", 8, plist_get("drive_shaft", motor_plist)),
+                            motor_plist);
+long_pad        = gearmotor_encoder_params(long_pad_motor,
+                                           gearbox_bracket_thickness);
 near(plist_get("magnet_face", long_pad), magnet);
 near(plist_get("sleeve_origin", long_pad),
      plist_get("sleeve_origin", e) - [0, 8 - plist_get("pad_l", plist_get("drive_shaft", motor_plist)), 0]);
 // A deeper magnet recess changes only the lip; the seat fixes the magnet face.
 recessed_sleeve = driveshaft_magnet_sleeve_params(magnet_h_clearance=0.3);
 recessed = gearmotor_encoder_params(motor_plist,
-                                    bracket_thickness,
+                                    gearbox_bracket_thickness,
                                     sleeve_params=recessed_sleeve);
 near(plist_get("magnet_face", recessed), magnet);
 // Axial shaft clearance moves the pocket and PCB together without adding a floor.
 gap_sleeve      = driveshaft_magnet_sleeve_params(h_clearance=0.7);
 gap_mount = gearmotor_encoder_params(motor_plist,
-                                     bracket_thickness,
+                                     gearbox_bracket_thickness,
                                      sleeve_params=gap_sleeve);
 near(plist_get("pcb_back", gap_mount), plist_get("pcb_back", e) + [0, 0.5, 0]);
 near(plist_get("sensor_face", gap_mount) - plist_get("magnet_face", gap_mount),
