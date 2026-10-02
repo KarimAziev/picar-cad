@@ -28,12 +28,11 @@ step_down_voltage_can_capacitors            = [["d", 7,
                                                 "marking_color", matte_black,
                                                 "can_color", metallic_silver_1,
                                                 "text_rows", ["47", "HFT", "S92"],
-                                                "position",
-                                                [-step_down_voltage_screw_terminal_holes[0] / 2
-                                                 - step_down_voltage_bolt_hole_dia / 2
-                                                 + 8.3,
-                                                 4.4,
-                                                 0],
+                                                "position", [-step_down_voltage_screw_terminal_holes[0] / 2
+                                                             - step_down_voltage_bolt_hole_dia / 2
+                                                             + 8.3,
+                                                             4.4,
+                                                             0],
                                                 "x_offset", 2.6,
                                                 "y_offset", 2.6,
                                                 "rotation", 0],
@@ -285,8 +284,6 @@ module step_down_voltage_regulator(plist = [],
 
   standoffs = calc_standoff_params(min_h=standoff_h, d=bolt_dia);
 
-  h = len(standoffs[1]) > 0 ? sum(standoffs[1]) : 0;
-
   standoff_real_h = len(standoffs[1]) > 0 ? sum(standoffs[1]) : 0;
 
   translate([center ? 0 : length / 2,
@@ -432,10 +429,6 @@ module step_down_voltage_regulator(plist = [],
   }
 }
 
-step_down_voltage_regulator(center=true,
-                            stand_up=true,
-                            slot_mode=false);
-
 // Conservative XY reach of a populated terminal about the board origin.
 function _step_down_terminal_reach(pl, board, input=false) =
   let (r = plist_get("rotation_z", pl, input ? 90 : -90),
@@ -443,9 +436,9 @@ function _step_down_terminal_reach(pl, board, input=false) =
        t = plist_get("thickness", pl),
        quarter = abs(r) == 90,
        x = (input ? -1 : 1) * (board[0] / 2
-           - (quarter ? t : w) / 2 - plist_get("x_offset", pl, 0)),
+                               - (quarter ? t : w) / 2 - plist_get("x_offset", pl, 0)),
        y = (quarter ? 0 : board[1] / 2 - t / 2)
-           - plist_get("y_offset", pl, 0))
+       - plist_get("y_offset", pl, 0))
   [abs(x) + (abs(cos(r)) * w + abs(sin(r)) * t) / 2,
    abs(y) + (abs(sin(r)) * w + abs(cos(r)) * t) / 2];
 
@@ -471,20 +464,19 @@ function step_down_mount_props(pl=[]) =
        terminals = [for (input = [true, false])
            let (t = plist_merge(default_dc_screw_terminal_props,
                                 plist_get(input ? "vin" : "vout", pl, [])))
-           if (plist_get(input ? "show_terminal_vin" : "show_terminal_vout",
-                         t, !input))
-             [t, _step_down_terminal_reach(t, board, input)]],
+             if (plist_get(input ? "show_terminal_vin" : "show_terminal_vout",
+                           t, !input))
+               [t, _step_down_terminal_reach(t, board, input)]],
        wire_d = plist_get("wire_d", pl, 0),
        size = [max(concat([board[0], pitch[0] + 2 * d, wire_d],
                           [for (t = terminals) 2 * t[1][0]])),
                max(concat([board[1], pitch[1] + 2 * d, wire_d],
                           [for (t = terminals) 2 * t[1][1]])),
-               h + board[2] + max(concat(
-                 [step_down_voltage_power_inductor_size[2]],
-                 [for (c = step_down_voltage_can_capacitors)
-                     plist_get("base_h", c) + plist_get("h", c)],
-                 [for (t = terminals)
-                     plist_get("base_h", t[0]) + plist_get("top_h", t[0])]))])
+               h + board[2] + max(concat([step_down_voltage_power_inductor_size[2]],
+                                         [for (c = step_down_voltage_can_capacitors)
+                                             plist_get("base_h", c) + plist_get("h", c)],
+                                         [for (t = terminals)
+                                             plist_get("base_h", t[0]) + plist_get("top_h", t[0])]))])
   assert(board[0] >= step_down_voltage_regulator_len
          && board[1] >= step_down_voltage_regulator_w && board[2] > 0,
          "Regulator PCB must contain its fixed component layout")
@@ -493,10 +485,13 @@ function step_down_mount_props(pl=[]) =
   assert(pitch[0] + d <= board[0] && pitch[1] + d <= board[1],
          "Regulator holes must fit inside its PCB")
   assert(len([for (t = terminals)
-               if (plist_get("pin_h", t[0]) > h + board[2]) 1]) == 0,
+                 if (plist_get("pin_h", t[0]) > h + board[2]) 1]) == 0,
          "Regulator terminal pins need taller standoffs")
-  ["size", size, "bolt_spacing", pitch, "bolt_d", d,
-   "standoff_h", h, "wire_d", wire_d];
+  ["size", size,
+   "bolt_spacing", pitch,
+   "bolt_d", d,
+   "standoff_h", h,
+   "wire_d", wire_d];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -511,10 +506,10 @@ function step_down_mount_props(pl=[]) =
   - `show_hardware`: Display regulator and standoffs in solid mode.
  */
 module step_down_mount(pl=[],
-                        parent_t=3,
-                        anchor=[0, 0, 1],
-                        slot_mode=false,
-                        show_hardware=true) {
+                       parent_t=3,
+                       anchor=[0, 0, 1],
+                       slot_mode=false,
+                       show_hardware=true) {
   p = step_down_mount_props(pl);
   with_anchor(anchor, plist_get("size", p), centered=true) {
     if (slot_mode) {
@@ -524,3 +519,7 @@ module step_down_mount(pl=[],
     }
   }
 }
+
+step_down_voltage_regulator(center=true,
+                            stand_up=true,
+                            slot_mode=false);
