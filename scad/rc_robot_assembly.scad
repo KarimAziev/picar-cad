@@ -49,10 +49,13 @@ use <suspension/rear_chassis/computed_params.scad>
 use <suspension/rear_chassis/rear_chassis.scad>
 use <suspension/steering_servo_bracket/steering_servo_bracket_assembly.scad>
 use <suspension/steering_servo_bracket/steering_servo_chassis_slots.scad>
+use <suspension/upper_steering_plate.scad>
 use <suspension/wishbone_arms/front_lower_arm.scad>
 
 show_chassis_front_frame                    = true;
 show_chassis_rear_frame                     = true;
+show_upper_steering_plate                   = true;
+show_upper_steering_plate_bolts             = true;
 show_bellcrank_drive                        = true;
 show_bellcrank_drive_idler_lever            = true;
 show_bellcrank_drive_servo_lever            = true;
@@ -241,7 +244,9 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
                               show_motor_encoder_magnet=show_motor_encoder_magnet,
                               show_rear_suspension_mount=show_rear_suspension_mount,
                               show_rear_power_wiring=show_rear_power_wiring,
-                              show_rear_panel_stack=show_rear_panel_stack) {
+                              show_rear_panel_stack=show_rear_panel_stack,
+                              show_upper_steering_plate=show_upper_steering_plate,
+                              show_upper_steering_plate_bolts=show_upper_steering_plate_bolts) {
   lipo_pack_case_props = multi_lipo_pack_props(plist=multi_lipo_packs_case);
 
   full_lipo_pack_size = plist_get("size", lipo_pack_case_props);
@@ -293,6 +298,11 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
     translate([0,
                -bellcrank_y_distance_from_bulkhead,
                chassis_thickness]) {
+      if (show_upper_steering_plate) {
+        upper_steering_plate_position() {
+          upper_steering_plate(show_bolts=show_upper_steering_plate_bolts);
+        }
+      }
       bellcrank_steering_assembly(show_bellcrank_drive=show_bellcrank_drive,
                                   show_bellcrank_drive_idler_lever=show_bellcrank_drive_idler_lever,
                                   show_bellcrank_drive_servo_lever=show_bellcrank_drive_servo_lever,

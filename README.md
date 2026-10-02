@@ -110,6 +110,8 @@ linkages now have a [rigid articulated assembly mode](scad/suspension/steering_c
 wishbones rotate about their pins, the knuckles follow their ball joints, and
 fixed-length rods determine wheel heading. `front_lower_arm_angle` prescribes
 the suspension pose; it does not simulate spring compression under vehicle weight.
+The [upper steering bridge](scad/suspension/front_chassis/README.md#upper-steering-bridge)
+connects the existing five upper mounts and has its own assembly and printable entries.
 
 ### Configurations
 

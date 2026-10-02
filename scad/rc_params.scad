@@ -1191,6 +1191,14 @@ upper_steering_panel_bulkhead_bore_d               = 4.6;
 upper_steering_panel_bulkhead_bore_h               = 1;
 upper_steering_panel_bulkhead_spacing              = 21;
 
+// Sculpted bridge: stationary contact feet and clearance above rotating parts.
+upper_steering_plate_thickness                    = 3;
+upper_steering_plate_running_clearance            = 0.6;
+upper_steering_plate_pad_d                        = 11;
+upper_steering_plate_web_w                        = 6;
+upper_steering_plate_window_r                     = 1.2;
+upper_steering_plate_rear_scallop                  = 0.22;
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Gearmotor shaft encoder, opposite the sleeve (near the motor contacts)
 // ─────────────────────────────────────────────────────────────────────────────
