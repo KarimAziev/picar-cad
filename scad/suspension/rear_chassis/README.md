@@ -7,8 +7,12 @@ opposite sides of the motor, with the LiPo case and lidar above them.
 
 ```scad
 rear_panel_specs = [
-  ["type", "control", "side", "left",  "orientation", "wlh"],
-  ["type", "fuse",    "side", "right", "orientation", "lwh"]
+  ["type", "control",
+  "side", "left",
+  "orientation", "wlh"],
+  ["type", "fuse",
+  "side", "right",
+  "orientation", "lwh"]
 ];
 ```
 
