@@ -1,3 +1,4 @@
+
 include <colors.scad>
 include <parameters.scad>
 
@@ -26,14 +27,14 @@ power_lid_left_slots  = [["type", "four_corner_holes",
                           "hide_board", false,
                           "hide_display", false,
                           "text", "16.4",
-                          "text_props", ["font", "DSEG14 Classic:style=Italic", "size", 6],
+                          "text_props", ["font", "DSEG14 Classic:style=Italic",
+                                         "size", 6],
                           "pins", ["size", [voltmeter_pin_thickness,
                                             voltmeter_pin_h],
                                    "count", voltmeter_pins_count,
                                    "total_len", voltmeter_pins_len],
                           "wiring", ["d", voltmeter_wiring_d,
-                                     "distance",
-                                     voltmeter_wiring_distance,
+                                     "distance", voltmeter_wiring_distance,
                                      "path", [[-5, -5, -2],
                                               [-15, -10, -1],
                                               [10, -15, -2],
