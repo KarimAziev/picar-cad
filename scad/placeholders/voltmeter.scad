@@ -1,3 +1,4 @@
+
 /**
  * Module: Placeholder for voltmeter, default parameters as for DSN-DVM-368
  *
@@ -58,8 +59,8 @@ module voltmeter_display(txt, display, text_props) {
     union() {
       color(bottom_color, alpha=1) {
         cuboid([display_w,
-                 display_len,
-                 main_h]);
+                display_len,
+                main_h]);
       }
       translate([0, 0, main_h]) {
         color(upper_color, alpha=1) {
@@ -112,15 +113,15 @@ module voltmeter_board(show_standoffs=true,
         union() {
           color(green_2, alpha=1) {
             cuboid([board_w,
-                     board_len,
-                     board_h]);
+                    board_len,
+                    board_h]);
           }
           four_corner_children(size=bolt_spacing) {
             color(green_2, alpha=1) {
               cuboid(size=[bolt_dia + bolt_padding,
-                            bolt_dia + bolt_padding,
-                            board_h],
-                      center=true);
+                           bolt_dia + bolt_padding,
+                           board_h],
+                     center=true);
             }
           }
         }
@@ -226,7 +227,8 @@ module voltmeter(show_standoffs=true,
                  display=plist_get("display", voltmeter_default_spec),
                  text=plist_get("text", voltmeter_default_spec, ""),
                  text_props=plist_get("text_props", voltmeter_default_spec,
-                                      ["font", "DSEG14 Classic:style=Italic", "size", 6]),
+                                      ["font", "DSEG14 Classic:style=Italic",
+                                       "size", 6]),
                  pins=voltmeter_default_pins_spec,
                  wiring=["d", voltmeter_wiring_d,
                          "distance", voltmeter_wiring_distance,
@@ -395,16 +397,19 @@ function voltmeter_mount_props(pl=[]) =
        wiring = plist_get("wiring", pl, []),
        wire_r = plist_get("d", wiring, 3) / 2,
        wire_y = board[1] / 2 - wire_r
-                - plist_get("distance", wiring, voltmeter_wiring_distance),
+       - plist_get("distance", wiring, voltmeter_wiring_distance),
        wire_y2 = wire_y - 2 * wire_r
-                 - plist_get("gap", wiring, voltmeter_wiring_gap),
+       - plist_get("gap", wiring, voltmeter_wiring_gap),
        size = [max(board[0] + 0.4 * wire_r, display[0], pitch[0] + d + pad),
                max(board[1], display[1], pitch[1] + d + pad,
                    2 * (max(abs(wire_y), abs(wire_y2)) + 1.2 * wire_r)),
                h + board[2] + display[2]])
   assert(min(size) > 0 && min(pitch) >= 0 && d > 0,
          "Voltmeter dimensions must be positive")
-  ["size", size, "bolt_spacing", pitch, "bolt_d", d, "standoff_h", h];
+  ["size", size,
+   "bolt_spacing", pitch,
+   "bolt_d", d,
+   "standoff_h", h];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -419,26 +424,30 @@ function voltmeter_mount_props(pl=[]) =
   - `show_hardware`: Display the board, display and standoffs.
  */
 module voltmeter_mount(pl=[],
-                        parent_t=3,
-                        anchor=[0, 0, 1],
-                        slot_mode=false,
-                        show_hardware=true) {
+                       parent_t=3,
+                       anchor=[0, 0, 1],
+                       slot_mode=false,
+                       show_hardware=true) {
   p = voltmeter_mount_props(pl);
   d = plist_get("bolt_d", p);
   with_anchor(anchor, plist_get("size", p), centered=true) {
     if (slot_mode) {
       translate([0, 0, -parent_t]) {
         four_corner_children(size=plist_get("bolt_spacing", p), center=true) {
-          counterbore(h=parent_t, d=d + 0.2,
-                      bore_d=d * 2, bore_h=min(parent_t - 0.8, d * 0.6),
-                      sink=true, reverse=true);
+          counterbore(h=parent_t,
+                      d=d + 0.2,
+                      bore_d=d * 2,
+                      bore_h=min(parent_t - 0.8, d * 0.6),
+                      sink=true,
+                      reverse=true);
         }
         cylinder(d=plist_get("wire_d", pl, 4), h=parent_t + 0.1, $fn=32);
       }
     } else if (show_hardware) {
       voltmeter_from_plist(plist_merge(pl,
-        ["wiring", plist_merge(plist_get("wiring", pl, []), ["path", []])]),
-                           center=true, stand_up=true);
+                                       ["wiring", plist_merge(plist_get("wiring", pl, []), ["path", []])]),
+                           center=true,
+                           stand_up=true);
     }
   }
 }
