@@ -1,3 +1,9 @@
+/**
+  * Module: Solder tab contact
+  *
+  * Author: Karim Aziiev <karim.aziiev@gmail.com>
+  * License: GPL-3.0-or-later
+  */
 
 include <../../colors.scad>
 
