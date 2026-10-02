@@ -196,7 +196,6 @@ module perf_bord_from_plist(plist,
   }
 }
 
-perf_bord_from_plist();
 /**
   ─────────────────────────────────────────────────────────────────────────────
   perf_board_mount_props
@@ -221,7 +220,7 @@ function perf_board_mount_props(pl=[]) =
        grid_size = [for (n = counts) max(0, n * pad_d + (n - 1) * spacing)],
        bus_n = plist_get("bus_pad_cols", pl, 4),
        bus_w = bus_n * plist_get("bus_pad_rx", pl, 1.9)
-               + max(0, bus_n - 1) * plist_get("bus_pad_spacing", pl, 0.8),
+       + max(0, bus_n - 1) * plist_get("bus_pad_spacing", pl, 0.8),
        mount_d = max(2 * d, plist_get("body_d", hardware)),
        size = [max(board[0], pitch[0] + mount_d, wire_d),
                max(board[1], pitch[1] + mount_d, wire_d),
@@ -236,8 +235,11 @@ function perf_board_mount_props(pl=[]) =
          "Perf-board copper grid must fit its PCB; adjust rows/cols/bus_pad_cols")
   assert(h > 0 && component_h >= 0 && wire_d >= 0,
          "Perf board needs standoffs and nonnegative component/wire clearance")
-  ["size", size, "bolt_spacing", pitch, "bolt_d", d,
-   "standoff_h", h, "wire_d", wire_d];
+  ["size", size,
+   "bolt_spacing", pitch,
+   "bolt_d", d,
+   "standoff_h", h,
+   "wire_d", wire_d];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -252,17 +254,19 @@ function perf_board_mount_props(pl=[]) =
   - `show_hardware`: Display board and standoffs in solid mode.
  */
 module perf_board_mount(pl=[],
-                         parent_t=3,
-                         anchor=[0, 0, 1],
-                         slot_mode=false,
-                         show_hardware=true) {
+                        parent_t=3,
+                        anchor=[0, 0, 1],
+                        slot_mode=false,
+                        show_hardware=true) {
   p = perf_board_mount_props(pl);
   with_anchor(anchor, plist_get("size", p), centered=true) {
     if (slot_mode) {
       pcb_mount_slots(p, parent_t);
     } else if (show_hardware) {
-      perf_bord_from_plist(pl, bolt_visible_h=parent_t,
-                          show_bolt=false, show_nut=false);
+      perf_bord_from_plist(pl,
+                           bolt_visible_h=parent_t,
+                           show_bolt=false,
+                           show_nut=false);
     }
   }
 }

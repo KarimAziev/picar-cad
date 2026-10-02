@@ -54,7 +54,7 @@ tongue projection.
 
 In [`rc_robot_assembly.scad`](../../rc_robot_assembly.scad),
 leave `show_middle_chassis=false` for the direct connection. Set
-`rear_chassis_joint_spacing=0` for the fitted position, or increase it to slide
+`rear_suspension_joint_spacing=0` for the fitted position, or increase it to slide
 the rear chassis rearward for inspection. The rear chassis also follows
 `front_chassis_joint_spacing`. With the optional middle deck enabled, the
 assembly selects `front_joint=false` to retain its existing flat rear interface.

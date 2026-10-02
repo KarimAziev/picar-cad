@@ -17,6 +17,7 @@ use <../front_chassis/front_chassis_joint.scad>
 use <../rear_suspension/rear_suspension_slots.scad>
 use <rear_equipment.scad>
 use <rear_payload.scad>
+use <rear_power_wiring.scad>
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -66,6 +67,7 @@ module rear_chassis_slots(anchor=undef, layout=rear_chassis_layout()) {
                   parent_t=chassis_thickness);
       rear_power_payload(plist_get("power_case", layout), slot_mode=true);
       rear_equipment(layout, slot_mode=true);
+      rear_power_harness(layout, slot_mode=true);
     }
   }
 }

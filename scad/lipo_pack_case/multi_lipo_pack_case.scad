@@ -658,7 +658,10 @@ function multi_lipo_pack_mount_height(pl, target_h=0, parent_thickness=6) =
 
   **Parameters:**
 
-  `pl`: Case plist accepted by `multi_lipo_pack_props()`.
+  `pl`: Case plist accepted by `multi_lipo_pack_props()`. `power_rotation`
+  defaults to 0; 180 turns the case, packs and their symmetric mounting pattern
+  about the XY center. Matching lid power equipment and wiring follow it, while
+  lid displays and the lidar retain their own frame.
   `anchor`: Anchor of the final oriented case envelope.
   `mount_ear_d`: Optional diameter of floor mounting ears (default zero).
   Ears connect outboard bolt centers to the case floor without widening the
@@ -1161,24 +1164,31 @@ module multi_lipo_pack_case(pl,
                      to=case_orientation,
                      size=canonical_size,
                      anchor=anchor) {
-      if (show_standoffs && target_h > 0 && !slot_mode) {
-        _standoffs(z_anchor=-1);
-      }
-      if (slot_mode && target_h > 0) {
-        four_corner_children(size=bolt_spacing, center=true) {
-          counterbore(h=parent_thickness,
-                      d=bolt_d,
-                      bore_d=bore_d,
-                      bore_h=bore_h,
-                      reverse=true,
-                      sink=true);
+      // Half-turn the case, packs and mounting interface around their XY center.
+      // The lid keeps its sensor/display frame and turns only its power equipment.
+      power_rotation = plist_get("power_rotation", pl, 0);
+      assert(power_rotation == 0 || power_rotation == 180,
+             "power_rotation must be 0 or 180 to retain the rail envelope");
+      rotate([0, 0, power_rotation]) {
+        if (show_standoffs && target_h > 0 && !slot_mode) {
+          _standoffs(z_anchor=-1);
         }
-      } else {
-        with_anchor(anchor=[0, 0, 1], size=body_size) {
-          if (slot_mode) {
-            _mounting_slots();
-          } else {
-            _solid_case();
+        if (slot_mode && target_h > 0) {
+          four_corner_children(size=bolt_spacing, center=true) {
+            counterbore(h=parent_thickness,
+                        d=bolt_d,
+                        bore_d=bore_d,
+                        bore_h=bore_h,
+                        reverse=true,
+                        sink=true);
+          }
+        } else {
+          with_anchor(anchor=[0, 0, 1], size=body_size) {
+            if (slot_mode) {
+              _mounting_slots();
+            } else {
+              _solid_case();
+            }
           }
         }
       }

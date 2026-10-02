@@ -278,8 +278,17 @@ function lid_equipment_layout(specs, lid, obstacles=[]) =
        occupied = [for (i = [0:2]) max(sensor_size[i], plate_size[i])],
        sensor_boxes = occupied[0] == 0 ? []
            : [_wago_bounds(concat(plist_get("lidar_offset", lid), [0]), occupied)])
-  _lid_equipment_layout([for (s = specs) if (plist_get("enabled", s, true)) s],
-                          lid, concat(obstacles, sensor_boxes));
+  let (a = plist_get("power_rotation", lid, 0),
+       local_obstacles = [for (b = concat(obstacles, sensor_boxes))
+           _lid_rotate_bounds(b, -a)],
+       placed = _lid_equipment_layout(
+         [for (s = specs) if (plist_get("enabled", s, true)) s],
+         lid, local_obstacles))
+  [for (m = placed) plist_merge(m,
+    ["pos", _lid_rotate(plist_get("pos", m), a),
+     "rotation", plist_get("rotation", m, 0) + a,
+     "bounds", _lid_rotate_bounds(plist_get("bounds", m), a),
+     "roof_bounds", _lid_rotate_bounds(plist_get("roof_bounds", m), a)])];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────

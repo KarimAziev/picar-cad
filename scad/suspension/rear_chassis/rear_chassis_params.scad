@@ -29,8 +29,8 @@ panel_stack_y_offset                   = 0; // from bracket footprint center, al
 // | auto. Auto chooses the smaller occupied side; later entries can use the
 // opposite side automatically. Repeated sides are placed successively outward.
 rear_panel_specs                       = [["type", "fuse",
-                                           "side", "right",
-                                           "orientation", "wlh"],
+                                           "side", "left",
+                                           "orientation", "lwh"],
                                           // ["type", "fuse", "side", "auto", "orientation", "lwh"]
                                           ];
 

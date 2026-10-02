@@ -15,10 +15,10 @@ rear_equipment_specs = rear_equipment_mixed;
 // Or: rear_equipment_meters, [], or a custom list.
 ```
 
-The configuration initially uses `[]`, so selecting a loadout explicitly enables
-its mounting holes. `rear_equipment_mixed` fits one voltmeter beside the fuse
-panel, and a 20 × 80 mm perf board plus a rotated regulator on the opposite side.
-`rear_equipment_meters` fits two voltmeters and one regulator.
+The selected `rear_equipment_mixed` loadout contains one voltmeter beside the
+fuse panel and a rotated regulator on the opposite side. The former voltmeter
+beside the regulator is omitted to leave room for its ring terminal and wiring
+passages. The two side displays on the battery lid remain in place.
 
 Open `scad/suspension/rear_chassis/rear_equipment_example.scad` for the mixed
 loadout with the case hidden and colored zones visible. It deliberately previews
@@ -101,6 +101,43 @@ model of the components soldered to the board.
 configured holes. `show_equipment_zones=true` shows corridors with occupied
 areas removed. Hide the case/lid to inspect the deck. Selecting `equipment=[]`
 removes both electronics and their additional cutouts.
+
+## Rear power harness
+
+The case preset in `scad/rc_params.scad` uses `power_rotation=180` to reverse the
+battery case, battery, WAGO pair and concealed fuse. Roof equipment placements
+are resolved in that power frame. The switch's own `rotation=180` counter-turns
+it so the lever still faces the lid voltmeters. The side displays, lidar and
+adapter retain their original positions and direction.
+
+`rear_power_wiring` controls the three positive WAGO-to-fuse leads, the innermost
+fuse's red converter supply and the chassis passages. The supply goes down near
+the motor, runs below the chassis at Z=-8 mm, and emerges 40 mm beyond the
+converter input holes. It terminates in the shared `power_ring_terminal_plist`
+placeholder. The black return is deferred; its adjacent passages are present.
+
+- `hole_d=12` sets the minimum passage diameter. It grows if the ring terminal's
+  width plus twice `terminal_clearance` requires more room.
+- `black_holes=true` adds a second passage at each end, with `hole_gap=3` mm of
+  material between holes. Set it to false for only the two red-wire passages.
+- `converter_run=40` reserves the terminal length and its wire approach.
+- `under_z=-8` is the wire center below the chassis underside.
+- `rear_chassis(show_power_wiring=false)` hides both harnesses while retaining
+  all passages. `rear_power_wiring.enabled=false` disables the deck harness and
+  its passages together.
+
+The holes are checked against the existing deck boundary, motor, panel,
+electronics and support columns. Invalid placements assert without enlarging
+the chassis. The default plate envelope remains 166 × 153.49 × 6 mm.
+
+The converter currently has 5 mm input-hole spacing; two 6.61 mm outer-diameter
+ring terminals cannot lie beside each other on the same PCB face. The red ring
+is shown seated on its input pad. A mounting arrangement for the black ring
+remains to be chosen when its wire is added.
+
+`tests/test_rear_power_wiring.scad` checks placement, direction and fixed lid
+hardware. `tests/check_rear_power_wiring_mesh.py` checks wire separation,
+enclosure clearance, terminal passage, converter clearance and rail mating.
 
 ## Add another component type
 

@@ -4,9 +4,9 @@
   * Author: Karim Aziiev <karim.aziiev@gmail.com>
   * License: GPL-3.0-or-later
   */
-use <../../lib/plist.scad>
-use <../../lib/functions.scad>
 use <../../components/deck_component.scad>
+use <../../lib/functions.scad>
+use <../../lib/plist.scad>
 
 function _deck_overlap(a, b, gap=0) =
   a[0][0] < b[1][0] + gap - 0.000001
@@ -39,7 +39,8 @@ function rear_equipment_zones(layout, edge_margin=3, gap=3) =
   [for (side = ["left", "right"])
       let (x0 = side == "left" ? -half_w + edge_margin : motor[1][0] + gap,
            x1 = side == "left" ? motor[0][0] - gap : half_w - edge_margin)
-      ["name", side, "bounds", [[x0, y0, 0], [x1, y1, 0]]]];
+        ["name", side,
+         "bounds", [[x0, y0, 0], [x1, y1, 0]]]];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -78,20 +79,25 @@ function _deck_fits(bounds, zone, obstacles, gap, payload, parent_t) =
 function _deck_candidates(size, zone, obstacles, gap, position) =
   !is_undef(position)
   ? [[for (axis = [0, 1])
-        zone[0][axis] + size[axis] / 2
+      zone[0][axis] + size[axis] / 2
         + position[axis] * (zone[1][axis] - zone[0][axis] - size[axis])]]
   : let (xs = qsort(concat([zone[0][0] + size[0] / 2,
-                           zone[1][0] - size[0] / 2],
-                          [for (b = obstacles) b[1][0] + gap + size[0] / 2],
-                          [for (b = obstacles) b[0][0] - gap - size[0] / 2])),
+                            zone[1][0] - size[0] / 2],
+                           [for (b = obstacles) b[1][0] + gap + size[0] / 2],
+                           [for (b = obstacles) b[0][0] - gap - size[0] / 2])),
          ys = qsort(concat([zone[0][1] + size[1] / 2,
-                           zone[1][1] - size[1] / 2],
-                          [for (b = obstacles) b[1][1] + gap + size[1] / 2],
-                          [for (b = obstacles) b[0][1] - gap - size[1] / 2])))
-    [for (y = ys, x = xs) [x, y]];
+                            zone[1][1] - size[1] / 2],
+                           [for (b = obstacles) b[1][1] + gap + size[1] / 2],
+                           [for (b = obstacles) b[0][1] - gap - size[1] / 2])))
+  [for (y = ys, x = xs) [x, y]];
 
-function _rear_equipment_place(specs, layout, zones, obstacles, gap,
-                                i=0, placed=[]) =
+function _rear_equipment_place(specs,
+                               layout,
+                               zones,
+                               obstacles,
+                               gap,
+                               i=0,
+                               placed=[]) =
   i >= len(specs) ? placed :
   let (spec = specs[i],
        kind = plist_get("kind", spec),
@@ -109,25 +115,35 @@ function _rear_equipment_place(specs, layout, zones, obstacles, gap,
   assert(side == "left" || side == "right" || side == "auto",
          "Equipment zone must be left, right or auto")
   assert(is_undef(position) || (is_list(position) && len(position) == 2
-                               && min(position) >= 0 && max(position) <= 1),
+                                && min(position) >= 0 && max(position) <= 1),
          "Equipment position must be [x,y] fractions between 0 and 1")
   let (candidates = [for (zone = zones)
            if (side == "auto" || side == plist_get("name", zone))
              let (bounds = plist_get("bounds", zone))
-             for (xy = _deck_candidates(size, bounds, occupied, gap, position))
-               let (pos = [xy[0], xy[1], 0], b = _deck_bounds(pos, size))
-               if (_deck_fits(b, bounds, occupied, gap,
-                              plist_get("power_case", layout),
-                              plist_get("size", layout)[2]))
-                 ["kind", kind, "component", component, "props", props,
-                  "zone", plist_get("name", zone), "rotation", rotation,
-                  "pos", pos, "size", size, "bounds", b]])
+               for (xy = _deck_candidates(size, bounds, occupied, gap, position))
+                 let (pos = [xy[0], xy[1], 0], b = _deck_bounds(pos, size))
+                   if (_deck_fits(b, bounds, occupied, gap,
+                                  plist_get("power_case", layout),
+                                  plist_get("size", layout)[2]))
+                     ["kind", kind,
+                      "component", component,
+                      "props", props,
+                      "zone", plist_get("name", zone),
+                      "rotation", rotation,
+                      "pos", pos,
+                      "size", size,
+                      "bounds", b]])
   assert(len(candidates) > 0,
          str("Rear equipment #", i + 1, " (", kind, ") does not fit zone ", side,
              " at rotation ", rotation, "; envelope ", size,
              ". Change order, zone, rotation, position or hardware; chassis is fixed."))
-  _rear_equipment_place(specs, layout, zones, obstacles, gap,
-                         i + 1, concat(placed, [candidates[0]]));
+  _rear_equipment_place(specs,
+                        layout,
+                        zones,
+                        obstacles,
+                        gap,
+                        i + 1,
+                        concat(placed, [candidates[0]]));
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -148,12 +164,14 @@ function rear_equipment_layout(specs, layout, edge_margin=3, gap=3) =
   assert(is_list(specs), "Rear equipment must be a list")
   let (expanded = [for (spec = specs)
            let (count = plist_get("count", spec, 1))
-           each assert(is_num(count) && count >= 1 && floor(count) == count,
-                  "Equipment count must be a positive integer")
-           [for (copy = [1:count]) spec]])
-  _rear_equipment_place(expanded, layout,
-                         rear_equipment_zones(layout, edge_margin, gap),
-                         rear_equipment_obstacles(layout), gap);
+             each assert(is_num(count) && count >= 1 && floor(count) == count,
+                         "Equipment count must be a positive integer")
+             [for (copy = [1:count]) spec]])
+  _rear_equipment_place(expanded,
+                        layout,
+                        rear_equipment_zones(layout, edge_margin, gap),
+                        rear_equipment_obstacles(layout),
+                        gap);
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -168,17 +186,20 @@ function rear_equipment_layout(specs, layout, edge_margin=3, gap=3) =
   Native origin is the holder row, Z=0 at the bottom of the chassis plate.
  */
 module rear_equipment(layout,
-                        slot_mode=false,
-                        show_hardware=true,
-                        show_zones=false) {
+                      slot_mode=false,
+                      show_hardware=true,
+                      show_zones=false) {
   parent_t = plist_get("size", layout)[2];
   translate([0, 0, parent_t]) {
     for (p = plist_get("equipment", layout, [])) {
       translate(plist_get("pos", p)) {
         rotate([0, 0, plist_get("rotation", p)]) {
-          deck_component(plist_get("kind", p), plist_get("component", p),
-                           parent_t=parent_t, slot_mode=slot_mode,
-                           show_hardware=show_hardware);
+          deck_component(plist_get("kind", p),
+                         plist_get("component", p),
+
+                         parent_t=parent_t,
+                         slot_mode=slot_mode,
+                         show_hardware=show_hardware);
         }
       }
     }

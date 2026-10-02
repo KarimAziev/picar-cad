@@ -430,6 +430,26 @@ module step_down_voltage_regulator(plist = [],
   }
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  step_down_input_ports
+  ─────────────────────────────────────────────────────────────────────────────
+  Return the two input solder-hole centers on the PCB top.
+  **Parameters:**
+  - `pl`: Hardware and mounting plist accepted by step_down_mount_props.
+  **Returns:** XYZ points in the mounted board frame, ordered local -Y, +Y.
+ */
+function step_down_input_ports(pl=[]) =
+  let (pitch = plist_get("terminal_size", pl, step_down_voltage_screw_terminal_holes),
+       board = plist_get("placeholder_size", pl,
+                         [step_down_voltage_regulator_len,
+                          step_down_voltage_regulator_w,
+                          step_down_voltage_regulator_thickness]),
+       mount = step_down_mount_props(pl))
+  [for (side = [-1, 1])
+      [-pitch[0] / 2, side * pitch[1] / 2,
+       plist_get("standoff_h", mount) + board[2]]];
+
 // Conservative XY reach of a populated terminal about the board origin.
 function _step_down_terminal_reach(pl, board, input=false) =
   let (r = plist_get("rotation_z", pl, input ? 90 : -90),

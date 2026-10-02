@@ -8,11 +8,35 @@
   * License: GPL-3.0-or-later
   */
 use <../lib/plist.scad>
+use <../lib/functions.scad>
+use <../placeholders/wago/wago_221.scad>
 use <../lib/shapes3d.scad>
 use <../lib/slots.scad>
 use <../lib/transforms.scad>
 use <../placeholders/bolt.scad>
 use <wago_bracket.scad>
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  wago_pair_wire_ports
+  ─────────────────────────────────────────────────────────────────────────────
+  Return the conductor mouths in the centered pair mounting frame.
+  **Parameters:**
+  - `pl`: Pair specification accepted by wago_pair_props.
+  - `side`: +1 selects the positive lid connector; -1 selects GND.
+  **Returns:** XYZ points in the connector's local conductor order.
+ */
+function wago_pair_wire_ports(pl=[], side=1) =
+  let (p = wago_pair_props(pl),
+       b = plist_get("bracket_props", p),
+       bs = plist_get("size", b),
+       ws = plist_get("wago_size", b),
+       wp = plist_get("wago_pos", b) - [bs[0] / 2, bs[1] / 2, 0]
+            + [ws[0] / 2, ws[1] / 2, 0])
+  assert(side == -1 || side == 1, "Wago side must be -1 or 1")
+  [for (pt = wago_wire_ports(plist_get("wago", b)))
+      rotZ(wp + pt, side == 1 ? 180 : 0)
+      + [0, side * plist_get("offset", p), 0]];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────

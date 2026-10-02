@@ -1334,6 +1334,16 @@ lipo_pack_base_pl                                  = ["size", [lipo_pack_width,
 
 lipo_packs                                         = [lipo_pack_base_pl];
 
+power_ring_terminal_plist                         = ["d", 4.33,
+                                                      "od", 6.61,
+                                                      "w", 3.35,
+                                                      "l", 9.1,
+                                                      "t", 0.62,
+                                                      "color", metallic_silver_5,
+                                                      "insulate", ["color", "#3771E1",
+                                                                   "l", 10.5,
+                                                                   "d", 5.9]];
+
 button_switch_default_plist                        = ["body_size", toggle_switch_size,
                                                       "thread_h", toggle_switch_thread_h,
                                                       "thread_d", toggle_switch_thread_d,
@@ -1347,15 +1357,7 @@ button_switch_default_plist                        = ["body_size", toggle_switch
                                                       "metallic_head_h", toggle_switch_metallic_head_h,
                                                       "terminal_hole_z", 3.8,
                                                       "terminal_hole_d", m3_hole_dia,
-                                                      "crimp_terminal", ["d", 4.33,
-                                                                         "od", 6.61,
-                                                                         "w", 3.35,
-                                                                         "l", 9.1,
-                                                                         "t", 0.62,
-                                                                         "color", metallic_silver_5,
-                                                                         "insulate", ["color", "#3771E1",
-                                                                                      "l", 10.5,
-                                                                                      "d", 5.9]]];
+                                                      "crimp_terminal", power_ring_terminal_plist];
 
 toggle_switch_bracket_plist                        = ["button", button_switch_default_plist,
                                                       "bolt_d", m3_hole_dia,
@@ -1385,7 +1387,8 @@ multi_lipo_lid_button_mount                        = ["kind", "button",
                                                                                 plist_get("terminal_size", button_switch_default_plist)[2]]),
                                                       "placement", "left",
                                                       "advance_to_rail", true,
-                                                      "rotation", 0];
+                                                      // Counter-turn the switch so its lever faces the lid meters.
+                                                      "rotation", 180];
 multi_lipo_lid_equipment_presets                   = ["meter", [multi_lipo_lid_button_mount,
                                                                 ["kind", "wago",
                                                                  "placement", "right",
@@ -1409,6 +1412,7 @@ multi_lipo_lid_equipment                           = assert(multi_lipo_lid_equip
                                                       multi_lipo_lid_equipment_presets);
 
 multi_lipo_packs_case                              = ["lipo_packs", lipo_packs,
+                                                      "power_rotation", 180,
                                                       "wiring", ["enabled", multi_lipo_lid_equipment_preset == "dual_wago",
                                                                  "d", 3.8,
                                                                  "cut_allowance", 20],
@@ -1481,6 +1485,17 @@ multi_lipo_packs_case                              = ["lipo_packs", lipo_packs,
                                                       "bolt_d", m3_hole_dia,
                                                       "bore_d", front_chassis_bellcrank_bolt_bore_d,
                                                       "bore_h", front_chassis_bellcrank_bolt_bore_h,];
+
+// Rear harness: holes accept the complete insulated ring terminal end-first.
+rear_power_wiring = ["enabled", true,
+                     "d", 3.8,
+                     "hole_d", 12,
+                     "black_holes", true,
+                     "hole_gap", 3,
+                     "terminal_clearance", 2,
+                     "converter_run", 40,
+                     "under_z", -8,
+                     "ring_terminal", power_ring_terminal_plist];
 
 multi_power_case_props                             = multi_lipo_pack_props(plist=multi_lipo_packs_case);
 multi_power_case_size                              = plist_get("size",

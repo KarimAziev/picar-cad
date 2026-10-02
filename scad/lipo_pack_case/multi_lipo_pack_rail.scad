@@ -145,6 +145,33 @@ function multi_lipo_pack_rail_props(pl, size, walls) =
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
+  multi_lipo_pack_rail_half_turn
+  ─────────────────────────────────────────────────────────────────────────────
+  Turn rail datums around the case center, retaining their low-to-high order.
+  **Parameters:**
+  - `props`: Resolved rail properties in the canonical case frame.
+  - `size`: Case body size, excluding mounting ears.
+  **Returns:** Rail properties with mirrored cross/along coordinates and wall
+  names. Unequal interruptions and locking holes stay aligned with the case.
+ */
+function multi_lipo_pack_rail_half_turn(props, size) =
+  !plist_get("enabled", props, false) ? props :
+  let (along = plist_get("axis", props) == "x" ? 0 : 1,
+       cross = 1 - along,
+       opposite = ["rear", "front", "front", "rear",
+                   "left", "right", "right", "left"])
+  plist_put("rails", [for (rail = reverse(plist_get("rails", props)))
+      plist_merge(rail,
+        ["wall", plist_get(plist_get("wall", rail), opposite),
+         "cross", size[cross] - plist_get("cross", rail),
+         "start", size[along] - plist_get("start", rail) - plist_get("l", rail),
+         "segments", [for (s = reverse(plist_get("segments", rail)))
+             [size[along] - s[1], size[along] - s[0]]],
+         "bolts", [for (b = reverse(plist_get("bolts", rail))) size[along] - b]])],
+    props);
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
   multi_lipo_pack_rail_shape
   ─────────────────────────────────────────────────────────────────────────────
 

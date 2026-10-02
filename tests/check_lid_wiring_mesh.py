@@ -32,9 +32,11 @@ pack_routes=[for(key=["power_lead","balance_lead"])
   ["d",plist_get("d",q),"path",[for(pt=path) _harness_pack_point(pl,c,pt)]]];
 all_routes=concat(routes,pack_routes);
 module pack_frame() {{
+ rotate([0,0,plist_get("power_rotation",pl,0)]) {{
  translate(plist_get("pack_positions",c)[0]-[b[0]/2,b[1]/2,0]) {{
   with_orientation(to=plist_get("orientation",pack),size=s,anchor=[1,1,1]) {{children();}}
  }}
+}}
 }}
 module pack_wires() {{
  pack_frame() {{for(key=["power_lead","balance_lead"]) {{
@@ -77,8 +79,10 @@ def main() -> None:
   multi_lipo_pack_case(pl,anchor=[0,0,1],show_packs=false,show_rail_bolts=false);
   multi_lipo_pack_lid_on_case(pl,show_equipment=false,show_lidar=false,
                             show_wago_brackets=false,show_adapter=true);
-  translate(plist_get("pack_positions",c)[0]-[b[0]/2,b[1]/2,0]) {
-   lipo_pack_from_pl(pack,anchor=[1,1,1],show_wiring=false);
+  rotate([0,0,plist_get("power_rotation",pl,0)]) {
+   translate(plist_get("pack_positions",c)[0]-[b[0]/2,b[1]/2,0]) {
+    lipo_pack_from_pl(pack,anchor=[1,1,1],show_wiring=false);
+   }
   }
  }
 }''')

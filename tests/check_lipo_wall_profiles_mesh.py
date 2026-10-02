@@ -102,7 +102,14 @@ def main() -> None:
   multi_lipo_pack_case(multi_lipo_packs_case, anchor=[1,1,1],
                       show_packs=false, show_standoffs=false, show_rail_bolts=false);
   body=plist_get("body_size",multi_lipo_pack_props(multi_lipo_packs_case));
-  translate([body[0]-1.5,0.5,9.65]) cube(0.05);
+  size=plist_get("canonical_size",multi_lipo_pack_props(multi_lipo_packs_case));
+  translate([size[0]/2,size[1]/2,0]) {
+   rotate([0,0,plist_get("power_rotation",multi_lipo_packs_case,0)]) {
+    translate([-size[0]/2,-size[1]/2,0]) {
+     translate([body[0]-1.5,0.5,9.65]) {cube(0.05);}
+    }
+   }
+  }
 }''', empty=True)
         print("PASS configured wire-facing wall is connected and the former corner lip is absent", flush=True)
 

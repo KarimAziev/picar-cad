@@ -16,8 +16,9 @@ use <../rear_suspension/rear_suspension_mount.scad>
 use <rear_chassis_frame.scad>
 use <rear_equipment.scad>
 use <rear_payload.scad>
+use <rear_power_wiring.scad>
 
-rear_suspension_mount_slide_l = 0;
+rear_suspension_joint_spacing = 0;
 show_rear_suspension_mount    = true;
 
 /**
@@ -67,7 +68,8 @@ function rear_chassis_size(layout=rear_chassis_layout()) =
   - `show_wago_brackets`: Display configured deck brackets; holes remain present.
   - `show_wagos`: Display connectors in those brackets.
   - `show_power_wiring`: Undef follows lid/lidar visibility; true shows the
-    configured power harness even in a roof-hidden inspection view.
+    configured battery and rear fuse/converter harnesses in a roof-hidden view.
+    Wiring passages remain present when the harness is hidden.
   - `show_equipment`: Display configured deck electronics; holes remain present.
   - `show_equipment_zones`: Overlay available side corridors for placement.
   - `front_joint`: Include the direct front-frame tongue; false retains a flat edge.
@@ -80,7 +82,7 @@ module rear_chassis(show_panel_stack=true,
                     show_drive_shaft=true,
                     show_mount_bolts=true,
                     show_nuts=true,
-                    show_shaft_seeve=true,
+                    show_drive_shaft_seeve=true,
                     show_extra_drive_shaft=true,
                     anchor=[0, 1, 1],
                     layout=rear_chassis_layout(),
@@ -97,7 +99,7 @@ module rear_chassis(show_panel_stack=true,
                     show_power_wiring=undef,
                     show_equipment=true,
                     show_equipment_zones=false,
-                    rear_suspension_mount_slide_l=rear_suspension_mount_slide_l,
+                    rear_suspension_joint_spacing=rear_suspension_joint_spacing,
                     show_rear_suspension_mount=show_rear_suspension_mount,
                     front_joint=true) {
   size = rear_chassis_size(layout);
@@ -107,11 +109,14 @@ module rear_chassis(show_panel_stack=true,
       union() {
         rear_chassis_frame(layout=layout, front_joint=front_joint);
         if (show_rear_suspension_mount) {
-          translate([0, rear_suspension_mount_slide_l, 0]) {
+          translate([0, rear_suspension_joint_spacing, 0]) {
             rear_suspension_mount(layout=layout);
           }
         }
       }
+      rear_power_harness(layout,
+                           show_wiring=is_undef(show_power_wiring)
+                               ? show_lidar_lid || show_lidar : show_power_wiring);
       rear_equipment(layout,
                      show_hardware=show_equipment,
                      show_zones=show_equipment_zones);
@@ -139,7 +144,7 @@ module rear_chassis(show_panel_stack=true,
                               show_drive_shaft=show_drive_shaft,
                               show_mount_bolts=show_mount_bolts,
                               show_nuts=show_nuts,
-                              show_shaft_seeve=show_shaft_seeve,
+                              show_shaft_seeve=show_drive_shaft_seeve,
                               show_extra_drive_shaft=show_extra_drive_shaft,
                               show_encoder_bracket=show_motor_encoder_bracket,
                               show_encoder=show_motor_encoder,

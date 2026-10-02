@@ -20,7 +20,7 @@ use <../rear_suspension/rear_suspension_joint.scad>
 use <../rear_suspension/rear_suspension_mount.scad>
 use <rear_chassis_slots.scad>
 
-rear_suspension_mount_slide_l = 20; // [0:1:100]
+rear_suspension_joint_spacing = 20; // [0:1:100]
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -71,7 +71,7 @@ module rear_chassis_frame(debug=false,
                           color=white_smoke_1,
                           slot_mode=false,
                           anchor=undef,
-                          rear_suspension_mount_slide_l=rear_suspension_mount_slide_l,
+                          rear_suspension_joint_spacing=rear_suspension_joint_spacing,
                           layout=rear_chassis_layout(),
                           show_rear_suspension_mount=false,
                           front_joint=true) {
@@ -139,7 +139,7 @@ module rear_chassis_frame(debug=false,
       }
 
       if (show_rear_suspension_mount) {
-        translate([0, rear_suspension_mount_slide_l, 0]) {
+        translate([0, rear_suspension_joint_spacing, 0]) {
           rear_suspension_mount(layout=layout);
         }
       }

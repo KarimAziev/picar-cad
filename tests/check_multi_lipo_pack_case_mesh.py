@@ -231,8 +231,15 @@ props = multi_lipo_pack_props(multi_lipo_packs_case);
 intersection() {{
   multi_lipo_pack_case(multi_lipo_packs_case, anchor=[1,1,1],
                       show_packs=false, show_rail_bolts=false);
-  translate(plist_get("pack_positions", props)[0] + [0,0,{lift}]) {{
-    lipo_pack_from_pl(lipo_pack_base_pl, anchor=[1,1,1]);
+  size=plist_get("canonical_size",props);
+  translate([size[0]/2,size[1]/2,0]) {{
+    rotate([0,0,plist_get("power_rotation",multi_lipo_packs_case,0)]) {{
+      translate([-size[0]/2,-size[1]/2,0]) {{
+        translate(plist_get("pack_positions", props)[0] + [0,0,{lift}]) {{
+          lipo_pack_from_pl(lipo_pack_base_pl, anchor=[1,1,1]);
+        }}
+      }}
+    }}
   }}
 }}
 ''', empty=True)

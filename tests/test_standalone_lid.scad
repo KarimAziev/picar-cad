@@ -20,8 +20,8 @@ lid = multi_lipo_pack_lid_props(standalone_lipo_case);
 spec = plist_get("lid", standalone_lipo_case);
 mounts = lid_equipment_layout(plist_get("equipment", spec), lid);
 assert(len(mounts) == 2);
-assert(plist_get("pos", mounts[0])[0] < 0);
-assert(plist_get("pos", mounts[1])[0] > 0);
+assert(plist_get("pos", mounts[0])[0] > 0);
+assert(plist_get("pos", mounts[1])[0] < 0);
 assert(plist_get("kind", mounts[1]) == "wago_pair");
 assert(plist_get("canonical_size", lid)
        == plist_get("canonical_size", multi_lipo_pack_lid_props(multi_lipo_packs_case)));
@@ -40,10 +40,14 @@ swapped = [plist_merge(standalone_lid_equipment[0],
                        ["placement", "left", "rotation", 0])];
 mirrored = lid_equipment_layout(swapped, lid);
 assert(len(mirrored) == 2);
-assert(plist_get("pos", mirrored[0])[0] > 0);
-assert(plist_get("pos", mirrored[1])[0] < 0);
+assert(plist_get("pos", mirrored[0])[0] < 0);
+assert(plist_get("pos", mirrored[1])[0] > 0);
 fixed = lid_equipment_layout([for (m = mounts)
-  plist_merge(m, ["pos", plist_get("pos", m), "count", 1])], lid);
+  plist_merge(m, ["pos", _lid_rotate(plist_get("pos", m),
+                                     -plist_get("power_rotation", lid, 0)),
+                  "rotation", plist_get("rotation", m)
+                              - plist_get("power_rotation", lid, 0),
+                  "count", 1])], lid);
 assert([for (m = fixed) plist_get("pos", m)] == [for (m = mounts) plist_get("pos", m)]);
 echo("PASS: swapped sides and explicit XY placements use shared geometry");
 

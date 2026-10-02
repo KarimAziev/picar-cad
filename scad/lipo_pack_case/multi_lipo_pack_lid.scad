@@ -35,6 +35,8 @@ use <multi_lipo_pack_rail.scad>
   **Parameters:**
 
   `pl`: Case plist with enabled `rail` and optional `lid` properties.
+  `power_rotation` (0 or 180) turns the roof equipment and concealed fuse with
+  the case; side voltmeters, lidar and adapter retain their positions.
   `lid.t` is roof thickness (default 3), `side_t` material beside each channel
   (default 2), and `headroom` the space above the rail before the roof (default
   10). `headroom="auto"` fits the flat fuse above the batteries and the side
@@ -64,7 +66,10 @@ use <multi_lipo_pack_rail.scad>
  */
 function multi_lipo_pack_lid_props(pl, l_clearance=0.4, w_clearance=0.4) =
   let (case_props = multi_lipo_pack_props(pl, l_clearance, w_clearance),
-       rails = plist_get("rail_props", case_props),
+       native_rails = plist_get("rail_props", case_props),
+       rails = plist_get("power_rotation", pl, 0) == 180
+           ? multi_lipo_pack_rail_half_turn(native_rails, plist_get("body_size", case_props))
+           : native_rails,
        spec = plist_get("lid", pl, []))
   assert(plist_get("enabled", rails),
          "A sliding lid requires enabled case rails")
@@ -109,6 +114,7 @@ function multi_lipo_pack_lid_props(pl, l_clearance=0.4, w_clearance=0.4) =
               "Lid corner_r must be nonnegative mm or percent")
        let (base = ["size", orientation_size(orientation, size),
                     "canonical_size", size,
+                    "power_rotation", plist_get("power_rotation", pl, 0),
                     "mount_z", mount_z,
                     "roof_z", roof_z,
                     "headroom", headroom,

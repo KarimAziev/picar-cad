@@ -10,6 +10,7 @@ include <../parameters.scad>
 
 use <../core/slot_layout.scad>
 use <../lib/holes.scad>
+use <../lib/functions.scad>
 use <../lib/placement.scad>
 use <../lib/plist.scad>
 use <../lib/shapes2d.scad>
@@ -95,6 +96,39 @@ lower_standoff_height   = non_empty(standoff_params[1])
 upper_standoff_height   = non_empty(standoff_upper_params[1])
                            ? sum(standoff_upper_params[1])
                            : upper_h;
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  fuse_panel_wire_ports
+  ─────────────────────────────────────────────────────────────────────────────
+  Return free lead endpoints for the configured centered fuse row.
+  **Parameters:**
+  - `side`: Canonical holder X end: -1 or +1, before panel orientation.
+  - `orientation`: Horizontal panel axis convention: wlh or lwh.
+  **Returns:** XYZ endpoints above the panel mounting plane, in fuse row order.
+ */
+function fuse_panel_wire_ports(side=1, orientation="wlh") =
+  let (specs = fuse_panel_plist_specs,
+       ys = get_y_sizes(specs, "ttb"),
+       before = get_gaps_before(specs),
+       after = get_gaps_after(specs),
+       total = get_total_size(specs, "ttb")[1])
+  [for (i = [0:len(specs) - 1])
+      let (pl = specs[i],
+           body = plist_get("size", plist_get("body", pl)),
+           wire = plist_get("wiring", pl),
+           tail = plist_get(side == 1 ? "left_pts" : "right_pts", wire),
+           rib = plist_get("thickness", plist_get("rib", plist_get("body", pl)), 1),
+           flip = plist_get("cap_to_bottom", pl, false),
+           y = total / 2 - sum(ys, i) - sum(before, i) - sum(after, i)
+               - before[i] - ys[i] / 2 - plist_get("y_offset", pl, 0),
+           pt = [side * ((body[0] - 2 * rib) / 2 + tail[len(tail) - 1][0]),
+                 0, (flip ? 1 : -1) * body[2] / 2],
+           local = rotZ(pt, plist_get("rotation", pl, 0))
+                   + [plist_get("x_offset", pl, 0), y,
+                      fuse_panel_height() - fuse_panel_thickness],
+           v = orientation_matrix(orientation) * concat(local, [1]))
+        [v[0], v[1], v[2]]];
 
 function fuse_panel_bolt_spacing() = panel_bolt_spacing;
 

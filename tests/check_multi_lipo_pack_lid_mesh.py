@@ -27,10 +27,12 @@ module lid_body(slide=0, lift=0) {{
 module pack() {{
   props=multi_lipo_pack_props(pl);
   body=plist_get("body_size",props);
+  rotate([0,0,plist_get("power_rotation",pl,0)]) {{
   translate([-body[0]/2,-body[1]/2,0]) {{
     translate(plist_get("pack_positions",props)[0]) {{
       lipo_pack_from_pl(plist_get("lipo_packs",pl)[0], anchor=[1,1,1]);
     }}
+  }}
   }}
 }}
 '''
@@ -143,9 +145,11 @@ multi_lipo_packs_rail_bolts(rails,rail,show_bolts=false,show_nuts=true);
   props=multi_lipo_pack_props(pl);
   body=plist_get("body_size",props);
   rails=plist_get("rail_props",props);
-  translate([-body[0]/2,-body[1]/2,0]) {
-    for (rail=plist_get("rails",rails)) {
-      multi_lipo_packs_rail_bolts(rails,rail,show_nuts=true);
+  rotate([0,0,plist_get("power_rotation",pl,0)]) {
+    translate([-body[0]/2,-body[1]/2,0]) {
+      for (rail=plist_get("rails",rails)) {
+        multi_lipo_packs_rail_bolts(rails,rail,show_nuts=true);
+      }
     }
   }
 }''', empty=True, common=common)

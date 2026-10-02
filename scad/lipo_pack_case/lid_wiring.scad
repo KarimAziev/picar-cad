@@ -14,7 +14,7 @@ use <../lib/transforms.scad>
 use <../lib/wire.scad>
 use <../placeholders/lipo_pack_wiring.scad>
 use <../placeholders/t_plug.scad>
-use <../placeholders/wago/wago_221.scad>
+use <../wago/wago_pair.scad>
 use <lid_equipment.scad>
 use <lid_fuse.scad>
 use <multi_lipo_pack_lid.scad>
@@ -28,8 +28,8 @@ function _harness_pack_point(pl, case_p, p) =
        oriented = plist_get("pack_sizes", case_p)[0],
        v = orientation_matrix(plist_get("orientation", pack, "wlh")) * concat(p - [0, 0, s[2] / 2], [1]),
        body = plist_get("body_size", case_p))
-  [v[0], v[1], v[2]] + oriented / 2 + plist_get("pack_positions", case_p)[0]
-  - [body[0] / 2, body[1] / 2, 0];
+  rotZ([v[0], v[1], v[2]] + oriented / 2 + plist_get("pack_positions", case_p)[0]
+       - [body[0] / 2, body[1] / 2, 0], plist_get("power_rotation", pl, 0));
 
 function _harness_route(name, controls, d, color, config) =
   let (chosen = plist_get(name, plist_get("paths", config, []), controls),
@@ -47,12 +47,8 @@ function _harness_wago_tail(m, side, z, d) =
   let (p = plist_get("props", m),
        b = plist_get("bracket_props", p),
        bs = plist_get("size", b),
-       ws = plist_get("wago_size", b),
-       wp = plist_get("wago_pos", b) - [bs[0] / 2, bs[1] / 2, 0]
-       + [ws[0] / 2, ws[1] / 2, 0],
-       ports = wago_wire_ports(plist_get("wago", b)),
-       port = ports[side == -1 ? 0 : len(ports) - 1],
-       end = rotZ(wp + port, side == 1 ? 180 : 0) + [0, side * plist_get("offset", p), 0],
+       ports = wago_pair_wire_ports(plist_get("component", m), side),
+       end = ports[side == -1 ? 0 : len(ports) - 1],
        x = -bs[0] / 2 - d / 2 - 1.2,
        outside_y = end[1] + side * (2 * d + plist_get("wall_t", b)),
        upper = max(end[2], plist_get("base_t", b) + d / 2 + 1),
@@ -83,12 +79,20 @@ function _harness_button_tail(m, i, z, d) =
     wiring.cut_allowance adds a configurable trimming allowance (default 20 mm).
   - `l_clearance`, `w_clearance`: Same pack-cell clearances as the assembly.
   **Returns:** Named sampled routes and lengths, plus mating connector placement.
+  Case power_rotation turns the complete harness and mating connector together.
   Unsupported circuits are rejected rather than electrically joining packs.
-  `wiring.paths` can override named routes while preserving their endpoints;
+  `wiring.paths` overrides routes in the unrotated power frame, preserving endpoints;
   `wiring.bend_trim` controls corner rounding. The default routing template
   targets the standalone dual-Wago layout; it is not an obstacle-search solver.
  */
 function lid_wiring_props(pl, l_clearance=0.4, w_clearance=0.4) =
+  let (a = plist_get("power_rotation", pl, 0),
+       p = _lid_wiring_props(plist_put("power_rotation", 0, pl),
+                             l_clearance, w_clearance))
+  plist_put("routes", [for (r = plist_get("routes", p))
+      plist_put("path", [for (pt = plist_get("path", r)) rotZ(pt, a)], r)], p);
+
+function _lid_wiring_props(pl, l_clearance=0.4, w_clearance=0.4) =
   let (lid = multi_lipo_pack_lid_props(pl, l_clearance, w_clearance),
        c = plist_get("case_props", lid),
        spec = plist_get("lid", pl),
@@ -210,13 +214,15 @@ module lid_wiring(pl,
       pack = plist_get("pack", props);
       s = plist_get("size", pack);
       body = plist_get("body_size", c);
-      translate(plist_get("pack_positions", c)[0] - [body[0] / 2, body[1] / 2, 0]) {
-        with_orientation(to=plist_get("orientation", pack, "wlh"),
-                         size=s,
-                         anchor=[1, 1, 1]) {
-          translate(plist_get("plug_pos", props)) {
-            rotate([0, 0, plist_get("plug_angle", props)]) {
-              t_plug_mated(show_female=false);
+      rotate([0, 0, plist_get("power_rotation", pl, 0)]) {
+        translate(plist_get("pack_positions", c)[0] - [body[0] / 2, body[1] / 2, 0]) {
+          with_orientation(to=plist_get("orientation", pack, "wlh"),
+                           size=s,
+                           anchor=[1, 1, 1]) {
+            translate(plist_get("plug_pos", props)) {
+              rotate([0, 0, plist_get("plug_angle", props)]) {
+                t_plug_mated(show_female=false);
+              }
             }
           }
         }
