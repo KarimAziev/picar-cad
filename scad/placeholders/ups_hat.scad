@@ -1,6 +1,6 @@
 /**
  * Module: Uninterruptible Power Supply Module 3S
- * https://www.waveshare.com/ups-module-3s.html
+ * https://www.waveshare.com/ups-module-3s.htm
  *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
