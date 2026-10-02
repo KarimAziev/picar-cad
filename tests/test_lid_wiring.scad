@@ -10,6 +10,35 @@ use <../scad/lib/wire.scad>
 use <../scad/placeholders/lipo_pack_wiring.scad>
 use <../scad/placeholders/t_plug.scad>
 use <../scad/lipo_pack_case/lid_wiring.scad>
+use <../scad/components/button_bracket/button_bracket.scad>
+
+// Crimp mouths in the bracket frame for the measured default switch.
+ports = button_bracket_wire_ports(toggle_switch_bracket_plist);
+assert(norm(ports[0] - [14.91, -31.63, 12.35]) < 0.000001);
+assert(norm(ports[1] - [-14.91, -31.63, 12.35]) < 0.000001);
+button = plist_get("button", toggle_switch_bracket_plist);
+for (hole_z = [1.8, 5.8, undef]) {
+  changed_button = plist_put("terminal_hole_z", hole_z, button);
+  changed = plist_put("button", changed_button, toggle_switch_bracket_plist);
+  changed_ports = button_bracket_wire_ports(changed);
+  expected_y = is_undef(hole_z)
+      ? -31.63 + (9.7 - plist_get("terminal_hole_d", button)) / 2 - 3.8
+      : -31.63 + hole_z - 3.8;
+  for (i = [0:1]) {
+    assert(norm(changed_ports[i] - [ports[i][0], expected_y, 12.35]) < 0.000001);
+  }
+}
+assert(button_bracket_wire_ports(plist_put("button",
+           plist_remove("terminal_hole_z", button), toggle_switch_bracket_plist))
+       == button_bracket_wire_ports(plist_put("button",
+           plist_put("terminal_hole_z", undef, button), toggle_switch_bracket_plist)));
+ring = plist_get("crimp_terminal", button);
+changed_ring = plist_merge(ring, ["t", 1.02, "l", 11.1]);
+changed_ports = button_bracket_wire_ports(plist_put("button",
+    plist_put("crimp_terminal", changed_ring, button), toggle_switch_bracket_plist));
+assert(norm(changed_ports[0] - (ports[0] + [0.2, -2, 0])) < 0.000001);
+assert(norm(changed_ports[1] - (ports[1] + [-0.2, -2, 0])) < 0.000001);
+echo("PASS nested switch crimps, terminal-hole defaults and parametric wire ports");
 
 pack = plist_get("lipo_packs", standalone_lipo_case)[0];
 for (key = ["power_lead", "balance_lead"]) {

@@ -53,7 +53,10 @@ function ring_terminal_props(plist) =
    "total_l", total_l,
    "max_w", max_w];
 
-module ring_terminal(plist, orientation="whl", anchor=[0, 0, 1], spin=0) {
+module ring_terminal(plist,
+                     orientation="whl",
+                     anchor=[0, 0, 1],
+                     spin=0) {
   props = ring_terminal_props(plist);
   l = plist_get("l", props);
   t = plist_get("t", props);

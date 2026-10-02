@@ -1318,7 +1318,18 @@ button_switch_default_plist                       = ["body_size", toggle_switch_
                                                      "lever_h", toggle_switch_lever_h,
                                                      "terminal_size", toggle_switch_terminal_size,
                                                      "thread_border_w", toggle_switch_thread_border_w,
-                                                     "metallic_head_h", toggle_switch_metallic_head_h,];
+                                                     "metallic_head_h", toggle_switch_metallic_head_h,
+                                                     "terminal_hole_z", 3.8,
+                                                     "terminal_hole_d", m3_hole_dia,
+                                                     "crimp_terminal", ["d", 4.33,
+                                                                        "od", 6.61,
+                                                                        "w", 3.35,
+                                                                        "l", 9.1,
+                                                                        "t", 0.62,
+                                                                        "color", metallic_silver_5,
+                                                                        "insulate", ["color", "#3771E1",
+                                                                                     "l", 10.5,
+                                                                                     "d", 5.9]]];
 
 toggle_switch_bracket_plist                       = ["button", button_switch_default_plist,
                                                      "bolt_d", m3_hole_dia,
@@ -1330,17 +1341,7 @@ toggle_switch_bracket_plist                       = ["button", button_switch_def
                                                      "d_tolerance", toggle_switch_slot_d_tolerance,
                                                      "side_pad", 4,
                                                      "bolt_pad", 5,
-                                                     "color", white_smoke_1,
-                                                     "crimp_terminal", ["props", ["d", 4.33,
-                                                                                  "od", 6.61,
-                                                                                  "w", 3.35,
-                                                                                  "l", 9.1,
-                                                                                  "t", 0.62,
-                                                                                  "color", metallic_silver_5,
-                                                                                  "insulate", ["color", "#3771E1",
-                                                                                               "l", 10.5,
-                                                                                               "d", 5.9]],
-                                                                        "z_offset", 5]];
+                                                     "color", white_smoke_1];
 
 basic_vent_spec                                   = ["vent_h", 2,
                                                      "vent_corner_r", "40%",

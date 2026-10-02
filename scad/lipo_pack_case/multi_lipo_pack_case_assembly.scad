@@ -6,10 +6,10 @@
   */
 include <../steering_params.scad>
 
-use <multi_lipo_pack_case.scad>
-use <multi_lipo_pack_lid.scad>
 use <../lib/plist.scad>
 use <lid_wiring.scad>
+use <multi_lipo_pack_case.scad>
+use <multi_lipo_pack_lid.scad>
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -49,10 +49,16 @@ module multi_lipo_pack_case_assembly(pl=multi_lipo_packs_case,
                                      show_wiring=true,
                                      report_wire_lengths=false) {
 
-  wired = show_wiring && plist_get("enabled", plist_get("wiring", pl, []), false);
+  wired = show_wiring && plist_get("enabled",
+                                   plist_get("wiring", pl, []),
+                                   false);
   if (wired && slide == 0 && lift == 0) {
-    lid_wiring(pl, anchor=anchor, report=report_wire_lengths,
-                 l_clearance=l_clearance, w_clearance=w_clearance);
+
+    lid_wiring(pl,
+               anchor=anchor,
+               report=report_wire_lengths,
+               l_clearance=l_clearance,
+               w_clearance=w_clearance);
   }
 
   multi_lipo_pack_case(pl,

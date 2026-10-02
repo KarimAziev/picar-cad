@@ -108,10 +108,9 @@ module slot_placeholders_assembly(plist,
                                 toggle_switch_nut_out_h)) {
       translate([0,
                  0,
-                 -size[2] - terminal_size[2] - thickness
-                 + nut_bore_h - 0.1]) {
+                 -size[2] - terminal_size[2] - thickness + nut_bore_h - 0.1]) {
 
-        toggle_switch_from_plist(plist, center_x=true, center_y=true);
+        toggle_switch_from_plist(plist, anchor=[0, 0, 1]);
       }
     }
   } else if (show_perf_board && placeholder == "perf_board") {
