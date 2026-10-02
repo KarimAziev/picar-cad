@@ -97,10 +97,17 @@ function multi_lipo_pack_lid_props(pl, l_clearance=0.4, w_clearance=0.4) =
        let (radius = maybe_percent_string_to_num(plist_get("corner_r", spec, 0), min(footprint)))
        assert(is_num(radius) && radius >= 0,
               "Lid corner_r must be nonnegative mm or percent")
-       let (base = ["size", orientation_size(orientation, size), "canonical_size", size,
-                    "mount_z", mount_z, "roof_z", roof_z, "t", t, "side_t", side_t,
-                    "case_props", case_props, "rail_props", rails,
-                    "lidar", lidar_pl, "lidar_orientation", lidar_orientation, "lidar_offset", lidar_offset,
+       let (base = ["size", orientation_size(orientation, size),
+                    "canonical_size", size,
+                    "mount_z", mount_z,
+                    "roof_z", roof_z,
+                    "t", t,
+                    "side_t", side_t,
+                    "case_props", case_props,
+                    "rail_props", rails,
+                    "lidar", lidar_pl,
+                    "lidar_orientation", lidar_orientation,
+                    "lidar_offset", lidar_offset,
                     "corner_r", calc_corner_rad(footprint, radius)],
             adapter = multi_lipo_pack_adapter_props(plist_get("adapter", spec), base),
             adapter_h = plist_get("enabled", adapter, false) ? plist_get("size", adapter)[2] : 0,
@@ -110,7 +117,9 @@ function multi_lipo_pack_lid_props(pl, l_clearance=0.4, w_clearance=0.4) =
        assert(is_undef(lidar_pl) || standoff_target_h > 0,
               "lidar_target_h must exceed adapter thickness plus its spacers")
        concat(base,
-              ["adapter_props", adapter, "adapter_h", adapter_h, "adapter_gap", adapter_gap,
+              ["adapter_props", adapter,
+               "adapter_h", adapter_h,
+               "adapter_gap", adapter_gap,
                "standoff_target_h", standoff_target_h,
                "lidar_base_z", is_undef(lidar_pl) ? undef : size[2] + adapter_h + adapter_gap
                + standoff_real_h(standoff_target_h, plist_get("bolt_d", lidar_pl))]);
@@ -340,7 +349,9 @@ module multi_lipo_pack_lid(pl,
                       translate([axis == "x" ? along : cross,
                                  axis == "x" ? cross : along,
                                  0]) {
-                        cube(axis == "x" ? [size[0], depth, roof_z + 0.01] : [depth, size[1], roof_z + 0.01]);
+                        cube(axis == "x"
+                             ? [size[0], depth, roof_z + 0.01]
+                             : [depth, size[1], roof_z + 0.01]);
                       }
                     }
                   }
@@ -393,7 +404,8 @@ module multi_lipo_pack_lid(pl,
           d = plist_get("bolt_d", lidar_pl);
           mount_pl = plist_merge(lidar_pl,
                                  ["bore_d", find_bolt_head_d(d, "countersunk") + 0.2,
-                                  "bore_h", find_bolt_head_h(d, "countersunk") + 0.15, "sink", true]);
+                                  "bore_h", find_bolt_head_h(d, "countersunk") + 0.15,
+                                  "sink", true]);
           translate([body[0] / 2 + lidar_offset[0],
                      body[1] / 2 + lidar_offset[1],
                      size[2] + adapter_h + adapter_gap]) {
