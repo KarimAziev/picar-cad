@@ -1,5 +1,5 @@
 /**
-  * Module: Front chassis assembly.
+  * Module: Assembly for RC-style robot with suspension.
   *
   * Assembles the front chassis, including its front and rear frame sections,
   * together with the front suspension, bellcrank steering assembly, and
@@ -12,44 +12,44 @@
   * Author: Karim Aziiev <karim.aziiev@gmail.com>
   * License: GPL-3.0-or-later
   */
-include <../../colors.scad>
-include <../../parameters.scad>
-include <../../steering_params.scad>
-include <computed_params.scad>
+include <colors.scad>
+include <parameters.scad>
+include <steering_params.scad>
+include <suspension/front_chassis/computed_params.scad>
 
-use <../../head/head_neck.scad>
-use <../../lib/debug.scad>
-use <../../lib/functions.scad>
-use <../../lib/plist.scad>
-use <../../lib/shapes3d.scad>
-use <../../lib/slots.scad>
-use <../../lib/transforms.scad>
-use <../../lib/trapezoids.scad>
-use <../../lipo_pack_case/multi_lipo_pack_case.scad>
-use <../../motor_brackets/rc/gearbox_bracket.scad>
-use <../../placeholders/dservo.scad>
-use <../../placeholders/lidar.scad>
-use <../../placeholders/rpi_5.scad>
-use <../../power/power_case.scad>
-use <../bellcrank/bellcrank_drive.scad>
-use <../bellcrank/bellcrank_idler.scad>
-use <../bellcrank/bellcrank_slots.scad>
-use <../bellcrank/center_link.scad>
-use <../bellcrank_steering_assembly.scad>
-use <../bellcrank_steering_slots.scad>
-use <../bulkhead/front_bulkhead_chassis.scad>
-use <../bulkhead/front_bulkhead_housing.scad>
-use <../computed.scad>
-use <../front_suspension_assembly.scad>
-use <../middle_chassis/middle_chassis.scad>
-use <../rear_chassis/computed_params.scad>
-use <../rear_chassis/rear_chassis.scad>
-use <../steering_servo_bracket/steering_servo_bracket_assembly.scad>
-use <../steering_servo_bracket/steering_servo_chassis_slots.scad>
-use <../wishbone_arms/front_lower_arm.scad>
-use <front_chassis.scad>
-use <front_chassis_controls.scad>
-use <front_chassis_front_frame.scad>
+use <head/head_neck.scad>
+use <lib/debug.scad>
+use <lib/functions.scad>
+use <lib/plist.scad>
+use <lib/shapes3d.scad>
+use <lib/slots.scad>
+use <lib/transforms.scad>
+use <lib/trapezoids.scad>
+use <lipo_pack_case/multi_lipo_pack_case.scad>
+use <motor_brackets/rc/gearbox_bracket.scad>
+use <placeholders/dservo.scad>
+use <placeholders/lidar.scad>
+use <placeholders/rpi_5.scad>
+use <power/power_case.scad>
+use <suspension/bellcrank/bellcrank_drive.scad>
+use <suspension/bellcrank/bellcrank_idler.scad>
+use <suspension/bellcrank/bellcrank_slots.scad>
+use <suspension/bellcrank/center_link.scad>
+use <suspension/bellcrank_steering_assembly.scad>
+use <suspension/bellcrank_steering_slots.scad>
+use <suspension/bulkhead/front_bulkhead_chassis.scad>
+use <suspension/bulkhead/front_bulkhead_housing.scad>
+use <suspension/computed.scad>
+use <suspension/front_suspension_assembly.scad>
+use <suspension/middle_chassis/middle_chassis.scad>
+use <suspension/rear_chassis/computed_params.scad>
+use <suspension/rear_chassis/rear_chassis.scad>
+use <suspension/steering_servo_bracket/steering_servo_bracket_assembly.scad>
+use <suspension/steering_servo_bracket/steering_servo_chassis_slots.scad>
+use <suspension/wishbone_arms/front_lower_arm.scad>
+use <suspension/front_chassis/front_chassis.scad>
+use <suspension/front_chassis/front_chassis_controls.scad>
+use <suspension/front_chassis/front_chassis_front_frame.scad>
 
 show_chassis_front_frame                    = true;
 show_chassis_rear_frame                     = true;
@@ -317,9 +317,11 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
 
   if (show_rear_chassis) {
     // The tongue fills the existing front socket; the rear deck starts at its lip.
-    translate([0, front_chassis_y_joint_2_end - front_chassis_joint_spacing
+    translate([0,
+               front_chassis_y_joint_2_end - front_chassis_joint_spacing
                - (show_middle_chassis ? full_lipo_pack_size[1] : 0)
-               - rear_chassis_joint_spacing, 0]) {
+               - rear_chassis_joint_spacing,
+               0]) {
       rotate([0, 0, 180]) {
         rear_chassis(anchor=[0, 1, 1],
                      layout=rear_layout,

@@ -48,7 +48,7 @@ socket; it does not increase the assembled chassis length. The anchor reference
 and `rear_chassis_size()` describe the original plate envelope, excluding the
 tongue projection.
 
-In [`front_chassis_assembly.scad`](../front_chassis/front_chassis_assembly.scad),
+In [`rc_robot_assembly.scad`](../../rc_robot_assembly.scad),
 leave `show_middle_chassis=false` for the direct connection. Set
 `rear_chassis_joint_spacing=0` for the fitted position, or increase it to slide
 the rear chassis rearward for inspection. The rear chassis also follows

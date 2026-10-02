@@ -2,7 +2,7 @@
 
 `front_chassis()` assembles the removable head plate, bulkhead/bellcrank plate,
 and steering-servo plate at their existing vehicle coordinates. The complete
-vehicle entry point is `front_chassis_assembly.scad`.
+vehicle entry point is `../../rc_robot_assembly.scad`.
 
 ## Removable head
 
@@ -15,14 +15,14 @@ socket and clearance around the central tab.
 Use **two 23.8 × 3 mm pins** from the four available. Passages are 3.1 mm and
 sag compensated. The current configuration has:
 
-| Dimension | Value |
-| --- | ---: |
-| Joint band in native Y | 39.025–46.325 mm |
-| Pin center X positions | −16.5, +16.5 mm |
-| Pin ends in native Y | 34.425–58.225 mm |
-| Engagement beyond the socket into the bulkhead plate | 4.6 mm |
-| Pin-end clearance to the front bulkhead countersink envelope | 3 mm |
-| Pin passage to ribbon opening, edge to edge | 4.95 mm |
+| Dimension                                                    |            Value |
+| ------------------------------------------------------------ | ---------------: |
+| Joint band in native Y                                       | 39.025–46.325 mm |
+| Pin center X positions                                       |  −16.5, +16.5 mm |
+| Pin ends in native Y                                         | 34.425–58.225 mm |
+| Engagement beyond the socket into the bulkhead plate         |           4.6 mm |
+| Pin-end clearance to the front bulkhead countersink envelope |             3 mm |
+| Pin passage to ribbon opening, edge to edge                  |          4.95 mm |
 
 The pin passages are centered on the head-side root, not the middle of the
 joint. This offset keeps their lower ends clear of the bulkhead holes.
