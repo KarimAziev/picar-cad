@@ -1,3 +1,3 @@
-use <../steering_system/steering_pinion.scad>
+use <../simple_robot/chassis/steering_pinion.scad>
 
 steering_pinion();

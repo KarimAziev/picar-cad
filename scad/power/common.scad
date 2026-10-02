@@ -5,7 +5,7 @@
  * License: GPL-3.0-or-later
  */
 
-include <../parameters.scad>
+include <../simple_robot/power_parameters.scad>
 
 use <../lib/functions.scad>
 use <../lib/transforms.scad>

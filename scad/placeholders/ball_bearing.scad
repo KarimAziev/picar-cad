@@ -37,7 +37,9 @@ module ball_bearing(bore_d,
                     ball_d,
                     balls_n=7,
                     ball_clearance=0.2,
-                    fn=20) {
+                    fn=20,
+                    anchor=[0, 0, 1],
+                    orientation="wlh") {
 
   diff_w = outer_d - bore_d;
   shoulder_d = with_default(shoulder_d,
@@ -76,66 +78,109 @@ module ball_bearing(bore_d,
     }
   }
 
-  union() {
-    render() {
-      color(ring_color, alpha=1) {
-        difference() {
-          rotate_extrude(angle = 360, $fn=50) {
-            difference() {
-              union() {
-                translate([bore_rad, 0, 0]) {
-                  square([gap_rad - bore_rad - (ball_rad / 2), w]);
+  with_orientation(from="wlh",
+                   to=orientation,
+                   anchor=anchor,
+                   size=[outer_d, outer_d, w]) {
+    union() {
+      render() {
+        color(ring_color, alpha=1) {
+          difference() {
+            rotate_extrude(angle = 360, $fn=50) {
+              difference() {
+                union() {
+                  translate([bore_rad, 0, 0]) {
+                    square([gap_rad - bore_rad - (ball_rad / 2), w]);
+                  }
+                  translate([gap_rad + (ball_rad / 2), 0, 0]) {
+                    square([outer_rad - gap_rad - (ball_rad / 2), w]);
+                  }
                 }
-                translate([gap_rad + (ball_rad / 2), 0, 0]) {
-                  square([outer_rad - gap_rad - (ball_rad / 2), w]);
-                }
-              }
 
-              translate([gap_rad, w / 2, 0]) {
-                circle(ball_rad);
+                translate([gap_rad, w / 2, 0]) {
+                  circle(ball_rad);
+                }
               }
             }
-          }
 
-          if (!rubber_seal_both_sides) {
-            let (d = outer_recess_d - ball_rad,
-                 h = ring_h) {
-              translate([0, 0, h + 0.1]) {
-                ring(d=d,
-                     od2=outer_recess_d,
-                     od1=outer_recess_d / 2,
-                     h=h);
-              }
-
-              translate([0, 0, h - 0.1]) {
-                rotate([180, 0, 0]) {
+            if (!rubber_seal_both_sides) {
+              let (d = outer_recess_d - ball_rad,
+                   h = ring_h) {
+                translate([0, 0, h + 0.1]) {
                   ring(d=d,
                        od2=outer_recess_d,
-                       od1=0,
+                       od1=outer_recess_d / 2,
                        h=h);
+                }
+
+                translate([0, 0, h - 0.1]) {
+                  rotate([180, 0, 0]) {
+                    ring(d=d,
+                         od2=outer_recess_d,
+                         od1=0,
+                         h=h);
+                  }
                 }
               }
             }
           }
         }
       }
-    }
-    if (rubber_seal_both_sides) {
-      _rubber_seal();
-      translate([0, 0, w]) {
+      if (rubber_seal_both_sides) {
+        _rubber_seal();
+        translate([0, 0, w]) {
+          _rubber_seal();
+        }
+      } else {
         _rubber_seal();
       }
-    } else {
-      _rubber_seal();
-    }
 
-    if (!rubber_seal_both_sides) {
-      for (idx = [0 : len(ball_positions) - 1]) {
-        translate(ball_positions[idx])
-          sphere(r = ball_rad + ball_clearance, $fn=fn);
+      if (!rubber_seal_both_sides) {
+        for (idx = [0 : len(ball_positions) - 1]) {
+          translate(ball_positions[idx]) {
+            sphere(r = ball_rad + ball_clearance, $fn=fn);
+          }
+        }
       }
     }
   }
 }
 
-ball_bearing(bore_d=8, shoulder_d=12.15, outer_recess_d=19.2, w=7, outer_d=22);
+module ball_bearing_from_plist(plist,
+                               anchor=[0, 0, 1],
+                               orientation="wlh") {
+  bore_d = plist_get("bore_d", plist);
+  shoulder_d = plist_get("shoulder_d", plist);
+  outer_d = plist_get("outer_d", plist);
+  outer_recess_d = plist_get("outer_recess_d", plist);
+  w = plist_get("w", plist);
+  rubber_seal_color = plist_get("rubber_seal_color", plist);
+  ring_color = plist_get("ring_color", plist);
+  rubber_seal_covers_outer_recess = plist_get("rubber_seal_covers_outer_recess",
+                                              plist);
+  rubber_seal_both_sides = plist_get("rubber_seal_both_sides", plist);
+  ball_d = plist_get("ball_d", plist);
+  balls_n = plist_get("balls_n", plist);
+  ball_clearance = plist_get("ball_clearance", plist);
+
+  ball_bearing(bore_d=bore_d,
+               shoulder_d=shoulder_d,
+               outer_d=outer_d,
+               outer_recess_d=outer_recess_d,
+               w=w,
+               rubber_seal_color=rubber_seal_color,
+               ring_color=ring_color,
+               rubber_seal_covers_outer_recess=rubber_seal_covers_outer_recess,
+               rubber_seal_both_sides=rubber_seal_both_sides,
+               ball_d=ball_d,
+               balls_n=balls_n,
+               ball_clearance=ball_clearance,
+               anchor=anchor,
+               orientation=orientation);
+}
+
+ball_bearing(bore_d=8,
+             shoulder_d=12.15,
+             outer_recess_d=19.2,
+             w=7,
+             outer_d=22);

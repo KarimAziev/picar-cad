@@ -12,8 +12,8 @@ use <lipo_pack_case/multi_lipo_pack_case.scad>
 // ─────────────────────────────────────────────────────────────────────────────
 
 chassis_bolt_d                                    = m3_hole_dia;
-chassis_bore_d                                    = 6.2;
-chassis_bore_h                                    = min(m3_countersunk_head_h + 0.2,
+chassis_countersunk_bore_d                        = 6.2;
+chassis_countersunk_bore_h                        = min(m3_countersunk_head_h + 0.2,
                                                         chassis_thickness / 2);
 
 // Diameter of the bolt holes in the bellcrank idler and bellcrank drive arms
@@ -295,6 +295,29 @@ front_chassis_joint_boolean_overlap               = 0.02;
 // ─────────────────────────────────────────────────────────────────────────────
 // Head mount on the front chassis
 // ─────────────────────────────────────────────────────────────────────────────
+// Suspension chassis cable passages; placement derives from component datums.
+// Preserve the proven head-side ribbon threading bank, not a single cable exit.
+front_chassis_head_ribbon_slot_rows               = 3;
+front_chassis_head_ribbon_slot_w                  = 20;
+front_chassis_head_ribbon_slot_l                  = 3;
+front_chassis_head_ribbon_slot_gap                = 3;
+front_chassis_head_side_slot_w                    = 7.5;
+front_chassis_head_side_slot_l                    = 11.0;
+front_chassis_head_side_slot_rows                 = 2;
+
+// Pan-servo mounting interface retained from the proven head mount.
+front_chassis_head_pan_servo_slot_dia                 = 6.5;
+front_chassis_head_pan_servo_slot_recess              = constraint(2.0,
+                                                                  0,
+                                                                  chassis_thickness - 1);
+front_chassis_head_pan_servo_top_ribbon_cutout_len    = 18;
+front_chassis_head_pan_servo_top_ribbon_cutout_h      = 2;
+front_chassis_head_pan_servo_recess_y_len             = 14;
+front_chassis_head_pan_servo_recess_x_len             = 16;
+front_chassis_head_pan_servo_recess_thickness         = 5;
+front_chassis_head_pan_servo_screw_d                  = 1.5;
+front_chassis_head_pan_servo_screws_gap               = 0.5;
+
 front_chassis_head_mount_padding                  = 2.0;
 front_chassis_head_wire_land                      = 3.0;
 
@@ -741,6 +764,9 @@ front_upper_suspension_holder_grab_screw_d        = 3.1;
 // ─────────────────────────────────────────────────────────────────────────────
 // Knuckle
 // ─────────────────────────────────────────────────────────────────────────────
+// Independent suspension knuckle base; preserves the previous 14.15 mm default.
+knuckle_base_d                                   = 14.15;
+
 knuckle_total_len                                 = 42.7;
 
 // ─────────────────────────────────────────────────────────────────────────────

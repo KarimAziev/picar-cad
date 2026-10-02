@@ -1,3 +1,3 @@
-use <../components/chassis/chassis_printable.scad>
+use <../simple_robot/chassis/chassis_printable.scad>
 
 chassis_printable();

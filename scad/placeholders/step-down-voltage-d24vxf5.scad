@@ -4,6 +4,7 @@
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */
+
 include <../colors.scad>
 include <../parameters.scad>
 include <../power_lid_parameters.scad>
@@ -192,14 +193,14 @@ default_dc_screw_terminal_props = ["thickness", step_down_voltage_screw_terminal
                                    "colr", step_down_voltage_screw_terminal_colr,
                                    "pin_thickness", step_down_voltage_screw_terminal_pin_thickness,
                                    "pin_h", step_down_voltage_screw_terminal_pin_h,
-                                   "wall_thickness", step_down_voltage_screw_terminal_wall_thickness,];
+                                   "wall_thickness", step_down_voltage_screw_terminal_wall_thickness];
 
 module step_down_voltage_regulator(plist = [],
-                                   bolt_visible_h=power_lid_thickness,
+                                   bolt_visible_h=2,
                                    show_bolt=true,
                                    show_terminal_vout=true,
                                    slot_mode=false,
-                                   slot_thickness=power_lid_thickness,
+                                   slot_thickness=2,
                                    center=true,
                                    show_standoff=true,
                                    stand_up=true) {

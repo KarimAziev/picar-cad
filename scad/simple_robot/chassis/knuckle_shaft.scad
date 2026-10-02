@@ -1,0 +1,178 @@
+/**
+ * Module: Knuckle Shaft
+ *
+ * This file defines modules for a removable bent (curved) axle shaft that connects
+ * the steering knuckle to the wheel hub in a vehicle's steering assembly.
+ *
+ * The shaft is composed of vertical and horizontal cylindrical segments arranged
+ * in an "elbow" configuration, forming a rigid connection. It is designed to be
+ * secured in place via a single mounting bolt.
+ *
+ * Main module:
+ * - knuckle_shaft:
+ *     Entry-point module. Forms the complete bent shaft assembly and optionally
+ *     displays the front wheel attached at the end.
+ *
+ * Auxiliary modules:
+ * - knuckle_bent_shaft:
+ *     Builds the full bent shaft geometry from vertical and horizontal cylinders
+ *     and elbow joints using circular extrusions.
+ *
+ * - knuckle_bent:
+ *     Utility module that creates a curved bend via rotate_extrude().
+ *
+ * - knuckle_bolts_slots:
+ *     Cuts a slot for a bolt that fixes the shaft in place.
+ *
+ * - knuckle_shaft_print_plate:
+ *     Optional helper that places and mirrors the shaft for 3D printing layout.
+ *
+ * Parameters:
+ * - show_wheel (bool): When true, shows attached animated front wheel.
+ * - knuckle_shaft_color (color): Color used for visualizing the shaft.
+ *
+ * Author: Karim Aziiev <karim.aziiev@gmail.com>
+ * License: GPL-3.0-or-later
+ */
+
+include <../../colors.scad>
+include <../steering_parameters.scad>
+
+use <../../lib/slots.scad>
+use <../wheels/front_wheel.scad>
+
+module knuckle_shaft(show_wheel=false,
+                     knuckle_shaft_color="white") {
+  difference() {
+    translate([0, 0, knuckle_shaft_dia / 2]) {
+      knuckle_bent_shaft(show_wheel=show_wheel,
+                         knuckle_shaft_color=knuckle_shaft_color);
+    }
+
+    translate([0,
+               0,
+               -knuckle_shaft_bolts_offset]) {
+      rotate([0, 0, 90]) {
+        knuckle_bolts_slots(d=knuckle_shaft_bolt_dia);
+        translate([0,
+                   0,
+                   - knuckle_shaft_bolt_dia
+                   - knuckle_shaft_bolts_distance]) {
+          knuckle_bolts_slots(d=knuckle_shaft_bolt_dia);
+        }
+      }
+    }
+  }
+}
+
+module knuckle_bent(angle, r, fn=360, bent_color=matte_black) {
+  color(bent_color) {
+    rotate_extrude(angle=angle) {
+      translate([r, 0, 0]) {
+        circle(r=r, $fn=fn);
+      }
+    }
+  }
+}
+
+module knuckle_bent_shaft(show_wheel=false,
+                          knuckle_shaft_color=matte_black) {
+  d = knuckle_shaft_dia;
+  knuckle_rad = knuckle_dia / 2;
+  r = d / 2;
+  union() {
+    translate([0,
+               0,
+               -knuckle_shaft_vertical_len - r]) {
+      color(knuckle_shaft_color) {
+        cylinder(h=knuckle_shaft_vertical_len, r=r, center=false, $fn=360);
+      }
+
+      translate([0, r, 0]) {
+        rotate([-0, 90, 0]) {
+          knuckle_bent(angle=-90, r=r, bent_color=knuckle_shaft_color);
+        }
+        translate([0, 0, -r]) {
+          rotate([-90, 0, 0]) {
+            color(knuckle_shaft_color) {
+              cylinder(h=knuckle_shaft_connector_extra_len
+                       + knuckle_rad
+                       + knuckle_shaft_extra_len,
+                       r=r,
+                       center=false,
+                       $fn=360);
+            }
+          }
+          translate([-r,
+                     knuckle_shaft_connector_extra_len
+                     + knuckle_rad +
+                     knuckle_shaft_extra_len,
+                     0]) {
+            knuckle_bent(angle=90, r=r, bent_color=knuckle_shaft_color);
+
+            translate([0, r, 0]) {
+              rotate([0, -90, 0]) {
+                color(knuckle_shaft_color) {
+                  cylinder(h=knuckle_shaft_lower_horiz_len,
+                           r=r,
+                           center=false,
+                           $fn=360);
+                }
+
+                if (show_wheel) {
+                  translate([0, 0, wheel_center_offset]) {
+                    front_wheel_animated(show_bearing = true,
+                                         show_upper_hub = true,
+                                         show_extra_lower_hub = true,
+                                         show_extra_bearing = true,
+                                         show_extra_upper_hub = true,
+                                         show_wheel_hub_bolts = true,
+                                         show_wheel_hub_nuts = true,
+                                         show_tire = true);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+module knuckle_bolts_slots(d=knuckle_shaft_bolt_dia,
+                           bore_d=knuckle_shaft_bolt_cbore_dia,
+                           h=knuckle_shaft_dia + 1,
+                           bore_h,
+                           reverse,
+                           sink,
+                           fn=360) {
+  translate([0, 0, -d / 2]) {
+    rotate([90, 0, 0]) {
+      translate([0, 0, -h / 2]) {
+        counterbore(h=h,
+                    d=d,
+                    bore_d=bore_d,
+                    bore_h=bore_h,
+                    sink=sink,
+                    fn=fn,
+                    reverse=reverse);
+      }
+    }
+  }
+}
+
+module knuckle_shaft_print_plate() {
+  offst = knuckle_dia;
+  z = knuckle_shaft_vertical_len + knuckle_shaft_dia;
+  translate([offst / 2 + knuckle_shaft_lower_horiz_len, 0, z]) {
+    knuckle_shaft();
+  }
+  translate([-offst / 2 - knuckle_shaft_lower_horiz_len, 0, z]) {
+    mirror([1, 0, 0]) {
+      knuckle_shaft();
+    }
+  }
+}
+
+knuckle_shaft_print_plate();

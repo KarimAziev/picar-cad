@@ -4,6 +4,6 @@
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
  */
-use <../components/front_panel/front_panel.scad>
+use <../simple_robot/chassis/front_panel/front_panel.scad>
 
 front_panel_printable(show_front_panel=true, show_front_rear_panel=false);

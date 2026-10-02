@@ -6,7 +6,7 @@
  */
 
 include <../colors.scad>
-include <../parameters.scad>
+include <../simple_robot/power_parameters.scad>
 
 use <../lib/functions.scad>
 use <../lib/placement.scad>

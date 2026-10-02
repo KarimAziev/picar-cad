@@ -6,7 +6,8 @@
  */
 
 include <../colors.scad>
-include <../parameters.scad>
+include <../simple_robot/power_parameters.scad>
+include <../simple_robot/steering_parameters.scad>
 
 use <../lib/shapes3d.scad>
 use <../lib/slider.scad>;

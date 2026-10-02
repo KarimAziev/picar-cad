@@ -69,4 +69,4 @@ module front_chassis_rpi(slot_mode=false) {
   }
 }
 
-front_chassis_controls();
+front_chassis_rpi();

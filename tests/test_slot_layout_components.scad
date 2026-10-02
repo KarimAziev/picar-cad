@@ -1,5 +1,5 @@
 include <../scad/colors.scad>
-include <../scad/parameters.scad>
+include <../scad/simple_robot/power_parameters.scad>
 
 use <../scad/core/slot_layout.scad>
 use <../scad/core/slot_layout_components.scad>

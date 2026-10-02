@@ -10,7 +10,7 @@ include <../../parameters.scad>
 
 use <../../lib/shapes3d.scad>
 use <../../lib/text.scad>
-use <../../wheels/rear_wheel.scad>
+use <../../simple_robot/wheels/rear_wheel.scad>
 use <rc/motor_drive_shaft.scad>
 use <simple_motor.scad>
 

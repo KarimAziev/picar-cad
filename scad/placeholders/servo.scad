@@ -485,20 +485,6 @@ module servo_slot_2d(size=[head_neck_tilt_servo_slot_width,
   }
 }
 
-module servo_slot_3d(size=[steering_servo_slot_width,
-                           steering_servo_slot_height],
-                     bolts_dia=steering_servo_bolt_dia,
-                     bolts_offset=steering_servo_bolts_offset,
-                     thickness=3,
-                     center=true) {
-
-  linear_extrude(height=thickness, center=center) {
-    servo_slot_2d(size=size,
-                  bolts_dia=bolts_dia,
-                  bolts_offset=bolts_offset);
-  }
-}
-
 servo(size=[dsservo_size[0],
             dsservo_size[1],
             dsservo_size[2]],

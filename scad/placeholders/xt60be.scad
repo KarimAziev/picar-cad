@@ -1,8 +1,17 @@
+/**
+  * Module: Placeholder for XT60E connector
+  *
+  * Author: Karim Aziiev <karim.aziiev@gmail.com>
+  * License: GPL-3.0-or-later
+  */
 
 include <../colors.scad>
 include <../parameters.scad>
+include <../simple_robot/power_parameters.scad>
 
 use <xt90e-m.scad>
+
+xte_bolt_visible_h = 4;
 
 module xt60e(shell_size=xt60be_size,
              mounting_panel_size=xt60be_mounting_panel_size,
@@ -23,10 +32,10 @@ module xt60e(shell_size=xt60be_size,
              pin_length=xt60be_pin_length,
              pin_thickness=xt60be_pin_thickness,
              shell_color=xt60be_shell_color,
-             bolt_visible_h=power_lid_thickness + 4,
+             bolt_visible_h=xte_bolt_visible_h + 4,
              bolt_head_type="pan",
              round_side="bottom",
-             bolt_through_h=power_lid_thickness,
+             bolt_through_h=xte_bolt_visible_h,
              gnd_wiring_color=matte_black,
              gnd_wiring,
              vcc_wiring,

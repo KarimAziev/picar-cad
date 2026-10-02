@@ -29,7 +29,7 @@ Open `demo/wago/placements.scad` and select `view`:
 
 Open `scad/printable_parts/wago_bracket_printable.scad` to print the default
 bracket. It is base-down at Z=0 and contains no placeholder hardware. The shared
-`scad/printable.scad` plate also has a `show_wago_bracket` toggle.
+`scad/simple_robot/printable.scad` plate also has a `show_wago_bracket` toggle.
 
 ```sh
 make build/export/stl/wago_bracket_printable.stl

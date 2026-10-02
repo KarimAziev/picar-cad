@@ -121,7 +121,7 @@ need checking on the physical parts.
 ## Printing and validation
 
 The feature has its own plate and individual entry files; it is not part of the
-legacy two-motor plate in `scad/printable.scad`. All entries omit hardware and
+legacy two-motor plate in `scad/simple_robot/printable.scad`. All entries omit hardware and
 place the printed parts on Z=0:
 
 - `printable.scad`: all five parts with separation derived from their dimensions.

@@ -9,6 +9,6 @@
  * License: GPL-3.0-or-later
  */
 
-use <../steering_system/steering_kingpin_post.scad>
+use <../simple_robot/chassis/steering_kingpin_post.scad>
 
 steering_kingpin_post(color="white");

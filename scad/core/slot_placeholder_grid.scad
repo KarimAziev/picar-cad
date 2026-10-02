@@ -26,6 +26,8 @@ use <grid.scad>
 use <slot_layout.scad>
 use <slot_renderer.scad>
 
+// Legacy layout example: ../simple_robot/chassis/battery_holder_grid_example.scad
+
 module slot_or_placeholder(slot_mode=true) {
   placeholder = $placeholder;
   plist = placeholder;
@@ -223,51 +225,3 @@ module slot_or_placeholder_grid(grid,
     slot_or_placeholder(slot_mode=false);
   }
 }
-
-specs = ["type", "grid",
-         "size", [chassis_body_w, chassis_body_len],
-         "rows",
-         maybe_add_battery_holders_rows_h([["cells",
-                                            [["w", 0.5,
-                                              "placeholder",
-                                              ["placeholder_type", "battery_holder",
-                                               "mount_type", battery_holder_mount_type,
-                                               "count", 3,
-                                               "show_battery", true,
-                                               "terminal_type", battery_holder_terminal_type,
-                                               "side_wall_cutout_type", battery_holder_side_wall_type,]],
-                                             ["w", 0.5,
-                                              "placeholder",
-                                              ["placeholder_type", "battery_holder",
-                                               "terminal_type", "coil_spring",
-                                               "side_wall_cutout_type", "enclosed",
-                                               "battery_len", 70,
-                                               "battery_dia", 21,
-                                               "show_battery", true,
-                                               "mount_type", "under_cell",
-                                               "battery_color", "pink",
-                                               "color", "black"]]]],
-                                           ["cells",
-                                            [["w", 1,
-                                              "spin", 90,
-                                              "align_y", 1,
-                                              "placeholder",
-                                              ["placeholder_type", "battery_holder",
-                                               "show_battery", true,
-                                               "count", 1,
-                                               "mount_type", battery_holder_mount_type,
-                                               "terminal_type", battery_holder_terminal_type,
-                                               "side_wall_cutout_type", battery_holder_side_wall_type,]]],]])];
-
-translate([-chassis_body_w / 2, 0, 0]) {
-  slot_or_placeholder_grid(mode="placeholder",
-                           grid=specs,
-                           debug=true,
-                           debug_spec=["border_w", 0]);
-}
-
-// translate([-chassis_body_w / 2, 0, 0]) {
-//   slot_or_placeholder_grid(mode="slot",
-//                            grid=chassis_body_battery_holders_specs,
-//                            debug=true);
-// }

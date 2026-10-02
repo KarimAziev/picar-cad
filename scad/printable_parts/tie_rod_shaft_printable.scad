@@ -6,6 +6,6 @@
  * License: GPL-3.0-or-later
  */
 
-use <../steering_system/tie_rod_shaft.scad>
+use <../simple_robot/chassis/tie_rod_shaft.scad>
 
 tie_rod_shaft_printable();

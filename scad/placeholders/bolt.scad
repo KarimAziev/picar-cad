@@ -255,35 +255,22 @@ module bolt_head_pan_phillips(head_d = 4.8,
     }
   }
 }
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  bolt
+  ─────────────────────────────────────────────────────────────────────────────
 
-module helical_thread(major_d = 2.5,
-                      pitch = 0.45,
-                      h = 10,
-                      depth = 0.27,
-                      slices = 90) {
-  turns = h / pitch;
-  outer_r = major_d / 2;
-  minor_r = outer_r - depth;
+  Note: The total height is equal to the `h` parameter only if `head_type` is
+  `"none"`.
 
-  base_half = pitch * 0.45;
-  profile_r = minor_r + depth/2;
+  **Example**:
+  ```scad
+   bolt(d=3, h=20, threaded=false, head_type="countersunk", reverse=true);
 
-  flat = pitch * 0.10;
-  pts = [[profile_r,  flat],
-         [profile_r, -flat],
-         [profile_r - depth, -base_half],
-         [profile_r - depth,  base_half]];
-
-  linear_extrude(height = h,
-                 twist = 360 * turns,
-                 slices = slices,
-                 convexity = 2) {
-    polygon(points = pts);
-  }
-}
-
-module bolt(d = 2.5,                 // major diameter (mm)
-            h = 8,                   // shank h (mm) - head sits on top (z = h)
+  ```
+  */
+module bolt(d=2.5,                 // major diameter (mm)
+            h=8,                   // shank h (mm) - head sits on top (z = h)
             thread_len = undef,      // h of threaded portion (undef -> h)
             pitch = undef,           // thread pitch (undef -> default metric)
             threaded = true,         // produce thread ridges
@@ -460,32 +447,16 @@ d = 6;
 d3 = 13;
 nut_distance = 4;
 
-// bolt(d = d,
-//      h = h,
-//      head_d=d3,
-//      head_h=5.5,
-//      threaded = true,
-//      unthreaded=20,
-//      show_nut=false,
-//      lock_nut=false,
-//      unthreaded_d=8,
-//      nut_head_distance=nut_distance,
-//      bolt_color=matte_black,
-//      unthreaded_color=metallic_silver_2,
-//      head_type = "socket");
-
-bolt(d = 3,
-     h = h,
+bolt(d=d,
+     h=h,
+     head_d=d3,
+     head_h=5.5,
      threaded = true,
+     unthreaded=20,
      show_nut=false,
      lock_nut=false,
      unthreaded_d=8,
      nut_head_distance=nut_distance,
      bolt_color=matte_black,
      unthreaded_color=metallic_silver_2,
-     head_type = "countersunk",
-     reverse=true);
-
-// bolt_head(type="countersunk", head_d=5.8);
-
-// echo("thread_pitch(d=5)", thread_pitch(3));
+     head_type="socket");

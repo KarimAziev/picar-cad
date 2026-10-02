@@ -26,7 +26,7 @@
  */
 
 include <../colors.scad>
-include <../parameters.scad>
+include <../simple_robot/wheel_parameters.scad>
 
 use <../lib/functions.scad>
 use <../lib/holes.scad>
@@ -36,7 +36,7 @@ use <../lib/shapes3d.scad>
 use <../lib/slots.scad>
 use <../placeholders/bolt.scad>
 use <../placeholders/motors/n20_motor.scad>
-use <../wheels/rear_wheel.scad>
+use <../simple_robot/wheels/rear_wheel.scad>
 
 function n20_motor_width() = n20_can_dia + n20_motor_bracket_thickness * 2;
 

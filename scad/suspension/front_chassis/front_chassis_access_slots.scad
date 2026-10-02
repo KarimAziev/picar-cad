@@ -2,7 +2,9 @@
   * Module: Head-side cable and upper ribbon access openings.
   * Adapts the legacy side trapezoids and ribbon passage to the new outline.
   */
+
 include <computed_params.scad>
+
 use <../../lib/transforms.scad>
 use <front_chassis_head_slots.scad>
 
@@ -18,7 +20,7 @@ use <front_chassis_head_slots.scad>
  */
 function front_chassis_head_front_ribbon_y() =
   front_chassis_head_mount_size()[1] / 2 + front_chassis_head_wire_land
-    + chassis_pan_servo_top_ribbon_cuttout_h / 2;
+    + front_chassis_head_pan_servo_top_ribbon_cutout_h / 2;
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -35,8 +37,8 @@ module front_chassis_head_front_ribbon_slot(thickness=chassis_thickness,
                                            anchor=[0, 0, 1]) {
   head = front_chassis_head_mount_size();
   eps = front_chassis_joint_boolean_overlap;
-  w = chassis_pan_servo_top_ribbon_cuttout_len;
-  l = chassis_pan_servo_top_ribbon_cuttout_h;
+  w = front_chassis_head_pan_servo_top_ribbon_cutout_len;
+  l = front_chassis_head_pan_servo_top_ribbon_cutout_h;
   with_anchor(anchor, [head[0], head[1], thickness], centered=true) {
     translate([0, front_chassis_head_front_ribbon_y(), -eps]) {
       linear_extrude(height=thickness + eps * 2) {

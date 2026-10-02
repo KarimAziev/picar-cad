@@ -53,7 +53,7 @@ show_front_access_slots         = true;
  */
 function front_chassis_front_frame_start_y() =
   front_chassis_head_center_y() + front_chassis_head_front_ribbon_y()
-  + chassis_pan_servo_top_ribbon_cuttout_h / 2 + front_chassis_head_wire_land
+  + front_chassis_head_pan_servo_top_ribbon_cutout_h / 2 + front_chassis_head_wire_land
   + front_bumper_center_bolt_y_offset
   + front_bumper_bolt_d + front_bumper_bolt_pad_y * 2;
 
@@ -82,7 +82,7 @@ function front_chassis_head_center_y() =
   - Head-neck placement coordinate on Z.
  */
 function front_chassis_head_mount_z() =
-  chassis_thickness - chassis_pan_servo_slot_recess;
+  chassis_thickness - front_chassis_head_pan_servo_slot_recess;
 
 function front_chassis_ear_pts() =
   let (ear_y = front_chassis_ear_w / 2,

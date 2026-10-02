@@ -6,11 +6,11 @@
  */
 
 include <../../colors.scad>
-include <../../parameters.scad>
+include <../../simple_robot/wheel_parameters.scad>
 
 use <../../lib/shapes2d.scad>
 use <../../lib/shapes3d.scad>
-use <../../wheels/rear_wheel.scad>
+use <../../simple_robot/wheels/rear_wheel.scad>
 
 module motor_can(h=standard_motor_can_len,
                  r=standard_motor_can_rad,

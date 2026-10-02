@@ -15,6 +15,6 @@
  *
  */
 
-use <../wheels/tire.scad>
+use <../simple_robot/wheels/tire.scad>
 
 tire();

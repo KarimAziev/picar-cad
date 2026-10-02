@@ -90,8 +90,8 @@ python3 -m venv .venv
 - `make tests-scad` — run `tests/test_*.scad`; tolerates the empty top-level warning used by logic-only tests.
 - `make tests-mesh` — run every `tests/check_*.py` script; requires OpenSCAD and the Python dependencies. These checks render geometry and take longer than unit tests.
 - `make typecheck` — run Pyright over all Python code in `tests/` using the configured interpreter, with strict checking for unit tests and shared log-parsing helpers.
-- `make assembly` — export `scad/assembly.scad` to `build/export/stl/assembly.stl` and `build/export/3mf/assembly.3mf` with `--backend=Manifold --enable=textmetrics --hardwarnings` and 3MF metadata.
-- `make printable` — export `scad/printable.scad` and every file in `scad/printable_parts/` to flattened `build/export/stl/` and `build/export/3mf/` (tires prefer the TPU material hint; falls back if unsupported).
+- `make assembly` — export `scad/simple_robot/assembly.scad` to `build/export/stl/assembly.stl` and `build/export/3mf/assembly.3mf` with `--backend=Manifold --enable=textmetrics --hardwarnings` and 3MF metadata.
+- `make printable` — export `scad/simple_robot/printable.scad` and every file in `scad/printable_parts/` to flattened `build/export/stl/` and `build/export/3mf/` (tires prefer the TPU material hint; falls back if unsupported).
 - `make all` — run tests, then build assembly and all printable exports.
 - `make clean` — remove build outputs and test temp files.
 
@@ -115,7 +115,7 @@ All commands require `--enable=textmetrics --backend=Manifold`.
 
 ```sh
 # Full assembly preview (PNG)
-openscad -o /tmp/scad-preview.png --preview --imgsize=754,934 --backend=Manifold --enable=textmetrics --camera=0,0,0,0,0,0,1100 scad/assembly.scad
+openscad -o /tmp/scad-preview.png --preview --imgsize=754,934 --backend=Manifold --enable=textmetrics --camera=0,0,0,0,0,0,1100 scad/simple_robot/assembly.scad
 
 # Utility tests
 openscad --backend=Manifold --enable=textmetrics -o /tmp/test_functions.stl tests/test_functions.scad
@@ -131,13 +131,13 @@ Ackermann steering is implemented with a rack-and-pinion mechanism that drives a
 > [!NOTE]
 > Install the `rack_link` on only one side and on only one of the knuckles - it doesn't matter which. Movement of the rack will cause that "leading" knuckle to rotate. The leading knuckle is then connected to the second, "driven" knuckle via a tie rod.
 
-Most parameters live in `scad/parameters.scad`, but the actual Ackermann geometry (angles and the required tie-rod top width) is calculated automatically from core robot dimensions such as chassis length, steering panel placement and knuckle geometry. Because of that, you will rarely need to edit Ackermann-specific variables manually - especially `steering_angle_deg`, which is derived from the layout.
+Legacy steering parameters live in `scad/simple_robot/steering_parameters.scad`, which includes the legacy chassis and wheel settings alongside shared hardware defaults. The Ackermann geometry (angles and the required tie-rod top width) is calculated automatically from core robot dimensions such as chassis length, steering panel placement and knuckle geometry. Because of that, you will rarely need to edit Ackermann-specific variables manually - especially `steering_angle_deg`, which is derived from the layout.
 
 ## Assembly
 
 ![Interactive Assembly](./demo/interactive_assembly.gif)
 
-The interactive guide lives in `scad/assembly_guide.scad`. Open it in OpenSCAD and step through the boolean checkboxes in the built-in Customizer to reveal each assembly step (power case, steering, electronics, and wheels). For a static full build view, use `scad/assembly.scad`.
+The interactive guide lives in `scad/simple_robot/assembly_guide.scad`. Open it in OpenSCAD and step through the boolean checkboxes in the built-in Customizer to reveal each assembly step (power case, steering, electronics, and wheels). For a static full build view, use `scad/simple_robot/assembly.scad`.
 
 ## Structure
 
@@ -145,18 +145,22 @@ The project is organized into several reusable modules under the scad/ directory
 
 - `parameters.scad`: Central configuration file containing physical dimensions (units are in millimeters).
 - `power_lid_parameters.scad`: Configuration for the power case lid.
-- `printable.scad`: Contains all printable parts in one place. You can print all parts except the tires using either PETG (recommended) or PLA. For the tires, use TPU (e.g., TPU 95A).
+- `simple_robot/printable.scad`: Contains all printable parts in one place. You can print all parts except the tires using either PETG (recommended) or PLA. For the tires, use TPU (e.g., TPU 95A).
   ![Single printable view](./demo/single-printable-plate.png)
 - `printable_parts/`: Individual printable part sources (one part per file) used by the Makefile for per-part exports.
-- `assembly.scad`: Fully assembled view of the robot.
+- `simple_robot/assembly.scad`: Fully assembled view of the robot.
   ![Overview](./demo/full_assembly.gif)
-- `assembly_guide.scad`: Interactive assembly. See [above](#assembly).
-- `steering_system/`: Rack-and-pinion steering system based on Ackermann geometry.
+- `simple_robot/assembly_guide.scad`: Interactive assembly. See [above](#assembly).
+- `simple_robot/parameters.scad`: Complete legacy assembly configuration, combining `chassis_parameters.scad`, `steering_parameters.scad`, `power_parameters.scad`, and `wheel_parameters.scad`. These domain files include shared hardware defaults from `parameters.scad` at the root of `scad/`.
+- `simple_robot/chassis_parameters.scad`: Legacy chassis outline, mounting layouts, Raspberry Pi placement, and front/rear panel dimensions.
+- `simple_robot/steering_parameters.scad`: Legacy steering, knuckle, servo, and Ackermann parameters.
+- `simple_robot/power_parameters.scad`: Legacy power case, socket case, rails, and lid dimensions.
+- `simple_robot/wheel_parameters.scad`: Legacy front/rear wheels, hubs, and tires.
 - `power/`: Power case and related components.
-- `components/chassis/`: Chassis and other components.
+- `simple_robot/chassis/`: Legacy chassis, front/rear panels, and rack-and-pinion steering based on Ackermann geometry.
 - `head/`: Mounting system for dual Raspberry Pi cameras.
 - `motor_brackets/`: Brackets for both standard (yellow) and N20-style motors.
-- `wheels/`: Components for rear and front wheels, including hubs and tires.
+- `simple_robot/wheels/`: Legacy front/rear wheels, hubs, and tires. These are specific to the simple robot; the suspension vehicle needs its own wheel design.
 - `placeholders/`: Placeholder geometry for components such as the Raspberry Pi, servos, DC motors, battery holders, HATs, sensors, step-down voltage converters, INA260, etc. There’s a lot of stuff in there.
 - `lib/`: Reusable modules. One important module is `lib/plist`, which provides helpers for working with property lists-a dict-like data structure used throughout the project because OpenSCAD doesn’t support dictionaries.
 
@@ -508,7 +512,7 @@ Assumes two battery holders are installed alongside the default LiPo power case 
 
 **Core components**
 
-- Printed parts from `scad/printable.scad` (PETG/PLA) and TPU tires
+- Printed parts from `scad/simple_robot/printable.scad` (PETG/PLA) and TPU tires
 - 1x Raspberry Pi 5
 - 3x EMAX ES08MA II servos (steering + pan + tilt)
 - 2x N20 rear motors (default `motor_type`)
@@ -546,7 +550,7 @@ Assumes two battery holders are installed; this variant omits the LiPo power cas
 
 **Core components**
 
-- Printed parts from `scad/printable.scad` (PETG/PLA) and TPU tires
+- Printed parts from `scad/simple_robot/printable.scad` (PETG/PLA) and TPU tires
 - 1x Raspberry Pi 5
 - 3x EMAX ES08MA II servos (steering + pan + tilt)
 - 2x N20 rear motors (default `motor_type`)

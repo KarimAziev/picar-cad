@@ -1,3 +1,3 @@
-use <../steering_system/steering_panel.scad>
+use <../simple_robot/chassis/steering_panel.scad>
 
 steering_panel_printable();

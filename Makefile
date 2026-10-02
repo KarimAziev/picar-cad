@@ -17,7 +17,7 @@ TIRE_MATERIAL_TYPE := TPU 95A HF
 DEFAULT_COLOR := white
 DEFAULT_DECIMAL_PRECISION := 6
 
-ASSEMBLY_SRC := scad/assembly.scad
+ASSEMBLY_SRC := scad/simple_robot/assembly.scad
 
 EXPORT_DIR := build/export
 STL_DIR := $(EXPORT_DIR)/stl
@@ -25,7 +25,7 @@ MF3_DIR := $(EXPORT_DIR)/3mf
 
 ASSEMBLY_TARGETS := $(STL_DIR)/assembly.stl $(MF3_DIR)/assembly.3mf
 
-PRINTABLE_SRCS := $(sort $(wildcard scad/printable_parts/*.scad) scad/printable.scad)
+PRINTABLE_SRCS := $(sort $(wildcard scad/printable_parts/*.scad) scad/simple_robot/printable.scad)
 PRINTABLE_BASES := $(notdir $(basename $(PRINTABLE_SRCS)))
 PRINTABLE_STL := $(addprefix $(STL_DIR)/,$(addsuffix .stl,$(PRINTABLE_BASES)))
 PRINTABLE_3MF := $(addprefix $(MF3_DIR)/,$(addsuffix .3mf,$(PRINTABLE_BASES)))
@@ -56,8 +56,8 @@ help:
 	@echo "  tests-python     Run Python unit tests without OpenSCAD."
 	@echo "  tests-mesh       Run Python mesh checks using OpenSCAD."
 	@echo "  typecheck        Type-check all Python test code with Pyright."
-	@echo "  assembly         Export scad/assembly.scad to $(STL_DIR)/assembly.stl and $(MF3_DIR)/assembly.3mf with hard warnings."
-	@echo "  printable        Export scad/printable.scad and scad/printable_parts/*.scad to flattened $(STL_DIR) and $(MF3_DIR)."
+	@echo "  assembly         Export scad/simple_robot/assembly.scad to $(STL_DIR)/assembly.stl and $(MF3_DIR)/assembly.3mf with hard warnings."
+	@echo "  printable        Export scad/simple_robot/printable.scad and scad/printable_parts/*.scad to flattened $(STL_DIR) and $(MF3_DIR)."
 	@echo "  clean            Remove build outputs and test temp files."
 	@echo "  clean-assembly   Remove build/assembly outputs."
 	@echo "  clean-printable  Remove build/printable outputs."
@@ -111,7 +111,7 @@ clean-printable:
 clean-tests:
 	rm -f /tmp/picar-cad-test-*.stl /tmp/picar-cad-test-log-*.txt
 
-$(STL_DIR)/%.stl: scad/%.scad
+$(STL_DIR)/assembly.stl: $(ASSEMBLY_SRC)
 	@mkdir -p $(dir $@)
 ifneq ($(CI_PREVIEW_ONLY),0)
 	$(OPENSCAD) $(SCAD_COMMON_ARGS) $(HARDWARNINGS) --preview --imgsize=400,400 -o "/tmp/preview-$(@F).png" "$<"
@@ -119,7 +119,7 @@ else
 	$(OPENSCAD) $(SCAD_COMMON_ARGS) $(HARDWARNINGS) -o "$@" "$<"
 endif
 
-$(MF3_DIR)/%.3mf: scad/%.scad
+$(MF3_DIR)/assembly.3mf: $(ASSEMBLY_SRC)
 	@mkdir -p $(dir $@)
 ifneq ($(CI_PREVIEW_ONLY),0)
 	$(OPENSCAD) $(SCAD_COMMON_ARGS) $(HARDWARNINGS) --preview --imgsize=400,400 -o "/tmp/preview-$(@F).png" "$<"

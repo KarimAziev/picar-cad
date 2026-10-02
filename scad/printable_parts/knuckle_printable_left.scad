@@ -1,6 +1,6 @@
-include <../parameters.scad>
+include <../simple_robot/steering_parameters.scad>
 
-use <../steering_system/knuckle.scad>
+use <../simple_robot/chassis/knuckle.scad>
 
 module knuckle_printable_left(knuckle_color="white",
                               knuckle_shaft_color="white") {

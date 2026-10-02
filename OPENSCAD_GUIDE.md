@@ -280,9 +280,10 @@ The project is migrating toward these principles and a more complex vehicle with
 
 ### Deprecated components
 
-- [scad/steering_system/](scad/steering_system/): deprecated; do not use it for new work.
-- [scad/components/chassis/](scad/components/chassis/): deprecated, but contains useful examples and parts worth preserving in an improved implementation.
-- [scad/assembly.scad](scad/assembly.scad) and [scad/assembly_guide.scad](scad/assembly_guide.scad): deprecated entry points. Existing build commands may still target them; their presence does not make them the design reference for new assemblies.
+- [scad/simple_robot/chassis/](scad/simple_robot/chassis/): legacy chassis and rack-and-pinion steering, migrated from `components/chassis/` and `steering_system/`. Do not use the old steering for new work; the chassis contains useful examples and parts worth preserving in an improved implementation.
+- [scad/simple_robot/parameters.scad](scad/simple_robot/parameters.scad): legacy assembly presets, split into chassis, steering, power, and wheel parameter files alongside it. Shared hardware remains in `scad/parameters.scad`; suspension head-mount and knuckle defaults live independently in `scad/steering_params.scad`.
+- [scad/simple_robot/wheels/](scad/simple_robot/wheels/): legacy wheel, hub, and tire models. These are not the design reference for suspension-vehicle wheels.
+- [scad/simple_robot/assembly.scad](scad/simple_robot/assembly.scad) and [scad/simple_robot/assembly_guide.scad](scad/simple_robot/assembly_guide.scad): deprecated entry points. Existing build commands may still target them; their presence does not make them the design reference for new assemblies.
 
 ### Code needing refactoring
 

@@ -132,30 +132,30 @@ module front_chassis_head_ribbon_slots(thickness=chassis_thickness,
   - anchor: Anchor vector for the mount-pad envelope.
  */
 module front_chassis_head_slots(thickness=chassis_thickness,
-                                recess_h=chassis_pan_servo_slot_recess,
+                                recess_h=front_chassis_head_pan_servo_slot_recess,
                                 anchor=[0, 0, 1]) {
   size = front_chassis_head_mount_size();
   eps = front_chassis_joint_boolean_overlap;
-  screw_step = chassis_pan_servo_screw_d
-    + chassis_pan_servo_screws_gap;
-  slot_r = chassis_pan_servo_slot_dia / 2;
-  x_screw_cols = round((chassis_pan_servo_recesess_x_len / 2) / screw_step);
-  y_screw_rows = round((chassis_pan_servo_recesess_y_len / 2) / screw_step);
+  screw_step = front_chassis_head_pan_servo_screw_d
+    + front_chassis_head_pan_servo_screws_gap;
+  slot_r = front_chassis_head_pan_servo_slot_dia / 2;
+  x_screw_cols = round((front_chassis_head_pan_servo_recess_x_len / 2) / screw_step);
+  y_screw_rows = round((front_chassis_head_pan_servo_recess_y_len / 2) / screw_step);
 
-  cols_params = calc_cols_params(gap=chassis_pan_servo_screws_gap,
+  cols_params = calc_cols_params(gap=front_chassis_head_pan_servo_screws_gap,
                                  cols=x_screw_cols,
-                                 w=chassis_pan_servo_screw_d);
-  rows_params = calc_cols_params(gap=chassis_pan_servo_screws_gap,
+                                 w=front_chassis_head_pan_servo_screw_d);
+  rows_params = calc_cols_params(gap=front_chassis_head_pan_servo_screws_gap,
                                  cols=y_screw_rows,
-                                 w=chassis_pan_servo_screw_d);
+                                 w=front_chassis_head_pan_servo_screw_d);
 
   total_x = cols_params[1];
   total_y = rows_params[1];
 
-  recess_w = total_x * 2 + slot_r * 2 + chassis_pan_servo_screw_d
-    + chassis_pan_servo_screws_gap;
-  recess_l = total_y * 2 + slot_r * 2 + chassis_pan_servo_screw_d
-    + chassis_pan_servo_screws_gap;
+  recess_w = total_x * 2 + slot_r * 2 + front_chassis_head_pan_servo_screw_d
+    + front_chassis_head_pan_servo_screws_gap;
+  recess_l = total_y * 2 + slot_r * 2 + front_chassis_head_pan_servo_screw_d
+    + front_chassis_head_pan_servo_screws_gap;
 
   with_anchor(anchor=anchor,
               size=[size[0], size[1], thickness],
@@ -164,9 +164,9 @@ module front_chassis_head_slots(thickness=chassis_thickness,
       translate([0, 0, thickness - recess_h]) {
         linear_extrude(height=recess_h + eps, center=false) {
           mirror_copy([0, 1, 0]) {
-            translate([-chassis_pan_servo_recesess_thickness / 2, 0, 0]) {
-              trapezoid_rounded_top(b=chassis_pan_servo_slot_dia,
-                                    t=chassis_pan_servo_recesess_thickness,
+            translate([-front_chassis_head_pan_servo_recess_thickness / 2, 0, 0]) {
+              trapezoid_rounded_top(b=front_chassis_head_pan_servo_slot_dia,
+                                    t=front_chassis_head_pan_servo_recess_thickness,
                                     h=recess_w / 2,
                                     center=false,
                                     r_factor=0.5);
@@ -174,9 +174,9 @@ module front_chassis_head_slots(thickness=chassis_thickness,
           }
           rotate([0, 0, 90]) {
             mirror_copy([0, 1, 0]) {
-              translate([-chassis_pan_servo_recesess_thickness / 2, 0, 0]) {
-                trapezoid_rounded_top(b=chassis_pan_servo_slot_dia,
-                                      t=chassis_pan_servo_recesess_thickness,
+              translate([-front_chassis_head_pan_servo_recess_thickness / 2, 0, 0]) {
+                trapezoid_rounded_top(b=front_chassis_head_pan_servo_slot_dia,
+                                      t=front_chassis_head_pan_servo_recess_thickness,
                                       h=recess_l / 2,
                                       center=false,
                                       r_factor=0.5);
@@ -187,17 +187,17 @@ module front_chassis_head_slots(thickness=chassis_thickness,
       }
 
       translate([0, 0, -eps]) {
-        cylinder(d=chassis_pan_servo_slot_dia,
+        cylinder(d=front_chassis_head_pan_servo_slot_dia,
                  h=thickness + eps * 2,
                  $fn=$preview ? 40 : 120);
       }
 
       mirror_copy([1, 0, 0]) {
-        translate([slot_r + chassis_pan_servo_screws_gap, 0, -eps]) {
-          columns_children(gap=chassis_pan_servo_screws_gap,
+        translate([slot_r + front_chassis_head_pan_servo_screws_gap, 0, -eps]) {
+          columns_children(gap=front_chassis_head_pan_servo_screws_gap,
                            cols=x_screw_cols,
-                           w=chassis_pan_servo_screw_d) {
-            cylinder(d=chassis_pan_servo_screw_d,
+                           w=front_chassis_head_pan_servo_screw_d) {
+            cylinder(d=front_chassis_head_pan_servo_screw_d,
                      h=thickness + eps * 2,
                      $fn=$preview ? 24 : 80);
           }
@@ -205,11 +205,11 @@ module front_chassis_head_slots(thickness=chassis_thickness,
       }
 
       mirror_copy([0, 1, 0]) {
-        translate([0, slot_r + chassis_pan_servo_screws_gap, -eps]) {
-          rows_children(gap=chassis_pan_servo_screws_gap,
+        translate([0, slot_r + front_chassis_head_pan_servo_screws_gap, -eps]) {
+          rows_children(gap=front_chassis_head_pan_servo_screws_gap,
                         rows=y_screw_rows,
-                        w=chassis_pan_servo_screw_d) {
-            cylinder(d=chassis_pan_servo_screw_d,
+                        w=front_chassis_head_pan_servo_screw_d) {
+            cylinder(d=front_chassis_head_pan_servo_screw_d,
                      h=thickness + eps * 2,
                      $fn=$preview ? 24 : 80);
           }

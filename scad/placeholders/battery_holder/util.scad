@@ -120,12 +120,6 @@ function maybe_add_battery_holders_rows_h(rows) =
            : plist_get(row, "h", 0))
         plist_merge(["h", h], row)];
 
-echo("MERGED",
-     merge_specs_rows_by_placeholder_types(chassis_body_battery_holders_specs,
-                                           plist=["show_battery", true],
-                                           override=true,
-                                           placeholder_types=["battery_holder"]));
-
 // echo("ROWS",
 //      maybe_add_battery_holders_rows_h([["cells",
 //                                         [["w", 0.5,

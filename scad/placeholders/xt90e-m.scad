@@ -23,6 +23,8 @@ use <../lib/transforms.scad>
 use <bolt.scad>
 use <xt90.scad>
 
+parent_thickness = 2;
+
 module xt90e_mounting_pattern(h,
                               spacing,
                               d,
@@ -56,7 +58,7 @@ module xt90e_mounting_panel(size=xt90e_mounting_panel_size,
                             bolt_head_type="pan",
                             round_side="top",
                             bolt_visible_h=4,
-                            bolt_through_h=power_lid_thickness,
+                            bolt_through_h=parent_thickness,
                             show_nut=true) {
   w = size[0];
   length = size[1];
@@ -128,10 +130,10 @@ module xt90e(shell_size=xt90e_size,
              pin_length=xt90e_pin_length,
              pin_thickness=xt90e_pin_thickness,
              shell_color=xt90e_shell_color,
-             bolt_visible_h=power_lid_thickness + 4,
+             bolt_visible_h=parent_thickness + 4,
              bolt_head_type="pan",
              round_side="bottom",
-             bolt_through_h=power_lid_thickness,
+             bolt_through_h=parent_thickness,
              gnd_wiring_color=matte_black,
              gnd_wiring,
              vcc_wiring,
@@ -208,7 +210,7 @@ module xt90e(shell_size=xt90e_size,
   }
 }
 
-module xt_90_slot(spec, thickness=power_lid_thickness, center=false) {
+module xt_90_slot(spec, thickness=parent_thickness, center=false) {
   slot_size = plist_get("slot_size", spec, undef);
   d = plist_get("mount_dia", spec, undef);
   bolt_spacing = plist_get("bolt_spacing", spec);
@@ -241,7 +243,7 @@ module xt90e_m_from_plist(plist,
                           standup=false,
                           show_bolt=true,
                           bolt_visible_h=4,
-                          bolt_through_h=power_lid_thickness,
+                          bolt_through_h=parent_thickness,
                           echo_bolts_info=false,
                           show_nut=true,
                           center=true) {
@@ -311,7 +313,7 @@ module xt90e_m_from_plist(plist,
 }
 
 module xt_90_slot_or_placeholder(spec,
-                                 thickness=power_lid_thickness,
+                                 thickness=parent_thickness,
                                  center=false) {
   slot_size = plist_get("slot_size", spec, undef);
   d = plist_get("mount_dia", spec, undef);

@@ -1,6 +1,6 @@
-include <../scad/parameters.scad>
+include <../scad/simple_robot/wheel_parameters.scad>
 
-use <../scad/wheels/wheel_hub.scad>
+use <../scad/simple_robot/wheels/wheel_hub.scad>
 
 translate([-wheel_hub_outer_d / 2 - 2, 0, 0]) {
   wheel_hub_assembly(lower_spacer_h=wheel_hub_wheel_spacer_h,

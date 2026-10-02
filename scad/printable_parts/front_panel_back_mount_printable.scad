@@ -5,7 +5,7 @@
  * License: GPL-3.0-or-later
  */
 
-use <../components/front_panel/front_panel_back_mount.scad>
+use <../simple_robot/chassis/front_panel/front_panel_back_mount.scad>
 
 module front_panel_back_mount_printable(color="white") {
   color(color, alpha=1) {

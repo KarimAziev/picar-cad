@@ -18,6 +18,7 @@ include <../colors.scad>
 include <../parameters.scad>
 
 use <../lib/shapes2d.scad>
+use <../lib/transforms.scad>
 
 bearing_shaft_d        = 8;
 bearing_section_height = 7;
@@ -37,7 +38,9 @@ module bearing(rings = [[0]],
                h = bearing_section_height,
                flanged_h=0,
                flanged_w=0,
-               fn=100) {
+               fn=100,
+               anchor=[0, 0, 1],
+               orientation="wlh") {
   ring_widths = [for (x = rings) x[0]];
   ring_colors = [for (x = rings) x[1]];
   num_rings = len(rings);
@@ -47,42 +50,72 @@ module bearing(rings = [[0]],
   ring_width_last = ring_widths[num_rings - 1];
   d_last = d - 2 * outer_ring_w - 2 * ring_width_last;
 
-  union() {
+  with_orientation(from="wlh", to=orientation, anchor=anchor, size=[d, d, h]) {
+    union() {
+      color(outer_col) {
+        linear_extrude(height = h) {
+          ring_2d(w = outer_ring_w, d = d, outer = false, fn=fn);
+        }
 
-    color(outer_col) {
-      linear_extrude(height = h) {
-        ring_2d(w = outer_ring_w, d = d, outer = false, fn=fn);
-      }
-
-      if (flanged_w > 0 && flanged_h > 0) {
-        linear_extrude(height = flanged_h) {
-          ring_2d(w = flanged_w, d = d, outer = true, fn=fn);
+        if (flanged_w > 0 && flanged_h > 0) {
+          linear_extrude(height = flanged_h) {
+            ring_2d(w = flanged_w, d = d, outer = true, fn=fn);
+          }
         }
       }
-    }
 
-    color(shaft_ring_col) {
-      linear_extrude(height = h) {
-        ring_2d(w=shaft_ring_w, d=shaft_d, outer = true, fn=fn);
-      }
-    }
-
-    for (i = [1 : num_rings]) {
-
-      d_ring = (num_rings > 1)
-        ? d_first + (d_last - d_first) * ((i - 1) / (num_rings - 1))
-        : d_first;
-
-      col_ring = ring_colors[i - 1];
-      w_ring   = ring_widths[i - 1];
-
-      color(col_ring) {
+      color(shaft_ring_col) {
         linear_extrude(height = h) {
-          ring_2d(w = w_ring, d = d_ring, outer = true, fn=40);
+          ring_2d(w=shaft_ring_w, d=shaft_d, outer = true, fn=fn);
+        }
+      }
+
+      for (i = [1 : num_rings]) {
+
+        d_ring = (num_rings > 1)
+          ? d_first + (d_last - d_first) * ((i - 1) / (num_rings - 1))
+          : d_first;
+
+        col_ring = ring_colors[i - 1];
+        w_ring   = ring_widths[i - 1];
+
+        color(col_ring) {
+          linear_extrude(height = h) {
+            ring_2d(w = w_ring, d = d_ring, outer = true, fn=40);
+          }
         }
       }
     }
   }
 }
 
-bearing(rings=rings);
+module bearing_from_plist(plist,
+                          fn=100,
+                          anchor=[0, 0, 1],
+                          orientation="wlh") {
+  rings = plist_get("rings", plist, [[0]]);
+  d = plist_get("d", plist, outer_bearing_d);
+  outer_ring_w = plist_get("outer_ring_w", plist, outer_ring_w);
+  outer_col = plist_get("outer_col", plist, metallic_grey);
+  shaft_d = plist_get("shaft_d", plist, bearing_shaft_d);
+  shaft_ring_w = plist_get("shaft_ring_w", plist, shaft_ring_w);
+  shaft_ring_col = plist_get("shaft_ring_col", plist, metallic_silver_2);
+  h = plist_get("h", plist, bearing_section_height);
+  flanged_h = plist_get("flanged_h", plist, 0);
+  flanged_w = plist_get("flanged_w", plist, 0);
+  bearing(rings=rings,
+          d=d,
+          outer_ring_w=outer_ring_w,
+          outer_col=outer_col,
+          shaft_d=shaft_d,
+          shaft_ring_w=shaft_ring_w,
+          shaft_ring_col=shaft_ring_col,
+          h=h,
+          flanged_h=flanged_h,
+          flanged_w=flanged_w,
+          fn=fn,
+          anchor=anchor,
+          orientation=orientation);
+}
+
+bearing(rings=rings, anchor=[1, 0, -1]);

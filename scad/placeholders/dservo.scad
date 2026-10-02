@@ -6,7 +6,6 @@
  */
 
 include <../colors.scad>
-include <../parameters.scad>
 include <../steering_params.scad>
 
 use <../components/encoder_l_bracket.scad>
@@ -65,11 +64,6 @@ function dsservo_height_max_bracket_l() =
   dsservo_size[2] - dsservo_flange_z_offset
   - dsservo_socket_z_offset
   - dsservo_socket_size[2];
-
-function dsservo_height_before_flange() =
-  servo_height_before_flange(h=dsservo_size[2],
-                             z_offst=steering_servo_flange_z_offset,
-                             flange_thickness=dsservo_flange_thickness);
 
 function steering_servo_y_tie_rod() =
   steering_servo_arm_d / 2
