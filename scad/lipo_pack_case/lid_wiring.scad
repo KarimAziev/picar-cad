@@ -124,6 +124,8 @@ function lid_wiring_props(pl, l_clearance=0.4, w_clearance=0.4) =
        wt = [for (side = [-1, 1]) _harness_wago_tail(wagos[0], side, top, d)],
        pack_top = plist_get("pack_positions", c)[0][2] + plist_get("pack_sizes", c)[0][2],
        low = pack_top + d / 2 + 0.8,
+       // Cross behind the flat fuse, between its body and the rear skirt.
+       return_y = _lid_access_limits(lid)[1] + d / 2 + 0.1,
        button_in = bt[0][len(bt[0]) - 1],
        button_out = bt[1][len(bt[1]) - 1],
 // Socket approaches follow the configured fuse's own X direction.
@@ -144,7 +146,8 @@ function lid_wiring_props(pl, l_clearance=0.4, w_clearance=0.4) =
                                 concat([fp[1], fuse_out, [button_in[0], button_in[1], fp[1][2]]], reverse(bt[0])), d, "#d92727", config),
                  _harness_route("Switch output -> positive Wago",
                                 concat(bt[1], [[button_out[0], button_out[1], low],
-                                               [wt[1][0][0], button_out[1], low],
+                                               [button_out[0], return_y, low],
+                                               [wt[1][0][0], return_y, low],
                                                [wt[1][0][0], wt[1][0][1], low]], wt[1]), d, "#d92727", config)])
   ["routes", routes,
    "case_props", c,

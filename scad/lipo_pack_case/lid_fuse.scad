@@ -17,13 +17,41 @@ use <../wago/wago_mounts.scad>
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
+  lid_fuse_headroom
+  ─────────────────────────────────────────────────────────────────────────────
+  Calculate rail-top headroom for a holder lying on its side above the packs.
+  **Parameters:**
+  - `spec`: Fuse plist or undef; clearance defaults to 1 mm above the batteries.
+  - `case_props`: Resolved case dimensions, battery positions and rails.
+  - `side_t`: Minimum material above the rail channels.
+  **Returns:** Minimum headroom in mm, including rail clearance in the datum.
+ */
+function lid_fuse_headroom(spec, case_props, side_t) =
+  is_undef(spec) || !plist_get("enabled", spec, true) ? side_t :
+  let (holder = plist_get("holder", spec, atm_fuse_default_plist),
+       c = plist_get("clearance", spec, 1),
+       packs = plist_get("pack_sizes", case_props),
+       positions = plist_get("pack_positions", case_props),
+       top = max([for (i = [0:len(packs) - 1]) positions[i][2] + packs[i][2]]),
+       rails = plist_get("rail_props", case_props))
+  assert(is_num(c) && c >= 0, "Fuse clearance must be nonnegative mm")
+  max(side_t, top + atm_fuse_holder_size(holder)[1] + c
+      - plist_get("z", rails) - plist_get("h", rails)
+      - plist_get("clearance", rails));
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
   lid_fuse_props
   ─────────────────────────────────────────────────────────────────────────────
   Resolve a flat ATM holder, tie slots and clearance from the batteries.
   **Parameters:**
   - `spec`: Undef disables the holder. `holder` is its hardware plist;
     `pos` is roof-center XY, `rotation` is a Z angle. `clearance` defaults
-    to 1 mm above/below the holder. `tie_size` is [width, thickness] in mm.
+    to 1 mm between the holder and batteries. The holder rests directly against
+    the roof underside. `tie_size` is [width, thickness] in mm.
+    `tie_recess` cuts paths into the exterior roof for a flush adapter; default
+    zero. Allow tie thickness + 0.4 mm and retain at least 1.2 mm of roof.
+    Keep cable-tie locking heads below the roof, outside the adapter footprint.
   - `lid`: Resolved lid properties, including the case and rail references.
   **Returns:** Installed `size`, local tie-slot centers, and placement values.
  */
@@ -35,6 +63,7 @@ function lid_fuse_props(spec, lid) =
        size = [upright[0], upright[2], upright[1]],
        c = plist_get("clearance", spec, 1),
        tie = plist_get("tie_size", spec, [3, 1.2]),
+       recess = plist_get("tie_recess", spec, 0),
        pos = plist_get("pos", spec, [0, 0]),
        a = plist_get("rotation", spec, 0),
        adapter = plist_get("adapter_props", lid),
@@ -62,17 +91,20 @@ function lid_fuse_props(spec, lid) =
   assert(is_list(pos) && len(pos) == 2 && is_num(pos[0]) && is_num(pos[1])
          && is_num(a), "Fuse placement requires numeric XY pos and Z rotation")
   assert(!plist_get("enabled", adapter, false) || !_wago_overlap(b, adapter_box)
-         || plist_get("standoff_h", adapter, 0) >= tie[1] + 0.4,
-         "Raise the adapter to clear the fuse retaining ties")
+         || plist_get("standoff_h", adapter, 0) + recess >= tie[1] + 0.4,
+         "Recess the fuse ties or raise the adapter to clear them")
   assert(min(size) > 0 && c >= 0 && min(tie) > 0,
          "Fuse-holder and tie dimensions must be positive")
-  assert(size[2] + 2 * c <= free_h,
+  assert(is_num(recess) && recess >= 0
+         && plist_get("t", lid) - recess >= 1.2,
+         "Fuse tie recess must leave at least 1.2 mm of roof")
+  assert(size[2] + c <= free_h + 0.000001,
          "Fuse holder does not fit above the battery; change its orientation or lid headroom")
   assert(b[0][cross] >= inner[0] && b[1][cross] <= inner[1]
          && _lid_roof_contains(b, plist_get("canonical_size", lid), plist_get("corner_r", lid)),
          "Fuse holder must fit between the lid skirts")
   plist_merge(spec, ["enabled", true, "holder", holder, "size", size,
-                     "clearance", c, "tie_size", tie, "slots", slots,
+                     "clearance", c, "tie_size", tie, "tie_recess", recess, "slots", slots,
                      "pos", pos, "rotation", a, "free_h", free_h]);
 
 /**
@@ -93,6 +125,18 @@ module lid_fuse(props, roof_t, slot_mode=false) {
     translate(concat(plist_get("pos", props), [0])) {
       rotate([0, 0, plist_get("rotation", props)]) {
         if (slot_mode) {
+          recess = plist_get("tie_recess", props);
+          if (recess > 0) {
+            for (p = plist_get("slots", props)) {
+              if (p[0] < 0) {
+                translate([0, p[1], roof_t - recess]) {
+                  cuboid([2 * abs(p[0]) + tie[1] + 0.4,
+                          tie[0] + 0.4, recess + 0.01],
+                         anchor=[0, 0, 1], r=0.5);
+                }
+              }
+            }
+          }
           for (p = plist_get("slots", props)) {
             translate(concat(p, [-0.01])) {
               cuboid([tie[1] + 0.4, tie[0] + 0.4, roof_t + 0.02],
@@ -101,41 +145,11 @@ module lid_fuse(props, roof_t, slot_mode=false) {
           }
         } else {
           translate([0, -size[1] / 2,
-                     -size[2] / 2 - plist_get("clearance", props)]) {
+                     -size[2] / 2]) {
             rotate([-90, 0, 0]) {
               atm_fuse_holder_from_spec(plist_merge(holder,
                 ["wiring", plist_merge(plist_get("wiring", holder),
                                         ["left_pts", [], "right_pts", []])]));
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-/**
-  ─────────────────────────────────────────────────────────────────────────────
-  lid_fuse_supports
-  ─────────────────────────────────────────────────────────────────────────────
-  Add two shallow bearing pads beneath the roof for the tied fuse holder.
-  **Parameters:**
-  - `props`: Resolved fuse properties. Pads extend down from the interior face
-    at Z=0 and keep the holder at the specified clearance from that face.
- */
-module lid_fuse_supports(props) {
-  c = plist_get("clearance", props, 0);
-  if (plist_get("enabled", props, false) && c > 0) {
-    holder = plist_get("holder", props);
-    rib = plist_get("rib", plist_get("body", holder));
-    tie = plist_get("tie_size", props);
-    translate(concat(plist_get("pos", props), [0])) {
-      rotate([0, 0, plist_get("rotation", props)]) {
-        for (p = plist_get("slots", props)) {
-          if (p[0] < 0) {
-            translate([0, p[1], -c]) {
-              cuboid([plist_get("l", rib), tie[0], c + 0.01],
-                     anchor=[0, 0, 1], r=0.5);
             }
           }
         }
@@ -206,4 +220,4 @@ function lid_fuse_wire_ports(props) =
   [for (side = [1, -1])
       concat(plist_get("pos", props), [0])
       + rotZ([side * x, -size[1] / 2 + body[2] / 2,
-              -size[2] / 2 - plist_get("clearance", props)], plist_get("rotation", props))];
+              -size[2] / 2], plist_get("rotation", props))];

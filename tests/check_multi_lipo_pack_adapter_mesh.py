@@ -62,10 +62,10 @@ def main() -> None:
         close(bounds(vertices(mesh))[0], [-27.8, -27.8, 0])
         close(bounds(vertices(mesh))[1], [27.8, 27.8, 4])
         render("multi_lipo_pack_printable();")
-        assert connected_components(mesh) == 10
+        assert connected_components(mesh) == 6
         close([bounds(vertices(mesh))[0][2]], [0])
         print(
-            "PASS: adapter is one solid on the bed; combined layout has ten separate parts",
+            "PASS: adapter is one solid on the bed; combined layout has six separate parts without adapter spacers",
             flush=True,
         )
 
@@ -174,7 +174,7 @@ def main() -> None:
            "front",["t",3,"h",15],"rear",["t",3,"h",15],
            "left",["t",3,"h",20],"right",["t",3,"h",20]],
  "lid",plist_merge(plist_get("lid",multi_lipo_packs_case),[
-   "equipment",[],"fuse",undef,
+   "equipment",[],"fuse",undef,"voltmeters",[],
    "lidar_orientation","lwh","lidar_offset",[3,-2],
    "lidar",plist_merge(rplidar_c1_plist,["size",[62,58],"bolt_spacing",[46,40],"offsets",[1,-2]])])]);"""
         alt = COMMON.replace("pl=multi_lipo_packs_case;", altered)

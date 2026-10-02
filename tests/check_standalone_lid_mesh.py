@@ -39,8 +39,9 @@ def main() -> None:
         source = Path(folder) / "fixture.scad"
         mesh = Path(folder) / "fixture.stl"
 
-        def render(code: str, empty: bool = False, reject: bool = False) -> None:
-            source.write_text(COMMON + code)
+        def render(code: str, empty: bool = False, reject: bool = False,
+                   prelude: str = COMMON) -> None:
+            source.write_text(prelude + code)
             result = subprocess.run(
                 [OPENSCAD, "--backend=Manifold", "--enable=textmetrics", "--hardwarnings",
                  "--export-format", "binstl", "-o", str(mesh), str(source)],
@@ -56,20 +57,26 @@ def main() -> None:
             if empty:
                 assert mesh_volume(mesh) < 0.00001, (mesh_volume(mesh), log)
 
+        render(f"include <{ROOT}/scad/suspension/rear_chassis/rear_power_lid_printable.scad>",
+               prelude="")
+        assert connected_components(mesh) == 1
+        close([bounds(vertices(mesh))[0][2], bounds(vertices(mesh))[1][2]], [0, 18.1])
+        print("PASS actual rear-power lid entry prints with both meter mounting lands", flush=True)
+
         render("multi_lipo_pack_printable(pl);")
-        assert connected_components(mesh) == 10
+        assert connected_components(mesh) == 6
         close([bounds(vertices(mesh))[0][2]], [0])
         render('''meter_case=plist_merge(pl,["lid",plist_merge(spec,
   ["equipment",plist_get("meter",multi_lipo_lid_equipment_presets)])]);
 multi_lipo_pack_printable(meter_case);''')
-        assert connected_components(mesh) == 9
+        assert connected_components(mesh) == 5
         render("multi_lipo_pack_lid_printable(pl);")
         assert connected_components(mesh) == 1
         close([bounds(vertices(mesh))[0][2]], [0])
         render("button_bracket(toggle_switch_bracket_plist,show_button=false);")
         assert connected_components(mesh) == 1
         close([bounds(vertices(mesh))[0][2]], [0])
-        render('multi_lipo_pack_adapter_spacers(plist_get("adapter_props",p));')
+        render('multi_lipo_pack_adapter_spacers(plist_merge(plist_get("adapter_props",p), ["standoff_h",4]));')
         assert connected_components(mesh) == 4
         close([bounds(vertices(mesh))[0][2]], [0])
         print("PASS lid, switch bracket and four spacers print on Z=0", flush=True)
@@ -88,6 +95,44 @@ multi_lipo_pack_printable(meter_case);''')
   multi_lipo_pack_lid(pl,show_lid=false,show_adapter=true,show_bolts=true);
 }''', empty=True)
         print("PASS roof holes align and installed equipment clears lid and fuse", flush=True)
+
+        # Preserve solid wall around the side mounting holes and the wiring port.
+        # This probes the exterior land where the vent row would otherwise pass.
+        render('''for (m=lid_voltmeter_layout(plist_get("voltmeters",spec),p)) {
+xy=plist_get("pos",m); outer=plist_get("outer",m);
+difference() {
+  translate([xy[0],outer-0.25,xy[1]]) {
+    cube([plist_get("width",m)-0.2,0.4,7],center=true);
+  }
+  union() {
+    multi_lipo_pack_lid(pl);
+    lid_voltmeter(m,slot_mode=true);
+  }
+}
+}''', empty=True)
+        # No fuse pads remain below the roof; the holder touches its underside.
+        render('''intersection() {
+  multi_lipo_pack_lid(pl);
+  translate([-10,-12,plist_get("roof_z",p)-1.01]) {
+    cube([20,14,1]);
+  }
+}''', empty=True)
+        render('''bad=plist_merge(pl,["lid",plist_merge(spec,
+  ["voltmeters",[for(x=[0,10])
+    ["component",voltmeter_default_spec,"edge_pad",1.25,"pos",[x,undef]]]])]);
+multi_lipo_pack_lid(bad);''', reject=True)
+        # The exterior tie bands must fit entirely below a flush adapter.
+        render('''intersection() {
+  multi_lipo_pack_lid(pl);
+  for(b=_lid_fuse_tie_bounds(fuse)) {
+    translate([b[0][0]+0.5,b[0][1]+0.5,
+               plist_get("canonical_size",p)[2]-plist_get("tie_recess",fuse)+0.01]) {
+      cube([b[1][0]-b[0][0]-1,b[1][1]-b[0][1]-1,
+            plist_get("tie_recess",fuse)]);
+    }
+  }
+}''', empty=True)
+        print("PASS side meter keeps solid mounting lands and recessed fuse ties clear the flush adapter", flush=True)
 
         # The large opening passes through the actual roof without hidden membranes.
         render('''m=equipment[1];

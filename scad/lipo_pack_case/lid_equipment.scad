@@ -45,7 +45,7 @@ function _lid_move_bounds(b, p, gap=0) =
 
 function _lid_roof_contains(b, size, r) =
   len([for (x = [b[0][0], b[1][0]], y = [b[0][1], b[1][1]])
-         if (abs(x) > size[0] / 2 || abs(y) > size[1] / 2
+         if (abs(x) > size[0] / 2 + 0.000001 || abs(y) > size[1] / 2 + 0.000001
              || norm([max(0, abs(x) - size[0] / 2 + r),
                       max(0, abs(y) - size[1] / 2 + r)]) > r + 0.000001) 1]) == 0;
 
@@ -135,6 +135,18 @@ function _lid_edge_limit(cross_min, cross_max, span, cross_span, r) =
   let (d = max(0, max(abs(cross_min), abs(cross_max)) - cross_span / 2 + r))
   span / 2 - r + sqrt(max(0, r * r - d * d));
 
+function _lid_equipment_roof_contains(p, pos, lid, gap) =
+  let (size = plist_get("canonical_size", lid),
+       r = plist_get("corner_r", lid),
+       angle = plist_get("rotation", p, 0))
+  plist_get("kind", p) != "button"
+      ? _lid_roof_contains(_lid_move_bounds(plist_get("roof_bounds", p), pos, gap), size, r)
+      : len([for (v = plist_get("footprint", plist_get("props", p)))
+                 let (point = concat(_lid_rotate(v, angle), [0]))
+                 if (!_lid_roof_contains(_lid_move_bounds([point, point], pos, gap), size, r)) 1]) == 0
+      && len([for (cut = _lid_equipment_cuts(p))
+                 if (!_lid_roof_contains(_lid_move_bounds(cut, pos, gap), size, r)) 1]) == 0;
+
 function _lid_equipment_place(spec, lid, obstacles) =
   let (p = lid_equipment_props(spec),
        b = plist_get("bounds", p),
@@ -172,8 +184,7 @@ function _lid_equipment_place(spec, lid, obstacles) =
                  : max(lo[1], -edge - roof[0][1] + gap)]]
            : [for (x = xs, y = ys) [x, y]],
        fits = [for (xy = candidates)
-           if (_lid_roof_contains(_lid_move_bounds(roof, xy, gap), size,
-                                  plist_get("corner_r", lid))
+           if (_lid_equipment_roof_contains(p, xy, lid, gap)
                && _lid_cut_access(cuts, xy, lid)
                && _wago_clear(_lid_move_bounds(b, xy, gap), obstacles)) xy])
   assert(is_num(gap) && gap >= 0, "Equipment gap must be nonnegative")
@@ -188,11 +199,51 @@ function _lid_equipment_place(spec, lid, obstacles) =
   plist_merge(p, ["pos", fits[0], "bounds", _lid_move_bounds(b, fits[0]),
                  "roof_bounds", _lid_move_bounds(roof, fits[0])]);
 
+// Advance a switch toward its lever, retaining the original roof wire opening.
+// Only axis-aligned lever directions across the rails are accepted.
+function _lid_button_advance(m, lid, obstacles) =
+  let (angle = plist_get("rotation", m, 0),
+       dir = _lid_rotate([0, 1], angle),
+       limits = _lid_access_limits(lid),
+       cross = limits[0],
+       sign = dir[cross],
+       pos = plist_get("pos", m),
+       p = plist_get("props", m),
+       roof = plist_get("roof_bounds", m),
+       size = plist_get("canonical_size", lid),
+       gap = plist_get("gap", m, 1),
+       cuts = _lid_equipment_cuts(m),
+       mount_bounds = _lid_union_bounds([for (i = [0:len(cuts) - 2]) cuts[i]]),
+       advance = max(0, min(
+         sign > 0 ? limits[2] - pos[cross] - mount_bounds[1][cross]
+                  : pos[cross] + mount_bounds[0][cross] - limits[1],
+         sign > 0 ? size[cross] / 2 - gap - roof[1][cross]
+                  : roof[0][cross] + size[cross] / 2 - gap)),
+       component = plist_merge(plist_get("component", m),
+         ["wire_pos", plist_get("wire_pos", p) - [0, advance]]),
+       moved = lid_equipment_props(plist_merge(m, ["component", component])),
+       xy = pos + dir * advance,
+       b = _lid_move_bounds(plist_get("bounds", moved), xy),
+       rb = _lid_move_bounds(plist_get("roof_bounds", moved), xy))
+  assert(abs(abs(sign) - 1) < 0.000001,
+         "advance_to_rail requires the switch lever perpendicular to the rails")
+  assert(_lid_equipment_roof_contains(moved, xy, lid, gap)
+         && _lid_cut_access(_lid_equipment_cuts(moved), xy, lid)
+         && _wago_clear(_lid_move_bounds(plist_get("bounds", moved), xy, gap), obstacles),
+         "Advanced switch overlaps equipment or the roof edge")
+  plist_merge(moved, ["pos", xy, "bounds", b, "roof_bounds", rb,
+                      "advance", advance]);
+
 function _lid_equipment_layout(specs, lid, obstacles, i=0, placed=[]) =
   i >= len(specs) ? placed :
   let (spec = specs[i],
        count = plist_get("count", spec, 1),
-       p = _lid_equipment_place(spec, lid, obstacles))
+       initial = _lid_equipment_place(spec, lid, obstacles),
+       p = !is_undef(initial) && plist_get("kind", spec) == "button"
+           && plist_get("advance_to_rail", spec, false)
+           && is_undef(plist_get("pos", spec))
+           ? _lid_button_advance(initial, lid, obstacles)
+           : initial)
   assert(count == 1 || count == "fit", "Equipment count must be 1 or fit")
   is_undef(p) ? _lid_equipment_layout(specs, lid, obstacles, i + 1, placed)
   : _lid_equipment_layout(specs, lid,
@@ -209,6 +260,9 @@ function _lid_equipment_layout(specs, lid, obstacles, i=0, placed=[]) =
     `placement` is auto/left/right/front/rear in canonical lid axes; `pos`
     overrides automatic placement. `gap` defaults to 1 mm edge-to-edge.
     `count="fit"` fills remaining space, stopping when no further copy fits.
+    Buttons may set `advance_to_rail=true` to advance toward the lever until
+    the roof margin or rail tool clearance limits travel, preserving their
+    original wiring opening. Explicit `pos` bypasses that automatic advance.
   - `lid`: Resolved lid properties.
   - `obstacles`: Additional roof XY exclusion boxes, such as legacy Wago mounts.
   **Returns:** Resolved equipment list, with component-frame XY `pos` values.
@@ -271,6 +325,152 @@ module lid_equipment(mounts, parent_t, slot_mode=false, show_hardware=true) {
           }
         } else {
           wago_bracket(pl, anchor=[0, 0, 1], show_wago=show_hardware);
+        }
+      }
+    }
+  }
+}
+
+function _lid_voltmeter_cut_h(pl, props) =
+  max(plist_get("bolt_spacing", props)[0] + 2 * plist_get("bolt_d", props),
+      plist_get("wire_d", pl, 4));
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  lid_voltmeter_headroom
+  ─────────────────────────────────────────────────────────────────────────────
+  Calculate minimum skirt headroom for the side displays and their mounting lands.
+  **Parameters:**
+  - `specs`: Meter plists accepted by lid_voltmeter_props; disabled entries
+    contribute no height. Undef mounting height centers each meter above the rail.
+  - `rails`: Resolved case rail properties.
+  - `side_t`: Solid material above the rail channel, in mm.
+  - `roof_t`: Roof thickness, in mm.
+  **Returns:** Minimum rail-top headroom, keeping holes within the skirt and
+  displays below roof equipment. Explicit mounting heights use channel-bottom Z.
+ */
+function lid_voltmeter_headroom(specs, rails, side_t, roof_t) =
+  assert(is_list(specs), "lid.voltmeters must be a list")
+  max(concat([side_t], [for (s = specs)
+    if (!is_undef(s) && plist_get("enabled", s, true))
+      let (pl = plist_get("component", s, []),
+           p = voltmeter_mount_props(pl),
+           cut_h = _lid_voltmeter_cut_h(pl, p),
+           edge = plist_get("edge_pad", s, 1.5),
+           display_h = plist_get("size", p)[0],
+           z = plist_get("pos", s, [0, undef])[1],
+           rail_top = plist_get("h", rails) + plist_get("clearance", rails))
+      is_undef(z)
+          ? side_t + max(cut_h + 2 * edge, display_h - 2 * roof_t)
+          : max(z + cut_h / 2 + edge, z + display_h / 2 - roof_t) - rail_top]));
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  lid_voltmeter_props
+  ─────────────────────────────────────────────────────────────────────────────
+  Resolve a horizontal display on the exterior of the positive rail skirt.
+  **Parameters:**
+  - `spec`: Undef or `enabled=false` disables the meter. `component` is its
+    hardware plist; `pos` is [along, height] from the lid center/channel bottom.
+    Along is +X for X rails and -Y for Y rails. Undef height centers the holes
+    above the channel. `edge_pad` (default 1.5) preserves material around cuts.
+    Meter standoffs also clear the roof overhang and PCB pins by at least 0.5 mm.
+  - `lid`: Resolved lid properties. The display faces +Y for X rails, +X for Y.
+  **Returns:** Hardware properties, wall thickness, mounting position and the
+  solid vent-exclusion width. The roof and case dimensions are unchanged.
+ */
+function lid_voltmeter_props(spec, lid) =
+  is_undef(spec) || !plist_get("enabled", spec, true) ? ["enabled", false] :
+  let (input = plist_get("component", spec, []),
+       hardware = voltmeter_mount_props(input),
+       rails = plist_get("rail_props", lid),
+       axis = plist_get("axis", rails),
+       cross = axis == "x" ? 1 : 0,
+       slide = 1 - cross,
+       rail = plist_get("rails", rails)[1],
+       depth = plist_get("locking_depth", rail),
+       body = plist_get("body_size", plist_get("case_props", lid)),
+       outer = plist_get("cross", rail) - body[cross] / 2 + depth / 2,
+       roof = plist_get("canonical_size", lid),
+       pl = plist_merge(input,
+         ["standoff_body_h", max(plist_get("standoff_body_h", input, 0),
+                                 roof[cross] / 2 - outer
+                                 + plist_get("pin_h", hardware) + 0.5)]),
+       p = voltmeter_mount_props(pl),
+       size = plist_get("size", p),
+       bottom = plist_get("h", rails) + plist_get("clearance", rails)
+       + plist_get("side_t", lid),
+       top = plist_get("roof_z", lid),
+       requested = plist_get("pos", spec, [0, undef]),
+       pos = [requested[0], with_default(requested[1], (bottom + top) / 2)],
+       edge = plist_get("edge_pad", spec, 1.5),
+       pitch = plist_get("bolt_spacing", p),
+       cut_h = _lid_voltmeter_cut_h(pl, p),
+       width = max(size[1], pitch[1] + 2 * plist_get("bolt_d", p)) + 2 * edge)
+  assert(is_num(pos[0]) && is_num(pos[1]) && edge >= 0,
+         "Lid voltmeter pos must contain numeric along/height or undef height")
+  assert(pos[1] - cut_h / 2 - edge >= bottom - 0.000001
+         && pos[1] + cut_h / 2 + edge <= top + 0.000001,
+         "Voltmeter holes need solid material above the channel and below the roof")
+  assert(abs(pos[0]) + width / 2 <= roof[slide] / 2 - plist_get("corner_r", lid),
+         "Voltmeter mounting land must clear the rounded skirt ends")
+  assert(pos[1] + size[0] / 2 <= roof[2],
+         "Voltmeter must stay below the roof equipment")
+  plist_merge(spec, ["enabled", true, "component", pl, "props", p,
+                     "pos", pos, "outer", outer, "parent_t", depth,
+                     "axis", axis, "width", width]);
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  lid_voltmeter_layout
+  ─────────────────────────────────────────────────────────────────────────────
+  Resolve side meters and keep their solid mounting lands separate.
+  **Parameters:**
+  - `specs`: List of meter plists accepted by lid_voltmeter_props. Disabled
+    entries are omitted. Each enabled meter reserves a full-height vent strip.
+  - `lid`: Resolved lid properties.
+  **Returns:** Validated list of enabled meter properties.
+ */
+function lid_voltmeter_layout(specs, lid) =
+  assert(is_list(specs), "lid.voltmeters must be a list")
+  let (meters = [for (s = specs)
+                   let (p = lid_voltmeter_props(s, lid))
+                   if (plist_get("enabled", p, false)) p])
+  assert(len([for (i = [0:1:len(meters) - 1], j = [0:1:i - 1])
+                if (abs(plist_get("pos", meters[i])[0]
+                        - plist_get("pos", meters[j])[0])
+                    < (plist_get("width", meters[i])
+                       + plist_get("width", meters[j])) / 2) 1]) == 0,
+         "Side voltmeter mounting lands overlap; separate their positions")
+  meters;
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  lid_voltmeter
+  ─────────────────────────────────────────────────────────────────────────────
+  Render the side meter, matching holes, or its solid ventilation land.
+  **Parameters:**
+  - `props`: Result of lid_voltmeter_props; coordinates use the lid center XY
+    and channel-bottom Z, before the case's final orientation and anchor.
+  - `slot_mode`: Emit wall mounting countersinks and a central wiring passage.
+  - `reserve_mode`: Emit the wall region to exclude from ventilation cuts.
+ */
+module lid_voltmeter(props, slot_mode=false, reserve_mode=false) {
+  if (plist_get("enabled", props, false)) {
+    pos = plist_get("pos", props);
+    depth = plist_get("parent_t", props);
+    rotate([0, 0, plist_get("axis", props) == "x" ? 0 : -90]) {
+      translate([pos[0], plist_get("outer", props), pos[1]]) {
+        if (reserve_mode) {
+          translate([0, -depth / 2, 0]) {
+            cube([plist_get("width", props), depth + 0.4, 2 * pos[1] + 1],
+                 center=true);
+          }
+        } else {
+          rotate([-90, -90, 0]) {
+            voltmeter_mount(plist_get("component", props),
+                            parent_t=depth, slot_mode=slot_mode);
+          }
         }
       }
     }

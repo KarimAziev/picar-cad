@@ -23,13 +23,13 @@ assert(plist_get("pos", mounts[1])[0] > 0);
 assert(plist_get("kind", mounts[1]) == "wago_pair");
 assert(plist_get("canonical_size", lid)
        == plist_get("canonical_size", multi_lipo_pack_lid_props(multi_lipo_packs_case)));
-assert(plist_get("adapter_gap", lid) == 4);
-assert(plist_get("bolt_l", plist_get("adapter_props", lid)) == 12);
+assert(plist_get("adapter_gap", lid) == 0);
+assert(plist_get("bolt_l", plist_get("adapter_props", lid)) == 8);
 assert(plist_get("lidar_offset", lid) == [0, 0]);
 fuse = lid_fuse_validate(lid_fuse_props(plist_get("fuse", spec), lid), lid, mounts);
 assert(plist_get("enabled", fuse));
 assert(len(plist_get("slots", fuse)) == 4);
-echo("PASS: standalone equipment fits the unchanged roof with centered raised adapter");
+echo("PASS: standalone equipment fits the unchanged roof with centered flush adapter");
 
 // Swapping sides changes component placement without moving mechanical datums.
 swapped = [plist_merge(standalone_lid_equipment[0],
@@ -70,30 +70,55 @@ changed_wago = lid_equipment_layout(
 assert(len(changed_wago) == 1);
 echo("PASS: all four named edges respect tool access and changed Wago dimensions");
 
-// The terminal attachments move the bracket, while the existing roof slot stays put.
+// Advancing the switch preserves its exact roof wire position and opening.
 button_mount = mounts[0];
-button_pl = plist_get("component", button_mount);
-original_button_pl = plist_merge(button_pl, ["terminal_extension", 0]);
-original_mounts = lid_equipment_layout(
-  [for (i = [0:len(standalone_lid_equipment) - 1])
-      i == 0 ? plist_merge(standalone_lid_equipment[i],
-                            ["component", original_button_pl])
-      : standalone_lid_equipment[i]], lid);
-original_button = original_mounts[0];
 button_props = plist_get("props", button_mount);
-original_props = plist_get("props", original_button);
-angle = plist_get("rotation", button_mount);
-terminal_h = plist_get("terminal_size", plist_get("button", button_pl))[2];
-assert(plist_get("terminal_extension", button_pl) == terminal_h);
-assert(norm(plist_get("pos", button_mount) - plist_get("pos", original_button)
-            - _lid_rotate([0, terminal_h], angle)) < 0.000001);
+baseline_specs = [plist_merge(standalone_lid_equipment[0],
+                              ["advance_to_rail", false]),
+                  standalone_lid_equipment[1]];
+baseline = lid_equipment_layout(baseline_specs, lid)[0];
+assert(plist_get("advance", button_mount) > 6);
 assert(norm(plist_get("pos", button_mount)
-            + _lid_rotate(plist_get("wire_pos", button_props), angle)
-            - plist_get("pos", original_button)
-            - _lid_rotate(plist_get("wire_pos", original_props), angle)) < 0.000001);
-assert(plist_get("wire_size", button_props) == plist_get("wire_size", original_props));
-assert(plist_get("size", button_props) == plist_get("size", original_props));
-echo("PASS: doubled terminal allowance shifts the button by one terminal length and preserves the roof wire slot");
+            + _lid_rotate(plist_get("wire_pos", button_props), 0)
+            - plist_get("pos", baseline)
+            - plist_get("wire_pos", plist_get("props", baseline))) < 0.000001);
+assert(plist_get("wire_size", button_props)
+       == plist_get("wire_size", plist_get("props", baseline)));
+assert(_lid_cut_access(_lid_equipment_cuts(button_mount),
+                       plist_get("pos", button_mount), lid));
+assert(abs(plist_get("headroom", lid) - 11) < 0.000001);
+assert(abs(plist_get("free_h", fuse) - plist_get("size", fuse)[2]
+           - plist_get("clearance", fuse)) < 0.000001);
+assert(plist_get("tie_recess", fuse) >= plist_get("tie_size", fuse)[1] + 0.4);
+assert(plist_get("t", lid) - plist_get("tie_recess", fuse) >= 1.2);
+for (clearance = [0.8, 1, 2]) {
+  changed_spec = plist_merge(spec, ["fuse", plist_merge(plist_get("fuse", spec),
+                                                        ["clearance", clearance])]);
+  changed = multi_lipo_pack_lid_props(plist_merge(standalone_lipo_case,
+                                                   ["lid", changed_spec]));
+  assert(abs(plist_get("headroom", changed) - max(10 + clearance, 10.9)) < 0.000001);
+}
+meters = lid_voltmeter_layout(plist_get("voltmeters", spec), lid);
+assert(len(meters) == 2);
+assert(plist_get("pos", meters[0])[0] == -plist_get("pos", meters[1])[0]);
+assert(plist_get("pos", meters[0])[1] == plist_get("pos", meters[1])[1]);
+assert(lid_voltmeter_layout([], lid) == []);
+assert(lid_voltmeter_layout([["enabled", false]], lid) == []);
+meter = meters[0];
+assert(norm(plist_get("pos", meter) - [30, 10.7]) < 0.000001);
+assert(plist_get("enabled", meter));
+assert(plist_get("standoff_h", plist_get("props", meter))
+       - plist_get("pin_h", plist_get("props", meter))
+       >= plist_get("canonical_size", lid)[1] / 2 - plist_get("outer", meter) + 0.5);
+changed_holder = plist_merge(atm_fuse_default_plist,
+  ["body", plist_merge(plist_get("body", atm_fuse_default_plist),
+                       ["size", [28.5, 14.2, 15.07, 28.9]])]);
+changed_lid = multi_lipo_pack_lid_props(plist_merge(standalone_lipo_case,
+  ["lid", plist_merge(spec,
+    ["fuse", plist_merge(plist_get("fuse", spec), ["holder", changed_holder])])]));
+assert(abs(plist_get("headroom", changed_lid) - plist_get("headroom", lid) - 2) < 0.000001);
+assert(!plist_get("enabled", lid_voltmeter_props(undef, lid)));
+echo("PASS: switch travel retains wire opening, automatic fuse clearance and side meter fit");
 
 // Pair spacing and opening dimensions follow the selected connector and ears.
 pair = plist_get("props", mounts[1]);
@@ -109,3 +134,21 @@ assert(_lid_roof_contains(plist_get("roof_bounds", mounts[1]),
 assert(!_lid_roof_contains(plist_get("bounds", mounts[1]),
                           plist_get("canonical_size", lid), plist_get("corner_r", lid)));
 echo("PASS: opposing Wagos reserve supported lands and derive their shared opening from hardware");
+
+// Raising case rails above the battery must not shrink the meter mounting lands.
+for (top_clearance = [0, 2, 5]) {
+  raised = multi_lipo_pack_lid_props(plist_merge(standalone_lipo_case,
+                                                ["top_clearance", top_clearance]));
+  assert(abs(plist_get("headroom", raised)
+             - max(11 - top_clearance, 10.9)) < 0.000001);
+  assert(len(lid_voltmeter_layout(plist_get("voltmeters", spec), raised)) == 2);
+}
+explicit_meter = ["component", voltmeter_default_spec,
+                  "edge_pad", 1.25, "pos", [30, 12]];
+explicit_lid = multi_lipo_pack_lid_props(plist_merge(standalone_lipo_case,
+  ["lid", plist_merge(spec, ["voltmeters", [explicit_meter]])]));
+assert(len(lid_voltmeter_layout([explicit_meter], explicit_lid)) == 1);
+assert(lid_voltmeter_headroom([], plist_get("rail_props", lid), 2, 3) == 2);
+assert(lid_voltmeter_headroom([["enabled", false]],
+                              plist_get("rail_props", lid), 2, 3) == 2);
+echo("PASS: automatic height fits side meters with raised case rails and explicit mounting heights");

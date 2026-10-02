@@ -37,7 +37,10 @@ use <multi_lipo_pack_rail.scad>
   `pl`: Case plist with enabled `rail` and optional `lid` properties.
   `lid.t` is roof thickness (default 3), `side_t` material beside each channel
   (default 2), and `headroom` the space above the rail before the roof (default
-  10). `lidar` is a hardware plist or undef for a plain roof. `lidar_offset`
+  10). `headroom="auto"` fits the flat fuse above the batteries and the side
+  meters' mounting lands above the channels, with at least `side_t` of material.
+  It also keeps side displays below the roof equipment.
+  `lidar` is a hardware plist or undef for a plain roof. `lidar_offset`
   locates its center relative to the case center; `lidar_orientation` defaults
   to "wlh". `lidar_pad` (default 2) is the margin around its footprint.
   `corner_r` rounds the roof outline and skirt tips (default zero), in mm or
@@ -71,12 +74,19 @@ function multi_lipo_pack_lid_props(pl, l_clearance=0.4, w_clearance=0.4) =
        channel_pad = plist_get("clearance_w", rails),
        t = plist_get("t", spec, 3),
        side_t = plist_get("side_t", spec, 2),
-       headroom = plist_get("headroom", spec, 10),
+       requested_headroom = plist_get("headroom", spec, 10),
+       headroom = requested_headroom == "auto"
+           ? max(lid_fuse_headroom(plist_get("fuse", spec), case_props, side_t),
+                 lid_voltmeter_headroom(plist_get("voltmeters", spec,
+                                                  [plist_get("voltmeter", spec)]),
+                                        rails, side_t, t))
+           : requested_headroom,
        lidar_pl = plist_get("lidar", spec),
        lidar_orientation = plist_get("lidar_orientation", spec, "wlh"),
        lidar_offset = plist_get("lidar_offset", spec, [0, 0]),
        lidar_pad = plist_get("lidar_pad", spec, 2),
-       lidar_dims = is_undef(lidar_pl) ? [0, 0, 0]
+       lidar_dims = is_undef(lidar_pl)
+       ? [0, 0, 0]
        : orientation_size(lidar_orientation, lidar_size(lidar_pl)),
        footprint = [for (i = [0:1]) max(body[i] + (i == (axis == "x" ? 1 : 0)
                                                    ? 2 * (side_t + channel_pad)
@@ -101,6 +111,7 @@ function multi_lipo_pack_lid_props(pl, l_clearance=0.4, w_clearance=0.4) =
                     "canonical_size", size,
                     "mount_z", mount_z,
                     "roof_z", roof_z,
+                    "headroom", headroom,
                     "t", t,
                     "side_t", side_t,
                     "case_props", case_props,
@@ -195,8 +206,11 @@ function multi_lipo_pack_lid_wago_mounts(pl, props) =
   `show_wagos`: Display connectors in shown brackets (default true).
   `show_equipment`: Show configured roof equipment and the concealed fuse.
   `lid.equipment` accepts the lid_equipment_layout interface. `lid.fuse`
-  accepts lid_fuse_props; holes and bearing pads are part of the printed lid.
+  accepts lid_fuse_props; retaining slots are part of the printed lid.
 
+  `lid.voltmeters` is a list of side-mounted displays; see lid_voltmeter_layout.
+  Their mounting and wiring lands are excluded from the skirt vents.
+  The earlier single `lid.voltmeter` plist is used when `voltmeters` is absent.
   `lid.vents` accepts the same vent properties as a case wall. Vents occupy the
   skirt above the channels; the rail grooves and roof retain solid material.
   In this dedicated `vents` plist, `corner_r` is an alias for `vent_corner_r`;
@@ -221,6 +235,8 @@ module multi_lipo_pack_lid(pl,
   spec = plist_get("lid", pl, []);
   wagos = multi_lipo_pack_lid_wago_mounts(pl, props);
   fuse_props = lid_fuse_props(plist_get("fuse", spec), props);
+  meters = lid_voltmeter_layout(plist_get("voltmeters", spec,
+                                           [plist_get("voltmeter", spec)]), props);
   wago_boxes = [for (m = wagos)
       _wago_bounds(concat(plist_get("pos", m), [0]), wago_mount_size(m))];
   equipment = lid_equipment_layout(plist_get("equipment", spec, []),
@@ -250,6 +266,11 @@ module multi_lipo_pack_lid(pl,
   roof_min = [(body[0] - size[0]) / 2, (body[1] - size[1]) / 2];
 
   module _mount_slots() {
+    translate([body[0] / 2, body[1] / 2, 0]) {
+      for (meter = meters) {
+        lid_voltmeter(meter, slot_mode=true);
+      }
+    }
     translate([body[0] / 2, body[1] / 2, roof_z]) {
       lid_fuse(fuse, t, slot_mode=true);
     }
@@ -306,8 +327,15 @@ module multi_lipo_pack_lid(pl,
                                       max(0, roof_z - z));
     along = roof_min[slide_axis];
     cross = plist_get("cross", rail) - depth / 2 - 0.1;
-    translate([axis == "x" ? along : cross, axis == "x" ? cross : along, z]) {
-      multi_lipo_pack_vents(vent, depth + 0.2, axis=axis);
+    difference() {
+      translate([axis == "x" ? along : cross, axis == "x" ? cross : along, z]) {
+        multi_lipo_pack_vents(vent, depth + 0.2, axis=axis);
+      }
+      translate([body[0] / 2, body[1] / 2, 0]) {
+        for (meter = meters) {
+          lid_voltmeter(meter, reserve_mode=true);
+        }
+      }
     }
   }
 
@@ -331,33 +359,28 @@ module multi_lipo_pack_lid(pl,
         if (show_lid) {
           color(lid_color) {
             difference() {
-              union() {
-                intersection() {
-                  translate(concat(roof_min, [0])) {
-                    cuboid(size,
-                           r=plist_get("corner_r", props),
-                           anchor=[1, 1, 1]);
-                  }
-                  union() {
-                    translate(concat(roof_min, [roof_z])) {
-                      cube([size[0], size[1], t]);
-                    }
-                    for (rail = plist_get("rails", rails)) {
-                      depth = plist_get("locking_depth", rail);
-                      cross = plist_get("cross", rail) - depth / 2;
-                      along = roof_min[slide_axis];
-                      translate([axis == "x" ? along : cross,
-                                 axis == "x" ? cross : along,
-                                 0]) {
-                        cube(axis == "x"
-                             ? [size[0], depth, roof_z + 0.01]
-                             : [depth, size[1], roof_z + 0.01]);
-                      }
-                    }
-                  }
+              intersection() {
+                translate(concat(roof_min, [0])) {
+                  cuboid(size,
+                         r=plist_get("corner_r", props),
+                         anchor=[1, 1, 1]);
                 }
-                translate([body[0] / 2, body[1] / 2, roof_z]) {
-                  lid_fuse_supports(fuse);
+                union() {
+                  translate(concat(roof_min, [roof_z])) {
+                    cube([size[0], size[1], t]);
+                  }
+                  for (rail = plist_get("rails", rails)) {
+                    depth = plist_get("locking_depth", rail);
+                    cross = plist_get("cross", rail) - depth / 2;
+                    along = roof_min[slide_axis];
+                    translate([axis == "x" ? along : cross,
+                               axis == "x" ? cross : along,
+                               0]) {
+                      cube(axis == "x"
+                           ? [size[0], depth, roof_z + 0.01]
+                           : [depth, size[1], roof_z + 0.01]);
+                    }
+                  }
                 }
               }
               for (rail = plist_get("rails", rails)) {
@@ -393,6 +416,11 @@ module multi_lipo_pack_lid(pl,
           }
         }
         if (show_equipment) {
+          translate([body[0] / 2, body[1] / 2, 0]) {
+            for (meter = meters) {
+              lid_voltmeter(meter);
+            }
+          }
           translate([body[0] / 2, body[1] / 2, roof_z]) {
             lid_fuse(fuse, t);
           }

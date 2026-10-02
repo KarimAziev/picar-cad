@@ -9,7 +9,7 @@ assert(plist_get("enabled",a));
 assert(plist_get("size",a)==[55.6,55.6,4]);
 assert(plist_get("holes",a)==[[-21.5,-13.975],[-21.5,13.975],[21.5,-13.975],[21.5,13.975]]);
 assert(plist_get("sensor_holes",a)==[[-21.5,-21.5],[-21.5,21.5],[21.5,-21.5],[21.5,21.5]]);
-assert(plist_get("bolt_l",a)==12);
+assert(plist_get("bolt_l",a)==8);
 assert(plist_get("nut_z",a)>=1);
 assert(abs(plist_get("lidar_base_z",p)-plist_get("canonical_size",p)[2]-17)<0.000001);
 assert(abs(plist_get("corner_r",p)-2.98)<0.000001);

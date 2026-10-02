@@ -12,6 +12,8 @@ if (!is_undef(payload)) {
   multi_lipo_pack_case(plist_get("plist", payload),
                        anchor=[0, 0, 1],
                        target_h=0,
+                       show_rail_bolts=false,
+                       show_rail_nuts=false,
                        show_standoffs=false,
                        show_packs=false);
  }

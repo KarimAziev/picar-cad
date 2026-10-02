@@ -382,7 +382,7 @@ voltmeter_from_plist(center=false,
   **Parameters:**
   - `pl`: Voltmeter plist; defaults to the project's meter. `standoff_body_h`
     is the minimum clearance below its PCB; `wire_d` defaults to 4 mm.
-  **Returns:** `size`, `bolt_spacing`, `bolt_d`, and the actual `standoff_h`.
+  **Returns:** `size`, `bolt_spacing`, `bolt_d`, actual `standoff_h`, and `pin_h`.
   Bounds include the mounting ears and display, centered on XY at Z=0.
  */
 function voltmeter_mount_props(pl=[]) =
@@ -409,7 +409,9 @@ function voltmeter_mount_props(pl=[]) =
   ["size", size,
    "bolt_spacing", pitch,
    "bolt_d", d,
-   "standoff_h", h];
+   "standoff_h", h,
+   "pin_h", plist_get("size", plist_get("pins", pl, []),
+                       [voltmeter_pin_thickness, voltmeter_pin_h])[1]];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────

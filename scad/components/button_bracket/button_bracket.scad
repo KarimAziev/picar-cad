@@ -28,6 +28,8 @@ use <../../placeholders/toggle_switch.scad>
     `terminal_extension` reserves additional terminal length in mm (default 0)
     and moves the wiring opening that far toward local -Y. It leaves the
     measured switch placeholder and the opening's dimensions unchanged.
+    `wire_pos` optionally overrides the opening center in local XY, independently
+    of the bracket and switch; solid and slot modes use the same position.
   **Returns:**
   `size` is the printed reference box, centered on XY with its base at Z=0.
   `bounds` includes terminals, both lever positions and the wiring opening.
@@ -51,12 +53,17 @@ function button_bracket_props(pl) =
                                           [plist_get("lever_dia_1", b), plist_get("lever_dia_2", b),
                                            plist_get("lever_h", b)]),
        wire = plist_get("wire_size", pl, [body[0] * 0.6, terminal[2] + 2]),
-       wire_y = -size[1] / 2 - terminal[2] / 2 - extension,
-       half_w = max(size[0] / 2, lever[1][0], wire[0] / 2),
+       wire_pos = plist_get("wire_pos", pl,
+                             [0, -size[1] / 2 - terminal[2] / 2 - extension]),
+       wire_y = wire_pos[1],
+       half_w = max(size[0] / 2, lever[1][0], abs(wire_pos[0]) + wire[0] / 2),
        bounds = [[-half_w, min(-size[1] / 2 - terminal[2] - extension, wire_y - wire[1] / 2), 0],
                  [half_w, max(size[1] / 2,
                               body[2] - size[1] / 2
                               + max(lever[1][2], plist_get("thread_h", b))), size[2]]])
+  assert(is_list(wire_pos) && len(wire_pos) == 2
+         && is_num(wire_pos[0]) && is_num(wire_pos[1]),
+         "Button wire_pos must be numeric local XY")
   assert(is_num(extension) && extension >= 0,
          "Button terminal_extension must be nonnegative mm")
   assert(min(size) > 0 && plist_get("bolt_d", pl) > 0
@@ -64,8 +71,13 @@ function button_bracket_props(pl) =
          "Button bracket dimensions must be positive")
   ["size", size,
    "bounds", bounds,
+   "footprint", [for (side = [-1, 1]) each
+     [[side * wall_w / 2, -size[1] / 2],
+      [side * size[0] / 2, -plist_get("bolt_d", pl)],
+      [side * size[0] / 2, plist_get("bolt_d", pl)],
+      [side * wall_w / 2, size[1] / 2]]],
    "wire_size", wire,
-   "wire_pos", [0, wire_y],
+   "wire_pos", wire_pos,
    "mount_holes", [[-pitch / 2, 0], [pitch / 2, 0]]];
 
 /**
