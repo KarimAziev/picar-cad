@@ -17,22 +17,28 @@ use <../../lib/transforms.scad>
 use <../../lib/trapezoids.scad>
 use <../wishbone_arms/util.scad>
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_bulkhead_chassis_mount_origin_y
+  ─────────────────────────────────────────────────────────────────────────────
+  Locate the mounting pattern in native front-chassis coordinates.
+  **Parameters:**
+  - `barrel_y_offset`: Hinge barrel setback from the bulkhead's front edge.
+  - `hinge_clearance`: Clearance removed from the arm's barrel length.
+  **Returns:** Y translation shared by mounting cutters and clearance checks.
+ */
+function front_bulkhead_chassis_mount_origin_y(
+  barrel_y_offset=front_bulkhead_barrel_y_offset,
+  hinge_clearance=front_bulkhead_barrel_hinge_clearance) =
+  let (barrel_len = front_lower_arm_mount_cutout_size()[1] - hinge_clearance,
+       bolt_spacing_max_y = max(front_bulkhead_mount_bolt_spacing_1[1],
+                                front_bulkhead_mount_bolt_spacing_2[1]),
+       full_bolt_spacing_y = bolt_spacing_max_y + front_bulkhead_mount_bolt_d)
+  front_bulkhead_len - full_bolt_spacing_y / 2 - barrel_y_offset - barrel_len / 2;
+
 module front_bulkhead_housing_slots_non_center_y(barrel_y_offset=front_bulkhead_barrel_y_offset,
                                                  hinge_clearance=front_bulkhead_barrel_hinge_clearance) {
-  barrel_size = front_lower_arm_mount_cutout_size();
-  barrel_len = barrel_size[1] - hinge_clearance;
-
-  bolt_spacing_max_y = max(front_bulkhead_mount_bolt_spacing_1[1],
-                           front_bulkhead_mount_bolt_spacing_2[1]);
-
-  full_bolt_spacing_y = bolt_spacing_max_y + front_bulkhead_mount_bolt_d;
-  translate([0,
-             front_bulkhead_len / 2
-             - full_bolt_spacing_y
-             - barrel_y_offset
-             - barrel_len / 2 + full_bolt_spacing_y / 2
-             + front_bulkhead_len / 2,
-             0]) {
+  translate([0, front_bulkhead_chassis_mount_origin_y(barrel_y_offset, hinge_clearance), 0]) {
     front_bulkhead_chassis_mount_slots(center_y=false);
   }
 }

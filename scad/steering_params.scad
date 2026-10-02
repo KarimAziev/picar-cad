@@ -298,6 +298,12 @@ front_chassis_joint_boolean_overlap               = 0.02;
 front_chassis_head_mount_padding                  = 2.0;
 front_chassis_head_wire_land                      = 3.0;
 
+// Two of the four available 23.8 x 3 mm pins reinforce the removable head.
+front_chassis_head_joint_pin_l                    = 23.8;
+front_chassis_head_joint_pin_d                    = 3.1;
+front_chassis_head_joint_pin_spacing              = 33;
+front_chassis_head_joint_rail_w                   = 40;
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Middle chassis
 // ─────────────────────────────────────────────────────────────────────────────

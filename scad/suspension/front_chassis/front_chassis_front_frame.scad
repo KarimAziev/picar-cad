@@ -1,9 +1,9 @@
 /**
-  * Module: The front section of the front chassis
+  * Module: Separate head and bulkhead sections of the front chassis.
   *
-  * It contains slots for the front bulkhead and bellcrank. The rear section of
-  * the front chassis, which includes the steering servo slot, is connected to
-  * this frame with dedicated dovetail joints and bolts.
+  * The removable head retains the camera ribbon bank and bumper mounts.
+  * The bulkhead and bellcrank section carries the matching head socket and
+  * the existing rear joint for the steering-servo frame.
   *
   * Author: Karim Aziiev <karim.aziiev@gmail.com>
   * License: GPL-3.0-or-later
@@ -17,6 +17,7 @@ include <computed_params.scad>
 use <../../lib/debug.scad>
 use <../../lib/functions.scad>
 use <../../lib/placement.scad>
+use <../../lib/plist.scad>
 use <../../lib/polygon_util.scad>
 use <../../lib/shapes2d.scad>
 use <../../lib/shapes3d.scad>
@@ -34,6 +35,7 @@ use <../bulkhead/util.scad>
 use <../wishbone_arms/front_lower_arm.scad>
 use <front_chassis_access_slots.scad>
 use <front_chassis_head_slots.scad>
+use <front_chassis_head_joint.scad>
 use <front_chassis_joint.scad>
 
 front_chassis_front_frame_debug = true;
@@ -96,7 +98,7 @@ function front_chassis_ear_pts() =
            [p[0], -p[1]]])
   concat(pts, mirrored_pts);
 
-module front_chassis_front_frame(debug=front_chassis_front_frame_debug,
+module _front_chassis_front_frame_unsplit(debug=front_chassis_front_frame_debug,
                                  show_access_slots=show_front_access_slots,
                                  debug_font="Gill Sans:style=Bold",
                                  debug_color=green_2,
@@ -231,11 +233,98 @@ module front_chassis_front_frame(debug=front_chassis_front_frame_debug,
   }
 }
 
-module front_chassis_front_frame_printable(debug=front_chassis_front_frame_debug,
-                                           color=white_smoke_1) {
-  rotate([0, 180, 0]) {
-    front_chassis_front_frame(debug=$preview ? debug : false, color=color);
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_front_frame
+  ─────────────────────────────────────────────────────────────────────────────
+  Build the bulkhead and bellcrank frame with a socket for the separate head.
+  **Parameters:**
+  - `debug`: Show outline labels within this part.
+  - `show_access_slots`: Retain the head access-slot configuration in the source outline.
+  - `debug_font`: Outline label font.
+  - `debug_color`: Outline label color.
+  - `color`: Body color; undef inherits the caller's color.
+  **Behavior:** Original vehicle coordinates and the rear steering joint stay fixed.
+ */
+module front_chassis_front_frame(debug=front_chassis_front_frame_debug,
+                                 show_access_slots=show_front_access_slots,
+                                 debug_font="Gill Sans:style=Bold",
+                                 debug_color=green_2,
+                                 color=white_smoke_1) {
+  p = front_chassis_head_joint_params();
+  difference() {
+    intersection() {
+      _front_chassis_front_frame_unsplit(debug=debug,
+                                         show_access_slots=show_access_slots,
+                                         debug_font=debug_font,
+                                         debug_color=debug_color,
+                                         color=color);
+      translate([-500, plist_get("root_y", p) - 1000, -1]) {
+        cube([1000, 1000, chassis_thickness + 10]);
+      }
+    }
+    front_chassis_head_joint(mode="female", slot_mode=true);
   }
 }
 
-front_chassis_front_frame_printable();
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_head_frame
+  ─────────────────────────────────────────────────────────────────────────────
+  Build the removable head and bumper plate with its complete ribbon-slot bank.
+  **Parameters:**
+  - `debug`: Show outline labels within this part.
+  - `show_access_slots`: Include the side and front cable openings.
+  - `color`: Body color; undef inherits the caller's color.
+  **Behavior:** Native coordinates align with the bulkhead frame. The central
+  full-thickness tab keeps all ribbon slots on this part; two 23.8 x 3 mm pins
+  reinforce the side rails. Cutters provide 3.1 mm sag-compensated passages.
+ */
+module front_chassis_head_frame(debug=false,
+                                show_access_slots=show_front_access_slots,
+                                color=white_smoke_1) {
+  p = front_chassis_head_joint_params();
+  maybe_color(color) {
+    difference() {
+      union() {
+        intersection() {
+          _front_chassis_front_frame_unsplit(debug=debug,
+                                             show_access_slots=show_access_slots,
+                                             color=undef);
+          union() {
+            // Stay off the outline vertex plane to avoid zero-thickness slivers.
+            // The tongue's root overlap still reaches this head body.
+            translate([-500, plist_get("root_y", p)
+                       + front_chassis_joint_boolean_overlap / 2, -1]) {
+              cube([1000, 1000, chassis_thickness + 10]);
+            }
+            translate([-plist_get("tab_w", p) / 2, plist_get("end_y", p), -1]) {
+              cube([plist_get("tab_w", p), plist_get("l", p) + 1,
+                    chassis_thickness + 10]);
+            }
+          }
+        }
+        front_chassis_head_joint(mode="male");
+      }
+      front_chassis_head_joint(mode="male", slot_mode=true);
+      translate([0, front_chassis_head_center_y(), 0]) {
+        front_chassis_head_slots();
+      }
+      if (show_access_slots) {
+        front_chassis_access_slots(front_chassis_head_center_y());
+      }
+    }
+  }
+}
+
+module front_chassis_front_frame_printable(debug=front_chassis_front_frame_debug,
+                                           color=white_smoke_1) {
+  translate([0, 0, chassis_thickness]) {
+    rotate([0, 180, 0]) {
+      front_chassis_front_frame(debug=$preview ? debug : false, color=color);
+    }
+  }
+}
+
+front_chassis_front_frame();
+front_chassis_head_frame();

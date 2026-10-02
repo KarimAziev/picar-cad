@@ -109,6 +109,7 @@ show_front_chassis_components               = true;
 
 // Joint separation for assembly inspection.
 front_chassis_joint_spacing                 = 0; // [0:1:30]
+head_chassis_joint_spacing                  = 0; // [0:1:30]
 middle_chassis_joint_spacing                = 0; // [0:1:30]
 rear_chassis_joint_spacing                  = 0; // [0:1:30]
 rear_motor_spacing                          = 0; // [0:1:40]
@@ -196,6 +197,7 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
                               show_head=show_head,
                               show_front_chassis_components=show_front_chassis_components,
                               front_chassis_joint_spacing=front_chassis_joint_spacing,
+                              head_chassis_joint_spacing=head_chassis_joint_spacing,
                               middle_chassis_joint_spacing=middle_chassis_joint_spacing,
                               show_middle_chassis=show_middle_chassis,
                               show_middle_chassis_components=show_middle_chassis_components,
@@ -233,6 +235,7 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
                 show_rear_frame=show_chassis_rear_frame,
                 debug=false,
                 spacing=front_chassis_joint_spacing,
+                head_spacing=head_chassis_joint_spacing,
                 show_access_slots=show_front_access_slots);
 
   if (show_front_chassis_components && show_front_rpi) {
@@ -294,7 +297,7 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
 
   if (show_head) {
     translate([0,
-               front_chassis_head_center_y(),
+               front_chassis_head_center_y() + head_chassis_joint_spacing,
                front_chassis_head_mount_z()]) {
       head_neck(center_pan_servo_slot=true,
                 pan_servo_rotation=0);
