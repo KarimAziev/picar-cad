@@ -746,7 +746,7 @@ ir_case_head_bolts_side_panel_positions              = [[ir_case_head_side_panel
 // LiPo Battery Pack dimensions (4S2P configuration)
 // ─────────────────────────────────────────────────────────────────────────────
 
-lipo_pack_length                                     = 155.41; // Length of the battery pack
+lipo_pack_length                                     = 155.0; // Length of the battery pack
 lipo_pack_width                                      = 47.4;   // Width of the battery pack
 lipo_pack_s3_height                                  = 21.8;  // Height of the S3 battery pack
 lipo_pack_s2_height                                  = 14.6;  // Height of the S2 battery pack
