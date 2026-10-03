@@ -19,6 +19,7 @@ use <../bellcrank_steering_slots.scad>
 use <../steering_servo_bracket/steering_servo_chassis_slots.scad>
 use <front_chassis_controls.scad>
 use <front_chassis_joint.scad>
+use <front_chassis_ribbon_slots.scad>
 
 front_chassis_rear_frame_debug = true;
 show_front_controls_slots      = true;
@@ -35,7 +36,8 @@ module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
                                 color=white_smoke_1,
                                 debug_color=green_2,
                                 debug_font="Gill Sans:style=Bold",
-                                width=front_chassis_rear_frame_w) {
+                                width=front_chassis_rear_frame_w,
+                                show_ribbon_slots=true) {
   assert(width >= front_chassis_required_width(),
          "Frame width cannot exclude the front hardware");
   pts = front_chassis_pts(width);
@@ -87,6 +89,9 @@ module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
     }
 
     front_chassis_rpi(slot_mode=true);
+    if (show_ribbon_slots) {
+      front_chassis_ribbon_slots();
+    }
 
     translate([0, y_front_chassis_rear_frame_main_start, 0]) {
       front_chassis_pin_joint_holes(center=true,

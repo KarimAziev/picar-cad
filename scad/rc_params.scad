@@ -1314,6 +1314,10 @@ front_rpi_rotate_z_180                             = true; // 180-degree turn in
 // Material beyond the RPi standoffs/counterbores; connectors may overhang.
 front_rpi_mount_pad                                = 2;
 
+// Shared camera-ribbon threading bank beneath the Pi, turning toward the head.
+front_chassis_ribbon_slot_rows                     = 5;
+front_chassis_ribbon_land                          = 3;
+
 front_chassis_rear_frame_corner_r                  = 4;
 
 lipo_pack_base_pl                                  = ["size", [lipo_pack_width,

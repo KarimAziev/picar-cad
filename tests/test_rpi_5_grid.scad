@@ -6,6 +6,7 @@ use <../scad/lib/functions.scad>
 use <../scad/lib/plist.scad>
 use <../scad/placeholders/pin_header.scad>
 use <../scad/placeholders/rpi_5_grid.scad>
+use <../scad/placeholders/rpi_5.scad>
 
 // Resolve observable leaf reference boxes independently of the RPi factory.
 // Each result is [placeholder plist, canonical minimum XYZ, spun reference size].
@@ -141,3 +142,14 @@ assert(close(partial_button[2], [4.5, 3, 3.3]));
 assert(plist_get("button_d", partial_button[0]) == 2);
 
 echo("RPi 5 grid placement assertions passed");
+
+// Routing datums agree with the observable CSI connector boxes.
+csi_boxes = with_size(defaults, rpi_csi_size);
+csi_centers = rpi_5_csi_centers();
+assert(len(csi_centers) == len(csi_boxes));
+for (i = [0:len(csi_centers) - 1]) {
+  near_center = [csi_boxes[i][1][0] + csi_boxes[i][2][0] / 2,
+                 csi_boxes[i][1][1] + csi_boxes[i][2][1] / 2, 0];
+  assert(close(csi_centers[i], near_center));
+}
+assert(close(rpi_5_csi_centers([10, 30], [3, 12, 2], 2, 4)[1], [16, 23, 0]));

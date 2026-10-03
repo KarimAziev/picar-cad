@@ -25,7 +25,9 @@ echo(reference=rpi_5_size(), offset=rpi_bolts_offset,
      spacing=rpi_bolt_spacing, radius=rpi_bolt_cbore_dia/2 + 0.4,
      front_y=y_front_chassis_rear_frame_main_start + front_rpi_y_offset,
      width=front_chassis_rear_frame_w, rear_y=front_chassis_y_joint_2_end);
-front_chassis_rear_frame(debug=false);
+// Isolate the mounting interface, including board placements on either side.
+// Complete ribbon routing and its hardware lands have dedicated mesh checks.
+front_chassis_rear_frame(debug=false, show_ribbon_slots=false);
 '''
     cases = [(orientation, reverse, -5) for orientation in ("wlh", "lwh")
              for reverse in (False, True)]

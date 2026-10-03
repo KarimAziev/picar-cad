@@ -31,7 +31,7 @@ show_gpio_expansion_board   = true;
 show_camera_ribbon_slot     = true;
 
 rpi_camera_ribbon_slot_size = [rpi_csi_size[1], 1.6];
-rpi_camera_ribbon_slot_gap  = 1.4;
+rpi_camera_ribbon_slot_gap  = 2.4;
 rpi_camera_ribbon_slot_rows = 3;
 
 rpi_plugged_usb_a           = ["left", [1],
@@ -115,6 +115,26 @@ function rpi_5_mount_bounds(orientation="wlh",
     min([for (p = centers) p[1]]) - r, 0],
    [max([for (p = centers) p[0]]) + r,
     max([for (p = centers) p[1]]) + r, 0]];
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  rpi_5_csi_centers
+  ─────────────────────────────────────────────────────────────────────────────
+  Return CSI connector centers in the canonical PCB frame.
+  **Parameters:**
+  - `position`: First connector's minimum X and center Y, matching `rpi_5_grid`.
+  - `size`: Connector `[depth, ribbon_width, height]`.
+  - `n`: Positive number of CSI connectors.
+  - `gap`: Edge-to-edge gap between consecutive connectors along Y.
+  **Returns:** Connector center points `[x, y, 0]` on the PCB plane.
+ */
+function rpi_5_csi_centers(position=[rpi_csi_position_x, rpi_csi_position_y],
+                           size=rpi_csi_size,
+                           n=rpi_csi_cameras_n,
+                           gap=rpi_csi_camera_gap) =
+  assert(n > 0 && n == floor(n), "CSI count must be a positive integer")
+  [for (i = [0:n - 1])
+      [position[0] + size[1] / 2, position[1] - i * (size[0] + gap), 0]];
 
 module rpi_standoffs(standoff_height=rpi_standoff_height,
                      bolt_visible_h,

@@ -50,7 +50,7 @@ module front_chassis_controls(slot_mode=false) {
   ─────────────────────────────────────────────────────────────────────────────
   Place the RPi or its mounting cutters using the front-frame configuration.
   **Parameters:**
-  - `slot_mode`: Cut mounting holes and camera-ribbon passages through the frame.
+  - `slot_mode`: Cut the Pi mounting holes through the frame.
 
   `front_rpi_orientation` selects the flat layout; `front_rpi_rotate_z_180` turns
   the board 180 degrees in its plane. Both keep the configured minimum X and
@@ -66,6 +66,7 @@ module front_chassis_rpi(slot_mode=false) {
           slot_thickness=chassis_thickness,
           bolt_visible_h=chassis_thickness - chassis_counterbore_h,
           show_standoffs=true,
+          show_camera_ribbon_slot=false,
           slot_mode=slot_mode);
   }
 }
