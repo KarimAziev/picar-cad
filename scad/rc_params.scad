@@ -1545,3 +1545,20 @@ gearbox_bracket_boss_pocket_clearance              = 2.0; // Diametral socket al
 gearbox_bracket_boss_pocket_depth                  = 2.0;
 gearbox_bracket_boss_pocket_h_clearances           = ["front", 0.1,
                                                       "rear", 0.2];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Generic touring wheels: purchased-hardware visualization, not print geometry.
+// mount_z is explicit backspacing; hub details are provisional.
+// ─────────────────────────────────────────────────────────────────────────────
+rc_wheel_plist = ["tire_d", 65,
+                  "width", 26,
+                  "rim_d", 52,
+                  "hex_af", 12,
+                  "mount_z", 15];
+rc_wheel_bearing_gap = 1;
+rc_wheel_hex_h = 5;
+
+// Rear suspension is not yet modeled. Undef matches the front reference pose.
+rc_rear_wheel_preview_track = undef;
+rc_rear_wheel_preview_axis_z = undef;
+rc_rear_wheel_preview_y_offset = 0;

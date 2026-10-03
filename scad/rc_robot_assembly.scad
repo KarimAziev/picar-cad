@@ -22,35 +22,27 @@ use <lib/debug.scad>
 use <lib/functions.scad>
 use <lib/plist.scad>
 use <lib/shapes3d.scad>
-use <lib/slots.scad>
-use <lib/transforms.scad>
-use <lib/trapezoids.scad>
 use <lipo_pack_case/multi_lipo_pack_case.scad>
-use <motor_brackets/rc/gearbox_bracket.scad>
-use <placeholders/dservo.scad>
-use <placeholders/lidar.scad>
-use <placeholders/rpi_5.scad>
-use <power/power_case.scad>
-use <suspension/bellcrank/bellcrank_drive.scad>
-use <suspension/bellcrank/bellcrank_idler.scad>
-use <suspension/bellcrank/bellcrank_slots.scad>
-use <suspension/bellcrank/center_link.scad>
 use <suspension/bellcrank_steering_assembly.scad>
 use <suspension/bellcrank_steering_slots.scad>
 use <suspension/bulkhead/front_bulkhead_chassis.scad>
-use <suspension/bulkhead/front_bulkhead_housing.scad>
 use <suspension/computed.scad>
 use <suspension/front_chassis/front_chassis.scad>
 use <suspension/front_chassis/front_chassis_controls.scad>
 use <suspension/front_chassis/front_chassis_front_frame.scad>
 use <suspension/front_suspension_assembly.scad>
 use <suspension/middle_chassis/middle_chassis.scad>
+use <suspension/rc_wheels.scad>
 use <suspension/rear_chassis/computed_params.scad>
 use <suspension/rear_chassis/rear_chassis.scad>
 use <suspension/steering_servo_bracket/steering_servo_bracket_assembly.scad>
 use <suspension/steering_servo_bracket/steering_servo_chassis_slots.scad>
 use <suspension/upper_steering_plate.scad>
 use <suspension/wishbone_arms/front_lower_arm.scad>
+
+show_front_wheels                           = true;
+show_rear_wheels_preview                    = true;
+show_wheel_tires                            = true;
 
 show_chassis_front_frame                    = true;
 show_chassis_rear_frame                     = true;
@@ -246,7 +238,10 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
                               show_rear_power_wiring=show_rear_power_wiring,
                               show_rear_panel_stack=show_rear_panel_stack,
                               show_upper_steering_plate=show_upper_steering_plate,
-                              show_upper_steering_plate_bolts=show_upper_steering_plate_bolts) {
+                              show_upper_steering_plate_bolts=show_upper_steering_plate_bolts,
+                              show_front_wheels=show_front_wheels,
+                              show_rear_wheels_preview=show_rear_wheels_preview,
+                              show_wheel_tires=show_wheel_tires) {
   lipo_pack_case_props = multi_lipo_pack_props(plist=multi_lipo_packs_case);
 
   full_lipo_pack_size = plist_get("size", lipo_pack_case_props);
@@ -270,7 +265,9 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
   if (show_front_chassis_components) {
     if (show_steering_assembly) {
       translate([0, 0, chassis_thickness]) {
-        front_suspension_assembly(solve_linkage=solve_front_linkage,
+        front_suspension_assembly(show_wheels=show_front_wheels,
+                                  show_tires=show_wheel_tires,
+                                  solve_linkage=solve_front_linkage,
                                   lower_arm_angle=front_lower_arm_angle,
                                   bellcrank_angle=steering_servo_angle,
                                   steering_hole=front_steering_hole,
@@ -375,7 +372,14 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
                      rear_suspension_joint_spacing=rear_suspension_joint_spacing,
                      show_rear_suspension_mount=show_rear_suspension_mount,
                      show_power_wiring=show_rear_power_wiring,
-                     show_panel_stack=show_rear_panel_stack);
+                     show_panel_stack=show_rear_panel_stack) {
+          if (show_rear_wheels_preview) {
+            translate([0, rear_suspension_joint_spacing, 0]) {
+              rc_rear_wheels_preview(layout=rear_layout,
+                                     show_tire=show_wheel_tires);
+            }
+          }
+        }
       }
     }
   }

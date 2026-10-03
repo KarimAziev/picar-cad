@@ -1,6 +1,9 @@
 /**
   * Module: Rear chassis plate with its shaft-centered motor and controls.
   * The default origin is the center of the flat joining edge, below the plate.
+  *
+  * Author: Karim Aziiev <karim.aziiev@gmail.com>
+  * License: GPL-3.0-or-later
   */
 include <../../rc_params.scad>
 include <computed_params.scad>
@@ -73,6 +76,8 @@ function rear_chassis_size(layout=rear_chassis_layout()) =
   - `show_equipment`: Display configured deck electronics; holes remain present.
   - `show_equipment_zones`: Overlay available side corridors for placement.
   - `front_joint`: Include the direct front-frame tongue; false retains a flat edge.
+  **Children:** Additional hardware in the unanchored native layout frame,
+  transformed with the chassis (for example provisional rear wheels).
  */
 module rear_chassis(show_panel_stack=true,
                     show_gearbox_bracket=true,
@@ -106,6 +111,8 @@ module rear_chassis(show_panel_stack=true,
   center_y = (plist_get("min_y", layout) + plist_get("max_y", layout)) / 2;
   with_anchor(is_undef(anchor) ? [0, 0, 1] : anchor, size, centered=true) {
     translate([0, is_undef(anchor) ? 0 : -center_y, 0]) {
+      // Optional packaging hardware supplied in this native rear layout frame.
+      children();
       union() {
         rear_chassis_frame(layout=layout, front_joint=front_joint);
         if (show_rear_suspension_mount) {
@@ -115,8 +122,8 @@ module rear_chassis(show_panel_stack=true,
         }
       }
       rear_power_harness(layout,
-                           show_wiring=is_undef(show_power_wiring)
-                               ? show_lidar_lid || show_lidar : show_power_wiring);
+                         show_wiring=is_undef(show_power_wiring)
+                         ? show_lidar_lid || show_lidar : show_power_wiring);
       rear_equipment(layout,
                      show_hardware=show_equipment,
                      show_zones=show_equipment_zones);

@@ -213,6 +213,8 @@ module knuckle_left(color=color,
           if (show_knuckle) {
             knuckle(color=color);
           }
+          // Child hardware shares the outer bearing face, axis and articulation.
+          children();
 
           if (show_knuckle_outer_bearing) {
             ball_bearing(bore_d=knuckle_outer_bearing_bore_d,
@@ -335,7 +337,9 @@ module knuckle_right(color=color,
                  show_lower_arm_ball_stud=show_lower_arm_ball_stud,
                  show_upper_arm_ball_stud=show_upper_arm_ball_stud,
                  show_knuckle=show_knuckle,
-                 angles=[angles[0], angles[1], -angles[2]]);
+                 angles=[angles[0], angles[1], -angles[2]]) {
+      children();
+    }
   }
 }
 

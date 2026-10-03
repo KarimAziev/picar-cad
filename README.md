@@ -113,6 +113,25 @@ the suspension pose; it does not simulate spring compression under vehicle weigh
 The [upper steering bridge](scad/suspension/front_chassis/README.md#upper-steering-bridge)
 connects the existing five upper mounts and has its own assembly and printable entries.
 
+The RC assembly also displays generic **65 × 26 mm touring wheels with 12 mm
+hex mounts** (a commercial envelope used, for example, by
+[VRX #10417](https://www.vrx-racing.com/products/rc-tire-12mm-hex-hub-rubber-for-1-10-scale-rc-on-road-touring-cars-10417/)).
+Use `show_front_wheels`, `show_rear_wheels_preview`, and `show_wheel_tires` in
+`rc_robot_assembly.scad`. Wheel dimensions live in `rc_wheel_plist` in
+`scad/rc_params.scad`; `mount_z` is the explicit contact-plane distance from the
+inboard tire face, provisionally 15 mm, not a commercial offset specification.
+
+Front wheels inherit the actual knuckle/bearing transforms, including solved
+suspension and steering motion. The rear suspension is not modeled yet: rear
+wheels are packaging placeholders at the midpoint of the two rear bulkhead
+mounting groups. Their track and height follow the neutral front reference unless
+`rc_rear_wheel_preview_track` or `rc_rear_wheel_preview_axis_z` is set;
+`rc_rear_wheel_preview_y_offset` adjusts that provisional axle location. The
+[wheel placeholder](scad/placeholders/rc_touring_wheel.scad) has an illustrative
+rim, tire grooves, and hub section; it is not a printable wheel or a verified
+fit for a specific purchased wheel.
+
+
 ### Configurations
 
 Two main presets are supported: the default LiPo power case stack and the UPS S3 option. Both assume two battery holders. Jump to the BOMs for details: [Full BOM (default preset)](#full-bom-default-preset) or [Full BOM (with UPS module S3)](#full-bom-with-ups-module-s3).
