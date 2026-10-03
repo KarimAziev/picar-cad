@@ -11,6 +11,7 @@ include <../../rc_params.scad>
 
 use <../../lib/functions.scad>
 use <../../lib/plist.scad>
+use <../../lib/shapes2d.scad>
 use <../../lib/wire.scad>
 use <../../lipo_pack_case/lid_equipment.scad>
 use <../../lipo_pack_case/multi_lipo_pack_lid.scad>
@@ -19,6 +20,88 @@ use <../../placeholders/crimp_terminals/ring_terminal.scad>
 use <../../placeholders/step-down-voltage-d24vxf5.scad>
 use <../../wago/wago_pair.scad>
 use <rear_equipment.scad>
+
+function _rear_wire_opening_fits(pos, size, layout, obstacles, gap) =
+  abs(pos[0]) + size[0] / 2 + gap <= plist_get("join_w", layout) / 2
+  && pos[1] - size[1] / 2 >= plist_get("min_y", layout) + gap
+  && pos[1] + size[1] / 2 <= plist_get("transition_y_end", layout) - gap
+  && len([for (b = obstacles)
+      if (_deck_overlap(_deck_bounds(pos, size), b, gap)) 1]) == 0;
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  rear_fuse_wire_passages
+  ─────────────────────────────────────────────────────────────────────────────
+  Size chassis wire passages on either side of the fuse panel.
+  **Parameters:**
+  - `layout`: Rear layout in native holder-row coordinates.
+  - `panel`: Resolved fuse panel from the layout.
+  - `holes`: Converter passage centers; the first is beside the fuse outlets.
+  - `hole_d`: Shared round passage diameter in millimeters.
+  - `obstacles`: Occupied hardware footprints in chassis coordinates.
+  - `config`: Harness settings. fuse_hole_columns is 0, 1 or 2; two columns
+    fall back to one if space is limited. fuse_outlet enables the RPi passage.
+    hole_gap separates round holes; terminal_clearance preserves solid lands.
+    fuse_outlet_edge_margin reserves material along the chassis side (12 mm).
+  **Returns:** A plist with round `holes`, `outlet_pos`, `outlet_size` and
+  `outlet_r`. The outlet sits toward native -Y (vehicle front), outside the
+  chassis joint's reinforcing pin. Disabled outlets have size [0, 0, 0].
+ */
+function rear_fuse_wire_passages(layout,
+                                 panel,
+                                 holes,
+                                 hole_d,
+                                 obstacles,
+                                 config=rear_power_wiring) =
+  let (columns = plist_get("fuse_hole_columns", config, 2),
+       gap = plist_get("terminal_clearance", config, 2),
+       edge_margin = plist_get("fuse_outlet_edge_margin", config, 12),
+       pitch = hole_d + plist_get("hole_gap", config, 3),
+       side = sign(plist_get("pos", panel)[0]),
+       candidates = [for (column = [1:1:columns])
+           [for (row = [0, 1])
+               holes[0] + [side * column * pitch, row * pitch, 0]]],
+       round_obstacles = concat(obstacles,
+                                 [for (h = holes)
+                                     _deck_bounds(h, [hole_d, hole_d, 0])]),
+       fits = [for (pair = candidates)
+           len([for (h = pair)
+               if (!_rear_wire_opening_fits(h, [hole_d, hole_d, 0], layout,
+                                            round_obstacles, gap)) 1]) == 0],
+       count = columns == 0
+           ? 0
+           : columns == 2 && fits[0] && fits[1]
+             ? 2
+             : fits[0] ? 1 : 0,
+       bounds = plist_get("bounds", panel),
+       rail_w = plist_get("join_w", layout)
+       - 2 * (front_chassis_joint_bolt_d + front_chassis_joint_bolt_pad
+              + front_chassis_joint_rail_bolt_clearance),
+       // The body joint uses pin_spacing=rail_w/2, measured center-to-center.
+       inner_x = rail_w / 4 + front_chassis_joint_pin_d / 2 + gap,
+       outer_x = plist_get("join_w", layout) / 2 - edge_margin,
+       y0 = plist_get("min_y", layout) + gap,
+       y1 = bounds[0][1] - gap,
+       outlet = plist_get("fuse_outlet", config, true),
+       outlet_size = outlet
+           ? [outer_x - inner_x, y1 - y0, 0]
+           : [0, 0, 0],
+       outlet_pos = [side * (inner_x + outer_x) / 2, (y0 + y1) / 2, 0])
+  assert(columns == 0 || columns == 1 || columns == 2,
+         "Fuse wire passages need zero, one or two columns")
+  assert(gap >= 2, "Fuse wire passages need at least 2 mm of solid land")
+  assert(edge_margin >= gap,
+         "Fuse outlet edge margin must cover the terminal clearance")
+  assert(columns == 0 || count > 0,
+         "Two fuse wire holes do not fit the existing chassis")
+  assert(!outlet || (min(outlet_size[0], outlet_size[1]) >= gap * 2
+                    && _rear_wire_opening_fits(outlet_pos, outlet_size,
+                                               layout, obstacles, gap)),
+         "Fuse outlet does not fit between the panel, joint pin and chassis edge")
+  ["holes", [for (i = [0:1:count - 1]) each candidates[i]],
+   "outlet_pos", outlet_pos,
+   "outlet_size", outlet_size,
+   "outlet_r", min(3, min(outlet_size[0], outlet_size[1]) / 2)];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -29,7 +112,8 @@ use <rear_equipment.scad>
   - `layout`: Resolved rear layout in native holder-row coordinates.
   - `config`: Harness plist: enabled, d, hole_d, terminal_clearance, converter_run,
     under_z and ring_terminal. black_holes adds adjacent return passages;
-    hole_gap is their edge-to-edge separation. Defaults are in rc_params.scad.
+    hole_gap is their edge-to-edge separation. fuse_hole_columns and fuse_outlet
+    configure rear_fuse_wire_passages. Defaults are in rc_params.scad.
   **Returns:** Routes and terminal/hole datums. Missing case, Wago pair, single fuse
   panel or single converter disables this harness. Unsupported clearances assert;
   the chassis is never enlarged. The positive Wago feed port stays reserved.
@@ -106,7 +190,9 @@ function rear_power_wiring_props(layout, config=rear_power_wiring) =
                                     mouth + outward * 6, mouth], trim=2 * d),
        obstacles = concat(rear_equipment_obstacles(layout),
                           [for (e = plist_get("equipment", layout, []))
-                              plist_get("bounds", e)]))
+                              plist_get("bounds", e)]),
+       fuse_passages = rear_fuse_wire_passages(layout, panel, holes, hole_d,
+                                               obstacles, config))
                               assert(plist_get("hole_gap", config, 3) >= 2,
                                      "Adjacent wiring holes need at least 2 mm of material between them")
                               assert(len(ports) > len(feeds),
@@ -125,6 +211,7 @@ function rear_power_wiring_props(layout, config=rear_power_wiring) =
                                      "Rear wiring passages must fit the existing full-width deck")
                               ["enabled", true,
                                "holes", holes,
+                               "fuse_passages", fuse_passages,
                                "hole_d", hole_d,
                                "parent_t", parent_t,
                                "black_holes", black_holes,
@@ -155,11 +242,23 @@ module rear_power_harness(layout,
   p = rear_power_wiring_props(layout, config);
   if (plist_get("enabled", p, false)) {
     if (slot_mode) {
-      for (h = plist_get("holes", p)) {
+      passages = plist_get("fuse_passages", p);
+      for (h = concat(plist_get("holes", p), plist_get("holes", passages))) {
         translate(h - [0, 0, 0.1]) {
           cylinder(d=plist_get("hole_d", p),
                    h=plist_get("parent_t", p) + 0.2,
                    $fn=64);
+        }
+      }
+      outlet_size = plist_get("outlet_size", passages);
+      if (outlet_size[0] > 0 && outlet_size[1] > 0) {
+        translate(plist_get("outlet_pos", passages) - [0, 0, 0.1]) {
+          linear_extrude(height=plist_get("parent_t", p) + 0.2) {
+            rounded_rect([outlet_size[0], outlet_size[1]],
+                          r=plist_get("outlet_r", passages),
+                          center=true,
+                          fn=64);
+          }
         }
       }
     } else if (show_wiring) {

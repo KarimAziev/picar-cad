@@ -40,6 +40,13 @@ module lid_body() {{
 module lead(path) {{
  wire_path(path,d=plist_get("d",p),cut_len=undef,mode="none");
 }}
+module fuse_passages() {{
+ difference() {{
+  rear_power_harness(l,slot_mode=true);
+  rear_power_harness(l,slot_mode=true,config=plist_merge(rear_power_wiring,
+      ["fuse_hole_columns",0,"fuse_outlet",false]));
+ }}
+}}
 '''
 
 
@@ -61,6 +68,22 @@ def main() -> None:
             assert result.returncode == 0, log
             assert mesh_volume(mesh) < 0.00001, (mesh_volume(mesh), log)
 
+        empty('''intersection() {
+ rear_chassis_frame(layout=l);
+ fuse_passages();
+}''')
+        print("PASS fuse wire passages cut through the complete chassis", flush=True)
+        empty('''difference() {
+ intersection() {
+  minkowski() {
+   fuse_passages();
+   cylinder(r=1.99,h=0.001,$fn=64);
+  }
+  translate([-200,-300,0.01]) {cube([400,600,plist_get("size",l)[2]-0.02]);}
+ }
+ union() {rear_chassis_frame(layout=l); fuse_passages();}
+}''')
+        print("PASS fuse passages retain 2 mm lands at edges, mounts and joint pins", flush=True)
         empty('''intersection() {
  rear_power_harness(l);
  union() {rear_chassis_frame(layout=l); case_body(); lid_body();}
