@@ -27,7 +27,8 @@ joint_preview_spacing = 0; // [0:1:30]
   - `spacing`: Center-to-center distance between the outer bolts.
   **Returns:** Bolt-center X coordinates.
  */
-function front_chassis_joint_default_bolt_xs(spacing=front_chassis_joint_bolt_spacing) = [-spacing / 2, 0, spacing / 2];
+function front_chassis_joint_default_bolt_xs(spacing=front_chassis_joint_bolt_spacing)
+                      = [-spacing / 2, 0, spacing / 2];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────

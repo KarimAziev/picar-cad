@@ -17,10 +17,8 @@ include <../../rc_params.scad>
 
 use <../../lib/placement.scad>
 use <../../lib/shapes2d.scad>
-use <../../lib/shapes3d.scad>
 use <../../lib/threading/threads.scad>
 use <../../lib/trapezoids.scad>
-use <bellcrank_ring.scad>
 
 module bellcrank_servo_lever(color=cobalt_blue_metallic,
                              alpha=1,

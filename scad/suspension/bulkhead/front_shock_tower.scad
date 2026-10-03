@@ -12,10 +12,7 @@ include <../../rc_params.scad>
 use <../../lib/debug.scad>
 use <../../lib/functions.scad>
 use <../../lib/holes.scad>
-use <../../lib/shapes2d.scad>
-use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
-use <../../lib/trapezoids.scad>
 use <util.scad>
 
 module front_shock_holder_2d(tilt_angle=front_shock_tower_damper_holes_angle,

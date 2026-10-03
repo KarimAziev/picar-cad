@@ -45,7 +45,6 @@ include <../parameters.scad>
 use <../lib/functions.scad>
 use <../lib/l_bracket.scad>
 use <../lib/plist.scad>
-use <../lib/shapes3d.scad>
 use <../lib/transforms.scad>
 use <../placeholders/bolt.scad>
 use <../placeholders/pan_servo.scad>
@@ -697,8 +696,8 @@ module head_neck_printable() {
 head_neck(center_pan_servo_slot=true);
 
 bounds = head_neck_bounds(pan_servo_rotation=pan_servo_rotation,
-                           tilt_servo_rotation=tilt_servo_rotation,
-                           center_pan_servo_slot=true);
+                          tilt_servo_rotation=tilt_servo_rotation,
+                          center_pan_servo_slot=true);
 bbox = bounds[1] - bounds[0];
 
 // The size alone does not describe the assembly's asymmetric placement.

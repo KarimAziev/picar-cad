@@ -18,14 +18,12 @@ include <rc_params.scad>
 include <suspension/front_chassis/computed_params.scad>
 
 use <head/head_neck.scad>
-use <lib/debug.scad>
 use <lib/functions.scad>
 use <lib/plist.scad>
 use <lib/shapes3d.scad>
 use <lipo_pack_case/multi_lipo_pack_case.scad>
 use <suspension/bellcrank_steering_assembly.scad>
 use <suspension/bellcrank_steering_slots.scad>
-use <suspension/bulkhead/front_bulkhead_chassis.scad>
 use <suspension/computed.scad>
 use <suspension/front_chassis/front_chassis.scad>
 use <suspension/front_chassis/front_chassis_controls.scad>
@@ -35,10 +33,7 @@ use <suspension/middle_chassis/middle_chassis.scad>
 use <suspension/rc_wheels.scad>
 use <suspension/rear_chassis/computed_params.scad>
 use <suspension/rear_chassis/rear_chassis.scad>
-use <suspension/steering_servo_bracket/steering_servo_bracket_assembly.scad>
-use <suspension/steering_servo_bracket/steering_servo_chassis_slots.scad>
 use <suspension/upper_steering_plate.scad>
-use <suspension/wishbone_arms/front_lower_arm.scad>
 
 show_front_wheels                           = true;
 show_rear_wheels_preview                    = true;

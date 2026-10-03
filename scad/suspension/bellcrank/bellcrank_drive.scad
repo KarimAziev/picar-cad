@@ -20,9 +20,6 @@ include <../../colors.scad>
 include <../../parameters.scad>
 include <../../rc_params.scad>
 
-use <../../lib/placement.scad>
-use <../../lib/shapes2d.scad>
-use <../../lib/shapes3d.scad>
 use <bellcrank_idler.scad>
 use <bellcrank_lever.scad>
 use <bellcrank_ring.scad>

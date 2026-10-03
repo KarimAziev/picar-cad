@@ -143,5 +143,4 @@ rotate([0, 0, 0]) {
              z_offset=0.0,
              center=false,
              p=0.65);
-  cube([5, 5, header_height]);
 }

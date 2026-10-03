@@ -21,7 +21,6 @@ use <../../lib/shapes3d.scad>
 use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
 use <../../placeholders/ball_stud.scad>
-use <../../placeholders/suspension_arm_pin.scad>
 use <barrel_hinge.scad>
 use <util.scad>
 

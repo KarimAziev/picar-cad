@@ -6,17 +6,13 @@
  */
 include <../parameters.scad>
 
-use <../colors.scad>
 use <../lib/debug.scad>
 use <../lib/functions.scad>
-use <../lib/holes.scad>
 use <../lib/plist.scad>
 use <../lib/shapes3d.scad>
 use <../lib/slots.scad>
 use <../lib/text.scad>
 use <../lib/transforms.scad>
-
-
 
 function slot_spec_is_valid(spec) =
   plist_is(spec)
@@ -312,7 +308,8 @@ module slot_layout(specs,
   align_to_axle = with_default(align_to_axle, 1);
   global_debug = debug;
 
-  assert(member(direction, ["btt", "ttb", "ltr", "rtl"]), "Invalid direction");
+  assert(member(direction, ["btt", "ttb",
+                            "ltr", "rtl"]), "Invalid direction");
 
   assert(member(align, [0, 1, -1]),
          str("Invalid align ", align, " should be 1, 0 or -1"));
@@ -427,12 +424,12 @@ module slot_layout(specs,
           if (show_borders) {
             #difference() {
               cuboid(size=[curr_x,
-                            curr_y,
-                            thickness]);
+                           curr_y,
+                           thickness]);
               translate([0, 0, -0.5]) {
                 cuboid(size=[curr_x - 1,
-                              curr_y - 1,
-                              thickness + 1]);
+                             curr_y - 1,
+                             thickness + 1]);
               }
             }
           }
@@ -658,15 +655,14 @@ my_specs = [["type", "rect",
                         "round_side", "all",
                         "x_offset", 0,
                         "y_offset", 0],
-                       ["specs",
-                        [["type", "rect",
-                          "gap_before", 0,
-                          "rotation", 0,
-                          "slot_size", [20, 5],
-                          "corner_factor", 0.5,
-                          "round_side", "all",
-                          "x_offset", 0,
-                          "y_offset", 0],
+                       ["specs", [["type", "rect",
+                                   "gap_before", 0,
+                                   "rotation", 0,
+                                   "slot_size", [20, 5],
+                                   "corner_factor", 0.5,
+                                   "round_side", "all",
+                                   "x_offset", 0,
+                                   "y_offset", 0],
                          ["type", "rect",
                           "gap_before", 0,
                           "rotation", 0,
@@ -679,7 +675,7 @@ my_specs = [["type", "rect",
              "direction", "ltr",
              "align_to_axle", 0,
              "align_on_primary_axle", 0,
-             "center",  false,
+             "center", false,
              "gap_before", 0,
              "gap_after", 0,
              "rotation", 0,

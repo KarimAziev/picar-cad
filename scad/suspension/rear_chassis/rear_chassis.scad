@@ -12,8 +12,6 @@ use <../../lib/plist.scad>
 use <../../lib/transforms.scad>
 use <../../motor_brackets/rc/gearbox_bracket.scad>
 use <../../panel_stack/panel_stack.scad>
-use <../../placeholders/step-down-voltage-d24vxf5.scad>
-use <../../placeholders/voltmeter.scad>
 use <../../wago/wago_mounts.scad>
 use <../rear_suspension/rear_suspension_mount.scad>
 use <rear_chassis_frame.scad>

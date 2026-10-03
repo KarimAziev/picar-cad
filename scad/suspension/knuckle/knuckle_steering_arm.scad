@@ -12,7 +12,6 @@ include <../../parameters.scad>
 include <../../rc_params.scad>
 
 use <../../lib/debug.scad>
-use <../../lib/functions.scad>
 use <../../lib/placement.scad>
 use <../../lib/shapes2d.scad>
 use <../../lib/transforms.scad>

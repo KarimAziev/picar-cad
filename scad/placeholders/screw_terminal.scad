@@ -1,5 +1,5 @@
 /**
- * Module: Screw Terminal
+ * Module: Screw Terminal block
  *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
@@ -8,7 +8,6 @@
 include <../colors.scad>
 
 use <../lib/functions.scad>
-use <../lib/placement.scad>
 use <../lib/plist.scad>
 use <../lib/shapes3d.scad>
 use <../lib/slots.scad>
@@ -195,20 +194,20 @@ module screw_terminal_from_plist(plist,
 }
 
 screw_terminal_from_plist(["placeholder", "screw_terminal",
-                           "base_w",  undef,
-                           "base_h",  8.8,
-                           "thickness",  10.6,
-                           "top_l",  5.50,
-                           "top_h",  3.2,
-                           "contacts_n",  6,
-                           "contact_w",  3.5,
-                           "contact_h",  4.47,
-                           "pitch",  4.5,
-                           "colr",  medium_blue_2,
-                           "pin_thickness",  0.4,
-                           "pin_h",  3.9,
-                           "wall_thickness",  0.6,
-                           "isosceles_trapezoid", false,],
+                           "base_w", undef,
+                           "base_h", 8.8,
+                           "thickness", 10.6,
+                           "top_l", 5.50,
+                           "top_h", 3.2,
+                           "contacts_n", 6,
+                           "contact_w", 3.5,
+                           "contact_h", 4.47,
+                           "pitch", 4.5,
+                           "colr", medium_blue_2,
+                           "pin_thickness", 0.4,
+                           "pin_h", 3.9,
+                           "wall_thickness", 0.6,
+                           "isosceles_trapezoid", false],
                           center=false,
                           slot_thickness=1,
-                          slot_mode=true);
+                          slot_mode=false);

@@ -1,8 +1,6 @@
 include <../parameters.scad>
 
 use <../lib/functions.scad>
-use <../lib/holes.scad>
-use <../lib/placement.scad>
 use <../lib/plist.scad>
 use <../lib/shapes2d.scad>
 use <../lib/shapes3d.scad>
@@ -551,14 +549,14 @@ module ina260(size=ina260_size,
                  thickness]) {
         rotate([0, 0, 90]) {
           pin_header(cols=8,
-                      rows=1,
-                      header_width=pin_header_thickness,
-                      header_height=pin_header_height,
-                      header_y_width=pin_step,
-                      pin_height=pin_height,
-                      z_offset=thickness + pin_header_z_offset,
-                      center=true,
-                      p=pin_thickness);
+                     rows=1,
+                     header_width=pin_header_thickness,
+                     header_height=pin_header_height,
+                     header_y_width=pin_step,
+                     pin_height=pin_height,
+                     z_offset=thickness + pin_header_z_offset,
+                     center=true,
+                     p=pin_thickness);
         }
       }
     }

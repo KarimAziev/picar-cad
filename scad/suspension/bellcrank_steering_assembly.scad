@@ -10,10 +10,7 @@
 
 include <../rc_params.scad>
 
-use <../lib/shapes3d.scad>
-use <../placeholders/dservo.scad>
 use <bellcrank/bellcrank_assembly.scad>
-use <bellcrank/bellcrank_drive.scad>
 use <bellcrank_steering_slots.scad>
 use <steering_servo_bracket/steering_servo_bracket_assembly.scad>
 

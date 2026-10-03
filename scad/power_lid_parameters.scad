@@ -3,7 +3,6 @@ include <colors.scad>
 include <simple_robot/power_parameters.scad>
 
 use <lib/functions.scad>
-use <lib/plist.scad>
 
 power_lid_left_slots  = [["type", "four_corner_holes",
                           "placeholder", "voltmeter",

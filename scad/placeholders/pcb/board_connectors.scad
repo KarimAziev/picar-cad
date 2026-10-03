@@ -1,3 +1,4 @@
+
 /**
   * Module: Board connector placeholders.
   *
@@ -78,7 +79,8 @@ module board_edge_socket(size, anchor=[1, 1, 1]) {
       color("silver") {
         difference() {
           linear_extrude(height=size[2]) {
-            rounded_rect([size[0], size[1]], center=true,
+            rounded_rect([size[0], size[1]],
+                         center=true,
                          r=min(size[0], size[1]) * 0.1);
           }
           translate([size[0] * 0.1 + 1, 0, size[2] * 0.1]) {

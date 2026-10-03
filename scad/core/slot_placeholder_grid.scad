@@ -1,29 +1,23 @@
+/**
+  * Module: Slot Placeholder Grid
+  *
+  * Author: Karim Aziiev <karim.aziiev@gmail.com>
+  * License: GPL-3.0-or-later
+  */
 
 include <../colors.scad>
 include <../parameters.scad>
 
 use <../lib/functions.scad>
-use <../lib/holes.scad>
-use <../lib/placement.scad>
 use <../lib/plist.scad>
-use <../lib/shapes2d.scad>
-use <../lib/shapes3d.scad>
-use <../lib/slider.scad>
 use <../lib/transforms.scad>
-use <../lib/wire.scad>
-use <../placeholders/atc_ato_blade_fuse_holder.scad>;
 use <../placeholders/atm_fuse_holder/atm_fuse_holder.scad>
 use <../placeholders/battery_holder/battery_holder.scad>
-use <../placeholders/bolt.scad>
-use <../placeholders/lipo_pack.scad>
-use <../placeholders/perf_board.scad>
 use <../placeholders/rpi_5.scad>
 use <../placeholders/step-down-voltage-d24vxf5.scad>
-use <../placeholders/toggle_switch.scad>
 use <../placeholders/voltmeter.scad>
 use <../placeholders/xt90e-m.scad>
 use <grid.scad>
-use <slot_layout.scad>
 use <slot_renderer.scad>
 
 // Legacy layout example: ../simple_robot/chassis/battery_holder_grid_example.scad

@@ -7,15 +7,10 @@
  */
 include <../colors.scad>
 
-use <../core/slot_layout.scad>
 use <../lib/debug.scad>
 use <../lib/functions.scad>
-use <../lib/holes.scad>
 use <../lib/plist.scad>
-use <../lib/shapes2d.scad>
-use <../lib/shapes3d.scad>
 use <../lib/slots.scad>
-use <../lib/text.scad>
 use <../lib/transforms.scad>
 
 module slot_renderer(plist,

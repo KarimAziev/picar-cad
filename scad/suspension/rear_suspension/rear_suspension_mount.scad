@@ -9,12 +9,10 @@ include <../../rc_params.scad>
 include <../rear_chassis/computed_params.scad>
 include <../rear_chassis/rear_chassis_params.scad>
 
-use <../../components/plate_joint/plate_joint.scad>
 use <../../lib/debug.scad>
 use <../../lib/functions.scad>
 use <../../lib/plist.scad>
 use <../../lib/polygon_util.scad>
-use <../../lib/shapes2d.scad>
 use <../../lib/transforms.scad>
 use <../rear_chassis/rear_chassis_slots.scad>
 use <rear_suspension_joint.scad>

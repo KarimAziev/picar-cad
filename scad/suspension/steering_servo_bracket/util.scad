@@ -7,7 +7,6 @@
 
 include <../../rc_params.scad>
 
-use <../../lib/functions.scad>
 use <../../placeholders/bolt.scad>
 use <../../placeholders/dservo.scad>
 

@@ -16,7 +16,6 @@
 include <../rc_params.scad>
 
 use <bulkhead/front_bulkhead.scad>
-use <bulkhead/front_bulkhead_chassis.scad>
 use <bulkhead/front_bulkhead_housing.scad>
 use <front_linkage.scad>
 use <knuckle/knuckle.scad>

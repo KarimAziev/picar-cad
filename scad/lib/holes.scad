@@ -9,8 +9,6 @@
 use <../placeholders/bolt.scad>
 use <debug.scad>
 use <functions.scad>
-use <shapes2d.scad>
-use <shapes3d.scad>
 use <slots.scad>
 use <text.scad>
 use <transforms.scad>
@@ -179,8 +177,7 @@ module four_corner_hole_rows(specs,
          debug_spec = with_default(debug_specs[i], [false]),
          bolt_spec = with_default(bolt_mode_specs[i], []),
          bolt_type = with_default(bolt_spec[0], "pan"),
-         bolt_h = with_default(bolt_spec[1], thickness + 2),
-         bolt_head_h = with_default(bolt_spec[2], 2)) {
+         bolt_h = with_default(bolt_spec[1], thickness + 2)) {
 
       translate([x - (center ? 0 : x_sizes[i] / 2), y + y_offset, 0]) {
         $spec = spec;

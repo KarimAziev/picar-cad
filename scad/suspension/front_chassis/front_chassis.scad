@@ -14,7 +14,6 @@ include <../../rc_params.scad>
 include <computed_params.scad>
 
 use <front_chassis_front_frame.scad>
-use <front_chassis_joint.scad>
 use <front_chassis_rear_frame.scad>
 
 /**

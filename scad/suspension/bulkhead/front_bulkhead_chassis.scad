@@ -9,12 +9,8 @@ include <../../colors.scad>
 include <../../parameters.scad>
 include <../../rc_params.scad>
 
-use <../../lib/functions.scad>
-use <../../lib/shapes2d.scad>
-use <../../lib/shapes3d.scad>
 use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
-use <../../lib/trapezoids.scad>
 use <../wishbone_arms/util.scad>
 
 /**
@@ -27,9 +23,8 @@ use <../wishbone_arms/util.scad>
   - `hinge_clearance`: Clearance removed from the arm's barrel length.
   **Returns:** Y translation shared by mounting cutters and clearance checks.
  */
-function front_bulkhead_chassis_mount_origin_y(
-  barrel_y_offset=front_bulkhead_barrel_y_offset,
-  hinge_clearance=front_bulkhead_barrel_hinge_clearance) =
+function front_bulkhead_chassis_mount_origin_y(barrel_y_offset=front_bulkhead_barrel_y_offset,
+                                               hinge_clearance=front_bulkhead_barrel_hinge_clearance) =
   let (barrel_len = front_lower_arm_mount_cutout_size()[1] - hinge_clearance,
        bolt_spacing_max_y = max(front_bulkhead_mount_bolt_spacing_1[1],
                                 front_bulkhead_mount_bolt_spacing_2[1]),
@@ -38,7 +33,9 @@ function front_bulkhead_chassis_mount_origin_y(
 
 module front_bulkhead_housing_slots_non_center_y(barrel_y_offset=front_bulkhead_barrel_y_offset,
                                                  hinge_clearance=front_bulkhead_barrel_hinge_clearance) {
-  translate([0, front_bulkhead_chassis_mount_origin_y(barrel_y_offset, hinge_clearance), 0]) {
+  translate([0,
+             front_bulkhead_chassis_mount_origin_y(barrel_y_offset, hinge_clearance),
+             0]) {
     front_bulkhead_chassis_mount_slots(center_y=false);
   }
 }

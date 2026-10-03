@@ -15,7 +15,6 @@ include <../../colors.scad>
 include <../../parameters.scad>
 include <../../rc_params.scad>
 
-use <../../lib/debug.scad>
 use <../../lib/functions.scad>
 use <../../lib/shapes2d.scad>
 use <../../lib/shapes3d.scad>
@@ -24,14 +23,10 @@ use <../../lib/transforms.scad>
 use <../../lib/trapezoids.scad>
 use <../../placeholders/bolt.scad>
 use <../../placeholders/suspension_arm_pin.scad>
-use <../bellcrank/bellcrank_drive.scad>
-use <../bellcrank/bellcrank_idler.scad>
 use <../bellcrank/util.scad>
-use <../wishbone_arms/front_lower_arm.scad>
 use <../wishbone_arms/front_upper_arm.scad>
 use <../wishbone_arms/util.scad>
 use <front_bulkhead_chassis.scad>
-use <front_bulkhead_housing.scad>
 use <front_shock_tower.scad>
 use <front_upper_suspension_holder.scad>
 use <suspension_arm_pad.scad>

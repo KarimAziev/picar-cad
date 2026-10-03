@@ -10,7 +10,6 @@ include <../../rc_params.scad>
 use <../../placeholders/dservo.scad>
 use <../../placeholders/rpi_5.scad>
 use <../bellcrank_steering_slots.scad>
-use <../bulkhead/front_bulkhead.scad>
 use <../steering_servo_bracket/helpers.scad>
 use <../wishbone_arms/util.scad>
 

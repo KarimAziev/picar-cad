@@ -18,13 +18,10 @@ use <../../../lib/debug.scad>
 use <../../../lib/functions.scad>
 use <../../../lib/plist.scad>
 use <../../../lib/polygon_util.scad>
-use <../../../lib/shapes2d.scad>
 use <../../../lib/shapes3d.scad>
 use <../../../lib/slots.scad>
 use <../../../lib/transforms.scad>
-use <../../../lib/trapezoids.scad>
 use <../../bolt.scad>
-use <../../suspension_arm_pin.scad>
 use <motor_drive_shaft.scad>
 
 /**

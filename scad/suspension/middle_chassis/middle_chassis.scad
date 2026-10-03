@@ -17,13 +17,11 @@ include <../computed.scad>
 include <../front_chassis/computed_params.scad>
 
 use <../../head/head_neck.scad>
-use <../../lib/placement.scad>
 use <../../lib/plist.scad>
 use <../../lib/shapes3d.scad>
 use <../../lib/transforms.scad>
 use <../../lipo_pack_case/multi_lipo_pack_case.scad>
 use <../../placeholders/lidar.scad>
-use <../../placeholders/lipo_pack.scad>
 
 show_middle_chassis               = true;
 show_middle_chassis_components    = true;

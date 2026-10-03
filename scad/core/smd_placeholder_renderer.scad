@@ -1,7 +1,13 @@
+/**
+  * Module: SMD Placeholder Renderer
+  *
+  * Author: Karim Aziiev <karim.aziiev@gmail.com>
+  * License: GPL-3.0-or-later
+  */
+
 include <../colors.scad>
 include <../parameters.scad>
 
-use <../lib/debug.scad>
 use <../lib/functions.scad>
 use <../lib/plist.scad>
 use <../lib/text.scad>
@@ -147,15 +153,14 @@ module smd_placeholder_slot_renderer(plist,
   }
 }
 
-smd_placeholder_renderer(["type","smd_chip",
+smd_placeholder_renderer(["type", "smd_chip",
                           "placeholder_size", [10, 17],
                           "corner_rad", 0.0,
                           "spin", 0,
                           "chip_size", [8, 17, 1.65],
-                          "j_lead",
-                          [["count", 11,
-                            "thickness", 0.4,
-                            "sides", ["left", "right"]]]],
+                          "j_lead", [["count", 11,
+                                      "thickness", 0.4,
+                                      "sides", ["left", "right"]]]],
                          cell_size=[20, 30],
                          align_x=0,
                          align_y=0);

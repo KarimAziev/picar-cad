@@ -12,8 +12,6 @@ include <rear_chassis_params.scad>
 use <../../lib/debug.scad>
 use <../../lib/functions.scad>
 use <../../lib/plist.scad>
-use <../../lib/polygon_util.scad>
-use <../../lib/shapes2d.scad>
 use <../../lib/transforms.scad>
 use <../front_chassis/front_chassis_joint.scad>
 use <../rear_suspension/rear_suspension_joint.scad>

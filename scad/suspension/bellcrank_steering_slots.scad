@@ -8,7 +8,6 @@
 
 include <../rc_params.scad>
 
-use <../lib/shapes3d.scad>
 use <../placeholders/dservo.scad>
 use <bellcrank/bellcrank_slots.scad>
 use <steering_servo_bracket/steering_servo_chassis_slots.scad>

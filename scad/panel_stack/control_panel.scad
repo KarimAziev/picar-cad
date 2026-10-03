@@ -8,14 +8,10 @@ include <../colors.scad>
 include <../parameters.scad>
 
 use <../lib/functions.scad>
-use <../lib/holes.scad>
-use <../lib/placement.scad>
 use <../lib/plist.scad>
 use <../lib/shapes2d.scad>
-use <../lib/shapes3d.scad>
 use <../lib/slots.scad>
 use <../lib/transforms.scad>
-use <../placeholders/bolt.scad>
 use <../placeholders/standoff.scad>
 use <../placeholders/toggle_switch.scad>
 

@@ -19,11 +19,9 @@ include <../../rc_params.scad>
 
 use <../../lib/shapes2d.scad>
 use <../../lib/shapes3d.scad>
-use <../../lib/threading/threaded_plug_hex_socket.scad>
 use <../../lib/threading/threads.scad>
 use <../../lib/transforms.scad>
 use <knuckle_threaded_plug.scad>
-use <util.scad>
 
 color              = cobalt_blue_metallic;
 show_threaded_plug = false;

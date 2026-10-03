@@ -10,10 +10,8 @@ include <../colors.scad>
 include <../parameters.scad>
 
 use <../lib/functions.scad>
-use <../lib/holes.scad>
 use <../lib/shapes2d.scad>
 use <../lib/transforms.scad>
-use <bolt.scad>
 
 module camera_module_with_holes_positions() {
   translate([0,
@@ -37,9 +35,7 @@ module camera_module(board_color=green_2,
                      left_text_x_offset=0,
                      right_text_x_offset=1,
                      left_text_spacing=1.3,
-                     right_text_spacing=1.1,
-                     show_bolt=true,
-                     bolt_h=4) {
+                     right_text_spacing=1.1) {
   max_lens_y = max([for (i = [0 : len(camera_lens_items) - 1])
                        camera_lens_items[i][4] == "circle" ?
                          camera_lens_items[i][0] :

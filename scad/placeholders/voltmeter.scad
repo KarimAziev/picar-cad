@@ -16,8 +16,6 @@ use <../lib/slots.scad>
 use <../lib/text.scad>
 use <../lib/transforms.scad>
 use <../lib/wire.scad>
-use <./pins.scad>
-use <./rpi_5.scad>
 use <standoff.scad>
 
 module voltemeter_text(txt, text_props) {
@@ -410,8 +408,9 @@ function voltmeter_mount_props(pl=[]) =
    "bolt_spacing", pitch,
    "bolt_d", d,
    "standoff_h", h,
-   "pin_h", plist_get("size", plist_get("pins", pl, []),
-                       [voltmeter_pin_thickness, voltmeter_pin_h])[1]];
+   "pin_h", plist_get("size",
+                      plist_get("pins", pl, []),
+                      [voltmeter_pin_thickness, voltmeter_pin_h])[1]];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────

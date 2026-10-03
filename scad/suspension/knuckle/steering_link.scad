@@ -10,14 +10,9 @@ include <../../parameters.scad>
 include <../../rc_params.scad>
 
 use <../../lib/functions.scad>
-use <../../lib/placement.scad>
-use <../../lib/plist.scad>
-use <../../lib/shapes2d.scad>
 use <../../lib/transforms.scad>
-use <../../placeholders/bolt.scad>
 use <../../placeholders/tie_rod_end.scad>
 use <../../placeholders/tie_rod_shaft.scad>
-use <knuckle_steering_arm.scad>
 use <util.scad>
 
 function steering_link_full_len(eye_od=knuckle_tie_rod_eye_od,
@@ -266,6 +261,4 @@ module steering_link(knuckle_arm_len=knuckle_arm_base_len,
   }
 }
 
-// steering_link(left_end_bushing_angles=[0, 0, 0], angles=[0, 10, 0]);
-// knuckle_steering_arm();
 steering_tie_rod_link(center_x_by_eye=false);

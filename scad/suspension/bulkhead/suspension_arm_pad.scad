@@ -14,7 +14,6 @@ include <../../parameters.scad>
 include <../../rc_params.scad>
 
 use <../../lib/debug.scad>
-use <../../lib/shapes2d.scad>
 use <../../lib/trapezoids.scad>
 
 module suspension_arm_pad(color=cobalt_blue_light_3,

@@ -10,12 +10,8 @@ include <../../parameters.scad>
 include <../../rc_params.scad>
 
 use <../../lib/debug.scad>
-use <../../lib/placement.scad>
-use <../../lib/shapes2d.scad>
-use <../../lib/threading/threaded_plug_hex_socket.scad>
 use <../../lib/transforms.scad>
 use <../../placeholders/ball_bearing.scad>
-use <../../placeholders/bolt.scad>
 use <../wishbone_arms/front_lower_arm.scad>
 use <../wishbone_arms/front_upper_arm.scad>
 use <../wishbone_arms/util.scad>
@@ -257,20 +253,18 @@ module knuckle_left(color=color,
         }
       }
       if (show_lower_arm) {
-        let (ball_stud_y_pos = front_lower_arm_ball_stud_y_pos()) {
-          translate([ball_stud_mount_x,
-                     0,
-                     0]) {
+        translate([ball_stud_mount_x,
+                   0,
+                   0]) {
 
-            translate([-front_lower_arm_thickness / 2,
-                       -lower_ball_stud_y_pos,
-                       front_lower_arm_len
-                       + front_arm_ball_stud_unthreaded_h
-                       + knuckle_ball_stud_house_h]) {
-              rotate([0, 90, 0]) {
-                front_lower_arm(show_ball_stud=show_lower_arm_ball_stud,
-                                y_angle=lower_arm_y_angle);
-              }
+          translate([-front_lower_arm_thickness / 2,
+                     -lower_ball_stud_y_pos,
+                     front_lower_arm_len
+                     + front_arm_ball_stud_unthreaded_h
+                     + knuckle_ball_stud_house_h]) {
+            rotate([0, 90, 0]) {
+              front_lower_arm(show_ball_stud=show_lower_arm_ball_stud,
+                              y_angle=lower_arm_y_angle);
             }
           }
         }

@@ -12,13 +12,11 @@ include <../../colors.scad>
 include <../../parameters.scad>
 include <../../rc_params.scad>
 
-use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
 use <../../placeholders/dservo.scad>
 use <../bellcrank/bellcrank_drive.scad>
 use <helpers.scad>
 use <servo_bracket.scad>
-use <util.scad>
 
 show_servo_brackets   = true;
 

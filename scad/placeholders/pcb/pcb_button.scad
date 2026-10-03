@@ -1,3 +1,4 @@
+
 /**
   * Module: PCB button placeholder
   *
@@ -89,7 +90,8 @@ module pcb_button_from_plist(plist, orientation, anchor) {
   button_d = plist_get("button_d", plist, 1.8);
   color = plist_get("color", plist, matte_black);
   button_color = plist_get("button_color", plist, metallic_yellow_silver);
-  orientation = with_default(orientation, plist_get("orientation", plist, "wlh"));
+  orientation = with_default(orientation,
+                             plist_get("orientation", plist, "wlh"));
   anchor = with_default(anchor, plist_get("anchor", plist, [0, 0, 1]));
   pcb_button(size=size,
              button_h=button_h,

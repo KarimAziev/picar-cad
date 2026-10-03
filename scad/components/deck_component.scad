@@ -6,10 +6,9 @@
   */
 use <../lib/plist.scad>
 use <../lib/transforms.scad>
-use <../lib/slots.scad>
-use <../placeholders/voltmeter.scad>
 use <../placeholders/perf_board.scad>
 use <../placeholders/step-down-voltage-d24vxf5.scad>
+use <../placeholders/voltmeter.scad>
 
 function _deck_component_props(kind, pl=[]) =
   kind == "voltmeter" ? voltmeter_mount_props(pl) :
@@ -38,8 +37,9 @@ function deck_component_props(kind, pl=[]) =
   assert(wire_d >= 0, "Wire passage diameter must be nonnegative")
   assert(wire_d == 0 || wire_d / 2 + d + 1 <= norm(pitch) / 2,
          "Center wire passage must leave material around mounting screws")
-  plist_merge(p, ["size", [max(s[0], pitch[0] + 2 * d, wire_d),
-                           max(s[1], pitch[1] + 2 * d, wire_d), s[2]]]);
+  plist_merge(p,
+              ["size", [max(s[0], pitch[0] + 2 * d, wire_d),
+                        max(s[1], pitch[1] + 2 * d, wire_d), s[2]]]);
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -55,11 +55,11 @@ function deck_component_props(kind, pl=[]) =
   - `show_hardware`: Display component and its mounting hardware in solid mode.
  */
 module deck_component(kind,
-                       pl=[],
-                       parent_t=3,
-                       anchor=[0, 0, 1],
-                       slot_mode=false,
-                       show_hardware=true) {
+                      pl=[],
+                      parent_t=3,
+                      anchor=[0, 0, 1],
+                      slot_mode=false,
+                      show_hardware=true) {
   props = deck_component_props(kind, pl);
   with_anchor(anchor, plist_get("size", props), centered=true) {
     if (kind == "voltmeter") {

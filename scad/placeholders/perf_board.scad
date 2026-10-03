@@ -1,6 +1,12 @@
+/**
+  * Module: Perfboard placeholder
+  *
+  * Author: Karim Aziiev <karim.aziiev@gmail.com>
+  * License: GPL-3.0-or-later
+  */
+
 include <../parameters.scad>
 
-use <../lib/holes.scad>
 use <../lib/plist.scad>
 use <../lib/shapes2d.scad>
 use <../lib/slots.scad>

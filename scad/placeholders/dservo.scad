@@ -9,17 +9,13 @@ include <../colors.scad>
 include <../rc_params.scad>
 
 use <../components/encoder_l_bracket.scad>
-use <../lib/debug.scad>
 use <../lib/functions.scad>
-use <../lib/shapes3d.scad>
 use <../suspension/bellcrank/bellcrank_drive.scad>
-use <bolt.scad>
 use <rotary_encoder.scad>
 use <servo.scad>
 use <servo_arm.scad>
 use <tie_rod.scad>
 use <tie_rod_end.scad>
-use <tie_rod_shaft.scad>
 
 function dsservo_full_height() =
   servo_full_height(dsservo_size[2],

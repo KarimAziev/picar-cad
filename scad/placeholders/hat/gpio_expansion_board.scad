@@ -8,8 +8,6 @@
 include <../../colors.scad>
 include <../../parameters.scad>
 
-use <../../lib/holes.scad>
-use <../../lib/placement.scad>
 use <../../lib/shapes2d.scad>
 use <../../lib/shapes3d.scad>
 use <../../lib/transforms.scad>
@@ -37,7 +35,8 @@ module gpio_expansion_board(show_standoff=true,
                          r=gpio_expansion_corner_rad,
                          center=true);
             four_corner_holes_2d(size=rpi_bolt_spacing, center=true);
-            four_corner_holes_2d(size=gpio_expansion_bolt_spacing_2, center=true);
+            four_corner_holes_2d(size=gpio_expansion_bolt_spacing_2,
+                                 center=true);
           }
         }
       }
@@ -60,13 +59,13 @@ module gpio_expansion_board(show_standoff=true,
                  -gpio_expansion_header_height]) {
         union() {
           pin_header(cols=rpi_pin_headers_cols,
-                      rows=rpi_pin_headers_rows,
-                      header_width=rpi_pin_header_width,
-                      header_height=gpio_expansion_header_height,
-                      pin_height=gpio_expansion_pin_height,
-                      z_offset=-gpio_expansion_header_height,
-                      p=0.65,
-                      center=true);
+                     rows=rpi_pin_headers_rows,
+                     header_width=rpi_pin_header_width,
+                     header_height=gpio_expansion_header_height,
+                     pin_height=gpio_expansion_pin_height,
+                     z_offset=-gpio_expansion_header_height,
+                     p=0.65,
+                     center=true);
         }
       }
       translate([-w / 2 + rpi_pin_header_width * 4,
@@ -77,23 +76,23 @@ module gpio_expansion_board(show_standoff=true,
                  h]) {
         union() {
           pin_header(cols=rpi_pin_headers_cols,
-                      rows=rpi_pin_headers_rows,
-                      header_width=rpi_pin_header_width,
-                      header_height=0,
-                      pin_height=gpio_expansion_pin_height,
-                      z_offset=0,
-                      p=0.65,
-                      center=true);
+                     rows=rpi_pin_headers_rows,
+                     header_width=rpi_pin_header_width,
+                     header_height=0,
+                     pin_height=gpio_expansion_pin_height,
+                     z_offset=0,
+                     p=0.65,
+                     center=true);
           let (total_x = rpi_pin_header_width * rpi_pin_headers_rows,
                total_y = rpi_pin_header_width * rpi_pin_headers_cols) {
             pin_header(cols=rpi_pin_headers_cols,
-                        rows=rpi_pin_headers_rows,
-                        header_width=rpi_pin_header_width,
-                        header_height=0,
-                        pin_height=gpio_expansion_pin_up_height,
-                        z_offset=0,
-                        p=0.65,
-                        center=true);
+                       rows=rpi_pin_headers_rows,
+                       header_width=rpi_pin_header_width,
+                       header_height=0,
+                       pin_height=gpio_expansion_pin_up_height,
+                       z_offset=0,
+                       p=0.65,
+                       center=true);
             translate([0, 0, 0]) {
               color(yellow_1, alpha=1) {
                 cuboid([total_x, total_y, gpio_expansion_header_up_height]);
@@ -104,7 +103,7 @@ module gpio_expansion_board(show_standoff=true,
       }
       let (step = gpio_expansion_inner_header_gap +
            gpio_expansion_inner_header_rows * rpi_pin_header_width,
-           total_y = step * (gpio_expansion_inner_headers_count - 1),) {
+           total_y = step * (gpio_expansion_inner_headers_count - 1)) {
         translate([0, -total_y / 2, 0]) {
           for (i = [0 : gpio_expansion_inner_headers_count - 1]) {
             let (y = i * step,
@@ -114,13 +113,13 @@ module gpio_expansion_board(show_standoff=true,
                 rotate([0, 0, 90]) {
                   translate([0, 0, h]) {
                     pin_header(cols=gpio_expansion_inner_header_cols,
-                                rows=gpio_expansion_inner_header_rows,
-                                header_width=rpi_pin_header_width,
-                                header_height=0,
-                                pin_height=gpio_expansion_inner_header_pin_height,
-                                z_offset=0,
-                                p=0.65,
-                                center=true);
+                               rows=gpio_expansion_inner_header_rows,
+                               header_width=rpi_pin_header_width,
+                               header_height=0,
+                               pin_height=gpio_expansion_inner_header_pin_height,
+                               z_offset=0,
+                               p=0.65,
+                               center=true);
                     color(yellow_1, alpha=1) {
                       cuboid([total_x, total_y, gpio_expansion_header_up_height]);
                     }

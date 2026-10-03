@@ -12,21 +12,11 @@ include <computed_params.scad>
 
 use <../../lib/debug.scad>
 use <../../lib/functions.scad>
-use <../../lib/placement.scad>
 use <../../lib/polygon_util.scad>
 use <../../lib/shapes3d.scad>
-use <../../lib/slider.scad>
-use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
-use <../../placeholders/dservo.scad>
-use <../../placeholders/rpi_5.scad>
-use <../bellcrank/bellcrank_slots.scad>
 use <../bellcrank_steering_slots.scad>
-use <../bulkhead/front_bulkhead.scad>
-use <../bulkhead/front_bulkhead_chassis.scad>
-use <../bulkhead/front_bulkhead_housing.scad>
 use <../steering_servo_bracket/steering_servo_chassis_slots.scad>
-use <../wishbone_arms/front_lower_arm.scad>
 use <front_chassis_controls.scad>
 use <front_chassis_joint.scad>
 

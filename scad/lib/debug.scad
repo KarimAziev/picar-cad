@@ -9,7 +9,6 @@ include <../colors.scad>
 use <functions.scad>
 use <plist.scad>
 use <polygon_util.scad>
-use <text.scad>
 use <transforms.scad>
 
 function polygon_vertex_radial_dir(pts, i) =

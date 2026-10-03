@@ -10,11 +10,9 @@ include <../parameters.scad>
 
 use <../core/pcb_grid.scad>
 use <../lib/functions.scad>
-use <../lib/holes.scad>
 use <../lib/placement.scad>
 use <../lib/plist.scad>
 use <../lib/shapes2d.scad>
-use <../lib/shapes3d.scad>
 use <../lib/slots.scad>
 use <../lib/transforms.scad>
 use <hat/ai_hat.scad>
@@ -36,7 +34,8 @@ rpi_camera_ribbon_slot_size = [rpi_csi_size[1], 1.6];
 rpi_camera_ribbon_slot_gap  = 1.4;
 rpi_camera_ribbon_slot_rows = 3;
 
-rpi_plugged_usb_a           = ["left", [1], "right", []];
+rpi_plugged_usb_a           = ["left", [1],
+                               "right", []];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -108,8 +107,8 @@ function rpi_5_mount_bounds(orientation="wlh",
        sign = rotate_z_180 ? -1 : 1,
        centers = [for (x = [0, bolt_spacing[0]], y = [0, bolt_spacing[1]])
            let (p = orientation_matrix(orientation)
-                    * [bolt_offset + x - reference[0] / 2,
-                       bolt_offset + y - reference[1] / 2, 0, 1])
+                * [bolt_offset + x - reference[0] / 2,
+                   bolt_offset + y - reference[1] / 2, 0, 1])
              [sign * p[0] + shift[0], sign * p[1] + shift[1]]],
        r = mount_d / 2 + pad)
   [[min([for (p = centers) p[0]]) - r,

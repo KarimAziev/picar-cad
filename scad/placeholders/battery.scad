@@ -9,7 +9,6 @@ include <../colors.scad>
 include <../parameters.scad>
 
 use <../lib/functions.scad>
-use <../lib/text.scad>
 
 module battery(d=battery_dia,
                h=battery_length,

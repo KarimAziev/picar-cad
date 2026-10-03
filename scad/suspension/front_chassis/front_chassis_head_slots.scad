@@ -14,7 +14,6 @@ include <../../rc_params.scad>
 use <../../head/head_neck.scad>
 use <../../lib/functions.scad>
 use <../../lib/placement.scad>
-use <../../lib/shapes3d.scad>
 use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
 use <../../lib/trapezoids.scad>

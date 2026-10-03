@@ -6,7 +6,6 @@
   */
 
 use <../../../lib/functions.scad>
-use <../../../lib/shapes3d.scad>
 use <../../../lib/transforms.scad>
 use <../../suspension_arm_pin.scad>
 

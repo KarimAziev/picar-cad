@@ -29,8 +29,6 @@ include <../colors.scad>
 include <../simple_robot/wheel_parameters.scad>
 
 use <../lib/functions.scad>
-use <../lib/holes.scad>
-use <../lib/l_bracket.scad>
 use <../lib/shapes2d.scad>
 use <../lib/shapes3d.scad>
 use <../lib/slots.scad>

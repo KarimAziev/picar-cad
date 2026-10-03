@@ -10,24 +10,15 @@ include <../../parameters.scad>
 include <../../rc_params.scad>
 
 use <../../lib/functions.scad>
-use <../../lib/l_bracket.scad>
-use <../../lib/shapes2d.scad>
-use <../../lib/shapes3d.scad>
-use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
-use <../../placeholders/bolt.scad>
 use <../../placeholders/dservo.scad>
-use <../../placeholders/nut.scad>
-use <../../placeholders/tie_rod_end.scad>
-use <../../placeholders/tie_rod_shaft.scad>
-use <../bellcrank/bellcrank_drive.scad>
 use <util.scad>
 
 function steering_servo_encoder_bracket_bend_reach(plist=steering_encoder_plist,
-                                                    magnet_h=steering_magnet_h,
-                                                    arm_base_h=steering_servo_arm_base_h,
-                                                    side_thickness=steering_encoder_side_thickness,
-                                                    magnet_distance=steering_encoder_magnet_distance) =
+                                                   magnet_h=steering_magnet_h,
+                                                   arm_base_h=steering_servo_arm_base_h,
+                                                   side_thickness=steering_encoder_side_thickness,
+                                                   magnet_distance=steering_encoder_magnet_distance) =
   !plist
   ? 0
   : dsservo_output_attachment_height()
@@ -38,19 +29,19 @@ function steering_servo_encoder_bracket_bend_reach(plist=steering_encoder_plist,
                                        magnet_distance=magnet_distance);
 
 function steering_servo_encoder_chassis_reach(plist=steering_encoder_plist,
-                                               magnet_h=steering_magnet_h,
-                                               arm_base_h=steering_servo_arm_base_h,
-                                               side_thickness=steering_encoder_side_thickness,
-                                               magnet_distance=steering_encoder_magnet_distance,
-                                               bottom_pan_bolt_d=steering_encoder_bottom_pan_bolt_d,
-                                               bottom_pan_bolt_pad=steering_encoder_bottom_pan_bolt_pad) =
+                                              magnet_h=steering_magnet_h,
+                                              arm_base_h=steering_servo_arm_base_h,
+                                              side_thickness=steering_encoder_side_thickness,
+                                              magnet_distance=steering_encoder_magnet_distance,
+                                              bottom_pan_bolt_d=steering_encoder_bottom_pan_bolt_d,
+                                              bottom_pan_bolt_pad=steering_encoder_bottom_pan_bolt_pad) =
   !plist
   ? 0
   : steering_servo_encoder_bracket_bend_reach(plist=plist,
-                                               magnet_h=magnet_h,
-                                               arm_base_h=arm_base_h,
-                                               side_thickness=side_thickness,
-                                               magnet_distance=magnet_distance)
+                                              magnet_h=magnet_h,
+                                              arm_base_h=arm_base_h,
+                                              side_thickness=side_thickness,
+                                              magnet_distance=magnet_distance)
   + bottom_pan_bolt_pad
   + bottom_pan_bolt_d;
 
@@ -62,10 +53,10 @@ module steering_servo_encoder_bracket_position(plist=steering_encoder_plist,
                                                target_h=dsservo_size[1] / 2,
                                                center_y=false) {
   bend_x = steering_servo_encoder_bracket_bend_reach(plist=plist,
-                                                      magnet_h=magnet_h,
-                                                      arm_base_h=arm_base_h,
-                                                      side_thickness=side_thickness,
-                                                      magnet_distance=magnet_distance);
+                                                     magnet_h=magnet_h,
+                                                     arm_base_h=arm_base_h,
+                                                     side_thickness=side_thickness,
+                                                     magnet_distance=magnet_distance);
   output_shaft_y = -dsservo_size[0] / 2 + dsservo_gearbox_d1 / 2;
 
   maybe_translate([0, center_y ? 0 : -dsservo_flange_w / 2, 0]) {

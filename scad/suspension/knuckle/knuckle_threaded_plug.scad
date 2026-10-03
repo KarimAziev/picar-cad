@@ -8,7 +8,6 @@ include <../../colors.scad>
 include <../../rc_params.scad>
 
 use <../../lib/threading/threaded_plug_hex_socket.scad>
-use <../../lib/threading/threads.scad>
 
 module knuckle_threaded_plug() {
   threaded_plug_hex_socket(d=knuckle_threaded_plug_d,

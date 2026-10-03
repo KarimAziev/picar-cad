@@ -7,7 +7,6 @@
 include <../rc_params.scad>
 
 use <functions.scad>
-use <placement.scad>
 use <plist.scad>
 use <shapes3d.scad>
 use <transforms.scad>
@@ -403,13 +402,13 @@ function normalize_texts(texts = [],
              (is_list(v) && !plist_is(v)) ? concat(["text"], v) : v],
        gap = with_default(gap, 0),
        default_plist = plist_merge(["font", default_font,
-                                    "height",  default_height,
-                                    "size",  default_size,
-                                    "spacing",  default_spacing,
-                                    "halign",  default_halign,
-                                    "valign",  default_valign,
-                                    "rotation",  default_rotation,
-                                    "translation",  default_translation,
+                                    "height", default_height,
+                                    "size", default_size,
+                                    "spacing", default_spacing,
+                                    "halign", default_halign,
+                                    "valign", default_valign,
+                                    "rotation", default_rotation,
+                                    "translation", default_translation,
                                     "color", default_color],
                                    with_default(plist, [])),
        text_strings = [for (v = texts) let (txt = is_string(v) || is_num(v)

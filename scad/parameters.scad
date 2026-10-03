@@ -12,7 +12,6 @@ include <colors.scad>
 
 use <lib/functions.scad>
 use <lib/plist.scad>
-use <placeholders/battery_holder/util.scad>
 
 // Shared chassis defaults for suspension, panel mounts and hardware.
 chassis_thickness                                    = 6.0; // [2.0:10.0]
@@ -250,7 +249,7 @@ fuse_panel_plist_specs                               = concat(repeat(plist_merge
                                                                                  ["gap_after", 2,
                                                                                   "cap_to_bottom", true,
                                                                                   "wiring", plist_put("cut_len", 0,
-                                                                                    plist_get("wiring", atm_fuse_default_plist))]),
+                                                                                                      plist_get("wiring", atm_fuse_default_plist))]),
                                                                      3));
 
 panel_stack_orientation                              = "wlh"; // wlh | lwh

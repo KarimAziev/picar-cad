@@ -18,8 +18,6 @@ include <../../rc_params.scad>
 
 use <../../lib/threading/thread_funcs.scad>
 use <../../lib/threading/threads.scad>
-use <../../lib/transforms.scad>
-use <../../placeholders/bolt.scad>
 
 // The central cylindrical hub/housing that the bellcrank rotates about
 module bellcrank_post(color=metallic_silver_1,

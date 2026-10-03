@@ -11,7 +11,6 @@ use <../lib/functions.scad>
 use <../lib/placement.scad>
 use <../lib/plist.scad>
 use <../lib/shapes2d.scad>
-use <../lib/shapes3d.scad>
 use <../lib/slots.scad>
 use <../lib/text.scad>
 use <../lib/transforms.scad>
@@ -42,7 +41,8 @@ function text_to_plist(txt_or_plist) = is_string(txt_or_plist)
 
 function _get_text_plist(spec,
                          type,
-                         defaults=["size", 1, "valign", "center"]) =
+                         defaults=["size", 1,
+                                   "valign", "center"]) =
   let (value = spec && plist_get(type, spec)
        ? plist_merge(defaults,
                      text_to_plist(is_string(plist_get(type, spec)) ?
@@ -202,7 +202,8 @@ module _pads(plist, pcb_w, pcb_l, h=0.1) {
   is_cols = in_list(side, ["top", "bottom"]);
   sgn = in_list(side, ["bottom", "left"]) ? -1 : 1;
 
-  assert(in_list(side, ["top", "left", "right", "bottom"]),
+  assert(in_list(side, ["top", "left",
+                        "right", "bottom"]),
          "Pads side must be one of: 'top', 'left', 'right', 'bottom'")
 
     translate([is_cols ? 0 : ((sgn * ((pcb_w - pad_l) / 2)) - sgn * padding),
@@ -226,7 +227,8 @@ module _pads(plist, pcb_w, pcb_l, h=0.1) {
   }
 }
 
-module _text_item(spec, pad_w, pad_l, defaults=["size", 1, "valign", "center"]) {
+module _text_item(spec, pad_w, pad_l, defaults=["size", 1,
+                                                "valign", "center"]) {
   for (type = ["before", "after", "bottom", "top", "on"]) {
     let (pl = _get_text_plist(spec=spec, type=type, defaults=defaults)) {
       if (pl) {
@@ -255,7 +257,8 @@ module _interface_pads(plist, pcb_w, pcb_l, h=0.1) {
     _text_item(spec=texts[$i],
                pad_w=plist_get("w", plist),
                pad_l=plist_get("l", plist),
-               defaults=plist_get("text_props", plist, ["size", 1, "valign", "top"]));
+               defaults=plist_get("text_props", plist, ["size", 1,
+                                                        "valign", "top"]));
     maybe_color(pads_color) {
       linear_extrude(height=h, center=false) {
         _pad_rect_2d(plist);
@@ -273,7 +276,8 @@ module _capacitors(plist, pcb_w, pcb_l) {
   pad_l = size[1];
 
   merged_pl = plist_merge(plist_remove_by_keys(["props", "texts"], plist),
-                          ["w", pad_w, "l", pad_l]);
+                          ["w", pad_w,
+                           "l", pad_l]);
   _pads(merged_pl, pcb_w=pcb_w, pcb_l=pcb_l) {
     let (txt = texts[$i]) {
       _text_item(spec=txt, pad_w=pad_w, pad_l=pad_l);
