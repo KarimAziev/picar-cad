@@ -1766,11 +1766,32 @@ servo_horn_screws_distance                           = 2.84;
 // This is the number of screw holes on each arm.
 servo_horn_holes_n                                   = 2;
 
-perf_board_default_plist                             = ["size", [30, 70.0, 1.6],
-                                                        "slot_size", [26.0, 65.0],
-                                                        "cols", 10,
-                                                        "rows", 25,
-                                                        "bus_pad_cols", 8];
+// A bare PCB needs only size and bolt_spacing. Rows, cols and bus_pad_cols
+// are calculated from the available pad area when omitted (see perfboard_props).
+// Mount consumers receive their hardware and clearance defaults through this plist.
+perfboard_default_plist                              = ["size", [20, 80, 1.6],
+                                                        "bolt_spacing", [16, 76],
+                                                        // "rows", 28,        // optional calculated-count override
+                                                        // "cols", 6,         // optional calculated-count override
+                                                        // "bus_pad_cols", 4, // optional calculated-count override
+                                                        "bolt_d", m2_hole_dia - 0.1,
+                                                        "corner_r", 1,
+                                                        "pad_d", 1.9,
+                                                        "perf_grid_d", 1,
+                                                        "spacing", 0.54,
+                                                        "bus_pad_rx", 1.9,
+                                                        "bus_pad_ry", 1,
+                                                        "bus_pad_offset", 0.8,
+                                                        "bus_pad_spacing", 0.8,
+                                                        "board_color", "green",
+                                                        "pin_color", "silver",
+                                                        "bus_pad_color", "silver",
+                                                        "standoff_h", 2,
+                                                        "wire_d", 0,
+                                                        "component_h", 0,
+                                                        "slot_bore_d", m2_round_head_dia + 0.1,
+                                                        "slot_bore_sink", false,
+                                                        "slot_bore_h", 2];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Ultrasonic placeholder
@@ -1920,10 +1941,8 @@ wago_total_w        = 36.0;
 // Keep the converter input corridor free for the ring terminal and service hole.
 rear_equipment_mixed = [["kind", "step_down",
                          "zone", "auto",
-                         "rotation", -90],
-                        ["kind", "voltmeter",
-                         "zone", "auto",
-                         "rotation", 90]];
+                         "rotation", -90]];
+
 rear_equipment_meters = [["kind", "voltmeter",
                           "zone", "auto",
                           "rotation", 90,

@@ -43,9 +43,10 @@ use <{ROOT}/scad/components/deck_component.scad>
 
         for kind in ("voltmeter", "step_down", "perf_board"):
             log = render(f'''
-p=deck_component_props("{kind}");
+component="{kind}"=="perf_board" ? perfboard_default_plist : [];
+p=deck_component_props("{kind}",component);
 echo(size=plist_get("size",p));
-deck_component("{kind}");
+deck_component("{kind}",component);
 ''')
             size = ast.literal_eval(echo_value(log, "size"))
             actual = bounds(vertices(mesh))

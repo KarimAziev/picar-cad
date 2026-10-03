@@ -12,7 +12,7 @@ use <../lib/functions.scad>
 use <../lib/plist.scad>
 use <../placeholders/atm_fuse_holder/atm_fuse_holder.scad>
 use <../placeholders/lidar.scad>
-use <../placeholders/perf_board.scad>
+use <../placeholders/perfboard.scad>
 use <../placeholders/step-down-voltage-d24vxf5.scad>
 use <../placeholders/toggle_switch.scad>
 use <../placeholders/voltmeter.scad>
@@ -110,12 +110,13 @@ module slot_placeholders_assembly(plist,
       }
     }
   } else if (show_perf_board && placeholder == "perf_board") {
-    perf_bord_from_plist(plist,
-                         bolt_visible_h=bolt_visible_h,
-                         stand_up=true,
-                         show_bolt=show_bolt,
-                         show_standoff=show_standoff,
-                         show_nut=show_nut);
+    perfboard(plist,
+               standoff_h=plist_get("standoff_h", plist),
+               bolt_visible_h=bolt_visible_h,
+               stand_up=true,
+               show_bolt=show_bolt,
+               show_standoff=show_standoff,
+               show_nut=show_nut);
   }
 }
 

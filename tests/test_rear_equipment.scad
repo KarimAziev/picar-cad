@@ -58,11 +58,12 @@ for (specs = [rear_equipment_mixed, rear_equipment_meters,
  }
 // Hardware modifications flow into the layout; taller populated boards reserve Z.
 custom = deck_component_props("perf_board",
-                              ["size", [30, 50, 1.6],
-                               "slot_size", [26, 46],
-                               "rows", 16,
-                               "cols", 10,
-                               "component_h", 12]);
+                              plist_merge(perfboard_default_plist,
+                                ["size", [30, 50, 1.6],
+                                 "bolt_spacing", [26, 46],
+                                 "rows", 16,
+                                 "cols", 10,
+                                 "component_h", 12]));
 assert(plist_get("size", custom)[0] == 30);
 assert(plist_get("size", custom)[1] == 50);
 assert(plist_get("size", custom)[2] > 18);

@@ -125,6 +125,75 @@ difference() {
   }
 }
 }''', empty=True)
+        # The perfboard uses only its upper row; recesses have cylindrical walls.
+        render('''board=lid_perfboard_props(plist_get("perfboard",spec),p);
+lid_perfboard(board,slot_mode=true);''')
+        assert connected_components(mesh) == 2
+        render('''board=lid_perfboard_props(plist_get("perfboard",spec),p);
+xy=plist_get("pos",board); outer=plist_get("outer",board);
+t=plist_get("parent_t",board);
+component=plist_get("component",board);
+r=(plist_get("slot_bore_d",component)+plist_get("bolt_d",component))/4;
+bh=plist_get("slot_bore_h",component);
+difference() {
+  for(h=plist_get("holes",board), depth=[0.2,bh-0.2]) {
+    translate([xy[0]-h[1]+r,outer+t-depth,xy[1]+h[0]]) {
+      cube([0.04,0.04,0.04],center=true);
+    }
+  }
+  lid_perfboard(board,slot_mode=true);
+}''', empty=True)
+        # Material around each selected hole is continuous through the skirt.
+        render('''board=lid_perfboard_props(plist_get("perfboard",spec),p);
+intersection() {
+  lid_perfboard(board,reserve_mode=true);
+  multi_lipo_pack_lid(pl);
+}''')
+        assert connected_components(mesh) == 2
+        render('''board=lid_perfboard_props(plist_get("perfboard",spec),p);
+xy=plist_get("pos",board); outer=plist_get("outer",board);
+t=plist_get("parent_t",board);
+r=plist_get("land_r",board)-0.15;
+difference() {
+  for(h=plist_get("holes",board)) {
+    translate([xy[0]-h[1],outer+t/2,xy[1]+h[0]]) {
+      cube([2*r,t-0.1,2*r],center=true);
+    }
+  }
+  union() {
+    multi_lipo_pack_lid(pl);
+    lid_perfboard(board,slot_mode=true);
+  }
+}''', empty=True)
+        print("PASS perfboard has two cylindrical counterbores and solid mounting lands", flush=True)
+
+        # Every vent intersecting a mounting land is filled across its whole
+        # width and height; a partial fill would leave a tab during printing.
+        render('''board=lid_perfboard_props(plist_get("perfboard",spec),p);
+rails=plist_get("rail_props",p);
+size=plist_get("canonical_size",p);
+z=plist_get("h",rails)+plist_get("clearance",rails)+plist_get("side_t",p);
+v=multi_lipo_pack_vent_props(plist_get("vents",spec),size[0],plist_get("roof_z",p)-z);
+start=plist_get("start",v); slot=plist_get("slot_size",v); gap=plist_get("gap",v);
+pos=plist_get("pos",board); r=plist_get("land_r",board);
+for(col=[0:plist_get("count",v)[0]-1]) {
+  x=start[0]+col*(slot[0]+gap[0])-size[0]/2;
+  intersects=len([for(h=plist_get("holes",board))
+    if(x<pos[0]-h[1]+r && x+slot[0]>pos[0]-h[1]-r) 1])>0;
+  if(intersects) {
+    difference() {
+      translate([x+0.1,plist_get("outer",board)+0.1,z+start[1]+0.1]) {
+        cube([slot[0]-0.2,plist_get("parent_t",board)-0.2,slot[1]-0.2]);
+      }
+      union() {
+        multi_lipo_pack_lid(pl);
+        lid_perfboard(board,slot_mode=true);
+      }
+    }
+  }
+}''', empty=True)
+        print("PASS complete vent openings are omitted at perfboard mounts", flush=True)
+
         # No fuse pads remain below the roof; the holder touches its underside.
         render('''intersection() {
   multi_lipo_pack_lid(pl);

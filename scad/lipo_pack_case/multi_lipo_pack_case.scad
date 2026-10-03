@@ -415,6 +415,8 @@ function multi_lipo_pack_vent_props(wall, span, wall_h) =
   `vent`: Resolved properties from `multi_lipo_pack_vent_props()`.
   `depth`: Positive cutter depth through the wall or lid skirt.
   `axis`: Direction of the vent rows, "x" or "y" (default "x").
+  `exclude`: Rectangles [[along_min, z_min], [along_max, z_max]] in the
+  grid frame. A vent touching any rectangle is omitted as a complete opening.
 
   **Notes:**
 
@@ -422,19 +424,19 @@ function multi_lipo_pack_vent_props(wall, span, wall_h) =
   row axis and Z. Cutter depth extends positively on the other horizontal
   axis. The caller supplies any overshoot needed for through cuts.
  */
-module multi_lipo_pack_vents(vent, depth, axis="x") {
+module multi_lipo_pack_vents(vent, depth, axis="x", exclude=[]) {
   assert(in_list(axis, ["x", "y"]) && is_num(depth) && depth > 0,
          "Vent cutters require axis x/y and positive depth");
   translate([0, axis == "x" ? depth : 0, 0]) {
     rotate([90, 0, axis == "x" ? 0 : 90]) {
       linear_extrude(height=depth) {
-        _multi_lipo_pack_vents_2d(vent);
+        _multi_lipo_pack_vents_2d(vent, exclude);
       }
     }
   }
 }
 
-module _multi_lipo_pack_vents_2d(vent) {
+module _multi_lipo_pack_vents_2d(vent, exclude=[]) {
   if (plist_get("enabled", vent, false)) {
     count = plist_get("count", vent);
     start = plist_get("start", vent);
@@ -442,11 +444,18 @@ module _multi_lipo_pack_vents_2d(vent) {
     slot = plist_get("slot_size", vent);
     if (count[0] > 0 && count[1] > 0) {
       for (col = [0 : count[0] - 1], row = [0 : count[1] - 1]) {
-        translate(start + [col * (slot[0] + gap[0]), row * (slot[1] + gap[1])]) {
-          rounded_rect(slot,
-                       r=plist_get("corner_r", vent, 0),
-                       fn=40,
-                       anchor=[1, 1, 1]);
+        pos = start + [col * (slot[0] + gap[0]), row * (slot[1] + gap[1])];
+        intersects = len([for (bounds = exclude)
+            if (pos[0] <= bounds[1][0] && pos[0] + slot[0] >= bounds[0][0]
+                && pos[1] <= bounds[1][1] && pos[1] + slot[1] >= bounds[0][1])
+              1]) > 0;
+        if (!intersects) {
+          translate(pos) {
+            rounded_rect(slot,
+                         r=plist_get("corner_r", vent, 0),
+                         fn=40,
+                         anchor=[1, 1, 1]);
+          }
         }
       }
     }

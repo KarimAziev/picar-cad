@@ -13,6 +13,7 @@ use <../lib/functions.scad>
 use <../lib/slots.scad>
 use <../placeholders/bolt.scad>
 use <../placeholders/voltmeter.scad>
+use <../placeholders/perfboard.scad>
 use <../wago/wago_bracket.scad>
 use <../wago/wago_pair.scad>
 use <../wago/wago_mounts.scad>
@@ -477,6 +478,101 @@ module lid_voltmeter(props, slot_mode=false, reserve_mode=false) {
           rotate([-90, -90, 0]) {
             voltmeter_mount(plist_get("component", props),
                             parent_t=depth, slot_mode=slot_mode);
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  lid_perfboard_props
+  ─────────────────────────────────────────────────────────────────────────────
+  Fit a horizontal perfboard to the negative rail skirt without resizing the lid.
+  **Parameters:**
+  - `spec`: Undef or enabled=false disables the board. `component` supplies an
+    explicit perf_board_mount_props plist including bolt_idxes. `pos` is
+    [along, board_center_height]; undef height puts the highest selected hole
+    below the roof with edge_pad material. Along is +X for X rails, -Y for Y.
+    `edge_pad` defaults to 1.25 mm around mounting lands.
+  - `lid`: Resolved lid geometry; height is relative to the channel bottom.
+  **Returns:** Component, mount properties, position, wall depth and hole centers.
+  The board faces -Y for X rails and -X for Y rails. Its local +X edge is up.
+  Selected mounting holes must fit above the rail channel. Standoffs clear the
+  roof overhang by 0.5 mm; the PCB may extend below the channel.
+ */
+function lid_perfboard_props(spec, lid) =
+  is_undef(spec) || !plist_get("enabled", spec, true)
+      ? ["enabled", false]
+      : let (input = plist_get("component", spec),
+             hardware = perf_board_mount_props(input),
+             rails = plist_get("rail_props", lid),
+             axis = plist_get("axis", rails), cross = axis == "x" ? 1 : 0,
+             rail = plist_get("rails", rails)[0],
+             depth = plist_get("locking_depth", rail),
+             body = plist_get("body_size", plist_get("case_props", lid)),
+             outer = plist_get("cross", rail) - body[cross] / 2 - depth / 2,
+             roof = plist_get("canonical_size", lid),
+             pl = plist_merge(input,
+               ["standoff_h", max(plist_get("standoff_h", input),
+                                   roof[cross] / 2 + outer + 0.5)]),
+             p = perf_board_mount_props(pl),
+             holes = plist_get("bolt_positions", p),
+             edge = plist_get("edge_pad", spec, 1.25),
+             radius = plist_get("mount_d", p) / 2 + edge,
+             bottom = plist_get("h", rails) + plist_get("clearance", rails)
+             + plist_get("side_t", lid),
+             top = plist_get("roof_z", lid),
+             requested = plist_get("pos", spec, [0, undef]))
+        assert(len(holes) > 0, "Lid perfboard needs selected mounting holes")
+        let (pos = [requested[0],
+                    with_default(requested[1], top - radius
+                                 - max([for (h = holes) h[0]]))])
+        assert(is_num(pos[0]) && is_num(pos[1]) && edge >= 0,
+               "Lid perfboard pos must contain numeric along/height or undef height")
+        assert(plist_get("wire_d", p) == 0,
+               "Side perfboard wiring routes outside the skirt")
+        assert(len([for (h = holes)
+                       if (pos[1] + h[0] - radius < bottom - 0.000001
+                           || pos[1] + h[0] + radius > top + 0.000001
+                           || abs(pos[0] - h[1]) + radius
+                           > roof[1 - cross] / 2 - plist_get("corner_r", lid)) h]) == 0,
+               "Perfboard mounting lands must fit above the channel and below the roof")
+        assert(abs(pos[0]) + plist_get("size", p)[1] / 2 <= roof[1 - cross] / 2
+               && pos[1] + plist_get("board_size", p)[0] / 2 <= roof[2],
+               "Perfboard must fit along the lid and below roof equipment")
+        plist_merge(spec, ["enabled", true, "component", pl, "props", p,
+                           "pos", pos, "outer", outer, "parent_t", depth,
+                           "axis", axis, "land_r", radius, "holes", holes]);
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  lid_perfboard
+  ─────────────────────────────────────────────────────────────────────────────
+  Render a side perfboard, its selected wall cutters or solid mounting lands.
+  **Parameters:**
+  - `props`: Result of lid_perfboard_props, in the lid center/channel-bottom frame.
+  - `slot_mode`: Emit mounting holes with the component's underside counterbores.
+  - `reserve_mode`: Emit local mounting lands to exclude from skirt ventilation.
+ */
+module lid_perfboard(props, slot_mode=false, reserve_mode=false) {
+  if (plist_get("enabled", props, false)) {
+    pos = plist_get("pos", props);
+    depth = plist_get("parent_t", props);
+    rotate([0, 0, plist_get("axis", props) == "x" ? 0 : -90]) {
+      translate([pos[0], plist_get("outer", props), pos[1]]) {
+        if (reserve_mode) {
+          for (h = plist_get("holes", props)) {
+            translate([-h[1], depth / 2, h[0]]) {
+              cube([2 * plist_get("land_r", props), depth + 0.4,
+                    2 * plist_get("land_r", props)], center=true);
+            }
+          }
+        } else {
+          rotate([90, 0, 0]) {
+            perf_board_mount(plist_get("component", props), parent_t=depth,
+                              orientation="lwh", slot_mode=slot_mode);
           }
         }
       }

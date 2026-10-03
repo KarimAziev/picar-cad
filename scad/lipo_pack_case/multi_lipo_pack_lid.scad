@@ -216,7 +216,8 @@ function multi_lipo_pack_lid_wago_mounts(pl, props) =
 
   `lid.voltmeters` is a list of side-mounted displays; see lid_voltmeter_layout.
   Their mounting and wiring lands are excluded from the skirt vents.
-  The earlier single `lid.voltmeter` plist is used when `voltmeters` is absent.
+  `lid.perfboard` mounts a board on the opposite skirt; see lid_perfboard_props.
+  `lid.voltmeter` supplies one display when `voltmeters` is absent.
   `lid.vents` accepts the same vent properties as a case wall. Vents occupy the
   skirt above the channels; the rail grooves and roof retain solid material.
   In this dedicated `vents` plist, `corner_r` is an alias for `vent_corner_r`;
@@ -243,6 +244,7 @@ module multi_lipo_pack_lid(pl,
   fuse_props = lid_fuse_props(plist_get("fuse", spec), props);
   meters = lid_voltmeter_layout(plist_get("voltmeters", spec,
                                            [plist_get("voltmeter", spec)]), props);
+  perfboard = lid_perfboard_props(plist_get("perfboard", spec), props);
   wago_boxes = [for (m = wagos)
       _wago_bounds(concat(plist_get("pos", m), [0]), wago_mount_size(m))];
   equipment = lid_equipment_layout(plist_get("equipment", spec, []),
@@ -272,6 +274,7 @@ module multi_lipo_pack_lid(pl,
 
   module _mount_slots() {
     translate([body[0] / 2, body[1] / 2, 0]) {
+      lid_perfboard(perfboard, slot_mode=true);
       for (meter = meters) {
         lid_voltmeter(meter, slot_mode=true);
       }
@@ -332,9 +335,20 @@ module multi_lipo_pack_lid(pl,
                                       max(0, roof_z - z));
     along = roof_min[slide_axis];
     cross = plist_get("cross", rail) - depth / 2 - 0.1;
+    perfboard_exclusions = plist_get("enabled", perfboard, false)
+      && rail == plist_get("rails", rails)[0]
+        ? [for (hole = plist_get("holes", perfboard))
+             let (pos = plist_get("pos", perfboard),
+                  r = plist_get("land_r", perfboard),
+                  center = [size[slide_axis] / 2
+                            + (axis == "x" ? 1 : -1) * (pos[0] - hole[1]),
+                            pos[1] + hole[0] - z])
+               [center - [r, r], center + [r, r]]]
+        : [];
     difference() {
       translate([axis == "x" ? along : cross, axis == "x" ? cross : along, z]) {
-        multi_lipo_pack_vents(vent, depth + 0.2, axis=axis);
+        multi_lipo_pack_vents(vent, depth + 0.2, axis=axis,
+                              exclude=perfboard_exclusions);
       }
       translate([body[0] / 2, body[1] / 2, 0]) {
         for (meter = meters) {
@@ -422,6 +436,7 @@ module multi_lipo_pack_lid(pl,
         }
         if (show_equipment) {
           translate([body[0] / 2, body[1] / 2, 0]) {
+            lid_perfboard(perfboard);
             for (meter = meters) {
               lid_voltmeter(meter);
             }

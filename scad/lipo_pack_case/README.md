@@ -467,3 +467,42 @@ points. `wiring.bend_trim` controls corner smoothing (default twice `d`).
 overshoot, and `wire_path(mode="none")` renders the same sampled centerline
 used for the length report. The rounding value is not a specified minimum bend
 radius for the actual cable.
+
+## Side perfboard
+
+`lid.perfboard` attaches a PCB to the skirt opposite the voltmeters. The shared
+preset in `rc_params.scad` supplies `perfboard_default_plist` with
+`bolt_idxes=[[1,0],[1,1]]`: the two holes on the PCB's local +X edge, which faces
+up in this assembly. Both holes have cylindrical M2 counterbores on the inside
+of the skirt. A vent opening that intersects either mounting area is omitted
+in full, leaving continuous skirt material around the mount for roof-down printing.
+
+```scad
+["perfboard", ["component", plist_merge(perfboard_default_plist,
+                                      ["bolt_idxes", [[1, 0], [1, 1]]]),
+               "edge_pad", 1.25,
+               "pos", [0, undef]]]
+```
+
+`pos` is `[along, board_center_height]`, relative to the lid center and channel
+bottom. An undefined height places the selected hole row below the roof with
+the specified edge margin. Standoff height is derived from the skirt face and
+roof overhang. This component does not contribute to case dimensions, lid
+footprint or headroom. Mounting lands that cannot fit produce an assertion.
+Use `enabled=false` or omit `lid.perfboard` to omit its hardware and holes.
+Standalone and rear-chassis lids share this configuration.
+
+The `perfboard()` placeholder in `scad/placeholders/perfboard.scad` requires only:
+
+```scad
+["size", [20, 80, 1.6], "bolt_spacing", [16, 76]]
+```
+
+`rows`, `cols` and `bus_pad_cols` are calculated from the available pad area;
+this example yields 28 rows, 6 columns and 4 bus pads at each end. Explicit
+counts override the calculation; zero hides the corresponding pads. Mount
+consumers additionally supply standoff, clearance and recess properties from
+`perfboard_default_plist`. `perf_board_mount_props(pl)` requires that explicit
+mounting plist, and `perf_board_mount(pl, parent_t)` also requires the actual
+parent thickness. Rear deck entries with `kind="perf_board"` merge their
+`component` overrides into the parameter preset before calling these interfaces.

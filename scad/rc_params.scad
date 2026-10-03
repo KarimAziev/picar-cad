@@ -282,7 +282,7 @@ front_chassis_joint_rail_corner_r                  = 0.4;
 front_chassis_joint_bolt_d                         = 3;
 front_chassis_joint_bolt_pad                       = 2;
 // Keep the wide rail clear of tangent bolt cutters, including binary STL export.
-front_chassis_joint_rail_bolt_clearance             = 0.05;
+front_chassis_joint_rail_bolt_clearance            = 0.05;
 front_chassis_joint_bolt_spacing                   = 42.8;
 front_chassis_joint_use_dovetail_rib               = true;
 
@@ -1192,11 +1192,11 @@ upper_steering_panel_bulkhead_bore_h               = 1;
 upper_steering_panel_bulkhead_spacing              = 21;
 
 // Sculpted bridge: stationary contact feet and clearance above rotating parts.
-upper_steering_plate_thickness                    = 3;
-upper_steering_plate_running_clearance            = 0.6;
-upper_steering_plate_pad_d                        = 11;
-upper_steering_plate_web_w                        = 6;
-upper_steering_plate_window_r                     = 1.2;
+upper_steering_plate_thickness                     = 3;
+upper_steering_plate_running_clearance             = 0.6;
+upper_steering_plate_pad_d                         = 11;
+upper_steering_plate_web_w                         = 6;
+upper_steering_plate_window_r                      = 1.2;
 upper_steering_plate_rear_scallop                  = 0.22;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1349,7 +1349,7 @@ lipo_pack_base_pl                                  = ["size", [lipo_pack_width,
 
 lipo_packs                                         = [lipo_pack_base_pl];
 
-power_ring_terminal_plist                         = ["d", 4.33,
+power_ring_terminal_plist                          = ["d", 4.33,
                                                       "od", 6.61,
                                                       "w", 3.35,
                                                       "l", 9.1,
@@ -1448,11 +1448,15 @@ multi_lipo_packs_case                              = ["lipo_packs", lipo_packs,
                                                                        "pos", [0, 2],
                                                                        "clearance", 1,
                                                                        "tie_recess", 1.6],
-                                                              // LiPo display by the Wagos; future RPi display by the switch.
+                                                              "perfboard", ["component",
+                                                                            plist_merge(perfboard_default_plist,
+                                                                              ["bolt_idxes", [[1, 0], [1, 1]]]),
+                                                                            "edge_pad", 1.25,
+                                                                            "pos", [0, undef]],
                                                               "voltmeters", [for (x = [30, -30])
-                                                                  ["component", voltmeter_default_spec,
-                                                                   "edge_pad", 1.25,
-                                                                   "pos", [x, undef]]],
+                                                      ["component", voltmeter_default_spec,
+                                                       "edge_pad", 1.25,
+                                                       "pos", [x, undef]]],
                                                               "adapter", ["t", 4,
                                                                           "bolt_d", 3,
                                                                           "corner_r", 3,
@@ -1467,18 +1471,18 @@ multi_lipo_packs_case                              = ["lipo_packs", lipo_packs,
                                                                         "vent_col_gap", 5,
                                                                         "corner_r", "40%",
                                                                         "vent_pad", 1.5]],
-                                                      "walls", ["front", merge_vent_spec(["t", 2,
+                                                      "walls", ["front", merge_vent_spec(["t", 2.5,
                                                                                           "l", "90%",
                                                                                           "corner_r", "20%"]),
-                                                                "rear", merge_vent_spec(["t", 2,
+                                                                "rear", merge_vent_spec(["t", 2.5,
                                                                                          "l", "90%",
                                                                                          "corner_r", "20%"]),
                                                                 "bottom", ["t", 6.2],
-                                                                "left", merge_vent_spec(["t", 2,
+                                                                "left", merge_vent_spec(["t", 2.5,
                                                                                          "h", "90%"]),
                                                       // One continuous outline avoids lips where wiring cutouts met the band.
                                                       // Keep the rim clear of the case's rounded plan-view corners.
-                                                                "right", ["t", 2,
+                                                                "right", ["t", 2.5,
                                                                           "l", "88%",
                                                                           "edge_r", 0.5,
                                                                           "shape", "custom",
@@ -1502,15 +1506,15 @@ multi_lipo_packs_case                              = ["lipo_packs", lipo_packs,
                                                       "bore_h", front_chassis_bellcrank_bolt_bore_h,];
 
 // Rear harness: holes accept the complete insulated ring terminal end-first.
-rear_power_wiring = ["enabled", true,
-                     "d", 3.8,
-                     "hole_d", 12,
-                     "black_holes", true,
-                     "hole_gap", 3,
-                     "terminal_clearance", 2,
-                     "converter_run", 40,
-                     "under_z", -8,
-                     "ring_terminal", power_ring_terminal_plist];
+rear_power_wiring                                  = ["enabled", true,
+                                                      "d", 3.8,
+                                                      "hole_d", 12,
+                                                      "black_holes", true,
+                                                      "hole_gap", 3,
+                                                      "terminal_clearance", 2,
+                                                      "converter_run", 40,
+                                                      "under_z", -8,
+                                                      "ring_terminal", power_ring_terminal_plist];
 
 multi_power_case_props                             = multi_lipo_pack_props(plist=multi_lipo_packs_case);
 multi_power_case_size                              = plist_get("size",
@@ -1550,15 +1554,15 @@ gearbox_bracket_boss_pocket_h_clearances           = ["front", 0.1,
 // Generic touring wheels: purchased-hardware visualization, not print geometry.
 // mount_z is explicit backspacing; hub details are provisional.
 // ─────────────────────────────────────────────────────────────────────────────
-rc_wheel_plist = ["tire_d", 65,
-                  "width", 26,
-                  "rim_d", 52,
-                  "hex_af", 12,
-                  "mount_z", 15];
-rc_wheel_bearing_gap = 1;
-rc_wheel_hex_h = 5;
+rc_wheel_plist                                     = ["tire_d", 65,
+                                                      "width", 26,
+                                                      "rim_d", 52,
+                                                      "hex_af", 12,
+                                                      "mount_z", 15];
+rc_wheel_bearing_gap                               = 1;
+rc_wheel_hex_h                                     = 5;
 
 // Rear suspension is not yet modeled. Undef matches the front reference pose.
-rc_rear_wheel_preview_track = undef;
-rc_rear_wheel_preview_axis_z = undef;
-rc_rear_wheel_preview_y_offset = 0;
+rc_rear_wheel_preview_track                        = undef;
+rc_rear_wheel_preview_axis_z                       = undef;
+rc_rear_wheel_preview_y_offset                     = 0;

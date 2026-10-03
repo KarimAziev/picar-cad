@@ -6,7 +6,7 @@
   */
 use <../lib/plist.scad>
 use <../lib/transforms.scad>
-use <../placeholders/perf_board.scad>
+use <../placeholders/perfboard.scad>
 use <../placeholders/step-down-voltage-d24vxf5.scad>
 use <../placeholders/voltmeter.scad>
 
@@ -24,6 +24,7 @@ function _deck_component_props(kind, pl=[]) =
   **Parameters:**
   - `kind`: voltmeter | step_down | perf_board.
   - `pl`: Hardware-specific plist, passed unchanged to its mounting interface.
+    Perfboards require the explicit mounting values from perfboard_default_plist.
   **Returns:** Component props including `size`, centered on XY above Z=0.
   Add future types here and in deck_component; placement needs no type branches.
  */

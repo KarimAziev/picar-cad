@@ -4,6 +4,8 @@
   * Author: Karim Aziiev <karim.aziiev@gmail.com>
   * License: GPL-3.0-or-later
   */
+include <../../parameters.scad>
+
 use <../../components/deck_component.scad>
 use <../../lib/functions.scad>
 use <../../lib/plist.scad>
@@ -101,7 +103,9 @@ function _rear_equipment_place(specs,
   i >= len(specs) ? placed :
   let (spec = specs[i],
        kind = plist_get("kind", spec),
-       component = plist_get("component", spec, []),
+       component = kind == "perf_board"
+           ? plist_merge(perfboard_default_plist, plist_get("component", spec, []))
+           : plist_get("component", spec, []),
        props = deck_component_props(kind, component),
        base = plist_get("size", props),
        rotation = plist_get("rotation", spec, 0),

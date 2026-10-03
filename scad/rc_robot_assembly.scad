@@ -112,6 +112,7 @@ show_drive_shaft_seeve                      = true;
 show_motor_encoder_bracket                  = true;
 show_motor_encoder                          = true;
 show_motor_encoder_magnet                   = true;
+
 show_rear_equipment                         = true;
 show_rear_suspension_mount                  = true;
 show_rear_power_wiring                      = true;
