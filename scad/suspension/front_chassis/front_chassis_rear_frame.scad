@@ -32,12 +32,35 @@ function front_chassis_pts(width=front_chassis_rear_frame_w) =
    [half_of_main_w, front_chassis_y_joint_2_end],
    [0, front_chassis_y_joint_2_end]];
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_wiring_slot_pos
+  ─────────────────────────────────────────────────────────────────────────────
+  Locate a general wiring passage beside the steering servo.
+  **Parameters:**
+  - `d`: Passage diameter in millimeters.
+  **Returns:** Center `[x, y, 0]` on the chassis underside.
+  With a crosswise Pi, the passage clears the servo flange toward +X and
+  its forward edge meets the Pi reference-box midpoint. A lengthwise Pi
+  places the passage behind the servo, beside the ribbon bank.
+ */
+function front_chassis_wiring_slot_pos(d=front_chassis_wiring_slot_d) =
+  assert(d > 0, "Wiring passage diameter must be positive")
+  let (bounds = front_chassis_rpi_bounds())
+  front_rpi_orientation == "lwh"
+  ? [bellcrank_params[0] + d / 2 + front_chassis_wiring_slot_clearance,
+     (bounds[0][1] + bounds[1][1] - d) / 2, 0]
+  : [bellcrank_params[0] - d,
+     min((bounds[0][1] + bounds[1][1] - d) / 2,
+         servo_end_y - d / 2 - front_chassis_wiring_slot_clearance * 2), 0];
+
 module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
                                 color=white_smoke_1,
                                 debug_color=green_2,
                                 debug_font="Gill Sans:style=Bold",
                                 width=front_chassis_rear_frame_w,
-                                show_ribbon_slots=true) {
+                                show_ribbon_slots=true,
+                                show_wiring_slot=true) {
   assert(width >= front_chassis_required_width(),
          "Frame width cannot exclude the front hardware");
   pts = front_chassis_pts(width);
@@ -86,6 +109,15 @@ module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
 
     translate([0, y_front_chassis_rear_frame_joint_1_start, 0]) {
       front_chassis_joint_female(slot_mode=true);
+    }
+
+    if (show_wiring_slot) {
+      eps = front_chassis_joint_boolean_overlap;
+      translate(front_chassis_wiring_slot_pos() - [0, 0, eps]) {
+        cylinder(d=front_chassis_wiring_slot_d,
+                 h=chassis_thickness + eps * 2,
+                 $fn=80);
+      }
     }
 
     front_chassis_rpi(slot_mode=true);

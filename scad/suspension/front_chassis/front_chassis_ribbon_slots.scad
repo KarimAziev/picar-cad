@@ -169,7 +169,7 @@ module front_chassis_ribbon_slots(thickness=chassis_thickness,
                   h=thickness + 2 * eps,
                   center=true,
                   autoscale_step=0,
-                  r=0);
+                  r=front_chassis_ribbon_slot_corner_r);
       }
     }
   }

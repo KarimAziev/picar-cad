@@ -98,8 +98,9 @@ function front_chassis_head_rear_reach() =
   **Parameters:**
   - `thickness`: Frame thickness crossed by every slot.
   - `anchor`: Anchor on the head mounting-pad envelope, matching the horn slots.
-  **Notes:** Defaults preserve the old chassis's three 20 × 3 mm openings and
-  two 3 mm strips. These are functional ribbon-routing features, not vents.
+  **Behavior:** Three rounded 20 × 3 mm openings retain the camera ribbons,
+  with two 3 mm solid strips between them. Corner radius is shared with the
+  Pi-side ribbon bank.
  */
 module front_chassis_head_ribbon_slots(thickness=chassis_thickness,
                                        anchor=[0, 0, 1]) {
@@ -112,7 +113,7 @@ module front_chassis_head_ribbon_slots(thickness=chassis_thickness,
                   h=thickness + eps * 2,
                   autoscale_step=0,
                   center=true,
-                  r=0);
+                  r=front_chassis_ribbon_slot_corner_r);
       }
     }
   }

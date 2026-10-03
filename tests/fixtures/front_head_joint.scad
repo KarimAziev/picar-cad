@@ -68,6 +68,8 @@ if (part == "head") {
       }
     }
   }
+} else if (part == "ribbon_shape") {
+  front_chassis_head_ribbon_slots();
 } else if (part == "ribbon_land") {
   ys = front_chassis_head_ribbon_slot_ys();
   intersection() {

@@ -303,6 +303,7 @@ front_chassis_head_ribbon_slot_rows                = 3;
 front_chassis_head_ribbon_slot_w                   = 20;
 front_chassis_head_ribbon_slot_l                   = 3;
 front_chassis_head_ribbon_slot_gap                 = 3;
+front_chassis_ribbon_slot_corner_r                 = 0.6;
 front_chassis_head_side_slot_w                     = 7.5;
 front_chassis_head_side_slot_l                     = 11.0;
 front_chassis_head_side_slot_rows                  = 2;
@@ -1317,6 +1318,8 @@ front_rpi_mount_pad                                = 2;
 // Shared camera-ribbon threading bank beneath the Pi, turning toward the head.
 front_chassis_ribbon_slot_rows                     = 5;
 front_chassis_ribbon_land                          = 3;
+front_chassis_wiring_slot_d                        = 14;
+front_chassis_wiring_slot_clearance                = 3;
 
 front_chassis_rear_frame_corner_r                  = 4;
 
@@ -1452,9 +1455,8 @@ multi_lipo_packs_case                              = ["lipo_packs", lipo_packs,
                                                                        "pos", [0, 2],
                                                                        "clearance", 1,
                                                                        "tie_recess", 1.6],
-                                                              "perfboard", ["component",
-                                                                            plist_merge(perfboard_default_plist,
-                                                                              ["bolt_idxes", [[1, 0], [1, 1]]]),
+                                                              "perfboard", ["component", plist_merge(perfboard_default_plist,
+                                                                                        ["bolt_idxes", [[1, 0], [1, 1]]]),
                                                                             "edge_pad", 1.25,
                                                                             "pos", [0, undef]],
                                                               "voltmeters", [for (x = [30, -30])

@@ -25,6 +25,12 @@ def main() -> None:
     for part in ("collision", "pin_keepout", "pin_obstruction", "bolt_obstruction",
                  "ribbon_obstruction"):
         checks.assert_no_interference(checks.export(part, empty=True), part)
+    ribbons = checks.export("ribbon_shape")
+    assert ribbons is not None
+    assert len(ribbons.split()) == 3
+    radius = 0.6
+    slot_area = 20 * 3 - 4 * radius**2 + 20 * radius**2 * np.sin(np.pi / 20)
+    np.testing.assert_allclose(ribbons.volume, 3 * slot_area * 6.04, atol=0.01)
     lands = checks.export("ribbon_land")
     assert lands is not None
     assert len(lands.split()) == 2

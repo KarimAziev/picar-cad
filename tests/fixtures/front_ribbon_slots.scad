@@ -57,6 +57,10 @@ if (part == "servo") {
       for (p = poses) {
         slot_prism(p, pad=1.5);
       }
+      translate(front_chassis_wiring_slot_pos() + [0, 0, 0.05]) {
+        cylinder(d=front_chassis_wiring_slot_d + 3,
+                 h=chassis_thickness - 0.1, $fn=80);
+      }
     }
     linear_extrude(height=chassis_thickness) {
       projection(cut=false) {
@@ -67,5 +71,20 @@ if (part == "servo") {
         }
       }
     }
+  }
+}
+
+if (part == "wiring_land") {
+  difference() {
+    translate(front_chassis_wiring_slot_pos() + [0, 0, 0.05]) {
+      cylinder(d=front_chassis_wiring_slot_d + 3,
+               h=chassis_thickness - 0.1, $fn=80);
+    }
+    front_chassis_rear_frame(debug=false, show_wiring_slot=false);
+  }
+} else if (part == "wiring") {
+  difference() {
+    front_chassis_rear_frame(debug=false, show_wiring_slot=false);
+    front_chassis_rear_frame(debug=false);
   }
 }

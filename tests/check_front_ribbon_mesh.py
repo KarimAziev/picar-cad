@@ -25,16 +25,24 @@ def main() -> None:
             assert slots is not None
             count = 5
             assert len(slots.split()) == count, f"{case}: openings must stay separate"
-            np.testing.assert_allclose(slots.volume, count * 20 * 3 * 6, atol=0.01)
+            # Rounded rectangle area, including the 40-sided corner tessellation.
+            radius = 0.6
+            slot_area = 20 * 3 - 4 * radius**2 + 20 * radius**2 * np.sin(np.pi / 20)
+            np.testing.assert_allclose(slots.volume, count * slot_area * 6, atol=0.01)
             np.testing.assert_allclose(baseline.volume - frame.volume,
                                        slots.volume, atol=0.02)
-            for part in ("land", "separation", "servo"):
+            for part in ("land", "separation", "servo", "wiring_land"):
                 checks.assert_no_interference(
                     checks.export(part, name=f"{part}-{case}", empty=True, **params),
                     f"{part}-{case}",
                 )
+            wiring = checks.one_solid("wiring", name=f"wiring-{case}", **params)
+            np.testing.assert_allclose(wiring.extents, [14, 14, 6], atol=1e-5)
+            np.testing.assert_allclose(wiring.volume,
+                                       40 * 7**2 * np.sin(np.pi / 40) * 6,
+                                       atol=0.01)
             print(f"PASS {case}: {count} full 20 x 3 mm passages, 1.5 mm hardware "
-                  "clearance, 3 mm slot separation and unchanged frame bounds")
+                  "clearance, rounded corners, a 14 mm wiring passage and intact frame bounds")
 
 
 if __name__ == "__main__":
