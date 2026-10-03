@@ -15,8 +15,168 @@ use <../lib/slots.scad>
 use <../lib/text.scad>
 use <../lib/transforms.scad>
 use <bolt.scad>
+use <pins.scad>
 use <smd/ceramic_capacitor.scad>
 use <smd/smd_chip.scad>
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  encoder_connector_spec
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Resolve a connector on the PCB face opposite the sensor, extending into -Z.
+
+  **Parameters:**
+  - `plist`: Encoder specification. `show_jst_shr` and `show_pins` independently
+    enable the connectors. `jst_shr` and `pins` hold optional dimensions.
+  - `type`: `"jst_shr"` for the interface pads or `"pins"` for the wire pads.
+
+  **Returns:**
+  A plist containing `enabled`, `size`, `position`, `rotation`, `contacts`,
+  `pitch`, and `tail_l` (header pin reach from the row center, zero for JST).
+  `position` is the center of the body's inner edge at PCB Z=0;
+  the body spans centered X, positive Y and negative Z before `rotation`.
+  Coordinates use the PCB-centered XY reference of `encoder()`.
+
+  The JST-SHR-06V-S envelope is [9.7, 4.83, 3.4] mm with six contacts at 1 mm.
+  Its inner edge follows the interface pads' inner edge. Header contact count
+  and pitch follow the wire pads; its body is centered on their row. `size`
+  overrides JST dimensions; `contacts` and `pitch` derive its width otherwise.
+ */
+function encoder_connector_spec(plist, type) =
+  assert(in_list(type, ["jst_shr", "pins"]), "Unknown encoder connector")
+  let (jst = type == "jst_shr",
+       enabled = plist_get(str("show_", type), plist, false),
+       props = plist_get(type, plist, []),
+       pcb = plist_get("size", plist),
+       pads = plist_get(jst ? "interface_pads" : "wire_pads", plist, []),
+       side = plist_get("side", pads, jst ? "top" : "bottom"),
+       angle = side == "top" ? 0
+       : side == "bottom" ? 180
+       : side == "left" ? 90 : -90,
+       contacts = plist_get("contacts", props,
+                             jst ? 6 : plist_get("cols", pads, 3)),
+       pitch = plist_get("pitch", props,
+                          jst ? 1 : plist_get("w", pads, 1.74)
+                          + plist_get("gap", pads, 0.8)),
+       size = jst
+       ? plist_get("size", props, [(contacts - 1) * pitch + 4.7, 4.83, 3.4])
+       : [contacts * pitch, pitch, plist_get("h", props, 4.56)],
+       edge = pcb[in_list(side, ["top", "bottom"]) ? 1 : 0] / 2,
+       pad_l = plist_get("l", pads, size[1]),
+       inner = edge - plist_get("padding", pads, 0)
+       - (jst ? pad_l : (pad_l + size[1]) / 2),
+       position = [-sin(angle) * inner, cos(angle) * inner, 0])
+  assert(!enabled || (len(pads) > 0 && in_list(side, ["top", "bottom", "left", "right"])),
+         "Enabled encoder connectors require a valid contact-pad row")
+  assert(contacts >= 1 && floor(contacts) == contacts && pitch > 0
+         && min(size) > 0, "Invalid encoder connector dimensions")
+  ["enabled", enabled, "size", size, "position", position,
+   "rotation", [0, 0, angle], "contacts", contacts, "pitch", pitch,
+   "tail_l", jst ? 0 : plist_get("tail_l", props, 6)];
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  encoder_has_connectors
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Return whether either rear-face connector is enabled in encoder `plist`.
+ */
+function encoder_has_connectors(plist) =
+  plist_get("show_jst_shr", plist, false) || plist_get("show_pins", plist, false);
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  encoder_connector_clearance
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Emit rear-face connector cutouts through a PCB support wall.
+
+  **Parameters:**
+  - `plist`: Encoder specification, including `connector_clearance` (0.2 mm).
+  - `depth`: Wall depth behind PCB Z=0; must be positive.
+  - `edge_span`: Optional width and outward reach for full edge trims. Omit for
+    local connector notches that preserve material beside the connectors.
+
+  Uses PCB-centered XY coordinates and -Z depth. Apply the same placement and
+  rotation as `encoder(..., anchor=[0, 0, 1])`. Only enabled connectors cut.
+ */
+module encoder_connector_clearance(plist, depth, edge_span=undef) {
+  clearance = plist_get("connector_clearance", plist, 0.2);
+  assert(depth > 0 && clearance >= 0, "Invalid encoder connector clearance");
+  for (type = ["jst_shr", "pins"]) {
+    spec = encoder_connector_spec(plist, type);
+    size = plist_get("size", spec);
+    w = is_undef(edge_span) ? size[0] + 2 * clearance : edge_span;
+    l = is_undef(edge_span) ? size[1] + 2 * clearance : edge_span;
+    if (plist_get("enabled", spec)) {
+      translate(plist_get("position", spec)) {
+        rotate(plist_get("rotation", spec)) {
+          translate([-w / 2, -clearance, -depth - 0.01]) {
+            cube([w, l, depth + 0.02]);
+          }
+        }
+      }
+    }
+  }
+}
+
+module _encoder_connectors(plist) {
+  for (type = ["jst_shr", "pins"]) {
+    spec = encoder_connector_spec(plist, type);
+    size = plist_get("size", spec);
+    props = plist_get(type, plist, []);
+    contacts = plist_get("contacts", spec);
+    pitch = plist_get("pitch", spec);
+    if (plist_get("enabled", spec)) {
+      translate(plist_get("position", spec)) {
+        rotate(plist_get("rotation", spec)) {
+          if (type == "jst_shr") {
+            color("Ivory") {
+              difference() {
+                translate([-size[0] / 2, 0, -size[2]]) {
+                  cube(size);
+                }
+                translate([-size[0] / 2 + 0.6, 0.6, -size[2] + 0.5]) {
+                  cube([size[0] - 1.2, size[1], size[2] - 1]);
+                }
+              }
+            }
+            color(metallic_silver_1) {
+              for (i = [0 : contacts - 1]) {
+                translate([(i - (contacts - 1) / 2) * pitch - 0.15,
+                           0.5, -size[2] / 2 - 0.15]) {
+                  cube([0.3, size[1] - 1, 0.3]);
+                }
+              }
+            }
+          } else {
+            body_h = plist_get("body_h", props, 2.5);
+            pin_w = plist_get("pin_w", props, 0.64);
+            tail_l = plist_get("tail_l", spec);
+            assert(body_h > 0 && body_h < size[2] && pin_w > 0
+                   && pin_w < pitch && tail_l > size[1] / 2,
+                   "Invalid encoder pin-header dimensions");
+            color("black") {
+              translate([-size[0] / 2, 0, -body_h]) {
+                cube([size[0], size[1], body_h]);
+              }
+            }
+            translate([0, size[1] / 2, 0]) {
+              rotate([0, 0, 180]) {
+                pins_centered(pitch=pitch,
+                              count=contacts,
+                              pin_w=pin_w,
+                              pin_b=size[2] - pin_w / 2,
+                              pin_a=tail_l + pin_w / 2);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
 
 function encoder_total_thickness(plist) =
   let (size = plist_get("size", plist),
@@ -97,6 +257,7 @@ module encoder(plist,
     } else {
       if (show_encoder) {
         union() {
+          _encoder_connectors(plist);
           maybe_color(color=colr) {
             linear_extrude(height=pcb_thickness, center=false) {
               difference() {

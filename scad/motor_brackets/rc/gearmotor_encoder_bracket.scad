@@ -210,12 +210,24 @@ module gearmotor_encoder_bracket(params,
               // Keep the upright back slightly inside the foot. Coincident
               // back faces can collapse to non-manifold edges in float32 STL.
               // The PCB-facing surface stays at pcb_back[1].
-              translate([0, wall_y - 0.01, base_h]) {
-                rotate([90, 0, 0]) {
-                  cuboid([wall_w, wall_h, wall_t - 0.01],
-                         anchor=[0, 1, 1],
-                         r_factor=0.5,
-                         side="top");
+              difference() {
+                translate([0, wall_y - 0.01, base_h]) {
+                  rotate([90, 0, 0]) {
+                    cuboid([wall_w, wall_h, wall_t - 0.01],
+                           anchor=[0, 1, 1],
+                           r_factor=0.5,
+                           side="top");
+                  }
+                }
+                translate(pcb_back) {
+                  rotate([90, 0, 0]) {
+                    rotate([0, 0, pcb_rotation]) {
+                      encoder_connector_clearance(plist_get("encoder", params),
+                                                  depth=wall_t,
+                                                  edge_span=pcb_rotation == 90
+                                                  ? 2 * wall_h : undef);
+                    }
+                  }
                 }
               }
               // Hull the footprint before extrusion to avoid nearly coincident

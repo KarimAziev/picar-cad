@@ -80,11 +80,23 @@ module encoder_l_bracket(plist,
   bolt_d = plist_get("bolt_d", plist);
   pcb_w = size[0];
   pcb_l = size[1];
+  // Extra left width supports directly soldered wiring.
+  wiring_extra_w = encoder_has_connectors(plist) ? 0 : extra_left_w;
 
   diff_val_1 = (target_h - ((pcb_l / 2) + bottom_thickness));
   diff_val_2 = (target_h - ((pcb_w / 2) + bottom_thickness));
 
   should_rotate = diff_val_1 <= 0;
+
+  pins = encoder_connector_spec(plist, "pins");
+  if (!should_rotate && plist_get("enabled", pins)
+      && plist_get("rotation", pins)[2] == 180) {
+    pin_tip_h = target_h + plist_get("position", pins)[1]
+      - plist_get("size", pins)[1] / 2 - plist_get("tail_l", pins);
+    assert(pin_tip_h >= bottom_thickness
+           + plist_get("connector_clearance", plist, 0.2),
+           "Encoder pin tails reach the mounting foot; increase target_h or shorten pins.tail_l");
+  }
 
   if (diff_val_1 < 0 && diff_val_2 < 0) {
     echo("diff_val_1", diff_val_1, "diff_val_2", diff_val_2);
@@ -100,13 +112,34 @@ module encoder_l_bracket(plist,
 
   effective_w = (should_rotate ? l_val : w_val) + top_side_padding;
 
-  left_x = -effective_w / 2 - extra_left_w;
+  left_x = -effective_w / 2 - wiring_extra_w;
+  right_x = effective_w / 2 + extra_right_w;
+  connector_clearance = plist_get("connector_clearance", plist, 0.2);
+  connector_edges = !should_rotate
+    ? []
+    : [for (type = ["jst_shr", "pins"])
+         let (spec = encoder_connector_spec(plist, type),
+              direction = sin(plist_get("rotation", spec)[2] + 90),
+              x = -plist_get("position", spec)[1])
+         if (plist_get("enabled", spec) && abs(direction) > 0.5)
+           [direction, x + direction * connector_clearance]];
+  // Keep untrimmed upright sides just inside the foot to prevent coincident
+  // side faces from producing degenerate edges in exported meshes.
+  upper_edge_inset = encoder_has_connectors(plist) ? 0.01 : 0;
+  upper_left_x = max(concat([left_x + upper_edge_inset],
+                            [for (edge = connector_edges)
+                               if (edge[0] > 0) edge[1]]));
+  upper_right_x = min(concat([right_x - upper_edge_inset],
+                             [for (edge = connector_edges)
+                                if (edge[0] < 0) edge[1]]));
+
+  assert(upper_right_x > upper_left_x,
+         "Encoder connectors leave no width for the upright");
 
   module _encoder(slot_mode=true) {
     translate([0,
                target_h,
                side_thickness]) {
-      echo("should_rotate", should_rotate);
       rotate([0, 0, should_rotate ? 90 : 0]) {
         encoder(plist=plist,
                 parent_thickness=side_thickness,
@@ -123,10 +156,8 @@ module encoder_l_bracket(plist,
         }
         maybe_color(color) {
           difference() {
-            translate([left_x, 0, 0]) {
-              cuboid(size=[effective_w
-                           + extra_left_w
-                           + extra_right_w,
+            translate([upper_left_x, 0, 0]) {
+              cuboid(size=[upper_right_x - upper_left_x,
                            effective_l,
                            side_thickness],
                      anchor=[1, 1],
@@ -136,6 +167,14 @@ module encoder_l_bracket(plist,
             translate([0, 0, -side_thickness]) {
               _encoder(slot_mode=true);
             }
+            translate([0, target_h, side_thickness]) {
+              rotate([0, 0, should_rotate ? 90 : 0]) {
+                encoder_connector_clearance(plist,
+                                            depth=side_thickness,
+                                            edge_span=should_rotate
+                                            ? 2 * effective_l : undef);
+              }
+            }
           }
         }
       }
@@ -144,14 +183,14 @@ module encoder_l_bracket(plist,
   module _lower_pan() {
     maybe_color(color) {
       difference() {
-        translate([left_x, bottom_pan_l / 2, 0]) {
+        translate([left_x, -side_thickness, 0]) {
           cuboid(size=[effective_w
-                       + extra_left_w
+                       + wiring_extra_w
                        + extra_right_w,
-                       bottom_pan_l,
+                       bottom_pan_l + side_thickness,
                        bottom_thickness],
                  r=bottom_corner_r,
-                 anchor=[1, 0],
+                 anchor=[1, 1],
                  side="top");
         }
         encoder_l_bracket_bottom_pan_bolt_children(bottom_pan_bolt_spacing=bottom_pan_bolt_spacing,
