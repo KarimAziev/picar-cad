@@ -7,7 +7,6 @@
 include <../../rc_params.scad>
 
 use <../../lib/plist.scad>
-use <gearbox_bracket.scad>
 use <gearmotor_encoder_bracket.scad>
 use <util.scad>
 

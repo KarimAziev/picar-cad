@@ -1,4 +1,3 @@
-use <../lib/shapes3d.scad>
 
 module stairs_solid(total_size=[100, 50, 40], step_count=5, center=true) {
   length = total_size[0];

@@ -11,11 +11,7 @@ include <../parameters.scad>
 
 use <rear_panel/rear_panel.scad>
 use <../../core/grid.scad>
-use <../../core/slot_layout.scad>
-use <../../core/slot_layout_components.scad>
 use <../../core/slot_placeholder_grid.scad>
-use <../../lib/debug.scad>
-use <../../lib/functions.scad>
 use <../../lib/holes.scad>
 use <../../lib/placement.scad>
 use <../../lib/plist.scad>
@@ -23,22 +19,13 @@ use <../../lib/shapes2d.scad>
 use <../../lib/shapes3d.scad>
 use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
-use <../../lib/trapezoids.scad>
 use <../../motor_brackets/n20_motor_bracket.scad>
 use <../../motor_brackets/standard_motor_bracket.scad>
-use <../../panel_stack/control_panel.scad>
-use <../../panel_stack/fuse_panel.scad>
 use <../../panel_stack/panel_stack.scad>
-use <../../placeholders/battery_holder/battery_holder.scad>
-use <../../placeholders/bolt.scad>
-use <../../placeholders/motors/simple_motor.scad>
 use <../../placeholders/rpi_5.scad>
 use <../../placeholders/ups_hat.scad>
 use <../../power/power_case_assembly.scad>
-use <../../power/power_lid.scad>
-use <../wheels/rear_wheel.scad>
 use <chassis_connector.scad>
-use <upper_chassis.scad>
 
 show_motor                        = false;
 show_motor_brackets               = false;

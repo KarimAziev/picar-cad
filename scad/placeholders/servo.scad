@@ -16,7 +16,6 @@ use <../lib/shapes2d.scad>
 use <../lib/slots.scad>
 use <../lib/text.scad>
 use <../lib/wire.scad>
-use <bolt.scad>
 use <servo_horn.scad>
 
 function servo_gear_total_height(gear_size) =

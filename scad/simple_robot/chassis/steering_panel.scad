@@ -53,21 +53,14 @@ include <../steering_parameters.scad>
 
 use <util.scad>
 use <../../lib/functions.scad>
-use <../../lib/holes.scad>
-use <../../lib/l_bracket.scad>
 use <../../lib/plist.scad>
 use <../../lib/shapes2d.scad>
 use <../../lib/slots.scad>
 use <../../lib/text.scad>
 use <../../lib/transforms.scad>
 use <../../placeholders/bolt.scad>
-use <simple_steering_servo.scad>
-use <bearing_shaft.scad>
-use <knuckle_connector.scad>
 use <rack.scad>
-use <rack_util.scad>
 use <steering_kingpin_post.scad>
-use <steering_pinion.scad>
 use <steering_rail.scad>
 use <steering_servo_mount.scad>
 

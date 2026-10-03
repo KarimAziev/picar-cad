@@ -13,7 +13,6 @@ use <../../lib/transforms.scad>
 use <../../motor_brackets/rc/gearbox_bracket.scad>
 use <../../panel_stack/panel_stack.scad>
 use <../../wago/wago_mounts.scad>
-use <../front_chassis/front_chassis_joint.scad>
 use <../rear_suspension/rear_suspension_slots.scad>
 use <rear_equipment.scad>
 use <rear_payload.scad>

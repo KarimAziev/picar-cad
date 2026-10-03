@@ -8,7 +8,6 @@
 include <../colors.scad>
 include <../parameters.scad>
 
-use <../lib/holes.scad>
 use <../lib/shapes2d.scad>
 use <../lib/transforms.scad>
 use <battery.scad>

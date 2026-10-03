@@ -8,10 +8,7 @@
 include <../../colors.scad>
 include <../wheel_parameters.scad>
 
-use <../../lib/shapes3d.scad>
 use <../../lib/transforms.scad>
-use <../../placeholders/ball_bearing.scad>
-use <../../placeholders/bearing.scad>
 use <../../placeholders/bolt.scad>
 use <tire.scad>
 use <wheel.scad>

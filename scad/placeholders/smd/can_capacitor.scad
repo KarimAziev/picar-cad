@@ -37,8 +37,6 @@ use <../../lib/functions.scad>
 use <../../lib/placement.scad>
 use <../../lib/plist.scad>
 use <../../lib/shapes3d.scad>
-use <../../lib/text.scad>
-use <../../lib/trapezoids.scad>
 
 module can_capacitor(d,
                      h,
@@ -51,8 +49,7 @@ module can_capacitor(d,
   let (chamfer=d / 6,
        cube_y=d - chamfer * 2,
        cyl_cutout_w = d * 0.9,
-       cyl_h = h - base_h,
-       text_len = d - cyl_cutout_w) {
+       cyl_h = h - base_h) {
     union() {
       color(base_color, alpha=1) {
         linear_extrude(height=base_h, center=false) {

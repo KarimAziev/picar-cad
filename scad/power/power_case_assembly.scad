@@ -11,17 +11,13 @@ include <../simple_robot/power_parameters.scad>
 include <../power_lid_parameters.scad>
 
 use <../components/closable_box/sliding_box.scad>
-use <../lib/placement.scad>
-use <../lib/shapes3d.scad>
 use <../lib/slots.scad>
-use <../lib/text.scad>
 use <../lib/transforms.scad>
 use <../placeholders/bolt.scad>
 use <../placeholders/lipo_pack.scad>
 use <../placeholders/standoff.scad>
 use <common.scad>
 use <power_case.scad>
-use <power_case_rail.scad>
 use <power_lid.scad>
 use <power_socket_case.scad>
 

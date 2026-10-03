@@ -11,23 +11,13 @@ include <../parameters.scad>
 
 use <front_panel/front_panel.scad>
 use <front_panel/util.scad>
-use <../../head/head_mount.scad>
 use <../../head/head_neck.scad>
-use <../../lib/debug.scad>
 use <../../lib/functions.scad>
-use <../../lib/holes.scad>
 use <../../lib/placement.scad>
 use <../../lib/shapes2d.scad>
 use <../../lib/shapes3d.scad>
 use <../../lib/slots.scad>
-use <../../lib/text.scad>
 use <../../lib/transforms.scad>
-use <../../lib/trapezoids.scad>
-use <../../placeholders/bolt.scad>
-use <../../placeholders/motors/simple_motor.scad>
-use <../../placeholders/pan_servo.scad>
-use <../../placeholders/ups_hat.scad>
-use <knuckle_shaft.scad>
 use <rack_and_pinion_assembly.scad>
 use <steering_panel.scad>
 use <chassis_connector.scad>

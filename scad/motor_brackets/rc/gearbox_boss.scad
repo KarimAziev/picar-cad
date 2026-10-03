@@ -9,7 +9,6 @@ include <../../rc_params.scad>
 
 use <../../lib/plist.scad>
 use <../../lib/shapes3d.scad>
-use <../../lib/transforms.scad>
 use <util.scad>
 
 /**

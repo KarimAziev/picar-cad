@@ -82,7 +82,6 @@ module n20_motor_bolt_holes_3d(reverse=false,
 }
 
 module n20_motor_bolts_panel() {
-  cutout_depth = cutout_depth(r=n20_can_dia / 2, cutout_w=n20_can_cutout_w);
   h = n20_can_height / 2;
   w = n20_motor_bolts_panel_len;
 

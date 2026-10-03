@@ -20,7 +20,6 @@ include <../../colors.scad>
 include <../steering_parameters.scad>
 
 use <../../lib/transforms.scad>
-use <../../lib/trapezoids.scad>
 use <bearing_shaft.scad>
 use <knuckle_shaft.scad>
 use <tie_rod.scad>

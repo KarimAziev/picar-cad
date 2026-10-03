@@ -116,7 +116,7 @@ function steering_audit_datums() =
        rod_h = max(knuckle_tie_rod_bushing_h, knuckle_tie_rod_eye_od, knuckle_tie_rod_link_od),
        rod_l = knuckle_tie_rod_eye_od + 2 * knuckle_tie_rod_shank_len + knuckle_tie_rod_link_len,
        rod_angles = knuckle_tie_rod_angles,
-       rod_bbox = rotated_bbox([for (i = [0:2]) knuckle_tie_rod_eye_od], rod_angles),
+       rod_bbox = rotated_bbox(repeat(knuckle_tie_rod_eye_od, 3), rod_angles),
        rod_shift = [-rod_bbox[0] / 2, -knuckle_tie_rod_eye_od / 2, 0],
        rod_origin = [arm_x, -knuckle_arm_thickness / 2 - rod_h, rod_z],
        rod_centers = [for (end = [0, 1])

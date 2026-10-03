@@ -8,7 +8,6 @@
 include <../colors.scad>
 include <../simple_robot/power_parameters.scad>
 
-use <../lib/functions.scad>
 use <../lib/placement.scad>
 use <../lib/shapes3d.scad>
 use <../lib/slots.scad>

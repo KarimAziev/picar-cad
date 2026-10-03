@@ -8,9 +8,7 @@
 
 include <../../chassis_parameters.scad>
 
-use <../../../lib/holes.scad>
 use <../../../lib/l_bracket.scad>
-use <../../../lib/shapes2d.scad>
 use <../../../lib/slots.scad>
 use <../../../placeholders/toggle_switch.scad>
 

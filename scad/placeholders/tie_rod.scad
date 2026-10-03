@@ -10,7 +10,6 @@ include <../colors.scad>
 include <../rc_params.scad>
 
 use <../lib/plist.scad>
-use <../lib/text.scad>
 use <bolt.scad>
 use <tie_rod_end.scad>
 use <tie_rod_shaft.scad>

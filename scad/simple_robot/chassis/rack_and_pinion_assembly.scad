@@ -12,17 +12,10 @@
 include <../../colors.scad>
 include <../steering_parameters.scad>
 
-use <../../placeholders/servo.scad>
-use <simple_steering_servo.scad>
 use <ackermann_geometry_triangle.scad>
 use <knuckle.scad>
-use <rack.scad>
-use <rack_connector.scad>
-use <rack_link.scad>
 use <rack_util.scad>
 use <steering_panel.scad>
-use <steering_pinion.scad>
-use <tie_rod.scad>
 
 show_ackermann_triangle = false;
 show_wheels             = false;

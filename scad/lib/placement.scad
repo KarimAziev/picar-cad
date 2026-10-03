@@ -5,8 +5,6 @@
  * License: GPL-3.0-or-later
  */
 use <functions.scad>
-use <holes.scad>
-use <shapes3d.scad>
 use <slots.scad>
 use <transforms.scad>
 

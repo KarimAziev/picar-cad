@@ -10,7 +10,6 @@ include <../../colors.scad>
 include <../../parameters.scad>
 
 use <../../core/pcb_grid.scad>
-use <../../lib/plist.scad>
 use <../../lib/shapes2d.scad>
 use <../../lib/transforms.scad>
 use <../pad_hole.scad>

@@ -9,7 +9,6 @@ include <../../colors.scad>
 include <../../parameters.scad>
 include <../../rc_params.scad>
 
-use <../../lib/functions.scad>
 use <../../lib/transforms.scad>
 use <../../placeholders/dservo.scad>
 use <util.scad>

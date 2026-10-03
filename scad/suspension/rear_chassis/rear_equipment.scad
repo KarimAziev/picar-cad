@@ -166,7 +166,7 @@ function rear_equipment_layout(specs, layout, edge_margin=3, gap=3) =
            let (count = plist_get("count", spec, 1))
              each assert(is_num(count) && count >= 1 && floor(count) == count,
                          "Equipment count must be a positive integer")
-             [for (copy = [1:count]) spec]])
+             repeat(spec, count)])
   _rear_equipment_place(expanded,
                         layout,
                         rear_equipment_zones(layout, edge_margin, gap),

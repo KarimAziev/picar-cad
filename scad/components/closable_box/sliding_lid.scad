@@ -7,13 +7,10 @@
  * License: GPL-3.0-or-later
  */
 use <../../lib/debug.scad>
-use <../../lib/functions.scad>
 use <../../lib/plist.scad>
 use <../../lib/shapes2d.scad>
 use <../../lib/shapes3d.scad>
 use <../../lib/text.scad>
-use <../../lib/transforms.scad>
-use <grid.scad>
 use <rim.scad>
 
 function max_corner_rad(size=[w, l, h],

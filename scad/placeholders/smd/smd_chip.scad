@@ -13,7 +13,6 @@ include <../../colors.scad>
 include <../../parameters.scad>
 
 use <../../lib/functions.scad>
-use <../../lib/l_bracket.scad>
 use <../../lib/plist.scad>
 use <../../lib/shapes2d.scad>
 use <../../lib/text.scad>

@@ -4,7 +4,6 @@ include <../parameters.scad>
 use <../lib/plist.scad>
 use <../lib/functions.scad>
 use <../lib/transforms.scad>
-use <../placeholders/smd/can_capacitor.scad>
 use <grid.scad>
 use <smd_placeholder_renderer.scad>
 use <pcb_placeholder_renderer.scad>

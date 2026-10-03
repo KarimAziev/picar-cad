@@ -9,7 +9,6 @@ include <../colors.scad>
 include <../parameters.scad>
 include <../power_lid_parameters.scad>
 
-use <../lib/holes.scad>
 use <../lib/plist.scad>
 use <../lib/shapes2d.scad>
 use <../lib/shapes3d.scad>

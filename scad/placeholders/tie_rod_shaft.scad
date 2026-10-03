@@ -8,7 +8,6 @@ include <../colors.scad>
 include <../parameters.scad>
 include <../rc_params.scad>
 
-use <../lib/functions.scad>
 use <../lib/text.scad>
 use <bolt.scad>
 

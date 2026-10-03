@@ -14,8 +14,6 @@ use <../../lipo_pack_case/multi_lipo_pack_lid.scad>
 use <../../motor_brackets/rc/util.scad>
 use <../../panel_stack/control_panel.scad>
 use <../../panel_stack/panel_stack.scad>
-use <../../placeholders/lidar.scad>
-use <../../placeholders/standoff.scad>
 use <../../wago/wago_mounts.scad>
 use <../front_chassis/layout_params.scad>
 use <rear_equipment.scad>

@@ -22,7 +22,6 @@
 include <../../colors.scad>
 include <../steering_parameters.scad>
 
-use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
 use <../../placeholders/bolt.scad>
 use <bearing_shaft.scad>

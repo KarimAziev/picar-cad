@@ -17,8 +17,6 @@ use <../../lib/polygon_util.scad>
 use <../../lib/shapes3d.scad>
 use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
-use <../../placeholders/motors/rc/brushed_motor.scad>
-use <../../placeholders/motors/rc/gearbox.scad>
 use <../../placeholders/motors/rc/gearmotor.scad>
 use <driveshaft_magnet_sleeve.scad>
 use <gearbox_boss.scad>

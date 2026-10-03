@@ -7,7 +7,6 @@
 
 include <../simple_robot/power_parameters.scad>
 
-use <../components/closable_box/grid.scad>
 use <../core/grid.scad>
 use <../lib/plist.scad>
 use <../lib/transforms.scad>

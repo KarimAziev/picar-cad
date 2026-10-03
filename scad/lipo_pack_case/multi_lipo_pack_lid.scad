@@ -255,7 +255,6 @@ module multi_lipo_pack_lid(pl,
   rails = plist_get("rail_props", props);
   axis = plist_get("axis", rails);
   slide_axis = axis == "x" ? 0 : 1;
-  cross_axis = 1 - slide_axis;
   mount_z = plist_get("mount_z", props);
   roof_z = plist_get("roof_z", props);
   t = plist_get("t", props);

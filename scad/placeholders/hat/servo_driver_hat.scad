@@ -10,11 +10,7 @@
 include <../../colors.scad>
 include <../../parameters.scad>
 
-use <../../lib/functions.scad>
-use <../../lib/holes.scad>
-use <../../lib/placement.scad>
 use <../../lib/shapes2d.scad>
-use <../../lib/shapes3d.scad>
 use <../../lib/transforms.scad>
 use <../pad_hole.scad>
 use <../pin_header.scad>

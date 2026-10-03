@@ -297,12 +297,9 @@ module polyarm(specs, thickness, w=7, type="cube", debug, debug_hull) {
     for (i=[0:len(specs)-2]) {
       let (spec      = specs[i],
            next_spec = specs[i + 1],
-           t         = plist_get("thickness", spec, with_default(thickness, w)),
-           next_t    = plist_get("thickness", next_spec, with_default(thickness, w)),
            ww        = plist_get("w", spec, w),
            next_w    = plist_get("w", next_spec, w),
            cap_w     = max([ww, next_w, max_w]),
-           cap_t     = max([t, next_t]),
            bbox      = bboxes[i],
            next_bbox = bboxes[i + 1],
            end_y     = bbox[4],

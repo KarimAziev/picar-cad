@@ -8,16 +8,11 @@
 include <../../colors.scad>
 include <../../parameters.scad>
 
-use <../../lib/holes.scad>
 use <../../lib/plist.scad>
-use <../../lib/shapes2d.scad>
-use <../../lib/shapes3d.scad>
-use <../../lib/slots.scad>
 use <../../lib/stairs.scad>
 use <../../lib/transforms.scad>
 use <../../lib/trapezoids.scad>
 use <../../lib/wire.scad>
-use <atm_fuse_holder_cap.scad>
 use <atm_fuse_holder_cap_collar.scad>
 
 module atm_fuse_holder_body(size=[atm_fuse_holder_body_bottom_l,

@@ -25,7 +25,6 @@ include <../../parameters.scad>
 
 use <../../lib/functions.scad>
 use <../../lib/plist.scad>
-use <../../lib/shapes2d.scad>
 use <../../lib/shapes3d.scad>
 use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
@@ -81,7 +80,6 @@ module battery_holder_with_mounting_holes_positions(count,
     }
   } else {
     if (count > 0) {
-      x_size = is_num(bolt_spacing) ? bolt_spacing : bolt_spacing[0];
       translate([-total_w / 2 - single_width / 2, 0, 0]) {
 
         for (i = [0:count - 1]) {

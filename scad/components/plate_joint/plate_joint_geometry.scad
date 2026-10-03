@@ -5,7 +5,6 @@
   */
 
 use <../../lib/plist.scad>
-use <../../lib/shapes3d.scad>
 use <../../lib/transforms.scad>
 use <plate_joint_base.scad>
 use <plate_joint_bolt_holes.scad>

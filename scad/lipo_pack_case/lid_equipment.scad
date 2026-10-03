@@ -10,9 +10,7 @@
 use <../components/button_bracket/button_bracket.scad>
 use <../lib/plist.scad>
 use <../lib/functions.scad>
-use <../lib/shapes3d.scad>
 use <../lib/slots.scad>
-use <../lib/transforms.scad>
 use <../placeholders/bolt.scad>
 use <../placeholders/voltmeter.scad>
 use <../wago/wago_bracket.scad>

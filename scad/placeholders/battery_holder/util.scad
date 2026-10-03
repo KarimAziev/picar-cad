@@ -9,8 +9,6 @@
 include <../../colors.scad>
 include <../../parameters.scad>
 
-use <../../core/grid.scad>
-use <../../lib/functions.scad>
 use <../../lib/plist.scad>
 use <contact.scad>
 
@@ -43,10 +41,10 @@ function battery_holder_solder_tab_full_len(inner_thickness,
        slot_len = tab_contact_slot_pad_len
        + front_rear_thickness
        + solder_len,
-       full_len = length + (slot_len - front_rear_thickness) * 2,
        length =
        _battery_holder_full_len(front_rear_thickness=front_rear_thickness,
                                 battery_len=battery_len),
+       full_len = length + (slot_len - front_rear_thickness) * 2,
        base_width = _battery_holder_full_w(inner_thickness=inner_thickness,
                                            count=count,
                                            battery_dia=battery_dia),

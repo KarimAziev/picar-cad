@@ -4,7 +4,6 @@
   * Standalone plate joint; dimensions are in millimeters.
   */
 
-use <../../lib/shapes3d.scad>
 use <../../lib/slider.scad>
 use <../../lib/transforms.scad>
 

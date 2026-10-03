@@ -7,9 +7,7 @@
 include <../colors.scad>
 include <../parameters.scad>
 
-use <../lib/plist.scad>
 use <../lib/shapes2d.scad>
-use <../lib/shapes3d.scad>
 use <../lib/transforms.scad>
 
 module rpi_rectangle_3d(size, r_factor=0.05, fn=40, center=false) {

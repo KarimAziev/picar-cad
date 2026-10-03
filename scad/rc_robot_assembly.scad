@@ -18,12 +18,10 @@ include <rc_params.scad>
 include <suspension/front_chassis/computed_params.scad>
 
 use <head/head_neck.scad>
-use <lib/functions.scad>
 use <lib/plist.scad>
 use <lib/shapes3d.scad>
 use <lipo_pack_case/multi_lipo_pack_case.scad>
 use <suspension/bellcrank_steering_assembly.scad>
-use <suspension/bellcrank_steering_slots.scad>
 use <suspension/computed.scad>
 use <suspension/front_chassis/front_chassis.scad>
 use <suspension/front_chassis/front_chassis_controls.scad>

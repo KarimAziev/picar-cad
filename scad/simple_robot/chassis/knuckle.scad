@@ -27,11 +27,8 @@ include <../steering_parameters.scad>
 
 use <../../lib/functions.scad>
 use <../../lib/shapes2d.scad>
-use <../../lib/slots.scad>
-use <../../lib/transforms.scad>
 use <../../placeholders/bearing.scad>
 use <../../placeholders/bolt.scad>
-use <bearing_connector.scad>
 use <knuckle_connector.scad>
 use <knuckle_shaft.scad>
 use <tie_rod_shaft.scad>
@@ -142,8 +139,7 @@ module knuckle_bent_shaft_rack_link_arm(knuckle_color="white",
                bore_d = knuckle_shaft_bolt_cbore_dia,
                wall_thickness = (knuckle_shaft_connector_dia
                                  - knuckle_shaft_dia) / 2,
-               bore_h = wall_thickness / 2,
-               fn = 360) {
+               bore_h = wall_thickness / 2) {
 
             translate([offst,
                        0,
@@ -172,8 +168,7 @@ module knuckle_bent_shaft_rack_link_arm(knuckle_color="white",
               let (h = ceil(knuckle_shaft_connector_dia),
                    h_offset = -knuckle_shaft_connector_dia / 2 - h / 2
                    + knuckle_shaft_connector_dia,
-                   d = knuckle_shaft_bolt_dia,
-                   fn = 360) {
+                   d = knuckle_shaft_bolt_dia) {
 
                 translate([offst,
                            -h / 2,
@@ -258,8 +253,7 @@ module knuckle_tie_rod_shaft_arm(border_w=knuckle_border_w,
              bore_d = tie_rod_shaft_knuckle_cbore_dia,
              wall_thickness =
              (tie_rod_shaft_knuckle_arm_dia - tie_rod_shaft_dia) / 2,
-             bore_h = wall_thickness / 2,
-             fn = 360) {
+             bore_h = wall_thickness / 2) {
 
           union() {
             translate([offst,
@@ -296,8 +290,7 @@ module knuckle_tie_rod_shaft_arm(border_w=knuckle_border_w,
           if (show_bolts) {
             let (h = ceil(tie_rod_shaft_knuckle_arm_dia + 1),
                  d = tie_rod_shaft_bolt_dia,
-                 h_offset = -h + tie_rod_shaft_knuckle_arm_dia / 2,
-                 fn = 360) {
+                 h_offset = -h + tie_rod_shaft_knuckle_arm_dia / 2) {
 
               union() {
                 translate([offst,

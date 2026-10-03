@@ -259,7 +259,7 @@ function rounded_polygon_points(points, radii=0, segments=12) =
                  "polygon vertices must contain numeric X/Y coordinates")
           [p[0], p[1]]],
        n = len(pts),
-       rs = is_list(radii) ? radii : [for (p = pts) radii])
+       rs = is_list(radii) ? radii : repeat(radii, n))
   assert(len(rs) == n, "corner radii must match the polygon vertex count")
   let (corners = [for (i = [0 : n - 1])
           let (a = pts[(i + n - 1) % n] - pts[i],

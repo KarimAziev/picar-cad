@@ -7,7 +7,6 @@
 
 include <../../parameters.scad>
 
-use <../../lib/debug.scad>
 use <../../lib/functions.scad>
 use <../../lib/transforms.scad>
 

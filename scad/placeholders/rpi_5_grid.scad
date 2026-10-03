@@ -11,7 +11,6 @@ include <../colors.scad>
 include <../parameters.scad>
 
 use <../lib/plist.scad>
-use <../lib/transforms.scad>
 use <pcb/pcb_button.scad>
 
 // Encode a measured distance without treating distances <= 1 mm as fractions.

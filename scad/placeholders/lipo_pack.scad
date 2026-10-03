@@ -11,7 +11,6 @@ include <../parameters.scad>
 use <../lib/functions.scad>
 use <../lib/placement.scad>
 use <../lib/plist.scad>
-use <../lib/shapes2d.scad>
 use <../lib/shapes3d.scad>
 use <../lib/text.scad>
 use <../lib/transforms.scad>
@@ -330,9 +329,6 @@ module lipo_pack_from_pl(plist, anchor=[0, 1, 1], show_wiring=true) {
   h = size[2];
   front_end_corner_r = plist_get("front_end_corner_r", plist);
   rear_end_corner_r = plist_get("rear_end_corner_r", plist);
-
-  power_lead = plist_get("power_lead", plist, []);
-  balance_lead = plist_get("balance_lead", plist, []);
 
   orientation = plist_get("orientation", plist, "wlh");
 

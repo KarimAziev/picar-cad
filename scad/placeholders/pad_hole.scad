@@ -9,7 +9,6 @@ include <../colors.scad>
 
 use <../lib/functions.scad>
 use <../lib/shapes2d.scad>
-use <../lib/shapes3d.scad>
 use <../lib/transforms.scad>
 
 function pad_hole_total_od(specs, bolt_d) =

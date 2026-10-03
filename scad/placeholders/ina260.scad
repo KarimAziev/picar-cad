@@ -1,9 +1,9 @@
 include <../parameters.scad>
 
 use <../lib/functions.scad>
+use <../lib/placement.scad>
 use <../lib/plist.scad>
 use <../lib/shapes2d.scad>
-use <../lib/shapes3d.scad>
 use <../lib/transforms.scad>
 use <pad_hole.scad>
 use <pin_header.scad>
@@ -403,7 +403,7 @@ module ina260(size=ina260_size,
                            spacing=spacing,
                            valign=txt_valigh,
                            halign=txt_haligh,
-                           font=colr);
+                           font=font);
                     }
                   }
                 }
@@ -432,7 +432,7 @@ module ina260(size=ina260_size,
                            size=size,
                            valign=txt_valigh,
                            halign=txt_haligh,
-                           font=colr);
+                           font=font);
                     }
                   }
                 }
@@ -568,24 +568,6 @@ module ina260_screw_terminal(plist,
                              power_pad_pin_hole_d) {
   plist = with_default(plist, []);
   thickness = plist_get("thickness", plist, ina260_screw_terminal_thickness);
-  isosceles_trapezoid = plist_get("isosceles_trapezoid",
-                                  plist,
-                                  ina260_screw_terminal_isosceles_trapezoid);
-  base_h = plist_get("base_h", plist, ina260_screw_terminal_base_h);
-  top_l = plist_get("top_l", plist, ina260_screw_terminal_top_l);
-  top_h = plist_get("top_h", plist, ina260_screw_terminal_top_h);
-  contacts_n = plist_get("contacts_n", plist, ina260_screw_terminal_contacts_n);
-  contact_w = plist_get("contact_w", plist, ina260_screw_terminal_contact_w);
-  contact_h = plist_get("contact_h", plist, ina260_screw_terminal_contact_h);
-  pitch = plist_get("pitch", plist, ina260_screw_terminal_pitch);
-  colr = plist_get("colr", plist, ina260_screw_terminal_colr);
-  pin_thickness = plist_get("pin_thickness",
-                            plist,
-                            ina260_screw_terminal_pin_thickness);
-  pin_h = plist_get("pin_h", plist, ina260_screw_terminal_pin_h);
-  wall_thickness = plist_get("wall_thickness",
-                             plist,
-                             ina260_screw_terminal_wall_thickness);
   translate([0,
              ysize / 2 - ina260_screw_terminal_thickness / 2
              - power_pad_y_offset + power_pad_pin_hole_d / 2,

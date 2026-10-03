@@ -11,24 +11,10 @@ include <../power_lid_parameters.scad>
 
 use <../core/slot_layout.scad>
 use <../core/slot_layout_components.scad>
-use <../lib/functions.scad>
-use <../lib/holes.scad>
-use <../lib/placement.scad>
-use <../lib/plist.scad>
-use <../lib/shapes2d.scad>
 use <../lib/shapes3d.scad>
-use <../lib/slider.scad>
 use <../lib/slots.scad>
 use <../lib/transforms.scad>
-use <../lib/wire.scad>
-use <../placeholders/atc_ato_blade_fuse_holder.scad>;
-use <../placeholders/bolt.scad>
 use <../placeholders/lidar.scad>
-use <../placeholders/lipo_pack.scad>
-use <../placeholders/step-down-voltage-d24vxf5.scad>
-use <../placeholders/toggle_switch.scad>
-use <../placeholders/voltmeter.scad>
-use <../placeholders/xt90e-m.scad>
 use <power_case_rail.scad>
 
 // All these toggle parameters will show a placeholder only if they are defined

@@ -14,7 +14,6 @@
 include <../colors.scad>
 include <../parameters.scad>
 
-use <../lib/functions.scad>
 use <../lib/plist.scad>
 use <../lib/shapes3d.scad>
 use <../lib/slots.scad>

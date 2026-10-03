@@ -18,9 +18,7 @@ include <../steering_parameters.scad>
 
 use <../../lib/shapes2d.scad>
 use <../../lib/transforms.scad>
-use <../../lib/trapezoids.scad>
 use <../../placeholders/bearing.scad>
-use <knuckle.scad>
 
 module tie_rod(tie_rod_color="white", show_bearing=false) {
   color(tie_rod_color, alpha=1) {

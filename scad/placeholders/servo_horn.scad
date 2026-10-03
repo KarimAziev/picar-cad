@@ -7,7 +7,6 @@
 include <../colors.scad>
 include <../parameters.scad>
 
-use <../lib/plist.scad>
 use <../lib/shapes2d.scad>
 use <../lib/transforms.scad>
 use <../lib/trapezoids.scad>

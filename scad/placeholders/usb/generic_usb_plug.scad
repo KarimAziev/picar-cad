@@ -8,12 +8,10 @@
 include <../../colors.scad>
 include <../../parameters.scad>
 
-use <../../../tests/test_transforms/test_orientation.scad>
 use <../../lib/functions.scad>
 use <../../lib/plist.scad>
 use <../../lib/shapes3d.scad>
 use <../../lib/transforms.scad>
-use <../../lib/wire.scad>
 
 function usb_plug_params(plist) =
   let (plug_shell=plist_get("plug_shell", plist, []),

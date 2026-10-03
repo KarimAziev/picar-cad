@@ -157,7 +157,7 @@ function _multi_lipo_pack_shape_props(wall, length, base_h) =
        debug = plist_get("debug", spec, false),
        round_bottom = plist_get("round_bottom", spec, true),
        radius_specs = plist_get("corner_radii", spec,
-                                [for (p = pts) undef]))
+                                 repeat(undef, len(pts))))
   assert(is_bool(debug) && is_bool(round_bottom),
          "shape debug and round_bottom must be booleans")
   assert(kind != "custom" || is_list(radius_specs) && len(radius_specs) == len(pts),
