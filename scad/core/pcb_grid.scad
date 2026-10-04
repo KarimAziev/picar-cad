@@ -1,12 +1,12 @@
 include <../colors.scad>
 include <../parameters.scad>
 
-use <../lib/plist.scad>
 use <../lib/functions.scad>
+use <../lib/plist.scad>
 use <../lib/transforms.scad>
 use <grid.scad>
-use <smd_placeholder_renderer.scad>
 use <pcb_placeholder_renderer.scad>
+use <smd_placeholder_renderer.scad>
 
 /**
   ─────────────────────────────────────────────────────────────────────────────

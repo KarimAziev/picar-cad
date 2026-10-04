@@ -13,8 +13,8 @@ use <../lib/shapes3d.scad>
 use <../lib/transforms.scad>
 use <../placeholders/bcm.scad>
 use <../placeholders/pcb/board_connectors.scad>
-use <../placeholders/pcb/pci_connector.scad>
 use <../placeholders/pcb/pcb_button.scad>
+use <../placeholders/pcb/pci_connector.scad>
 use <../placeholders/usb/generic_usb_socket.scad>
 use <smd_placeholder_renderer.scad>
 
@@ -51,8 +51,10 @@ function pcb_placeholder_size(plist) =
   : type == "pcb_text"
   ? let (tm = _pcb_text_metrics(plist))
     [tm.size[0], tm.size[1], plist_get("height", plist, 0.1)]
-  : member(type, ["cuboid", "bcm_processor", "ethernet_socket",
-                  "board_edge_socket", "shrouded_connector", "multi_usb_socket"])
+  : member(type,
+           ["cuboid", "bcm_processor",
+            "ethernet_socket", "board_edge_socket",
+            "shrouded_connector", "multi_usb_socket"])
   ? assert(is_list(size) && len(size) == 3
            && len([for (v = size) if (is_num(v) && v > 0) v]) == 3,
            str("PCB component ", type, " requires positive size=[w,l,h]"))
@@ -85,11 +87,11 @@ function pcb_placeholder_size(plist) =
   bounds are normalized before alignment. Legacy `text` plists are unchanged.
  */
 module pcb_placeholder_renderer(plist,
-                                 cell_size,
-                                 align_x=0,
-                                 align_y=0,
-                                 thickness=0,
-                                 spin=0) {
+                                cell_size,
+                                align_x=0,
+                                align_y=0,
+                                thickness=0,
+                                spin=0) {
   type = plist_get("type", plist);
   reference_size = pcb_placeholder_size(plist);
 
@@ -116,19 +118,19 @@ module pcb_placeholder_renderer(plist,
           }
         } else if (type == "bcm_processor") {
           bcm_processor(size=reference_size,
-                         detailed=plist_get("detailed", plist, rpi_model_detailed),
-                         scale_both_sides=plist_get("scale_both_sides", plist, false),
-                         r=plist_get("r", plist, 0.8),
-                         step=plist_get("step", plist, 5),
-                         extra_h=plist_get("extra_h", plist, 1),
-                         txt=plist_get("txt", plist),
-                         txt_color=plist_get("txt_color", plist),
-                         txt_size=plist_get("txt_size", plist),
-                         txt_spacing=plist_get("txt_spacing", plist, 1),
-                         txt_font=plist_get("txt_font", plist),
-                         colr=plist_get("color", plist, metallic_yellow_silver_2),
-                         r_factor=plist_get("r_factor", plist, 0.06),
-                         center=false);
+                        detailed=plist_get("detailed", plist, rpi_model_detailed),
+                        scale_both_sides=plist_get("scale_both_sides", plist, false),
+                        r=plist_get("r", plist, 0.8),
+                        step=plist_get("step", plist, 5),
+                        extra_h=plist_get("extra_h", plist, 1),
+                        txt=plist_get("txt", plist),
+                        txt_color=plist_get("txt_color", plist),
+                        txt_size=plist_get("txt_size", plist),
+                        txt_spacing=plist_get("txt_spacing", plist, 1),
+                        txt_font=plist_get("txt_font", plist),
+                        colr=plist_get("color", plist, metallic_yellow_silver_2),
+                        r_factor=plist_get("r_factor", plist, 0.06),
+                        center=false);
         } else if (type == "ethernet_socket") {
           ethernet_socket(size=reference_size, anchor=[1, 1, 1]);
         } else if (type == "board_edge_socket") {
@@ -136,18 +138,18 @@ module pcb_placeholder_renderer(plist,
         } else if (type == "shrouded_connector") {
           color(plist_get("color", plist, metallic_yellow_silver_2)) {
             shrouded_connector(size=reference_size,
-                                detailed=plist_get("detailed", plist, false),
-                                anchor=[1, 1, 1]);
+                               detailed=plist_get("detailed", plist, false),
+                               anchor=[1, 1, 1]);
           }
         } else if (type == "multi_usb_socket") {
           multi_usb_socket(size=reference_size,
-                            usb_rows=plist_get("usb_rows", plist, 2),
-                            color=plist_get("color", plist, metallic_yellow_silver),
-                            offsets=plist_get("offsets", plist, [0, 0, 1]),
-                            plugged_usb_idxes=plist_get("plugged_usb_idxes", plist, []),
-                            usb_plist=plist_get("usb_plist", plist, usb_a_plist),
-                            rotate_z_180=plist_get("rotate_z_180", plist, true),
-                            anchor=[1, 1, 1]);
+                           usb_rows=plist_get("usb_rows", plist, 2),
+                           color=plist_get("color", plist, metallic_yellow_silver),
+                           offsets=plist_get("offsets", plist, [0, 0, 1]),
+                           plugged_usb_idxes=plist_get("plugged_usb_idxes", plist, []),
+                           usb_plist=plist_get("usb_plist", plist, usb_a_plist),
+                           rotate_z_180=plist_get("rotate_z_180", plist, true),
+                           anchor=[1, 1, 1]);
         } else if (type == "pci_connector") {
           pci_connector_from_plist(plist, anchor=[1, 1, 1]);
         } else if (type == "pcb_button") {

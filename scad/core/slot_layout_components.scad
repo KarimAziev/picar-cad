@@ -111,12 +111,12 @@ module slot_placeholders_assembly(plist,
     }
   } else if (show_perf_board && placeholder == "perf_board") {
     perfboard(plist,
-               standoff_h=plist_get("standoff_h", plist),
-               bolt_visible_h=bolt_visible_h,
-               stand_up=true,
-               show_bolt=show_bolt,
-               show_standoff=show_standoff,
-               show_nut=show_nut);
+              standoff_h=plist_get("standoff_h", plist),
+              bolt_visible_h=bolt_visible_h,
+              stand_up=true,
+              show_bolt=show_bolt,
+              show_standoff=show_standoff,
+              show_nut=show_nut);
   }
 }
 

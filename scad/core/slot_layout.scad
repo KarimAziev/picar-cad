@@ -309,7 +309,8 @@ module slot_layout(specs,
   global_debug = debug;
 
   assert(member(direction, ["btt", "ttb",
-                            "ltr", "rtl"]), "Invalid direction");
+                            "ltr", "rtl"]),
+         "Invalid direction");
 
   assert(member(align, [0, 1, -1]),
          str("Invalid align ", align, " should be 1, 0 or -1"));
@@ -663,14 +664,14 @@ my_specs = [["type", "rect",
                                    "round_side", "all",
                                    "x_offset", 0,
                                    "y_offset", 0],
-                         ["type", "rect",
-                          "gap_before", 0,
-                          "rotation", 0,
-                          "slot_size", [20, 5],
-                          "corner_factor", 0.5,
-                          "round_side", "all",
-                          "x_offset", 0,
-                          "y_offset", 0]],
+                                  ["type", "rect",
+                                   "gap_before", 0,
+                                   "rotation", 0,
+                                   "slot_size", [20, 5],
+                                   "corner_factor", 0.5,
+                                   "round_side", "all",
+                                   "x_offset", 0,
+                                   "y_offset", 0]],
                         "direction", "ttb",]],
              "direction", "ltr",
              "align_to_axle", 0,
