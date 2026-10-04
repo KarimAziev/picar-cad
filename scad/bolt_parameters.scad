@@ -8,6 +8,8 @@ m3_hole_dia              = 3.2; // M3 bolt hole diameter
 m5_hole_dia              = 5.2; // M5 bolt hole diameter
 m6_hole_dia              = 6.2; // M6 bolt hole diameter
 
+m2_hole_dia_tight        = 2.2; // M2 bolt hole diameter
+
 m1_pan_head_dia          = 1.8;
 m2_pan_head_dia          = 3.5;
 m25_pan_head_dia         = 4.3;
@@ -77,6 +79,15 @@ m3_lock_nut_dia          = 6.1;
 m3_lock_nut_h            = 4.0;
 m6_lock_nut_dia          = 13.33;
 m6_lock_nut_h            = 8.92;
+
+m2_pan_counterbore_d     = m2_pan_head_dia;
+m2_pan_counterbore_h     = m2_pan_head_h + 0.2;
+
+m3_socket_counterbore_d  = 6.1;
+m3_socket_counterbore_h  = 3.3;
+
+m3_countersunk_bore_d    = 5.9;
+m3_countersunk_bore_h    = 1.95;
 
 bolt_specs               = [[1,
                              ["nut", ["outer_dia", m2_nut_dia,
