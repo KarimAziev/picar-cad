@@ -38,7 +38,9 @@ variants = [rear_panel_specs,
                                 "side", "left"]],
             []];
 for (specs = variants) {
-  layout = rear_chassis_layout(panels=specs, power_case=multi_lipo_packs_case);
+  layout = rear_chassis_layout(equipment=[],
+                               panels=specs,
+                               power_case=multi_lipo_packs_case);
   panels = plist_get("panels", layout);
   payload = plist_get("power_case", layout);
   motor = plist_get("motor_bounds", layout);
@@ -85,65 +87,76 @@ for (specs = variants) {
          == concat(plist_get("bolt_spacing", payload),[0]));
   assert(plist_get("bolt_spacing", plist_get("lidar", payload)) == [43, 43]);
 }
-plain = rear_chassis_layout(panels=[], power_case=undef);
+plain = rear_chassis_layout(equipment=[], panels=[], power_case=undef);
 assert(len(plist_get("panels", plain)) == 0 && is_undef(plist_get("power_case", plain)));
 assert(multi_lipo_pack_mount_height(multi_lipo_packs_case, 0, 6) == 0);
 assert(multi_lipo_pack_mount_height(multi_lipo_packs_case, 70.2, 6) == 71);
 echo("PASS: standalone panel references, independent panels, tall columns, payload clearance and support layout");
 
 // Only the tall lever needs to clear the overhead case and cover.
-default_layout = rear_chassis_layout();
-default_payload = plist_get("power_case", default_layout);
+control_specs = [["type", "control", "side", "right"],
+                 ["type", "fuse", "side", "left"]];
+control_layout = rear_chassis_layout(equipment=[],
+                                     panels=control_specs,
+                                     power_case=multi_lipo_packs_case);
+control_payload = plist_get("power_case", control_layout);
 under_payload = plist_get("power_case",
-                          rear_chassis_layout(control_outside=false));
+                          rear_chassis_layout(equipment=[], panels=control_specs,
+                                               power_case=multi_lipo_packs_case,
+                                               control_outside=false));
 assert(len(control_panel_switch_button_specs) == 1);
-assert(plist_get("standoff_h", default_payload) < plist_get("standoff_h", under_payload));
-assert(near(plist_get("pos", default_payload)[0], 0));
-for (panel = plist_get("panels", default_layout)) {
-  motor_bounds = plist_get("motor_bounds", default_layout);
+assert(plist_get("standoff_h", control_payload) < plist_get("standoff_h", under_payload));
+assert(near(plist_get("pos", control_payload)[0], 0));
+for (panel = plist_get("panels", control_layout)) {
+  motor_bounds = plist_get("motor_bounds", control_layout);
   bounds = plist_get("bounds", panel);
   assert(near(plist_get("side", panel) == "left"
               ? motor_bounds[0][0] - bounds[1][0]
               : bounds[0][0] - motor_bounds[1][0], panel_stack_side_x_dist_from_motor));
 }
-// Explicit overrides preserve the old under-case controls; combined stacks stay put.
+// Per-panel placement overrides take precedence over the layout default.
 for (outside = [false, true]) {
-  custom = rear_chassis_layout(panels=[["type", "control",
+  custom = rear_chassis_layout(equipment=[], power_case=multi_lipo_packs_case,
+                               panels=[["type", "control",
                                         "outside_case", outside]],
                                control_outside=!outside);
   assert(plist_get("outside_case", plist_get("panels", custom)[0]) == outside);
 }
 // Ears widen the support envelope without moving or enlarging the battery cells.
 base_props = multi_lipo_pack_props(multi_lipo_packs_case);
-rear_props = multi_lipo_pack_props(plist_get("plist", default_payload));
+rear_props = multi_lipo_pack_props(plist_get("plist", control_payload));
 assert(plist_get("body_size", rear_props)[0] == plist_get("body_size", base_props)[0]);
 assert(plist_get("body_size", rear_props)[1] == plist_get("body_size", base_props)[1]);
-assert(plist_get("size", rear_props)[0] > plist_get("body_size", default_payload)[0]);
-assert(near(plist_get("motor_pos", default_layout)[1]
-            - plist_get("drive_end_y", plist_get("bracket", default_layout)),
-            plist_get("maintenance_y", default_layout) - rc_motor_maintenance_hole_dist));
+assert(plist_get("size", rear_props)[0] > plist_get("body_size", control_payload)[0]);
+assert(near(plist_get("motor_pos", control_layout)[1]
+            - plist_get("drive_end_y", plist_get("bracket", control_layout)),
+            plist_get("maintenance_y", control_layout) - rc_motor_maintenance_hole_dist));
 
-// The revised motor envelope lets the default controls clear the case.
-// Keep the no-deck-extension and lever-clearance contracts independent of overlap.
-under_layout = rear_chassis_layout(control_outside=false);
-control = plist_get("panels", default_layout)[0];
+// Control and lever clearance must fit within the fixed deck envelope.
+under_layout = rear_chassis_layout(equipment=[],
+                                   panels=control_specs,
+                                   power_case=multi_lipo_packs_case,
+                                   control_outside=false);
+control = plist_get("panels", control_layout)[0];
 control_bounds = plist_get("bounds", control);
 lever_bounds = plist_get("clearance_regions", control)[1];
-cover_edge = plist_get("pos", default_payload)[1] + plist_get("lid_size",
-                                                              default_payload)[1]/2;
+cover_edge = plist_get("pos", control_payload)[1] + plist_get("lid_size",
+                                                              control_payload)[1]/2;
 assert(control_bounds[0][1] >= cover_edge + rear_control_case_gap - 0.00001);
 assert(lever_bounds[0][1] >= cover_edge + rear_control_case_gap - 0.00001);
-assert(plist_get("pos", control)[1] > plist_get("pos", default_payload)[1]);
-assert(near(plist_get("size", default_layout), plist_get("size", under_layout)));
-assert(near(plist_get("transition_y_end", default_layout), plist_get("transition_y_end", under_layout)));
-assert(plist_get("standoff_h", default_payload) == 47);
+assert(plist_get("pos", control)[1] > plist_get("pos", control_payload)[1]);
+assert(near(plist_get("size", control_layout), plist_get("size", under_layout)));
+assert(near(plist_get("transition_y_end", control_layout), plist_get("transition_y_end", under_layout)));
+assert(plist_get("standoff_h", control_payload) == 47);
 // With more longitudinal room the whole panel clears. With less, the case stays high.
-roomy = rear_chassis_layout(motor_dist=20);
+roomy = rear_chassis_layout(equipment=[], panels=control_specs,
+                             power_case=multi_lipo_packs_case, motor_dist=20);
 roomy_payload = plist_get("power_case", roomy);
 assert(plist_get("bounds", plist_get("panels", roomy)[0])[0][1]
        >= plist_get("pos", roomy_payload)[1] + plist_get("lid_size", roomy_payload)[1]/2
        + rear_control_case_gap - 0.00001);
-tight = rear_chassis_layout(motor_dist=-5,
+tight = rear_chassis_layout(equipment=[], power_case=multi_lipo_packs_case,
+                            motor_dist=-5,
                             panels=[["type", "control",
                                      "orientation", "lwh"],
                                     ["type", "fuse",

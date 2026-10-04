@@ -174,7 +174,7 @@ def main() -> None:
            "front",["t",3,"h",15],"rear",["t",3,"h",15],
            "left",["t",3,"h",20],"right",["t",3,"h",20]],
  "lid",plist_merge(plist_get("lid",multi_lipo_packs_case),[
-   "equipment",[],"fuse",undef,"voltmeters",[],
+   "equipment",[],"fuse",undef,"voltmeters",[],"perfboard",undef,
    "lidar_orientation","lwh","lidar_offset",[3,-2],
    "lidar",plist_merge(rplidar_c1_plist,["size",[62,58],"bolt_spacing",[46,40],"offsets",[1,-2]])])]);"""
         alt = COMMON.replace("pl=multi_lipo_packs_case;", altered)

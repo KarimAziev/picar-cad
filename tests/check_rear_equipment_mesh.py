@@ -19,10 +19,10 @@ def main() -> None:
         source = Path(folder) / "fixture.scad"
         mesh = Path(folder) / "fixture.stl"
         preamble = f'''
-include <{ROOT}/scad/suspension/rear_suspension/computed_params.scad>
-use <{ROOT}/scad/suspension/rear_suspension/rear_suspension_chassis.scad>
-use <{ROOT}/scad/suspension/rear_chassis/rear_equipment.scad>
+include <{ROOT}/scad/suspension/rear_chassis/computed_params.scad>
 use <{ROOT}/scad/suspension/rear_chassis/rear_chassis_frame.scad>
+use <{ROOT}/scad/suspension/rear_chassis/rear_equipment.scad>
+use <{ROOT}/scad/suspension/rear_chassis/rear_chassis.scad>
 use <{ROOT}/scad/components/deck_component.scad>
 '''
 
@@ -57,16 +57,19 @@ deck_component("{kind}",component);
                 assert actual[1][axis] <= expected[1][axis] + 0.025, (kind, actual, size)
         print("PASS deck component envelopes contain rendered hardware", flush=True)
 
-        for preset in ("rear_equipment_mixed", "rear_equipment_meters"):
+        cases = (("production", "rear_equipment_specs", "rear_panel_specs", "rear_power_case_plist"),
+                 ("converter", "rear_equipment_mixed", "[]", "undef"),
+                 ("meters", "rear_equipment_meters", "[]", "undef"))
+        for label, preset, panels, power_case in cases:
             fixture = f'''
-l=rear_suspension_layout(equipment={preset});
+l=rear_chassis_layout(equipment={preset}, panels={panels}, power_case={power_case});
 parts=plist_get("equipment",l);
 echo(mounts=[for(p=parts) [plist_get("pos",p), plist_get("rotation",p),
                            plist_get("bolt_spacing",plist_get("props",p)),
                            plist_get("bolt_d",plist_get("props",p))]]);
 '''
-            log = render(fixture + 'rear_suspension_chassis(layout=l);')
-            assert connected_components(mesh) == 1, preset
+            log = render(fixture + 'rear_chassis_frame(layout=l);')
+            assert connected_components(mesh) == 1, label
             mounts = ast.literal_eval(echo_value(log, "mounts"))
             triangles = read_triangles(mesh)
             for pos, angle, pitch, diameter in mounts:
@@ -76,9 +79,9 @@ echo(mounts=[for(p=parts) [plist_get("pos",p), plist_get("rotation",p),
                         x, y = sx * pitch[0] / 2, sy * pitch[1] / 2
                         cx = pos[0] + x * math.cos(r) - y * math.sin(r)
                         cy = pos[1] + x * math.sin(r) + y * math.cos(r)
-                        assert not ray_hits(triangles, cx, cy), (preset, cx, cy)
+                        assert not ray_hits(triangles, cx, cy), (label, cx, cy)
                         # Material remains just beyond each screw-head envelope.
-                        assert ray_hits(triangles, cx + diameter + 0.5, cy), (preset, cx, cy)
+                        assert ray_hits(triangles, cx + diameter + 0.5, cy), (label, cx, cy)
             # Hardware clears the plate, motor, fuse panel, case and support columns.
             render(fixture + '''
 intersection() {
@@ -102,12 +105,12 @@ for(p=parts) {
   }
 }
 '''
-            render(fixture + 'z=0.1; intersection() { rear_suspension_chassis(layout=l);'
+            render(fixture + 'z=0.1; intersection() { rear_chassis_frame(layout=l);'
                    + probes + '}', empty=True)
-            render(fixture + 'z=front_chassis_thickness-0.1; intersection() {'
-                   'rear_suspension_chassis(layout=l);' + probes + '}')
-            assert mesh_volume(mesh) > 0, preset
-            print(f"PASS {preset}: connected plate, aligned through-holes, underside recesses, no hardware collision",
+            render(fixture + 'z=chassis_thickness-0.1; intersection() {'
+                   'rear_chassis_frame(layout=l);' + probes + '}')
+            assert mesh_volume(mesh) > 0, label
+            print(f"PASS {label}: connected plate, aligned through-holes, underside recesses, no hardware collision",
                   flush=True)
 
         invalid = [
@@ -122,7 +125,7 @@ for(p=parts) {
              '["kind","voltmeter","zone","left","position",[0.5,0.5]]]', "does not fit"),
         ]
         for specs, message in invalid:
-            source.write_text(preamble + f'echo(rear_suspension_layout(equipment={specs}));')
+            source.write_text(preamble + f'echo(rear_chassis_layout(equipment={specs}));')
             result = subprocess.run(
                 [OPENSCAD, "--enable=textmetrics", "--hardwarnings",
                  "-o", str(source.with_suffix('.csg')), str(source)],

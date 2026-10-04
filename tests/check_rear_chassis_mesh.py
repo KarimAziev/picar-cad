@@ -54,13 +54,13 @@ def main() -> None:
         source = Path(folder) / "fixture.scad"
         mesh = Path(folder) / "fixture.stl"
         source.write_text(f"""
-include <{ROOT}/scad/suspension/rear_suspension/computed_params.scad>
+include <{ROOT}/scad/suspension/rear_chassis/computed_params.scad>
 use <{ROOT}/scad/motor_brackets/rc/util.scad>
 use <{ROOT}/scad/lib/plist.scad>
 use <{ROOT}/scad/lib/functions.scad>
 use <{ROOT}/scad/motor_brackets/rc/gearbox_bracket.scad>
 use <{ROOT}/scad/panel_stack/panel_stack.scad>
-use <{ROOT}/scad/suspension/rear_suspension/rear_suspension_chassis.scad>
+use <{ROOT}/scad/suspension/rear_chassis/rear_chassis_frame.scad>
 
 changed = false;
 side = "auto";
@@ -71,9 +71,9 @@ motor = changed ? plist_put("gearbox", plist_put("mount_ear_x_dist", 30,
                      plist_get("gearbox", motor_plist)), motor_plist) : motor_plist;
 bracket = changed ? gearmotor_bracket_compute_params(motor, bolt_pad_y=5, fillet_x_w=5)
                   : gearmotor_bracket_compute_params(motor);
-layout = rear_suspension_layout(panels=undef, power_case=undef, bracket=bracket, side=side,
+layout = rear_chassis_layout(equipment=[], panels=undef, power_case=undef, bracket=bracket, side=side,
                                 orientation=orientation, panel_y_offset=y_offset);
-size = rear_suspension_chassis_size(layout);
+size = plist_get("size", layout);
 center_y = (plist_get("min_y", layout) + plist_get("max_y", layout)) / 2;
 shift = to_anchor(anchor, size, centered=true) - [0, center_y, 0];
 panel_pos = plist_get("panel_pos", layout);
@@ -96,7 +96,8 @@ holes = concat(
       rear_suspension_chassis_bolt_bore_d/2+0.5]],
   [[0, plist_get("maintenance_y",layout), rear_chassis_maintenance_hole_d/2+0.5]]);
 echo(size=size, shift=shift, holes=holes);
-rear_suspension_chassis(anchor=anchor, layout=layout);
+rear_chassis_frame(anchor=anchor, layout=layout, front_joint=false,
+                   show_rear_suspension_mount=true, rear_suspension_joint_spacing=0);
 """)
         for side, orientation, anchor, changed, offset in cases:
             command = [

@@ -20,7 +20,7 @@ original      = plist_put("power_rotation", 0, pl);
 lid           = multi_lipo_pack_lid_props(pl);
 old_lid       = multi_lipo_pack_lid_props(original);
 spec          = plist_get("lid", pl);
-assert(norm(plist_get("size", layout) - [159.81, 153.49, 6]) < 1e-5);
+assert(norm(plist_get("size", layout) - [160.4, 153.49, 6]) < 1e-5);
 assert(plist_get("power_rotation", pl) == 180);
 for (key = ["lidar_offset", "lidar_orientation",
             "lidar_base_z", "canonical_size"]) {

@@ -13,13 +13,13 @@ use <../scad/suspension/rear_chassis/computed_params.scad>
 use <../scad/wago/wago_bracket.scad>
 use <../scad/wago/wago_mounts.scad>
 
-assert(wago_size() == [36.5, 21.1, 9.8]);
+assert(wago_size() == [36.0, 20.2, 9.8]);
 p       = wago_bracket_props();
-assert(norm(plist_get("size", p)-[40.2, 34.8, 13.25]) < 0.00001);
-assert(norm(plist_get("size", wago_bracket_props(["mount_side","sides"]))-[60.2, 24.8, 13.25]) < 0.00001);
+assert(norm(plist_get("size", p)-[39.7, 33.9, 13.25]) < 0.00001);
+assert(norm(plist_get("size", wago_bracket_props(["mount_side","sides"]))-[59.7, 23.9, 13.25]) < 0.00001);
 assert(plist_get("wago_size", wago_bracket_props(["wago",["n", 3,
                                                           "total_w", 22.7]]))[0] == 22.7);
-assert(norm(wago_mount_size(["rotation", 90])-[34.8, 40.2, 13.25]) < 0.00001);
+assert(norm(wago_mount_size(["rotation", 90])-[33.9, 39.7, 13.25]) < 0.00001);
 
 // A roomy payload must accept a bracket without changing its datums.
 payload = ["bounds", [[-70,-60, 0],[70, 60, 20]],
@@ -39,8 +39,8 @@ assert(plist_get("placement", a[0]) == "after");
 assert(plist_get("bounds", a[1])[1][1] <= plist_get("bounds", a[0])[0][1]);
 
 // Adding mounts must preserve every existing mechanical placement.
-base    = rear_chassis_layout(wago_mounts=[]);
-changed = rear_chassis_layout(wago_mounts=[["placement", "after",
+base    = rear_chassis_layout(equipment=[], wago_mounts=[]);
+changed = rear_chassis_layout(equipment=[], wago_mounts=[["placement", "after",
                                             "rotation", 90]]);
 for (key=["motor_pos","motor_rotation","panels","power_case","bulkhead_1_y","bulkhead_2_y","maintenance_y"]) {
   assert(plist_get(key, base) == plist_get(key, changed),

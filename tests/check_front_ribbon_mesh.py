@@ -36,7 +36,14 @@ def main() -> None:
                     checks.export(part, name=f"{part}-{case}", empty=True, **params),
                     f"{part}-{case}",
                 )
-            wiring = checks.one_solid("wiring", name=f"wiring-{case}", **params)
+            # Boolean subtraction can retain coplanar, zero-volume shells.
+            removed = checks.export("wiring", name=f"wiring-{case}", **params)
+            assert removed is not None
+            solids = [shell for shell in removed.split(only_watertight=False)
+                      if abs(shell.volume) > 1e-6]
+            assert len(solids) == 1, f"{case}: expected one wiring passage"
+            wiring = solids[0]
+            assert wiring.is_watertight and wiring.is_winding_consistent
             np.testing.assert_allclose(wiring.extents, [14, 14, 6], atol=1e-5)
             np.testing.assert_allclose(wiring.volume,
                                        40 * 7**2 * np.sin(np.pi / 40) * 6,

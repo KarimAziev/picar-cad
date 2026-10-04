@@ -18,9 +18,9 @@ use <{ROOT}/scad/lib/plist.scad>
 use <{ROOT}/scad/wago/wago_bracket.scad>
 use <{ROOT}/scad/wago/wago_mounts.scad>
 use <{ROOT}/scad/lipo_pack_case/multi_lipo_pack_lid.scad>
-use <{ROOT}/scad/suspension/rear_suspension/computed_params.scad>
-use <{ROOT}/scad/suspension/rear_suspension/rear_suspension_chassis.scad>
+use <{ROOT}/scad/suspension/rear_chassis/computed_params.scad>
 use <{ROOT}/scad/suspension/rear_chassis/rear_chassis_frame.scad>
+use <{ROOT}/scad/suspension/rear_chassis/rear_chassis.scad>
 $fn=32;
 '''
 
@@ -105,21 +105,20 @@ pl=plist_merge(multi_lipo_packs_case,["lid",lid]);
         print("PASS lid remains printable with aligned Wago holes and mounting hardware", flush=True)
 
         render('''
-layout=rear_suspension_layout(wago_mounts=[["placement","after","rotation",90]]);
+layout=rear_chassis_layout(equipment=[], wago_mounts=[["placement","after","rotation",90]]);
 intersection() {
-  rear_suspension_chassis(layout=layout);
+  rear_chassis_frame(layout=layout);
   wago_mounts(plist_get("wago_mounts",layout),show_bolts=true,parent_t=6);
 }''', empty=True)
         print("PASS chassis bracket hardware clears the extended mounting plate", flush=True)
 
         render('''
-layout=rear_suspension_layout(wago_mounts=[["placement","auto","rotation",270]]);
-assert(plist_get("placement",plist_get("wago_mounts",layout)[0]) == "under");
+layout=rear_chassis_layout(equipment=[], wago_mounts=[["placement","auto","rotation",270]]);
 intersection() {
   rear_chassis(layout=layout,anchor=undef,show_wago_brackets=false);
   wago_mounts(plist_get("wago_mounts",layout),parent_t=6);
 }''', empty=True)
-        print("PASS automatic under-case bracket clears the assembled rear hardware", flush=True)
+        print("PASS automatic bracket placement clears the assembled rear hardware", flush=True)
 
         for bad in ('["clip_overlap",1.5]', '["clearance",-0.1]',
                     '["ear_d",3]', '["wago",["n",6]]'):

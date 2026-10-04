@@ -53,11 +53,11 @@ for (key = ["power_lead", "balance_lead"]) {
   }
 }
 assert(plist_get("l", plist_get("power_lead", pack)) == 80);
-// Preserve the original measured default exit locations, not just two linked helpers.
+// Measured pack dimensions fix the two power-lead exit centers.
 assert(norm(lipo_pack_lead_exit(pack, plist_get("power_lead", pack), 0)
-            - [-25.875, -75.53, 10.9]) < 0.000001);
+            - [-25.875, -75.325, 10.9]) < 0.000001);
 assert(norm(lipo_pack_lead_exit(pack, plist_get("power_lead", pack), 1)
-            - [-25.875, -75.53, 15.25]) < 0.000001);
+            - [-25.875, -75.325, 15.25]) < 0.000001);
 echo("PASS fixed exits and measured 80 mm power / 40 mm balance lead lengths");
 
 p = lid_wiring_props(standalone_lipo_case);

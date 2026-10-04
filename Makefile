@@ -5,6 +5,7 @@ PYTHON ?= $(if $(wildcard .venv/bin/python),.venv/bin/python,python3)
 PYRIGHT ?= $(PYTHON) -m pyright
 export OPENSCAD
 MESH_TESTS := $(sort $(wildcard tests/check_*.py))
+MESH_TEST_TARGETS := $(patsubst tests/%.py,tests-mesh-%,$(MESH_TESTS))
 SCAD_COMMON_ARGS := --backend=Manifold --enable=textmetrics
 HARDWARNINGS := --hardwarnings
 CI_PREVIEW_ONLY ?= 0
@@ -43,6 +44,7 @@ PRINTABLE_PAIRS := $(foreach s,$(PRINTABLE_SRCS),$(notdir $(basename $s))|$s)
 	-O export-3mf/meta-data-license-terms="$(LICENSE_TERMS)"
 
 .PHONY: all assembly printable tests tests-scad tests-python tests-mesh typecheck clean clean-assembly clean-printable clean-tests help
+.PHONY: $(MESH_TEST_TARGETS)
 
 all: tests assembly printable
 
@@ -72,11 +74,11 @@ tests: tests-python typecheck tests-scad tests-mesh
 tests-python:
 	$(PYTHON) -m unittest discover -s tests -p 'test_*.py' -v
 
-tests-mesh:
-	@set -eu; for src in $(MESH_TESTS); do \
-		echo "Running $$src"; \
-		$(PYTHON) -u "$$src"; \
-	done
+tests-mesh: $(MESH_TEST_TARGETS)
+
+$(MESH_TEST_TARGETS): tests-mesh-%: tests/%.py
+	@echo "Running $<"
+	$(PYTHON) -u "$<"
 
 typecheck:
 	$(PYRIGHT) --pythonpath "$(PYTHON)"
@@ -88,8 +90,8 @@ tests-scad:
 		out=$$(mktemp /tmp/picar-cad-test-$$name-XXXXXX.stl); \
 		log=$$(mktemp /tmp/picar-cad-test-log-XXXXXX.txt); \
 		echo "Running $$src"; \
-		if $(OPENSCAD) $(SCAD_COMMON_ARGS) -o "$$out" "$$src" >"$$log" 2>&1; then rc=0; else rc=$$?; fi; \
-		if grep -Eq "FAIL:|ERROR:" "$$log"; then cat "$$log"; status=1; \
+		if $(OPENSCAD) $(SCAD_COMMON_ARGS) $(HARDWARNINGS) -o "$$out" "$$src" >"$$log" 2>&1; then rc=0; else rc=$$?; fi; \
+		if grep -Eq "FAIL:|ERROR:|WARNING:" "$$log"; then cat "$$log"; status=1; \
 		elif [ $$rc -ne 0 ] && ! grep -q "Current top level object is empty" "$$log"; then \
 			cat "$$log"; status=$$rc; \
 		else \

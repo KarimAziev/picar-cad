@@ -12,11 +12,11 @@ from check_gearmotor_encoder_mesh import mesh_volume
 
 ROOT = Path(__file__).resolve().parents[1]
 COMMON = f'''
-include <{ROOT}/scad/suspension/rear_suspension/computed_params.scad>
+include <{ROOT}/scad/suspension/rear_chassis/computed_params.scad>
 use <{ROOT}/scad/suspension/rear_chassis/rear_payload.scad>
 use <{ROOT}/scad/lipo_pack_case/lid_wiring.scad>
 use <{ROOT}/scad/lib/plist.scad>
-payload=plist_get("power_case",rear_suspension_layout());
+payload=plist_get("power_case",rear_chassis_layout());
 module actual() {{rear_power_payload(payload,show_lidar=false);}}
 module expected() {{
  rear_power_payload(payload,show_lidar=false,show_wiring=false);

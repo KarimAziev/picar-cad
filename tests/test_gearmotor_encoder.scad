@@ -16,7 +16,7 @@ bounds          = plist_get("bounds", e);
 module near(a, b) {
   assert(norm(a - b) < 0.000001, str(a, " != ", b));
 }
-near(shaft, [0, 30.1, 17.15]);
+near(shaft, [0, 29.1, 19.15]);
 near(magnet - shaft,
      [0, motor_encoder_magnet_h + motor_encoder_sleeve_h_clearance, 0]);
 near(sensor - magnet, [0, motor_encoder_magnet_distance, 0]);
@@ -27,15 +27,15 @@ assert(plist_get("base_h", e) + plist_get("bottom_thickness", e)
        < shaft[2] - plist_get("pcb_h", e) / 2);
 assert(plist_get("nut_pocket_h", e) < plist_get("base_h", e));
 assert(bounds[1][1] < plist_get("base_bounds", p)[1][1], "No added length");
-near([plist_get("size", p)[1]], [76.3]);
+near([plist_get("size", p)[1]], [66.6]);
 assert(plist_get("bounds", p)[1][0] > plist_get("base_bounds", p)[1][0]);
-assert(plist_get("bounds", p)[1][0] - plist_get("base_bounds", p)[1][0] < 2.2);
+near([plist_get("bounds", p)[1][0]], [bounds[1][0]]);
 
 // The main bracket retains its native shape and datums when the feature is off.
 plain           = gearmotor_bracket_compute_params(encoder_plist=undef);
 assert(is_undef(plist_get("encoder_mount", plain)));
-near(plist_get("bounds", plain)[1], [14.325, 44.3, 18.44]);
-near(plist_get("bounds", plain)[0], [-35.75, -32, 0]);
+near(plist_get("bounds", plain)[1], [11.825, 37.6, 20.44]);
+near(plist_get("bounds", plain)[0], [-28.65, -29, 0]);
 assert(plist_get("mount_hole_positions", plain) == plist_get("mount_hole_positions", p));
 
 // The unused shaft tip follows the actual shaft length, gearbox depth and
@@ -48,8 +48,8 @@ changed_motor   = plist_put("drive_shaft",
 changed = plist_get("encoder_mount",
                     gearmotor_bracket_compute_params(changed_motor,
                                                      bracket_thickness=8));
-near(plist_get("shaft_tip", changed), shaft + [0, 3.32, 1.5]);
-near(plist_get("pcb_back", changed), plist_get("pcb_back", e) + [0, 3.32, 1.5]);
+near(plist_get("shaft_tip", changed), shaft + [0, 4.32, 8 - gearbox_bracket_thickness]);
+near(plist_get("pcb_back", changed), plist_get("pcb_back", e) + [0, 4.32, 8 - gearbox_bracket_thickness]);
 // Rotate a wider/taller alternative PCB only when its X dimension is shorter.
 wide_pcb        = plist_put("size", [18, 14, 1.74], motor_encoder_plist);
 wide          = gearmotor_encoder_params(motor_plist,
@@ -100,12 +100,12 @@ gap_sleeve      = driveshaft_magnet_sleeve_params(h_clearance=0.7);
 gap_mount = gearmotor_encoder_params(motor_plist,
                                      gearbox_bracket_thickness,
                                      sleeve_params=gap_sleeve);
-near(plist_get("pcb_back", gap_mount), plist_get("pcb_back", e) + [0, 0.5, 0]);
+near(plist_get("pcb_back", gap_mount), plist_get("pcb_back", e) + [0, 0.3, 0]);
 near(plist_get("sensor_face", gap_mount) - plist_get("magnet_face", gap_mount),
      [0, 0.5, 0]);
 near([plist_get("magnet_bottom_z", s)], [plist_get("cup_h", s)]);
-near(magnet, [0, 32.3, 17.15]);
-near(plist_get("pcb_back", e), [0, 35.38, 17.15]);
+near(magnet, [0, 31.5, 19.15]);
+near(plist_get("pcb_back", e), [0, 34.58, 19.15]);
 // Bosses resolve their complete heights and diametral fits once for all consumers.
 near([plist_get("front", plist_get("boss_heights", p)),
       plist_get("rear", plist_get("boss_heights", p))],
@@ -116,5 +116,5 @@ custom = gearmotor_bracket_compute_params(boss_pocket_depth=1.5,
                                           motor_carrier_clearance=0.5);
 near([plist_get("front", plist_get("boss_heights", custom))], [10.43]);
 near([plist_get("boss_pocket_od", custom)], [6.4]);
-near(plist_get("base_bounds", custom)[1], [14.325, 44.3, 19.94]);
+near(plist_get("base_bounds", custom)[1], [11.825, 37.6, 21.94]);
 echo("PASS: sleeve seat, lip, cross-hole, changed pad length and boss fits");
