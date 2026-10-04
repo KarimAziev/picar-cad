@@ -5,17 +5,18 @@
   * License: GPL-3.0-or-later
   */
 include <../../scad/suspension/front_chassis/computed_params.scad>
+
 use <../../scad/lib/plist.scad>
+use <../../scad/suspension/bulkhead/front_bulkhead_chassis.scad>
+use <../../scad/suspension/front_chassis/front_chassis_access_slots.scad>
 use <../../scad/suspension/front_chassis/front_chassis_front_frame.scad>
 use <../../scad/suspension/front_chassis/front_chassis_head_joint.scad>
 use <../../scad/suspension/front_chassis/front_chassis_head_slots.scad>
-use <../../scad/suspension/front_chassis/front_chassis_access_slots.scad>
-use <../../scad/suspension/bulkhead/front_bulkhead_chassis.scad>
 
-part = "assembly";
+part    = "assembly";
 spacing = 0;
-p = front_chassis_head_joint_params();
-head_y = front_chassis_head_center_y();
+p       = front_chassis_head_joint_params();
+head_y  = front_chassis_head_center_y();
 
 module head() {
   translate([0, spacing, 0]) {
@@ -63,8 +64,11 @@ if (part == "head") {
     assembly();
     for (side = [-1, 1]) {
       translate([side * (plist_get("w", p) + front_chassis_head_joint_rail_w) / 4,
-                 plist_get("root_y", p) - plist_get("l", p) / 2, -1]) {
-        cylinder(d=front_chassis_joint_bolt_d * 0.8, h=chassis_thickness + 2, $fn=32);
+                 plist_get("root_y", p) - plist_get("l", p) / 2,
+                 -1]) {
+        cylinder(d=front_chassis_joint_bolt_d * 0.8,
+                 h=chassis_thickness + 2,
+                 $fn=32);
       }
     }
   }
@@ -76,7 +80,8 @@ if (part == "head") {
     head();
     for (i = [0:len(ys) - 2]) {
       translate([-front_chassis_head_ribbon_slot_w / 2,
-                 head_y + ys[i + 1] + front_chassis_head_ribbon_slot_l / 2, 0]) {
+                 head_y + ys[i + 1] + front_chassis_head_ribbon_slot_l / 2,
+                 0]) {
         cube([front_chassis_head_ribbon_slot_w,
               front_chassis_head_ribbon_slot_gap, chassis_thickness]);
       }

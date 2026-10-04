@@ -8,7 +8,6 @@
  */
 
 include <../../colors.scad>
-
 include <../parameters.scad>
 
 use <chassis_body.scad>

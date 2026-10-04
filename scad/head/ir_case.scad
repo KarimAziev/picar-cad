@@ -40,14 +40,14 @@ function is_ir_case_light_detector_enabled(name) =
   || ir_light_detector_position == name;
 
 function is_ir_case_bracket_enabled(name) = ir_case_bracket_position == "both"
-  || ir_case_bracket_position == name;
+                                            || ir_case_bracket_position == name;
 
 function ir_case_full_thickness() = ir_case_thickness
-  + ir_case_led_boss_thickness;
+                                    + ir_case_led_boss_thickness;
 
 function ir_case_holes_full_h() = ir_case_led_dia
-  + ir_light_detector_dia
-  + ir_light_offset_from_led_y;
+                                  + ir_light_detector_dia
+                                  + ir_light_offset_from_led_y;
 
 function ir_case_slider_y_pos() =
   ir_case_height
@@ -80,9 +80,9 @@ module ir_case_rail(color,
                     show_ir_case_rail_nuts=false,
                     echo_bolts_info=false) {
   full_thickness = ir_case_full_thickness()
-    + ir_case_carriage_h
-    + ir_case_rail_h
-    + ir_case_rail_protrusion_h;
+                   + ir_case_carriage_h
+                   + ir_case_rail_h
+                   + ir_case_rail_protrusion_h;
   slider_holes_extra_h = 1;
 
   inner_w = ir_case_rail_w - ir_case_rail_clearance;
@@ -114,7 +114,7 @@ module ir_case_rail(color,
         }
       }
       linear_extrude(height=full_thickness
-                     + slider_holes_extra_h,
+                            + slider_holes_extra_h,
                      center=false,
                      convexity=2) {
         ir_case_slider_holes_2d();
@@ -187,7 +187,7 @@ module ir_case_slider() {
     }
 
     linear_extrude(height=thickness
-                   + ir_case_carriage_h + 1,
+                          + ir_case_carriage_h + 1,
                    center=false,
                    convexity=2) {
       ir_case_slider_holes_2d();
@@ -320,7 +320,7 @@ module ir_case(show_bolts=false,
   full_thickness = ir_case_full_thickness();
 
   y_offst = ir_case_height - ir_case_holes_distance_from_top
-    - ir_light_detector_dia;
+            - ir_light_detector_dia;
   maybe_translate([center ? -ir_case_width / 2 : 0,
                    center ? -ir_case_height / 2 : 0,
                    0]) {
@@ -332,7 +332,7 @@ module ir_case(show_bolts=false,
                      y_offst,
                      ir_case_led_boss_thickness]) {
             linear_extrude(height=ir_case_thickness
-                           + ir_case_led_boss_thickness,
+                                  + ir_case_led_boss_thickness,
                            center=false,
                            convexity=2) {
               square([ir_case_width + 1, ir_case_height], center=false);

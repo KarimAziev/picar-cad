@@ -82,13 +82,13 @@ module front_wheel(w=wheel_w,
                              lock=wheel_hub_lock_nut);
 
   bolt_h = ((bearing_n - 1) * ((hub_h * 2) + wheel_hub_assembly_clearance))
-    + base_hub_h
-    + wheel_hub_assembly_clearance
-    + with_default(nut_height, 0)
-    - with_default(bolt_cbore_h, 0);
+           + base_hub_h
+           + wheel_hub_assembly_clearance
+           + with_default(nut_height, 0)
+           - with_default(bolt_cbore_h, 0);
 
   nut_head_distance = bolt_h - with_default(bolt_cbore_h, 0)
-    - (bearing_n * wheel_hub_assembly_clearance);
+                      - (bearing_n * wheel_hub_assembly_clearance);
 
   z_center = w / 2 + rim_w;
 

@@ -125,15 +125,15 @@ module front_bulkhead_housing(color=cobalt_blue_metallic,
       }
       if (show_front_lower_arm || show_front_lower_arm_pin) {
         lower_arm_x = front_bulkhead_w / 2
-          + barrel_w
-          - pin_hole_offset
-          - front_lower_arm_hinge_barrel_hole_offset
-          - lower_pin_hole_d;
+                      + barrel_w
+                      - pin_hole_offset
+                      - front_lower_arm_hinge_barrel_hole_offset
+                      - lower_pin_hole_d;
 
         arm_min_y = -(front_lower_arm_h - front_bulkhead_len)
-          - barrel_y_offset
-          + front_lower_arm_upper_hinge_barrel_h
-          - front_bulkhead_len / 2;
+                    - barrel_y_offset
+                    + front_lower_arm_upper_hinge_barrel_h
+                    - front_bulkhead_len / 2;
 
         step =
           front_lower_arm_h

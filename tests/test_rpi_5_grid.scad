@@ -5,8 +5,8 @@ use <../scad/core/pcb_placeholder_renderer.scad>
 use <../scad/lib/functions.scad>
 use <../scad/lib/plist.scad>
 use <../scad/placeholders/pin_header.scad>
-use <../scad/placeholders/rpi_5_grid.scad>
 use <../scad/placeholders/rpi_5.scad>
+use <../scad/placeholders/rpi_5_grid.scad>
 
 // Resolve observable leaf reference boxes independently of the RPi factory.
 // Each result is [placeholder plist, canonical minimum XYZ, spun reference size].
@@ -21,7 +21,7 @@ function leaf_box(cell, cell_size, origin, thickness) =
        alignment = [plist_get("align_x", cell, 0), plist_get("align_y", cell, 0)],
        offsets = [plist_get("x_offset", cell, 0), plist_get("y_offset", cell, 0)],
        minimum = [for (i = [0:1]) origin[i] + offsets[i]
-                    + (cell_size[i] - rotated[i]) * (alignment[i] + 1) / 2])
+                                  + (cell_size[i] - rotated[i]) * (alignment[i] + 1) / 2])
   [placeholder,
    concat(minimum, [thickness + plist_get("z_offset", cell, 0)]),
    [rotated[0], rotated[1], size[2]]];
@@ -43,8 +43,10 @@ function grid_boxes(grid, size, origin, thickness) =
   let (rows = plist_get("rows", grid),
        heights = [for (row = rows) maybe_to_mm(plist_get("h", row), size[1])])
   [for (ri = [0:1:len(rows)-1]) each
-     row_boxes(rows[ri], [size[0], heights[ri]],
-                origin - [0, sum_prefix(heights, ri + 1)], thickness)];
+    row_boxes(rows[ri],
+              [size[0], heights[ri]],
+              origin - [0, sum_prefix(heights, ri + 1)],
+              thickness)];
 
 function board_boxes(grid, thickness) =
   let (size = plist_get("size", grid))
@@ -96,7 +98,8 @@ at(with_size(defaults, [2.5, 3.4, 5])[0], [50.8, 15.5, 1.9]);
 custom = board_boxes(rpi_5_grid(size=[70, 100, 2.4], bolt_offset=3.5,
                                 header_width=3, header_rows=3, header_cols=12,
                                 header_height=4, pin_height=10,
-                                usb_a_n=0, csi_n=0, button=[]), 2.4);
+                                usb_a_n=0, csi_n=0, button=[]),
+                     2.4);
 assert(len(custom) == 14);
 assert(len(of_type(custom, "multi_usb_socket")) == 0);
 assert(len(with_size(custom, rpi_csi_size)) == 0);
@@ -116,7 +119,9 @@ at(with_size(custom, rpi_usb_c_jack_size)[0], [63.8, 6, 2.4]);
 // Submillimeter distances are measured gaps, not fractions of a parent grid.
 small = board_boxes(rpi_5_grid(usb_a_edge_gap=0.25, usb_a_x_gap=0.5,
                                csi_gap=0.4,
-                               plugged_usb_a=["right", [0], "left", [1]]), 1.9);
+                               plugged_usb_a=["right", [0],
+                                              "left", [1]]),
+                    1.9);
 usb = of_type(small, "multi_usb_socket");
 at(usb[0], [0.25, 70.4, 3.8]);
 at(usb[1], [14, 70.4, 3.8]);
@@ -136,7 +141,7 @@ assert(close(thin_cameras[0][2], [16, 1, 2.5]));
 
 // Partial button specs retain the reusable button's body-size defaults.
 partial_button = of_type(board_boxes(rpi_5_grid(button=["button_d", 2]), 1.9),
-                          "pcb_button")[0];
+                         "pcb_button")[0];
 at(partial_button, [34.425, 0, 1.9]);
 assert(close(partial_button[2], [4.5, 3, 3.3]));
 assert(plist_get("button_d", partial_button[0]) == 2);

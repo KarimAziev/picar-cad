@@ -317,19 +317,22 @@ panel_stack(orientation=panel_stack_orientation, anchor=[1, 1, 1]);
   overhead clearance, and assumes the panels and standoffs are all present.
  */
 function panel_component_size(type, orientation="wlh") =
-  assert(type == "control" || type == "fuse" || type == "stack", "Unknown panel type")
+  assert(type == "control" || type == "fuse" || type == "stack",
+         "Unknown panel type")
   type == "control" ? control_panel_oriented_size(orientation)
   : type == "fuse" ? fuse_panel_oriented_size(orientation)
   : panel_stack_oriented_size(orientation);
 
 function panel_component_bolt_spacing(type, orientation="wlh") =
-  assert(type == "control" || type == "fuse" || type == "stack", "Unknown panel type")
+  assert(type == "control" || type == "fuse" || type == "stack",
+         "Unknown panel type")
   type == "control" ? control_panel_oriented_bolt_spacing(orientation)
   : type == "fuse" ? fuse_panel_oriented_bolt_spacing(orientation)
   : panel_stack_oriented_bolt_spacing(orientation);
 
 function panel_component_height(type) =
-  assert(type == "control" || type == "fuse" || type == "stack", "Unknown panel type")
+  assert(type == "control" || type == "fuse" || type == "stack",
+         "Unknown panel type")
   type == "control" ? control_panel_clearance_height()
   : type == "fuse" ? fuse_panel_clearance_height()
   : max(fuse_panel_clearance_height(),
@@ -348,17 +351,31 @@ function panel_component_height(type) =
   - `slot_mode`: Render parent mounting cutters only.
   - `slot_thickness`: Parent plate thickness.
  */
-module panel_component(type="stack", orientation="wlh", anchor=[0, 0, 1],
-                        slot_mode=false, slot_thickness=chassis_thickness) {
-  assert(type == "control" || type == "fuse" || type == "stack", "Unknown panel type");
+module panel_component(type="stack",
+                       orientation="wlh",
+                       anchor=[0, 0, 1],
+                       slot_mode=false,
+                       slot_thickness=chassis_thickness) {
+  assert(type == "control" || type == "fuse" || type == "stack",
+         "Unknown panel type");
   if (type == "control") {
-    control_panel(orientation=orientation, anchor=anchor, slot_mode=slot_mode,
-                  slot_thickness=slot_thickness, show_buttons=true, show_bolt=true);
+    control_panel(orientation=orientation,
+                  anchor=anchor,
+                  slot_mode=slot_mode,
+                  slot_thickness=slot_thickness,
+                  show_buttons=true,
+                  show_bolt=true);
   } else if (type == "fuse") {
-    fuse_panel(orientation=orientation, anchor=anchor, slot_mode=slot_mode,
-               slot_thickness=slot_thickness, show_fuses=true, show_bolt=true);
+    fuse_panel(orientation=orientation,
+               anchor=anchor,
+               slot_mode=slot_mode,
+               slot_thickness=slot_thickness,
+               show_fuses=true,
+               show_bolt=true);
   } else {
-    panel_stack(orientation=orientation, anchor=anchor, slot_mode=slot_mode,
+    panel_stack(orientation=orientation,
+                anchor=anchor,
+                slot_mode=slot_mode,
                 slot_thickness=slot_thickness);
   }
 }

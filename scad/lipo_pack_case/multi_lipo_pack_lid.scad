@@ -103,43 +103,43 @@ function multi_lipo_pack_lid_props(pl, l_clearance=0.4, w_clearance=0.4) =
        roof_z = max(plist_get("h", rails) + clearance + headroom, body[2] - mount_z + clearance + side_t),
        size = concat(footprint, [roof_z + t]),
        orientation = plist_get("orientation", case_props))
-       assert(t > 0 && side_t > 0 && headroom >= side_t && lidar_pad >= 0,
-              "Lid roof and side thickness must be positive; headroom must leave material above the channels")
-       assert(in_list(lidar_orientation, ["wlh", "lwh"]),
-              "Lidar must remain upright on the roof")
-       assert(is_list(lidar_offset) && len(lidar_offset) == 2 && is_num(lidar_offset[0]) && is_num(lidar_offset[1]),
-              "lidar_offset must be a numeric XY vector")
-       let (radius = maybe_percent_string_to_num(plist_get("corner_r", spec, 0), min(footprint)))
-       assert(is_num(radius) && radius >= 0,
-              "Lid corner_r must be nonnegative mm or percent")
-       let (base = ["size", orientation_size(orientation, size),
-                    "canonical_size", size,
-                    "power_rotation", plist_get("power_rotation", pl, 0),
-                    "mount_z", mount_z,
-                    "roof_z", roof_z,
-                    "headroom", headroom,
-                    "t", t,
-                    "side_t", side_t,
-                    "case_props", case_props,
-                    "rail_props", rails,
-                    "lidar", lidar_pl,
-                    "lidar_orientation", lidar_orientation,
-                    "lidar_offset", lidar_offset,
-                    "corner_r", calc_corner_rad(footprint, radius)],
-            adapter = multi_lipo_pack_adapter_props(plist_get("adapter", spec), base),
-            adapter_h = plist_get("enabled", adapter, false) ? plist_get("size", adapter)[2] : 0,
-            adapter_gap = plist_get("standoff_h", adapter, 0),
-            target_h = plist_get("lidar_target_h", spec, 13),
-            standoff_target_h = max(0, target_h - adapter_h - adapter_gap))
-       assert(is_undef(lidar_pl) || standoff_target_h > 0,
-              "lidar_target_h must exceed adapter thickness plus its spacers")
-       concat(base,
-              ["adapter_props", adapter,
-               "adapter_h", adapter_h,
-               "adapter_gap", adapter_gap,
-               "standoff_target_h", standoff_target_h,
-               "lidar_base_z", is_undef(lidar_pl) ? undef : size[2] + adapter_h + adapter_gap
-               + standoff_real_h(standoff_target_h, plist_get("bolt_d", lidar_pl))]);
+  assert(t > 0 && side_t > 0 && headroom >= side_t && lidar_pad >= 0,
+         "Lid roof and side thickness must be positive; headroom must leave material above the channels")
+  assert(in_list(lidar_orientation, ["wlh", "lwh"]),
+         "Lidar must remain upright on the roof")
+  assert(is_list(lidar_offset) && len(lidar_offset) == 2 && is_num(lidar_offset[0]) && is_num(lidar_offset[1]),
+         "lidar_offset must be a numeric XY vector")
+  let (radius = maybe_percent_string_to_num(plist_get("corner_r", spec, 0), min(footprint)))
+  assert(is_num(radius) && radius >= 0,
+         "Lid corner_r must be nonnegative mm or percent")
+  let (base = ["size", orientation_size(orientation, size),
+               "canonical_size", size,
+               "power_rotation", plist_get("power_rotation", pl, 0),
+               "mount_z", mount_z,
+               "roof_z", roof_z,
+               "headroom", headroom,
+               "t", t,
+               "side_t", side_t,
+               "case_props", case_props,
+               "rail_props", rails,
+               "lidar", lidar_pl,
+               "lidar_orientation", lidar_orientation,
+               "lidar_offset", lidar_offset,
+               "corner_r", calc_corner_rad(footprint, radius)],
+       adapter = multi_lipo_pack_adapter_props(plist_get("adapter", spec), base),
+       adapter_h = plist_get("enabled", adapter, false) ? plist_get("size", adapter)[2] : 0,
+       adapter_gap = plist_get("standoff_h", adapter, 0),
+       target_h = plist_get("lidar_target_h", spec, 13),
+       standoff_target_h = max(0, target_h - adapter_h - adapter_gap))
+  assert(is_undef(lidar_pl) || standoff_target_h > 0,
+         "lidar_target_h must exceed adapter thickness plus its spacers")
+  concat(base,
+         ["adapter_props", adapter,
+          "adapter_h", adapter_h,
+          "adapter_gap", adapter_gap,
+          "standoff_target_h", standoff_target_h,
+          "lidar_base_z", is_undef(lidar_pl) ? undef : size[2] + adapter_h + adapter_gap
+                                                       + standoff_real_h(standoff_target_h, plist_get("bolt_d", lidar_pl))]);
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -166,26 +166,26 @@ function multi_lipo_pack_lid_wago_mounts(pl, props) =
        occupied = [for (i=[0:2]) max(sensor_size[i], adapter_size[i])],
        sensor_box = _wago_bounds(concat(plist_get("lidar_offset", props), [0]), occupied),
        boxes = [for (m = mounts)
-           let (pos = plist_get("pos", m), gap = plist_get("gap", m, 2))
-             assert(is_list(pos) && len(pos) == 2 && is_num(pos[0]) && is_num(pos[1]),
-                    "Lid Wago pos must be a canonical XY roof-center offset")
-             assert(is_num(gap) && gap >= 0, "Lid Wago gap must be nonnegative")
-             _wago_bounds(concat(pos, [0]), wago_mount_size(m), gap)],
+         let (pos = plist_get("pos", m), gap = plist_get("gap", m, 2))
+         assert(is_list(pos) && len(pos) == 2 && is_num(pos[0]) && is_num(pos[1]),
+                "Lid Wago pos must be a canonical XY roof-center offset")
+         assert(is_num(gap) && gap >= 0, "Lid Wago gap must be nonnegative")
+         _wago_bounds(concat(pos, [0]), wago_mount_size(m), gap)],
        radius = plist_get("corner_r", props),
        roof = [[-size[0]/2, -size[1]/2, 0], [size[0]/2, size[1]/2, 0]],
        outside_corners = [for (b = boxes, x = [b[0][0], b[1][0]], y = [b[0][1], b[1][1]])
-           if (norm([max(0, abs(x)-size[0]/2 + radius),
-                     max(0, abs(y)-size[1]/2 + radius)]) > radius + 0.000001) 1])
-                     assert(is_list(mounts), "lid.wago_mounts must be a list")
-                     assert(len(outside_corners) == 0
-                            && len([for (b = boxes) if (!_wago_inside(b, roof)) 1]) == 0,
-                            "Wago bracket and margin must fit the existing lid roof")
-                     assert(is_undef(sensor) || len([for (b = boxes) if (_wago_overlap(b, sensor_box)) 1]) == 0,
-                            "Wago bracket overlaps the lidar or adapter envelope")
-                     assert(len([for (i=[0:1:len(boxes)-1], j=[0:1:i-1])
-                                    if (_wago_overlap(boxes[i], boxes[j])) 1]) == 0,
-                            "Wago brackets overlap on the lid")
-                     mounts;
+         if (norm([max(0, abs(x)-size[0]/2 + radius),
+                   max(0, abs(y)-size[1]/2 + radius)]) > radius + 0.000001) 1])
+  assert(is_list(mounts), "lid.wago_mounts must be a list")
+  assert(len(outside_corners) == 0
+         && len([for (b = boxes) if (!_wago_inside(b, roof)) 1]) == 0,
+         "Wago bracket and margin must fit the existing lid roof")
+  assert(is_undef(sensor) || len([for (b = boxes) if (_wago_overlap(b, sensor_box)) 1]) == 0,
+         "Wago bracket overlaps the lidar or adapter envelope")
+  assert(len([for (i=[0:1:len(boxes)-1], j=[0:1:i-1])
+    if (_wago_overlap(boxes[i], boxes[j])) 1]) == 0,
+         "Wago brackets overlap on the lid")
+  mounts;
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -243,10 +243,11 @@ module multi_lipo_pack_lid(pl,
   wagos = multi_lipo_pack_lid_wago_mounts(pl, props);
   fuse_props = lid_fuse_props(plist_get("fuse", spec), props);
   meters = lid_voltmeter_layout(plist_get("voltmeters", spec,
-                                           [plist_get("voltmeter", spec)]), props);
+                                          [plist_get("voltmeter", spec)]),
+                                props);
   perfboard = lid_perfboard_props(plist_get("perfboard", spec), props);
   wago_boxes = [for (m = wagos)
-      _wago_bounds(concat(plist_get("pos", m), [0]), wago_mount_size(m))];
+    _wago_bounds(concat(plist_get("pos", m), [0]), wago_mount_size(m))];
   equipment = lid_equipment_layout(plist_get("equipment", spec, []),
                                    props,
                                    concat(wago_boxes, _lid_fuse_tie_bounds(fuse_props)));
@@ -336,18 +337,20 @@ module multi_lipo_pack_lid(pl,
     along = roof_min[slide_axis];
     cross = plist_get("cross", rail) - depth / 2 - 0.1;
     perfboard_exclusions = plist_get("enabled", perfboard, false)
-      && rail == plist_get("rails", rails)[0]
+                           && rail == plist_get("rails", rails)[0]
         ? [for (hole = plist_get("holes", perfboard))
-             let (pos = plist_get("pos", perfboard),
-                  r = plist_get("land_r", perfboard),
-                  center = [size[slide_axis] / 2
-                            + (axis == "x" ? 1 : -1) * (pos[0] - hole[1]),
-                            pos[1] + hole[0] - z])
-               [center - [r, r], center + [r, r]]]
+          let (pos = plist_get("pos", perfboard),
+               r = plist_get("land_r", perfboard),
+               center = [size[slide_axis] / 2
+                         + (axis == "x" ? 1 : -1) * (pos[0] - hole[1]),
+                         pos[1] + hole[0] - z])
+          [center - [r, r], center + [r, r]]]
         : [];
     difference() {
       translate([axis == "x" ? along : cross, axis == "x" ? cross : along, z]) {
-        multi_lipo_pack_vents(vent, depth + 0.2, axis=axis,
+        multi_lipo_pack_vents(vent,
+                              depth + 0.2,
+                              axis=axis,
                               exclude=perfboard_exclusions);
       }
       translate([body[0] / 2, body[1] / 2, 0]) {

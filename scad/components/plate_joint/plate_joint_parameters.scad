@@ -132,7 +132,8 @@ function plate_joint_parameters(plate_h,
          "plate_h is required and must be positive")
   assert(is_num(bolt_d) && bolt_d > 0,
          "bolt_d is required and must be positive")
-  assert(is_undef(w) || (is_num(w) && w > 0), "w must be positive when specified")
+  assert(is_undef(w) || (is_num(w) && w > 0),
+         "w must be positive when specified")
   assert(is_num(l) && l > 0, "l is required and must be positive")
   let (dovetail_rib = with_default(dovetail_rib, true),
        bolt_no_bore = with_default(bolt_no_bore, true),
@@ -273,41 +274,42 @@ function plate_joint_parameters(plate_h,
  */
 function plate_joint_size_report(params, flip=false) =
   let (p = params,
-       w = plist_get("w", p), l = plist_get("l", p), h = plist_get("plate_h", p),
-       rw = plist_get("rail_w", p), rh = plist_get("rail_h", p),
-       base = plist_get("base_h", p), bottom = plist_get("bottom_h", p),
-       gap = plist_get("clearance", p), xs = plist_get("bolt_xs", p),
+       w = plist_get("w", p),
+       l = plist_get("l", p),
+       h = plist_get("plate_h", p),
+       rw = plist_get("rail_w", p),
+       rh = plist_get("rail_h", p),
+       base = plist_get("base_h", p),
+       bottom = plist_get("bottom_h", p),
+       gap = plist_get("clearance", p),
+       xs = plist_get("bolt_xs", p),
        bore = plist_get("bolt_no_bore", p) ? 0 : plist_get("bolt_bore_h", p),
        hole_d = bore > 0 ? max(plist_get("bolt_d", p), plist_get("bolt_bore_d", p)) : plist_get("bolt_d", p),
-       pd = plist_get("pin_d", p), pz = plist_get("pin_z", p),
-       ps = plist_get("pin_spacing", p), comp = plist_get("pin_compensation", p),
+       pd = plist_get("pin_d", p),
+       pz = plist_get("pin_z", p),
+       ps = plist_get("pin_spacing", p),
+       comp = plist_get("pin_compensation", p),
        pad = plist_get("pin_use_pad", p),
        pin_z_extent = pad ? pd : pd + comp,
        pin_x_extent = pad ? pd : max(pd, comp),
        outer_x = len(xs) > 0 ? max([for (x = xs) abs(x)]) : 0,
        // The shared slider's rib half-profile join shortens its nominal tip by 0.05.
        rib_tip = plist_get("dovetail_rib", p) ? 0.05 : 0)
-  concat([
-    ["Joint X width", w, false],
-    ["Joint Y length", l, false],
-    ["Plate height", h, false],
-    ["Rail width", rw, false],
-    ["Rail height", rh, false],
-    ["Base skin", base, true],
-    ["Female floor after fit", bottom - gap, true],
-    ["Side strip before fit", (w - rw) / 2, false]
-  ], len(xs) == 0 ? [] : [
-    ["Bolt outer edge wall", w / 2 - outer_x - hole_d / 2, true],
-    ["Bolt span", plist_get("bolt_spacing_center", p), false]
-  ], len(xs) < 2 ? [] : [
-    ["Side bolt to socket wall", outer_x - rw / 2 - gap - hole_d / 2, true]
-  ], bore <= 0 ? [] : [
-    ["Male skin below head", base - bore, true],
-    ["Female floor above head", bottom - gap - bore, true]
-  ], !plist_get("include_pin_holes", p) ? [] : [
-    ["Pin axis Z in envelope", flip ? h - pz : pz, false],
-    ["Pin top cover", h - pz - pin_z_extent / 2, true],
-    ["Pin bottom cover", pz - pin_z_extent / 2 - bottom - rib_tip, true],
-    ["Pin side (neck bound)", (plist_get("rail_neck_w", p) - ps - pin_x_extent) / 2, true],
-    ["Pin engagement each end", (plist_get("pin_l", p) - l) / 2, true]
-  ]);
+  concat([["Joint X width", w, false],
+          ["Joint Y length", l, false],
+          ["Plate height", h, false],
+          ["Rail width", rw, false],
+          ["Rail height", rh, false],
+          ["Base skin", base, true],
+          ["Female floor after fit", bottom - gap, true],
+          ["Side strip before fit", (w - rw) / 2, false]],
+         len(xs) == 0 ? [] : [["Bolt outer edge wall", w / 2 - outer_x - hole_d / 2, true],
+                              ["Bolt span", plist_get("bolt_spacing_center", p), false]],
+         len(xs) < 2 ? [] : [["Side bolt to socket wall", outer_x - rw / 2 - gap - hole_d / 2, true]],
+         bore <= 0 ? [] : [["Male skin below head", base - bore, true],
+                           ["Female floor above head", bottom - gap - bore, true]],
+         !plist_get("include_pin_holes", p) ? [] : [["Pin axis Z in envelope", flip ? h - pz : pz, false],
+                                                    ["Pin top cover", h - pz - pin_z_extent / 2, true],
+                                                    ["Pin bottom cover", pz - pin_z_extent / 2 - bottom - rib_tip, true],
+                                                    ["Pin side (neck bound)", (plist_get("rail_neck_w", p) - ps - pin_x_extent) / 2, true],
+                                                    ["Pin engagement each end", (plist_get("pin_l", p) - l) / 2, true]]);

@@ -80,8 +80,8 @@ function gearmotor_encoder_params(motor,
        pcb_h = min(pcb[0], pcb[1]),
        axis_h = plist_get("outer_shaft_y_center", gearbox),
        shaft_tip_y = plist_get("outer_shaft_l", gearbox)
-       - plist_get("thickness", gearbox)
-       - plist_get("outer_shaft_rear_len", gearbox),
+                     - plist_get("thickness", gearbox)
+                     - plist_get("outer_shaft_rear_len", gearbox),
        axis_z = base_h + axis_h,
        ic_h = plist_get("chip_size", plist_get("sensor_ic", encoder_plist))[2],
        sleeve_origin_y = shaft_tip_y - plist_get("shaft_tip_z", sleeve),
@@ -103,49 +103,49 @@ function gearmotor_encoder_params(motor,
        head_clearance_d = find_bolt_head_d(chassis_bolt_d, "pan") + 2 * clearance,
        head_clearance_h = find_bolt_head_h(chassis_bolt_d, "pan") + clearance,
        bounds = [[-half_w, min_y, base_h], [half_w, wall_y, max_z]])
-       assert(base_h > pocket_h && bottom_thickness > 0 && side_thickness > 0,
-              "Encoder nut pockets must leave a solid roof in the gearbox base")
-       assert(min(pcb_padding, mount_wall, nut_clearance, clearance, magnet_distance) >= 0
-              && magnet_d > 0 && magnet_h > 0 && shaft_tip_y > 0,
-              "Invalid encoder mount dimensions or unused shaft length")
-       assert(axis_h - pcb_h / 2 >= bottom_thickness + clearance,
-              "Encoder PCB is too low for a separate foot; reduce foot thickness or revise the mount")
-       assert(sleeve_origin_y > plist_get("bearing_boss_h", gearbox),
-              "Encoder sleeve reaches the gearbox bearing boss")
-  assert(plist_get("size", sleeve)[2] - plist_get("magnet_face_z", sleeve) < magnet_distance,
-         "Recessed magnet leaves no clearance between sleeve lip and sensor")
-       ["encoder", encoder_plist,
-        "sleeve", sleeve,
-        "sleeve_origin", [0, sleeve_origin_y, axis_z],
-        "sleeve_rotation", [90, 0, 180],
-        "rotated", rotated,
-        "pcb_w", pcb_w,
-        "pcb_h", pcb_h,
-        "pcb_padding", pcb_padding,
-        "base_h", base_h,
-        "bottom_thickness", bottom_thickness,
-        "side_thickness", side_thickness,
-        "shaft_tip", [0, shaft_tip_y, axis_z],
-        "magnet_d", plist_get("magnet_d", sleeve),
-        "magnet_h", plist_get("magnet_h", sleeve),
-        "magnet_face", [0, magnet_face_y, axis_z],
-        "sensor_face", [0, magnet_face_y + magnet_distance, axis_z],
-        "pcb_back", [0, pcb_back_y, axis_z],
-        "wall_y", wall_y,
-        "foot_r", foot_r,
-        "foot_x", foot_x,
-        "mount_bolt_d", mount_bolt_d,
-        "mount_holes", [[-foot_x, foot_y], [foot_x, foot_y]],
-        "nut_d", nut_d,
-        "nut_h", nut_h,
-        "nut_pocket_d", pocket_d,
-        "nut_pocket_h", pocket_h,
-        "chassis_holes", chassis_holes,
-        "head_clearance_d", head_clearance_d,
-        "head_clearance_h", head_clearance_h,
-        "bounds", bounds,
-        "size", bounds[1] - bounds[0],
-        "base_extension_bounds", [[-half_w, min_y, 0], [half_w, wall_y, base_h]]];
+    assert(base_h > pocket_h && bottom_thickness > 0 && side_thickness > 0,
+           "Encoder nut pockets must leave a solid roof in the gearbox base")
+    assert(min(pcb_padding, mount_wall, nut_clearance, clearance, magnet_distance) >= 0
+           && magnet_d > 0 && magnet_h > 0 && shaft_tip_y > 0,
+           "Invalid encoder mount dimensions or unused shaft length")
+    assert(axis_h - pcb_h / 2 >= bottom_thickness + clearance,
+           "Encoder PCB is too low for a separate foot; reduce foot thickness or revise the mount")
+    assert(sleeve_origin_y > plist_get("bearing_boss_h", gearbox),
+           "Encoder sleeve reaches the gearbox bearing boss")
+    assert(plist_get("size", sleeve)[2] - plist_get("magnet_face_z", sleeve) < magnet_distance,
+           "Recessed magnet leaves no clearance between sleeve lip and sensor")
+    ["encoder", encoder_plist,
+     "sleeve", sleeve,
+     "sleeve_origin", [0, sleeve_origin_y, axis_z],
+     "sleeve_rotation", [90, 0, 180],
+     "rotated", rotated,
+     "pcb_w", pcb_w,
+     "pcb_h", pcb_h,
+     "pcb_padding", pcb_padding,
+     "base_h", base_h,
+     "bottom_thickness", bottom_thickness,
+     "side_thickness", side_thickness,
+     "shaft_tip", [0, shaft_tip_y, axis_z],
+     "magnet_d", plist_get("magnet_d", sleeve),
+     "magnet_h", plist_get("magnet_h", sleeve),
+     "magnet_face", [0, magnet_face_y, axis_z],
+     "sensor_face", [0, magnet_face_y + magnet_distance, axis_z],
+     "pcb_back", [0, pcb_back_y, axis_z],
+     "wall_y", wall_y,
+     "foot_r", foot_r,
+     "foot_x", foot_x,
+     "mount_bolt_d", mount_bolt_d,
+     "mount_holes", [[-foot_x, foot_y], [foot_x, foot_y]],
+     "nut_d", nut_d,
+     "nut_h", nut_h,
+     "nut_pocket_d", pocket_d,
+     "nut_pocket_h", pocket_h,
+     "chassis_holes", chassis_holes,
+     "head_clearance_d", head_clearance_d,
+     "head_clearance_h", head_clearance_h,
+     "bounds", bounds,
+     "size", bounds[1] - bounds[0],
+     "base_extension_bounds", [[-half_w, min_y, 0], [half_w, wall_y, base_h]]];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -180,7 +180,7 @@ module gearmotor_encoder_bracket(params,
   size = plist_get("size", params);
   shift = is_undef(anchor) ? [0, 0, 0]
     : to_anchor(normalize_anchor(anchor), size)
-    - bounds[0];
+      - bounds[0];
   base_h = plist_get("base_h", params);
   foot_h = plist_get("bottom_thickness", params);
   wall_h = bounds[1][2] - base_h;

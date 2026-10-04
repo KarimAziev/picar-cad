@@ -119,7 +119,8 @@ module pci_connector_from_plist(plist, anchor, orientation) {
   color = plist_get("color", plist, metallic_yellow_silver_2);
   latch_color = plist_get("latch_color", plist, jet_black);
   anchor = with_default(anchor, plist_get("anchor", plist, [0, 0, 1]));
-  orientation = with_default(orientation, plist_get("orientation", plist, "lwh"));
+  orientation = with_default(orientation,
+                             plist_get("orientation", plist, "lwh"));
   latch_thickness = plist_get("latch_thickness", plist, 0.4);
 
   pci_connector(size=size,

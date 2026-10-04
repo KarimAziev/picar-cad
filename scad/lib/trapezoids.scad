@@ -8,7 +8,6 @@
   * License: GPL-3.0-or-later
   */
 
-
 /**
    ─────────────────────────────────────────────────────────────────────────────
    trapezoid
@@ -124,12 +123,12 @@ module trapezoid_rounded_bottom(b=20,
   n = $fn;
 
   left_fillet = [for (i = [0 : n])
-      let (theta = 180 + i * (90 / n))
-        [rad + rad * cos(theta), rad + rad * sin(theta)]];
+    let (theta = 180 + i * (90 / n))
+    [rad + rad * cos(theta), rad + rad * sin(theta)]];
 
   right_fillet = [for (i = [1 : n])
-      let (theta = -90 + i * (90 / n))
-        [(b - rad) + rad * cos(theta), rad + rad * sin(theta)]];
+    let (theta = -90 + i * (90 / n))
+    [(b - rad) + rad * cos(theta), rad + rad * sin(theta)]];
 
   pts = concat(left_fillet,
                [[b - rad, 0]],

@@ -27,7 +27,7 @@ lock_nut       = true;
 function wheel_hub_full_h(bearing_w=wheel_bearing_w,
                           spacer_h=wheel_hub_inner_rim_h,
                           h_tolerance=wheel_hub_h_tolerance)
-= spacer_h + (h_tolerance + bearing_w) / 2;
+  = spacer_h + (h_tolerance + bearing_w) / 2;
 
 module wheel_hub_base(d=wheel_hub_outer_d,
                       bearing_d=wheel_bearing_outer_d,
@@ -59,9 +59,9 @@ module wheel_hub_base(d=wheel_hub_outer_d,
   bolt_y = (bearing_d / 2) + max(bolt_boss_d, bolt_d) / 2 + bolt_offset;
 
   has_counterbores = !is_undef(bolt_cbore_d)
-    && !is_undef(bolt_cbore_h)
-    && bolt_cbore_h > 0
-    && bolt_cbore_d > bolt_d;
+                     && !is_undef(bolt_cbore_h)
+                     && bolt_cbore_h > 0
+                     && bolt_cbore_d > bolt_d;
 
   module _base() {
     maybe_color(color) {

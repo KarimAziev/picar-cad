@@ -43,7 +43,7 @@ if (!is_undef(e)) {
   translate([base_right + 2 * gap + encoder_w + sleeve_d / 2, 0, 0]) {
     driveshaft_magnet_sleeve(params=sleeve);
   }
- }
+}
 for (i = [0:1]) {
   translate([base_right + encoder_w + sleeve_d + 3 * gap + boss_d / 2
              + i * (boss_d + gap),
@@ -51,4 +51,4 @@ for (i = [0:1]) {
              0]) {
     gearbox_boss(type=i == 0 ? "front" : "rear", params=p, anchor=[0, 0, 1]);
   }
- }
+}

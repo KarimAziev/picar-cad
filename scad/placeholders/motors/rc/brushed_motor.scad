@@ -66,7 +66,7 @@ function rc_motor_body_full_h(plist) =
        contact_stack_heights = contact_stack_get_heights(contact_stack),
        contact_stack_h = non_empty(contact_stack_heights) ? sum(contact_stack_heights) : 0,
        body_full_h = body_h + contact_cup_h
-       + max(contact_stack_h, plist_get("size", plist_get("contact", plist))[2]))
+                     + max(contact_stack_h, plist_get("size", plist_get("contact", plist))[2]))
   body_full_h;
 
 /**

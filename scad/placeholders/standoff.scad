@@ -22,26 +22,26 @@ function _standoff_height_table(target, heights, n=1, table=[[]]) =
   n > target ? table[target] :
   let (candidates = [for (h = heights) concat([h], table[max(0, n-h)])],
        best = best_list_by_lower_sum(candidates))
-  _standoff_height_table(target, heights, n+1, concat(table, [best]));
+    _standoff_height_table(target, heights, n + 1, concat(table, [best]));
 
 function standoff_heights(min_h,
                           body_heights = [20, 15, 10, 9, 8, 6, 5]) =
   min_h <= 0 || len(body_heights) == 0 ? [] :
   assert(min(body_heights) > 0, "Standoff body heights must be positive")
-  len([for (h = body_heights) if (h != floor(h)) h]) == 0
+    len([for (h = body_heights) if (h != floor(h)) h]) == 0
   ? _standoff_height_table(ceil(min_h), body_heights)
   : best_height_combo(min_h, body_heights, ceil(min_h / min(body_heights)) + 1);
 
 function calc_standoff_params(d, min_h) =
   let (norm_specs = [for (spec = standoff_specs)
-           [plist_get("thread_d", spec), spec]],
+    [plist_get("thread_d", spec), spec]],
        sorted_norm = sort_by_idx(norm_specs, asc=true, idx=0),
        sorted_specs = [for (pair = sorted_norm) pair[1]],
        sorted_dias = [for (spec = sorted_specs) plist_get("thread_d", spec)],
        found = [for (i = [0 : len(sorted_specs) - 1])
-           let (spec = sorted_specs[i],
-                dia = sorted_dias[i],
-                next_dia = sorted_dias[i + 1])
+         let (spec = sorted_specs[i],
+              dia = sorted_dias[i],
+              next_dia = sorted_dias[i + 1])
              if (d == dia || (dia < d && (is_undef(next_dia) || next_dia > d)))
                spec][0],
        standoffs = is_undef(found)

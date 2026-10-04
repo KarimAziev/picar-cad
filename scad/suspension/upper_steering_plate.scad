@@ -8,10 +8,11 @@
   * License: GPL-3.0-or-later
   */
 include <../rc_params.scad>
+
 use <../lib/transforms.scad>
 use <../placeholders/bolt.scad>
-use <bellcrank/util.scad>
 use <bellcrank/bellcrank_drive.scad>
+use <bellcrank/util.scad>
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -23,11 +24,11 @@ use <bellcrank/bellcrank_drive.scad>
  */
 function upper_steering_plate_mounts() =
   concat([for (side = [-1, 1])
-      [side * chassis_bellcrank_spacing / 2, 0, bellcrank_post_h]],
-    [for (side = [-1, 0, 1])
-      [side * upper_steering_panel_bulkhead_spacing / 2,
-       bellcrank_y_distance_from_bulkhead,
-       bellcrank_idler_full_mount_h() + bellcrank_post_flang_h]]);
+    [side * chassis_bellcrank_spacing / 2, 0, bellcrank_post_h]],
+         [for (side = [-1, 0, 1])
+           [side * upper_steering_panel_bulkhead_spacing / 2,
+            bellcrank_y_distance_from_bulkhead,
+            bellcrank_idler_full_mount_h() + bellcrank_post_flang_h]]);
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -39,16 +40,16 @@ function upper_steering_plate_web_z() =
   let (housing_top = bellcrank_idler_full_mount_h() + bellcrank_post_flang_h,
        // The cap is translated by the drive-ring thickness in bellcrank_drive.
        cap_top = housing_top + bellcrank_arm_thickness
-                   - bellcrank_servo_lever_thickness,
+                 - bellcrank_servo_lever_thickness,
        lever_top = bellcrank_servo_lever_z_coords()[1],
        // Highest upper-holder barrel after its assembly rotation about X.
        holder_top = front_bulkhead_housing_h
-                      + front_bulkhead_shock_tower_mount_offset
-                      + front_shock_tower_pin_y_offset
-                      + front_upper_arm_hinge_barrel_hole_d
-                      + front_upper_suspension_holder_pin_barrel_d / 2)
+                    + front_bulkhead_shock_tower_mount_offset
+                    + front_shock_tower_pin_y_offset
+                    + front_upper_arm_hinge_barrel_hole_d
+                    + front_upper_suspension_holder_pin_barrel_d / 2)
   max(housing_top, cap_top, lever_top, holder_top)
-    + upper_steering_plate_running_clearance;
+  + upper_steering_plate_running_clearance;
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -60,7 +61,7 @@ function upper_steering_plate_size() =
   [chassis_bellcrank_spacing + upper_steering_plate_pad_d,
    bellcrank_y_distance_from_bulkhead + upper_steering_plate_pad_d,
    upper_steering_plate_web_z() - bellcrank_post_h
-     + upper_steering_plate_thickness];
+   + upper_steering_plate_thickness];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -188,7 +189,8 @@ module upper_steering_plate(anchor=[1, 1, 1],
                 start_z = p[2] - bellcrank_post_h;
                 translate([p[0], p[1], start_z]) {
                   cylinder(d=i < 2 ? bellcrank_post_od : upper_steering_panel_boss_od,
-                           h=web_z - start_z + 0.01, $fn=fn);
+                           h=web_z - start_z + 0.01,
+                           $fn=fn);
                 }
               }
             }
@@ -198,8 +200,10 @@ module upper_steering_plate(anchor=[1, 1, 1],
         if (show_bolts) {
           for (p = mounts) {
             translate([p[0], p[1], size[2] - bolt_l]) {
-              bolt(d=snap_bolt_d(bolt_d), h=bolt_l,
-                   head_type="socket", threaded=false);
+              bolt(d=snap_bolt_d(bolt_d),
+                   h=bolt_l,
+                   head_type="socket",
+                   threaded=false);
             }
           }
         }

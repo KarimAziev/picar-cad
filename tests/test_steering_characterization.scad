@@ -1,13 +1,14 @@
 include <../scad/rc_params.scad>
+
 use <../scad/lib/plist.scad>
 use <../scad/suspension/steering_characterization/datums.scad>
 
-d = steering_audit_datums();
+d      = steering_audit_datums();
 pivots = plist_get("bellcrank_pivots", d);
 mounts = plist_get("center_mounts", d);
-plate = plist_get("center_plate_holes", d);
-a = plist_get("wheel_rod_a", d);
-b = plist_get("wheel_rod_b", d);
+plate  = plist_get("center_plate_holes", d);
+a      = plist_get("wheel_rod_a", d);
+b      = plist_get("wheel_rod_b", d);
 
 assert(abs(norm(pivots[1] - pivots[0]) - chassis_bellcrank_spacing) < 1e-8);
 assert(abs(norm(plate[1] - plate[0]) - plist_get("center_link_l", d)) < 1e-8);

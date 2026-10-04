@@ -7,13 +7,13 @@
   * Author: Karim Aziiev <karim.aziiev@gmail.com>
   * License: GPL-3.0-or-later
   */
-use <../lib/plist.scad>
 use <../lib/functions.scad>
-use <../placeholders/wago/wago_221.scad>
+use <../lib/plist.scad>
 use <../lib/shapes3d.scad>
 use <../lib/slots.scad>
 use <../lib/transforms.scad>
 use <../placeholders/bolt.scad>
+use <../placeholders/wago/wago_221.scad>
 use <wago_bracket.scad>
 
 /**
@@ -35,8 +35,8 @@ function wago_pair_wire_ports(pl=[], side=1) =
             + [ws[0] / 2, ws[1] / 2, 0])
   assert(side == -1 || side == 1, "Wago side must be -1 or 1")
   [for (pt = wago_wire_ports(plist_get("wago", b)))
-      rotZ(wp + pt, side == 1 ? 180 : 0)
-      + [0, side * plist_get("offset", p), 0]];
+    rotZ(wp + pt, side == 1 ? 180 : 0)
+    + [0, side * plist_get("offset", p), 0]];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -72,8 +72,8 @@ function wago_pair_props(pl=[]) =
        bore_d = find_bolt_head_d(d, "countersunk") + 0.3,
        bore_h = find_bolt_head_h(d, "countersunk") + 0.15,
        holes = [for (side = [-1, 1], xy = plist_get("mount_holes", p))
-           [-side * (xy[0] - s[0] / 2),
-            side * (offset - xy[1] + s[1] / 2)]])
+         [-side * (xy[0] - s[0] / 2),
+          side * (offset - xy[1] + s[1] / 2)]])
   assert(plist_get("mount_side", p) == "rear",
          "Opposing Wago pairs require rear mounting ears")
   assert(is_num(spacing) && spacing >= 0 && is_num(pad) && pad > 0,
@@ -86,11 +86,19 @@ function wago_pair_props(pl=[]) =
          "Shared Wago wiring opening must clear the mounting ears and trays")
   assert(is_num(r) && r >= 0 && r <= min(wire) / 2,
          "Wago pair wire_r must fit the wiring opening")
-  ["size", size, "bracket", bracket, "bracket_props", p,
-   "offset", offset, "mount_holes", holes,
-   "wire_pos", [0, 0], "wire_size", wire, "wire_r", r,
-   "max_wire_size", max_wire, "overhang", overhang,
-   "hole_d", plist_get("hole_d", p), "bore_d", bore_d, "bore_h", bore_h,
+  ["size", size,
+   "bracket", bracket,
+   "bracket_props", p,
+   "offset", offset,
+   "mount_holes", holes,
+   "wire_pos", [0, 0],
+   "wire_size", wire,
+   "wire_r", r,
+   "max_wire_size", max_wire,
+   "overhang", overhang,
+   "hole_d", plist_get("hole_d", p),
+   "bore_d", bore_d,
+   "bore_h", bore_h,
    "roof_bounds", [[-size[0] / 2, -size[1] / 2 + overhang, 0],
                    [size[0] / 2, size[1] / 2 - overhang, size[2]]]];
 

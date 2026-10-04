@@ -80,7 +80,7 @@ function steering_arm_bolt_pos_from_planar(planar_params,
   let (arm_dy=planar_params[1],
        ear_base_len=planar_params[2],
        pos=thickness + knuckle_outer_d / 2 + arm_dy
-       + ear_base_len
-       + bolt_d / 2
-       - (bolt_d - snap_bolt_d(bolt_d)))
+           + ear_base_len
+           + bolt_d / 2
+           - (bolt_d - snap_bolt_d(bolt_d)))
   pos;

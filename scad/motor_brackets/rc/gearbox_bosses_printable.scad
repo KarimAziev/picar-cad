@@ -13,4 +13,4 @@ for (i = [0:1]) {
   translate([i * (plist_get("boss_od", p) + 5), 0, 0]) {
     gearbox_boss(type=i == 0 ? "front" : "rear", params=p, anchor=[0, 0, 1]);
   }
- }
+}

@@ -39,10 +39,10 @@ function rear_equipment_zones(layout, edge_margin=3, gap=3) =
        y0 = plist_get("min_y", layout) + edge_margin,
        y1 = plist_get("transition_y_end", layout) - edge_margin)
   [for (side = ["left", "right"])
-      let (x0 = side == "left" ? -half_w + edge_margin : motor[1][0] + gap,
-           x1 = side == "left" ? motor[0][0] - gap : half_w - edge_margin)
-        ["name", side,
-         "bounds", [[x0, y0, 0], [x1, y1, 0]]]];
+    let (x0 = side == "left" ? -half_w + edge_margin : motor[1][0] + gap,
+         x1 = side == "left" ? motor[0][0] - gap : half_w - edge_margin)
+    ["name", side,
+     "bounds", [[x0, y0, 0], [x1, y1, 0]]]];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -58,13 +58,13 @@ function rear_equipment_obstacles(layout) =
        radius = is_undef(payload) ? 0 : plist_get("radius", payload))
   concat([plist_get("motor_bounds", layout)],
          [for (panel = plist_get("panels", layout, []))
-             plist_get("bounds", panel)],
+           plist_get("bounds", panel)],
          [for (wago = plist_get("wago_mounts", layout, []))
-             plist_get("bounds", wago)],
+           plist_get("bounds", wago)],
          is_undef(payload) ? [] :
          [for (p = plist_get("mount_holes", payload))
-             [[p[0] - radius, p[1] - radius, 0],
-              [p[0] + radius, p[1] + radius, 0]]]);
+           [[p[0] - radius, p[1] - radius, 0],
+            [p[0] + radius, p[1] + radius, 0]]]);
 
 function _deck_fits(bounds, zone, obstacles, gap, payload, parent_t) =
   bounds[0][0] >= zone[0][0] - 0.000001
@@ -81,8 +81,8 @@ function _deck_fits(bounds, zone, obstacles, gap, payload, parent_t) =
 function _deck_candidates(size, zone, obstacles, gap, position) =
   !is_undef(position)
   ? [[for (axis = [0, 1])
-      zone[0][axis] + size[axis] / 2
-        + position[axis] * (zone[1][axis] - zone[0][axis] - size[axis])]]
+    zone[0][axis] + size[axis] / 2
+    + position[axis] * (zone[1][axis] - zone[0][axis] - size[axis])]]
   : let (xs = qsort(concat([zone[0][0] + size[0] / 2,
                             zone[1][0] - size[0] / 2],
                            [for (b = obstacles) b[1][0] + gap + size[0] / 2],
@@ -91,7 +91,7 @@ function _deck_candidates(size, zone, obstacles, gap, position) =
                             zone[1][1] - size[1] / 2],
                            [for (b = obstacles) b[1][1] + gap + size[1] / 2],
                            [for (b = obstacles) b[0][1] - gap - size[1] / 2])))
-  [for (y = ys, x = xs) [x, y]];
+    [for (y = ys, x = xs) [x, y]];
 
 function _rear_equipment_place(specs,
                                layout,
@@ -115,17 +115,17 @@ function _rear_equipment_place(specs,
                abs(sin(rotation)) * base[0] + abs(cos(rotation)) * base[1],
                base[2]],
        occupied = concat(obstacles, [for (p = placed) plist_get("bounds", p)]))
-  assert(is_num(rotation), "Equipment rotation must be degrees about Z")
-  assert(side == "left" || side == "right" || side == "auto",
-         "Equipment zone must be left, right or auto")
-  assert(is_undef(position) || (is_list(position) && len(position) == 2
-                                && min(position) >= 0 && max(position) <= 1),
-         "Equipment position must be [x,y] fractions between 0 and 1")
-  let (candidates = [for (zone = zones)
-           if (side == "auto" || side == plist_get("name", zone))
+    assert(is_num(rotation), "Equipment rotation must be degrees about Z")
+    assert(side == "left" || side == "right" || side == "auto",
+           "Equipment zone must be left, right or auto")
+    assert(is_undef(position) || (is_list(position) && len(position) == 2
+                                  && min(position) >= 0 && max(position) <= 1),
+           "Equipment position must be [x,y] fractions between 0 and 1")
+    let (candidates = [for (zone = zones)
+      if (side == "auto" || side == plist_get("name", zone))
              let (bounds = plist_get("bounds", zone))
                for (xy = _deck_candidates(size, bounds, occupied, gap, position))
-                 let (pos = [xy[0], xy[1], 0], b = _deck_bounds(pos, size))
+               let (pos = [xy[0], xy[1], 0], b = _deck_bounds(pos, size))
                    if (_deck_fits(b, bounds, occupied, gap,
                                   plist_get("power_case", layout),
                                   plist_get("size", layout)[2]))
@@ -137,17 +137,17 @@ function _rear_equipment_place(specs,
                       "pos", pos,
                       "size", size,
                       "bounds", b]])
-  assert(len(candidates) > 0,
-         str("Rear equipment #", i + 1, " (", kind, ") does not fit zone ", side,
-             " at rotation ", rotation, "; envelope ", size,
-             ". Change order, zone, rotation, position or hardware; chassis is fixed."))
-  _rear_equipment_place(specs,
-                        layout,
-                        zones,
-                        obstacles,
-                        gap,
-                        i + 1,
-                        concat(placed, [candidates[0]]));
+    assert(len(candidates) > 0,
+           str("Rear equipment #", i + 1, " (", kind, ") does not fit zone ", side,
+               " at rotation ", rotation, "; envelope ", size,
+               ". Change order, zone, rotation, position or hardware; chassis is fixed."))
+    _rear_equipment_place(specs,
+                          layout,
+                          zones,
+                          obstacles,
+                          gap,
+                          i + 1,
+                          concat(placed, [candidates[0]]));
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -167,10 +167,10 @@ function _rear_equipment_place(specs,
 function rear_equipment_layout(specs, layout, edge_margin=3, gap=3) =
   assert(is_list(specs), "Rear equipment must be a list")
   let (expanded = [for (spec = specs)
-           let (count = plist_get("count", spec, 1))
-             each assert(is_num(count) && count >= 1 && floor(count) == count,
-                         "Equipment count must be a positive integer")
-             repeat(spec, count)])
+    let (count = plist_get("count", spec, 1))
+      each assert(is_num(count) && count >= 1 && floor(count) == count,
+                  "Equipment count must be a positive integer")
+      repeat(spec, count)])
   _rear_equipment_place(expanded,
                         layout,
                         rear_equipment_zones(layout, edge_margin, gap),

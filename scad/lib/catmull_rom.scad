@@ -156,8 +156,8 @@ function cr_resample(points, samples_per_seg=20) =
   ? points
   : concat([points[0]],
            [for (i=[0:len(points)-2])
-               for (k=[1:samples_per_seg]) // start at 1 to avoid duplicating segment start
-                 cr_point(points, i, k / samples_per_seg)]);
+             for (k=[1:samples_per_seg]) // start at 1 to avoid duplicating segment start
+               cr_point(points, i, k / samples_per_seg)]);
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -187,18 +187,18 @@ function cr_resample_adaptive(points, step=2) =
   len(points) < 2 ? points :
   concat([points[0]],
          [for (i = [0 : len(points) - 2])
-             let (seg = vsub(points[i + 1], points[i]),
-                  seglen = vlen(seg),
+           let (seg = vsub(points[i + 1], points[i]),
+                seglen = vlen(seg),
 
-                  f0 = local_step_factor(points, i),
-                  f1 = local_step_factor(points, i + 1),
-                  f = min(f0, f1),
+                f0 = local_step_factor(points, i),
+                f1 = local_step_factor(points, i + 1),
+                f = min(f0, f1),
 
-                  eff_step = max(1e-6, st * clamp(f, 0.2, 1.0)),
+                eff_step = max(1e-6, st * clamp(f, 0.2, 1.0)),
 
-                  s = max(3, ceil(seglen / eff_step)))
-               for (k = [1 : s])
-                 cr_point(points, i, k / s)]);
+                s = max(3, ceil(seglen / eff_step)))
+             for (k = [1 : s])
+             cr_point(points, i, k / s)]);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Centripetal Catmull-Rom (3D) + resampling
@@ -314,8 +314,8 @@ function cr_c_resample(points, samples_per_seg=20, alpha=0.5) =
   ? points
   : concat([points[0]],
            [for (i=[0:len(points)-2])
-               for (k=[1:samples_per_seg]) // avoid duplicating segment starts
-                 cr_c_point(points, i, k/samples_per_seg, alpha)]);
+             for (k=[1:samples_per_seg]) // avoid duplicating segment starts
+               cr_c_point(points, i, k/samples_per_seg, alpha)]);
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -344,23 +344,23 @@ function cr_c_resample_adaptive(points, step=2, alpha=0.5) =
   len(points) < 2 ? points :
   concat([points[0]],
          [for (i = [0 : len(points) - 2])
-             let (seg = vsub(points[i + 1], points[i]),
-                  seglen = vlen(seg),
+           let (seg = vsub(points[i + 1], points[i]),
+                seglen = vlen(seg),
 
-                  f0 = local_step_factor(points, i),
-                  f1 = local_step_factor(points, i + 1),
-                  f = min(f0, f1),
+                f0 = local_step_factor(points, i),
+                f1 = local_step_factor(points, i + 1),
+                f = min(f0, f1),
 
-                  eff_step = max(1e-6, st * clamp(f, 0.2, 1.0)),
-                  s = max(3, ceil(seglen / eff_step)))
-               for (k = [1 : s])
-                 cr_c_point(points, i, k / s, alpha)]);
+                eff_step = max(1e-6, st * clamp(f, 0.2, 1.0)),
+                s = max(3, ceil(seglen / eff_step)))
+             for (k = [1 : s])
+             cr_c_point(points, i, k / s, alpha)]);
 
 function drop_consecutive_dups(pts, eps=1e-9) =
   len(pts) <= 1 ? pts :
   concat([pts[0]],
          [for (i=[1:len(pts)-1])
-             if (vlen(vsub(pts[i], pts[i-1])) > eps) pts[i]]);
+           if (vlen(vsub(pts[i], pts[i-1])) > eps) pts[i]]);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helper functions
@@ -408,7 +408,7 @@ function local_step_factor(points, i) =
   let (v1 = points[i]   - points[i - 1],
        v2 = points[i + 1] - points[i],
        ang = turn_angle_deg(v1, v2))
-  ang > 120 ? 0.35 :
+    ang > 120 ? 0.35 :
   ang > 90  ? 0.5  :
   ang > 45  ? 0.75 :
   1.0;

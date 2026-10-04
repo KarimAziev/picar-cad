@@ -69,8 +69,8 @@ module multi_lipo_pack_printable(pl=multi_lipo_packs_case, spacing=8) {
                                    lid_props,
                                    concat(_lid_fuse_tie_bounds(fuse),
                                           [for (m = wagos)
-                                              _wago_bounds(concat(plist_get("pos", m), [0]),
-                                                           wago_mount_size(m))]));
+                                            _wago_bounds(concat(plist_get("pos", m), [0]),
+                                                         wago_mount_size(m))]));
   printed = [for (m = equipment) if (plist_get("kind", m) != "voltmeter") m];
   widths = [for (m = printed) plist_get("size", plist_get("props", m))[0]];
   for (i = [0:1:len(printed) - 1]) {

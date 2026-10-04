@@ -384,4 +384,4 @@ if (show_ideal_length) {
   translate([0, front_bulkhead_len / 2, 0]) {
     #cuboid(size=[200, chassis_ideal_wheelbase, 40], anchor=[0, -1, 1]);
   }
- }
+}

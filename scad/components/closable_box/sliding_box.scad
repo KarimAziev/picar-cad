@@ -142,7 +142,7 @@ module box(size=[86, 90, 35],
       if (!is_undef(grid_spec) && len(grid_spec) > 0) {
         intersection() {
           linear_extrude(height = h +
-                         (include_rim_sizing ? rim_h : 0) - latch_h - 0.3,
+                                  (include_rim_sizing ? rim_h : 0) - latch_h - 0.3,
                          center=false,
                          convexity = 2) {
 

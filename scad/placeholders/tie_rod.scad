@@ -44,24 +44,24 @@ function tie_rod_full_len(shaft_nut_h,
                         ? min(max_screw_out_depth, tie_rod_b_screw_out_depth)
                         : tie_rod_b_screw_out_depth),
        tie_rod_a_len=tie_rod_a_raw_len
-       + (limit_max_depth
+                     + (limit_max_depth
           ? min(max_screw_out_depth, tie_rod_a_screw_out_depth)
           : tie_rod_a_screw_out_depth)
        ,
        tie_rod_b_len=tie_rod_b_raw_len
-       + (limit_max_depth
+                     + (limit_max_depth
           ? min(max_screw_out_depth, tie_rod_b_screw_out_depth)
           : tie_rod_b_screw_out_depth)
        ,
        full_len = shaft_body_len + nut_h * 2 + tie_rod_a_len + tie_rod_b_len)
-       [full_len,
-        tie_rod_a_len,
-        tie_rod_b_len,
-        tie_rod_a_depth,
-        tie_rod_b_depth,
-        max_screw_out_depth,
-        tie_rod_a_raw_len,
-        tie_rod_b_raw_len];
+  [full_len,
+   tie_rod_a_len,
+   tie_rod_b_len,
+   tie_rod_a_depth,
+   tie_rod_b_depth,
+   max_screw_out_depth,
+   tie_rod_a_raw_len,
+   tie_rod_b_raw_len];
 
 module tie_rod(show_tie_rod_a=true,
                show_tie_rod_b=true,
@@ -444,7 +444,7 @@ function rotated_points_bbox(pts, a=[0, 0, 0]) =
 
 function bbox_from_boxes(boxes, a=[0, 0, 0]) =
   let (pts = [for (b = boxes)
-           each bbox_corners(b[0], b[1])])
+    each bbox_corners(b[0], b[1])])
   rotated_points_bbox(pts, a);
 
 function bbox_size_shift(minmax) =
@@ -486,8 +486,8 @@ function servo_tie_rod_bbox(angle=0) =
                                limit_max_depth=true),
        full_l = dims[0],
        eye_center_spacing = full_l
-       - servo_tie_rod_a_eye_od/2
-       - servo_tie_rod_b_eye_od/2,
+                            - servo_tie_rod_a_eye_od/2
+                            - servo_tie_rod_b_eye_od/2,
 
        ha = dservo_tie_rod_a_max_h(),
        hb = dservo_tie_rod_b_max_h(),
@@ -541,8 +541,8 @@ w = max(max_tie_rod_a_h, max_tie_rod_b_h, steering_servo_tie_rod_body_d);
 // I need to have way to get distance from x0 and y0 (the center of anchored
 // tie_rod_a_eye_od) to the center of tie_rod_b_eye_od
 eye_center_spacing = full_l
-  - servo_tie_rod_a_eye_od / 2
-  - servo_tie_rod_b_eye_od / 2;
+                     - servo_tie_rod_a_eye_od / 2
+                     - servo_tie_rod_b_eye_od / 2;
 
 bb = servo_tie_rod_bbox(angle);
 

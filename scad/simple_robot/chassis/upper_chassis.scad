@@ -6,11 +6,8 @@
  */
 
 include <../../colors.scad>
-
 include <../parameters.scad>
 
-use <front_panel/front_panel.scad>
-use <front_panel/util.scad>
 use <../../head/head_neck.scad>
 use <../../lib/functions.scad>
 use <../../lib/placement.scad>
@@ -18,9 +15,11 @@ use <../../lib/shapes2d.scad>
 use <../../lib/shapes3d.scad>
 use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
+use <chassis_connector.scad>
+use <front_panel/front_panel.scad>
+use <front_panel/util.scad>
 use <rack_and_pinion_assembly.scad>
 use <steering_panel.scad>
-use <chassis_connector.scad>
 use <util.scad>
 
 upper_side_hole_pts     =  scale_upper_trapezoid_pts(x=chassis_trapezoid_hole_width,
@@ -46,7 +45,7 @@ steering_pan_pos                = chassis_upper_len
                                    - steering_panel_distance_from_top;
 
 trapezoid_rows_params   = calc_cols_params(gap=chassis_pan_servo_side_trapezoid_gap
-                                           + chassis_upper_holes_border_w,
+                                               + chassis_upper_holes_border_w,
                                            cols=chassis_pan_servo_side_trapezoid_rows,
                                            w=chassis_trapezoid_hole_len);
 trapezoid_step                  = trapezoid_rows_params[0];
@@ -450,7 +449,7 @@ module chassis_upper_transition_rect_slots(border_mode=false) {
                 }
                 translate([0, 0, -0.5]) {
                   linear_extrude(height=chassis_trapezoid_border_height
-                                 + 1,
+                                        + 1,
                                  center=false) {
                     rounded_rect(size=[size[0], size[1]],
                                  r=size[2],
@@ -477,7 +476,7 @@ module chassis_top_most_side_holes(border_mode=false,
       chassis_upper_side_rect_holes(l=chassis_top_most_holes_side_len,
                                     rows=chassis_top_most_holes_rows,
                                     margin=chassis_top_most_holes_margin
-                                    + chassis_side_hole_border_w,
+                                           + chassis_side_hole_border_w,
                                     w=chassis_top_most_holes_side_w,
                                     gap=chassis_top_most_holes_gap,
                                     start=top_most_rects_start,

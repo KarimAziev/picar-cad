@@ -72,7 +72,7 @@ function front_chassis_head_ribbon_slot_ys(rows=front_chassis_head_ribbon_slot_r
          "Ribbon threading requires at least three slots")
   assert(slot_l > 0 && gap > 0)
   let (first_y = -front_chassis_head_mount_size()[1] / 2
-       - front_chassis_head_wire_land - slot_l / 2)
+                 - front_chassis_head_wire_land - slot_l / 2)
   [for (row = [0:rows - 1]) first_y - row * (slot_l + gap)];
 
 /**
@@ -137,7 +137,7 @@ module front_chassis_head_slots(thickness=chassis_thickness,
   size = front_chassis_head_mount_size();
   eps = front_chassis_joint_boolean_overlap;
   screw_step = front_chassis_head_pan_servo_screw_d
-    + front_chassis_head_pan_servo_screws_gap;
+               + front_chassis_head_pan_servo_screws_gap;
   slot_r = front_chassis_head_pan_servo_slot_dia / 2;
   x_screw_cols = round((front_chassis_head_pan_servo_recess_x_len / 2) / screw_step);
   y_screw_rows = round((front_chassis_head_pan_servo_recess_y_len / 2) / screw_step);
@@ -153,9 +153,9 @@ module front_chassis_head_slots(thickness=chassis_thickness,
   total_y = rows_params[1];
 
   recess_w = total_x * 2 + slot_r * 2 + front_chassis_head_pan_servo_screw_d
-    + front_chassis_head_pan_servo_screws_gap;
+             + front_chassis_head_pan_servo_screws_gap;
   recess_l = total_y * 2 + slot_r * 2 + front_chassis_head_pan_servo_screw_d
-    + front_chassis_head_pan_servo_screws_gap;
+             + front_chassis_head_pan_servo_screws_gap;
 
   with_anchor(anchor=anchor,
               size=[size[0], size[1], thickness],

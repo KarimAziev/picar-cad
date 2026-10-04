@@ -83,13 +83,13 @@ module front_suspension_assembly(show_front_lower_arm=show_front_lower_arm,
     : [undef, undef];
   barrel_size = front_lower_arm_mount_cutout_size();
   barrel_y_start = front_bulkhead_len - front_bulkhead_barrel_y_offset
-    - barrel_size[1];
+                   - barrel_size[1];
   bulkhead_full_w = front_bulkhead_w + front_bulkhead_barrel_hinge_w * 2;
   bolt_stud_y_pos = front_lower_arm_ball_stud_y_pos();
 
   lower_arm_offset = front_lower_arm_hinge_barrel_hole_offset
-    + front_bulkhead_barrel_pin_hole_offset
-    + front_lower_arm_hinge_barrel_hole_d;
+                     + front_bulkhead_barrel_pin_hole_offset
+                     + front_lower_arm_hinge_barrel_hole_d;
 
   union() {
     if (show_front_bulkhead_housing) {

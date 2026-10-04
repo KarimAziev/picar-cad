@@ -63,7 +63,9 @@ module rear_wheel(w=wheel_w,
             rim_w=rim_w,
             rim_bend=rim_bend);
     }
-    translate([0, 0, shaft_top_z -
+    translate([0,
+               0,
+               shaft_top_z -
                (shaft_hole_height + 0.4)]) {
       notched_circle(d=shaft_hole_d,
                      h=shaft_hole_height + 0.8,
@@ -80,7 +82,9 @@ module rear_wheel(w=wheel_w,
         notched_circle_square_center_x(r=shaft_hole_d / 2,
                                        cutout_w=wheel_rear_shaft_flat_len);
 
-      translate([square_center_x + 0.4, 0, shaft_top_z
+      translate([square_center_x + 0.4,
+                 0,
+                 shaft_top_z
                  - hole_h / 2]) {
         linear_extrude(height=hole_h, center=false) {
           square([1, wheel_rear_shaft_flat_len + 0.4], center=true);
@@ -166,7 +170,9 @@ module spoke(w=10,
         translate([half_of_w - (inner_w / 2), 0, 0]) {
           linear_extrude(height=thickness) {
             intersection() {
-              trapezoid(b=inner_w, h=h, t=((inner_w / 2) / top_coef),
+              trapezoid(b=inner_w,
+                        h=h,
+                        t=((inner_w / 2) / top_coef),
                         center=false);
               translate([inner_w / 2, 0, 0]) {
                 circle(r=h, $fn=fn);
@@ -180,7 +186,8 @@ module spoke(w=10,
             linear_extrude(height=thickness / 2) {
               translate([0, w]) {
                 difference() {
-                  trapezoid(b=w, h=double_h,
+                  trapezoid(b=w,
+                            h=double_h,
                             t=double_w / top_coef,
                             center=true);
                   translate([0, -h]) {

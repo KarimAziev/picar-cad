@@ -6,26 +6,30 @@
   */
 include <../../scad/rc_params.scad>
 
-use <../../scad/lib/plist.scad>
-use <../../scad/placeholders/rotary_encoder.scad>
 use <../../scad/components/encoder_l_bracket.scad>
+use <../../scad/lib/plist.scad>
 use <../../scad/motor_brackets/rc/gearmotor_encoder_bracket.scad>
+use <../../scad/placeholders/rotary_encoder.scad>
 
-jst = false;
-pins = false;
-part = "l";
-mode = "solid";
-target_h = 10;
+jst          = false;
+pins         = false;
+part         = "l";
+mode         = "solid";
+target_h     = 10;
 extra_left_w = 10;
 top_corner_r = 1;
-pl = plist_merge(as5048A_encoder_plist,
-                 ["show_jst_shr", jst, "show_pins", pins]);
-params = gearmotor_encoder_params(motor_plist, gearbox_bracket_thickness,
-                                   encoder_plist=pl);
+pl           = plist_merge(as5048A_encoder_plist,
+                 ["show_jst_shr", jst,
+                  "show_pins", pins]);
+params = gearmotor_encoder_params(motor_plist,
+                                  gearbox_bracket_thickness,
+                                  encoder_plist=pl);
 
 module bracket() {
   if (part == "l") {
-    encoder_l_bracket(pl, target_h, extra_left_w=extra_left_w,
+    encoder_l_bracket(pl,
+                      target_h,
+                      extra_left_w=extra_left_w,
                       top_corner_r=top_corner_r);
   } else {
     gearmotor_encoder_bracket(params);
@@ -47,7 +51,11 @@ module electronics() {
 }
 
 if (mode == "foot_gaps") {
-  foot_w = plist_get("size", pl)[encoder_should_rotate(pl, target_h, 1.6, 1.5, 0)
+  foot_w = plist_get("size", pl)[encoder_should_rotate(pl,
+                                                       target_h,
+                                                       1.6,
+                                                       1.5,
+                                                       0)
                                 ? 1 : 0];
   difference() {
     translate([-foot_w / 2 + 0.01, -2.99, 0.01]) {

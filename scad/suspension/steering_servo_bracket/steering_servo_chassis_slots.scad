@@ -39,8 +39,8 @@ module steering_servo_chassis_slots(chassis_thickness=chassis_thickness,
   if (steering_encoder_plist) {
     steering_servo_encoder_bracket_position(center_y=center_y) {
       encoder_l_bracket_bottom_pan_bolt_children(bottom_pan_bolt_spacing=encoder_bolt_spacing,
-                                                  bottom_pan_bolt_d=encoder_bolt_d,
-                                                  bottom_pan_bolt_pad=encoder_bolt_pad) {
+                                                 bottom_pan_bolt_d=encoder_bolt_d,
+                                                 bottom_pan_bolt_pad=encoder_bolt_pad) {
         counterbore(h=chassis_thickness,
                     d=encoder_bolt_d,
                     bore_d=encoder_bolt_bore_d,

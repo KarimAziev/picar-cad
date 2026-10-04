@@ -446,8 +446,8 @@ function step_down_input_ports(pl=[]) =
                           step_down_voltage_regulator_thickness]),
        mount = step_down_mount_props(pl))
   [for (side = [-1, 1])
-      [-pitch[0] / 2, side * pitch[1] / 2,
-       plist_get("standoff_h", mount) + board[2]]];
+    [-pitch[0] / 2, side * pitch[1] / 2,
+     plist_get("standoff_h", mount) + board[2]]];
 
 // Conservative XY reach of a populated terminal about the board origin.
 function _step_down_terminal_reach(pl, board, input=false) =
@@ -458,7 +458,7 @@ function _step_down_terminal_reach(pl, board, input=false) =
        x = (input ? -1 : 1) * (board[0] / 2
                                - (quarter ? t : w) / 2 - plist_get("x_offset", pl, 0)),
        y = (quarter ? 0 : board[1] / 2 - t / 2)
-       - plist_get("y_offset", pl, 0))
+           - plist_get("y_offset", pl, 0))
   [abs(x) + (abs(cos(r)) * w + abs(sin(r)) * t) / 2,
    abs(y) + (abs(sin(r)) * w + abs(cos(r)) * t) / 2];
 
@@ -486,8 +486,8 @@ function step_down_mount_props(pl=[]) =
        h = standoff_real_h(plist_get("standoff_h", pl,
                                      step_down_voltage_regulator_standoff_h), d),
        terminals = [for (input = [true, false])
-           let (t = plist_merge(default_dc_screw_terminal_props,
-                                plist_get(input ? "vin" : "vout", pl, [])))
+         let (t = plist_merge(default_dc_screw_terminal_props,
+                              plist_get(input ? "vin" : "vout", pl, [])))
              if (plist_get(input ? "show_terminal_vin" : "show_terminal_vout",
                            t, !input))
                [t, _step_down_terminal_reach(t, board, input)]],
@@ -499,9 +499,9 @@ function step_down_mount_props(pl=[]) =
                           [for (t = terminals) 2 * t[1][1]])),
                h + board[2] + max(concat([step_down_voltage_power_inductor_size[2]],
                                          [for (c = step_down_voltage_can_capacitors)
-                                             plist_get("base_h", c) + plist_get("h", c)],
+                                           plist_get("base_h", c) + plist_get("h", c)],
                                          [for (t = terminals)
-                                             plist_get("base_h", t[0]) + plist_get("top_h", t[0])]))])
+                                           plist_get("base_h", t[0]) + plist_get("top_h", t[0])]))])
   assert(board[0] >= step_down_voltage_regulator_len
          && board[1] >= step_down_voltage_regulator_w && board[2] > 0,
          "Regulator PCB must contain its fixed component layout")
@@ -510,7 +510,7 @@ function step_down_mount_props(pl=[]) =
   assert(pitch[0] + d <= board[0] && pitch[1] + d <= board[1],
          "Regulator holes must fit inside its PCB")
   assert(len([for (t = terminals)
-                 if (plist_get("pin_h", t[0]) > h + board[2]) 1]) == 0,
+    if (plist_get("pin_h", t[0]) > h + board[2]) 1]) == 0,
          "Regulator terminal pins need taller standoffs")
   ["size", size,
    "bolt_spacing", pitch,

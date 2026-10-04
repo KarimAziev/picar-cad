@@ -2,20 +2,22 @@ use <../../scad/lib/functions.scad>
 use <../../scad/lib/shapes3d.scad>
 use <../../scad/lib/transforms.scad>
 
-logical_size = [20, 50, 3];
-orientations = ["wlh", "whl", "lwh", "lhw", "hlw", "hwl"];
+logical_size   = [20, 50, 3];
+orientations   = ["wlh", "whl",
+                  "lwh", "lhw",
+                  "hlw", "hwl"];
 expected_sizes = [[20, 50, 3],
                   [20, 3, 50],
                   [50, 20, 3],
                   [50, 3, 20],
                   [3, 50, 20],
                   [3, 20, 50]];
-identity = [[1, 0, 0, 0],
-            [0, 1, 0, 0],
-            [0, 0, 1, 0],
-            [0, 0, 0, 1]];
-test_anchors = [for (x = [-1 : 1], y = [-1 : 1], z = [-1 : 1]) [x, y, z]];
-tol = 0.000001;
+identity       = [[1, 0, 0, 0],
+                  [0, 1, 0, 0],
+                  [0, 0, 1, 0],
+                  [0, 0, 0, 1]];
+test_anchors   = [for (x = [-1 : 1], y = [-1 : 1], z = [-1 : 1]) [x, y, z]];
+tol            = 0.000001;
 
 function box_corners(size) =
   [for (x = [-size[0] / 2, size[0] / 2],
@@ -37,7 +39,7 @@ function anchor_min(anchor_value, extent) =
 function vectors_close(a, b, epsilon=tol) =
   len(a) == len(b)
   && len([for (i = [0 : len(a) - 1]) if (abs(a[i] - b[i]) <= epsilon) i])
-     == len(a);
+  == len(a);
 
 assert(normalize_anchor([undef, 0, undef]) == [1, 0, 1]);
 assert(!is_orientation("xyz"));
@@ -62,10 +64,11 @@ for (from = orientations, to = orientations) {
   for (anchor = test_anchors) {
     anchor_translation = to_anchor(anchor, to_size, centered=true);
     transformed = [for (point = box_corners(from_size))
-                     reoriented_point(point, from, to) + anchor_translation];
+      reoriented_point(point, from, to) + anchor_translation];
     actual_min = [for (axis = [0 : 2]) min(axis_values(transformed, axis))];
     actual_max = [for (axis = [0 : 2]) max(axis_values(transformed, axis))];
-    expected_min = [for (axis = [0 : 2]) anchor_min(anchor[axis], to_size[axis])];
+    expected_min = [for (axis = [0 : 2]) anchor_min(anchor[axis],
+                                                    to_size[axis])];
     expected_max = expected_min + to_size;
 
     assert(vectors_close(actual_min, expected_min),

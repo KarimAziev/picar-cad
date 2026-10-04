@@ -56,8 +56,8 @@ module front_lower_arm(color=cobalt_blue_dark_1,
 
   hole_resolution = $preview ? 16 : 360;
   profile_x0 = front_lower_arm_hinge_barrel_hole_d / 2
-    + front_lower_arm_hinge_barrel_hole_offset
-    + front_lower_arm_hinge_barrel_hole_d;
+               + front_lower_arm_hinge_barrel_hole_offset
+               + front_lower_arm_hinge_barrel_hole_d;
 
   profile_length = front_lower_arm_len - profile_x0;
 

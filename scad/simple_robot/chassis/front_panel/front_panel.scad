@@ -136,7 +136,7 @@ module front_panel_main(w=front_panel_width,
   ultrasonic_rect_cutout_w = ultrasonic_w + 1;
   ultrasonic_rect_cutout_h = ultrasonic_h + 1.5;
   ultrasonic_z = front_panel_thickness
-    + ultrasonic_thickness;
+                 + ultrasonic_thickness;
   translate([center ? 0 : w / 2, center ? 0 : h / 2, 0]) {
     if (show_ultrasonic) {
       translate([ultrasonic_w / 2,
@@ -208,7 +208,7 @@ module front_panel_main(w=front_panel_width,
                 mirror_copy([1, 0, 0]) {
                   translate([bolts_x_offset, front_panel_bolts_y_offst, 0]) {
                     circle(r=front_panel_bolt_dia / 2
-                           + front_panel_rear_panel_ring_width + 0.4,
+                             + front_panel_rear_panel_ring_width + 0.4,
                            $fn=100);
                   }
                 }
@@ -290,7 +290,7 @@ module front_panel(w=front_panel_width,
       rotate([90, 0, 0]) {
         front_panel_connector(w=front_panel_connector_width,
                               h=front_panel_connector_len
-                              + thickness,
+                                + thickness,
                               thickness=thickness,
                               colr=colr,
                               show_bolts=show_front_panel_mount_bolts,

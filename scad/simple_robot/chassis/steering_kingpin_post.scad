@@ -30,7 +30,7 @@ kingpin_bolt_rad = steering_kingpin_post_bolt_dia / 2;
 
 module steering_kingpin_post(color) {
   border_rad = (knuckle_dia - (steering_kingpin_post_border_w * 2)) / 2
-    - 0.1;
+               - 0.1;
   center_hole_extra_h = 1;
 
   color(color, alpha=1) {
@@ -55,8 +55,8 @@ module steering_kingpin_post(color) {
 
       translate([0, 0, -center_hole_extra_h]) {
         cylinder(h=knuckle_pin_lower_height
-                 + steering_rack_support_thickness
-                 + center_hole_extra_h,
+                   + steering_rack_support_thickness
+                   + center_hole_extra_h,
                  r=kingpin_bolt_rad,
                  center=false,
                  $fn=200);

@@ -21,7 +21,7 @@ function is_valid_num(x) =
 
 function all_finite_points(pointarrays) =
   min([for (pa = pointarrays, p = pa, c = p)
-          is_valid_num(c) ? 1 : 0]) == 1;
+    is_valid_num(c) ? 1 : 0]) == 1;
 
 /**
    ─────────────────────────────────────────────────────────────────────────────
@@ -98,8 +98,8 @@ module close_points(pointarrays) {
   loop_offset = 1;
 
   faces_loop = [for (j=[0:N-2], i=[0:P-1], t=[0:1])
-      [loop_offset, loop_offset, loop_offset] +
-        (t==0
+    [loop_offset, loop_offset, loop_offset] +
+    (t==0
          ? [j * P + i, (j + 1) * P + i, (j + 1) * P + (i + 1) % P]
          : [j * P + i, (j + 1) * P + (i + 1) % P, j * P + (i + 1) % P])];
 
@@ -112,7 +112,7 @@ module close_points(pointarrays) {
                                 top_offset + i]];
 
   points = [for (i=[-1:NP])
-      (i < 0)
+    (i < 0)
         ? midbot
         : ((i == NP)
            ? midtop
@@ -278,51 +278,51 @@ module screw_thread(od,
     : ((hs % 3 == 0) ? 0 : tooth_h_half);
 
   pointarrays = [for (hs=[0:hsteps])
-      [for (s=[0:steps_per_loop - 1])
-          let (ang = step_angle_deg(s, steps_per_loop),
-               h_fudge = pitch * 0.001,
-               h_mod = thread_h_mod(hs,
-                                    s,
-                                    steps_per_loop,
-                                    pitch,
+    [for (s=[0:steps_per_loop - 1])
+      let (ang = step_angle_deg(s, steps_per_loop),
+           h_fudge = pitch * 0.001,
+           h_mod = thread_h_mod(hs,
+                                s,
+                                steps_per_loop,
+                                pitch,
+                                tooth_height,
+                                tooth_h_half,
+                                h_fudge),
+           h_level = thread_h_level(hs,
                                     tooth_height,
-                                    tooth_h_half,
-                                    h_fudge),
-               h_level = thread_h_level(hs,
-                                        tooth_height,
-                                        h_fudge,
-                                        tooth_h_half),
+                                    h_fudge,
+                                    tooth_h_half),
 
-               h_ub = floor((hs - hs_ext) / 3) * pitch
-               + h_level + ang * pitch / 360.0 - h_mod,
-               h_max = height - (hsteps - hs) * h_fudge,
-               h_min = hs * h_fudge,
-               H = (h_ub < h_min) ? h_min : ((h_ub > h_max) ? h_max : h_ub),
+           h_ub = floor((hs - hs_ext) / 3) * pitch
+                  + h_level + ang * pitch / 360.0 - h_mod,
+           h_max = height - (hsteps - hs) * h_fudge,
+           h_min = hs * h_fudge,
+           H = (h_ub < h_min) ? h_min : ((h_ub > h_max) ? h_max : h_ub),
 
-               ht = H - tip_start,
-               hf_ir = ht / tip_height_ir,
-               ht_w = H - tip_wstart,
-               hf_w_t = ht_w / tip_height_w,
-               hf_w = clamp(hf_w_t, 0, 1),
+           ht = H - tip_start,
+           hf_ir = ht / tip_height_ir,
+           ht_w = H - tip_wstart,
+           hf_w_t = ht_w / tip_height_w,
+           hf_w = clamp(hf_w_t, 0, 1),
 
-               ext_tip = (H <= tip_wstart) ? extent : (1 - hf_w) * extent,
-               wnormal = tooth_width(ang, H, pitch, tooth_height, ext_tip),
-               w = (H <= tip_wstart)
+           ext_tip = (H <= tip_wstart) ? extent : (1 - hf_w) * extent,
+           wnormal = tooth_width(ang, H, pitch, tooth_height, ext_tip),
+           w = (H <= tip_wstart)
                ? wnormal
                : (1 - hf_w)
-               * wnormal
-               + hf_w
-               * (0.1 * screw_resolution
-                  + (wnormal * wnormal * wnormal /
-                     (ext_tip * ext_tip + 0.1 * screw_resolution))),
+                 * wnormal
+                 + hf_w
+                 * (0.1 * screw_resolution
+                    + (wnormal * wnormal * wnormal /
+                       (ext_tip * ext_tip + 0.1 * screw_resolution))),
 
-               r = (ht <= 0)
+           r = (ht <= 0)
                ? ir + w
                : ((ht < tip_height_ir
                    ? ((2 / (1 + (hf_ir * hf_ir)) - 1) * ir)
                    : 0) + w))
 
-            [r * cos(ang), r * sin(ang), H]]];
+      [r * cos(ang), r * sin(ang), H]]];
 
   assert(all_finite_points(pointarrays),
          "screw_thread(): generated invalid point coordinates");
@@ -472,13 +472,13 @@ module recessed_clearance_hole(d,
     children();
     translate(position)
       rotate(rotation)
-      translate([0, 0, -extra_height/2])
-      cylinder(h=height + extra_height, r=(d/2 + tolerance));
+        translate([0, 0, -extra_height/2])
+          cylinder(h=height + extra_height, r=(d/2 + tolerance));
     translate(position)
       rotate(rotation)
-      translate([0, 0, -extra_height/2])
-      cylinder(h=recessed_height + extra_height/2,
-               r=(recessed_diam/2 + tolerance));
+        translate([0, 0, -extra_height/2])
+          cylinder(h=recessed_height + extra_height/2,
+                   r=(recessed_diam/2 + tolerance));
   }
 }
 
@@ -501,14 +501,14 @@ module countersunk_clearance_hole(d,
     children();
     translate(position)
       rotate(rotation)
-      translate([0, 0, -extra_height/2])
-      union() {
-      cylinder(h=height + extra_height, r=(d/2 + tolerance));
-      cylinder(h=sinkheight + extra_height,
-               r1=(sinkdiam/2 + tolerance),
-               r2=(d/2 + tolerance),
-               $fn=24*d);
-    }
+        translate([0, 0, -extra_height/2])
+          union() {
+            cylinder(h=height + extra_height, r=(d/2 + tolerance));
+            cylinder(h=sinkheight + extra_height,
+                     r1=(sinkdiam/2 + tolerance),
+                     r2=(d/2 + tolerance),
+                     $fn=24*d);
+          }
   }
 }
 
@@ -580,7 +580,7 @@ module metric_bolt(d, l, tolerance=0.4) {
 module metric_countersunk_bolt(d, l, tolerance=0.4) {
   drive_tolerance = pow(3*tolerance/countersunk_drive_across_corners(d),
                         2)
-    + 0.75 * tolerance;
+                    + 0.75 * tolerance;
 
   difference() {
     cylinder(h=d/2, r1=d, r2=d/2, $fn=24*d);
@@ -728,8 +728,8 @@ module demo() {
   translate([0, 25, 0]) metric_countersunk_bolt(5, 10);
   translate([23, 18, 5])
     scale([1, 1,-1])
-    countersunk_clearance_hole(5, 8, [7, 7, 0], [0, 0, 0])
-    cube([14, 14, 5]);
+      countersunk_clearance_hole(5, 8, [7, 7, 0], [0, 0, 0])
+        cube([14, 14, 5]);
 
   translate([70, -10, 0]) {
     rod_start(20, 30);
@@ -744,10 +744,10 @@ module demo() {
 
   translate([12, 50, 0])
     union() {
-    translate([0, 0, 5.99])
-      auger_thread(15, 3.5, 22, 7, tooth_angle=15, tip_height=7);
-    translate([-4, -9, 0]) cube([8, 18, 6]);
-  }
+      translate([0, 0, 5.99])
+        auger_thread(15, 3.5, 22, 7, tooth_angle=15, tip_height=7);
+      translate([-4, -9, 0]) cube([8, 18, 6]);
+    }
 }
 
 screw_thread(od=12, height=20, pitch=2);

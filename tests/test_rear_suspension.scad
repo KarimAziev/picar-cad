@@ -24,7 +24,7 @@ assert(plist_get("min_y", layout) < maintenance_y - rear_chassis_maintenance_hol
 pts            = rear_suspension_outline_points();
 for (i = [1:len(pts)-1]) {
   assert(pts[i] != pts[i-1]);
- }
+}
 echo("PASS: measured rear suspension edge gaps and nonduplicated outline");
 
 use <../scad/motor_brackets/rc/util.scad>
@@ -51,9 +51,9 @@ near(plist_get("motor_side_widths", layout), [encoder_bounds[1][0], 35.75]);
 assert(plist_get("motor_pos", layout)[0] == 0);
 assert(plist_get("panel_side", layout) == "left");
 for (side = ["left", "right", "auto"],
-       orientation = ["wlh", "lwh"],
-       y_offset = [-20, 0, 15],
-       gap = [0, 3, 8]) {
+     orientation = ["wlh", "lwh"],
+     y_offset = [-20, 0, 15],
+     gap = [0, 3, 8]) {
   current = rear_chassis_layout(panels=undef,
                                 power_case=undef,
                                 side=side,
@@ -82,7 +82,7 @@ for (side = ["left", "right", "auto"],
          [max(front_chassis_required_width() / 2,
               min(plist_get("candidate_half_widths", current)))]);
   }
- }
+}
 
 // Changing hardware can reverse the smaller side; changing bracket padding
 // must propagate through the exact same computed specification to the chassis.

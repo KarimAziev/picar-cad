@@ -8,8 +8,8 @@ include <layout_params.scad>
 
 use <../../components/plate_joint/plate_joint.scad>
 use <../../lib/plist.scad>
-use <../bulkhead/util.scad>
 use <../bulkhead/front_bulkhead_chassis.scad>
+use <../bulkhead/util.scad>
 use <front_chassis_head_slots.scad>
 
 /**
@@ -26,18 +26,18 @@ function front_chassis_head_joint_params() =
   let (end_y = front_bulkhead_pad_distance_to_hinge() + bulkhead_size_y,
        root_y = end_y + bulkhead_transition_len,
        taper_y = front_bulkhead_pad_distance_to_hinge() + bulkhead_transition_len
-           + front_bumper_bolt_y_offset + front_bumper_bolt_d,
+                 + front_bumper_bolt_y_offset + front_bumper_bolt_d,
        head_half_w = max(front_bumper_bolt_spacing_x / 2
                          + front_bumper_bolt_d / 2 + front_bumper_bolt_pad_x,
                          front_chassis_head_mount_size()[0] / 2
                          + front_chassis_head_side_slot_w + front_chassis_head_wire_land * 2),
        bulkhead_half_w = bulkhead_size_x / 2,
        half_w = bulkhead_half_w + (head_half_w - bulkhead_half_w)
-           * (end_y - taper_y) / (root_y - taper_y),
+                * (end_y - taper_y) / (root_y - taper_y),
        tab_w = front_chassis_head_ribbon_slot_w + front_chassis_head_wire_land * 2,
        bulkhead_front_y = front_bulkhead_chassis_mount_origin_y()
-           + front_bulkhead_mount_bolt_spacing_1[1] + front_bulkhead_mount_bolt_d / 2
-           + max(front_bulkhead_mount_bolt_d, front_bulkhead_mount_bolt_bore_d) / 2,
+                          + front_bulkhead_mount_bolt_spacing_1[1] + front_bulkhead_mount_bolt_d / 2
+                          + max(front_bulkhead_mount_bolt_d, front_bulkhead_mount_bolt_bore_d) / 2,
        pin_end_land = root_y - front_chassis_head_joint_pin_l / 2 - bulkhead_front_y)
   assert(end_y > taper_y && root_y > end_y,
          "Head joint must fit inside the existing taper")
@@ -49,8 +49,11 @@ function front_chassis_head_joint_params() =
          - front_chassis_head_joint_pin_d / 2
          - tab_w / 2 - front_chassis_joint_clearance >= 1.5,
          "Head pin passages need 1.5 mm wall beside the ribbon tab socket")
-  ["root_y", root_y, "end_y", end_y,
-   "w", half_w * 2, "l", root_y - end_y, "tab_w", tab_w,
+  ["root_y", root_y,
+   "end_y", end_y,
+   "w", half_w * 2,
+   "l", root_y - end_y,
+   "tab_w", tab_w,
    "pin_z", joint_base_h + (joint_base_h + joint_rail_h) / 2];
 
 /**
@@ -91,13 +94,15 @@ module front_chassis_head_joint(mode="male", slot_mode=false) {
     translate([0, plist_get("root_y", p), 0]) {
       plate_joint(plate_h=chassis_thickness,
                   bolt_d=front_chassis_joint_bolt_d,
-                  w=plist_get("w", p), l=plist_get("l", p),
+                  w=plist_get("w", p),
+                  l=plist_get("l", p),
                   rail_w=front_chassis_head_joint_rail_w,
                   bolt_n_center=2,
                   clearance=front_chassis_joint_clearance,
                   boolean_overlap=front_chassis_joint_boolean_overlap,
                   include_pin_holes=false,
-                  mode=mode, slot_mode=slot_mode);
+                  mode=mode,
+                  slot_mode=slot_mode);
     }
   }
   if (slot_mode) {
@@ -106,7 +111,8 @@ module front_chassis_head_joint(mode="male", slot_mode=false) {
     if (mode == "female") {
       gap = front_chassis_joint_clearance;
       translate([-plist_get("tab_w", p) / 2 - gap,
-                 plist_get("end_y", p) - gap, -gap]) {
+                 plist_get("end_y", p) - gap,
+                 -gap]) {
         cube([plist_get("tab_w", p) + gap * 2,
               plist_get("l", p) + gap * 2, chassis_thickness + gap * 2]);
       }

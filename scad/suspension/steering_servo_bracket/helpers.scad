@@ -21,11 +21,11 @@ function steering_servo_encoder_bracket_bend_reach(plist=steering_encoder_plist,
   !plist
   ? 0
   : dsservo_output_attachment_height()
-  + arm_base_h
-  + dsservo_encoder_bracket_arm_offset(plist=plist,
-                                       magnet_h=magnet_h,
-                                       side_thickness=side_thickness,
-                                       magnet_distance=magnet_distance);
+    + arm_base_h
+    + dsservo_encoder_bracket_arm_offset(plist=plist,
+                                         magnet_h=magnet_h,
+                                         side_thickness=side_thickness,
+                                         magnet_distance=magnet_distance);
 
 function steering_servo_encoder_chassis_reach(plist=steering_encoder_plist,
                                               magnet_h=steering_magnet_h,
@@ -41,8 +41,8 @@ function steering_servo_encoder_chassis_reach(plist=steering_encoder_plist,
                                               arm_base_h=arm_base_h,
                                               side_thickness=side_thickness,
                                               magnet_distance=magnet_distance)
-  + bottom_pan_bolt_pad
-  + bottom_pan_bolt_d;
+    + bottom_pan_bolt_pad
+    + bottom_pan_bolt_d;
 
 module steering_servo_encoder_bracket_position(plist=steering_encoder_plist,
                                                magnet_h=steering_magnet_h,
@@ -78,7 +78,7 @@ module servo_l_bracket_chassis_slot_child(skip_rotation=false) {
   chassis_bolt_y = params[5];
 
   chassis_bolt_step = steering_servo_bracket_chassis_bolt_gap
-    + steering_servo_mount_bolt_d;
+                      + steering_servo_mount_bolt_d;
 
   module _main() {
     translate([bracket_w / 2, chassis_bolt_y, 0]) {

@@ -156,8 +156,8 @@ module power_case_vent(panel_height,
                        total_width) {
 
   available_h = panel_height
-    - bottom_thickness
-    - padding_z;
+                - bottom_thickness
+                - padding_z;
 
   slot_z_step = gap_z + slot_h;
   slot_y_rows = floor(available_h / slot_z_step);

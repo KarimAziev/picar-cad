@@ -247,8 +247,8 @@ module battery_holder(battery_len=battery_length,
                      solder_tab_contact_mount_w(battery_dia=battery_dia,
                                                 contact_hole_d=tab_contact_hole_d),
                      slot_len = tab_contact_slot_pad_len
-                     + front_rear_thickness
-                     + solder_len,
+                                + front_rear_thickness
+                                + solder_len,
                      slot_w = tab_contact_slot_pad_w + contact_w,
                      y1 = holder_l / 2 - front_rear_thickness,
                      y2 = -holder_l / 2 - slot_len + front_rear_thickness,

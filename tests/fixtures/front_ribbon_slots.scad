@@ -6,15 +6,15 @@
   */
 include <../../scad/suspension/front_chassis/computed_params.scad>
 
+use <../../scad/suspension/bellcrank_steering_slots.scad>
 use <../../scad/suspension/front_chassis/front_chassis_rear_frame.scad>
 use <../../scad/suspension/front_chassis/front_chassis_ribbon_slots.scad>
-use <../../scad/suspension/bellcrank_steering_slots.scad>
 use <../../scad/suspension/steering_servo_bracket/steering_servo_bracket_assembly.scad>
 
-part = "frame";
+part  = "frame";
 poses = front_chassis_ribbon_slot_poses();
-w = front_chassis_head_ribbon_slot_w;
-l = front_chassis_head_ribbon_slot_l;
+w     = front_chassis_head_ribbon_slot_w;
+l     = front_chassis_head_ribbon_slot_l;
 
 module slot_prism(p, pad=0) {
   translate([p[0], p[1], 0.05]) {
@@ -59,7 +59,8 @@ if (part == "servo") {
       }
       translate(front_chassis_wiring_slot_pos() + [0, 0, 0.05]) {
         cylinder(d=front_chassis_wiring_slot_d + 3,
-                 h=chassis_thickness - 0.1, $fn=80);
+                 h=chassis_thickness - 0.1,
+                 $fn=80);
       }
     }
     linear_extrude(height=chassis_thickness) {
@@ -78,7 +79,8 @@ if (part == "wiring_land") {
   difference() {
     translate(front_chassis_wiring_slot_pos() + [0, 0, 0.05]) {
       cylinder(d=front_chassis_wiring_slot_d + 3,
-               h=chassis_thickness - 0.1, $fn=80);
+               h=chassis_thickness - 0.1,
+               $fn=80);
     }
     front_chassis_rear_frame(debug=false, show_wiring_slot=false);
   }

@@ -96,8 +96,8 @@ module knuckle_bent_shaft(show_wheel=false,
           rotate([-90, 0, 0]) {
             color(knuckle_shaft_color) {
               cylinder(h=knuckle_shaft_connector_extra_len
-                       + knuckle_rad
-                       + knuckle_shaft_extra_len,
+                         + knuckle_rad
+                         + knuckle_shaft_extra_len,
                        r=r,
                        center=false,
                        $fn=360);

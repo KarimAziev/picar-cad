@@ -8,8 +8,8 @@
  */
 
 include <../colors.scad>
-include <../simple_robot/power_parameters.scad>
 include <../power_lid_parameters.scad>
+include <../simple_robot/power_parameters.scad>
 
 use <../components/closable_box/sliding_box.scad>
 use <../core/slot_layout_components.scad>

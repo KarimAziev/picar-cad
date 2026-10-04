@@ -220,35 +220,47 @@ module test_calc_rotated_bbox() {
 }
 
 module test_percent_to_mm() {
-  assert_eq(percent_to_mm(0, 80), 0,
+  assert_eq(percent_to_mm(0, 80),
+            0,
             "percent_to_mm(0, 80)");
-  assert_eq(percent_to_mm(25, 80), 20,
+  assert_eq(percent_to_mm(25, 80),
+            20,
             "percent_to_mm(25, 80)");
-  assert_eq(percent_to_mm(100, 80), 80,
+  assert_eq(percent_to_mm(100, 80),
+            80,
             "percent_to_mm(100, 80)");
-  assert_eq(percent_to_mm(12.5, 240), 30,
+  assert_eq(percent_to_mm(12.5, 240),
+            30,
             "percent_to_mm(12.5, 240)");
 }
 
 module test_to_percent() {
-  assert_eq(to_percent(0, 80), 0,
+  assert_eq(to_percent(0, 80),
+            0,
             "to_percent(0, 80)");
-  assert_eq(to_percent(20, 80), 25,
+  assert_eq(to_percent(20, 80),
+            25,
             "to_percent(20, 80)");
-  assert_eq(to_percent(80, 80), 100,
+  assert_eq(to_percent(80, 80),
+            100,
             "to_percent(80, 80)");
-  assert_eq(to_percent(30, 240), 12.5,
+  assert_eq(to_percent(30, 240),
+            12.5,
             "to_percent(30, 240)");
-  assert_eq(to_percent(20, 0), 0,
+  assert_eq(to_percent(20, 0),
+            0,
             "to_percent returns zero for a zero total");
 }
 
 module test_substr() {
-  assert_eq(substr("abcdef", 0, 3), "abc",
+  assert_eq(substr("abcdef", 0, 3),
+            "abc",
             "substr from the beginning");
-  assert_eq(substr("abcdef", 2, 3), "cde",
+  assert_eq(substr("abcdef", 2, 3),
+            "cde",
             "substr from an offset");
-  assert_eq(substr("abcdef", 3, 0), "",
+  assert_eq(substr("abcdef", 3, 0),
+            "",
             "substr with zero length");
 }
 
@@ -259,37 +271,50 @@ module test_char_to_num() {
 }
 
 module test_number_string_helpers() {
-  assert_eq(_int_part("123"), 123,
+  assert_eq(_int_part("123"),
+            123,
             "_int_part integer string");
-  assert_eq(_int_part("123.45"), 123,
+  assert_eq(_int_part("123.45"),
+            123,
             "_int_part stops at decimal point");
-  assert_eq(_dec_part("45"), 0.45,
+  assert_eq(_dec_part("45"),
+            0.45,
             "_dec_part decimal digits");
-  assert_eq(_dec_part("123.45", i=4), 0.45,
+  assert_eq(_dec_part("123.45", i=4),
+            0.45,
             "_dec_part from an offset");
-  assert_eq(_find_dot("123.45"), 3,
+  assert_eq(_find_dot("123.45"),
+            3,
             "_find_dot finds decimal point");
-  assert_eq(_find_dot("123"), undef,
+  assert_eq(_find_dot("123"),
+            undef,
             "_find_dot returns undef when absent");
 }
 
 module test_str_to_num() {
-  assert_eq(str_to_num("123"), 123,
+  assert_eq(str_to_num("123"),
+            123,
             "str_to_num integer");
-  assert_eq(str_to_num("123.45"), 123.45,
+  assert_eq(str_to_num("123.45"),
+            123.45,
             "str_to_num decimal");
-  assert_eq(str_to_num(".5"), 0.5,
+  assert_eq(str_to_num(".5"),
+            0.5,
             "str_to_num decimal without integer digits");
-  assert_eq(str_to_num("5."), 5,
+  assert_eq(str_to_num("5."),
+            5,
             "str_to_num decimal without fractional digits");
 }
 
 module test_parse_percent() {
-  assert_eq(parse_percent("25%"), 25,
+  assert_eq(parse_percent("25%"),
+            25,
             "parse_percent with suffix");
-  assert_eq(parse_percent("12.5%"), 12.5,
+  assert_eq(parse_percent("12.5%"),
+            12.5,
             "parse_percent decimal with suffix");
-  assert_eq(parse_percent("25"), 25,
+  assert_eq(parse_percent("25"),
+            25,
             "parse_percent without suffix");
 }
 

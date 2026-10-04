@@ -125,7 +125,7 @@ module voltmeter_board(show_standoffs=true,
         }
         gap = (pins_len -
                pins_count * pin_thickness)
-          / (pins_count - 1);
+              / (pins_count - 1);
         step = pin_thickness + gap;
 
         color(metallic_silver_1, alpha=1) {
@@ -395,9 +395,9 @@ function voltmeter_mount_props(pl=[]) =
        wiring = plist_get("wiring", pl, []),
        wire_r = plist_get("d", wiring, 3) / 2,
        wire_y = board[1] / 2 - wire_r
-       - plist_get("distance", wiring, voltmeter_wiring_distance),
+                - plist_get("distance", wiring, voltmeter_wiring_distance),
        wire_y2 = wire_y - 2 * wire_r
-       - plist_get("gap", wiring, voltmeter_wiring_gap),
+                 - plist_get("gap", wiring, voltmeter_wiring_gap),
        size = [max(board[0] + 0.4 * wire_r, display[0], pitch[0] + d + pad),
                max(board[1], display[1], pitch[1] + d + pad,
                    2 * (max(abs(wire_y), abs(wire_y2)) + 1.2 * wire_r)),

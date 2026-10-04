@@ -85,7 +85,7 @@ function front_chassis_ear_pts() =
               [l, 0],
               [0, 0]],
        mirrored_pts = [for (p = reverse(pts))
-           [p[0], -p[1]]])
+         [p[0], -p[1]]])
   concat(pts, mirrored_pts);
 
 module _front_chassis_front_frame_unsplit(debug=front_chassis_front_frame_debug,
@@ -99,8 +99,8 @@ module _front_chassis_front_frame_unsplit(debug=front_chassis_front_frame_debug,
   head_center_y = front_chassis_head_center_y();
 
   bumper_x = front_bumper_bolt_spacing_x / 2
-    + front_bumper_bolt_d / 2
-    + front_bumper_bolt_pad_x;
+             + front_bumper_bolt_d / 2
+             + front_bumper_bolt_pad_x;
   x1 = max(bumper_x,
            head_mount_size[0] / 2
            + front_chassis_head_side_slot_w + front_chassis_head_wire_land * 2);
@@ -108,15 +108,15 @@ module _front_chassis_front_frame_unsplit(debug=front_chassis_front_frame_debug,
 
   x2 = bulkhead_size_x / 2;
   y2 = front_bulkhead_pad_distance_to_hinge()
-    + bulkhead_transition_len + front_bumper_bolt_y_offset
-    + front_bumper_bolt_d;
+       + bulkhead_transition_len + front_bumper_bolt_y_offset
+       + front_bumper_bolt_d;
 
   head_rear_y = head_center_y - front_chassis_head_rear_reach()
-    + bulkhead_transition_len;
+                + bulkhead_transition_len;
 
   y3 = bulkhead_transition_len
-    + front_chassis_bellcrank_tool_access_hole_d / 2
-    - front_lower_arm_lower_hinge_barrel_h;
+       + front_chassis_bellcrank_tool_access_hole_d / 2
+       - front_lower_arm_lower_hinge_barrel_h;
 
   x_end = front_frame_x_end;
 

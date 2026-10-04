@@ -10,7 +10,8 @@ module steering_rack_anti_tilt_key() {
              0]) {
     cube([steering_panel_rail_len,
           steering_rack_anti_tilt_key_thickness,
-          steering_rack_anti_tilt_key_height], center=false);
+          steering_rack_anti_tilt_key_height],
+         center=false);
   }
 }
 
@@ -35,7 +36,7 @@ module steering_rail(h=steering_panel_rail_height,
 
 module steering_rail_relief_cutter(h=steering_panel_rail_height,
                                    w=steering_panel_rail_thickness
-                                   + steering_rack_rail_tolerance,
+                                     + steering_rack_rail_tolerance,
                                    l=steering_panel_rail_len,
                                    angle=steering_panel_rail_angle,
                                    r=steering_panel_rail_rad,

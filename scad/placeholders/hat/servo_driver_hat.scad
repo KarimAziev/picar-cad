@@ -271,10 +271,10 @@ module servo_driver_hat(show_standoff=true, center=true) {
       }
 
       let (step = servo_driver_hat_side_pins_headers_margin
-           + servo_driver_hat_side_pin_cols * rpi_pin_header_width,
+                  + servo_driver_hat_side_pin_cols * rpi_pin_header_width,
            total_y = step * (servo_driver_hat_side_pins_headers_count - 1),
            z_offset=servo_driver_hat_side_pin_height / 2
-           - servo_driver_hat_side_header_height / 2,
+                    - servo_driver_hat_side_header_height / 2,
            step_z = rpi_pin_header_width,
            start_len = 0.65 * servo_driver_hat_side_pin_height,
            end_len   = servo_driver_hat_side_pin_height,
@@ -292,7 +292,7 @@ module servo_driver_hat(show_standoff=true, center=true) {
                 for (r = [0 : servo_driver_hat_side_pin_rows - 1]) {
                   let (length = (servo_driver_hat_side_pin_rows > 1)
                        ? start_len + r
-                       * step_len : end_len,
+                         * step_len : end_len,
                        l_len = (step_z * (r + 1)) + step_z) {
                     translate([0, 0, step_z * r]) {
                       rotate([0, -90, 0]) {

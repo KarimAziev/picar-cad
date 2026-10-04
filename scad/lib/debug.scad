@@ -197,26 +197,26 @@ module bounding_box(excess=0, planar=false) {
     if (planar) {
       projection()
         rotate([90, 0, 0]) {
-        linear_extrude(1, center=true) {
-          hull() {
-            children();
+          linear_extrude(1, center=true) {
+            hull() {
+              children();
+            }
           }
         }
-      }
     } else {
       xs = excess < .1 ? 1: excess;
       linear_extrude(xs, center=true)
         projection() {
-        rotate([90, 0, 0]) {
-          linear_extrude(xs, center=true) {
-            projection() {
-              hull() {
-                children();
+          rotate([90, 0, 0]) {
+            linear_extrude(xs, center=true) {
+              projection() {
+                hull() {
+                  children();
+                }
               }
             }
           }
         }
-      }
     }
   }
 

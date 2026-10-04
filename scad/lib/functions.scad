@@ -292,7 +292,7 @@ function non_empty(items) = items && len(items) > 0;
    ```
 */
 function map_idx(items, idx, def_val) = [for (i = [0 : len(items) - 1])
-    is_undef(items[i][idx])
+  is_undef(items[i][idx])
       ? def_val
       : items[i][idx]];
 
@@ -344,12 +344,12 @@ function map_idx(items, idx, def_val) = [for (i = [0 : len(items) - 1])
 */
 function poly_width_at_y(pts, y_target) =
   let (intersections = [for (i = [0 : len(pts)-1])
-           if (((pts[i][1] - y_target)
-                * (pts[(i + 1) % len(pts)][1] - y_target) <= 0)
-               && (pts[(i + 1) % len(pts)][1] - pts[i][1] != 0))
+    if (((pts[i][1] - y_target)
+         * (pts[(i + 1) % len(pts)][1] - y_target) <= 0)
+        && (pts[(i + 1) % len(pts)][1] - pts[i][1] != 0))
              pts[i][0] + ((y_target - pts[i][1])
                           / (pts[(i + 1) % len(pts)][1] - pts[i][1]))
-               * (pts[(i + 1) % len(pts)][0] - pts[i][0])])
+             * (pts[(i + 1) % len(pts)][0] - pts[i][0])])
   (max(intersections) - min(intersections));
 
 /**
@@ -401,12 +401,12 @@ function poly_width_at_y(pts, y_target) =
 */
 function poly_width_at_x(pts, x_target) =
   let (intersections = [for (i = [0 : len(pts)-1])
-           if (((pts[i][0] - x_target)
-                * (pts[(i + 1) % len(pts)][0] - x_target) <= 0)
-               && (pts[(i + 1) % len(pts)][0] - pts[i][0] != 0))
+    if (((pts[i][0] - x_target)
+         * (pts[(i + 1) % len(pts)][0] - x_target) <= 0)
+        && (pts[(i + 1) % len(pts)][0] - pts[i][0] != 0))
              pts[i][1] + ((x_target - pts[i][0])
                           / (pts[(i + 1) % len(pts)][0] - pts[i][0]))
-               * (pts[(i + 1) % len(pts)][1] - pts[i][1])])
+             * (pts[(i + 1) % len(pts)][1] - pts[i][1])])
   (max(intersections) - min(intersections));
 
 /**
@@ -569,7 +569,7 @@ function sort_by_idx(elems, asc=true, idx=0) =
   let (best_i = find_best_index(elems, idx, asc),
        best   = elems[best_i],
        rest   = [for (i=[0:len(elems)-1]) if (i != best_i) elems[i]])
-  concat([best], sort_by_idx(rest, asc, idx));
+    concat([best], sort_by_idx(rest, asc, idx));
 
 /**
    ─────────────────────────────────────────────────────────────────────────────
@@ -612,7 +612,7 @@ function find_best_index(elems, idx, asc, i=0, best_i=0) =
   let (k  = key(elems[i], idx),
        bk = key(elems[best_i], idx),
        better = asc ? (k < bk) : (k > bk))
-  better ? find_best_index(elems, idx, asc, i + 1, i)
+    better ? find_best_index(elems, idx, asc, i + 1, i)
   : find_best_index(elems, idx, asc, i + 1, best_i);
 
 /**
@@ -768,7 +768,7 @@ function with_default(val, default, type = "any") =
 function calc_cols_params(cols, w, gap) =
   let (step = gap + w,
        total_x = cols * w + (cols - 1)
-       * gap)
+                 * gap)
   [step, total_x];
 
 /**
@@ -1023,9 +1023,9 @@ function best_height_combo(min_h, heights, limit) =
   min_h <= 0 ? [] :
   limit == 0 ? [] :
   let (candidates = [for (h = heights)
-           let (r = best_height_combo(min_h - h, heights, limit - 1))
-             r == [] && min_h - h > 0 ? [] : concat([h], r)])
-  best_list_by_lower_sum(candidates);
+    let (r = best_height_combo(min_h - h, heights, limit - 1))
+    r == [] && min_h - h > 0 ? [] : concat([h], r)])
+    best_list_by_lower_sum(candidates);
 
 /**
    ─────────────────────────────────────────────────────────────────────────────
@@ -1402,7 +1402,7 @@ function qsort(v, asc=true) =
          left = [for (x=v) if (asc ? x < pivot : x > pivot) x],
          mid  = [for (x=v) if (x == pivot) x],
          right  = [for (x=v) if (asc ? x > pivot : x < pivot) x])
-  concat(qsort(left, asc), mid, qsort(right, asc));
+    concat(qsort(left, asc), mid, qsort(right, asc));
 
 /**
 ─────────────────────────────────────────────────────────────────────────────
@@ -1971,9 +1971,9 @@ offset_path([[0,0,0], [0,10,0]], 1, [0,0,1]); // -> [[1, 0, 0], [1, 10, 0]]
 
 function offset_path(points, offset, up=[0, 0, 1]) =
   [for (i = [0:len(points)-1])
-      let (t = point_tangent(points, i),
-           p = safe_perp(t, up))
-        vadd(points[i], vmul(p, offset))];
+    let (t = point_tangent(points, i),
+         p = safe_perp(t, up))
+    vadd(points[i], vmul(p, offset))];
 
 /**
 ─────────────────────────────────────────────────────────────────────────────
@@ -2026,7 +2026,10 @@ function countersink_h(d, sink_d, angle) =
  */
 function is_orientation(orientation) =
   is_string(orientation)
-  && in_list(orientation, ["wlh", "whl", "lwh", "lhw", "hlw", "hwl"]);
+  && in_list(orientation,
+             ["wlh", "whl",
+              "lwh", "lhw",
+              "hlw", "hwl"]);
 
 /**
   ────────────────────────────────────────────────────────────────────────────
@@ -2101,7 +2104,7 @@ function orientation_size(orientation, size) =
  */
 function transpose_matrix(matrix) =
   [for (column = [0 : len(matrix[0]) - 1])
-      [for (row = [0 : len(matrix) - 1]) matrix[row][column]]];
+    [for (row = [0 : len(matrix) - 1]) matrix[row][column]]];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -2123,30 +2126,30 @@ function transpose_matrix(matrix) =
  */
 function orientation_matrix(orientation) =
   let (orientation = assert_orientation(orientation))
-  orientation == "wlh" ? [[ 1,  0,  0, 0],
-                            [ 0,  1,  0, 0],
-                            [ 0,  0,  1, 0],
-                            [ 0,  0,  0, 1]] :
-  orientation == "whl" ? [[ 1,  0,  0, 0],
-                            [ 0,  0, -1, 0],
-                            [ 0,  1,  0, 0],
-                            [ 0,  0,  0, 1]] :
-  orientation == "lwh" ? [[ 0, -1,  0, 0],
-                            [ 1,  0,  0, 0],
-                            [ 0,  0,  1, 0],
-                            [ 0,  0,  0, 1]] :
-  orientation == "lhw" ? [[ 0,  1,  0, 0],
-                            [ 0,  0,  1, 0],
-                            [ 1,  0,  0, 0],
-                            [ 0,  0,  0, 1]] :
-  orientation == "hlw" ? [[ 0,  0, -1, 0],
-                            [ 0,  1,  0, 0],
-                            [ 1,  0,  0, 0],
-                            [ 0,  0,  0, 1]] :
-                           [[ 0,  0,  1, 0],
-                            [ 1,  0,  0, 0],
-                            [ 0,  1,  0, 0],
-                            [ 0,  0,  0, 1]];
+  orientation == "wlh" ? [[1,  0,  0, 0],
+                          [0,  1,  0, 0],
+                          [0,  0,  1, 0],
+                          [0,  0,  0, 1]] :
+  orientation == "whl" ? [[1,  0,  0, 0],
+                          [0,  0, -1, 0],
+                          [0,  1,  0, 0],
+                          [0,  0,  0, 1]] :
+  orientation == "lwh" ? [[0, -1,  0, 0],
+                          [1,  0,  0, 0],
+                          [0,  0,  1, 0],
+                          [0,  0,  0, 1]] :
+  orientation == "lhw" ? [[0,  1,  0, 0],
+                          [0,  0,  1, 0],
+                          [1,  0,  0, 0],
+                          [0,  0,  0, 1]] :
+  orientation == "hlw" ? [[0,  0, -1, 0],
+                          [0,  1,  0, 0],
+                          [1,  0,  0, 0],
+                          [0,  0,  0, 1]] :
+                           [[0,  0,  1, 0],
+                            [1,  0,  0, 0],
+                            [0,  1,  0, 0],
+                            [0,  0,  0, 1]];
 
 /**
   ──────────────────────────────────────────────────────────────────────────────
@@ -2275,9 +2278,9 @@ function to_anchor(anchor, size, centered=false) =
   assert(is_num(anchor[2]) && in_list(abs(anchor[2]), [0, 1]),
          "Invalid value in anchor[2]")
   [for (i = [0:2])
-      let (a = anchor[i],
-           v = size[i])
-        (centered && i != 2)
+    let (a = anchor[i],
+         v = size[i])
+    (centered && i != 2)
         ? (a ==  1 ?  v/2 :
            a ==  0 ?  0   :
            -v/2)

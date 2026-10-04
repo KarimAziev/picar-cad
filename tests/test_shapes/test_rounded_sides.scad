@@ -6,7 +6,7 @@ use <../../scad/lib/shapes3d.scad>
 selections = [["top_left", "bottom_right"],
               [["top", 7], ["bottom", "10%"]],
               [["all", 6], ["top_left", 0]]];
-labels = ["opposite corners", "7 mm / 10%", "all 6, top-left 0"];
+labels     = ["opposite corners", "7 mm / 10%", "all 6, top-left 0"];
 
 for (i = [0:2]) {
   translate([i * 50, 40, 0]) {
@@ -17,8 +17,12 @@ for (i = [0:2]) {
     }
   }
   translate([i * 50, 0, 0]) {
-    cuboid([40, 24, 8], r=6, side=selections[i], fn=48,
-           center=false, color="DarkOrange");
+    cuboid([40, 24, 8],
+           r=6,
+           side=selections[i],
+           fn=48,
+           center=false,
+           color="DarkOrange");
   }
   translate([i * 50 + 20, -7, 0]) {
     color("DimGray") {

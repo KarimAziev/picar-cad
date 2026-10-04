@@ -67,7 +67,7 @@ function _multi_lipo_pack_positions(pack_sizes,
        x_steps = [for (size = pack_sizes) size[0] + w_clearance + inner_t],
        y_steps = [for (size = pack_sizes) size[1] + l_clearance + inner_t])
   [for (i = [0 : len(pack_sizes) - 1])
-      layout_axis == "x"
+    layout_axis == "x"
         ? [left_t + w_clearance / 2 + _multi_lipo_pack_sum_before(x_steps, i),
            rear_t + (inner_size[1] - lengths[i]) / 2,
            bottom_t]
@@ -95,32 +95,32 @@ function _multi_lipo_pack_sides(spec, size, r, fallback) =
 function _multi_lipo_pack_slots(slots, size) =
   assert(is_list(slots), "slots must be a list of plists")
   [for (slot = slots)
-      assert(plist_is(slot), "each slot must be a plist")
-        let (pos_spec = plist_get("pos", slot, [0, 0]),
-             size_spec = plist_get("size", slot),
-             d_spec = plist_get("d", slot))
-        assert(is_list(pos_spec) && len(pos_spec) == 2,
-               "slot pos must be [x, z]")
-        assert(is_undef(d_spec) != is_undef(size_spec),
-               "slot needs either d or size")
-        assert(is_undef(size_spec) || is_list(size_spec) && len(size_spec) == 2,
-               "slot size must be [length, height]")
-        let (d = is_undef(d_spec) ? 0 : maybe_percent_string_to_num(d_spec, min(size)),
-             dims = is_undef(size_spec) ? [d, d]
+    assert(plist_is(slot), "each slot must be a plist")
+    let (pos_spec = plist_get("pos", slot, [0, 0]),
+         size_spec = plist_get("size", slot),
+         d_spec = plist_get("d", slot))
+    assert(is_list(pos_spec) && len(pos_spec) == 2,
+           "slot pos must be [x, z]")
+    assert(is_undef(d_spec) != is_undef(size_spec),
+           "slot needs either d or size")
+    assert(is_undef(size_spec) || is_list(size_spec) && len(size_spec) == 2,
+           "slot size must be [length, height]")
+    let (d = is_undef(d_spec) ? 0 : maybe_percent_string_to_num(d_spec, min(size)),
+         dims = is_undef(size_spec) ? [d, d]
              : [for (i = [0 : 1]) maybe_percent_string_to_num(size_spec[i], size[i])],
-             pos = [for (i = [0 : 1]) maybe_percent_string_to_num(pos_spec[i], size[i])])
-        assert(is_num(d) && d >= 0 && is_num(dims[0]) && is_num(dims[1])
-               && min(dims) > 0,
-               "slot dimensions must be positive")
-        assert(is_num(pos[0]) && is_num(pos[1]) && min(pos) >= 0
-               && pos[0] + dims[0] <= size[0] && pos[1] + dims[1] <= size[1],
-               "slot must fit its wall/profile reference box")
-        let (r = _multi_lipo_pack_corner_r(plist_get("corner_r", slot, 0), dims[0], dims[1]))
-        ["pos", pos,
-         "size", dims,
-         "d", d,
-         "corner_r", r,
-         "side", _multi_lipo_pack_sides(slot, dims, r, "all")]];
+         pos = [for (i = [0 : 1]) maybe_percent_string_to_num(pos_spec[i], size[i])])
+    assert(is_num(d) && d >= 0 && is_num(dims[0]) && is_num(dims[1])
+           && min(dims) > 0,
+           "slot dimensions must be positive")
+    assert(is_num(pos[0]) && is_num(pos[1]) && min(pos) >= 0
+           && pos[0] + dims[0] <= size[0] && pos[1] + dims[1] <= size[1],
+           "slot must fit its wall/profile reference box")
+    let (r = _multi_lipo_pack_corner_r(plist_get("corner_r", slot, 0), dims[0], dims[1]))
+    ["pos", pos,
+     "size", dims,
+     "d", d,
+     "corner_r", r,
+     "side", _multi_lipo_pack_sides(slot, dims, r, "all")]];
 
 function _multi_lipo_pack_shape_props(wall, length, base_h) =
   let (kind = plist_get("shape", wall),
@@ -133,58 +133,58 @@ function _multi_lipo_pack_shape_props(wall, length, base_h) =
   let (h = maybe_percent_string_to_num(plist_get("h", spec, "100%"), base_h),
        top = maybe_percent_string_to_num(plist_get("t", spec, "50%"), length),
        points = plist_get("points", spec, []))
-  assert(is_num(h) && h >= 0, "shape h must be nonnegative")
-  assert(is_num(top) && top >= 0 && top <= length,
-         "shape t must fit wall length")
-  assert(kind != "trapezoid_rounded_top" || length == 0 || h == 0 || top > 0,
-         "rounded-top trapezoid needs positive t")
-  assert(is_list(points) && (kind != "custom" || len(points) >= 3),
-         "custom shape needs at least three points")
-  let (pts = kind != "custom" ? [] : [for (p = points)
-           assert(is_list(p) && len(p) >= 2 && len(p) <= 4,
-                  "shape points must be [x, z] with optional debug annotations")
-             let (x = maybe_percent_string_to_num(p[0], length),
-                  z = maybe_percent_string_to_num(p[1], h))
-             assert(is_num(x) && is_num(z) && x >= 0 && x <= length && z >= 0 && z <= h,
-                    "shape points must fit its length/height reference box")
-             concat([x, z], len(p) > 2 ? [for (i = [2 : len(p) - 1]) p[i]] : [])],
-       requested_r = _multi_lipo_pack_corner_r(plist_get("corner_r", spec,
-                                                         plist_get("corner_r", wall, 0)), length, h),
-       r = kind == "trapezoid_rounded_top"
+    assert(is_num(h) && h >= 0, "shape h must be nonnegative")
+    assert(is_num(top) && top >= 0 && top <= length,
+           "shape t must fit wall length")
+    assert(kind != "trapezoid_rounded_top" || length == 0 || h == 0 || top > 0,
+           "rounded-top trapezoid needs positive t")
+    assert(is_list(points) && (kind != "custom" || len(points) >= 3),
+           "custom shape needs at least three points")
+    let (pts = kind != "custom" ? [] : [for (p = points)
+      assert(is_list(p) && len(p) >= 2 && len(p) <= 4,
+             "shape points must be [x, z] with optional debug annotations")
+      let (x = maybe_percent_string_to_num(p[0], length),
+           z = maybe_percent_string_to_num(p[1], h))
+      assert(is_num(x) && is_num(z) && x >= 0 && x <= length && z >= 0 && z <= h,
+             "shape points must fit its length/height reference box")
+      concat([x, z], len(p) > 2 ? [for (i = [2 : len(p) - 1]) p[i]] : [])],
+         requested_r = _multi_lipo_pack_corner_r(plist_get("corner_r", spec,
+                                                           plist_get("corner_r", wall, 0)), length, h),
+         r = kind == "trapezoid_rounded_top"
        ? (length == 0 ? 0 : min(requested_r, top / 2, top * h / (top + length)))
        : requested_r,
-       vents = plist_get("vent_props", spec, []),
-       debug = plist_get("debug", spec, false),
-       round_bottom = plist_get("round_bottom", spec, true),
-       radius_specs = plist_get("corner_radii", spec,
-                                 repeat(undef, len(pts))))
-  assert(is_bool(debug) && is_bool(round_bottom),
-         "shape debug and round_bottom must be booleans")
-  assert(kind != "custom" || is_list(radius_specs) && len(radius_specs) == len(pts),
-         "custom corner_radii must have one entry per point")
-  assert(kind != "custom" || h == 0 || length == 0 || abs(polygon_signed_area(pts)) > 0,
-         "custom shape must have nonzero area")
-  assert(plist_is(vents), "shape vent_props must be a plist")
-  let (radii = kind != "custom" ? [] : [for (i = [0 : len(pts) - 1])
-           let (radius = maybe_percent_string_to_num(is_undef(radius_specs[i]) ? requested_r : radius_specs[i],
-                                                     min(length, h)))
-             assert(is_num(radius) && radius >= 0,
-                    "custom corner radii must be nonnegative numbers or percentages")
-             !round_bottom && abs(pts[i][1] - polygon_min_y(pts)) < 0.000001
+         vents = plist_get("vent_props", spec, []),
+         debug = plist_get("debug", spec, false),
+         round_bottom = plist_get("round_bottom", spec, true),
+         radius_specs = plist_get("corner_radii", spec,
+                                  repeat(undef, len(pts))))
+    assert(is_bool(debug) && is_bool(round_bottom),
+           "shape debug and round_bottom must be booleans")
+    assert(kind != "custom" || is_list(radius_specs) && len(radius_specs) == len(pts),
+           "custom corner_radii must have one entry per point")
+    assert(kind != "custom" || h == 0 || length == 0 || abs(polygon_signed_area(pts)) > 0,
+           "custom shape must have nonzero area")
+    assert(plist_is(vents), "shape vent_props must be a plist")
+    let (radii = kind != "custom" ? [] : [for (i = [0 : len(pts) - 1])
+      let (radius = maybe_percent_string_to_num(is_undef(radius_specs[i]) ? requested_r : radius_specs[i],
+                                                min(length, h)))
+      assert(is_num(radius) && radius >= 0,
+             "custom corner radii must be nonnegative numbers or percentages")
+      !round_bottom && abs(pts[i][1] - polygon_min_y(pts)) < 0.000001
              ? 0 : radius])
-  ["kind", kind,
-   "h", h,
-   "t", top,
-   "points", pts,
-   "corner_r", r,
-   "corner_radii", radii,
-   "debug", debug,
-   "side", _multi_lipo_pack_sides(spec,
-                                  [length, h],
-                                  r,
-                                  plist_get("side", wall, plist_get("sides", wall, "top"))),
-   "vent_props", vents,
-   "slots", _multi_lipo_pack_slots(plist_get("slots", spec, []), [length, h])];
+    ["kind", kind,
+     "h", h,
+     "t", top,
+     "points", pts,
+     "corner_r", r,
+     "corner_radii", radii,
+     "debug", debug,
+     "side", _multi_lipo_pack_sides(spec,
+                                    [length, h],
+                                    r,
+                                    plist_get("side", wall, plist_get("sides", wall, "top"))),
+     "vent_props", vents,
+     "slots", _multi_lipo_pack_slots(plist_get("slots", spec, []), [length, h])];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -300,24 +300,24 @@ function multi_lipo_pack_wall_props(wall, span, base_h) =
    "side", _multi_lipo_pack_sides(wall, [l, band_h], r, "top"),
    "slots", _multi_lipo_pack_slots(plist_get("slots", wall, []), [l, h]),
    "cutouts", [for (cutout = cutouts)
-        let (cut_l = maybe_percent_string_to_num(plist_get("l", cutout), l),
-             cut_h = maybe_percent_string_to_num(plist_get("h", cutout, "100%"), h),
-             cut_offset = maybe_percent_string_to_num(plist_get("offset", cutout, 0), l))
-          assert(is_num(cut_l) && cut_l > 0, "cutout l must be positive")
-          assert(is_num(cut_h) && cut_h >= 0 && cut_h <= h,
-                 "cutout h must be between zero and wall height")
-          assert(is_num(cut_offset) && cut_offset >= 0 && cut_offset + cut_l <= l + 0.000001,
-                 "cutout offset and l must fit the retained wall length")
-          ["l", cut_l,
-           "h", cut_h,
-           "offset", cut_offset,
-           "corner_r", _multi_lipo_pack_corner_r(plist_get("corner_r", cutout, 0),
-                                                 cut_l,
-                                                 cut_h),
-           "side", _multi_lipo_pack_sides(cutout,
-                                          [cut_l, cut_h],
-                                          _multi_lipo_pack_corner_r(plist_get("corner_r", cutout, 0), cut_l, cut_h),
-                                          "bottom")]]];
+     let (cut_l = maybe_percent_string_to_num(plist_get("l", cutout), l),
+          cut_h = maybe_percent_string_to_num(plist_get("h", cutout, "100%"), h),
+          cut_offset = maybe_percent_string_to_num(plist_get("offset", cutout, 0), l))
+     assert(is_num(cut_l) && cut_l > 0, "cutout l must be positive")
+     assert(is_num(cut_h) && cut_h >= 0 && cut_h <= h,
+            "cutout h must be between zero and wall height")
+     assert(is_num(cut_offset) && cut_offset >= 0 && cut_offset + cut_l <= l + 0.000001,
+            "cutout offset and l must fit the retained wall length")
+     ["l", cut_l,
+      "h", cut_h,
+      "offset", cut_offset,
+      "corner_r", _multi_lipo_pack_corner_r(plist_get("corner_r", cutout, 0),
+                                            cut_l,
+                                            cut_h),
+      "side", _multi_lipo_pack_sides(cutout,
+                                     [cut_l, cut_h],
+                                     _multi_lipo_pack_corner_r(plist_get("corner_r", cutout, 0), cut_l, cut_h),
+                                     "bottom")]]];
 
 /**
   ──────────────────────────────────────────────────────────────────────────────
@@ -378,30 +378,30 @@ function multi_lipo_pack_vent_props(wall, span, wall_h) =
          row_gap = maybe_percent_string_to_num(plist_get("vent_row_gap",
                                                          wall,
                                                          vent_h), available_h))
-                                                         assert(min([left_pad, right_pad, bottom_pad, top_pad]) >= 0,
-                                                                "vent padding must not be negative")
-                                                         assert(vent_w >= 0 && vent_h >= 0 && col_gap >= 0 && row_gap >= 0,
-                                                                "vent sizes and gaps must not be negative")
-                                                         let (cols = vent_w > 0 && vent_w <= available_span
+    assert(min([left_pad, right_pad, bottom_pad, top_pad]) >= 0,
+           "vent padding must not be negative")
+    assert(vent_w >= 0 && vent_h >= 0 && col_gap >= 0 && row_gap >= 0,
+           "vent sizes and gaps must not be negative")
+    let (cols = vent_w > 0 && vent_w <= available_span
                                                               ? max(1, floor((available_span + col_gap) / (vent_w + col_gap)))
                                                               : 0,
-                                                              rows = vent_h > 0 && vent_h <= available_h
+         rows = vent_h > 0 && vent_h <= available_h
                                                               ? max(1, floor((available_h + row_gap) / (vent_h + row_gap)))
                                                               : 0,
-                                                              used_span = cols > 0 ? cols * vent_w + (cols - 1) * col_gap : 0,
-                                                              used_h = rows > 0 ? rows * vent_h + (rows - 1) * row_gap : 0,
-                                                              span_start = left_pad + (available_span - used_span) / 2,
-                                                              z_start = bottom_pad + (available_h - used_h) / 2)
-                                                              ["enabled", true,
-                                                               "slot_size", [vent_w, vent_h],
-                                                               "corner_r", _multi_lipo_pack_corner_r(plist_get("vent_corner_r", wall, 0),
-                                                                                                     vent_w,
-                                                                                                     vent_h),
-                                                               "gap", [col_gap, row_gap],
-                                                               "padding", [left_pad, right_pad, bottom_pad, top_pad],
-                                                               "available_size", [available_span, available_h],
-                                                               "count", [cols, rows],
-                                                               "start", [span_start, z_start]];
+         used_span = cols > 0 ? cols * vent_w + (cols - 1) * col_gap : 0,
+         used_h = rows > 0 ? rows * vent_h + (rows - 1) * row_gap : 0,
+         span_start = left_pad + (available_span - used_span) / 2,
+         z_start = bottom_pad + (available_h - used_h) / 2)
+    ["enabled", true,
+     "slot_size", [vent_w, vent_h],
+     "corner_r", _multi_lipo_pack_corner_r(plist_get("vent_corner_r", wall, 0),
+                                           vent_w,
+                                           vent_h),
+     "gap", [col_gap, row_gap],
+     "padding", [left_pad, right_pad, bottom_pad, top_pad],
+     "available_size", [available_span, available_h],
+     "count", [cols, rows],
+     "start", [span_start, z_start]];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -446,8 +446,8 @@ module _multi_lipo_pack_vents_2d(vent, exclude=[]) {
       for (col = [0 : count[0] - 1], row = [0 : count[1] - 1]) {
         pos = start + [col * (slot[0] + gap[0]), row * (slot[1] + gap[1])];
         intersects = len([for (bounds = exclude)
-            if (pos[0] <= bounds[1][0] && pos[0] + slot[0] >= bounds[0][0]
-                && pos[1] <= bounds[1][1] && pos[1] + slot[1] >= bounds[0][1])
+          if (pos[0] <= bounds[1][0] && pos[0] + slot[0] >= bounds[0][0]
+              && pos[1] <= bounds[1][1] && pos[1] + slot[1] >= bounds[0][1])
               1]) > 0;
         if (!intersects) {
           translate(pos) {
@@ -553,7 +553,7 @@ function multi_lipo_pack_props(plist,
        inner_size_2d = layout_axis == "x" ? x_inner_size : y_inner_size,
        top_clearance = plist_get("top_clearance", plist, 0),
        base_h = assert(top_clearance >= 0, "top_clearance must be nonnegative")
-       max(map_idx(pack_sizes, 2)) + top_clearance,
+         max(map_idx(pack_sizes, 2)) + top_clearance,
        inner_size = concat(inner_size_2d, [base_h]),
        body_w = left_t + inner_size[0] + right_t,
        body_l = rear_t + inner_size[1] + front_t,
@@ -562,10 +562,10 @@ function multi_lipo_pack_props(plist,
                                    ["left", left, body_l],
                                    ["right", right, body_l],
                                    ["inner", inner, inner_size[layout_axis == "x" ? 1 : 0]]])
-           each [entry[0], multi_lipo_pack_wall_props(entry[1], entry[2], base_h)]],
+         each [entry[0], multi_lipo_pack_wall_props(entry[1], entry[2], base_h)]],
        wall_h = max([for (name = ["front", "rear", "left", "right", "inner"])
-                        let (wall = plist_get(name, wall_props))
-                          (name != "inner" || pack_n > 1) && plist_get("l", wall) > 0
+         let (wall = plist_get(name, wall_props))
+         (name != "inner" || pack_n > 1) && plist_get("l", wall) > 0
                           ? plist_get("h", wall) : 0]),
        wall_size = [body_w, body_l, bottom_t + wall_h],
        rail_props = multi_lipo_pack_rail_props(plist, wall_size, wall_props),
@@ -934,8 +934,8 @@ module multi_lipo_pack_case(pl,
       length = plist_get("l", wall);
       points = plist_get("points", shape);
       labels = opposite ? [for (p = points)
-          concat([length - p[0], p[1]],
-                 len(p) > 2 ? [for (i = [2 : len(p) - 1]) p[i]] : [])] : points;
+        concat([length - p[0], p[1]],
+               len(p) > 2 ? [for (i = [2 : len(p) - 1]) p[i]] : [])] : points;
       // Background annotations sit outside the wall face and outside all CSG.
       translate([x + (axis == "x" ? along : opposite ? -0.05 : depth + 0.05),
                  y + (axis == "y" ? along : opposite ? depth + 0.05 : -0.05),

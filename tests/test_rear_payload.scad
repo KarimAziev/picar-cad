@@ -13,7 +13,7 @@ function outside(p, bounds, r) =
 // The efficient tall-column solver preserves the original hardware selection.
 for (h=[0:0.5:24]) {
   assert(standoff_heights(h) == best_height_combo(h, [20, 15, 10, 9, 8, 6, 5], ceil(h/5) + 1));
- }
+}
 assert(sum(standoff_heights(106.2)) == 107);
 assert(standoff_heights(8.1, [5.5, 3]) == [5.5, 3]);
 
@@ -22,7 +22,7 @@ for (to=["wlh", "lwh",
          "hlw", "hwl"]) {
   assert(control_panel_oriented_size(to) == orientation_size(to, control_panel_oriented_size()));
   assert(fuse_panel_oriented_size(to) == orientation_size(to, fuse_panel_oriented_size()));
- }
+}
 assert(control_panel_clearance_height() > control_panel_height());
 assert(fuse_panel_clearance_height() >= fuse_panel_height());
 
@@ -84,7 +84,7 @@ for (specs = variants) {
   assert(orientation_size(plist_get("orientation", props), concat(plist_get("bolt_spacing", props),[0]))
          == concat(plist_get("bolt_spacing", payload),[0]));
   assert(plist_get("bolt_spacing", plist_get("lidar", payload)) == [43, 43]);
- }
+}
 plain = rear_chassis_layout(panels=[], power_case=undef);
 assert(len(plist_get("panels", plain)) == 0 && is_undef(plist_get("power_case", plain)));
 assert(multi_lipo_pack_mount_height(multi_lipo_packs_case, 0, 6) == 0);
@@ -105,14 +105,14 @@ for (panel = plist_get("panels", default_layout)) {
   assert(near(plist_get("side", panel) == "left"
               ? motor_bounds[0][0] - bounds[1][0]
               : bounds[0][0] - motor_bounds[1][0], panel_stack_side_x_dist_from_motor));
- }
+}
 // Explicit overrides preserve the old under-case controls; combined stacks stay put.
 for (outside = [false, true]) {
   custom = rear_chassis_layout(panels=[["type", "control",
                                         "outside_case", outside]],
                                control_outside=!outside);
   assert(plist_get("outside_case", plist_get("panels", custom)[0]) == outside);
- }
+}
 // Ears widen the support envelope without moving or enlarging the battery cells.
 base_props = multi_lipo_pack_props(multi_lipo_packs_case);
 rear_props = multi_lipo_pack_props(plist_get("plist", default_payload));
@@ -154,5 +154,5 @@ for (to = ["wlh", "lwh"]) {
   regions = control_panel_clearance_regions(to);
   assert(len(regions) == 1 + len(control_panel_switch_button_specs));
   assert(max([for (b = regions) b[1][2]]) == control_panel_clearance_height());
- }
+}
 echo("PASS: suspension-side controls, lever clearance, unchanged deck and safe height fallback");

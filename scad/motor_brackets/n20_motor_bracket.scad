@@ -135,7 +135,7 @@ module n20_motor_bracket() {
       translate([0, 0, -extra_h / 2]) {
         notched_circle(h=n20_can_height + extra_h,
                        d=n20_can_dia +
-                       n20_motor_bracket_tolerance,
+                         n20_motor_bracket_tolerance,
                        cutout_w=n20_can_cutout_w,
                        x_cutouts_n=2,
                        $fn=360);
@@ -164,7 +164,7 @@ module n20_motor_assembly(show_motor=true,
       x_offst = n20_motor_bolts_panel_x_offset();
 
       bolt_height = round(with_default(bolt_h, chassis_thickness - n20_motor_bolt_bore_h
-                                       + n20_motor_bolts_panel_thickness() + bolt_visible_h));
+                                               + n20_motor_bolts_panel_thickness() + bolt_visible_h));
       translate([x_offst + bolt_height, 0, h]) {
         rotate([90, 0, 90]) {
           n20_motor_with_bolt_holes_positions() {

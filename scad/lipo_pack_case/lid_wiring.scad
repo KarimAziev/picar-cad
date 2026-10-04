@@ -29,7 +29,8 @@ function _harness_pack_point(pl, case_p, p) =
        v = orientation_matrix(plist_get("orientation", pack, "wlh")) * concat(p - [0, 0, s[2] / 2], [1]),
        body = plist_get("body_size", case_p))
   rotZ([v[0], v[1], v[2]] + oriented / 2 + plist_get("pack_positions", case_p)[0]
-       - [body[0] / 2, body[1] / 2, 0], plist_get("power_rotation", pl, 0));
+       - [body[0] / 2, body[1] / 2, 0],
+       plist_get("power_rotation", pl, 0));
 
 function _harness_route(name, controls, d, color, config) =
   let (chosen = plist_get(name, plist_get("paths", config, []), controls),
@@ -89,8 +90,10 @@ function lid_wiring_props(pl, l_clearance=0.4, w_clearance=0.4) =
   let (a = plist_get("power_rotation", pl, 0),
        p = _lid_wiring_props(plist_put("power_rotation", 0, pl),
                              l_clearance, w_clearance))
-  plist_put("routes", [for (r = plist_get("routes", p))
-      plist_put("path", [for (pt = plist_get("path", r)) rotZ(pt, a)], r)], p);
+  plist_put("routes",
+            [for (r = plist_get("routes", p))
+              plist_put("path", [for (pt = plist_get("path", r)) rotZ(pt, a)], r)],
+            p);
 
 function _lid_wiring_props(pl, l_clearance=0.4, w_clearance=0.4) =
   let (lid = multi_lipo_pack_lid_props(pl, l_clearance, w_clearance),
@@ -122,7 +125,7 @@ function _lid_wiring_props(pl, l_clearance=0.4, w_clearance=0.4) =
        plug_pos = plist_get("connector_pos", power),
        plug_angle = plist_get("connector_rotation", power),
        male = [for (p = plist_get("male_ports", t_plug_mated_props()))
-           _harness_pack_point(pl, c, plug_pos + rotZ(p, plug_angle))],
+         _harness_pack_point(pl, c, plug_pos + rotZ(p, plug_angle))],
        fp = [for (p = lid_fuse_wire_ports(fuse)) p + [0, 0, roof]],
        bt = [for (i = [0, 1]) _harness_button_tail(buttons[0], i, top, d)],
        wt = [for (side = [-1, 1]) _harness_wago_tail(wagos[0], side, top, d)],
@@ -132,7 +135,7 @@ function _lid_wiring_props(pl, l_clearance=0.4, w_clearance=0.4) =
        return_y = _lid_access_limits(lid)[1] + d / 2 + 0.1,
        button_in = bt[0][len(bt[0]) - 1],
        button_out = bt[1][len(bt[1]) - 1],
-// Socket approaches follow the configured fuse's own X direction.
+       // Socket approaches follow the configured fuse's own X direction.
        fuse_in = fp[0] + rotZ([8, 0, 0], plist_get("rotation", fuse)),
        fuse_out = fp[1] + rotZ([-8, 0, 0], plist_get("rotation", fuse)),
        plug_ports = plist_get("male_ports", t_plug_mated_props()),

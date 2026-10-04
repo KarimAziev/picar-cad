@@ -104,15 +104,15 @@ module smd_chip(length,
 
 function expand_j_leads(input_data) =
   flatten_pairs([for (rec = input_data)
-                    let (sides = with_default(plist_get("sides", rec, []), [], "list"),
-                         props = plist_remove("sides", rec))
-                      for (s = sides) [s, props]]);
+    let (sides = with_default(plist_get("sides", rec, []), [], "list"),
+         props = plist_remove("sides", rec))
+      for (s = sides) [s, props]]);
 
 function normalize_j_leads(j_lead_plists) =
   let (sides = [for (pl = j_lead_plists)
-           [for (side = plist_get("sides", pl, []))
-               plist_merge(plist_remove_by_keys(["sides"], pl),
-                           ["side", side])]],
+    [for (side = plist_get("sides", pl, []))
+      plist_merge(plist_remove_by_keys(["sides"], pl),
+                  ["side", side])]],
        flatten = flatten_pairs(sides))
   flatten;
 
@@ -168,7 +168,8 @@ module smd_chip_from_plist(plist,
                  thickness = plist_get("thickness", pl, 0.0),
                  side = plist_get("side", pl),
                  lower_lead_fraction = plist_get("lower_fraction", pl, 0.7)) {
-              assert(member(side, ["top", "left", "bottom", "right"]),
+              assert(member(side, ["top", "left",
+                                   "bottom", "right"]),
                      "Invalid side was passed to smd_chip");
               if (count > 0 && thickness > 0) {
                 let (y_axle = member(side, ["top", "bottom"]),
@@ -183,7 +184,7 @@ module smd_chip_from_plist(plist,
                      total_len = y_axle ? chip_x : chip_y,
                      chip_val = y_axle ? chip_y : chip_x,
                      available_w = (total_val - chip_val) / (has_pair ? 2 : 1)
-                     - (thickness + pair_thickness),
+                                   - (thickness + pair_thickness),
                      upper_len = available_w * (1 - lower_lead_fraction),
                      lower_len = available_w * lower_lead_fraction,
                      base_h = chip_z * 0.9,

@@ -102,7 +102,7 @@ module gpio_expansion_board(show_standoff=true,
         }
       }
       let (step = gpio_expansion_inner_header_gap +
-           gpio_expansion_inner_header_rows * rpi_pin_header_width,
+                  gpio_expansion_inner_header_rows * rpi_pin_header_width,
            total_y = step * (gpio_expansion_inner_headers_count - 1)) {
         translate([0, -total_y / 2, 0]) {
           for (i = [0 : gpio_expansion_inner_headers_count - 1]) {
@@ -173,7 +173,7 @@ module gpio_expansion_board(show_standoff=true,
                             show_nut=show_nut,
                             colr=gpio_expansion_standoff_color,
                             min_h=gpio_expansion_header_height
-                            + extra_standoff_h);
+                                  + extra_standoff_h);
           }
         }
       }

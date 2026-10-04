@@ -107,13 +107,13 @@ module front_bulkhead(color=cobalt_blue_light_1,
   bellcrank_h = bellcrank_idler_full_mount_h() + shoulder_h;
 
   upper_panel_boss_h = bellcrank_h
-    - bulkhead_housing_h
-    - bellcrank_z_end
-    - rear_h;
+                       - bulkhead_housing_h
+                       - bellcrank_z_end
+                       - rear_h;
 
   upper_panel_hole_depth = bellcrank_h
-    - bulkhead_housing_h
-    - bellcrank_z_end;
+                           - bulkhead_housing_h
+                           - bellcrank_z_end;
 
   upper_suspension_holder_z_pos =
     front_bulkhead_upper_suspension_holder_z_pos(tower_pin_hole_y_offset=tower_pin_hole_y_offset,
@@ -228,8 +228,8 @@ module front_bulkhead(color=cobalt_blue_light_1,
                 translate([upper_holder_bolt_spacing / 2, 0, 0]) {
                   counterbore(d=upper_holder_bolt_d,
                               h=upper_holder_mount_thickness
-                              + upper_holder_hole_depth
-                              + extra_rear_len,
+                                + upper_holder_hole_depth
+                                + extra_rear_len,
                               bore_d=front_bulkhead_counterbore_d,
                               bore_h=front_bulkhead_counterbore_h,
                               teardrop_angle=45,
@@ -482,9 +482,9 @@ module front_bulkhead_support(bulkhead_w=front_bulkhead_w,
 
   upper_holder_mount_thickness = upper_holder_barrel_h - upper_holder_thickness;
   z = shock_tower_bolt_spacing[1]
-    + upper_holder_round_cutout_d / 2
-    - upper_holder_bore_d / 2
-    - upper_holder_round_cutout_y_offset;
+      + upper_holder_round_cutout_d / 2
+      - upper_holder_bore_d / 2
+      - upper_holder_round_cutout_y_offset;
 
   rear_h = shock_tower_mount_offset + upper_holder_w - bellcrank_z_end;
   min_rear_h = (upper_suspension_holder_z_pos[2] - upper_suspension_holder_z_pos[0]) + 0.5;

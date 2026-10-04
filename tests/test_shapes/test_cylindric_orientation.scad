@@ -11,7 +11,9 @@
 
 use <fixtures.scad>
 
-orientations = ["wlh", "whl", "lwh", "lhw", "hlw", "hwl"];
+orientations = ["wlh", "whl",
+                "lwh", "lhw",
+                "hlw", "hwl"];
 shapes       = ["cylinder", "frustum", "cone", "flats", "notches", "ring",
                 "tapered ring"];
 colors       = ["SteelBlue", "DarkOrange", "MediumSeaGreen", "Orchid",
@@ -30,9 +32,9 @@ for (column = [0 : len(orientations) - 1]) {
       shape_test_axes();
     }
   }
- }
+}
 for (row = [0 : len(shapes) - 1]) {
   translate([-24, -row * cell_size[1], 0]) {
     shape_test_label(shapes[row], halign="right");
   }
- }
+}

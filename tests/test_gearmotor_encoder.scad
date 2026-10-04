@@ -72,8 +72,8 @@ near(plist_get("sleeve_origin", e),
      shaft - [0, plist_get("pad_l", plist_get("drive_shaft", motor_plist)), 0]);
 near(plist_get("size", s),
      [7.5, 7.5, plist_get("pad_l", plist_get("drive_shaft", motor_plist))
-      + motor_encoder_sleeve_h_clearance + motor_encoder_magnet_h
-      + motor_encoder_magnet_h_clearance]);
+                + motor_encoder_sleeve_h_clearance + motor_encoder_magnet_h
+                + motor_encoder_magnet_h_clearance]);
 near([plist_get("hole_z", s)],
      [plist_get("pad_l", plist_get("drive_shaft", motor_plist))
       - plist_get("hole_edge_dist", plist_get("drive_shaft", motor_plist))

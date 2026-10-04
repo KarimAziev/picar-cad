@@ -14,7 +14,9 @@ use <../pad_hole.scad>
 use <../pin_header.scad>
 use <../standoff.scad>
 
-module ai_hat(center=true, show_pins=true, show_standoff=true,
+module ai_hat(center=true,
+              show_pins=true,
+              show_standoff=true,
               extra_standoff_h=0) {
   w = ai_hat_size[0];
   l = ai_hat_size[1];
@@ -49,24 +51,24 @@ module ai_hat(center=true, show_pins=true, show_standoff=true,
       translate([-w / 2, -l / 2 + rpi_bolts_offset * 2, 0]) {
         translate([0, 0, h]) {
           pin_header(cols=rpi_pin_headers_cols,
-                      rows=rpi_pin_headers_rows,
-                      header_width=rpi_pin_header_width,
-                      header_height=rpi_pin_header_height,
-                      pin_height=0,
-                      z_offset=rpi_thickness / 2 + 0.5,
-                      p=0.65,
-                      center=false);
+                     rows=rpi_pin_headers_rows,
+                     header_width=rpi_pin_header_width,
+                     header_height=rpi_pin_header_height,
+                     pin_height=0,
+                     z_offset=rpi_thickness / 2 + 0.5,
+                     p=0.65,
+                     center=false);
         }
         if (show_pins) {
           translate([0, 0, - ai_hat_header_height]) {
             pin_header(cols=rpi_pin_headers_cols,
-                        rows=rpi_pin_headers_rows,
-                        header_width=rpi_pin_header_width,
-                        header_height=ai_hat_header_height,
-                        pin_height=ai_hat_pin_height,
-                        z_offset=-ai_hat_header_height,
-                        p=0.65,
-                        center=false);
+                       rows=rpi_pin_headers_rows,
+                       header_width=rpi_pin_header_width,
+                       header_height=ai_hat_header_height,
+                       pin_height=ai_hat_pin_height,
+                       z_offset=-ai_hat_header_height,
+                       p=0.65,
+                       center=false);
           }
         }
       }

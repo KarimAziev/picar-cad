@@ -56,7 +56,7 @@ module power_case_rail(h=power_case_rail_height,
 
 module power_case_rail_relief_cutter(h=power_case_rail_height,
                                      w=power_case_side_wall_thickness
-                                     + power_case_rail_tolerance,
+                                       + power_case_rail_tolerance,
                                      l=power_case_length,
                                      angle=power_case_rail_angle,
                                      r=power_case_rail_rad,

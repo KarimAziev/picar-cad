@@ -22,13 +22,13 @@ function steering_servo_bracket_params(lower_thickness_clearance=steering_servo_
        max_bracket_l = dsservo_height_max_bracket_l() - dsservo_socket_size[2],
        servo_bracket_y = -dsservo_flange_h / 2 - bracket_extra_h,
        lower_thickness = bracket_extra_h +
-       ((dsservo_flange_h - (dsservo_bolt_spacing[1]
-                             + max(servo_nut_d,
-                                   steering_servo_bracket_servo_bolt_d))) / 2)
-       - lower_thickness_clearance,
+                         ((dsservo_flange_h - (dsservo_bolt_spacing[1]
+                                               + max(servo_nut_d,
+                                                     steering_servo_bracket_servo_bolt_d))) / 2)
+                         - lower_thickness_clearance,
        chassis_mount_pan_l = min(max_bracket_l,
                                  (servo_h / 2) + steering_servo_mount_bolt_d / 2
                                  + steering_servo_bracket_lower_wall_bolt_edge_pad),
        chassis_bolt_y=chassis_mount_pan_l - steering_servo_mount_bolt_d / 2
-       - steering_servo_bracket_lower_wall_bolt_edge_pad)
-       [bracket_w, chassis_mount_pan_l, servo_bracket_y, bracket_extra_h, lower_thickness, chassis_bolt_y];
+                      - steering_servo_bracket_lower_wall_bolt_edge_pad)
+  [bracket_w, chassis_mount_pan_l, servo_bracket_y, bracket_extra_h, lower_thickness, chassis_bolt_y];

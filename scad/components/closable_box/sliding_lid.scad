@@ -90,15 +90,15 @@ module sliding_lid(size=[86, 90, 35],
   diff_l = max(0, rim_size2[1] - rim_size1[1]);
   scale_x = (rim_size2[0] + rail_tolerance * 2) / rim_size2[0];
   rail_cutout_len = corner_rad + diff_l / 2
-    + (is_undef(rail_cutout_extra_len) ? l * 0.2 : rail_cutout_extra_len);
+                    + (is_undef(rail_cutout_extra_len) ? l * 0.2 : rail_cutout_extra_len);
 
   union() {
     difference() {
       color(lid_color, alpha=1) {
         union() {
           linear_extrude(height=thickness
-                         + rim_h
-                         + rail_top_thickness,
+                                + rim_h
+                                + rail_top_thickness,
                          center=false) {
             rounded_rect([lid_w, lid_l],
                          center=true,
@@ -117,8 +117,8 @@ module sliding_lid(size=[86, 90, 35],
       }
       translate([0, 0, thickness + rail_top_thickness]) {
         linear_extrude(height=thickness
-                       + rail_top_thickness
-                       + rim_h + 0.1,
+                              + rail_top_thickness
+                              + rim_h + 0.1,
                        center=false) {
           rounded_rect([rim_size1[0],
                         rim_size1[1]],
@@ -147,18 +147,18 @@ module sliding_lid(size=[86, 90, 35],
         text_plists = plist_get("plists", props);
 
         plists = [for (pl = text_plists)
-            let (th = plist_get("height", pl),
-                 translation = plist_get("translation", pl),
-                 updated_translation = is_list(translation)
+          let (th = plist_get("height", pl),
+               translation = plist_get("translation", pl),
+               updated_translation = is_list(translation)
                  ? [translation[0],
                     translation[1],
                     translation[2]
                     - th]
                  : [0, 0, -th],
-                 merged = plist_merge(pl,
-                                      ["translation", updated_translation,
-                                       "height", th + 0.1]))
-              merged];
+               merged = plist_merge(pl,
+                                    ["translation", updated_translation,
+                                     "height", th + 0.1]))
+          merged];
 
         translate([0, 0, 0.01]) {
           rotate([180, 0, 0]) {

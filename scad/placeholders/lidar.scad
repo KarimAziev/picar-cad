@@ -271,7 +271,8 @@ module lidar(plist=rplidar_c1_plist,
           if (socket_d) {
             assert(in_list(cable_position, ["top", "center", "bottom"]),
                    "Invalid position");
-            assert(in_list(cable_side, ["rear", "front", "left", "right"]),
+            assert(in_list(cable_side, ["rear", "front",
+                                        "left", "right"]),
                    "Invalid position");
 
             let (bend_exclusion_l = plist_get("bend_exclusion_l", cable_exit, 5),
@@ -296,9 +297,9 @@ module lidar(plist=rplidar_c1_plist,
                  socket_translation = plist_get(cable_side, socket_translations),
                  socket_rotation = plist_get(cable_side, socket_rotations),
                  z_position_offsets = ["top", [0, 0, base_h - socket_d
-                                               + cable_socket_z_offset],
+                                                     + cable_socket_z_offset],
                                        "center", [0, 0, base_h / 2 - (socket_d / 2)
-                                                  + cable_socket_z_offset],
+                                                        + cable_socket_z_offset],
                                        "bottom", [0, 0, cable_socket_z_offset]],
                  z_pos = plist_get(cable_position, z_position_offsets),
                  socket_r = socket_d / 2,

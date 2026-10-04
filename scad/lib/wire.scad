@@ -45,21 +45,23 @@ function total_wire_length(points) =
  */
 function rounded_wire_points(points, trim=6, steps=12) =
   let (p = drop_consecutive_dups(points), n = len(p))
-  assert(n >= 2 && trim >= 0 && steps >= 2, "Wire route needs two points and valid rounding")
-  concat([p[0]], [for (i = [1:1:n - 2]) each
-    let (a = p[i - 1] - p[i], b = p[i + 1] - p[i],
-         t = min(trim, norm(a) * 0.45, norm(b) * 0.45),
-         start = p[i] + a * t / norm(a), end = p[i] + b * t / norm(b))
-    [for (j = [0:steps]) let (u = j / steps)
-        (1 - u) * (1 - u) * start + 2 * (1 - u) * u * p[i] + u * u * end]],
-    [p[n - 1]]);
+  assert(n >= 2 && trim >= 0 && steps >= 2,
+         "Wire route needs two points and valid rounding")
+  concat([p[0]],
+         [for (i = [1:1:n - 2]) each
+           let (a = p[i - 1] - p[i], b = p[i + 1] - p[i],
+                t = min(trim, norm(a) * 0.45, norm(b) * 0.45),
+                start = p[i] + a * t / norm(a), end = p[i] + b * t / norm(b))
+           [for (j = [0:steps]) let (u = j / steps)
+             (1 - u) * (1 - u) * start + 2 * (1 - u) * u * p[i] + u * u * end]],
+         [p[n - 1]]);
 
 function suffix_lengths(pts) =
   let (n=len(pts))
   n < 2 ? [] :
   let (seg=[for (i=[0:n-2]) vlen(pts[i + 1]-pts[i])])
-  // suf[i] = sum(seg[i..end])
-  [for (i=[0:n-2]) sum([for (k=[i:n-2]) seg[k]])];
+    // suf[i] = sum(seg[i..end])
+    [for (i=[0:n-2]) sum([for (k=[i:n-2]) seg[k]])];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -263,7 +265,7 @@ module cylinder_between_points(p1, p2, d=2, $fn=16) {
   if (len > 1e-9) {
     translate(p1)
       rotate(rot_from_z(v))
-      cylinder(h=len, d=d, center=false, $fn=$fn);
+        cylinder(h=len, d=d, center=false, $fn=$fn);
   }
 }
 

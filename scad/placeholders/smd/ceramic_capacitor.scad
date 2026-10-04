@@ -53,4 +53,5 @@ module ceramic_capactior(plist, center=false) {
                use_inner_round=use_inner_round);
 }
 
-ceramic_capactior(["placeholder_size", [1.82, 0.9, 0.76], "pad_factor_x", 0.8]);
+ceramic_capactior(["placeholder_size", [1.82, 0.9, 0.76],
+                   "pad_factor_x", 0.8]);

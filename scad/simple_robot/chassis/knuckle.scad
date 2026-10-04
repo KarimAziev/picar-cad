@@ -167,7 +167,7 @@ module knuckle_bent_shaft_rack_link_arm(knuckle_color="white",
             if (show_bolts) {
               let (h = ceil(knuckle_shaft_connector_dia),
                    h_offset = -knuckle_shaft_connector_dia / 2 - h / 2
-                   + knuckle_shaft_connector_dia,
+                              + knuckle_shaft_connector_dia,
                    d = knuckle_shaft_bolt_dia) {
 
                 translate([offst,
@@ -200,7 +200,7 @@ module knuckle_bent_shaft_rack_link_arm(knuckle_color="white",
                                 inner_d=steering_rack_link_bearing_d,
                                 h=knuckle_rack_link_arm_height,
                                 length=knuckle_shaft_connector_extra_len
-                                + knuckle_shaft_connector_extra_arm_len,
+                                       + knuckle_shaft_connector_extra_arm_len,
                                 border_w=border_w,
                                 children_modes=["union"],
                                 connector_color=knuckle_color,

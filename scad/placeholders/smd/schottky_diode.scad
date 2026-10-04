@@ -53,4 +53,5 @@ module schottky_diode(plist, center=false) {
                use_inner_round=use_inner_round);
 }
 
-schottky_diode(["type", "schottky_diode", "size", [3, 2, 1]]);
+schottky_diode(["type", "schottky_diode",
+                "size", [3, 2, 1]]);

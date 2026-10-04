@@ -4,12 +4,25 @@ part = "plate_a";
 
 // Match a typical common wrapper: these options arrive explicitly as undef.
 module wrapper(mode, slot_mode, show_bolts, anchor, flip) {
-  plate_joint(plate_h=6, bolt_d=3.2, w=140, l=26, pin_l=30,
-              include_pin_holes=true, mode=mode, slot_mode=slot_mode,
-              show_bolts=show_bolts, anchor=anchor, flip=flip);
+  plate_joint(plate_h=6,
+              bolt_d=3.2,
+              w=140,
+              l=26,
+              pin_l=30,
+              include_pin_holes=true,
+              mode=mode,
+              slot_mode=slot_mode,
+              show_bolts=show_bolts,
+              anchor=anchor,
+              flip=flip);
 }
 module direct() {
-  plate_joint(plate_h=6, bolt_d=3.2, w=140, l=26, pin_l=30, include_pin_holes=true);
+  plate_joint(plate_h=6,
+              bolt_d=3.2,
+              w=140,
+              l=26,
+              pin_l=30,
+              include_pin_holes=true);
 }
 if (part == "plate_a") {
   plate_a();
@@ -68,12 +81,21 @@ if (part == "parent_pin_empty") {
 }
 
 if (part == "auto_width_male" || part == "auto_width_female") {
-  plate_joint(plate_h=6, bolt_d=3.2, l=26, pin_l=30,
-              include_pin_holes=true, mode=part == "auto_width_male" ? "male" : "female");
+  plate_joint(plate_h=6,
+              bolt_d=3.2,
+              l=26,
+              pin_l=30,
+              include_pin_holes=true,
+              mode=part == "auto_width_male" ? "male" : "female");
 }
 if (part == "auto_width_collision") {
   intersection() {
     plate_joint(plate_h=6, bolt_d=3.2, l=26, pin_l=30, include_pin_holes=true);
-    plate_joint(plate_h=6, bolt_d=3.2, l=26, pin_l=30, include_pin_holes=true, mode="female");
+    plate_joint(plate_h=6,
+                bolt_d=3.2,
+                l=26,
+                pin_l=30,
+                include_pin_holes=true,
+                mode="female");
   }
 }

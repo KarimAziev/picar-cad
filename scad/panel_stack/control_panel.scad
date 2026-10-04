@@ -141,8 +141,8 @@ function control_panel_clearance_height(show_standoff=true) =
   control_panel_height(show_standoff) - control_panel_thickness
   + max(control_panel_thickness,
         max([for (spec = control_panel_switch_button_specs)
-                let (thread = plist_get("thread", spec), lever = plist_get("lever", spec))
-                  max(thread[1], thread[1] / 2 + lever[2] + max(lever[0], lever[1]) / 2)]));
+          let (thread = plist_get("thread", spec), lever = plist_get("lever", spec))
+          max(thread[1], thread[1] / 2 + lever[2] + max(lever[0], lever[1]) / 2)]));
 
 function _control_panel_switch_y(i, gap=control_panel_row_gap, center=true) =
   gap * i + (i > 0 ? sum(y_sizes, i) : 0) + y_sizes[i]
@@ -169,15 +169,15 @@ function control_panel_clearance_regions(orientation="wlh") =
                    + plist_get("thread_h", standoff_plist),
                    z + max(control_panel_thickness,
                            max([for (s = control_panel_switch_button_specs)
-                                   max(plist_get("thread", s)[1], plist_get("nut", s)[1])]))),
+                             max(plist_get("thread", s)[1], plist_get("nut", s)[1])]))),
        low = [[-full_panel_width/2, -full_panel_len/2, 0],
               [full_panel_width/2, full_panel_len/2, low_h]],
        regions = concat([low],
                         [for (i = [0:len(control_panel_switch_button_specs)-1])
-                            let (spec = control_panel_switch_button_specs[i],
-                                 bounds = toggle_switch_lever_bounds(plist_get("thread", spec), plist_get("lever", spec)),
-                                 pos = [0, _control_panel_switch_y(i), z])
-                              [bounds[0] + pos, bounds[1] + pos]]))
+                          let (spec = control_panel_switch_button_specs[i],
+                               bounds = toggle_switch_lever_bounds(plist_get("thread", spec), plist_get("lever", spec)),
+                               pos = [0, _control_panel_switch_y(i), z])
+                          [bounds[0] + pos, bounds[1] + pos]]))
   orientation == "wlh" ? regions
   : [for (b = regions) [[-b[1][1], b[0][0], b[0][2]],
                         [-b[0][1], b[1][0], b[1][2]]]];

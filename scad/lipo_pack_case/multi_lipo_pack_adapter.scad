@@ -56,7 +56,7 @@ function multi_lipo_pack_adapter_props(spec, lid) =
        off = plist_get("offsets", sensor, [0, 0]),
        sensor_offset = rotated ? [-off[1], off[0]] : off,
        sensor_holes = [for (x=[-1, 1], y=[-1, 1])
-           [x*pitch[0]/2 + sensor_offset[0], y*pitch[1]/2 + sensor_offset[1]]],
+         [x*pitch[0]/2 + sensor_offset[0], y*pitch[1]/2 + sensor_offset[1]]],
        t = plist_get("t", spec, 4),
        d = plist_get("bolt_d", spec, 3),
        clearance = plist_get("clearance", spec, 0.3),
@@ -77,13 +77,13 @@ function multi_lipo_pack_adapter_props(spec, lid) =
        body = plist_get("body_size", plist_get("case_props", lid)),
        centers = [for (r=plist_get("rails", rails)) plist_get("cross", r)-body[cross]/2],
        half_widths = [for (r=plist_get("rails", rails))
-           plist_get("w", r)/2 + plist_get("clearance_w", rails) + plist_get("side_t", lid)],
+         plist_get("w", r)/2 + plist_get("clearance_w", rails) + plist_get("side_t", lid)],
        inner = [centers[0] + half_widths[0], centers[1]-half_widths[1]],
        offset = plist_get("lidar_offset", lid),
        safe_half = min(offset[cross]-inner[0], inner[1]-offset[cross]) - access_d / 2 - edge,
        spacing = plist_get("bolt_spacing", spec,
                            [for (i=[0:1])
-                               i == cross
+                             i == cross
                                  ? min(pitch[i] * 0.65,
                                        safe_half * 2,
                                        (pattern_half -abs(sensor_offset[cross])
@@ -92,52 +92,52 @@ function multi_lipo_pack_adapter_props(spec, lid) =
        holes = [for (x=[-1, 1], y=[-1, 1]) [x*spacing[0]/2, y*spacing[1]/2]],
        radius = maybe_percent_string_to_num(plist_get("corner_r", spec, 3), min(dims)),
        r = calc_corner_rad(dims, radius))
-       assert(t >= nut_h + 1.2 && clearance >= 0 && nut_clearance >= 0 && edge >= 0,
-              "Adapter needs nonnegative clearances and at least 1 mm below its nut pockets")
-       assert(d + clearance <= find_nut_prop("outer_dia", d) - 1,
-              "Adapter nuts need at least 0.5 mm of shoulder around the mounting holes")
-       assert(is_num(radius) && radius >= 0,
-              "Adapter corner_r must be nonnegative mm or percent")
-       assert(is_list(spacing) && len(spacing)==2 && min(spacing)>0
-              && access_d >= find_bolt_head_d(d,"countersunk") + clearance,
-              "Adapter mounting pattern must leave screw-head access between the skirts")
-       assert(roof_t >= find_bolt_head_h(d,"countersunk") + 0.2,
-              "Lid roof is too thin for the adapter countersinks")
-       assert(gap >= 0 && bolt_l >= roof_t + gap + t - 0.1
-              && bolt_l <= roof_t + gap + t + 1.5,
-              "Adapter screws must engage the whole nut and extend at most 1.5 mm above the plate")
-       assert(min([for (p=holes) min(p[cross] + offset[cross]-inner[0], inner[1]-p[cross]-offset[cross])])
-              >= access_d/2 + edge - 0.000001,
-              "Adapter screws/tool access overlap a lid skirt")
-       assert(min([for (p=holes, q=sensor_holes) norm(p-q)]) >= pocket_d/2 + sensor_head_r + edge,
-              "Adapter nut pockets overlap the sensor countersinks; reduce lid-side spacing")
-       assert(min([for (p=concat(holes, sensor_holes), i=[0:1]) dims[i]/2-abs(p[i])])
-              >= max(pocket_d/2, sensor_head_r) + edge,
-              "Adapter holes need more material at the plate edges")
-// Conservative corner check: a circle around each mounting feature must fit.
-       assert(min([for (p=concat(holes, sensor_holes))
-                      r - norm([max(0, abs(p[0])-(dims[0]/2-r)), max(0, abs(p[1])-(dims[1]/2-r))])])
-              >= min(r, max(pocket_d/2, sensor_head_r) + edge),
-              "Reduce adapter corner_r to preserve mounting lands")
-       assert(min([for (i=[0:1]) plist_get("canonical_size", lid)[i]/2-abs(offset[i])-dims[i]/2]) >= 0,
-              "Adapter footprint must fit the lid roof")
-       ["enabled", true,
-        "size", concat(dims,[t]),
-        "corner_r", r,
-        "holes", holes,
-        "sensor_holes", sensor_holes,
-        "sensor_d", sensor_d,
-        "bolt_d", d,
-        "bolt_l", bolt_l,
-        "roof_t", roof_t,
-        "standoff_h", gap,
-        "clearance", clearance,
-        "nut_h", nut_h,
-        "nut_z", t-nut_h-0.2,
-        "nut_d", nut_d,
-        "pocket_d", pocket_d,
-        "access_d", access_d,
-        "offset", offset];
+    assert(t >= nut_h + 1.2 && clearance >= 0 && nut_clearance >= 0 && edge >= 0,
+           "Adapter needs nonnegative clearances and at least 1 mm below its nut pockets")
+    assert(d + clearance <= find_nut_prop("outer_dia", d) - 1,
+           "Adapter nuts need at least 0.5 mm of shoulder around the mounting holes")
+    assert(is_num(radius) && radius >= 0,
+           "Adapter corner_r must be nonnegative mm or percent")
+    assert(is_list(spacing) && len(spacing)==2 && min(spacing)>0
+           && access_d >= find_bolt_head_d(d,"countersunk") + clearance,
+           "Adapter mounting pattern must leave screw-head access between the skirts")
+    assert(roof_t >= find_bolt_head_h(d,"countersunk") + 0.2,
+           "Lid roof is too thin for the adapter countersinks")
+    assert(gap >= 0 && bolt_l >= roof_t + gap + t - 0.1
+           && bolt_l <= roof_t + gap + t + 1.5,
+           "Adapter screws must engage the whole nut and extend at most 1.5 mm above the plate")
+    assert(min([for (p=holes) min(p[cross] + offset[cross]-inner[0], inner[1]-p[cross]-offset[cross])])
+           >= access_d/2 + edge - 0.000001,
+           "Adapter screws/tool access overlap a lid skirt")
+    assert(min([for (p=holes, q=sensor_holes) norm(p-q)]) >= pocket_d/2 + sensor_head_r + edge,
+           "Adapter nut pockets overlap the sensor countersinks; reduce lid-side spacing")
+    assert(min([for (p=concat(holes, sensor_holes), i=[0:1]) dims[i]/2-abs(p[i])])
+           >= max(pocket_d/2, sensor_head_r) + edge,
+           "Adapter holes need more material at the plate edges")
+    // Conservative corner check: a circle around each mounting feature must fit.
+    assert(min([for (p=concat(holes, sensor_holes))
+      r - norm([max(0, abs(p[0])-(dims[0]/2-r)), max(0, abs(p[1])-(dims[1]/2-r))])])
+           >= min(r, max(pocket_d/2, sensor_head_r) + edge),
+           "Reduce adapter corner_r to preserve mounting lands")
+    assert(min([for (i=[0:1]) plist_get("canonical_size", lid)[i]/2-abs(offset[i])-dims[i]/2]) >= 0,
+           "Adapter footprint must fit the lid roof")
+    ["enabled", true,
+     "size", concat(dims,[t]),
+     "corner_r", r,
+     "holes", holes,
+     "sensor_holes", sensor_holes,
+     "sensor_d", sensor_d,
+     "bolt_d", d,
+     "bolt_l", bolt_l,
+     "roof_t", roof_t,
+     "standoff_h", gap,
+     "clearance", clearance,
+     "nut_h", nut_h,
+     "nut_z", t-nut_h-0.2,
+     "nut_d", nut_d,
+     "pocket_d", pocket_d,
+     "access_d", access_d,
+     "offset", offset];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────

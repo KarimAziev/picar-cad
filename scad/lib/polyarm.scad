@@ -15,7 +15,7 @@ function m_id() = [[1, 0, 0, 0],
                    [0, 0, 0, 1]];
 
 function m_mul(A, B) = [for (i=[0:3]) [for (j=[0:3])
-      A[i][0]*B[0][j] + A[i][1]*B[1][j] + A[i][2]*B[2][j] + A[i][3]*B[3][j]]];
+  A[i][0]*B[0][j] + A[i][1]*B[1][j] + A[i][2]*B[2][j] + A[i][3]*B[3][j]]];
 
 function m_t(x, y, z) = [[1, 0, 0, x],
                          [0, 1, 0, y],
@@ -45,12 +45,12 @@ function build_tfs_bboxwalk(specs,
          yz    = seg_yz(ww, l, t, angle),
          ystep = yz[0],
          zstep = yz[1])
-  build_tfs_bboxwalk(specs,
-                     thickness,
-                     w_default,
-                     i + 1,
-                     m_mul(tf, m_t(0, ystep, zstep)),
-                     concat(acc, [tf]));
+    build_tfs_bboxwalk(specs,
+                       thickness,
+                       w_default,
+                       i + 1,
+                       m_mul(tf, m_t(0, ystep, zstep)),
+                       concat(acc, [tf]));
 
 function step_vec(l, angle) = [0, l*cos(angle), l*sin(angle)];
 
@@ -60,10 +60,10 @@ function build_tfs_kinematic(specs, i=0, tf=m_id(), acc=[]) =
   : let (l     = plist_get("l", specs[i], 0),
          angle = plist_get("angle", specs[i], 0),
          dv    = step_vec(l, angle))
-  build_tfs_kinematic(specs,
-                      i + 1,
-                      m_mul(tf, m_t(dv[0], dv[1], dv[2])),
-                      concat(acc, [tf]));
+    build_tfs_kinematic(specs,
+                        i + 1,
+                        m_mul(tf, m_t(dv[0], dv[1], dv[2])),
+                        concat(acc, [tf]));
 
 module segment_center_x(size,
                         type,
@@ -145,7 +145,12 @@ function add_bbox(spec=[], w=0, thickness=0) =
        "bbox",
        bbox)
   plist_merge(spec,
-              ["y", y, "z", z, "bbox", bbox, "w", w, "t", t, "angle", angle]);
+              ["y", y,
+               "z", z,
+               "bbox", bbox,
+               "w", w,
+               "t", t,
+               "angle", angle]);
 
 module old_polyarm(specs,
                    thickness,
@@ -154,9 +159,9 @@ module old_polyarm(specs,
                    debug_hull=false,
                    debug=false) {
   plists = [for (spec = specs)
-      add_bbox(spec,
-               thickness=with_default(thickness, w),
-               w=w)];
+    add_bbox(spec,
+             thickness=with_default(thickness, w),
+             w=w)];
   y_sizes = [for (v = plists) plist_get("y", v)];
   z_sizes = [for (v = plists) plist_get("z", v)];
   widths = [for (v = plists) plist_get("w", v)];
@@ -249,11 +254,11 @@ module polyarm(specs, thickness, w=7, type="cube", debug, debug_hull) {
 
   tfs = build_tfs_bboxwalk(specs, thickness, w);
   bboxes = [for (spec = specs)
-      let (ww    = plist_get("w", spec, w),
-           l     = plist_get("l", spec, 0),
-           t     = plist_get("thickness", spec, with_default(thickness, w)),
-           angle = plist_get("angle", spec, 0))
-        is_num(angle)
+    let (ww    = plist_get("w", spec, w),
+         l     = plist_get("l", spec, 0),
+         t     = plist_get("thickness", spec, with_default(thickness, w)),
+         angle = plist_get("angle", spec, 0))
+    is_num(angle)
         ? rot_x_bbox_align([ww, l, t], angle=angle)
         : [l, t, 0, 0, l, t]];
 

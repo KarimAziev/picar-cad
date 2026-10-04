@@ -3,11 +3,11 @@
   * Author: Karim Aziiev <karim.aziiev@gmail.com>
   * License: GPL-3.0-or-later
   */
-use <../scad/lib/plist.scad>
 use <../scad/lib/functions.scad>
+use <../scad/lib/plist.scad>
 use <../scad/suspension/front_linkage.scad>
 
-d = front_linkage_datums();
+d  = front_linkage_datums();
 lo = plist_get("lower", d);
 up = plist_get("upper", d);
 

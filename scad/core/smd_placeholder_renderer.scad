@@ -76,7 +76,7 @@ module smd_placeholder_renderer(plist,
         } else if (show_ceramic_capactior
                    && placeholder == "ceramic_capactior") {
           ceramic_capactior(plist, center=false); {
-          }
+        }
         } else if (show_smd_chip && placeholder == "smd_chip") {
           smd_chip_from_plist(plist, center=false);
         } else if (show_unshielded_power_inductor

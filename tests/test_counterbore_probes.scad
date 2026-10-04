@@ -11,8 +11,11 @@ specs = [["d", [2, 2.2],
           "bore_h", [1, 1.5],
           "bore_d", [4, 5, 6],
           "gap", 1.5],
-         ["d", 3, "bore_h", 2, "bore_d", 6.5, "sink", true]];
-rows = hole_probe_rows(specs);
+         ["d", 3,
+          "bore_h", 2,
+          "bore_d", 6.5,
+          "sink", true]];
+rows  = hole_probe_rows(specs);
 assert(len(rows) == 5);
 assert([for (r = rows) plist_get("d", r)] == [2, 2, 2.2, 2.2, 3]);
 assert([for (r = rows) plist_get("bore_h", r)] == [1, 1.5, 1, 1.5, 2]);
@@ -34,12 +37,12 @@ for (mode = ["raised", "engraved", "none"]) {
   holes = plist_get("holes", layout);
   labels = plist_get("labels", layout);
   bounds = concat([for (hole = holes)
-                      let (p = plist_get("pos", hole),
-                           r = plist_get("bore_d", hole) / 2)
-                      [p[0] - r, p[1] - r, p[0] + r, p[1] + r]],
+    let (p = plist_get("pos", hole),
+         r = plist_get("bore_d", hole) / 2)
+    [p[0] - r, p[1] - r, p[0] + r, p[1] + r]],
                   [for (label = labels)
-                      let (p = label[2], s = label[1].size)
-                      [p[0], p[1], p[0] + s[0], p[1] + s[1]]]);
+                    let (p = label[2], s = label[1].size)
+                    [p[0], p[1], p[0] + s[0], p[1] + s[1]]]);
   for (b = bounds) {
     assert(b[0] >= 2 - 0.00001 && b[1] >= 2 - 0.00001);
     assert(b[2] <= size[0] - 2 + 0.00001);
@@ -55,7 +58,9 @@ for (mode = ["raised", "engraved", "none"]) {
   assert(abs(max([for (b = bounds) b[3]]) + 2 - size[1]) < 0.00001);
 }
 
-single = hole_probes_layout([["d", 2, "bore_h", 1, "bore_d", 4]],
+single = hole_probes_layout([["d", 2,
+                              "bore_h", 1,
+                              "bore_d", 4]],
                             label_mode="none");
 assert(plist_get("size", single) == [8, 8, 3]);
 assert(len(plist_get("holes", single)) == 1);

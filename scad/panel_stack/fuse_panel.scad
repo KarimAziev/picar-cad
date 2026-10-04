@@ -18,23 +18,23 @@ use <../placeholders/atm_fuse_holder/atm_fuse_holder.scad>
 use <../placeholders/standoff.scad>
 
 max_body_height         = max([for (pl = fuse_panel_plist_specs)
-                                  let (body = plist_get("body", pl, []),
-                                       size = plist_get("size", body, []),
-                                       height =
+  let (body = plist_get("body", pl, []),
+       size = plist_get("size", body, []),
+       height =
                                        with_default(size[2],
                                                     atm_fuse_holder_body_h))
-                                    height]);
+  height]);
 
 max_lid_height          = max([for (pl = fuse_panel_plist_specs)
-                                  let (cap = plist_get("cap", pl, []),
-                                       size = plist_get("size", cap, []),
-                                       height =
+  let (cap = plist_get("cap", pl, []),
+       size = plist_get("size", cap, []),
+       height =
                                        with_default(size[2],
                                                     atm_fuse_holder_cap_h))
-                                    height]);
+  height]);
 
 flipped_len             = len([for (pl = fuse_panel_plist_specs)
-                                  if (plist_get("cap_to_bottom", pl) == true)
+                           if (plist_get("cap_to_bottom", pl) == true)
                                     pl]);
 
 is_flipped              = flipped_len > 0;
@@ -109,21 +109,21 @@ function fuse_panel_wire_ports(side=1, orientation="wlh") =
        after = get_gaps_after(specs),
        total = get_total_size(specs, "ttb")[1])
   [for (i = [0:len(specs) - 1])
-      let (pl = specs[i],
-           body = plist_get("size", plist_get("body", pl)),
-           wire = plist_get("wiring", pl),
-           tail = plist_get(side == 1 ? "left_pts" : "right_pts", wire),
-           rib = plist_get("thickness", plist_get("rib", plist_get("body", pl)), 1),
-           flip = plist_get("cap_to_bottom", pl, false),
-           y = total / 2 - sum(ys, i) - sum(before, i) - sum(after, i)
-           - before[i] - ys[i] / 2 - plist_get("y_offset", pl, 0),
-           pt = [side * ((body[0] - 2 * rib) / 2 + tail[len(tail) - 1][0]),
-                 0, (flip ? 1 : -1) * body[2] / 2],
-           local = rotZ(pt, plist_get("rotation", pl, 0))
-           + [plist_get("x_offset", pl, 0), y,
-              fuse_panel_height() - fuse_panel_thickness],
-           v = orientation_matrix(orientation) * concat(local, [1]))
-        [v[0], v[1], v[2]]];
+    let (pl = specs[i],
+         body = plist_get("size", plist_get("body", pl)),
+         wire = plist_get("wiring", pl),
+         tail = plist_get(side == 1 ? "left_pts" : "right_pts", wire),
+         rib = plist_get("thickness", plist_get("rib", plist_get("body", pl)), 1),
+         flip = plist_get("cap_to_bottom", pl, false),
+         y = total / 2 - sum(ys, i) - sum(before, i) - sum(after, i)
+             - before[i] - ys[i] / 2 - plist_get("y_offset", pl, 0),
+         pt = [side * ((body[0] - 2 * rib) / 2 + tail[len(tail) - 1][0]),
+               0, (flip ? 1 : -1) * body[2] / 2],
+         local = rotZ(pt, plist_get("rotation", pl, 0))
+                 + [plist_get("x_offset", pl, 0), y,
+                    fuse_panel_height() - fuse_panel_thickness],
+         v = orientation_matrix(orientation) * concat(local, [1]))
+    [v[0], v[1], v[2]]];
 
 function fuse_panel_bolt_spacing() = panel_bolt_spacing;
 

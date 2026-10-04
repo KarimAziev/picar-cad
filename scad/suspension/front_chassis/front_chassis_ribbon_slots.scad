@@ -33,15 +33,15 @@ function front_chassis_ribbon_curve() =
        csi = rpi_5_csi_centers(),
        bank = (csi[0] + csi[len(csi) - 1]) / 2,
        oriented = orientation_matrix(front_rpi_orientation)
-         * concat(bank - [reference[0] / 2, reference[1] / 2, 0], [1]),
+                  * concat(bank - [reference[0] / 2, reference[1] / 2, 0], [1]),
        sign = front_rpi_rotate_z_180 ? -1 : 1,
        source = [for (i = [0:1])
-           (bounds[0][i] + bounds[1][i]) / 2 + sign * oriented[i]],
+         (bounds[0][i] + bounds[1][i]) / 2 + sign * oriented[i]],
        w = front_chassis_head_ribbon_slot_w,
        l = front_chassis_head_ribbon_slot_l,
        land = front_chassis_ribbon_land,
        rear_y = front_chassis_y_joint_2_end + joint_l
-         + land * 2 + rpi_bolt_cbore_dia / 2 + w / 2,
+                + land * 2 + rpi_bolt_cbore_dia / 2 + w / 2,
        end = [w / 2 + land,
               y_front_chassis_rear_frame_main_start - joint_l - land - l / 2],
        horizontal = front_rpi_orientation == "lwh",
@@ -79,9 +79,9 @@ function _front_ribbon_slots_separate(a, b, size, land) =
        delta = [b[0] - a[0], b[1] - a[1]],
        half = (size + [land, land]) / 2)
   max([for (axis = [ax, ay, bx, by])
-      abs(delta * axis)
-      - half[0] * (abs(ax * axis) + abs(bx * axis))
-      - half[1] * (abs(ay * axis) + abs(by * axis))]) >= -0.000001;
+    abs(delta * axis)
+    - half[0] * (abs(ax * axis) + abs(bx * axis))
+    - half[1] * (abs(ay * axis) + abs(by * axis))]) >= -0.000001;
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -118,27 +118,28 @@ function front_chassis_ribbon_path(steps=40) =
   the local cable direction.
  */
 function front_chassis_ribbon_slot_poses(rows=front_chassis_ribbon_slot_rows) =
-  assert(rows >= 3 && rows == floor(rows), "At least three ribbon slots required")
+  assert(rows >= 3 && rows == floor(rows),
+         "At least three ribbon slots required")
   let (curve = front_chassis_ribbon_curve(),
        samples = 100,
        points = [for (i = [0:samples]) _front_ribbon_point(curve, i / samples)],
        tangents = [for (i = [0:samples])
-           let (v = _front_ribbon_tangent(curve, i / samples)) v / norm(v)],
+         let (v = _front_ribbon_tangent(curve, i / samples)) v / norm(v)],
        lengths = [for (i = [0:samples - 1])
-           let (turn = acos(constraint(tangents[i] * tangents[i + 1], -1, 1)))
-             max(0.000001, norm(points[i + 1] - points[i])
-                 - front_chassis_head_ribbon_slot_w * PI / 360 * turn)],
+         let (turn = acos(constraint(tangents[i] * tangents[i + 1], -1, 1)))
+         max(0.000001, norm(points[i + 1] - points[i])
+                       - front_chassis_head_ribbon_slot_w * PI / 360 * turn)],
        distances = [for (i = [0:samples]) sum(lengths, i)],
        length = distances[samples])
   [for (row = [0:rows - 1])
-      let (distance = length * row / (rows - 1),
-           hi = max(1, min(samples,
-                           len([for (d = distances) if (d < distance) d]))),
-           t = (hi - 1 + (distance - distances[hi - 1]) / lengths[hi - 1])
+    let (distance = length * row / (rows - 1),
+         hi = max(1, min(samples,
+                         len([for (d = distances) if (d < distance) d]))),
+         t = (hi - 1 + (distance - distances[hi - 1]) / lengths[hi - 1])
              / samples,
-           p = _front_ribbon_point(curve, t),
-           tangent = _front_ribbon_tangent(curve, t))
-        [p[0], p[1], atan2(tangent[1], tangent[0]) - 90]];
+         p = _front_ribbon_point(curve, t),
+         tangent = _front_ribbon_tangent(curve, t))
+    [p[0], p[1], atan2(tangent[1], tangent[0]) - 90]];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -153,13 +154,13 @@ function front_chassis_ribbon_slot_poses(rows=front_chassis_ribbon_slot_rows) =
   separate the slots; the free cable run to the head stays beneath the chassis.
  */
 module front_chassis_ribbon_slots(thickness=chassis_thickness,
-                                   rows=front_chassis_ribbon_slot_rows) {
+                                  rows=front_chassis_ribbon_slot_rows) {
   eps = front_chassis_joint_boolean_overlap;
   poses = front_chassis_ribbon_slot_poses(rows);
   size = [front_chassis_head_ribbon_slot_w, front_chassis_head_ribbon_slot_l];
   for (i = [0:len(poses) - 2], j = [i + 1:len(poses) - 1]) {
     assert(_front_ribbon_slots_separate(poses[i], poses[j], size,
-                                       front_chassis_ribbon_land),
+                                        front_chassis_ribbon_land),
            "Ribbon slots need more material between openings; reduce rows");
   }
   for (pose = poses) {

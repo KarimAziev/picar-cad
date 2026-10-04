@@ -102,10 +102,10 @@ function front_linkage_datums() =
                        + front_bulkhead_shock_tower_mount_offset
                        + front_upper_arm_thickness / 2],
        ball_extension = front_arm_ball_stud_unthreaded_h
-       + ball_stud_center_z(front_arm_ball_stud_shank_d,
-                            front_arm_ball_stud_ball_d,
-                            front_arm_ball_stud_len)
-       - front_arm_ball_stud_len,
+                        + ball_stud_center_z(front_arm_ball_stud_shank_d,
+                                             front_arm_ball_stud_ball_d,
+                                             front_arm_ball_stud_len)
+                        - front_arm_ball_stud_len,
        lower_ball = lower_origin + [front_lower_arm_len + ball_extension
                                     + front_lower_arm_ball_stud_insert_out_depth,
                                     front_lower_arm_ball_stud_y_pos(),
@@ -129,26 +129,26 @@ function front_linkage_datums() =
             knuckle_total_len / 2 - knuckle_ball_stud_mount_outer_d / 2
             + front_bulkhead_housing_h / 2],
        socket_z = knuckle_ball_stud_house_h - front_arm_ball_stud_ball_d
-       + knuckle_bushing_thickness + knuckle_bushing_d / 2,
+                  + knuckle_bushing_thickness + knuckle_bushing_d / 2,
        socket = k + [-socket_z, 0, -joint[1]],
        planar = steering_arm_planar_params(),
        hole_z = knuckle_arm_thickness + 2 * knuckle_arm_ring_connector_l
-       + planar[1] + knuckle_arm_ear_len - knuckle_arm_bolt_hole_offset
-       - knuckle_arm_bolt_d / 2,
+                + planar[1] + knuckle_arm_ear_len - knuckle_arm_bolt_hole_offset
+                - knuckle_arm_bolt_d / 2,
        holes = [for (i = [0:knuckle_arm_holes_n - 1])
-           k + [-bearing[3] - planar[0] - knuckle_arm_narrow_w / 2,
-                -hole_z + i * (knuckle_arm_bolt_d + knuckle_arm_holes_gap),
-                -knuckle_arm_thickness / 2]])
-                ["lower", ["origin", lower_origin,
-                           "hinge", lower_hinge,
-                           "ball", lower_ball],
-                 "upper", ["origin", upper_origin,
-                           "hinge", upper_hinge,
-                           "ball", upper_ball],
-                 "hub", k,
-                 "socket", socket,
-                 "upright_l", 2 * joint[1],
-                 "holes", holes];
+         k + [-bearing[3] - planar[0] - knuckle_arm_narrow_w / 2,
+              -hole_z + i * (knuckle_arm_bolt_d + knuckle_arm_holes_gap),
+              -knuckle_arm_thickness / 2]])
+  ["lower", ["origin", lower_origin,
+             "hinge", lower_hinge,
+             "ball", lower_ball],
+   "upper", ["origin", upper_origin,
+             "hinge", upper_hinge,
+             "ball", upper_ball],
+   "hub", k,
+   "socket", socket,
+   "upright_l", 2 * joint[1],
+   "holes", holes];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -197,7 +197,7 @@ function front_linkage_pose(lower_angle=0,
                     - pow(knuckle_tie_rod_bushing_d, 2))),
        rod_ref = plist_get("holes", datums)[hole] - [0, 0, h / 2],
        outer_r = bellcrank_arm_l - bellcrank_arm_bolt_d / 2
-       - bellcrank_arm_bolt_edge_offset,
+                 - bellcrank_arm_bolt_edge_offset,
        target = [chassis_bellcrank_spacing / 2
                  + side * outer_r * sin(bellcrank_angle),
                  -bellcrank_y_distance_from_bulkhead
@@ -209,19 +209,19 @@ function front_linkage_pose(lower_angle=0,
        r = _fl_columns(_fl_turn(x, axis, steer), _fl_turn(y, axis, steer), axis),
        a = lower + r * (rod_ref - socket),
        forward = r * [0, 1, 0])
-       ["datums", datums,
-        "side", side,
-        "lower_angle", lower_angle,
-        "upper_angle", -atan2(upper[2] - uh[2], upper[0] - uh[0]),
-        "lower_ball", lower,
-        "upper_ball", upper,
-        "rotation", r,
-        "steer", steer,
-        "heading", atan2(-forward[0], forward[1]),
-        "rod_a", a,
-        "rod_b", target,
-        "rod_l", length,
-        "rod_h", h];
+  ["datums", datums,
+   "side", side,
+   "lower_angle", lower_angle,
+   "upper_angle", -atan2(upper[2] - uh[2], upper[0] - uh[0]),
+   "lower_ball", lower,
+   "upper_ball", upper,
+   "rotation", r,
+   "steer", steer,
+   "heading", atan2(-forward[0], forward[1]),
+   "rod_a", a,
+   "rod_b", target,
+   "rod_l", length,
+   "rod_h", h];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────

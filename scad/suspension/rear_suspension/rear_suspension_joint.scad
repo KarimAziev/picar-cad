@@ -34,7 +34,7 @@ module rear_suspension_chassis_joint(mode,
               pin_use_pad=false,
               pin_d=front_chassis_joint_pin_d,
               pin_l=rear_suspension_joint_pin_l
-                + 2 * front_chassis_joint_pin_end_clearance,
+                    + 2 * front_chassis_joint_pin_end_clearance,
               l=joint_l,
               pin_spacing="60%",
               show_bolts=show_bolts,

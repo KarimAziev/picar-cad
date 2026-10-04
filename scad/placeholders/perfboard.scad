@@ -20,7 +20,7 @@ use <standoff.scad>
 // omitted bus_pad_cols fits the bus pads between the corner mounting holes.
 // Explicit zero counts hide the corresponding pads.
 perfboard_plist_example = ["size", [20, 80, 1.6],
-                          "bolt_spacing", [16, 76]];
+                           "bolt_spacing", [16, 76]];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -42,33 +42,46 @@ function perfboard_props(pl) =
          "Perfboard size must contain three positive dimensions")
   assert(is_list(pitch) && len(pitch) == 2 && min(pitch) > 0,
          "Perfboard bolt_spacing must contain two positive dimensions")
-  let (p = plist_merge(["bolt_d", m2_hole_dia, "corner_r", 1,
-                        "pad_d", 1.9, "perf_grid_d", 1, "spacing", 0.54,
-                        "bus_pad_rx", 1.9, "bus_pad_ry", 1,
-                        "bus_pad_offset", 0.8, "bus_pad_spacing", 0.8,
-                        "board_color", "green", "pin_color", "silver",
+  let (p = plist_merge(["bolt_d", m2_hole_dia,
+                        "corner_r", 1,
+                        "pad_d", 1.9,
+                        "perf_grid_d", 1,
+                        "spacing", 0.54,
+                        "bus_pad_rx", 1.9,
+                        "bus_pad_ry", 1,
+                        "bus_pad_offset", 0.8,
+                        "bus_pad_spacing", 0.8,
+                        "board_color", "green",
+                        "pin_color", "silver",
                         "bus_pad_color", "silver"], pl),
-       d = plist_get("bolt_d", p), pad = plist_get("pad_d", p),
-       gap = plist_get("spacing", p), rx = plist_get("bus_pad_rx", p),
-       ry = plist_get("bus_pad_ry", p), offset = plist_get("bus_pad_offset", p),
+       d = plist_get("bolt_d", p),
+       pad = plist_get("pad_d", p),
+       gap = plist_get("spacing", p),
+       rx = plist_get("bus_pad_rx", p),
+       ry = plist_get("bus_pad_ry", p),
+       offset = plist_get("bus_pad_offset", p),
        bus_gap = plist_get("bus_pad_spacing", p))
   assert(d > 0 && pad > 0 && gap >= 0 && rx > 0 && ry >= 0
-         && offset >= 0 && bus_gap >= 0, "Invalid perfboard pad dimensions")
+         && offset >= 0 && bus_gap >= 0,
+         "Invalid perfboard pad dimensions")
   assert(pitch[0] + d <= size[0] && pitch[1] + d <= size[1],
          "Perfboard mounting holes must fit inside its PCB")
   let (cols = plist_get("cols", p, max(0, floor((pitch[0] + gap) / (pad + gap)))),
        rows = plist_get("rows", p,
-         max(0, floor((pitch[1] - 2 * (rx + ry + offset) + gap) / (pad + gap)))),
+                        max(0, floor((pitch[1] - 2 * (rx + ry + offset) + gap) / (pad + gap)))),
        bus_cols = plist_get("bus_pad_cols", p,
-         max(0, floor((pitch[0] - 2 * d + bus_gap) / (rx + bus_gap)))))
+                            max(0, floor((pitch[0] - 2 * d + bus_gap) / (rx + bus_gap)))))
   assert(len([for (n = [rows, cols, bus_cols])
-                if (!is_num(n) || n < 0 || n != floor(n)) n]) == 0,
+    if (!is_num(n) || n < 0 || n != floor(n)) n]) == 0,
          "Perfboard pad counts must be nonnegative integers")
   assert(cols * pad + max(0, cols - 1) * gap <= size[0]
          && rows * pad + max(0, rows - 1) * gap <= size[1]
          && bus_cols * rx + max(0, bus_cols - 1) * bus_gap <= size[0],
          "Perfboard copper grid must fit its PCB")
-  plist_merge(p, ["rows", rows, "cols", cols, "bus_pad_cols", bus_cols]);
+  plist_merge(p,
+              ["rows", rows,
+               "cols", cols,
+               "bus_pad_cols", bus_cols]);
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -84,11 +97,11 @@ function perfboard_props(pl) =
 function perfboard_bolt_positions(pl, bolt_idxes) =
   let (pitch = plist_get("bolt_spacing", pl))
   assert(is_undef(bolt_idxes) || (is_list(bolt_idxes)
-         && len([for (idx = bolt_idxes)
-                   if (!in_list(idx, [[0, 0], [0, 1], [1, 0], [1, 1]])) idx]) == 0),
+                                  && len([for (idx = bolt_idxes)
+                                    if (!in_list(idx, [[0, 0], [0, 1], [1, 0], [1, 1]])) idx]) == 0),
          "Perfboard bolt_idxes must contain corner index pairs")
   [for (x = [0, 1], y = [0, 1])
-      if (is_undef(bolt_idxes) || in_list([x, y], bolt_idxes))
+    if (is_undef(bolt_idxes) || in_list([x, y], bolt_idxes))
         [(x - 0.5) * pitch[0], (y - 0.5) * pitch[1]]];
 
 module perfgrid(cols, rows, d, pad_d, spacing, h, color, $fn=10) {
@@ -137,23 +150,23 @@ module perfgrid(cols, rows, d, pad_d, spacing, h, color, $fn=10) {
   stand_up and orientation. Slot mode shares the same reference and placement.
  */
 module perfboard(plist,
-                  $fn=100,
-                  size_key="size",
-                  bolt_spacing_key="bolt_spacing",
-                  bolt_idxes,
-                  orientation="wlh",
-                  anchor=[0, 0, 1],
-                  standoff_h=2,
-                  bolt_visible_h=2,
-                  slot_mode=false,
-                  stand_up=true,
-                  show_bolt=true,
-                  show_standoff=true,
-                  show_nut=true) {
+                 $fn=100,
+                 size_key="size",
+                 bolt_spacing_key="bolt_spacing",
+                 bolt_idxes,
+                 orientation="wlh",
+                 anchor=[0, 0, 1],
+                 standoff_h=2,
+                 bolt_visible_h=2,
+                 slot_mode=false,
+                 stand_up=true,
+                 show_bolt=true,
+                 show_standoff=true,
+                 show_nut=true) {
 
   p = perfboard_props(plist_merge(plist,
-    ["size", plist_get(size_key, plist),
-     "bolt_spacing", plist_get(bolt_spacing_key, plist)]));
+                                  ["size", plist_get(size_key, plist),
+                                   "bolt_spacing", plist_get(bolt_spacing_key, plist)]));
   size = plist_get("size", p);
   bolt_spacing = plist_get("bolt_spacing", p);
 
@@ -236,7 +249,7 @@ module perfboard(plist,
               mirror_copy([0, 1, 0]) {
                 let (step = bus_pad_spacing + bus_pad_rx,
                      total_x = bus_pad_cols * bus_pad_rx
-                     + (bus_pad_cols - 1) * bus_pad_spacing) {
+                               + (bus_pad_cols - 1) * bus_pad_spacing) {
                   translate([-total_x / 2,
                              y / 2 -
                              (bus_pad_ry + bus_pad_rx) / 2,
@@ -304,16 +317,20 @@ perfboard(perfboard_plist_example);
 function perf_board_mount_props(pl) =
   assert(plist_is(pl), "Perfboard mount requires an explicit hardware plist")
   assert(len([for (k = ["bolt_d", "standoff_h", "wire_d", "component_h",
-                       "slot_bore_d", "slot_bore_h", "slot_bore_sink"])
-                if (is_undef(plist_get(k, pl))) k]) == 0,
+                        "slot_bore_d", "slot_bore_h", "slot_bore_sink"])
+    if (is_undef(plist_get(k, pl))) k]) == 0,
          "Perfboard mount requires explicit mounting parameters")
-  let (p = perfboard_props(pl), board = plist_get("size", p),
-       pitch = plist_get("bolt_spacing", p), d = plist_get("bolt_d", p),
+  let (p = perfboard_props(pl),
+       board = plist_get("size", p),
+       pitch = plist_get("bolt_spacing", p),
+       d = plist_get("bolt_d", p),
        requested_h = plist_get("standoff_h", p),
        h = standoff_real_h(requested_h, d),
        hardware = calc_standoff_params(d, h)[0],
-       wire = plist_get("wire_d", p), populated = plist_get("component_h", p),
-       bore = plist_get("slot_bore_d", p), bore_h = plist_get("slot_bore_h", p),
+       wire = plist_get("wire_d", p),
+       populated = plist_get("component_h", p),
+       bore = plist_get("slot_bore_d", p),
+       bore_h = plist_get("slot_bore_h", p),
        positions = perfboard_bolt_positions(p, plist_get("bolt_idxes", p)),
        mount_d = max(bore, plist_get("body_d", hardware)),
        size = [max(board[0], pitch[0] + mount_d, wire),
@@ -323,9 +340,15 @@ function perf_board_mount_props(pl) =
          "Perfboard mount needs standoffs and nonnegative clearances")
   assert(bore >= d && bore_h > 0 && is_bool(plist_get("slot_bore_sink", p)),
          "Invalid perfboard mounting recess")
-  ["size", size, "board_size", board, "component", p,
-   "bolt_spacing", pitch, "bolt_d", d, "standoff_h", h,
-   "wire_d", wire, "mount_d", mount_d, "bolt_positions", positions];
+  ["size", size,
+   "board_size", board,
+   "component", p,
+   "bolt_spacing", pitch,
+   "bolt_d", d,
+   "standoff_h", h,
+   "wire_d", wire,
+   "mount_d", mount_d,
+   "bolt_positions", positions];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────

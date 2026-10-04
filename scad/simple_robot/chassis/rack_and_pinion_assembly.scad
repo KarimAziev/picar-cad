@@ -70,9 +70,9 @@ module knuckle_assembly(show_wheel=true,
   x_offst = steering_panel_length / 2 - knuckle_dia / 2;
 
   z_offst = knuckle_pin_lower_height
-    + steering_rack_support_thickness / 2
-    + knuckle_pin_stopper_height
-    + knuckle_bearing_flanged_height;
+            + steering_rack_support_thickness / 2
+            + knuckle_pin_stopper_height
+            + knuckle_bearing_flanged_height;
   angle = $t > 0.0 ? pinion_angle_sync($t) : 0;
   translate([x_offst, 0, z_offst]) {
     rotate([0, 0, rotation_dir * angle]) {

@@ -42,8 +42,8 @@ function plist_is(value) =
   is_list(value)
   && (len(value) == 0 || (len(value) % 2 == 0
                           && len([for (i = [0:len(value) - 1])
-                                     if (i % 2 == 0
-                                         && !is_string(value[i]))
+                            if (i % 2 == 0
+                                && !is_string(value[i]))
                                        1]) == 0));
 
 /**
@@ -293,7 +293,7 @@ function plist_remove(key, plist) =
 function plist_remove_by_keys(key_or_keys, plist) =
   let (keys = is_list(key_or_keys) ? key_or_keys : [key_or_keys])
   flatten_pairs([for (i = [0:2:len(plist)-1])
-                    if (!member(plist[i], keys))
+    if (!member(plist[i], keys))
                       [plist[i], plist[i + 1]]]);
 
 /**
@@ -329,10 +329,10 @@ function plist_merge(plist_a, plist_b) =
        keys_b = plist_keys(plist_b),
 
        part_a = flatten_pairs([for (k = keys_a)
-                                  [k, plist_get(k, plist_b, plist_get(k, plist_a))]]),
+         [k, plist_get(k, plist_b, plist_get(k, plist_a))]]),
 
        part_b = flatten_pairs([for (k = keys_b)
-                                  if (!member(k, keys_a))
+         if (!member(k, keys_a))
                                     [k, plist_get(k, plist_b)]]))
   concat(part_a, part_b);
 

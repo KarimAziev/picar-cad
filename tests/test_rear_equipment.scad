@@ -42,7 +42,7 @@ for (specs = [rear_equipment_mixed, rear_equipment_meters,
     p = parts[i];
     b = plist_get("bounds", p);
     zone = [for (z = plist_get("equipment_zones", layout))
-        if (plist_get("name", z) == plist_get("zone", p))
+      if (plist_get("name", z) == plist_get("zone", p))
           plist_get("bounds", z)][0];
     for (axis = [0, 1]) {
       assert(b[0][axis] >= zone[0][axis] - 0.00001);
@@ -55,15 +55,15 @@ for (specs = [rear_equipment_mixed, rear_equipment_meters,
       assert(!overlap(b, plist_get("bounds", parts[j]), rear_equipment_gap));
     }
   }
- }
+}
 // Hardware modifications flow into the layout; taller populated boards reserve Z.
 custom = deck_component_props("perf_board",
                               plist_merge(perfboard_default_plist,
-                                ["size", [30, 50, 1.6],
-                                 "bolt_spacing", [26, 46],
-                                 "rows", 16,
-                                 "cols", 10,
-                                 "component_h", 12]));
+                                          ["size", [30, 50, 1.6],
+                                           "bolt_spacing", [26, 46],
+                                           "rows", 16,
+                                           "cols", 10,
+                                           "component_h", 12]));
 assert(plist_get("size", custom)[0] == 30);
 assert(plist_get("size", custom)[1] == 50);
 assert(plist_get("size", custom)[2] > 18);

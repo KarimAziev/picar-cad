@@ -4,8 +4,8 @@
 include <layout_params.scad>
 
 use <../../lib/plist.scad>
-use <front_chassis_joint.scad>
 use <../rear_chassis/computed_params.scad>
+use <front_chassis_joint.scad>
 
 front_chassis_rear_frame_w     = plist_get("join_w", rear_chassis_layout());
 

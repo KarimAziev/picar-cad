@@ -16,8 +16,8 @@ module near(a, b) {
 }
 
 plain  = plist_merge(as5048A_encoder_plist,
-                    ["show_jst_shr", false,
-                     "show_pins", false]);
+                     ["show_jst_shr", false,
+                      "show_pins", false]);
 assert(!encoder_has_connectors(plain));
 jst    = encoder_connector_spec(as5048A_encoder_plist, "jst_shr");
 pins   = encoder_connector_spec(as5048A_encoder_plist, "pins");
@@ -58,5 +58,5 @@ for (flags = [[true, false], [false, true], [true, true]]) {
   assert(plist_get("mount_holes", mount) == plist_get("mount_holes", base));
   near([encoder_total_thickness(pl)],
        [encoder_total_thickness(as5048A_encoder_plist)]);
- }
+}
 echo("PASS: encoder connectors follow pad rows and preserve sensor/mount datums");

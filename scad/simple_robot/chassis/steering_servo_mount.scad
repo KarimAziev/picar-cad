@@ -65,7 +65,7 @@ module steering_servo_mount_with_bolt_mirror_x_positions() {
 
 module steering_servo_mount_panel_bolt_holes() {
   h = steering_servo_mount_pass_through_len()
-    + 1;
+      + 1;
 
   steering_servo_mount_with_bolt_mirror_x_positions() {
     rotate([90, 0, 0]) {
@@ -98,9 +98,9 @@ module steering_servo_mount(show_servo=show_servo,
                              steering_servo_bolts_offset);
 
   slot_offset_y = steering_servo_mount_height / 2
-    - bolts_offst
-    - servo_bolt_dia * 0.5
-    - steering_servo_bolt_distance_from_top;
+                  - bolts_offst
+                  - servo_bolt_dia * 0.5
+                  - steering_servo_bolt_distance_from_top;
 
   z_r = min(0.1 * steering_servo_mount_height, 3);
 
@@ -143,7 +143,7 @@ module steering_servo_mount(show_servo=show_servo,
                                  + steering_servo_flange_thickness
                                  + steering_vertical_panel_thickness),
                    nut_head_distance=steering_servo_flange_thickness
-                   + steering_vertical_panel_thickness) {
+                                     + steering_vertical_panel_thickness) {
                 if (echo_bolts_info) {
                   echo(str("The steering servo vertical bolt: M",
                            snap_bolt_d(d),
@@ -186,16 +186,16 @@ module steering_servo_mount(show_servo=show_servo,
       servo_w = steering_servo_size[1];
 
       servo_y = -steering_servo_height_after_flange()
-        - steering_servo_flange_thickness
-        - steering_servo_mount_length
-        - steering_vertical_panel_thickness / 2
-        - steering_rack_support_width / 2;
+                - steering_servo_flange_thickness
+                - steering_servo_mount_length
+                - steering_vertical_panel_thickness / 2
+                - steering_rack_support_width / 2;
 
       z_offset = steering_servo_mount_height -
-        (steering_rack_support_thickness / 2)
-        - bolts_offset
-        - servo_dia
-        - servo_dia / 2;
+                 (steering_rack_support_thickness / 2)
+                 - bolts_offset
+                 - servo_dia
+                 - servo_dia / 2;
       translate([servo_w / 2, servo_y, z_offset]) {
         rotate([0, 90, 90]) {
           steering_servo(center=false,

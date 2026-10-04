@@ -10,9 +10,12 @@
 use <../../scad/lib/shapes3d.scad>
 use <fixtures.scad>
 
-names = ["cuboid", "cyl", "cylinder_cut", "star_3d", "notched_circle",
-         "rounded_rect_recess", "cube_border", "ring", "y_chamfered_cube",
-         "chamfered_cube", "tapered_box", "ring / outer color"];
+names = ["cuboid", "cyl",
+         "cylinder_cut", "star_3d",
+         "notched_circle", "rounded_rect_recess",
+         "cube_border", "ring",
+         "y_chamfered_cube", "chamfered_cube",
+         "tapered_box", "ring / outer color"];
 
 module color_fixture(index, color) {
   if (index == 0) {
@@ -69,4 +72,4 @@ for (index = [0 : len(names) - 1]) {
       shape_test_label(names[index], size=2.5);
     }
   }
- }
+}

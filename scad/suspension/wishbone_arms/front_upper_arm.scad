@@ -37,7 +37,7 @@ module upper_arm_barrel() {
 module upper_arm_hinge_barrels() {
   cut_h = front_upper_arm_h - front_upper_arm_hinge_barrel_h * 2;
   hole_end_x = front_upper_arm_hinge_barrel_hole_offset
-    + front_upper_arm_hinge_barrel_hole_d;
+               + front_upper_arm_hinge_barrel_hole_d;
   wall_len = front_upper_arm_hinge_barrel_len - hole_end_x;
 
   union() {
@@ -80,7 +80,7 @@ module front_upper_arm(color=cobalt_blue_metallic,
   ball_stud_mount_thickness = front_upper_arm_ball_stud_mount_size[2];
 
   ball_stud_mount_extra_thickness = ball_stud_mount_thickness
-    - front_upper_arm_thickness;
+                                    - front_upper_arm_thickness;
 
   ball_stud_mount_chamfer_thickness = ball_stud_mount_extra_thickness / 2;
 
@@ -88,11 +88,11 @@ module front_upper_arm(color=cobalt_blue_metallic,
 
   upper_bent_len = front_upper_arm_len - ball_stud_mount_length;
   hole_start_x = front_upper_arm_hinge_barrel_len
-    + front_upper_arm_leg_width;
+                 + front_upper_arm_leg_width;
   hole_start_y = cut_y_offset + front_upper_arm_ball_stud_mount_extra_h / 2;
 
   hinge_hole_end_x = front_upper_arm_hinge_barrel_hole_offset
-    + front_upper_arm_hinge_barrel_hole_d;
+                     + front_upper_arm_hinge_barrel_hole_d;
 
   shape_pts = [[front_upper_arm_hinge_barrel_len - front_upper_arm_corner_r,
                 -front_upper_arm_corner_r],

@@ -166,7 +166,7 @@ module cuboid(size,
               fn=36,
               color) {
   assert(is_num(size) || is_list(size) && len([for (v = size)
-                                                  if (is_num(v)) v]) == 3,
+    if (is_num(v)) v]) == 3,
          "Size should be number or [number, number, number]");
   size = is_num(size) ? [size, size, size] : size;
   r = maybe_percent_string_to_num(r,
@@ -873,7 +873,12 @@ module tapered_box(base_size,
   - `anchor`: Anchor of the original cylinder box, not the trimmed bounds.
     `[0, 0, 1]` preserves the shaft axis at X=Y=0 and the bottom at Z=0.
  */
-module flatted_cyl(d, h, flat_d, both_sides=false, $fn=20, color,
+module flatted_cyl(d,
+                   h,
+                   flat_d,
+                   both_sides=false,
+                   $fn=20,
+                   color,
                    anchor=[0, 0, 1]) {
   assert(d > 0 && h > 0 && flat_d > 0 && flat_d <= d,
          "Flat thickness must be positive and no greater than the shaft diameter");

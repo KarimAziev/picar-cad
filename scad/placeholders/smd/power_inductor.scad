@@ -157,5 +157,6 @@ translate([1, 0, 0]) {
 }
 
 translate([-size[0] - 1, 0, 0]) {
-  shielded_power_inductor_from_plist(["placeholder_size", size, "text", 220]);
+  shielded_power_inductor_from_plist(["placeholder_size", size,
+                                      "text", 220]);
 }

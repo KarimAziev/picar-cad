@@ -35,7 +35,7 @@ module knuckle_connector(parent_dia,
 
   function children_for(mode) =
     [for (i = [0:len(children_modes) - 1])
-        if (children_modes[i] == mode) i];
+      if (children_modes[i] == mode) i];
 
   union_children = children_for("union");
   difference_children = children_for("difference");

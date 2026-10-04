@@ -13,8 +13,8 @@ use <../../lib/slots.scad>
 
 module bellcrank_slots() {
   tool_access_offset_y = -bellcrank_arm_l
-    + bellcrank_arm_bolt_d / 2
-    + bellcrank_arm_bolt_edge_offset;
+                         + bellcrank_arm_bolt_d / 2
+                         + bellcrank_arm_bolt_edge_offset;
 
   union() {
     translate([0, -tool_access_offset_y, 0]) {

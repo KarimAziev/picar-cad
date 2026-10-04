@@ -55,24 +55,30 @@ function encoder_connector_spec(plist, type) =
        : side == "bottom" ? 180
        : side == "left" ? 90 : -90,
        contacts = plist_get("contacts", props,
-                             jst ? 6 : plist_get("cols", pads, 3)),
+                            jst ? 6 : plist_get("cols", pads, 3)),
        pitch = plist_get("pitch", props,
-                          jst ? 1 : plist_get("w", pads, 1.74)
-                          + plist_get("gap", pads, 0.8)),
+                         jst ? 1 : plist_get("w", pads, 1.74)
+                                   + plist_get("gap", pads, 0.8)),
        size = jst
        ? plist_get("size", props, [(contacts - 1) * pitch + 4.7, 4.83, 3.4])
        : [contacts * pitch, pitch, plist_get("h", props, 4.56)],
        edge = pcb[in_list(side, ["top", "bottom"]) ? 1 : 0] / 2,
        pad_l = plist_get("l", pads, size[1]),
        inner = edge - plist_get("padding", pads, 0)
-       - (jst ? pad_l : (pad_l + size[1]) / 2),
+               - (jst ? pad_l : (pad_l + size[1]) / 2),
        position = [-sin(angle) * inner, cos(angle) * inner, 0])
-  assert(!enabled || (len(pads) > 0 && in_list(side, ["top", "bottom", "left", "right"])),
+  assert(!enabled || (len(pads) > 0 && in_list(side, ["top", "bottom",
+                                                      "left", "right"])),
          "Enabled encoder connectors require a valid contact-pad row")
   assert(contacts >= 1 && floor(contacts) == contacts && pitch > 0
-         && min(size) > 0, "Invalid encoder connector dimensions")
-  ["enabled", enabled, "size", size, "position", position,
-   "rotation", [0, 0, angle], "contacts", contacts, "pitch", pitch,
+         && min(size) > 0,
+         "Invalid encoder connector dimensions")
+  ["enabled", enabled,
+   "size", size,
+   "position", position,
+   "rotation", [0, 0, angle],
+   "contacts", contacts,
+   "pitch", pitch,
    "tail_l", jst ? 0 : plist_get("tail_l", props, 6)];
 
 /**
@@ -83,7 +89,9 @@ function encoder_connector_spec(plist, type) =
   Return whether either rear-face connector is enabled in encoder `plist`.
  */
 function encoder_has_connectors(plist) =
-  plist_get("show_jst_shr", plist, false) || plist_get("show_pins", plist, false);
+  plist_get("show_jst_shr", plist, false) || plist_get("show_pins",
+                                                       plist,
+                                                       false);
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -145,7 +153,8 @@ module _encoder_connectors(plist) {
             color(metallic_silver_1) {
               for (i = [0 : contacts - 1]) {
                 translate([(i - (contacts - 1) / 2) * pitch - 0.15,
-                           0.5, -size[2] / 2 - 0.15]) {
+                           0.5,
+                           -size[2] / 2 - 0.15]) {
                   cube([0.3, size[1] - 1, 0.3]);
                 }
               }
@@ -370,26 +379,29 @@ module _pads(plist, pcb_w, pcb_l, h=0.1) {
     translate([is_cols ? 0 : ((sgn * ((pcb_w - pad_l) / 2)) - sgn * padding),
                is_cols ? ((sgn * ((pcb_l - pad_l) / 2)) - sgn * padding) : 0,
                0]) {
-    maybe_rotate([0, 0, is_cols ? 0 : 90]) {
-      columns_children(cols=pads_cols,
-                       w=pad_w,
-                       gap=pads_gap,
-                       center=true) {
+      maybe_rotate([0, 0, is_cols ? 0 : 90]) {
+        columns_children(cols=pads_cols,
+                         w=pad_w,
+                         gap=pads_gap,
+                         center=true) {
 
-        if ($children) {
-          children();
-        } else {
-          linear_extrude(height=h, center=false) {
-            _pad_rect_2d(plist);
+          if ($children) {
+            children();
+          } else {
+            linear_extrude(height=h, center=false) {
+              _pad_rect_2d(plist);
+            }
           }
         }
       }
     }
-  }
 }
 
-module _text_item(spec, pad_w, pad_l, defaults=["size", 1,
-                                                "valign", "center"]) {
+module _text_item(spec,
+                  pad_w,
+                  pad_l,
+                  defaults=["size", 1,
+                            "valign", "center"]) {
   for (type = ["before", "after", "bottom", "top", "on"]) {
     let (pl = _get_text_plist(spec=spec, type=type, defaults=defaults)) {
       if (pl) {

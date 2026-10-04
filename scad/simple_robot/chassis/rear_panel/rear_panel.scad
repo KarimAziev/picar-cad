@@ -12,8 +12,6 @@ use <../../../lib/l_bracket.scad>
 use <../../../lib/slots.scad>
 use <../../../placeholders/toggle_switch.scad>
 
-
-
 function rear_panel_bolt_panel_width() =
   max(rear_panel_bolt_hole_dia + rear_panel_bolt_offset * 2,
       rear_panel_size[2]);
@@ -78,7 +76,8 @@ module rear_panel(show_switch_button=false, colr) {
                      - w1
                      - rear_panel_bolt_cbore_hole_dia / 2
                      - 1,
-                     -bolt_cut_h / 2 + rear_panel_thickness / 2, 0]) {
+                     -bolt_cut_h / 2 + rear_panel_thickness / 2,
+                     0]) {
 
             square([w1, bolt_cut_h], center=false);
           }
@@ -86,7 +85,8 @@ module rear_panel(show_switch_button=false, colr) {
           translate([max_hole_x
                      + rear_panel_bolt_cbore_hole_dia / 2
                      + 1,
-                     -bolt_cut_h / 2 + rear_panel_thickness / 2, 0]) {
+                     -bolt_cut_h / 2 + rear_panel_thickness / 2,
+                     0]) {
 
             square([w2, bolt_cut_h], center=false);
           }
@@ -104,7 +104,8 @@ module rear_panel(show_switch_button=false, colr) {
           }
         }
 
-        translate([0, -h / 2
+        translate([0,
+                   -h / 2
                    - rear_panel_mount_thickness / 2,
                    bolts_panel_w / 2]) {
           rear_panel_bolt_holes_3d();
@@ -113,7 +114,9 @@ module rear_panel(show_switch_button=false, colr) {
     }
     if (show_switch_button) {
       for (x=rear_panel_holes_x_offsets) {
-        translate([x, 0, toggle_switch_size[0] + rear_panel_thickness / 2
+        translate([x,
+                   0,
+                   toggle_switch_size[0] + rear_panel_thickness / 2
                    + 0.05]) {
           rotate([180, 0, 0]) {
             toggle_switch();

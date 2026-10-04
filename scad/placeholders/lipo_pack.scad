@@ -14,8 +14,8 @@ use <../lib/plist.scad>
 use <../lib/shapes3d.scad>
 use <../lib/text.scad>
 use <../lib/transforms.scad>
-use <t_plug.scad>
 use <lipo_pack_wiring.scad>
+use <t_plug.scad>
 
 lipo_power_wiring_size    = [9.6, 8, 16.5];
 lipo_wiring_balancer_size = [8.75, 8, 11.3];
@@ -342,7 +342,7 @@ module lipo_pack_from_pl(plist, anchor=[0, 1, 1], show_wiring=true) {
                                  ["top", front_end_corner_r]),
                                 (is_undef(rear_end_corner_r) ? undef :
                                  ["bottom", rear_end_corner_r])])
-      if (v) v];
+    if (v) v];
 
   function _from_percent_val(val, total) = is_string(val)
     ? percent_to_mm(parse_percent(val),
@@ -443,8 +443,8 @@ module lipo_pack_from_pl(plist, anchor=[0, 1, 1], show_wiring=true) {
                                     total = spec[0],
                                     def = spec[1],
                                     val = with_default(v, def),)
-                                 maybe_percent_string_to_num(val=val,
-                                                             total=total)],
+           maybe_percent_string_to_num(val=val,
+                                       total=total)],
          cover_w = xy[0],
          cover_y = xy[1]) {
       color(bg, alpha=1) {
@@ -550,6 +550,7 @@ lipo_pack_from_pl(plist=["size", [lipo_pack_width,
                                                   "size", 10,
                                                   "halign", "center",
                                                   "gap_before", 10]],
-                                       "props", ["halign", "center", "color", "#28282B"]],
+                                       "props", ["halign", "center",
+                                                 "color", "#28282B"]],
                          "side_cover", ["bg", "silver"]],
                   anchor=[0, 0, 1]);

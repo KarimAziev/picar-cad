@@ -103,8 +103,8 @@ module servo_l_bracket(color=white_smoke_1,
     }
     if (show_chassis_bolt) {
       let (nut_head_dist = chassis_thickness
-           + lower_thickness
-           - steering_servo_mount_bolt_bore_h) {
+                           + lower_thickness
+                           - steering_servo_mount_bolt_bore_h) {
         servo_l_bracket_chassis_slot_child() {
           translate([0,
                      0,

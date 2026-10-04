@@ -84,7 +84,7 @@ module ir_led_board() {
                                     ir_led_board_len
                                     - ir_led_board_cutout_depth],
                                    r=min(ir_led_board_w, ir_led_board_len)
-                                   * 0.5);
+                                     * 0.5);
                 }
                 translate([0, ear_rad, 0]) {
                   translate([ear_rad, 0, 0]) {
@@ -103,7 +103,8 @@ module ir_led_board() {
                              fn=40);
               }
               translate([0,
-                         bolt_rad + 0.4, 0]) {
+                         bolt_rad + 0.4,
+                         0]) {
                 translate([ear_rad, 0, 0]) {
                   circle(r=bolt_rad, $fn=10);
                 }

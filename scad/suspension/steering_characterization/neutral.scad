@@ -6,15 +6,16 @@
   * This is an audit overlay, not an animated or corrected mechanism.
   */
 include <../../rc_params.scad>
+
 use <../../lib/plist.scad>
-use <datums.scad>
-use <../front_suspension_assembly.scad>
 use <../bellcrank_steering_assembly.scad>
+use <../front_suspension_assembly.scad>
+use <datums.scad>
 
 show_components = true;
-show_datums = true;
-marker_d = 1.5;
-axis_h = 12;
+show_datums     = true;
+marker_d        = 1.5;
+axis_h          = 12;
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -30,8 +31,9 @@ axis_h = 12;
   - `axis_h`: Display-only axis-marker length, in mm.
  */
 module steering_neutral_inspection(show_components=show_components,
-                                    show_datums=show_datums,
-                                    marker_d=marker_d, axis_h=axis_h) {
+                                   show_datums=show_datums,
+                                   marker_d=marker_d,
+                                   axis_h=axis_h) {
   data = steering_audit_datums();
   module point(p, col) {
     color(col) {
@@ -72,7 +74,9 @@ module steering_neutral_inspection(show_components=show_components,
       point(a, "orange");
       point(b, "orange");
     }
-    segment(plist_get("servo_rod_a", data), plist_get("servo_rod_b", data), "orange");
+    segment(plist_get("servo_rod_a", data),
+            plist_get("servo_rod_b", data),
+            "orange");
     for (p = plist_get("center_plate_holes", data)) {
       point(p, "orange");
     }

@@ -20,12 +20,12 @@ terminal_type        = "solder_tab"; // [coil_spring, solder_tab]
 
 function solder_tab_contact_mount_w(battery_dia,
                                     contact_hole_d=1)
-= max(contact_width_factor * battery_dia, with_default(contact_hole_d, 1) + 2);
+  = max(contact_width_factor * battery_dia, with_default(contact_hole_d, 1) + 2);
 
 function solder_tab_contact_mount_outer_size(battery_dia,
                                              contact_hole_d=1,
                                              thickness=contact_thickness)
-= let (contact_w =
+  = let (contact_w =
        solder_tab_contact_mount_w(battery_dia=battery_dia,
                                   contact_hole_d=contact_hole_d))
   [contact_w, contact_w * 0.69, with_default(thickness, contact_thickness)];
@@ -34,9 +34,9 @@ function solder_tab_outer_len(battery_dia,
                               contact_hole_d=1,
                               thickness=contact_thickness,
                               front_rear_thickness)
-= let (outer_size = solder_tab_contact_mount_outer_size(battery_dia=battery_dia,
-                                                        contact_hole_d=contact_hole_d,
-                                                        thickness=thickness))
+  = let (outer_size = solder_tab_contact_mount_outer_size(battery_dia=battery_dia,
+                                                          contact_hole_d=contact_hole_d,
+                                                          thickness=thickness))
   outer_size[1] + front_rear_thickness / 2;
 
 module solder_tab_cutout(battery_dia,

@@ -29,16 +29,16 @@ use <../../scad/suspension/rear_suspension/rear_suspension_mount.scad>
 use <../../scad/suspension/rear_suspension/rear_suspension_slots.scad>
 use <../../scad/suspension/steering_servo_bracket/steering_servo_chassis_slots.scad>
 
-joint = "wide";
-part = "collision";
-margin = 0;
-candidate_spacing = undef;
-candidate_length = undef;
+joint               = "wide";
+part                = "collision";
+margin              = 0;
+candidate_spacing   = undef;
+candidate_length    = undef;
 include_joint_bolts = true;
-layout = rear_chassis_layout();
-width = plist_get("join_w", layout);
-rear_start = plist_get("transition_y_start", layout);
-rear_end = plist_get("transition_y_end", layout);
+layout              = rear_chassis_layout();
+width               = plist_get("join_w", layout);
+rear_start          = plist_get("transition_y_start", layout);
+rear_end            = plist_get("transition_y_end", layout);
 rear_p = plate_joint_parameters(plate_h=chassis_thickness,
                                 bolt_d=chassis_bolt_d,
                                 w=plist_get("suspension_w", layout),
@@ -48,25 +48,27 @@ rear_p = plate_joint_parameters(plate_h=chassis_thickness,
                                 pin_d=front_chassis_joint_pin_d,
                                 pin_l=rear_suspension_joint_pin_l,
                                 pin_spacing="60%");
-head_p = front_chassis_head_joint_params();
-wide_rail = front_chassis_body_joint_rail_w(width);
-pattern = joint == "head"
-  ? [front_chassis_head_joint_pin_spacing, front_chassis_head_joint_pin_l,
-     plist_get("root_y", head_p), plist_get("pin_z", head_p)]
-  : joint == "compact"
-    ? [joint_rail_w / 2 + joint_recess_w / 2, front_chassis_joint_pin_l,
-       y_front_chassis_rear_frame_joint_1_start - joint_l / 2,
-       joint_base_h + (joint_base_h + joint_rail_h) / 2]
-    : joint == "wide"
-      ? [front_chassis_body_joint_pin_spacing(width), front_chassis_joint_pin_l,
-         front_chassis_y_joint_2_end + joint_l / 2,
-         joint_base_h + (joint_base_h + joint_rail_h) / 2]
-      : [plist_get("pin_spacing", rear_p), rear_suspension_joint_pin_l,
-         (rear_start + rear_end) / 2, plist_get("pin_z", rear_p)];
-span = is_undef(candidate_spacing) ? pattern[0] : candidate_spacing;
-length = is_undef(candidate_length) ? pattern[1] : candidate_length;
-echo(pattern=[span, length, pattern[2], pattern[3]], width=width,
-     rear_joint=[rear_end, rear_start], front_joint_l=joint_l);
+head_p              = front_chassis_head_joint_params();
+wide_rail           = front_chassis_body_joint_rail_w(width);
+pattern             = joint == "head"
+                       ? [front_chassis_head_joint_pin_spacing, front_chassis_head_joint_pin_l,
+                       plist_get("root_y", head_p), plist_get("pin_z", head_p)]
+                       : joint == "compact"
+                       ? [joint_rail_w / 2 + joint_recess_w / 2, front_chassis_joint_pin_l,
+                       y_front_chassis_rear_frame_joint_1_start - joint_l / 2,
+                       joint_base_h + (joint_base_h + joint_rail_h) / 2]
+                       : joint == "wide"
+                       ? [front_chassis_body_joint_pin_spacing(width), front_chassis_joint_pin_l,
+                       front_chassis_y_joint_2_end + joint_l / 2,
+                       joint_base_h + (joint_base_h + joint_rail_h) / 2]
+                       : [plist_get("pin_spacing", rear_p), rear_suspension_joint_pin_l,
+                       (rear_start + rear_end) / 2, plist_get("pin_z", rear_p)];
+span                = is_undef(candidate_spacing) ? pattern[0] : candidate_spacing;
+length              = is_undef(candidate_length) ? pattern[1] : candidate_length;
+echo(pattern=[span, length, pattern[2], pattern[3]],
+     width=width,
+     rear_joint=[rear_end, rear_start],
+     front_joint_l=joint_l);
 
 module pins() {
   d = part == "obstruction" || part == "view" ? 3 : front_chassis_joint_pin_d;
@@ -74,7 +76,9 @@ module pins() {
     translate([x, pattern[2], pattern[3]]) {
       rotate([90, 0, 0]) {
         cylinder(d=d + 2 * margin,
-                 h=length + 2 * margin, center=true, $fn=48);
+                 h=length + 2 * margin,
+                 center=true,
+                 $fn=48);
       }
     }
   }
@@ -92,7 +96,7 @@ module rear_in_front_coordinates() {
 
 module front_cutouts() {
   bumper_y = front_chassis_front_frame_start_y()
-    - front_bumper_bolt_d / 2 - front_bumper_bolt_pad_y;
+             - front_bumper_bolt_d / 2 - front_bumper_bolt_pad_y;
   translate([0, bumper_y, 0]) {
     counterbore(h=chassis_thickness, d=front_bumper_bolt_d);
   }
@@ -122,10 +126,15 @@ module front_cutouts() {
 module joint_bolts() {
   if (joint == "head") {
     translate([0, plist_get("root_y", head_p), 0]) {
-      plate_joint(plate_h=chassis_thickness, bolt_d=front_chassis_joint_bolt_d,
-                  w=plist_get("w", head_p), l=plist_get("l", head_p),
-                  rail_w=front_chassis_head_joint_rail_w, bolt_n_center=2,
-                  include_pin_holes=false, mode="male", slot_mode=true);
+      plate_joint(plate_h=chassis_thickness,
+                  bolt_d=front_chassis_joint_bolt_d,
+                  w=plist_get("w", head_p),
+                  l=plist_get("l", head_p),
+                  rail_w=front_chassis_head_joint_rail_w,
+                  bolt_n_center=2,
+                  include_pin_holes=false,
+                  mode="male",
+                  slot_mode=true);
     }
   } else if (joint == "compact") {
     translate([0, y_front_chassis_rear_frame_joint_1_start, 0]) {
@@ -134,14 +143,20 @@ module joint_bolts() {
   } else if (joint == "wide") {
     xs = front_chassis_body_joint_bolt_xs(width);
     translate([0, front_chassis_y_joint_2_end + joint_l, 0]) {
-      front_chassis_joint(mode="male", w=width, rail_w=wide_rail,
-                          bolt_xs=xs, include_pin_holes=false, slot_mode=true);
+      front_chassis_joint(mode="male",
+                          w=width,
+                          rail_w=wide_rail,
+                          bolt_xs=xs,
+                          include_pin_holes=false,
+                          slot_mode=true);
     }
   } else {
     translate([0, rear_start, 0]) {
-      plate_joint_bolt_holes(bolt_d=chassis_bolt_d, plate_h=chassis_thickness,
+      plate_joint_bolt_holes(bolt_d=chassis_bolt_d,
+                             plate_h=chassis_thickness,
                              l=rear_start - rear_end,
-                             bolt_xs=plist_get("bolt_xs", rear_p), no_bore=true);
+                             bolt_xs=plist_get("bolt_xs", rear_p),
+                             no_bore=true);
     }
   }
 }
@@ -201,7 +216,8 @@ if (part == "collision") {
         difference() {
           cylinder(r=front_chassis_joint_bolt_d / 2
                      + suspension_chassis_joint_wide_bolt_pad - 0.2,
-                   h=0.2, $fn=96);
+                   h=0.2,
+                   $fn=96);
           translate([0, 0, -0.1]) {
             cylinder(d=front_chassis_joint_bolt_d + 0.2, h=0.4, $fn=96);
           }

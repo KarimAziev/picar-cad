@@ -33,4 +33,4 @@ if (show_plate) {
   upper_steering_plate_position() {
     upper_steering_plate(show_bolts=show_bolts);
   }
- }
+}

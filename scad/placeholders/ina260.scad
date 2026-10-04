@@ -233,8 +233,8 @@ module ina260(size=ina260_size,
   pin_gap = pin_step - pin_d;
 
   mounting_hole_y_offset = ysize / 2
-    - bolt_d / 2
-    - ina260_mounting_hole_distance;
+                           - bolt_d / 2
+                           - ina260_mounting_hole_distance;
   union() {
     difference() {
       union() {
@@ -362,9 +362,9 @@ module ina260(size=ina260_size,
           }
           color(power_pad_text_spec[2], alpha=1) {
             let (x_size = power_pad_x_offset * 2 + power_pad_d
-                 + power_rect_padding[0],
+                          + power_rect_padding[0],
                  y_size = power_pad_y_offset + full_len
-                 + power_pad_border_w + power_rect_padding[1],
+                          + power_pad_border_w + power_rect_padding[1],
                  y_offset=ysize / 2 - y_size / 2) {
               translate([0, y_offset, thickness]) {
                 linear_extrude(height=0.05, center=false) {

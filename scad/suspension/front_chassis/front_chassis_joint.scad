@@ -63,8 +63,8 @@ function front_chassis_body_joint_bolt_xs(w) =
        n = suspension_chassis_joint_wide_bolt_cols)
   assert(n >= 2 && floor(n) == n, "Wide joint needs at least two bolt columns")
   let (xs = [for (i = [0:n - 1])
-      let (x = -edge_x + i * 2 * edge_x / (n - 1))
-        abs(abs(x) - pin_x) < separation
+    let (x = -edge_x + i * 2 * edge_x / (n - 1))
+    abs(abs(x) - pin_x) < separation
           ? sign(x) * (pin_x + separation)
           : x])
   assert(max([for (x = xs) abs(x)]) <= edge_x,
@@ -85,7 +85,7 @@ function front_chassis_body_joint_bolt_xs(w) =
   **Returns:** Bolt-center X coordinates.
  */
 function front_chassis_joint_default_bolt_xs(spacing=front_chassis_joint_bolt_spacing)
-                      = [-spacing / 2, 0, spacing / 2];
+  = [-spacing / 2, 0, spacing / 2];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -145,7 +145,7 @@ module front_chassis_joint(mode="male",
                 include_pin_holes=include_pin_holes,
                 pin_d=front_chassis_joint_pin_d,
                 pin_l=front_chassis_joint_pin_l
-                  + 2 * front_chassis_joint_pin_end_clearance,
+                      + 2 * front_chassis_joint_pin_end_clearance,
                 pin_spacing=spacing,
                 pin_z=joint_base_h + (joint_base_h + joint_rail_h) / 2,
                 pin_use_pad=false,
@@ -239,7 +239,7 @@ module front_chassis_pin_joint_holes(direction=-1,
   translate([0, center && direction == 1 ? l : 0, 0]) {
     plate_joint_pin_holes(d=front_chassis_joint_pin_d,
                           pin_l=front_chassis_joint_pin_l
-                            + 2 * front_chassis_joint_pin_end_clearance,
+                                + 2 * front_chassis_joint_pin_end_clearance,
                           l=l,
                           spacing=spacing,
                           z=joint_base_h + (joint_base_h + joint_rail_h) / 2,

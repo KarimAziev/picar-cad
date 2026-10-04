@@ -17,7 +17,7 @@ module ackermann_geometry_triangle(triangle_color="red", alpha=0.2) {
   triangle_points = [[0, 0],                       // center of the rack
                      [steering_x_left_knuckle, 0],    // center of the kingpin posts
                      [0, -steering_wheelbase_effective]     // tie rod convergence point
-                    ];
+  ];
 
   translate([0, 0, 0]) {
     color(triangle_color, alpha=alpha) {

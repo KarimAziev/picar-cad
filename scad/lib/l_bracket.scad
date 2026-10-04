@@ -77,8 +77,8 @@ module l_bracket(size,
 
   function children_for(mode, target) =
     [for (i = [0:len(children_modes) - 1])
-        if (children_modes[i][0] == mode
-            && children_modes[i][1] == target) i];
+      if (children_modes[i][0] == mode
+          && children_modes[i][1] == target) i];
 
   horizontal_children_union_outer = children_for("union", "horizontal");
   horizontal_children_union_inner = children_for("union_inner", "horizontal");

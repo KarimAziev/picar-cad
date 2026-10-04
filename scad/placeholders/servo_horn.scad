@@ -21,9 +21,9 @@ module with_servo_horn_holes(center_ring_dia=servo_horn_center_ring_outer_dia,
   for (dir = [-1, 1]) {
     group_offst = (dir < 0
                    ? -rad
-                   - screws_gap
+                     - screws_gap
                    : rad
-                   + screws_gap);
+                     + screws_gap);
 
     translate([0, group_offst, 0]) {
       for (i = [0 : screw_holes_count - 1]) {

@@ -39,8 +39,8 @@ function battery_holder_solder_tab_full_len(inner_thickness,
                             contact_hole_d=contact_hole_d,
                             front_rear_thickness=front_rear_thickness),
        slot_len = tab_contact_slot_pad_len
-       + front_rear_thickness
-       + solder_len,
+                  + front_rear_thickness
+                  + solder_len,
        length =
        _battery_holder_full_len(front_rear_thickness=front_rear_thickness,
                                 battery_len=battery_len),
@@ -66,7 +66,7 @@ function battery_holder_full_size(inner_thickness,
         ? solder_tab_outer_len(battery_dia=battery_dia,
                                contact_hole_d=contact_hole_d,
                                front_rear_thickness=front_rear_thickness)
-        + tab_contact_slot_pad_len
+          + tab_contact_slot_pad_len
         : 0),
        length =
        _battery_holder_full_len(front_rear_thickness=front_rear_thickness,
@@ -107,16 +107,16 @@ function battery_holder_full_size_from_plist(plist = []) =
 
 function maybe_add_battery_holders_rows_h(rows) =
   [for (row = rows)
-      let (batt_holder_sizes = [for (cell = plist_get("cells", row, []))
-               let (placeholder = plist_get("placeholder", cell, []),
-                    placeholder_type = plist_get("placeholder_type", placeholder))
+    let (batt_holder_sizes = [for (cell = plist_get("cells", row, []))
+      let (placeholder = plist_get("placeholder", cell, []),
+           placeholder_type = plist_get("placeholder_type", placeholder))
                  if (placeholder_type == "battery_holder")
                    battery_holder_full_size_from_plist(placeholder)],
-           batt_holder_lengths = [for (v = batt_holder_sizes) v[1]],
-           h = len(batt_holder_lengths) > 0
+         batt_holder_lengths = [for (v = batt_holder_sizes) v[1]],
+         h = len(batt_holder_lengths) > 0
            ? max(batt_holder_lengths)
            : plist_get(row, "h", 0))
-        plist_merge(["h", h], row)];
+    plist_merge(["h", h], row)];
 
 // echo("ROWS",
 //      maybe_add_battery_holders_rows_h([["cells",

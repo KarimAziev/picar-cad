@@ -45,7 +45,7 @@ changed = rear_chassis_layout(wago_mounts=[["placement", "after",
 for (key=["motor_pos","motor_rotation","panels","power_case","bulkhead_1_y","bulkhead_2_y","maintenance_y"]) {
   assert(plist_get(key, base) == plist_get(key, changed),
          str("Moved existing datum: ", key));
- }
+}
 assert(plist_get("min_y", changed) < plist_get("min_y", base));
 assert(plist_get("max_y", changed) == plist_get("max_y", base));
 

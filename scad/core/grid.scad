@@ -43,24 +43,24 @@ function merge_specs_rows_by_placeholder_types(grid,
                                                override=false,
                                                placeholder_types) =
   let (rows = [for (row = plist_get("rows", grid, []))
-           let (mapped_row = grid_is(row)
+    let (mapped_row = grid_is(row)
                 ? merge_specs_rows_by_placeholder_types(row=row,
                                                         plist=plist,
                                                         override=override,
                                                         placeholder_types=placeholder_types)
                 : plist_merge(row, ["cells", [for (cell = plist_get("cells", row, []))
-                                    let (placeholder = plist_get("placeholder", cell, []),
-                                         placeholder_type = plist_get("placeholder_type", placeholder),
-                                         updated_cell =
+                  let (placeholder = plist_get("placeholder", cell, []),
+                       placeholder_type = plist_get("placeholder_type", placeholder),
+                       updated_cell =
                                          member(placeholder_type, placeholder_types)
                                          ? plist_merge(cell, ["placeholder",
                                                               (override
                                                                ? plist_merge(placeholder, plist)
                                                                : plist_merge(plist, placeholder))])
                                          : cell)
-                                      updated_cell]]))
-             mapped_row])
-             plist_merge(grid, ["rows", rows]);
+                  updated_cell]]))
+    mapped_row])
+  plist_merge(grid, ["rows", rows]);
 
 module grid_plist_render(size,
                          grid,

@@ -89,7 +89,7 @@ function steering_servo_tie_rod_angle(bellcrank_lever_z_end) =
        y_rod_zh = y_tie_rod + dsservo_size[1] / 2 - servo_tie_rod_b_eye_h / 2,
        bellcrank_lever_z = y_rod_zh - bellcrank_lever_z_end,
        angle = y_angle_from_zshift(bellcrank_lever_z, full_l))
-       angle;
+  angle;
 
 function steering_servo_bellcrank_y(center=false,
                                     bellcrank_lever_z_end) =
@@ -110,14 +110,14 @@ function steering_servo_bellcrank_y(center=false,
        full_l = dims[0],
        angle = steering_servo_tie_rod_angle(bellcrank_lever_z_end=bellcrank_lever_z_end),
        eye_center_spacing = full_l
-       - servo_tie_rod_a_eye_od / 2
-       - servo_tie_rod_b_eye_od / 2,
+                            - servo_tie_rod_a_eye_od / 2
+                            - servo_tie_rod_b_eye_od / 2,
        eye_center_spacing_x = eye_center_spacing * cos(angle),
        flang_x = -eye_center_spacing_x - dsservo_gearbox_d1 / 2,
        flang_x_adjusted = center ? flang_x + dsservo_size[0] / 2 : flang_x,
        flange_w = (dsservo_flange_w - dsservo_size[0]) / 2,
        bellcrank_distance = flang_x_adjusted + dsservo_size[0] + flange_w)
-       bellcrank_distance;
+  bellcrank_distance;
 
 module servo_tie_rod(bushing_rotation,
                      tie_rod_b_bushing_rotation=[0, 0, 0],

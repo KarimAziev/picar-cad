@@ -87,7 +87,7 @@ module motor_driver_hat(plist=motor_driver_grid,
                 standoffs_stack(d=motor_driver_hat_bolt_dia,
                                 colr=motor_driver_hat_standoff_color,
                                 min_h=motor_driver_hat_lower_header_height
-                                + extra_standoff_h);
+                                      + extra_standoff_h);
               }
             }
           }

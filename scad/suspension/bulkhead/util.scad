@@ -22,10 +22,10 @@ function front_bulkhead_pad_distance_to_hinge(barrel_y_offset=front_bulkhead_bar
                               inner_spacing[1]),
        full_bolt_spacing_y=bolt_spacing_max_y + bulkhead_mount_bolt_d,
        y2=bulkhead_len
-       - full_bolt_spacing_y
-       - barrel_y_offset
-       - barrel_len / 2
-       + full_bolt_spacing_y / 2)
+          - full_bolt_spacing_y
+          - barrel_y_offset
+          - barrel_len / 2
+          + full_bolt_spacing_y / 2)
   y2 + arm_pad_thickness * 2;
 
 function shock_tower_mount_size_x(bolt_d=front_shock_tower_bolt_d,
@@ -83,8 +83,8 @@ function front_bulkhead_upper_suspension_holder_z_pos(tower_pin_hole_y_offset=fr
        bore_r =  bore_d / 2,
        common_pin_y = tower_pin_hole_y_offset + pin_d / 2,
        z_end = shock_tower_mount_offset
-       + common_pin_y
-       - upper_holder_bore_y_offset,
+               + common_pin_y
+               - upper_holder_bore_y_offset,
        z_center = z_end - bore_r,
        z_start = z_center - bore_r)
   [z_start, z_center, z_end];
@@ -119,10 +119,10 @@ function front_shock_damper_holes_poses(tilt_angle=front_shock_tower_damper_hole
        angle_sin=sin(tilt_angle),
        step=bolt_d + gap)
   [for (i = [0 : damper_holes_n - 1])
-      let (base_offst = i * step,
-           x = base_offst * angle_cos,
-           y = base_offst * angle_sin)
-        [x, y]];
+    let (base_offst = i * step,
+         x = base_offst * angle_cos,
+         y = base_offst * angle_sin)
+    [x, y]];
 
 function bbox_holder_hull_samepads(tilt_angle,
                                    damper_holes_n,

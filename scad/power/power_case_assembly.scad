@@ -7,8 +7,8 @@
  */
 
 include <../colors.scad>
-include <../simple_robot/power_parameters.scad>
 include <../power_lid_parameters.scad>
+include <../simple_robot/power_parameters.scad>
 
 use <../components/closable_box/sliding_box.scad>
 use <../lib/slots.scad>
@@ -203,8 +203,8 @@ module power_case_assembly(slot_mode=slot_mode,
                0,
                bottom_bolts_down
                ? power_case_bottom_thickness
-               - bolt_h
-               - power_case_bottom_cbore_h
+                 - bolt_h
+                 - power_case_bottom_cbore_h
                : power_case_bottom_thickness]) {
       with_power_case_mounting_holes() {
         bolt(d=power_case_bottom_bolt_dia,

@@ -651,9 +651,9 @@ module plate_joint_sizes(params,
                    ["text", str("THIN < ", threshold, " mm"),
                     "color", "firebrick"]],
                   [for (row = rows)
-                      let (thin = row[2] && row[1] < threshold)
-                        ["text", str(thin ? "! THIN  " : "", row[0], ": ", round(row[1] * 100) / 100, " mm"),
-                         "color", thin ? "firebrick" : "black"]]);
+                    let (thin = row[2] && row[1] < threshold)
+                    ["text", str(thin ? "! THIN  " : "", row[0], ": ", round(row[1] * 100) / 100, " mm"),
+                     "color", thin ? "firebrick" : "black"]]);
   if ($preview) {
     _plate_joint_anchor(p, anchor) {
       translate([plist_get("w", p) / 2 + size * 4,

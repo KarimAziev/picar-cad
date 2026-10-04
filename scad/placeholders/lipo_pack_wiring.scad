@@ -7,8 +7,8 @@
   * Author: Karim Aziiev <karim.aziiev@gmail.com>
   * License: GPL-3.0-or-later
   */
-use <../lib/plist.scad>
 use <../lib/functions.scad>
+use <../lib/plist.scad>
 use <../lib/wire.scad>
 use <t_plug.scad>
 
@@ -24,9 +24,11 @@ use <t_plug.scad>
   **Returns:** XYZ wire center at the existing side exit's outer bend.
  */
 function lipo_pack_lead_exit(pl, lead, i) =
-  let (s = plist_get("size", pl), d = plist_get("d", lead),
+  let (s = plist_get("size", pl),
+       d = plist_get("d", lead),
        side = plist_get("side", lead, "left") == "left" ? -1 : 1)
-  [side * (s[0] / 2 + d / 2), -s[1] / 2 + d / 2, s[2] / 2 + i * d - max(0, plist_get("exit_l", lead, 0) - d / 2)];
+  [side * (s[0] / 2 + d / 2), -s[1] / 2 + d / 2, s[2] / 2 + i * d - max(0,
+                                                                        plist_get("exit_l", lead, 0) - d / 2)];
 
 function _lipo_top_path(start, end, s, d, excursion, lane, count) =
   let (rear = -s[1] / 2 - excursion,
@@ -42,8 +44,16 @@ function _lipo_top_path(start, end, s, d, excursion, lane, count) =
                    end + [0, -2 * d, 0], end])
   rounded_wire_points(controls, trim=d);
 
-function _lipo_top_solve(start, end, s, d, length, lane, count,
-                          lo=2, hi=undef, n=22) =
+function _lipo_top_solve(start,
+                         end,
+                         s,
+                         d,
+                         length,
+                         lane,
+                         count,
+                         lo=2,
+                         hi=undef,
+                         n=22) =
   let (upper = is_undef(hi) ? length : hi,
        mid = (lo + upper) / 2,
        path = _lipo_top_path(start, end, s, d, mid, lane, count))
@@ -66,25 +76,35 @@ function _lipo_top_solve(start, end, s, d, length, lane, count,
 function lipo_pack_top_wiring_props(pl, key="power_lead") =
   assert(is_list(plist_get(key, pl)), str("Missing pack lead: ", key))
   assert(plist_get("d", plist_get(key, pl), 0) > 0
-         && plist_get("l", plist_get(key, pl), 0) > 0, "Lead diameter and length must be positive")
-  let (s = plist_get("size", pl), lead = plist_get(key, pl),
-       d = plist_get("d", lead), length = plist_get("l", lead),
+         && plist_get("l", plist_get(key, pl), 0) > 0,
+         "Lead diameter and length must be positive")
+  let (s = plist_get("size", pl),
+       lead = plist_get(key, pl),
+       d = plist_get("d", lead),
+       length = plist_get("l", lead),
        colors = plist_get("colors", lead, ["red", "black"]),
        plug = plist_get("connector", lead) == "t-plug",
        pos = plist_get("connector_pos", lead,
-         plug ? [s[0] / 6, -s[1] / 2 + 26, s[2] + 0.8]
+                       plug ? [s[0] / 6, -s[1] / 2 + 26, s[2] + 0.8]
          : [s[0] / 2 - 6, -s[1] / 2 + 6, s[2] + d / 2 + 0.5]),
        ports = plug ? [for (p = plist_get("female_ports", t_plug_mated_props()))
-                          pos + rotZ(p, 180)]
+         pos + rotZ(p, 180)]
          : [for (i = [0:len(colors) - 1]) pos + [(i - (len(colors) - 1) / 2) * (d + 0.2), 0, 0]],
        paths = [for (i = [0:len(colors) - 1])
-                  _lipo_top_solve(lipo_pack_lead_exit(pl, lead, i), ports[i], s, d, length, i, len(colors))])
-  assert(plist_get("lead_exit", pl) == "rear_side", "Top routing requires rear_side exits")
-  assert(!plug || len(colors) == 2, "T-plug requires positive and negative leads")
+         _lipo_top_solve(lipo_pack_lead_exit(pl, lead, i), ports[i], s, d, length, i, len(colors))])
+  assert(plist_get("lead_exit", pl) == "rear_side",
+         "Top routing requires rear_side exits")
+  assert(!plug || len(colors) == 2,
+         "T-plug requires positive and negative leads")
   assert(max([for (p = paths) abs(length - total_wire_length(p))]) < 0.01,
          "Lead length cannot reach its top connector position with this return loop")
-  ["paths", paths, "d", d, "colors", colors, "connector", plug,
-   "connector_pos", pos, "connector_rotation", 180, "length", length];
+  ["paths", paths,
+   "d", d,
+   "colors", colors,
+   "connector", plug,
+   "connector_pos", pos,
+   "connector_rotation", 180,
+   "length", length];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -96,8 +116,11 @@ function lipo_pack_top_wiring_props(pl, key="power_lead") =
  */
 module lipo_pack_top_wiring(props) {
   for (i = [0:len(plist_get("paths", props)) - 1]) {
-    wire_path(plist_get("paths", props)[i], d=plist_get("d", props),
-              colr=plist_get("colors", props)[i], mode="none", cut_len=undef);
+    wire_path(plist_get("paths", props)[i],
+              d=plist_get("d", props),
+              colr=plist_get("colors", props)[i],
+              mode="none",
+              cut_len=undef);
   }
   if (plist_get("connector", props)) {
     translate(plist_get("connector_pos", props)) {

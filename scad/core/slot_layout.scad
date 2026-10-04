@@ -76,7 +76,7 @@ function get_spec_base_size(spec, parent_direction="btt") =
                    direction=get_nested_direction(spec, parent_direction))
   : let (type = plist_get("type", spec),
          fallback_size = get_placeholder_size(spec))
-  type == "rect" || type == "custom"
+    type == "rect" || type == "custom"
   ? [get_rect_max_size_at(0, spec),
      get_rect_max_size_at(1, spec)]
   : type == "counterbore"
@@ -546,7 +546,7 @@ module slot_grid_rows(nested_specs,
                       align = 1,
                       thickness=3) {
   row_sizes = [for (v = nested_specs)
-      get_total_size(v, direction=cols_direction)[1]];
+    get_total_size(v, direction=cols_direction)[1]];
 
   translate([0, 0, 0]) {
     for (i = [0 : len(nested_specs) - 1]) {
@@ -585,7 +585,7 @@ module slot_grid_cols(nested_specs,
                       align = 1,
                       thickness=3) {
   row_sizes = [for (v = nested_specs)
-      get_total_size(v, direction=cols_direction)[0]];
+    get_total_size(v, direction=cols_direction)[0]];
 
   translate([0, 0, 0]) {
     for (i = [0 : len(nested_specs) - 1]) {

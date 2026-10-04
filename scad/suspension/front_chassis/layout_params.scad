@@ -37,7 +37,7 @@ bellcrank_mount_r                        = bellcrank_mount_d / 2;
 
 servo_chassis_reach                      = steering_encoder_plist
                                             ? max(dsservo_height_after_flange(),
-                                            steering_servo_encoder_chassis_reach())
+                                                  steering_servo_encoder_chassis_reach())
                                             : dsservo_height_after_flange();
 
 servo_slot_min_w                         = servo_chassis_reach + bellcrank_x_dist;
@@ -63,7 +63,7 @@ joint_recess_w                           = joint_rail_w * 0.35;
 front_frame_x_end                        = bellcrank_x
                                             + front_chassis_bellcrank_tool_access_hole_pad_x
                                             + max(bellcrank_mount_r,
-                                            front_chassis_bellcrank_tool_access_hole_d / 2);
+                                                 front_chassis_bellcrank_tool_access_hole_d / 2);
 
 servo_end_y                              = -bellcrank_y_distance_from_bulkhead + bellcrank_zone_y_len;
 y_front_chassis_rear_frame_joint_1_start = -bellcrank_y_distance_from_bulkhead - bellcrank_mount_r;

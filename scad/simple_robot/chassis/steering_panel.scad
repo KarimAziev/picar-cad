@@ -51,7 +51,6 @@ include <../../colors.scad>
 include <../chassis_parameters.scad>
 include <../steering_parameters.scad>
 
-use <util.scad>
 use <../../lib/functions.scad>
 use <../../lib/plist.scad>
 use <../../lib/shapes2d.scad>
@@ -63,6 +62,7 @@ use <rack.scad>
 use <steering_kingpin_post.scad>
 use <steering_rail.scad>
 use <steering_servo_mount.scad>
+use <util.scad>
 
 show_rack               = false;
 show_servo_mount_panel  = false;
@@ -92,7 +92,7 @@ steering_hinge_bolt_rad = steering_panel_hinge_bolt_dia / 2;
 
 hinge_pts = scale_upper_trapezoid_pts(x=steering_panel_hinge_w,
                                       y=steering_panel_hinge_length
-                                      + steering_panel_hinge_corner_rad);
+                                        + steering_panel_hinge_corner_rad);
 
 hinge_h                 = max(steering_rack_support_thickness * 0.8,
                               1);
@@ -141,7 +141,7 @@ module steering_panel_kingpin_connector(color,
                                     bolt_head_type_d),
          y = fasten_bolt ? -bolt_h + knuckle_dia / 2 - notch_w : 0,
          bolt_info_y = bolt_h + txt_size + knuckle_shaft_connector_extra_len
-         + knuckle_shaft_connector_dia) {
+                       + knuckle_shaft_connector_dia) {
 
       if (show_bolts_info) {
         translate([0,
@@ -277,8 +277,8 @@ module steering_hinges(slot_mode=false,
         let (d=steering_panel_hinge_bolt_dia,
              bolt_h = hinge_h + chassis_thickness,
              bolt_info_y = steering_panel_hinge_length
-             + steering_panel_hinge_corner_rad
-             + txt_size,
+                           + steering_panel_hinge_corner_rad
+                           + txt_size,
              snapped_d = snap_bolt_d(d),
              bolt_txt = str("M",
                             snapped_d,
@@ -396,7 +396,7 @@ module steering_rack_support(show_rack=false,
         translate([x,
                    0,
                    -steering_rack_support_thickness
-                   / 2]) {
+                    / 2]) {
           steering_panel_kingpin_connector(color=panel_color,
                                            show_bolt=show_kingpin_bolt,
                                            show_bolts_info=show_bolts_info,

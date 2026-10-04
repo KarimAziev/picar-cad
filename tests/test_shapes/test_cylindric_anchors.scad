@@ -12,9 +12,12 @@ use <fixtures.scad>
 
 anchors      = [[0, 0, 1], [0, 0, 0], [1, 1, 1], [-1, -1, -1],
                 [1, -1, 0], [-1, 0, 1]];
-shapes       = ["frustum", "flats", "notches", "tapered ring"];
-orientations = ["hwl", "whl", "lhw", "hlw"];
-colors       = ["DarkOrange", "Orchid", "Goldenrod", "Salmon"];
+shapes       = ["frustum", "flats",
+                "notches", "tapered ring"];
+orientations = ["hwl", "whl",
+                "lhw", "hlw"];
+colors       = ["DarkOrange", "Orchid",
+                "Goldenrod", "Salmon"];
 cell_size    = [50, 54];
 
 for (column = [0 : len(anchors) - 1]) {
@@ -30,10 +33,10 @@ for (column = [0 : len(anchors) - 1]) {
       shape_test_axes(length=29);
     }
   }
- }
+}
 for (row = [0 : len(shapes) - 1]) {
   translate([-30, -row * cell_size[1], 0]) {
     shape_test_label(str(shapes[row], " / ", orientations[row]),
                      halign="right");
   }
- }
+}

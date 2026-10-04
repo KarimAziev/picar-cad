@@ -115,11 +115,12 @@ translate([-10, 0, 0]) {
   bottom Z=0. Ports are ordered positive, negative, in both halves.
  */
 function t_plug_mated_props() =
-  ["female_size", t_plug_body_size, "male_size", t_plug_male_body_size,
+  ["female_size", t_plug_body_size,
+   "male_size", t_plug_male_body_size,
    "female_ports", [for (x = [-1, 1])
-       [x * t_plug_body_size[0] / 4, t_plug_body_size[1], t_plug_body_size[2] / 2]],
+     [x * t_plug_body_size[0] / 4, t_plug_body_size[1], t_plug_body_size[2] / 2]],
    "male_ports", [for (x = [-1, 1])
-       [x * t_plug_body_size[0] / 4, -t_plug_male_body_l, t_plug_body_size[2] / 2]]];
+     [x * t_plug_body_size[0] / 4, -t_plug_male_body_l, t_plug_body_size[2] / 2]]];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────

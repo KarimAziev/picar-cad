@@ -19,8 +19,8 @@ module ultrasonic(center=true) {
 
   transducer_rad = ultrasonic_transducer_dia / 2;
   text_x = ultrasonic_bolt_spacing[0] / 2
-    - ultrasonic_bolt_dia / 2
-    - ultrasonic_text_size;
+           - ultrasonic_bolt_dia / 2
+           - ultrasonic_text_size;
 
   text_y = -ultrasonic_bolt_spacing[1] / 2;
 

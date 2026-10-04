@@ -6,13 +6,13 @@
   */
 include <../scad/suspension/front_chassis/computed_params.scad>
 
-use <../scad/suspension/front_chassis/front_chassis_ribbon_slots.scad>
 use <../scad/suspension/front_chassis/front_chassis_front_frame.scad>
 use <../scad/suspension/front_chassis/front_chassis_head_slots.scad>
+use <../scad/suspension/front_chassis/front_chassis_ribbon_slots.scad>
 
 curve = front_chassis_ribbon_curve();
-path = front_chassis_ribbon_path();
-ys = front_chassis_head_ribbon_slot_ys();
+path  = front_chassis_ribbon_path();
+ys    = front_chassis_head_ribbon_slot_ys();
 assert(norm(path[0] - curve[0]) < 1e-6);
 assert(norm(path[len(path) - 1]
             - [0, front_chassis_head_center_y() + ys[len(ys) - 1]]) < 1e-6);

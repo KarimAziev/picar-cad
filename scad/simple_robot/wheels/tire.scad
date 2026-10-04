@@ -43,15 +43,15 @@ module groove_triangle() {
 
   linear_extrude(height=wheel_tire_groove_depth, center=false)
     difference() {
-    translate([-groove_w / 2, 0, 0]) {
-      polygon(points = base_points);
+      translate([-groove_w / 2, 0, 0]) {
+        polygon(points = base_points);
+      }
+      translate([-cut_len / 2 - wheel_tire_groove_thickness / 2,
+                 wheel_tire_groove_thickness,
+                 0]) {
+        polygon(points = cut_points);
+      }
     }
-    translate([-cut_len / 2 - wheel_tire_groove_thickness / 2,
-               wheel_tire_groove_thickness,
-               0]) {
-      polygon(points = cut_points);
-    }
-  }
 }
 
 module place_groove() {

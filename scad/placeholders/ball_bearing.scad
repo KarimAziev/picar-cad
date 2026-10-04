@@ -59,8 +59,8 @@ module ball_bearing(bore_d,
   gap_d   = shoulder_d + ball_d/2;
   gap_rad = gap_d / 2;
   ball_positions = [for (i = [0 : (fn / balls_n) : fn - 1])
-      let (angle_deg = i * 360 / fn)
-        circle_point(angle_deg, gap_rad, w)];
+    let (angle_deg = i * 360 / fn)
+    circle_point(angle_deg, gap_rad, w)];
 
   ring_h = w / 2;
 

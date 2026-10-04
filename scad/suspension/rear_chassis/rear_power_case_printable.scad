@@ -16,4 +16,4 @@ if (!is_undef(payload)) {
                        show_rail_nuts=false,
                        show_standoffs=false,
                        show_packs=false);
- }
+}

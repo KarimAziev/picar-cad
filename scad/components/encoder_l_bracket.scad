@@ -30,8 +30,8 @@ function encoder_full_h(plist,
        w_val=max(bolt_spacing[0] + bolt_d + top_bolt_min_padding, pcb_w),
        l_val=max(bolt_spacing[1] + bolt_d + top_bolt_min_padding, pcb_l),
        effective_l=target_h
-       + (should_rotate ? w_val : l_val) / 2
-       + top_up_padding)
+                   + (should_rotate ? w_val : l_val) / 2
+                   + top_up_padding)
   effective_l;
 
 function encoder_should_rotate(plist,
@@ -92,7 +92,7 @@ module encoder_l_bracket(plist,
   if (!should_rotate && plist_get("enabled", pins)
       && plist_get("rotation", pins)[2] == 180) {
     pin_tip_h = target_h + plist_get("position", pins)[1]
-      - plist_get("size", pins)[1] / 2 - plist_get("tail_l", pins);
+                - plist_get("size", pins)[1] / 2 - plist_get("tail_l", pins);
     assert(pin_tip_h >= bottom_thickness
            + plist_get("connector_clearance", plist, 0.2),
            "Encoder pin tails reach the mounting foot; increase target_h or shorten pins.tail_l");
@@ -107,8 +107,8 @@ module encoder_l_bracket(plist,
   l_val = max(bolt_spacing[1] + bolt_d + top_bolt_min_padding, pcb_l);
 
   effective_l = target_h
-    + (should_rotate ? w_val : l_val) / 2
-    + top_up_padding;
+                + (should_rotate ? w_val : l_val) / 2
+                + top_up_padding;
 
   effective_w = (should_rotate ? l_val : w_val) + top_side_padding;
 
@@ -118,9 +118,9 @@ module encoder_l_bracket(plist,
   connector_edges = !should_rotate
     ? []
     : [for (type = ["jst_shr", "pins"])
-         let (spec = encoder_connector_spec(plist, type),
-              direction = sin(plist_get("rotation", spec)[2] + 90),
-              x = -plist_get("position", spec)[1])
+      let (spec = encoder_connector_spec(plist, type),
+           direction = sin(plist_get("rotation", spec)[2] + 90),
+           x = -plist_get("position", spec)[1])
          if (plist_get("enabled", spec) && abs(direction) > 0.5)
            [direction, x + direction * connector_clearance]];
   // Keep untrimmed upright sides just inside the foot to prevent coincident
@@ -128,10 +128,10 @@ module encoder_l_bracket(plist,
   upper_edge_inset = encoder_has_connectors(plist) ? 0.01 : 0;
   upper_left_x = max(concat([left_x + upper_edge_inset],
                             [for (edge = connector_edges)
-                               if (edge[0] > 0) edge[1]]));
+                              if (edge[0] > 0) edge[1]]));
   upper_right_x = min(concat([right_x - upper_edge_inset],
                              [for (edge = connector_edges)
-                                if (edge[0] < 0) edge[1]]));
+                               if (edge[0] < 0) edge[1]]));
 
   assert(upper_right_x > upper_left_x,
          "Encoder connectors leave no width for the upright");
@@ -194,8 +194,8 @@ module encoder_l_bracket(plist,
                  side="top");
         }
         encoder_l_bracket_bottom_pan_bolt_children(bottom_pan_bolt_spacing=bottom_pan_bolt_spacing,
-                                                    bottom_pan_bolt_d=bottom_pan_bolt_d,
-                                                    bottom_pan_bolt_pad=bottom_pan_bolt_pad) {
+                                                   bottom_pan_bolt_d=bottom_pan_bolt_d,
+                                                   bottom_pan_bolt_pad=bottom_pan_bolt_pad) {
           rotate([0, 0, 90]) {
             counterbore(h=bottom_thickness,
                         teardrop_both_sides=true,

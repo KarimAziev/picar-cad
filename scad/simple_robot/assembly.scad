@@ -9,7 +9,6 @@
  */
 
 include <../colors.scad>
-
 include <parameters.scad>
 
 use <chassis/simple_chassis.scad>

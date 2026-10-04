@@ -70,7 +70,7 @@ module lock_nut(d,
   base_h = h - flanged_h - with_default(nylon_cap_h, 0);
   flanged_dia = with_default(flanged_dia, outer_d * 0.8);
   has_cap = !is_undef(nylon_cap_h) && !is_undef(nylon_cap_dia)
-    && nylon_cap_dia > 0 && nylon_cap_h > 0;
+            && nylon_cap_dia > 0 && nylon_cap_h > 0;
 
   module base_nut() {
     nut(d=d,

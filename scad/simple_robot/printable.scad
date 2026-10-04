@@ -17,10 +17,8 @@
  */
 
 include <../colors.scad>
-
 include <parameters.scad>
 
-use <chassis/front_panel/front_panel.scad>
 use <../head/head_mount.scad>
 use <../head/head_neck.scad>
 use <../head/ir_case.scad>
@@ -29,6 +27,9 @@ use <../motor_brackets/standard_motor_bracket.scad>
 use <../panel_stack/panel_stack.scad>
 use <../power/printable.scad>
 use <../printable_parts/rear_panel_printable.scad>
+use <../wago/wago_bracket.scad>
+use <chassis/chassis_printable.scad>
+use <chassis/front_panel/front_panel.scad>
 use <chassis/knuckle.scad>
 use <chassis/knuckle_shaft.scad>
 use <chassis/rack.scad>
@@ -39,12 +40,10 @@ use <chassis/steering_pinion.scad>
 use <chassis/steering_servo_mount.scad>
 use <chassis/tie_rod.scad>
 use <chassis/tie_rod_shaft.scad>
-use <../wago/wago_bracket.scad>
 use <wheels/front_wheel.scad>
 use <wheels/rear_wheel.scad>
 use <wheels/tire.scad>
 use <wheels/wheel_hub.scad>
-use <chassis/chassis_printable.scad>
 
 show_wago_bracket     = true;
 show_chasssis         = true;
@@ -86,13 +85,13 @@ module printable(spacing=5) {
                    steering_rack_width) / 2;
 
   initial_x = half_of_chassis_width
-    + head_plate_width / 2
-    + head_plate_thickness / 2
-    + spacing;
+              + head_plate_width / 2
+              + head_plate_thickness / 2
+              + spacing;
 
   inner_tire_r = wheel_dia / 2;
   outer_tire_r = inner_tire_r + wheel_tire_thickness
-    + wheel_rim_h + wheel_tire_fillet_gap;
+                 + wheel_rim_h + wheel_tire_fillet_gap;
 
   if (show_chasssis) {
     translate([0, 0, chassis_thickness / 2]) {
@@ -240,7 +239,7 @@ module printable(spacing=5) {
       }
 
       bracket_offst = steering_rack_link_rack_side_h_length
-        + steering_rack_link_bearing_outer_d + steering_rack_link_linkage_width;
+                      + steering_rack_link_bearing_outer_d + steering_rack_link_linkage_width;
       pinion_offst = steering_pinion_d + steering_pinion_tooth_height() * 2;
 
       translate([0,
@@ -292,7 +291,7 @@ module printable(spacing=5) {
                    wheel_dia) / 2 - 10,
              0]) {
     front_wheels_x = -rear_panel_size[0] / 2 - rear_panel_mount_thickness
-      - wheel_dia / 2 - spacing;
+                     - wheel_dia / 2 - spacing;
 
     if (show_rear_panel) {
       rear_panel_printable(colr="white");

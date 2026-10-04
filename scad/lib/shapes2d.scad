@@ -74,26 +74,30 @@ function rounded_rect_corner_radii(size, side, r=undef, r_factor=0.3) =
                 "top_left", "top_right", "bottom_left", "bottom_right"],
        selections = is_undef(side) ? ["all"] : is_list(side) ? side : [side],
        entries = [for (entry = selections)
-           assert(is_string(entry) ||
-                  (is_list(entry) && len(entry) == 2 && is_string(entry[0]) &&
-                   (is_num(entry[1]) || is_string(entry[1]))),
-                  "side entries must be names or [name, radius] pairs")
-           let (name = is_string(entry) ? entry : entry[0],
-                radius = is_string(entry) ? r : entry[1],
-                resolved = maybe_percent_string_to_num(radius, min(size[0], size[1])))
-           assert(!is_list(side) || len(search([name], names, 0)[0]) > 0,
-                  str("Unknown rounded side: ", name))
-           assert(is_string(entry) || (is_num(resolved) && resolved >= 0),
-                  "side radius must be non-negative")
-           [name, calc_corner_rad(size, radius, r_factor)]],
-       corners = [["all", "bottom", "left", "bottom_left"],
-                  ["all", "bottom", "right", "bottom_right"],
-                  ["all", "top", "right", "top_right"],
-                  ["all", "top", "left", "top_left"]])
+         assert(is_string(entry) ||
+                (is_list(entry) && len(entry) == 2 && is_string(entry[0]) &&
+                 (is_num(entry[1]) || is_string(entry[1]))),
+                "side entries must be names or [name, radius] pairs")
+         let (name = is_string(entry) ? entry : entry[0],
+              radius = is_string(entry) ? r : entry[1],
+              resolved = maybe_percent_string_to_num(radius, min(size[0], size[1])))
+         assert(!is_list(side) || len(search([name], names, 0)[0]) > 0,
+                str("Unknown rounded side: ", name))
+         assert(is_string(entry) || (is_num(resolved) && resolved >= 0),
+                "side radius must be non-negative")
+         [name, calc_corner_rad(size, radius, r_factor)]],
+       corners = [["all", "bottom",
+                   "left", "bottom_left"],
+                  ["all", "bottom",
+                   "right", "bottom_right"],
+                  ["all", "top",
+                   "right", "top_right"],
+                  ["all", "top",
+                   "left", "top_left"]])
   [for (corner = corners)
-      let (matches = [for (entry = entries)
-          if (len(search([entry[0]], corner, 0)[0]) > 0) entry[1]])
-      len(matches) == 0 ? 0 : matches[len(matches) - 1]];
+    let (matches = [for (entry = entries)
+      if (len(search([entry[0]], corner, 0)[0]) > 0) entry[1]])
+    len(matches) == 0 ? 0 : matches[len(matches) - 1]];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -136,7 +140,13 @@ function rounded_rect_corner_radii(size, side, r=undef, r_factor=0.3) =
   rounded_rect([40, 20], side=[["top", 4], ["bottom", "10%"]]);
   ```
  */
-module rounded_rect(size, r=undef, center=false, fn, r_factor=0.3, side, anchor) {
+module rounded_rect(size,
+                    r=undef,
+                    center=false,
+                    fn,
+                    r_factor=0.3,
+                    side,
+                    anchor) {
   w = size[0];
   h = size[1];
   rad = calc_corner_rad(size=size, r=r, r_factor=r_factor);
@@ -231,8 +241,8 @@ module rounded_rect_two(size,
 
   function arc(cx, cy, rad, a0, a1) =
     [for (i = [1:segments])
-        let (a = a0 + i * ((a1 - a0)/segments))
-          [cx + rad*cos(a), cy + rad*sin(a)]];
+      let (a = a0 + i * ((a1 - a0)/segments))
+      [cx + rad*cos(a), cy + rad*sin(a)]];
 
   pts =
     concat([[bl, 0]],
@@ -312,7 +322,8 @@ module chamfered_square(size, chamfer, anchor=[0, 0, 1]) {
 module chamfered_rect(size, chamfer, anchor=[0, 0, 1]) {
   x = size[0];
   y = size[1];
-  chamfer = maybe_percent_string_to_num(with_default(chamfer, y / 4), min(x, y));
+  chamfer = maybe_percent_string_to_num(with_default(chamfer, y / 4),
+                                        min(x, y));
   hy = y / 2;
   hx = x / 2;
   cy = chamfer > hy ? hy : chamfer;
@@ -409,9 +420,9 @@ module ring_2d(r, w, d, fn, outer) {
  */
 module star_2d(n=5, r_outer=20, r_inner=10) {
   pts = [for (i = [0 : 2 * n - 1])
-      let (angle = 360 / (2*n) * i,
-           r = (i % 2 == 0) ? r_outer : r_inner)
-        [r * cos(angle), r * sin(angle)]];
+    let (angle = 360 / (2*n) * i,
+         r = (i % 2 == 0) ? r_outer : r_inner)
+    [r * cos(angle), r * sin(angle)]];
   polygon(points = pts);
 }
 

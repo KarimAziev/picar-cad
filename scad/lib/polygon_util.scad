@@ -196,9 +196,9 @@ function v_perp_right(v) = [v[1], -v[0]];
 function polygon_signed_area(pts) =
   len(pts) < 3 ? 0 :
   sum([for (i = [0 : len(pts) - 1])
-          let (p0 = pts[i],
-               p1 = pts[(i + 1) % len(pts)])
-            p0[0] * p1[1] - p1[0] * p0[1]]) / 2;
+    let (p0 = pts[i],
+         p1 = pts[(i + 1) % len(pts)])
+    p0[0] * p1[1] - p1[0] * p0[1]]) / 2;
 
 function polygon_is_ccw(pts) = polygon_signed_area(pts) > 0;
 
@@ -255,32 +255,32 @@ function rounded_polygon_points(points, radii=0, segments=12) =
   assert(is_num(segments) && segments >= 1 && floor(segments) == segments,
          "polygon arc segments must be a positive integer")
   let (pts = [for (p = points)
-          assert(is_list(p) && len(p) >= 2 && is_num(p[0]) && is_num(p[1]),
-                 "polygon vertices must contain numeric X/Y coordinates")
-          [p[0], p[1]]],
+    assert(is_list(p) && len(p) >= 2 && is_num(p[0]) && is_num(p[1]),
+           "polygon vertices must contain numeric X/Y coordinates")
+    [p[0], p[1]]],
        n = len(pts),
        rs = is_list(radii) ? radii : repeat(radii, n))
   assert(len(rs) == n, "corner radii must match the polygon vertex count")
   let (corners = [for (i = [0 : n - 1])
-          let (a = pts[(i + n - 1) % n] - pts[i],
-               b = pts[(i + 1) % n] - pts[i],
-               la = norm(a), lb = norm(b))
-          assert(la > 0 && lb > 0, "polygon must not repeat adjacent vertices")
-          assert(is_num(rs[i]) && rs[i] >= 0, "polygon radii must be nonnegative")
-          let (u = a / la, v = b / lb,
-               cosine = max(-1, min(1, u * v)),
-               half = acos(cosine) / 2)
-          assert(half > 0.000001, "polygon edges must not double back")
-          let (distance = half > 89.999999 ? 0 : rs[i] / tan(half))
-          [u, v, la, lb, half, distance]],
+    let (a = pts[(i + n - 1) % n] - pts[i],
+         b = pts[(i + 1) % n] - pts[i],
+         la = norm(a), lb = norm(b))
+    assert(la > 0 && lb > 0, "polygon must not repeat adjacent vertices")
+    assert(is_num(rs[i]) && rs[i] >= 0, "polygon radii must be nonnegative")
+    let (u = a / la, v = b / lb,
+         cosine = max(-1, min(1, u * v)),
+         half = acos(cosine) / 2)
+    assert(half > 0.000001, "polygon edges must not double back")
+    let (distance = half > 89.999999 ? 0 : rs[i] / tan(half))
+    [u, v, la, lb, half, distance]],
        distances = [for (i = [0 : n - 1])
-           let (c = corners[i],
-                before = corners[(i + n - 1) % n][5] + c[5],
-                after = corners[(i + 1) % n][5] + c[5])
-           c[5] * min(1, before > 0 ? c[2] / before : 1,
-                         after > 0 ? c[3] / after : 1)])
+         let (c = corners[i],
+              before = corners[(i + n - 1) % n][5] + c[5],
+              after = corners[(i + 1) % n][5] + c[5])
+         c[5] * min(1, before > 0 ? c[2] / before : 1,
+                    after > 0 ? c[3] / after : 1)])
   let (result = [for (i = [0 : n - 1])
-      each let (c = corners[i], d = distances[i])
+    each let (c = corners[i], d = distances[i])
       d <= 0.000001 ? [pts[i]] :
       let (radius = d * tan(c[4]),
            center = pts[i] + v_unit(c[0] + c[1]) * radius / sin(c[4]),
@@ -288,9 +288,9 @@ function rounded_polygon_points(points, radii=0, segments=12) =
            end = pts[i] + c[1] * d - center,
            angle = atan2(start[1], start[0]),
            sweep = atan2(start[0] * end[1] - start[1] * end[0], start * end))
-      [for (j = [0 : segments])
+        [for (j = [0 : segments])
           center + radius * [cos(angle + sweep * j / segments),
                              sin(angle + sweep * j / segments)]]])
   [for (i = [0 : len(result) - 1])
-      if (norm(result[i] - result[(i + len(result) - 1) % len(result)]) > 0.000000001)
+    if (norm(result[i] - result[(i + len(result) - 1) % len(result)]) > 0.000000001)
         result[i]];

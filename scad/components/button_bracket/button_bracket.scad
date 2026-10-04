@@ -54,7 +54,7 @@ function button_bracket_props(pl) =
                                            plist_get("lever_h", b)]),
        wire = plist_get("wire_size", pl, [body[0] * 0.6, terminal[2] + 2]),
        wire_pos = plist_get("wire_pos", pl,
-                             [0, -size[1] / 2 - terminal[2] / 2 - extension]),
+                            [0, -size[1] / 2 - terminal[2] / 2 - extension]),
        wire_y = wire_pos[1],
        half_w = max(size[0] / 2, lever[1][0], abs(wire_pos[0]) + wire[0] / 2),
        bounds = [[-half_w, min(-size[1] / 2 - terminal[2] - extension, wire_y - wire[1] / 2), 0],
@@ -101,9 +101,9 @@ function button_bracket_wire_ports(pl) =
        size = plist_get("size", button_bracket_props(pl)),
        x = body[0] / 2 + plist_get("t", ring) / 2 - 0.1,
        y = -terminal[2] - size[1] / 2 + plist_get("od", ring) / 2
-       + plist_get("d", ring) / 2 + hole_z - plist_get("total_l", ring),
+           + plist_get("d", ring) / 2 + hole_z - plist_get("total_l", ring),
        z = max(plist_get("d_tolerance", pl) + plist_get("nut_d", b), body[1]) / 2
-       + plist_get("bottom_t", pl))
+           + plist_get("bottom_t", pl))
   [for (side = [1, -1]) [side * x, y, z]];
 
 /**

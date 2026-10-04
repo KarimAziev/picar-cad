@@ -116,7 +116,7 @@ module knuckle(color=color,
                        + knuckle_inner_bearing_clearance + 1]) {
               cylinder(d=knuckle_inner_bearing_seat_d,
                        h=knuckle_inner_bearing_w
-                       + knuckle_inner_bearing_clearance + 1,
+                         + knuckle_inner_bearing_clearance + 1,
                        $fn=fn);
             }
           }

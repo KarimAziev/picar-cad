@@ -37,12 +37,12 @@ module camera_module(board_color=green_2,
                      left_text_spacing=1.3,
                      right_text_spacing=1.1) {
   max_lens_y = max([for (i = [0 : len(camera_lens_items) - 1])
-                       camera_lens_items[i][4] == "circle" ?
+    camera_lens_items[i][4] == "circle" ?
                          camera_lens_items[i][0] :
                          camera_lens_items[i][1]]);
 
   max_lens_x = max([for (i = [0 : len(camera_lens_items) - 1])
-                       camera_lens_items[i][0]]);
+    camera_lens_items[i][0]]);
 
   union() {
     color(board_color, alpha=1) {
@@ -176,7 +176,7 @@ module camera_module(board_color=green_2,
              type = spec[4],
              fn_or_x = spec[5],
              prev_heights = [for (i = [0 : i - 1])
-                 camera_lens_connectors[i][1]],
+               camera_lens_connectors[i][1]],
              offst = i == 0 ? 0 : sum(prev_heights)) {
 
           if (is_num(w)) {

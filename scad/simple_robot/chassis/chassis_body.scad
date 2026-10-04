@@ -6,10 +6,8 @@
  */
 
 include <../../colors.scad>
-
 include <../parameters.scad>
 
-use <rear_panel/rear_panel.scad>
 use <../../core/grid.scad>
 use <../../core/slot_placeholder_grid.scad>
 use <../../lib/holes.scad>
@@ -26,6 +24,7 @@ use <../../placeholders/rpi_5.scad>
 use <../../placeholders/ups_hat.scad>
 use <../../power/power_case_assembly.scad>
 use <chassis_connector.scad>
+use <rear_panel/rear_panel.scad>
 
 show_motor                        = false;
 show_motor_brackets               = false;
@@ -86,13 +85,13 @@ max_lower_cutout                  = max([for (v = chassis_lower_cutout_pts) v[1]
 
 body_pts                          = concat(chassis_lower_cutout_pts,
                                            [[chassis_body_half_w, chassis_body_len +
-                                             max_lower_cutout],
+                                                                  max_lower_cutout],
                                             [0, chassis_body_len  + max_lower_cutout]]);
 
 function ups_hat_y_pos() = -chassis_body_len
-  + battery_ups_module_bolt_spacing[1] / 2
-  + max_lower_cutout
-  + battery_ups_offset;
+                           + battery_ups_module_bolt_spacing[1] / 2
+                           + max_lower_cutout
+                           + battery_ups_offset;
 
 module chassis_body_2d() {
   offset_vertices_2d(r=chassis_offset_rad) {
@@ -137,9 +136,9 @@ module standard_motor_bracket_bolts(extra_x=0, extra_y=0) {
 module n20_bracket_left(show_motor=false, show_wheel=false) {
   x = -(chassis_body_w * 0.5) - n20_motor_chassis_x_distance;
   y = -chassis_body_len + n20_motor_bolts_panel_len / 2
-    + n20_motor_chassis_y_distance;
+      + n20_motor_chassis_y_distance;
   z = n20_motor_bolts_panel_x_offset() +
-    chassis_thickness + n20_motor_bolts_panel_thickness();
+      chassis_thickness + n20_motor_bolts_panel_thickness();
   translate([x,
              y,
              z]) {
@@ -262,7 +261,7 @@ module chassis_body_3d(panel_color="white") {
       chassis_with_panel_stack_position() {
         panel_stack_bolt_holes(anchor=[1, 1, 1],
                                orientation=chassis_panel_stack_orientation
-                               == "vertical" ? "wlh" : "lwh");
+                                           == "vertical" ? "wlh" : "lwh");
       }
 
       chassis_battery_holders_slots_or_placeholders(mode="slot");

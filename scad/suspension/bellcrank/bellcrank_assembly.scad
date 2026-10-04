@@ -45,9 +45,9 @@ module bellcrank_assembly(show_bellcrank_drive=show_bellcrank_drive,
   x_pos = chassis_bellcrank_spacing / 2;
 
   center_link_y = bellcrank_arm_l
-    - bellcrank_arm_bolt_edge_offset
-    - (steering_center_link_boss_od - steering_center_link_hole_d) / 2
-    - bellcrank_arm_bolt_spacing;
+                  - bellcrank_arm_bolt_edge_offset
+                  - (steering_center_link_boss_od - steering_center_link_hole_d) / 2
+                  - bellcrank_arm_bolt_spacing;
 
   ang_drive = -90 - bellcrank_z_angle;
 

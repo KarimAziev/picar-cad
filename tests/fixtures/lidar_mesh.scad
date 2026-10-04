@@ -1,13 +1,14 @@
 include <../../scad/parameters.scad>
-use <../../scad/placeholders/lidar.scad>
+
 use <../../scad/lib/plist.scad>
 use <../../scad/lib/shapes3d.scad>
+use <../../scad/placeholders/lidar.scad>
 
-part = "body";
+part       = "body";
 // Housing checks exclude the optional cable and cosmetic lettering.
 body_plist = plist_merge(rplidar_c1_plist,
-                        ["texts", [],
-                         "cable_exit", ["socket_d", 0]]);
+                         ["texts", [],
+                          "cable_exit", ["socket_d", 0]]);
 if (part == "body") {
   lidar(plist=body_plist);
 }

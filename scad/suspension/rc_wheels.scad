@@ -61,7 +61,7 @@ function rc_front_wheel_reference_center() =
        d = plist_get("datums", pose),
        wheel = rc_touring_wheel_spec(rc_wheel_plist),
        offset = rc_wheel_bearing_gap + rc_wheel_hex_h
-       - plist_get("mount_z", wheel) + plist_get("width", wheel) / 2)
+                - plist_get("mount_z", wheel) + plist_get("width", wheel) / 2)
   plist_get("lower_ball", pose)
   + plist_get("rotation", pose)
   * (plist_get("hub", d) - plist_get("socket", d) + [offset, 0, 0]);
@@ -86,7 +86,7 @@ module rc_rear_wheels_preview(layout, show_tire=true) {
   z = is_undef(rc_rear_wheel_preview_axis_z)
     ? reference[2] : rc_rear_wheel_preview_axis_z;
   y = (plist_get("bulkhead_1_y", layout) + plist_get("bulkhead_2_y", layout)) / 2
-    + rc_rear_wheel_preview_y_offset;
+      + rc_rear_wheel_preview_y_offset;
   w = rc_touring_wheel_size(rc_wheel_plist)[2];
   for (side = [-1, 1]) {
     translate([side * track / 2, y, chassis_thickness + z]) {

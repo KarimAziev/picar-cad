@@ -40,7 +40,8 @@ changed_gearbox = plist_merge(gearbox_plist,
                                                        mount_ears)]);
 changed_shaft = plist_merge(drive_shaft,
                             ["d", 5,
-                             "bearing", ["od", 9, "w", 2]]);
+                             "bearing", ["od", 9,
+                                         "w", 2]]);
 changed_motor = plist_merge(motor_plist,
                             ["gearbox", changed_gearbox,
                              "drive_shaft", changed_shaft]);
@@ -56,21 +57,21 @@ near(plist_get("front_mount_ear_y_min", changed), 9);
 near(plist_get("front_mount_ear_y_max", changed), 13);
 
 // Ear heights and the bearing boss do not move mounting-hole axes.
-raised = gearbox_compute_params(
-  plist_put("gearbox", plist_put("rear_mount_ear_y_center", 20, gearbox_plist),
-            motor_plist));
+raised = gearbox_compute_params(plist_put("gearbox", plist_put("rear_mount_ear_y_center", 20, gearbox_plist),
+                                          motor_plist));
 near(plist_get("mount_hole_positions", raised)[0], holes[0]);
 near(plist_get("mount_hole_positions", raised)[1], holes[1]);
 near(plist_get("rear_mount_ear_y_min", raised), 18.38);
 near(plist_get("front_mount_ear_y_min", raised), 9.03);
 
 // Omitted optional gearbox dimensions resolve to the placeholder defaults.
-default_gearbox = plist_remove_by_keys(
-  ["motor_pad", "thickness", "bottom_straight_w", "motor_shaft_y",
-   "motor_x_shift", "outer_shaft_y_center", "rear_mount_ear_y_center",
-   "front_mount_ear_y_center", "mount_bolt_d", "mount_cbore_d"],
-  plist_put("mount_ears", plist_remove("ear_thickness", mount_ears),
-            gearbox_plist));
+default_gearbox = plist_remove_by_keys(["motor_pad", "thickness",
+                                        "bottom_straight_w", "motor_shaft_y",
+                                        "motor_x_shift", "outer_shaft_y_center",
+                                        "rear_mount_ear_y_center", "front_mount_ear_y_center",
+                                        "mount_bolt_d", "mount_cbore_d"],
+                                       plist_put("mount_ears", plist_remove("ear_thickness", mount_ears),
+                                                 gearbox_plist));
 defaults = gearbox_compute_params(plist_put("gearbox", default_gearbox,
                                             motor_plist));
 for (pair = [["motor_pad", 1.2],

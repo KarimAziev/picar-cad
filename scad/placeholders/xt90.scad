@@ -35,7 +35,7 @@ module xt90_contact_pin(pin_d,
           cuboid([0.5, pin_d + 1, pin_h]);
           cuboid([pin_d + 1, 0.5, pin_h]);
           counterbore(d=contact_d
-                      - pin_thickness * 2,
+                        - pin_thickness * 2,
                       no_bore=true,
                       h=contact_h);
         }

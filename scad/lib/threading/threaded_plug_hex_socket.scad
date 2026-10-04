@@ -25,7 +25,7 @@ module threaded_plug_hex_socket(d=9.8,
                                 tolerance=0.4,
                                 color=metallic_silver_1) {
   drive_tolerance = pow(3 * tolerance / hex_drive_across_corners(d), 2)
-    + 0.75 * tolerance;
+                    + 0.75 * tolerance;
 
   hex_r = (hex_drive_across_corners(hex_size) + drive_tolerance) / 2;
 

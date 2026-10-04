@@ -15,16 +15,15 @@ use <power_lid.scad>
 use <power_socket_case.scad>
 use <power_socket_lid.scad>
 
-power_case_printable_grid = ["type","grid",
+power_case_printable_grid = ["type", "grid",
                              "size", [max(power_case_width,
                                           power_socket_case_size[0],
                                           power_lid_width) * 4 + 20,
                                       max(power_case_length,
                                           power_socket_case_size[1])],
-                             "rows",
-                             [["h", 1,
-                               "cells", [["w", 0.25,
-                                          "placeholder", ["type", "power_case_lid"]],
+                             "rows", [["h", 1,
+                                       "cells", [["w", 0.25,
+                                                  "placeholder", ["type", "power_case_lid"]],
                                          ["w", 0.25,
                                           "placeholder", ["type", "power_case"]],
                                          ["w", 0.25,

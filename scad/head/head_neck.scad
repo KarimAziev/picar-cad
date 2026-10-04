@@ -94,7 +94,7 @@ function head_neck_full_w(base_width=max(head_neck_pan_servo_slot_width,
 
 function head_neck_full_pan_panel_h() =
   let (nominal_h = head_neck_pan_servo_slot_height
-       + head_neck_tilt_servo_slot_thickness / 2,
+                   + head_neck_tilt_servo_slot_thickness / 2,
        diff = (head_plate_width / 2 + head_plate_thickness) - nominal_h)
   nominal_h + diff + head_plate_thickness * 2;
 
@@ -108,14 +108,14 @@ function head_neck_full_tilt_panel_h() =
 // Bounds are built from component envelopes, before either servo rotation.
 function _head_neck_box(lo, hi, padding=0) =
   [for (x=[lo[0] - padding, hi[0] + padding],
-          y=[lo[1] - padding, hi[1] + padding],
-          z=[lo[2] - padding, hi[2] + padding]) [x, y, z]];
+        y=[lo[1] - padding, hi[1] + padding],
+        z=[lo[2] - padding, hi[2] + padding]) [x, y, z]];
 
 function _head_neck_bounds(points) =
   [for (side=[0, 1])
-      [for (axis=[0:2])
-          let (values=[for (p=points) p[axis]])
-            side == 0 ? min(values) : max(values)]];
+    [for (axis=[0:2])
+      let (values=[for (p=points) p[axis]])
+      side == 0 ? min(values) : max(values)]];
 
 // Include heads, nuts, and the rounding-up of selected bolt lengths.
 function _head_neck_fastener_padding(d, lock=false) =
@@ -152,7 +152,7 @@ function _head_neck_head_points() =
   let (t=head_plate_thickness,
        side_y=[for (y=[-head_side_panel_top, -head_side_panel_notch_y,
                        -head_side_panel_bottom, -head_side_panel_curve_end])
-           y + head_side_panel_curve_end - head_plate_height / 2],
+         y + head_side_panel_curve_end - head_plate_height / 2],
        frame=_head_neck_box([-max(head_plate_width / 2 + t, head_upper_plate_width / 2,
                                   head_upper_connector_width / 2, head_lower_connector_width / 2),
                              min(-head_plate_height / 2 - head_lower_connector_height / 2,
@@ -163,7 +163,7 @@ function _head_neck_head_points() =
                                  max(side_y)),
                              max(t, head_side_panel_width, head_upper_plate_height,
                                  head_upper_connector_len)]),
-// Horn coordinates before head_mount's outer Y rotation.
+       // Horn coordinates before head_mount's outer Y rotation.
        horn_r=max(servo_horn_center_ring_outer_dia / 2,
                   servo_horn_ending_arm_w / 2
                   + servo_horn_center_ring_outer_dia / 2 + servo_horn_len / 4),
@@ -171,33 +171,33 @@ function _head_neck_head_points() =
        horn_center=side_panel_servo_center(),
        horn=[for (p=_head_neck_box([-horn_r, -horn_r, -servo_horn_ring_height],
                                    [horn_r, horn_r, servo_horn_arm_z_offset
-                                    + servo_horn_arm_thickness], horn_pad))
-           rotY([head_plate_width / 2,
-                 -head_plate_height / 2 + head_side_panel_curve_end, 0]
-                + rotY([horn_center[0], horn_center[1], t] +
-                       rotZ(p, atan2(head_side_panel_bottom
-                                     - head_side_panel_curve_end,
-                                     head_side_panel_curve_start
-                                     - head_side_panel_width)), 90), 180)],
+                                                    + servo_horn_arm_thickness], horn_pad))
+         rotY([head_plate_width / 2,
+               -head_plate_height / 2 + head_side_panel_curve_end, 0]
+              + rotY([horn_center[0], horn_center[1], t] +
+                     rotZ(p, atan2(head_side_panel_bottom
+                                   - head_side_panel_curve_end,
+                                   head_side_panel_curve_start
+                                   - head_side_panel_width)), 90), 180)],
        camera_pad=_head_neck_fastener_padding(head_camera_bolt_dia),
        cameras=[for (i=[0:len(head_cameras)-1])
-           let (spec=head_cameras[i],
-                single_shift=len(head_cameras) > 1 ? 0 : head_cameras_y_distance / 2,
-                y=camera_final_y(i) + single_shift + spec[2][1] / 2
+         let (spec=head_cameras[i],
+              single_shift=len(head_cameras) > 1 ? 0 : head_cameras_y_distance / 2,
+              y=camera_final_y(i) + single_shift + spec[2][1] / 2
                 + head_camera_bolt_dia / 2 + spec[1] + camera_h / 2
                 - camera_holes_size[1] / 2 - camera_bolt_hole_dia / 2
                 - camera_holes_distance_from_top,
-                lens_h=sum([for (s=camera_lens_items) s[2]]),
-                lens_w=max([for (s=camera_lens_items) s[0]]),
-                connector_h=max([for (s=camera_lens_connectors) s[2]]))
-             each _head_neck_box([-max(camera_w, lens_w, spec[2][0]) / 2,
-                                  head_plate_height / 2 - y - camera_h / 2
-                                  - camera_module_ffc_zif_h,
-                                  t - max(lens_h, connector_h)],
-                                 [max(camera_w, lens_w, spec[2][0]) / 2,
-                                  head_plate_height / 2 - y + camera_h / 2
-                                  + camera_module_ffc_zif_h,
-                                  t + camera_thickness + camera_module_socket_thickness], camera_pad)],
+              lens_h=sum([for (s=camera_lens_items) s[2]]),
+              lens_w=max([for (s=camera_lens_items) s[0]]),
+              connector_h=max([for (s=camera_lens_connectors) s[2]]))
+           each _head_neck_box([-max(camera_w, lens_w, spec[2][0]) / 2,
+                                head_plate_height / 2 - y - camera_h / 2
+                                - camera_module_ffc_zif_h,
+                                t - max(lens_h, connector_h)],
+                               [max(camera_w, lens_w, spec[2][0]) / 2,
+                                head_plate_height / 2 - y + camera_h / 2
+                                + camera_module_ffc_zif_h,
+                                t + camera_thickness + camera_module_socket_thickness], camera_pad)],
        ir_t=ir_case_full_thickness(),
        ir_pad=max(_head_neck_fastener_padding(ir_case_bolt_dia),
                   _head_neck_fastener_padding(ir_case_rail_bolt_dia, true)),
@@ -219,16 +219,16 @@ function _head_neck_head_points() =
        : is_ir_case_bracket_enabled("left") ? ir_points
        : is_ir_case_bracket_enabled("right")
        ? [for (p=ir_points)
-           p + [-head_plate_width - ir_case_width - 2*t
-                - 2*ir_case_l_bracket_len, 0, 0]] : [])
-                concat(frame, horn, cameras, ir);
+         p + [-head_plate_width - ir_case_width - 2*t
+              - 2*ir_case_l_bracket_len, 0, 0]] : [])
+  concat(frame, horn, cameras, ir);
 
 // Bounding points relative to the tilt axis, before its Z rotation in the
 // vertical plate's local frame (which becomes X rotation in assembly space).
 function _head_neck_tilting_points() =
   let (c=side_panel_servo_center())
   [for (p=_head_neck_head_points())
-      rotY(p, 90) + [-c[0], -c[1] / 2, -head_plate_width / 2]];
+    rotY(p, 90) + [-c[0], -c[1] / 2, -head_plate_width / 2]];
 
 function _head_neck_fixed_points() =
   let (w=head_neck_full_w(),
@@ -239,12 +239,12 @@ function _head_neck_fixed_points() =
        pad=max(_head_neck_fastener_padding(head_neck_pan_servo_bolt_dia),
                _head_neck_fastener_padding(head_neck_tilt_servo_bolt_dia)),
        bracket=_head_neck_box([0, 0, 0], [w, l + vt / 2, h], pad),
-// Horn rotation is enclosed for all pan angles; its planar envelope
-// is deliberately conservative, including the arm screws.
+       // Horn rotation is enclosed for all pan angles; its planar envelope
+       // is deliberately conservative, including the arm screws.
        horn_r=servo_horn_len / 2 + servo_horn_center_ring_outer_dia / 2,
        pan_axis_x=pan_servo_size[0] / 2 - pan_servo_gearbox_d1 / 2,
        pan_z=pan_servo_size[2] + t - pan_servo_flange_z_offset
-       + pan_servo_flange_thickness / 2,
+             + pan_servo_flange_thickness / 2,
        pan=[for (p=_head_neck_box([-max(pan_servo_size[0] / 2, pan_servo_flange_w / 2,
                                         horn_r - pan_axis_x),
                                    -max(pan_servo_size[1] / 2, pan_servo_flange_h / 2, horn_r),
@@ -253,19 +253,19 @@ function _head_neck_fixed_points() =
                                        pan_axis_x + horn_r),
                                    max(pan_servo_size[1] / 2, pan_servo_flange_h / 2, horn_r),
                                    pan_z], pad))
-           [w/2, l/2 + vt/2, 0]
-             + rotZ(p, head_neck_pan_servo_assembly_reversed ? 180 : 0)],
+         [w/2, l/2 + vt/2, 0]
+         + rotZ(p, head_neck_pan_servo_assembly_reversed ? 180 : 0)],
        tilt_y=h / 2 - head_neck_tilt_servo_slot_height / 2
-       - head_neck_tilt_servo_extra_top_h,
+              - head_neck_tilt_servo_extra_top_h,
        tilt=[for (p=_head_neck_box([-max(tilt_servo_size[0], tilt_servo_flange_w) / 2,
                                     -max(tilt_servo_size[1], tilt_servo_flange_h) / 2, 0],
                                    [max(tilt_servo_size[0], tilt_servo_flange_w) / 2,
                                     max(tilt_servo_size[1], tilt_servo_flange_h) / 2,
                                     tilt_servo_full_height()], pad))
-           [w/2, vt/2, h/2]
-             + rotX(p + [0, tilt_y, -tilt_servo_height_after_flange()
-                         - vt/2 - tilt_servo_flange_thickness], 90)])
-                         concat(bracket, pan, tilt);
+         [w/2, vt/2, h/2]
+         + rotX(p + [0, tilt_y, -tilt_servo_height_after_flange()
+                                - vt/2 - tilt_servo_flange_thickness], 90)])
+  concat(bracket, pan, tilt);
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -302,11 +302,11 @@ function head_neck_bounds(pan_servo_rotation=pan_servo_rotation,
        offset=_head_neck_pan_offset(),
        points=concat(_head_neck_fixed_points(),
                      [for (p=_head_neck_tilting_points())
-                         pivot + rotX(rotZ(p, angle), 90)]))
+                       pivot + rotX(rotZ(p, angle), 90)]))
   _head_neck_bounds(center_pan_servo_slot
                     ? [for (p=points)
-                        rotZ(rotZ(p, -90) + offset,
-                             pan_servo_rotation)]
+                      rotZ(rotZ(p, -90) + offset,
+                           pan_servo_rotation)]
                     : points);
 
 /**
@@ -473,8 +473,8 @@ module head_neck_base(show_tilt_servo=false,
   half_of_tilt_h = full_tilt_h / 2;
 
   tilt_servo_y = half_of_tilt_h
-    - head_neck_tilt_servo_slot_height / 2
-    - head_neck_tilt_servo_extra_top_h;
+                 - head_neck_tilt_servo_slot_height / 2
+                 - head_neck_tilt_servo_extra_top_h;
 
   reverse_rotation = head_neck_pan_servo_assembly_reversed ? 180 : 0;
 

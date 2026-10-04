@@ -5,15 +5,16 @@
   * License: GPL-3.0-or-later
   */
 include <../scad/lipo_pack_case/standalone_parameters.scad>
+
+use <../scad/components/button_bracket/button_bracket.scad>
 use <../scad/lib/plist.scad>
 use <../scad/lib/wire.scad>
+use <../scad/lipo_pack_case/lid_wiring.scad>
 use <../scad/placeholders/lipo_pack_wiring.scad>
 use <../scad/placeholders/t_plug.scad>
-use <../scad/lipo_pack_case/lid_wiring.scad>
-use <../scad/components/button_bracket/button_bracket.scad>
 
 // Crimp mouths in the bracket frame for the measured default switch.
-ports = button_bracket_wire_ports(toggle_switch_bracket_plist);
+ports  = button_bracket_wire_ports(toggle_switch_bracket_plist);
 assert(norm(ports[0] - [14.91, -31.63, 12.35]) < 0.000001);
 assert(norm(ports[1] - [-14.91, -31.63, 12.35]) < 0.000001);
 button = plist_get("button", toggle_switch_bracket_plist);
@@ -29,13 +30,14 @@ for (hole_z = [1.8, 5.8, undef]) {
   }
 }
 assert(button_bracket_wire_ports(plist_put("button",
-           plist_remove("terminal_hole_z", button), toggle_switch_bracket_plist))
+                                           plist_remove("terminal_hole_z", button), toggle_switch_bracket_plist))
        == button_bracket_wire_ports(plist_put("button",
-           plist_put("terminal_hole_z", undef, button), toggle_switch_bracket_plist)));
+                                              plist_put("terminal_hole_z", undef, button), toggle_switch_bracket_plist)));
 ring = plist_get("crimp_terminal", button);
-changed_ring = plist_merge(ring, ["t", 1.02, "l", 11.1]);
+changed_ring = plist_merge(ring, ["t", 1.02,
+                                  "l", 11.1]);
 changed_ports = button_bracket_wire_ports(plist_put("button",
-    plist_put("crimp_terminal", changed_ring, button), toggle_switch_bracket_plist));
+                                                    plist_put("crimp_terminal", changed_ring, button), toggle_switch_bracket_plist));
 assert(norm(changed_ports[0] - (ports[0] + [0.2, -2, 0])) < 0.000001);
 assert(norm(changed_ports[1] - (ports[1] + [-0.2, -2, 0])) < 0.000001);
 echo("PASS nested switch crimps, terminal-hole defaults and parametric wire ports");
@@ -71,8 +73,8 @@ assert([for (p = plist_get("female_ports", plug)) p[0]]
        == [for (p = plist_get("male_ports", plug)) p[0]]);
 echo("PASS four harness legs, common connector polarity and sampled length reporting");
 
-corner = rounded_wire_points([[0,0,0], [20,0,0], [20,20,0]], trim=6);
-assert(corner[0] == [0,0,0] && corner[len(corner) - 1] == [20,20,0]);
+corner = rounded_wire_points([[0, 0, 0], [20, 0, 0], [20, 20, 0]], trim=6);
+assert(corner[0] == [0, 0, 0] && corner[len(corner) - 1] == [20, 20, 0]);
 assert(min([for (p = corner) p[0]]) >= 0 && max([for (p = corner) p[0]]) <= 20);
 assert(min([for (p = corner) p[1]]) >= 0 && max([for (p = corner) p[1]]) <= 20);
 assert(total_wire_length(corner) < 40);

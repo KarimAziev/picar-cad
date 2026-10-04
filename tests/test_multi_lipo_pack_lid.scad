@@ -25,7 +25,7 @@ for (rail = plist_get("rails", rails)) {
   assert(abs(plist_get("locking_depth", rail)
              - (plist_get("w", rail) + 2 * (plist_get("clearance_w", rails)
                                             + plist_get("side_t", lid)))) < 0.000001);
- }
+}
 
 plain = plist_merge(multi_lipo_packs_case, ["rail", ["enabled", false]]);
 plain_props = multi_lipo_pack_props(plain);
@@ -60,7 +60,7 @@ for (orientation = ["wlh", "lwh",
   oriented_lid = multi_lipo_pack_lid_props(oriented);
   assert(plist_get("size", oriented_case) == orientation_size(orientation, plist_get("canonical_size", changed_props)));
   assert(plist_get("size", oriented_lid) == orientation_size(orientation, plist_get("canonical_size", oriented_lid)));
- }
+}
 echo("PASS: rail selection, supported spans, shared lid references, disabled rails, and orientations");
 
 // Legacy/custom cases without rails remain usable in the rear assembly.
@@ -86,7 +86,7 @@ for (rail = rounded_rails) {
   wall = plist_get(plist_get("wall", rail),
                    plist_get("wall_props", rounded_props));
   assert(plist_get("l", rail) == plist_get("l", wall) - 2 * plist_get("corner_r", wall));
- }
+}
 echo("PASS: dovetail rails stay on the flat tops of rounded walls");
 
 // Rail lands follow explicit top-corner radii on the uppermost profile.

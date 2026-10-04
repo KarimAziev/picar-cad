@@ -17,10 +17,10 @@ function scale_trapezoid_pts(x_top,
                              target_l) =
   let (m        = (x_top - x_bottom) / (y_top - y_bottom),
        w_bottom = target_w + m *
-       target_l) [[0,         0],
-                  [target_w, 0],
-                  [w_bottom,    target_l],
-                  [0,         target_l]];
+                  target_l) [[0,         0],
+                             [target_w, 0],
+                             [w_bottom,    target_l],
+                             [0,         target_l]];
 
 function scale_upper_trapezoid_pts(x, y) =
   scale_trapezoid_pts(x_top=chassis_upper_half_w,
@@ -64,7 +64,10 @@ function trapezoid_slanted_frame(trapezoid_pts, eps=1e-9) =
   let (pts = trapezoid_pts,
        c   = _centroid4(pts),
        ord = _order_around_centroid(pts),
-       p0 = pts[ord[0]], p1 = pts[ord[1]], p2 = pts[ord[2]], p3 = pts[ord[3]],
+       p0 = pts[ord[0]],
+       p1 = pts[ord[1]],
+       p2 = pts[ord[2]],
+       p3 = pts[ord[3]],
        E  = [[p0, p1],[p1, p2],[p2, p3],[p3, p0]],
        s  = [_slant_score(p0, p1), _slant_score(p1, p2), _slant_score(p2, p3),
              _slant_score(p3, p0)],
@@ -75,7 +78,12 @@ function trapezoid_slanted_frame(trapezoid_pts, eps=1e-9) =
        n0 = _perp(u),
        n  = ((n0*(c - A)) >= 0) ? n0 : -n0) [A, B, u, n];
 
-module hole_along_slanted_side(trapezoid_pts, s, l, w, margin=0, eps=1e-9,
+module hole_along_slanted_side(trapezoid_pts,
+                               s,
+                               l,
+                               w,
+                               margin=0,
+                               eps=1e-9,
                                parallelogram=true) {
   f = trapezoid_slanted_frame(trapezoid_pts, eps);
   A = f[0]; u = f[2]; n = f[3];

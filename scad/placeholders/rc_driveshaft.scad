@@ -6,11 +6,12 @@
   * cutouts, pivot pins and the joint-angle limit remain packaging assumptions.
   */
 include <../parameters.scad>
+
 use <../lib/plist.scad>
 use <../lib/shapes3d.scad>
 use <../lib/transforms.scad>
 
-driveshaft_l = plist_get("pivot_l", rc_driveshaft_plist);
+driveshaft_l    = plist_get("pivot_l", rc_driveshaft_plist);
 driveshaft_drop = 0;
 
 /**
@@ -129,7 +130,7 @@ module _rc_driveshaft_hub(spec) {
     }
     translate([0, 0, yoke_l]) {
       cylinder(d=plist_get("bore_d", spec) + plist_get("bore_clearance", spec) * 2,
-                h=l * 2);
+               h=l * 2);
     }
     translate([0, 0, yoke_l + l / 2]) {
       rotate([0, 90, 0]) {
@@ -144,7 +145,10 @@ module _rc_driveshaft_tube(spec) {
   l = plist_get("tube_l", spec);
   reach = plist_get("tube_pivot_l", spec);
   yoke_l = reach - l;
-  _rc_driveshaft_yoke(spec, yoke_l, plist_get("tube_total_l", spec) - reach, phase=90);
+  _rc_driveshaft_yoke(spec,
+                      yoke_l,
+                      plist_get("tube_total_l", spec) - reach,
+                      phase=90);
   translate([0, 0, yoke_l]) {
     difference() {
       cylinder(d=plist_get("tube_d", spec), h=l);
@@ -155,7 +159,10 @@ module _rc_driveshaft_tube(spec) {
 
 module _rc_driveshaft_rod(spec) {
   yoke_l = plist_get("rod_yoke_pivot_l", spec);
-  _rc_driveshaft_yoke(spec, yoke_l, plist_get("rod_yoke_l", spec) - yoke_l, phase=90);
+  _rc_driveshaft_yoke(spec,
+                      yoke_l,
+                      plist_get("rod_yoke_l", spec) - yoke_l,
+                      phase=90);
   translate([0, 0, yoke_l]) {
     cylinder(d=plist_get("rod_d", spec), h=rc_driveshaft_rod_l(spec));
   }
@@ -177,7 +184,8 @@ module _rc_driveshaft_rod(spec) {
   **Notes:** The joint endpoints remain fixed when the shaft articulates.
   This placement helper uses explicit datums, not a bounding-box anchor.
  */
-module rc_driveshaft_between(start, end,
+module rc_driveshaft_between(start,
+                             end,
                              start_axis=[0, 1, 0],
                              end_axis=[0, -1, 0],
                              spec=rc_driveshaft_plist,
@@ -284,7 +292,9 @@ module rc_driveshaft(l=driveshaft_l,
   with_anchor(anchor, size, centered=true) {
     rc_driveshaft_between([0, projected_l / 2, h / 2 + max(0, drop)],
                           [0, -projected_l / 2, h / 2 + max(0, -drop)],
-                          spec=spec, slot_mode=slot_mode, clearance=clearance);
+                          spec=spec,
+                          slot_mode=slot_mode,
+                          clearance=clearance);
   }
 }
 

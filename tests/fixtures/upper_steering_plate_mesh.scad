@@ -4,14 +4,15 @@
   * License: GPL-3.0-or-later
   */
 include <../../scad/rc_params.scad>
-use <../../scad/suspension/upper_steering_plate.scad>
-use <../../scad/suspension/front_suspension_assembly.scad>
-use <../../scad/suspension/bellcrank_steering_assembly.scad>
 
-part = "plate";
-arm_angle = 0;
+use <../../scad/suspension/bellcrank_steering_assembly.scad>
+use <../../scad/suspension/front_suspension_assembly.scad>
+use <../../scad/suspension/upper_steering_plate.scad>
+
+part           = "plate";
+arm_angle      = 0;
 steering_angle = 0;
-plate_anchor = [1, 1, 1];
+plate_anchor   = [1, 1, 1];
 
 if (part == "plate") {
   upper_steering_plate(anchor=plate_anchor);
@@ -48,7 +49,8 @@ if (part == "plate") {
       }
       for (side = [-1, 0, 1]) {
         translate([side * upper_steering_panel_bulkhead_spacing / 2,
-                   bellcrank_y_distance_from_bulkhead, 0]) {
+                   bellcrank_y_distance_from_bulkhead,
+                   0]) {
           cylinder(d=upper_steering_panel_bolt_d - 0.05, h=50, $fn=40);
         }
       }

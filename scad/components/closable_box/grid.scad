@@ -26,7 +26,7 @@ module grid(grid_spec,
 
     cell_pct_lists = [for (r = grid_spec) r[1]];
     cell_widths_per_row = [for (cl = cell_pct_lists)
-        let (tot = sum(cl)) [for (c = cl) inner_x * c / tot]];
+      let (tot = sum(cl)) [for (c = cl) inner_x * c / tot]];
 
     is_pair = (len(inner_wall_thickness) == 2);
     row_wall_spec = is_pair
@@ -39,8 +39,8 @@ module grid(grid_spec,
 
     row_prefix = cumsums(row_heights);
     row_bottoms = [for (i = [0 : len(row_heights) - 1])
-        -inner_y/2 + (i == 0 ? 0 : sum([for (j=[0:i-1])
-                                           row_heights[j]]))];
+      -inner_y/2 + (i == 0 ? 0 : sum([for (j=[0:i-1])
+        row_heights[j]]))];
 
     eps = 0.02;
 
@@ -56,10 +56,10 @@ module grid(grid_spec,
       let (y_border = -inner_y/2 + row_prefix[i],
            t = spec_to_mm(row_wall_spec, (row_heights[i]
                                           + row_heights[i + 1])
-                          / 2))
+                                         / 2))
         translate([0, -y_border, 0]) {
-        square([inner_x + eps, t + eps], center=true);
-      }
+          square([inner_x + eps, t + eps], center=true);
+        }
     }
 
     for (ri = [0 : len(cell_widths_per_row) - 1]) {
@@ -73,8 +73,8 @@ module grid(grid_spec,
                tcol = spec_to_mm(col_wall_spec,
                                  (cw[ci] + cw[ci + 1]) / 2))
             translate([x_border, -y_center]) {
-            square([tcol + eps, row_h + eps], center=true);
-          }
+              square([tcol + eps, row_h + eps], center=true);
+            }
         }
     }
   }

@@ -64,22 +64,22 @@ module steering_rack(length=steering_rack_teethed_length,
   root_rad = r_pitch - (circular_pitch / PI) - clearance;
   outer_rad = outer_radius(r_pitch, circular_pitch, clearance);
   inv_angle = -involute_angle(base_circle_rad, r_pitch)
-    - (circular_pitch / 2 - backlash / 2) / (2 * r_pitch) / PI * 180;
+              - (circular_pitch / 2 - backlash / 2) / (2 * r_pitch) / PI * 180;
 
   total_teeth = round(length / circular_pitch);
 
   tooth_points = concat([polar_to_cartesian(root_rad, -180 / total_teeth)],
                         [for (f = [0:5])
-                            involute_point_at_fraction(f / 5, root_rad,
-                                                       base_circle_rad,
-                                                       outer_rad,
-                                                       inv_angle, 1)],
+                          involute_point_at_fraction(f / 5, root_rad,
+                                                     base_circle_rad,
+                                                     outer_rad,
+                                                     inv_angle, 1)],
                         [for (f = [5:-1:0])
-                            involute_point_at_fraction(f / 5, root_rad,
-                                                       base_circle_rad,
-                                                       outer_rad,
-                                                       inv_angle,
-                                                       -1)],
+                          involute_point_at_fraction(f / 5, root_rad,
+                                                     base_circle_rad,
+                                                     outer_rad,
+                                                     inv_angle,
+                                                     -1)],
                         [polar_to_cartesian(root_rad, 180 / total_teeth)]);
   shifted_points = [for (pt = tooth_points) [pt[0], pt[1] - root_rad]];
 

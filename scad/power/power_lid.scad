@@ -6,8 +6,8 @@
  */
 
 include <../colors.scad>
-include <../simple_robot/power_parameters.scad>
 include <../power_lid_parameters.scad>
+include <../simple_robot/power_parameters.scad>
 
 use <../core/slot_layout.scad>
 use <../core/slot_layout_components.scad>

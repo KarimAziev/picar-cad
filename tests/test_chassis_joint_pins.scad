@@ -10,10 +10,10 @@ include <../scad/suspension/rear_chassis/rear_chassis_params.scad>
 use <../scad/suspension/front_chassis/front_chassis_joint.scad>
 
 stock = [[23.8, 4], [33, 8], [38, 2], [39.5, 9], [43, 6]];
-pins = [front_chassis_head_joint_pin_l,
-        front_chassis_joint_pin_l,
-        front_chassis_joint_pin_l,
-        rear_suspension_joint_pin_l];
+pins  = [front_chassis_head_joint_pin_l,
+         front_chassis_joint_pin_l,
+         front_chassis_joint_pin_l,
+         rear_suspension_joint_pin_l];
 for (length = pins) {
   assert(len([for (item = stock) if (item[0] == length) 1]) == 1,
          "Each chassis joint needs an available stock pin length");

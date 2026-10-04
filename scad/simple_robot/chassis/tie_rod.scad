@@ -44,7 +44,9 @@ module tie_rod(tie_rod_color="white", show_bearing=false) {
   if (show_bearing) {
     mirror_copy([1, 0, 0]) {
       translate([-tie_rod_len / 2 + tie_rod_bearing_outer_dia / 2
-                 + tie_rod_bearing_x_offset, 0, 0]) {
+                 + tie_rod_bearing_x_offset,
+                 0,
+                 0]) {
         bearing(d=tie_rod_bearing_outer_dia,
                 h=tie_rod_bearing_height,
                 flanged_w=tie_rod_bearing_flanged_width,

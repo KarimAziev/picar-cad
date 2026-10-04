@@ -72,7 +72,7 @@ module battery_holder_side_wall_2d(length=side_wall_len,
     : [];
 
   pts = concat(pts_start,
-           // 3
+               // 3
                edge_cutout_pts,
                [[-h, half_of_len - center_upper_len / 2],
                 [-center_cutout_h, half_of_len - center_lower_len / 2],
