@@ -37,8 +37,9 @@ candidate_length    = undef;
 include_joint_bolts = true;
 layout              = rear_chassis_layout();
 width               = plist_get("join_w", layout);
-rear_start          = plist_get("transition_y_start", layout);
-rear_end            = plist_get("transition_y_end", layout);
+rear_joint_y        = rear_suspension_joint_y_bounds(layout);
+rear_start          = rear_joint_y[1];
+rear_end            = rear_joint_y[0];
 rear_p = plate_joint_parameters(plate_h=chassis_thickness,
                                 bolt_d=chassis_bolt_d,
                                 w=plist_get("suspension_w", layout),

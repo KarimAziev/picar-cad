@@ -336,15 +336,54 @@ function rear_chassis_layout(bracket=gearmotor_bracket_compute_params(motor_plis
 function rear_suspension_chassis_size(layout=rear_chassis_layout()) =
   plist_get("size", layout);
 
-function rear_chassis_outline_points(layout=rear_chassis_layout()) =
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  rear_suspension_joint_y_bounds
+  ─────────────────────────────────────────────────────────────────────────────
+  Locate the joint independently of the deck's outer taper.
+
+  **Parameters:**
+  - `layout`: Resolved rear layout shared by both mating plates.
+  - `inset`: Nonnegative distance into the deck along native -Y, in mm.
+
+  **Returns:**
+  `[min_y, max_y]` of the joint, from chassis root to suspension-mount root.
+ */
+function rear_suspension_joint_y_bounds(layout=rear_chassis_layout(),
+                                        inset=rear_suspension_joint_inset) =
+  assert(is_num(inset) && inset >= 0, "Joint inset must be nonnegative")
+  let (start = plist_get("transition_y_start", layout) - inset,
+       end = plist_get("transition_y_end", layout) - inset)
+  assert(end > plist_get("min_y", layout), "Joint must fit within the deck")
+  [end, start];
+
+function rear_chassis_outline_points(layout=rear_chassis_layout(),
+                                     wheel_relief=rear_chassis_wheel_relief) =
+  assert(is_list(wheel_relief) && len(wheel_relief) == 2
+         && is_num(wheel_relief[0]) && is_num(wheel_relief[1])
+         && min(wheel_relief) >= 0,
+         "Wheel relief must be [inward distance, forward distance] in mm")
+  assert(wheel_relief == [0, 0] || min(wheel_relief) > 0,
+         "Use two positive wheel-relief distances, or [0, 0] to disable")
   let (corner_r = rear_chassis_corner_r,
        min_y = plist_get("min_y", layout),
-
        max_half_w = plist_get("max_half_w", layout),
        half_w = plist_get("suspension_w", layout) / 2,
-       transition_y_start = plist_get("transition_y_start", layout))
+       transition_y_start = plist_get("transition_y_start", layout),
+       transition_y_end = plist_get("transition_y_end", layout),
+       inset = wheel_relief[0],
+       forward = wheel_relief[1])
+  assert(wheel_relief == [0, 0]
+         || (inset < max_half_w - half_w
+             && forward < transition_y_end - min_y),
+         "Wheel relief must fit between the suspension joint and front joining edge")
   [[-corner_r, transition_y_start],
    [half_w, transition_y_start],
-   [max_half_w, plist_get("transition_y_end", layout)],
+   each wheel_relief == [0, 0]
+     ? [[max_half_w, transition_y_end]]
+     : [[max_half_w - inset,
+         transition_y_end + inset * (transition_y_start - transition_y_end)
+           / (max_half_w - half_w)],
+        [max_half_w, transition_y_end - forward]],
    [max_half_w, min_y],
    [-corner_r, min_y]];

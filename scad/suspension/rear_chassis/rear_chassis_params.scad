@@ -14,8 +14,17 @@ rear_chassis_maintenance_hole_d        = 8.40;
 rear_chassis_edge_pad                  = 2.75;
 rear_chassis_corner_r                  = 2;
 
+// Wheel relief at each suspension-side shoulder, in mm:
+// [inward X distance, distance along the side toward vehicle front].
+// Both distances start at the intersection of the taper and the side edge.
+rear_chassis_wheel_relief              = [15, 15];
+
 // Length of the transition to the wider part
 rear_suspension_chassis_transition_len = 10;
+
+// Joint inset into the main deck along native -Y (vehicle front), in mm.
+// Provides screw access beside the suspension arm pad.
+rear_suspension_joint_inset            = 9.5;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // RC motor slot

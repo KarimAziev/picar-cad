@@ -20,9 +20,8 @@ module rear_suspension_chassis_joint(mode,
                                      show_sizes) {
 
   suspension_w = plist_get("suspension_w", layout);
-  transition_y_start = plist_get("transition_y_start", layout);
-  transition_y_end = plist_get("transition_y_end", layout);
-  joint_l = transition_y_start - transition_y_end;
+  joint_y = rear_suspension_joint_y_bounds(layout);
+  joint_l = joint_y[1] - joint_y[0];
 
   // The chassis joins at local Y=-joint_l; the suspension mount joins at Y=0.
   // Keep the male free-tip clearance away from its chassis attachment.

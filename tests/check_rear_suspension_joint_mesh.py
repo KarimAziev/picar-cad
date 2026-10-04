@@ -26,6 +26,7 @@ def main() -> None:
 include <{ROOT}/scad/suspension/rear_chassis/computed_params.scad>
 use <{ROOT}/scad/lib/plist.scad>
 use <{ROOT}/scad/suspension/rear_chassis/rear_chassis_frame.scad>
+use <{ROOT}/scad/suspension/rear_chassis/rear_chassis_slots.scad>
 use <{ROOT}/scad/suspension/rear_suspension/rear_suspension_mount.scad>
 use <{ROOT}/scad/suspension/rear_suspension/rear_suspension_joint.scad>
 part = "frame";
@@ -36,10 +37,12 @@ layout = changed
                   ["suspension_w", plist_get("suspension_w", original) + 8,
                    "transition_y_end", plist_get("transition_y_end", original) - 2])
     : original;
-start = plist_get("transition_y_start", layout);
-end = plist_get("transition_y_end", layout);
+joint_y = rear_suspension_joint_y_bounds(layout);
+end = joint_y[0];
 w = plist_get("suspension_w", layout);
 echo(probes=[for (x = [-w / 4, 0, w / 4], dy = [-0.1, 0, 0.2])
+                if (norm([x, end + dy - plist_get("maintenance_y", layout)])
+                    > rear_chassis_maintenance_hole_d / 2 + 0.1)
                 [x, end + dy]]);
 if (part == "frame") {{
   rear_chassis_frame(layout=layout);
@@ -58,12 +61,20 @@ if (part == "frame") {{
     rear_chassis_frame(layout=layout);
     rear_suspension_mount(layout=layout);
   }}
+}} else if (part == "blocked_slots") {{
+  intersection() {{
+    union() {{
+      rear_chassis_frame(layout=layout);
+      rear_suspension_mount(layout=layout);
+    }}
+    rear_chassis_slots(layout=layout);
+  }}
 }}
 """)
         for changed in (False, True):
             # Synthetic joint dimensions do not carry the stock deck's harness.
             wiring_args = ["-D", 'rear_power_wiring=["enabled", false]'] if changed else []
-            for part in ("frame", "mount", "female_root", "collision"):
+            for part in ("frame", "mount", "female_root", "collision", "blocked_slots"):
                 result = subprocess.run(
                     [OPENSCAD, "--backend=Manifold", "--enable=textmetrics",
                      "--hardwarnings", "--export-format", "binstl",
@@ -73,18 +84,19 @@ if (part == "frame") {{
                 )
                 log = result.stdout + result.stderr
                 assert "WARNING:" not in log and "ERROR:" not in log, log
-                if part == "collision" and "Current top level object is empty" in log:
+                expect_empty = part in ("collision", "blocked_slots")
+                if expect_empty and "Current top level object is empty" in log:
                     continue
                 assert result.returncode == 0, log
                 mesh = trimesh.load_mesh(output)
                 assert isinstance(mesh, trimesh.Trimesh)
-                if part == "collision":
+                if expect_empty:
                     triangles = mesh.triangles
                     volume = np.einsum(
                         "ij,ij->i", triangles[:, 0],
                         np.cross(triangles[:, 1], triangles[:, 2]),
                     ).sum() / 6
-                    assert abs(volume) < 1e-6, (changed, volume, mesh.bounds)
+                    assert abs(volume) < 1e-6, (part, changed, volume, mesh.bounds)
                     continue
                 assert mesh.is_watertight and mesh.volume > 0, (part, changed)
                 if part != "female_root":
@@ -96,7 +108,7 @@ if (part == "frame") {{
                             "Slit at chassis joint attachment", changed, x, y,
                         )
             print(f"PASS rear joint changed={changed}: solid attachment lands, "
-                  "connected halves, female root overlap and no interference")
+                  "connected halves, female root overlap, open cutouts and no interference")
 
 
 if __name__ == "__main__":

@@ -70,6 +70,7 @@ module rear_suspension_mount(layout=rear_chassis_layout(),
         }
       }
       rear_suspension_mount_slots(layout=layout);
+      rear_chassis_slots(layout=layout);
 
       translate([0, min_y, 0]) {
         rear_suspension_chassis_joint(anchor=[0, -1, 1],

@@ -76,8 +76,7 @@ module rear_chassis_frame(debug=false,
   pts = rear_chassis_outline_points(layout);
   size = plist_get("size", layout);
   transition_y_start = plist_get("transition_y_start", layout);
-  transition_y_end = plist_get("transition_y_end", layout);
-  joint_l = transition_y_start - transition_y_end;
+  joint_y = rear_suspension_joint_y_bounds(layout);
 
   suspension_w = plist_get("suspension_w", layout);
   join_w = plist_get("join_w", layout);
@@ -106,20 +105,21 @@ module rear_chassis_frame(debug=false,
                 difference() {
                   rear_chassis_outline(layout);
                   translate([-suspension_w / 2,
-                             transition_y_end,
+                             joint_y[0],
                              0]) {
-                    square([suspension_w, joint_l + 0.1], center=false);
+                    square([suspension_w, transition_y_start - joint_y[0] + 0.1],
+                            center=false);
                   }
                 }
               }
-              translate([0, transition_y_start, 0]) {
+              translate([0, joint_y[1], 0]) {
                 rear_suspension_chassis_joint(anchor=[0, -1, 1],
                                               layout=layout,
                                               mode="male");
               }
             }
 
-            translate([0, transition_y_start, 0]) {
+            translate([0, joint_y[1], 0]) {
               rear_suspension_chassis_joint(anchor=[0, -1, 1],
                                             layout=layout,
                                             mode="male",

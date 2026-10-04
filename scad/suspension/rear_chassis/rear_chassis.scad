@@ -19,7 +19,7 @@ use <rear_equipment.scad>
 use <rear_payload.scad>
 use <rear_power_wiring.scad>
 
-rear_suspension_joint_spacing = 0;
+rear_suspension_joint_spacing = 0; // [0:1:150]
 show_rear_suspension_mount    = true;
 
 /**
