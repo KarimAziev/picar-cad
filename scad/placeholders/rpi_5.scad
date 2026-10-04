@@ -106,10 +106,10 @@ function rpi_5_mount_bounds(orientation="wlh",
        shift = to_anchor(normalize_anchor(anchor), oriented, centered=true),
        sign = rotate_z_180 ? -1 : 1,
        centers = [for (x = [0, bolt_spacing[0]], y = [0, bolt_spacing[1]])
-           let (p = orientation_matrix(orientation)
-                * [bolt_offset + x - reference[0] / 2,
-                   bolt_offset + y - reference[1] / 2, 0, 1])
-             [sign * p[0] + shift[0], sign * p[1] + shift[1]]],
+         let (p = orientation_matrix(orientation)
+                  * [bolt_offset + x - reference[0] / 2,
+                     bolt_offset + y - reference[1] / 2, 0, 1])
+         [sign * p[0] + shift[0], sign * p[1] + shift[1]]],
        r = mount_d / 2 + pad)
   [[min([for (p = centers) p[0]]) - r,
     min([for (p = centers) p[1]]) - r, 0],
@@ -134,23 +134,26 @@ function rpi_5_csi_centers(position=[rpi_csi_position_x, rpi_csi_position_y],
                            gap=rpi_csi_camera_gap) =
   assert(n > 0 && n == floor(n), "CSI count must be a positive integer")
   [for (i = [0:n - 1])
-      [position[0] + size[1] / 2, position[1] - i * (size[0] + gap), 0]];
+    [position[0] + size[1] / 2, position[1] - i * (size[0] + gap), 0]];
 
 module rpi_standoffs(standoff_height=rpi_standoff_height,
                      bolt_visible_h,
                      bolt_spacing=rpi_bolt_spacing,
-                     bolt_offset=rpi_bolts_offset) {
+                     bolt_offset=rpi_bolts_offset,
+                     bolt_d=rpi_bolt_hole_dia,
+                     bolt_head_type=bolt_head_type) {
   show_bolt = !is_undef(bolt_visible_h);
 
   translate([bolt_offset, bolt_offset, -standoff_height]) {
     four_corner_children(size=bolt_spacing,
                          center=false) {
 
-      standoffs_stack(d=m2_hole_dia,
+      standoffs_stack(d=bolt_d,
                       min_h=standoff_height,
                       thread_at_top=true,
                       show_bolt=show_bolt,
-                      bolt_visible_h=bolt_visible_h);
+                      bolt_visible_h=bolt_visible_h,
+                      bolt_head_type=bolt_head_type);
     }
   }
 }
@@ -248,6 +251,10 @@ module rpi_5(size=[rpi_width, rpi_len, rpi_thickness],
              camera_ribbon_slot=rpi_camera_ribbon_slot_size,
              show_camera_ribbon_slot=show_camera_ribbon_slot,
              plugged_usb_a=rpi_plugged_usb_a,
+             use_countersunk=rpi_use_countersunk,
+             cbore_d=rpi_bolt_cbore_dia,
+             cbore_h=rpi_chassis_cbore_h,
+             bolt_head_type=rpi_bolt_head_type,
              anchor=[1, 1, 1],
              orientation="wlh",
              rotate_z_180=false,
@@ -297,10 +304,10 @@ module rpi_5(size=[rpi_width, rpi_len, rpi_thickness],
                                  center=false) {
               counterbore(d=mount_dia,
                           h=slot_thickness,
-                          bore_h=chassis_counterbore_h,
-                          bore_d=rpi_bolt_cbore_dia,
+                          bore_h=cbore_h,
+                          bore_d=cbore_d,
                           autoscale_step=0.1,
-                          sink=true,
+                          sink=use_countersunk,
                           reverse=true);
             }
           }
@@ -342,7 +349,8 @@ module rpi_5(size=[rpi_width, rpi_len, rpi_thickness],
                 rpi_standoffs(standoff_height=standoff_height,
                               bolt_visible_h=bolt_visible_h,
                               bolt_spacing=bolt_spacing,
-                              bolt_offset=bolt_offset);
+                              bolt_offset=bolt_offset,
+                              bolt_head_type=bolt_head_type);
               }
 
               // Pad rings share the mounting datum, independently of the grid.
@@ -399,7 +407,7 @@ module rpi_5(size=[rpi_width, rpi_len, rpi_thickness],
                   }
                   let (extra_upper_header_height = show_motor_driver_hat
                        ? motor_driver_hat_upper_header_height
-                       + motor_driver_hat_size[2]
+                         + motor_driver_hat_size[2]
                        : 0) {
                     translate([0,
                                0,

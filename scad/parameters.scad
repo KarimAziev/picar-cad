@@ -476,7 +476,7 @@ head_plate_width                                     = 38;
 // Ensures a minimum height of 40 mm.
 head_plate_height                                    = max(40,
                                                            sum([for (j = [0:len(head_cameras)-1])
-                                                                   head_cameras[j][0][1]])
+                                                             head_cameras[j][0][1]])
                                                            + head_cameras_y_distance *
                                                            len(head_cameras) - 1);
 
@@ -1091,7 +1091,10 @@ rpi_bolt_spacing                                     = [50, 58];
 
 // The diameter of the bolt holes for the Raspberry Pi 5 slot.
 rpi_bolt_hole_dia                                    = m2_hole_dia;
-rpi_bolt_cbore_dia                                   = m2_round_head_dia + 0.1;
+rpi_bolt_cbore_dia                                   = m2_pan_counterbore_d;
+rpi_chassis_cbore_h                                  = m2_pan_counterbore_h;
+rpi_bolt_head_type                                   = "pan";
+rpi_use_countersunk                                  = false;
 
 rpi_bolts_offset                                     = m25_hole_dia + 0.4;
 rpi_pin_headers_cols                                 = 20;
@@ -1195,7 +1198,7 @@ ai_hat_bolt_dia                                      = m25_hole_dia;
 
 ai_hat_mounting_hole_pad_spec                        = [[m25_hole_dia + 2.5, yellow_3]];
 ai_hat_csi_slot_size                                 = [rpi_csi_size[1] + 4, ai_hat_size[1]
-                                                        - rpi_csi_position_y];
+                                                                             - rpi_csi_position_y];
 
 ai_hat_processor_size                                = [17, 17, 1];
 ai_hat_processor_text                                = "HAILO";
@@ -1881,8 +1884,8 @@ rplidar_c1_plist = ["size", [55.6, 55.6],
                                 "bg_r_factor", 0.5,
                                 "bg_color", black_1,
                                 "color", onyx]]],
-// Metadata only: cable/connector dimensions are not modeled.
-// "bottom" is the -Y edge in plan view, not a Z-facing exit.
+                    // Metadata only: cable/connector dimensions are not modeled.
+                    // "bottom" is the -Y edge in plan view, not a Z-facing exit.
                     "cable_exit", ["side", "rear", // left | right | front | rear
                                    "position", "bottom", // top | bottom | center
                                    "side_offset", 0,

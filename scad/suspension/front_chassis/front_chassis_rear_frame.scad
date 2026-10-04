@@ -21,7 +21,7 @@ use <front_chassis_controls.scad>
 use <front_chassis_joint.scad>
 use <front_chassis_ribbon_slots.scad>
 
-front_chassis_rear_frame_debug = true;
+front_chassis_rear_frame_debug = false;
 show_front_controls_slots      = true;
 
 function front_chassis_pts(width=front_chassis_rear_frame_w) =
