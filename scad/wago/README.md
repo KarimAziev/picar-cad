@@ -11,11 +11,6 @@ front stops and retaining lips stay within the outer shoulders inferred from
 the measured total width and the 6.9 mm conductor pitch. No latch recess or
 unmeasured housing groove is assumed.
 
-![Installed bracket](../../demo/wago/bracket.png)
-
-[Roof placement preview](../../demo/wago/lid.png) ·
-[Rear deck preview](../../demo/wago/rear-open.png)
-
 ## Start here
 
 Open `demo/wago/placements.scad` and select `view`:

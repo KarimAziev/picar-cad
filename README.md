@@ -131,7 +131,6 @@ mounting groups. Their track and height follow the neutral front reference unles
 rim, tire grooves, and hub section; it is not a printable wheel or a verified
 fit for a specific purchased wheel.
 
-
 ### Configurations
 
 Two main presets are supported: the default LiPo power case stack and the UPS S3 option. Both assume two battery holders. Jump to the BOMs for details: [Full BOM (default preset)](#full-bom-default-preset) or [Full BOM (with UPS module S3)](#full-bom-with-ups-module-s3).
@@ -608,10 +607,3 @@ Fuse routing: UPS -> fuse -> RPi; dedicated fuses feed the motor and servo HATs.
 | IR case                         | M2×7+ (2), M2×10+ (2)                           | 4    | —                                                                 |
 | Ultrasonic bracket              | M2.5×6+ (2), M2.5×10+ (2)                       | 4    | —                                                                 |
 | Wheel hubs (pair)               | M2.5×12+ (12)                                   | 12   | Use M3 for tighter fit                                            |
-
-### Wago 221 brackets
-
-The [Wago bracket guide](scad/wago/README.md) covers the measured five-conductor
-cradle, M3 mounting holes, rear-chassis placement below or beyond the battery,
-and optional brackets on the sliding multi-LiPo lid. Open
-[`demo/wago/placements.scad`](demo/wago/placements.scad) for working examples.
