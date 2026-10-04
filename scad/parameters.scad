@@ -15,7 +15,13 @@ use <lib/plist.scad>
 
 // Shared chassis defaults for suspension, panel mounts and hardware.
 chassis_thickness                                    = 6.0; // [2.0:10.0]
-chassis_counterbore_h                                = 2.2; // The depth of counterbores on the chassis
+chassis_bolt_d                                       = m3_hole_dia; // The main hole dia for chassis
+
+chassis_counterbore_bore_d                           = m3_socket_counterbore_d; // The main counterbore hole diameter for chassis_bolt_d
+chassis_counterbore_h                                = m3_socket_counterbore_h; // The depth of counterbores on the chassis
+
+chassis_countersunk_bore_d                           = m3_countersunk_bore_d;  // The main countersunk hole diameter for chassis_bolt_d
+chassis_countersunk_bore_h                           = m3_countersunk_bore_h;// The depth of countersunkholes  on the chassis
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ATC ATO Blade Fuse Holder
@@ -1742,6 +1748,10 @@ step_down_voltage_screw_terminal_pin_thickness       = 0.4;       // lower thin 
 step_down_voltage_screw_terminal_pin_h               = 3.9;               // lower thin pin height
 step_down_voltage_screw_terminal_wall_thickness      = 0.6;  // wall offset from base top
 step_down_voltage_screw_terminal_isosceles_trapezoid = true;
+
+step_down_voltage_regulator_use_countersunk          = false;
+step_down_voltage_regulator_cbore_d                  = m2_pan_counterbore_d;
+step_down_voltage_regulator_cbore_h                  = m2_pan_counterbore_h;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Servo horn

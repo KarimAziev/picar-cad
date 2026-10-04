@@ -46,8 +46,8 @@ function lerp(a, b, t) = a*(1-t) + b*t;
 
 function lerp_pts(pts1, pts2, t) =
   [for (i=[0:len(pts1)-1])
-      [lerp(pts1[i][0], pts2[i][0], t),
-       lerp(pts1[i][1], pts2[i][1], t)]];
+    [lerp(pts1[i][0], pts2[i][0], t),
+     lerp(pts1[i][1], pts2[i][1], t)]];
 
 module loft_slices(pts1, pts2, h, steps=20, r=0) {
   for (i=[0:steps-1]) {
@@ -124,18 +124,18 @@ module loft_polyhedron(pts1, pts2, h, steps=1) {
   assert(area1 * area2 > 0, "Loft outlines must have matching nonzero winding");
 
   points = [for (k = [0:steps])
-      for (p = lerp_pts(pts1, pts2, k/steps))
-        [p[0], p[1], h*k/steps]];
+    for (p = lerp_pts(pts1, pts2, k/steps))
+      [p[0], p[1], h*k/steps]];
   // For CCW outlines OpenSCAD wants the bottom in forward order, the top
   // reversed, and side edges opposite their neighboring cap edges.
   // Triangles avoid nonplanar quads when corresponding edges are not parallel.
   faces = concat([[for (i = [0:n-1]) i]],
                  [[for (i = [n-1:-1:0]) steps*n + i]],
                  [for (k = [0:steps-1], i = [0:n-1])
-                     let (j = (i + 1)%n,
-                          a = k*n + i, b = k*n + j,
-                          c = (k + 1)*n + j, d = (k + 1)*n + i)
-                       each [[a, d, c], [a, c, b]]]);
+                   let (j = (i + 1)%n,
+                        a = k*n + i, b = k*n + j,
+                        c = (k + 1)*n + j, d = (k + 1)*n + i)
+                     each [[a, d, c], [a, c, b]]]);
   polyhedron(points=points,
              faces=area1 > 0 ? faces : [for (face = faces) reverse(face)],
              convexity=10);
@@ -234,6 +234,9 @@ module gearmotor_bracket(plist,
                          bolt_dist_from_cap=gearbox_bracket_bolt_dist_from_cap,
                          nut_pocket_clearance=gearbox_bracket_nut_pocket_clearance,
                          nut_pocket_h_clearance=gearbox_bracket_nut_pocket_h_clearance,
+                         chassis_cbore_h=gearbox_bracket_chassis_cbore_h,
+                         chassis_cbore_d=gearbox_bracket_chassis_cbore_d,
+                         chassis_use_countersunk=gearbox_bracket_chassis_use_countersunk,
                          use_polyhedron=false) {
   resolved = is_undef(params)
     ? gearmotor_bracket_compute_params(plist=plist,
@@ -334,24 +337,22 @@ module gearmotor_bracket(plist,
 
   module _slot(extra_thickness=0) {
     let (slot_h = resolved_bracket_thickness
-         + outer_shaft_y_center
-         + extra_thickness,
-         motor_parent_thickness = resolved_bracket_thickness
-         + extra_thickness) {
+                  + outer_shaft_y_center
+                  + extra_thickness) {
       union() {
-        gearmotor(plist=motor,
-                  slot_mode=true,
-                  parent_thickness=motor_parent_thickness);
         _slot_holes(h=slot_h,
                     holes=gearbox_mount_holes,
-                    sink=true,
+                    sink=chassis_use_countersunk,
                     bore_d=mount_cbore_d,
-                    bore_h=resolved_bracket_thickness,
+                    bore_h=chassis_cbore_h,
                     d=mount_bolt_d);
 
         _slot_holes(holes=bracket_mount_holes,
                     h=slot_h,
-                    d=resolved_bolt_d);
+                    sink=chassis_use_countersunk,
+                    d=resolved_bolt_d,
+                    bore_d=chassis_cbore_d,
+                    bore_h=chassis_cbore_h);
       }
     }
   }
@@ -529,8 +530,16 @@ module gearmotor_bracket(plist,
   }
 }
 
+// gearmotor_bracket(plist=motor_plist,
+//                   anchor_mode="size",
+//                   anchor=[0, 0, 1],
+//                   debug=false,
+//                   slot_mode=true,
+//                   show_motor=true);
+
 gearmotor_bracket(plist=motor_plist,
                   anchor_mode="size",
                   anchor=[0, 0, 1],
                   debug=false,
+                  slot_mode=false,
                   show_motor=true);

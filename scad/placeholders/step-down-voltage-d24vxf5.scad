@@ -468,9 +468,13 @@ function _step_down_terminal_reach(pl, board, input=false) =
   ─────────────────────────────────────────────────────────────────────────────
   Resolve the populated regulator envelope and standoff mounting pattern.
   **Parameters:**
-  - `pl`: Regulator plist; wire_d adds an optional central wiring passage.
-  **Returns:** Centered XY size, bolt_spacing, bolt_d, standoff_h and wire_d.
+  - `pl`: Regulator plist; `wire_d` adds an optional central wiring passage.
+  **Returns:** Centered XY `size`, `bolt_spacing`, `bolt_d`, `bore_d`, `bore_h`,
+  `sink`, `standoff_h` and `wire_d`.
   Includes terminal offsets/rotations, pin clearance and mounting screw heads.
+  Mounting recesses use `step_down_voltage_regulator_cbore_d`,
+  `step_down_voltage_regulator_cbore_h` and
+  `step_down_voltage_regulator_use_countersunk`.
  */
 function step_down_mount_props(pl=[]) =
   let (board = plist_get("placeholder_size", pl,
@@ -488,9 +492,10 @@ function step_down_mount_props(pl=[]) =
                            t, !input))
                [t, _step_down_terminal_reach(t, board, input)]],
        wire_d = plist_get("wire_d", pl, 0),
-       size = [max(concat([board[0], pitch[0] + 2 * d, wire_d],
+       mount_d = max(2 * d, step_down_voltage_regulator_cbore_d),
+       size = [max(concat([board[0], pitch[0] + mount_d, wire_d],
                           [for (t = terminals) 2 * t[1][0]])),
-               max(concat([board[1], pitch[1] + 2 * d, wire_d],
+               max(concat([board[1], pitch[1] + mount_d, wire_d],
                           [for (t = terminals) 2 * t[1][1]])),
                h + board[2] + max(concat([step_down_voltage_power_inductor_size[2]],
                                          [for (c = step_down_voltage_can_capacitors)
@@ -510,6 +515,9 @@ function step_down_mount_props(pl=[]) =
   ["size", size,
    "bolt_spacing", pitch,
    "bolt_d", d,
+   "bore_d", step_down_voltage_regulator_cbore_d,
+   "bore_h", step_down_voltage_regulator_cbore_h,
+   "sink", step_down_voltage_regulator_use_countersunk,
    "standoff_h", h,
    "wire_d", wire_d];
 

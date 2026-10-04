@@ -26,7 +26,7 @@ sag compensated. The current configuration has:
 
 The pin passages are centered on the head-side root, not the middle of the
 joint. This offset keeps their lower ends clear of the bulkhead holes.
-The 33, 38, 39.5, 43–44, and 54 mm stock pins are too long for this placement;
+The 33, 38, 39.5, and 43–44 mm stock pins are too long for this placement;
 the component rejects lengths that enter the bulkhead mounting keepout.
 No frame length, head position, or bulkhead hole position changes.
 
@@ -47,8 +47,9 @@ hardware cuts. Export the separate printable entries:
 
 - `front_chassis_head_frame_printable.scad`
 - `front_chassis_front_frame_printable.scad`
+- `front_chassis_rear_frame_printable.scad`
 
-Both sit on Z=0 with their top faces on the bed. The head-frame geometry and
+Each sits on Z=0 with its top face on the bed. The head-frame geometry and
 pin clearances are checked by `tests/check_front_head_joint_mesh.py`.
 
 ## Upper steering bridge

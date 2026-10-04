@@ -19,6 +19,7 @@ use <../../panel_stack/fuse_panel.scad>
 use <../../placeholders/crimp_terminals/ring_terminal.scad>
 use <../../placeholders/step-down-voltage-d24vxf5.scad>
 use <../../wago/wago_pair.scad>
+use <../front_chassis/front_chassis_joint.scad>
 use <rear_equipment.scad>
 
 function _rear_wire_opening_fits(pos, size, layout, obstacles, gap) =
@@ -74,11 +75,8 @@ function rear_fuse_wire_passages(layout,
              ? 2
              : fits[0] ? 1 : 0,
        bounds = plist_get("bounds", panel),
-       rail_w = plist_get("join_w", layout)
-       - 2 * (front_chassis_joint_bolt_d + front_chassis_joint_bolt_pad
-              + front_chassis_joint_rail_bolt_clearance),
-       // The body joint uses pin_spacing=rail_w/2, measured center-to-center.
-       inner_x = rail_w / 4 + front_chassis_joint_pin_d / 2 + gap,
+       pin_spacing = front_chassis_body_joint_pin_spacing(plist_get("join_w", layout)),
+       inner_x = pin_spacing / 2 + front_chassis_joint_pin_d / 2 + gap,
        outer_x = plist_get("join_w", layout) / 2 - edge_margin,
        y0 = plist_get("min_y", layout) + gap,
        y1 = bounds[0][1] - gap,

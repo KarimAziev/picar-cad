@@ -291,7 +291,8 @@ module fuse_panel(show_fuses=false,
         counterbore(d=panel_stack_bolt_dia,
                     h=slot_thickness,
                     bore_d=panel_stack_bolt_cbore_dia,
-                    bore_h=slot_bore_h);
+                    bore_h=slot_bore_h,
+                    reverse=true);
       }
     } else {
       _fuse_panel(show_fuses=show_fuses,

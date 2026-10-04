@@ -38,7 +38,7 @@ variants = [rear_panel_specs,
                                 "side", "left"]],
             []];
 for (specs = variants) {
-  layout = rear_chassis_layout(panels=specs);
+  layout = rear_chassis_layout(panels=specs, power_case=multi_lipo_packs_case);
   panels = plist_get("panels", layout);
   payload = plist_get("power_case", layout);
   motor = plist_get("motor_bounds", layout);

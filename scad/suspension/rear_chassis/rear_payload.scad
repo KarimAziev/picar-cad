@@ -18,6 +18,8 @@ use <../../placeholders/standoff.scad>
   Reserve four symmetric support columns outside the motor and panels.
   **Parameters:**
   - `pl`: Battery case specification, or undef to omit the raised payload.
+    An explicit `bolt_spacing` fixes the canonical mounting centers independently
+    of screw recess dimensions. Without it, columns are placed around equipment.
   - `motor_bounds`: Motor bracket bounds in chassis coordinates.
   - `y_offset`: Case-center offset from the motor's footprint center.
   - `clearance`: Gap from support/hole envelopes to neighboring components.
@@ -46,10 +48,13 @@ function rear_power_case_mount(pl,
        body_size = plist_get("size", props),
        max_span = orientation_size(orientation,
                                    concat(plist_get("max_bolt_spacing", props), [0])),
+       requested_span = orientation_size(orientation,
+                                         concat(plist_get("bolt_spacing", props), [0])),
        occupied_x = max(concat([abs(motor_bounds[0][0]), abs(motor_bounds[1][0])],
                                [for (p = panels, b = plist_get("bounds", p)) abs(b[0])])),
-       span = [2 * (occupied_x + radius + clearance),
-               max_span[1]],
+       span = is_undef(plist_get("bolt_spacing", pl))
+         ? [2 * (occupied_x + radius + clearance), max_span[1]]
+         : [requested_span[0], requested_span[1]],
        center = [0,
                  (motor_bounds[0][1] + motor_bounds[1][1]) / 2 + y_offset, 0],
        canonical_span = orientation == "lwh" ? [span[1], span[0]] : span,
@@ -59,23 +64,23 @@ function rear_power_case_mount(pl,
                                "mount_ear_d", ear_d]),
        size = plist_get("size", multi_lipo_pack_props(adjusted)),
        holes = [for (x = [-1, 1], y = [-1, 1])
-           [center[0] + x * span[0] / 2, center[1] + y * span[1] / 2]],
+         [center[0] + x * span[0] / 2, center[1] + y * span[1] / 2]],
        bounds = [center - [size[0]/2, size[1]/2, 0],
                  center + [size[0]/2, size[1]/2, size[2]]])
-                 assert(orientation == "wlh" || orientation == "lwh",
-                        "Rear battery floor must be horizontal")
-  assert(clearance >= 0 && span[1] > 2 * radius,
-         "Battery case needs nonnegative support clearance and separated support rows")
-                 ["plist", adjusted,
-                  "size", size,
-                  "body_size", body_size,
-                  "pos", center,
-                  "bounds", bounds,
-                  "bolt_spacing", span,
-                  "mount_holes", holes,
-                  "radius", radius,
-                  "keepout", [[center[0] - span[0]/2 - radius - clearance, bounds[0][1], 0],
-                              [center[0] + span[0]/2 + radius + clearance, bounds[1][1], 0]]];
+    assert(orientation == "wlh" || orientation == "lwh",
+           "Rear battery floor must be horizontal")
+    assert(clearance >= 0 && span[1] > 2 * radius,
+           "Battery case needs nonnegative support clearance and separated support rows")
+    ["plist", adjusted,
+     "size", size,
+     "body_size", body_size,
+     "pos", center,
+     "bounds", bounds,
+     "bolt_spacing", span,
+     "mount_holes", holes,
+     "radius", radius,
+     "keepout", [[center[0] - span[0]/2 - radius - clearance, bounds[0][1], 0],
+                 [center[0] + span[0]/2 + radius + clearance, bounds[1][1], 0]]];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -137,7 +142,7 @@ module rear_power_payload(payload,
                           show_lid=true,
                           slot_mode=false,
                           show_wiring=undef,
-                          report_wire_lengths=false) {
+                          report_wire_lengths=true) {
   if (!is_undef(payload)) {
     pl = plist_get("plist", payload);
     pos = plist_get("pos", payload);
@@ -145,7 +150,7 @@ module rear_power_payload(payload,
     lidar_pl = plist_get("lidar", payload);
     lid_pl = rear_power_lid_plist(pl, lidar_pl);
     wired = (is_undef(show_wiring) ? show_lid || show_lidar : show_wiring)
-      && plist_get("enabled", plist_get("wiring", lid_pl, []), false);
+            && plist_get("enabled", plist_get("wiring", lid_pl, []), false);
     translate(pos) {
       if (slot_mode || show_case) {
         multi_lipo_pack_case(pl,
@@ -162,6 +167,7 @@ module rear_power_payload(payload,
                                 bolt_d=plist_get("bolt_d", pl),
                                 cbore_d=plist_get("bore_d", pl),
                                 cbore_h=plist_get("bore_h", pl),
+                                sink=plist_get("sink", pl, true),
                                 bolt_spacing=plist_get("bolt_spacing", payload));
         }
       }

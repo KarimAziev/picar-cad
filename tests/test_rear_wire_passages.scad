@@ -18,13 +18,13 @@ assert(norm(holes[0] - [-46.0254, -72.94, 0]) < 0.0001);
 assert(norm(holes[3] - [-61.0254, -57.94, 0]) < 0.0001);
 assert(abs(norm(holes[1] - holes[0]) - 15) < 1e-6);
 assert(abs(norm(holes[2] - holes[0]) - 15) < 1e-6);
-assert(norm(plist_get("outlet_size", passages) - [27.075, 7.5, 0]) < 0.0001);
+assert(norm(plist_get("outlet_size", passages) - [24.65, 7.5, 0]) < 0.0001);
 assert(plist_get("outlet_r", passages) == 3);
 outlet_pos = plist_get("outlet_pos", passages);
 outlet_size = plist_get("outlet_size", passages);
 assert(abs(plist_get("join_w", layout) / 2
            - abs(outlet_pos[0]) - outlet_size[0] / 2 - 12) < 1e-6);
-assert(abs(abs(outlet_pos[0]) - outlet_size[0] / 2 - 41.125) < 1e-6);
+assert(abs(abs(outlet_pos[0]) - outlet_size[0] / 2 - 43.55) < 1e-6);
 
 panel = plist_get("panels", layout)[0];
 assert(plist_get("outlet_pos", passages)[1] < plist_get("bounds", panel)[0][1]);

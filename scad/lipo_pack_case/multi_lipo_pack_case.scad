@@ -671,6 +671,9 @@ function multi_lipo_pack_mount_height(pl, target_h=0, parent_thickness=6) =
   defaults to 0; 180 turns the case, packs and their symmetric mounting pattern
   about the XY center. Matching lid power equipment and wiring follow it, while
   lid displays and the lidar retain their own frame.
+  `sink` selects tapered mounting recesses and countersunk screw previews;
+  false selects cylindrical counterbores and pan-head screw previews. It
+  defaults to true for raised mounting and false for direct mounting.
   `anchor`: Anchor of the final oriented case envelope.
   `mount_ear_d`: Optional diameter of floor mounting ears (default zero).
   Ears connect outboard bolt centers to the case floor without widening the
@@ -750,6 +753,7 @@ module multi_lipo_pack_case(pl,
   bolt_d = plist_get("bolt_d", pl, 0);
   bore_d = plist_get("bore_d", pl);
   bore_h = plist_get("bore_h", pl);
+  sink = plist_get("sink", pl, target_h > 0);
   mount_nut_pockets = plist_get("mount_nut_pockets", pl, false);
   nut_h = mount_nut_pockets ? find_nut_prop("height", bolt_d) : 0;
   nut_d = mount_nut_pockets ? find_nut_prop("outer_dia", bolt_d) / cos(30) : 0;
@@ -778,7 +782,7 @@ module multi_lipo_pack_case(pl,
             ["left", left_t + inner_corner_r, "y", 0, 0, rear_t, l - front_t],
             ["right", right_t + inner_corner_r, "y", w - right_t - inner_corner_r, 0, rear_t, l - front_t]];
 
-  module _standoffs(z_anchor=-1, sink=true) {
+  module _standoffs(z_anchor=-1) {
     four_corner_standoffs(h=standoffs_real_h,
                           parent_thickness=parent_thickness,
                           cbore_d=bore_d,
@@ -797,7 +801,8 @@ module multi_lipo_pack_case(pl,
                                d=bolt_d,
                                h=parent_thickness + bottom_t,
                                bore_h=bore_h,
-                               bore_d=bore_d);
+                               bore_d=bore_d,
+                               sink=sink);
     }
   }
 
@@ -1047,6 +1052,7 @@ module multi_lipo_pack_case(pl,
                                    h=bottom_t,
                                    bore_h=bore_h,
                                    bore_d=bore_d,
+                                   sink=sink,
                                    no_bore=mount_nut_pockets);
           if (mount_nut_pockets) {
             let (pocket_h = bottom_t - nut_z + 0.2) {
@@ -1189,7 +1195,7 @@ module multi_lipo_pack_case(pl,
                         bore_d=bore_d,
                         bore_h=bore_h,
                         reverse=true,
-                        sink=true);
+                        sink=sink);
           }
         } else {
           with_anchor(anchor=[0, 0, 1], size=body_size) {

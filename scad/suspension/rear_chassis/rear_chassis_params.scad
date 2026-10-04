@@ -47,7 +47,10 @@ rear_panel_specs                       = [["type", "fuse",
 rear_control_outside_case              = true;
 rear_control_case_gap                  = 3;
 
-rear_power_case_plist                  = multi_lipo_packs_case;
+// Fixed mounting-center spacing for the rear battery case, in canonical X/Y.
+rear_power_case_plist                  = plist_merge(multi_lipo_packs_case,
+                                                     ["bolt_spacing",
+                                                      [138.450853, 34.6]]);
 rear_power_case_y_offset               = -4;
 rear_power_case_clearance              = 3;
 rear_power_standoff_clearance          = 2;
@@ -57,5 +60,5 @@ rear_power_standoff_clearance          = 2;
 // Example: [["placement", "auto", "rotation", 90], ["placement", "after"]]
 rear_wago_mounts                       = [];
 
-// joint
-rear_suspension_joint_pin_l            = 54;
+// Rear suspension joint: two 39.5 x 3 mm stock pins.
+rear_suspension_joint_pin_l            = 39.5;

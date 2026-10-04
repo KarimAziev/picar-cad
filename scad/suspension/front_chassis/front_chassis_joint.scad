@@ -20,6 +20,63 @@ joint_preview_spacing = 0; // [0:1:30]
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_body_joint_rail_w
+  ─────────────────────────────────────────────────────────────────────────────
+  Size the wide rail with padded bolt lands on both sides of its socket.
+  **Parameters:**
+  - `w`: Shared width of the adjoining chassis edges.
+  **Returns:** Rail width, excluding the female socket clearance.
+ */
+function front_chassis_body_joint_rail_w(w) =
+  w - 2 * (front_chassis_joint_bolt_d
+           + 2 * suspension_chassis_joint_wide_bolt_pad
+           + front_chassis_joint_clearance);
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_body_joint_pin_spacing
+  ─────────────────────────────────────────────────────────────────────────────
+  Return the wide joint's reinforcing-pin center spacing.
+  **Parameters:**
+  - `w`: Shared width of the adjoining chassis edges.
+  **Returns:** Center-to-center X distance. Percentage settings use rail width.
+ */
+function front_chassis_body_joint_pin_spacing(w) =
+  maybe_percent_string_to_num(suspension_chassis_joint_wide_pin_spacing,
+                              front_chassis_body_joint_rail_w(w));
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_body_joint_bolt_xs
+  ─────────────────────────────────────────────────────────────────────────────
+  Distribute wide-joint bolts with solid lands beside the reinforcing pins.
+  **Parameters:**
+  - `w`: Shared width of the adjoining chassis edges.
+  **Returns:** Bolt-center X coordinates in ascending order.
+ */
+function front_chassis_body_joint_bolt_xs(w) =
+  let (d = front_chassis_joint_bolt_d,
+       edge_x = w / 2 - suspension_chassis_joint_wide_bolt_pad - d / 2,
+       pin_x = front_chassis_body_joint_pin_spacing(w) / 2,
+       land = suspension_chassis_joint_wide_pin_bolt_land,
+       separation = (d + front_chassis_joint_pin_d) / 2 + land,
+       n = suspension_chassis_joint_wide_bolt_cols)
+  assert(n >= 2 && floor(n) == n, "Wide joint needs at least two bolt columns")
+  let (xs = [for (i = [0:n - 1])
+      let (x = -edge_x + i * 2 * edge_x / (n - 1))
+        abs(abs(x) - pin_x) < separation
+          ? sign(x) * (pin_x + separation)
+          : x])
+  assert(max([for (x = xs) abs(x)]) <= edge_x,
+         "Wide joint bolt and pin lands must fit the chassis width")
+  assert(min([for (x = xs) abs(abs(x) - pin_x)]) >= separation - 0.000001,
+         "Wide joint bolts must clear the reinforcing-pin passages")
+  assert(min([for (i = [1:n - 1]) xs[i] - xs[i - 1]]) >= d + land,
+         "Wide joint bolt columns need separate solid lands")
+  xs;
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
   front_chassis_joint_default_bolt_xs
   ─────────────────────────────────────────────────────────────────────────────
   Return the compact three-bolt pattern centered across the joint.
@@ -87,7 +144,8 @@ module front_chassis_joint(mode="male",
                 bolt_n_center=0,
                 include_pin_holes=include_pin_holes,
                 pin_d=front_chassis_joint_pin_d,
-                pin_l=front_chassis_joint_pin_l,
+                pin_l=front_chassis_joint_pin_l
+                  + 2 * front_chassis_joint_pin_end_clearance,
                 pin_spacing=spacing,
                 pin_z=joint_base_h + (joint_base_h + joint_rail_h) / 2,
                 pin_use_pad=false,
@@ -140,18 +198,14 @@ module front_chassis_body_joint(mode,
                                 color,
                                 slot_mode=false,
                                 anchor=[0, -1, 1]) {
-  rail_w = w - (front_chassis_joint_bolt_d + front_chassis_joint_bolt_pad
-                + front_chassis_joint_rail_bolt_clearance) * 2;
-  edge_x = w / 2 - front_chassis_joint_bolt_pad - front_chassis_joint_bolt_d / 2;
-  n = suspension_chassis_joint_wide_bolt_cols;
-  assert(n >= 2 && floor(n) == n, "Wide joint needs at least two bolt columns");
-  bolt_xs = [for (i = [0:n - 1]) -edge_x + i * 2 * edge_x / (n - 1)];
+  rail_w = front_chassis_body_joint_rail_w(w);
+  bolt_xs = front_chassis_body_joint_bolt_xs(w);
   front_chassis_joint(mode=mode,
                       color=color,
                       w=w,
                       rail_w=rail_w,
                       bolt_xs=bolt_xs,
-                      pin_spacing=rail_w / 2,
+                      pin_spacing=front_chassis_body_joint_pin_spacing(w),
                       root_side=1,
                       slot_mode=slot_mode,
                       anchor=anchor);
@@ -184,7 +238,8 @@ module front_chassis_pin_joint_holes(direction=-1,
   // The old +Y entry is referenced from the other end of the joint.
   translate([0, center && direction == 1 ? l : 0, 0]) {
     plate_joint_pin_holes(d=front_chassis_joint_pin_d,
-                          pin_l=front_chassis_joint_pin_l,
+                          pin_l=front_chassis_joint_pin_l
+                            + 2 * front_chassis_joint_pin_end_clearance,
                           l=l,
                           spacing=spacing,
                           z=joint_base_h + (joint_base_h + joint_rail_h) / 2,

@@ -44,6 +44,18 @@ female socket in `front_chassis_rear_frame()`. Both use
 preset built on the reusable `plate_joint`. Width, bolt positions, and pin spacing
 come from the same preset. The compact front joint also uses this shared geometry.
 
+At the default 160.4 mm chassis width, the wide joint has pin centers at
+X = ±40 mm and bolt centers at X = −75.7, −45.05, 0, 45.05, and 75.7 mm.
+The outer bolts have 3 mm of material between the hole edge and both the
+chassis side and the female socket. The inner bolts retain 2 mm of material
+beside the pin passages. The fuse-wire outlet follows the pin spacing and
+preserves a 2 mm land beside its passage.
+
+Configure these dimensions with `suspension_chassis_joint_wide_bolt_pad`,
+`suspension_chassis_joint_wide_pin_spacing`, and
+`suspension_chassis_joint_wide_pin_bolt_land` in `scad/rc_params.scad`.
+`front_chassis_body_joint()` applies the same dimensions to both mating halves.
+
 The rear plate's original joining edge remains at native `min_y`. With
 `anchor=[0, 1, 1]`, that edge is at Y=0 and the tongue projects along -Y.
 The vehicle assembly rotates the rear chassis 180 degrees around Z and places
@@ -64,6 +76,30 @@ For a geometry-only view, open
 and change `spacing` between 0 and 25 mm. Export
 [`rear_chassis_frame_printable.scad`](rear_chassis_frame_printable.scad) to print
 the rear frame with its top face and both male tongues facing the bed.
+The adjoining suspension plate has its own
+[`rear_suspension_mount_printable.scad`](../rear_suspension/rear_suspension_mount_printable.scad)
+entry, positioned on Z=0.
+
+### Reinforcing pins
+
+All chassis reinforcing pins are 3 mm diameter.
+
+| Joint | Pin length | Quantity |
+| --- | ---: | ---: |
+| Head plate to bulkhead plate | 23.8 mm | 2 |
+| Bulkhead plate to steering-servo plate | 39.5 mm | 2 |
+| Steering-servo plate to rear chassis | 39.5 mm | 2 |
+| Rear chassis to rear suspension mount | 39.5 mm | 2 |
+
+The three 39.5 mm pairs use 40 mm long, 3.1 mm sag-compensated passages,
+providing 0.25 mm of axial clearance at each end. The front joints engage
+each parent beyond the joint band by approximately 12.73 mm; the rear
+suspension joint provides 14.75 mm. The head joint uses its dedicated
+23.8 mm passage and offset described in the [front chassis guide](../front_chassis/README.md).
+
+The pin audit in `tests/check_chassis_pin_clearance.py` checks all four joints
+against equipment holes, joint bolts, wiring cutouts, and the assembled plates.
+It also checks the chassis envelopes and the outer bolt lands.
 
 ## Raised battery and lidar
 
@@ -76,12 +112,12 @@ mounting hardware. Visibility toggles on `rear_chassis()`
 and `front_chassis_assembly()` do not resize the configured layout.
 
 The case, lid and lidar are centered on chassis X=0, independently of the
-asymmetric motor bracket. Panels are placed first, close to the motor. Four
-symmetric columns are then placed outside their X footprints. The printed case
-uses this generated bolt pattern; rounded floor ears reach the outboard columns
-without enlarging the battery cavity or shifting the battery. Existing case
-`bolt_spacing`, `bolt_spacing_x` and `bolt_spacing_y` values are replaced only
-in the resolved rear case plist. Battery and lidar hardware dimensions stay fixed.
+asymmetric motor bracket. The rear preset fixes `bolt_spacing` for the printed
+case. Without an explicit spacing vector, four symmetric columns are placed
+outside the motor and panel footprints. Rounded floor ears reach the outboard
+columns without enlarging the battery cavity or shifting the battery. Screw
+recess dimensions do not move explicitly configured mounting centers. Battery
+and lidar hardware dimensions stay fixed.
 
 The default control panel has one master switch, configured by
 `control_panel_switch_button_specs` in `scad/parameters.scad`.

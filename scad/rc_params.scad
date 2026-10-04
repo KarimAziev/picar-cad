@@ -11,11 +11,6 @@ use <lipo_pack_case/multi_lipo_pack_case.scad>
 // - For the knuckle steering link, with an upper boss only.
 // ─────────────────────────────────────────────────────────────────────────────
 
-chassis_bolt_d                                     = m3_hole_dia;
-chassis_countersunk_bore_d                         = 6.2;
-chassis_countersunk_bore_h                         = min(m3_countersunk_head_h + 0.2,
-                                                         chassis_thickness / 2);
-
 // Diameter of the bolt holes in the bellcrank idler and bellcrank drive arms
 bellcrank_arm_bolt_d                               = 3.6;
 
@@ -286,7 +281,9 @@ front_chassis_joint_rail_bolt_clearance            = 0.05;
 front_chassis_joint_bolt_spacing                   = 42.8;
 front_chassis_joint_use_dovetail_rib               = true;
 
-front_chassis_joint_pin_l                          = 41.0;
+// Stock pin length; passages include clearance at both ends.
+front_chassis_joint_pin_l                          = 39.5;
+front_chassis_joint_pin_end_clearance              = 0.25;
 front_chassis_joint_pin_d                          = 3.1;
 front_chassis_joint_pin_pad_l                      = 5.5;
 front_chassis_joint_pin_pad_w                      = 2.5;
@@ -336,6 +333,10 @@ front_chassis_head_joint_rail_w                    = 40;
 middle_chassis_mount_land                          = 3.0;
 
 suspension_chassis_joint_wide_bolt_cols            = 5;
+// Material between each outer bolt hole and both the edge and the socket.
+suspension_chassis_joint_wide_bolt_pad             = 3;
+suspension_chassis_joint_wide_pin_spacing          = 80;
+suspension_chassis_joint_wide_pin_bolt_land        = 2;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Front suspension arm pad (geometry parameters)
@@ -1280,24 +1281,24 @@ motor_plist                                        = ["body", ["d", 24.3,
                                                                   "bearing_boss_h", 2.5,
                                                                   "motor_shaft_y", 18.8,
                                                                   "motor_outer_shaft_x_pad", 11.65, // right width
-                                                      // "motor_outer_shaft_x_pad", 15.65, // right width
+                                                                  // "motor_outer_shaft_x_pad", 15.65, // right width
                                                                   "motor_x_shift", 16.0, // left
                                                                   "outer_shaft_y_center", 10.65,
                                                                   "front_mount_ear_y_center", 10.65,
                                                                   "rear_mount_ear_y_center", 12.25,
                                                                   "mount_bolt_d", m3_hole_dia,
                                                                   "mount_ears", ["boss_d", 8.6,
-                                                                 // "ear_l", 6.7,
+                                                                                 // "ear_l", 6.7,
                                                                                  "ear_l", 2.35,
                                                                                  "ear_y_pad", 3.35,
                                                                                  "ear_thickness", 3.24,
                                                                                  "rear_boss_h", 1.0,
                                                                                  "front_boss_h", 0.0],
                                                                   "mount_ear_x_dist", 3.2,
-                                                      // "mount_ear_x_dist", 13.0,
+                                                                  // "mount_ear_x_dist", 13.0,
                                                                   "mount_ear_y_shift", 1.8,
                                                                   "mount_ear_y_spacing", 26.0,
-                                                      // "mount_ear_y_spacing", 25.6,
+                                                                  // "mount_ear_y_spacing", 25.6,
                                                                   "mount_ear_x_spacing", 19.8,
                                                                   "mount_cbore_h", 4,
                                                                   "mount_cbore_d", 6.8, // 6.6
@@ -1456,13 +1457,13 @@ multi_lipo_packs_case                              = ["lipo_packs", lipo_packs,
                                                                        "clearance", 1,
                                                                        "tie_recess", 1.6],
                                                               "perfboard", ["component", plist_merge(perfboard_default_plist,
-                                                                                        ["bolt_idxes", [[1, 0], [1, 1]]]),
+                                                                                                     ["bolt_idxes", [[1, 0], [1, 1]]]),
                                                                             "edge_pad", 1.25,
                                                                             "pos", [0, undef]],
                                                               "voltmeters", [for (x = [30, -30])
-                                                      ["component", voltmeter_default_spec,
-                                                       "edge_pad", 1.25,
-                                                       "pos", [x, undef]]],
+                                                                ["component", voltmeter_default_spec,
+                                                                 "edge_pad", 1.25,
+                                                                 "pos", [x, undef]]],
                                                               "adapter", ["t", 4,
                                                                           "bolt_d", 3,
                                                                           "corner_r", 3,
@@ -1486,8 +1487,8 @@ multi_lipo_packs_case                              = ["lipo_packs", lipo_packs,
                                                                 "bottom", ["t", 6.2],
                                                                 "left", merge_vent_spec(["t", 2.5,
                                                                                          "h", "90%"]),
-                                                      // One continuous outline avoids lips where wiring cutouts met the band.
-                                                      // Keep the rim clear of the case's rounded plan-view corners.
+                                                                // One continuous outline avoids lips where wiring cutouts met the band.
+                                                                // Keep the rim clear of the case's rounded plan-view corners.
                                                                 "right", ["t", 2.5,
                                                                           "l", "88%",
                                                                           "edge_r", 0.5,
@@ -1508,8 +1509,9 @@ multi_lipo_packs_case                              = ["lipo_packs", lipo_packs,
                                                       "bolt_pad_x", 10,
                                                       "bolt_pad_y", 5,
                                                       "bolt_d", m3_hole_dia,
-                                                      "bore_d", front_chassis_bellcrank_bolt_bore_d,
-                                                      "bore_h", front_chassis_bellcrank_bolt_bore_h,];
+                                                      "bore_d", chassis_counterbore_bore_d,
+                                                      "bore_h", chassis_counterbore_h,
+                                                      "sink", false];
 
 // Rear harness: holes accept the complete insulated ring terminal end-first.
 rear_power_wiring                                  = ["enabled", true,
@@ -1546,6 +1548,14 @@ gearbox_bracket_bolt_dist_y_ear_bolt               = 3.0;
 
 gearbox_bracket_nut_pocket_clearance               = 0.3;
 gearbox_bracket_nut_pocket_h_clearance             = 0.5;
+
+gearbox_bracket_chassis_use_countersunk            = false;
+gearbox_bracket_chassis_cbore_h                    = gearbox_bracket_chassis_use_countersunk
+                                                      ? chassis_countersunk_bore_h
+                                                      : chassis_counterbore_h;
+gearbox_bracket_chassis_cbore_d                    = gearbox_bracket_chassis_use_countersunk
+                                                      ? chassis_countersunk_bore_d
+                                                      : chassis_counterbore_bore_d;
 
 // The wall thickness of the bracket boss; the outer diameter is
 // motor_plist.gearbox.mount_bolt_d + gearbox_bracket_boss_thickness * 2.

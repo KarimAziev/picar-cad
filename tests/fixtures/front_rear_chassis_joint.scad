@@ -8,6 +8,7 @@ include <../../scad/suspension/front_chassis/computed_params.scad>
 
 use <../../scad/lib/plist.scad>
 use <../../scad/suspension/front_chassis/front_chassis_rear_frame.scad>
+use <../../scad/suspension/front_chassis/front_chassis_joint.scad>
 use <../../scad/suspension/rear_chassis/computed_params.scad>
 use <../../scad/suspension/rear_chassis/rear_chassis_frame.scad>
 
@@ -37,10 +38,8 @@ module assembly() {
 }
 
 module pin_probes() {
-  rail_w = w - (front_chassis_joint_bolt_d + front_chassis_joint_bolt_pad
-                + front_chassis_joint_rail_bolt_clearance) * 2;
   pin_z = joint_base_h + (joint_base_h + joint_rail_h) / 2;
-  for (x = [-rail_w / 4, rail_w / 4]) {
+  for (x = [-1, 1] * front_chassis_body_joint_pin_spacing(w) / 2) {
     translate([x, edge_y + joint_l / 2, pin_z]) {
       rotate([90, 0, 0]) {
         cylinder(d=front_chassis_joint_pin_d * 0.8,
@@ -52,10 +51,8 @@ module pin_probes() {
 }
 
 module bolt_probes() {
-  edge_x = w / 2 - front_chassis_joint_bolt_pad - front_chassis_joint_bolt_d / 2;
-  n = suspension_chassis_joint_wide_bolt_cols;
-  for (i = [0:n - 1]) {
-    translate([-edge_x + i * 2 * edge_x / (n - 1), edge_y + joint_l / 2, -1]) {
+  for (x = front_chassis_body_joint_bolt_xs(w)) {
+    translate([x, edge_y + joint_l / 2, -1]) {
       cylinder(d=front_chassis_joint_bolt_d * 0.8,
                h=chassis_thickness + 2, $fn=32);
     }
