@@ -238,8 +238,14 @@ front_chassis_bulkhead_padding_x                   = 12.8;
 // Bellcrank slots
 // ─────────────────────────────────────────────────────────────────────────────
 front_chassis_bellcrank_bolt_d                     = m3_hole_dia;
-front_chassis_bellcrank_bolt_bore_d                = m3_countersunk_head_dia + 0.2;
-front_chassis_bellcrank_bolt_bore_h                = m3_countersunk_head_h + 0.15;
+front_chassis_bellcrank_use_countersunk            = false;
+
+front_chassis_bellcrank_bolt_bore_d                = front_chassis_bellcrank_use_countersunk
+                                                      ? m3_countersunk_bore_d
+                                                      : m3_socket_counterbore_d;
+front_chassis_bellcrank_bolt_bore_h                = front_chassis_bellcrank_use_countersunk
+                                                      ? m3_countersunk_bore_h
+                                                      : m3_socket_counterbore_h;
 
 // The hole for easier access to the bellcrank (e.g., for fastening the steering arm)
 front_chassis_bellcrank_tool_access_hole_d         = 8;
