@@ -38,7 +38,7 @@ rear_bulkhead_bolt_spacing_1_2_edge_dist   = 1.7;
 // Rectangular slot for the arm pad
 // ─────────────────────────────────────────────────────────────────────────────
 rear_suspension_arm_pad_rect_slot_size     = [5.71, 3.6];
-rear_suspension_arm_pad_rect_corner_r      = 2;
+rear_suspension_arm_pad_rect_corner_r      = 1;
 
 // Distance between the edge of the last row of holes in
 // `rear_bulkhead_bolt_spacing_2` and the rectangular slot.

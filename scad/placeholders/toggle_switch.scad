@@ -58,7 +58,8 @@ module toggle_switch(size                               = toggle_switch_size,
                      terminal_hole_d,
                      terminal_hole_z,
                      crimp_terminal_plist,
-                     show_crimp_terminal) {
+                     show_crimp_terminal,
+                     show_crimp_terminal_bolt=true) {
   anchor = with_default(anchor, [0, 0, 1]);
   body_w = size[0];
   body_l = size[1];
@@ -102,6 +103,9 @@ module toggle_switch(size                               = toggle_switch_size,
             translate([terminal_t / 2 + t / 2, 0, z]) {
               ring_terminal(crimp_terminal_plist,
                             anchor=[0, 0, -1],
+                            bolt_d=terminal_hole_d,
+                            bolt_h=terminal_t + t + 1,
+                            show_bolt=show_crimp_terminal_bolt,
                             spin=90);
             }
           }
@@ -134,20 +138,23 @@ module toggle_switch(size                               = toggle_switch_size,
         }
       }
 
+      // toggle lever zone
       translate([0, 0, terminal_h + body_h]) {
         color(metallic_silver_1, alpha=1) {
           cylinder(h=nut_bore_h, d=nut_d, $fn=6);
 
-          difference() { // bordered cylinder
+          // bordered cylinder
+          difference() {
             cylinder(h=thread_h,
                      d=thread_d,
                      $fn=30);
             translate([0, 0, thread_h / 2]) {
               cylinder(h=thread_h,
                        d=thread_inner_dia,
-                       $fn=30);
+                       $fn=10);
             }
           }
+          // lever
           rotate([0, lever_angle, 0]) {
             translate([0, 0, thread_h / 2]) {
               union() {
@@ -155,7 +162,7 @@ module toggle_switch(size                               = toggle_switch_size,
                 cylinder(h=lever_h,
                          r1=lever_dia_1 / 2,
                          r2=lever_dia_2 / 2,
-                         $fn=30);
+                         $fn=20);
               }
             }
           }

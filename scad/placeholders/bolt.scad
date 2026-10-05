@@ -291,6 +291,8 @@ module bolt(d=2.5,                 // major diameter (mm)
             head_color,
             nut_h,
             reverse=false,
+            anchor=[0, 0, 1],
+            orientation="wlh",
             $fn = 64) {
 
   d = snap_bolt_d(d);
@@ -321,46 +323,63 @@ module bolt(d=2.5,                 // major diameter (mm)
                              head_spec,
                              with_default(head_h, 0.7 * d)));
 
-  maybe_translate([0, 0, reverse ? (h + head_h) : 0]) {
-    maybe_rotate([reverse ? 180 : 0, 0, 0]) {
-      let (pitch_v   = pitch != undef ? pitch : thread_pitch(d),
-           thread_len_v = thread_len != undef ? max(0, thread_len) : max(0, h - unthreaded),
-           turns = thread_len_v / pitch_v,
-           thread_segments = ceil(turns * 30),
-           thread_depth_v = thread_depth != undef ? thread_depth : pitch_v * 0.6,
-           major_r = d/2,
-           major_r_eff = major_r - thread_clearance,
-           minor_r = max(0, major_r - (thread_depth != undef ? thread_depth : pitch_v * 0.6)))
-        union() {
-          if (threaded) {
-            if (!is_undef(unthreaded_d)) {
-              color(with_default(unthreaded_color, bolt_color), alpha=1) {
-                translate([0, 0, thread_len_v]) {
-                  cylinder(d=unthreaded_d, h=unthreaded);
+  with_orientation(from="wlh", to=orientation, anchor=anchor, size=[d, d, h]) {
+    maybe_translate([0, 0, reverse ? (h + head_h) : 0]) {
+      maybe_rotate([reverse ? 180 : 0, 0, 0]) {
+        let (pitch_v   = pitch != undef ? pitch : thread_pitch(d),
+             thread_len_v = thread_len != undef ? max(0, thread_len) : max(0, h - unthreaded),
+             turns = thread_len_v / pitch_v,
+             thread_segments = ceil(turns * 30),
+             thread_depth_v = thread_depth != undef ? thread_depth : pitch_v * 0.6,
+             major_r = d/2,
+             major_r_eff = major_r - thread_clearance,
+             minor_r = max(0, major_r - (thread_depth != undef ? thread_depth : pitch_v * 0.6)))
+          union() {
+            if (threaded) {
+              if (!is_undef(unthreaded_d)) {
+                color(with_default(unthreaded_color, bolt_color), alpha=1) {
+                  translate([0, 0, thread_len_v]) {
+                    cylinder(d=unthreaded_d, h=unthreaded);
+                  }
                 }
               }
-            }
-            color(bolt_color, alpha=1) {
-              if (screw_mode) {
-                let (end_len = min(1.3, thread_len_v * 0.3),
-                     main_len = thread_len_v - end_len) {
-                  union() {
-                    translate([0, 0, end_len]) {
-                      cylinder(h = main_len,
-                               r=minor_r,
+              color(bolt_color, alpha=1) {
+                if (screw_mode) {
+                  let (end_len = min(1.3, thread_len_v * 0.3),
+                       main_len = thread_len_v - end_len) {
+                    union() {
+                      translate([0, 0, end_len]) {
+                        cylinder(h = main_len,
+                                 r=minor_r,
+                                 $fn = $fn);
+                      }
+                      cylinder(h = end_len,
+                               r1=minor_r * 0.1,
+                               r2 = minor_r,
                                $fn = $fn);
-                    }
-                    cylinder(h = end_len,
-                             r1=minor_r * 0.1,
-                             r2 = minor_r,
-                             $fn = $fn);
 
+                      for (s = [0:thread_starts-1]) {
+                        phase_deg = 360 * s / thread_starts;
+                        translate([0, 0, end_len]) {
+                          thread_ridge(major = (major_r_eff * 2),
+                                       pitch = pitch_v,
+                                       h = main_len,
+                                       depth = thread_depth_v,
+                                       segments = thread_segments,
+                                       start_phase = phase_deg);
+                        }
+                      }
+                    }
+                  }
+                } else {
+                  union() {
+                    cylinder(h = thread_len_v, r = minor_r, $fn = $fn);
                     for (s = [0:thread_starts-1]) {
                       phase_deg = 360 * s / thread_starts;
-                      translate([0, 0, end_len]) {
-                        thread_ridge(major = (major_r_eff * 2),
+                      translate([0, 0,-0.02]) {
+                        thread_ridge(major = d,
                                      pitch = pitch_v,
-                                     h = main_len,
+                                     h = thread_len_v + 0.04,
                                      depth = thread_depth_v,
                                      segments = thread_segments,
                                      start_phase = phase_deg);
@@ -368,75 +387,60 @@ module bolt(d=2.5,                 // major diameter (mm)
                     }
                   }
                 }
-              } else {
-                union() {
-                  cylinder(h = thread_len_v, r = minor_r, $fn = $fn);
-                  for (s = [0:thread_starts-1]) {
-                    phase_deg = 360 * s / thread_starts;
-                    translate([0, 0,-0.02]) {
-                      thread_ridge(major = d,
-                                   pitch = pitch_v,
-                                   h = thread_len_v + 0.04,
-                                   depth = thread_depth_v,
-                                   segments = thread_segments,
-                                   start_phase = phase_deg);
-                    }
+
+                if (thread_len_v < h) {
+                  translate([0, 0, thread_len_v]) {
+                    cylinder(h = h - thread_len_v, r = major_r, $fn = $fn);
                   }
                 }
               }
+            } else {
+              color(bolt_color, alpha=1) {
+                cylinder(h = h, r = minor_r, $fn = $fn);
+              }
+            }
 
-              if (thread_len_v < h) {
-                translate([0, 0, thread_len_v]) {
-                  cylinder(h = h - thread_len_v, r = major_r, $fn = $fn);
+            if (head_type != "none") {
+              color(with_default(head_color, plist_get("color", head_spec, bolt_color)),
+                    alpha=1) {
+                translate([0, 0, h]) {
+                  bolt_head(type = head_type,
+                            head_d = head_d,
+                            head_h = head_h,
+                            shaft_r = minor_r,
+                            $fn=$fn);
                 }
               }
             }
-          } else {
-            color(bolt_color, alpha=1) {
-              cylinder(h = h, r = minor_r, $fn = $fn);
-            }
-          }
+            if (show_nut) {
+              effective_h = h - unthreaded - nut_h;
 
-          if (head_type != "none") {
-            color(with_default(head_color, plist_get("color", head_spec, bolt_color)),
-                  alpha=1) {
-              translate([0, 0, h]) {
-                bolt_head(type = head_type,
-                          head_d = head_d,
-                          head_h = head_h,
-                          shaft_r = minor_r,
-                          $fn=$fn);
+              translate([0,
+                         0,
+                         effective_h - min(effective_h + (lock_nut ? nut_h * 0.2 : 0),
+                                           nut_head_distance)]) {
+                if (nut_type == "nut") {
+                  nut(d=d,
+                      outer_d=plist_get("outer_dia", nut_spec),
+                      h=nut_h,
+                      nut_color=with_default(nut_color, bolt_color));
+                } else if (nut_type == "lock_nut") {
+                  lock_nut(d=d,
+                           h=nut_h,
+                           reverse=true,
+                           flanged_dia=plist_get("flanged_dia", nut_spec),
+                           nylon_cap_h=plist_get("nylon_cap_h", nut_spec),
+                           nylon_cap_dia=plist_get("nylon_cap_dia", nut_spec),
+                           flanged_h=plist_get("flanged_h", nut_spec, nut_h
+                                                                      - standard_nut_h),
+                           flanged_fn=plist_get("flanged_fn", nut_spec),
+                           outer_d=plist_get("outer_dia", nut_spec),
+                           nut_color=with_default(nut_color, bolt_color));
+                }
               }
             }
           }
-          if (show_nut) {
-            effective_h = h - unthreaded - nut_h;
-
-            translate([0,
-                       0,
-                       effective_h - min(effective_h + (lock_nut ? nut_h * 0.2 : 0),
-                                         nut_head_distance)]) {
-              if (nut_type == "nut") {
-                nut(d=d,
-                    outer_d=plist_get("outer_dia", nut_spec),
-                    h=nut_h,
-                    nut_color=with_default(nut_color, bolt_color));
-              } else if (nut_type == "lock_nut") {
-                lock_nut(d=d,
-                         h=nut_h,
-                         reverse=true,
-                         flanged_dia=plist_get("flanged_dia", nut_spec),
-                         nylon_cap_h=plist_get("nylon_cap_h", nut_spec),
-                         nylon_cap_dia=plist_get("nylon_cap_dia", nut_spec),
-                         flanged_h=plist_get("flanged_h", nut_spec, nut_h
-                                                                    - standard_nut_h),
-                         flanged_fn=plist_get("flanged_fn", nut_spec),
-                         outer_d=plist_get("outer_dia", nut_spec),
-                         nut_color=with_default(nut_color, bolt_color));
-              }
-            }
-          }
-        }
+      }
     }
   }
 }
@@ -455,7 +459,9 @@ bolt(d=d,
      show_nut=false,
      lock_nut=false,
      unthreaded_d=8,
+     reverse=true,
      nut_head_distance=nut_distance,
      bolt_color=matte_black,
      unthreaded_color=metallic_silver_2,
+     anchor=[0, 0, -1],
      head_type="socket");

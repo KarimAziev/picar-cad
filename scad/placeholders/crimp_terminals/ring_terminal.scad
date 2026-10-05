@@ -12,12 +12,14 @@ use <../../lib/plist.scad>
 use <../../lib/shapes3d.scad>
 use <../../lib/transforms.scad>
 use <../../lib/trapezoids.scad>
+use <../bolt.scad>
 
 plist_example = ["d", 4.33,
                  "od", 6.61,
                  "w", 3.35,
                  "l", 9.1,
                  "t", 0.62,
+                 "bolt_d", 3.0,
                  "color", metallic_silver_5,
                  "insulate", ["color", "#3771E1",
                               "l", 10.5,
@@ -29,6 +31,7 @@ function ring_terminal_props(plist) =
        l=plist_get("l", plist),
        t=plist_get("t", plist),
        w=plist_get("w", plist),
+       bolt_d=plist_get("bolt_d", plist),
        insulate=plist_get("insulate", plist, []),
        insulate_color=plist_get("color", insulate),
        insulate_l=plist_get("l", insulate, 0),
@@ -50,11 +53,19 @@ function ring_terminal_props(plist) =
    "insulate_d", insulate_d,
    "d1", d1,
    "d2", d2,
+   "bolt_d", bolt_d,
    "total_l", total_l,
    "max_w", max_w];
 
 module ring_terminal(plist,
                      orientation="whl",
+                     bolt_d,
+                     nut_head_distance,
+                     bolt_h,
+                     show_bolt,
+                     show_nut,
+                     reverse_bolt,
+                     bolt_head_type="pan",
                      anchor=[0, 0, 1],
                      spin=0) {
   props = ring_terminal_props(plist);
@@ -71,25 +82,47 @@ module ring_terminal(plist,
   d2 = plist_get("d2", props);
   total_l = plist_get("total_l", props);
   max_w = plist_get("max_w", props);
+  bolt_d = with_default(with_default(bolt_d, plist_get("bolt_d", props, bolt_d)),
+                        d);
+
+  tran_l = l - od;
 
   with_orientation(from="whl",
                    to=orientation,
                    anchor=anchor,
                    size=[od, total_l, max_w]) {
+
     maybe_rotate([0, 0, spin]) {
       translate([0, 0, insulate_l]) {
-        color(color, alpha=1) {
-          let (tran_l = l - od) {
-            translate([0, 0, tran_l / 2]) {
-              rotate([90, 0, 0]) {
-                linear_extrude(height=t, center=true) {
-                  trapezoid(b=w, t=d, h=tran_l + od - d, center=true);
-                }
+        translate([0, 0, tran_l / 2]) {
+          rotate([90, 0, 0]) {
+            color(color) {
+              linear_extrude(height=t, center=true) {
+                trapezoid(b=w, t=d, h=tran_l + od - d, center=true);
               }
             }
-            translate([0, 0, tran_l]) {
-              rotate([0, 0, 90]) {
-                ring(od=od, d=d, h=t, orientation="hlw");
+          }
+        }
+
+        translate([0, 0, tran_l + od / 2]) {
+          rotate([90, 0, 0]) {
+            translate([0, 0, -t / 2]) {
+              union() {
+                ring(od=od, d=d, h=t, color=color);
+                if (show_bolt) {
+                  let (bolt_h = with_default(bolt_h, t + 2),
+                       head_h = find_bolt_head_h(bolt_d, bolt_head_type)) {
+                    translate([0, 0, reverse_bolt ? -head_h : t]) {
+                      bolt(h=bolt_h,
+                           d=bolt_d,
+                           nut_head_distance=nut_head_distance,
+                           show_nut=show_nut,
+                           head_type=bolt_head_type,
+                           reverse=reverse_bolt,
+                           anchor=[0, 0, reverse_bolt ? 1 : -1]);
+                    }
+                  }
+                }
               }
             }
           }
@@ -118,4 +151,7 @@ module ring_terminal(plist,
   }
 }
 
-ring_terminal(plist_example, anchor=[1, 1, 1]);
+ring_terminal(plist_example,
+              anchor=[1, 1, 1],
+              show_bolt=true,
+              reverse_bolt=true);
