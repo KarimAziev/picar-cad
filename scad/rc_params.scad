@@ -294,7 +294,7 @@ front_chassis_joint_pin_d                          = 3.1;
 front_chassis_joint_pin_pad_l                      = 5.5;
 front_chassis_joint_pin_pad_w                      = 2.5;
 
-front_chassis_joint_clearance                      = 0.4;
+front_chassis_joint_clearance                      = 0.2;
 front_chassis_joint_boolean_overlap                = 0.02;
 
 // ─────────────────────────────────────────────────────────────────────────────
