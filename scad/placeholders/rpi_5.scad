@@ -23,19 +23,12 @@ use <pad_hole.scad>
 use <rpi_5_grid.scad>
 use <standoff.scad>
 
-show_standoffs              = true;
-show_ai_hat                 = true;
-show_motor_driver_hat       = true;
-show_servo_driver_hat       = true;
-show_gpio_expansion_board   = true;
-show_camera_ribbon_slot     = true;
-
-rpi_camera_ribbon_slot_size = [rpi_csi_size[1], 1.6];
-rpi_camera_ribbon_slot_gap  = 2.4;
-rpi_camera_ribbon_slot_rows = 3;
-
-rpi_plugged_usb_a           = ["left", [1],
-                               "right", []];
+show_standoffs            = true;
+show_ai_hat               = true;
+show_motor_driver_hat     = true;
+show_servo_driver_hat     = true;
+show_gpio_expansion_board = true;
+show_camera_ribbon_slot   = true;
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -269,25 +262,25 @@ module rpi_5(size=[rpi_width, rpi_len, rpi_thickness],
   max_size = rpi_5_size(size, usb_a_y_offset);
 
   grid = is_undef(component_grid)
-    ? rpi_5_grid(size=size,
-                 bolt_offset=bolt_offset,
-                 header_height=header_height,
-                 header_width=header_width,
-                 pin_height=pin_height,
-                 header_cols=header_cols,
-                 header_rows=header_rows,
-                 usb_a_size=usb_a_size,
-                 csi_size=csi_size,
-                 io_size=io_size,
-                 wifi_bt_size=wifi_bt_size,
-                 pci_size=pci_size,
-                 ethernet_jack_size=ethernet_jack_size,
-                 usb_a_x_gap=usb_a_x_gap,
-                 usb_a_edge_gap=usb_a_edge_gap,
-                 usb_a_y_offset=usb_a_y_offset,
-                 usb_a_n=rpi_usb_a_n,
-                 plugged_usb_a=plugged_usb_a)
-    : component_grid;
+         ? rpi_5_grid(size=size,
+                      bolt_offset=bolt_offset,
+                      header_height=header_height,
+                      header_width=header_width,
+                      pin_height=pin_height,
+                      header_cols=header_cols,
+                      header_rows=header_rows,
+                      usb_a_size=usb_a_size,
+                      csi_size=csi_size,
+                      io_size=io_size,
+                      wifi_bt_size=wifi_bt_size,
+                      pci_size=pci_size,
+                      ethernet_jack_size=ethernet_jack_size,
+                      usb_a_x_gap=usb_a_x_gap,
+                      usb_a_edge_gap=usb_a_edge_gap,
+                      usb_a_y_offset=usb_a_y_offset,
+                      usb_a_n=rpi_usb_a_n,
+                      plugged_usb_a=plugged_usb_a)
+         : component_grid;
 
   with_orientation(from="wlh",
                    to=orientation,
@@ -374,8 +367,7 @@ module rpi_5(size=[rpi_width, rpi_len, rpi_thickness],
             translate([0,
                        0,
                        header_height + (h / 2) +
-                       (show_ai_hat
-                        ? ai_hat_header_height : 0)]) {
+                       (show_ai_hat ? ai_hat_header_height : 0)]) {
               if (show_ai_hat) {
                 ai_hat(center=false);
               }
@@ -406,9 +398,9 @@ module rpi_5(size=[rpi_width, rpi_len, rpi_thickness],
                                      extra_standoff_h=motor_driver_hat_upper_header_height);
                   }
                   let (extra_upper_header_height = show_motor_driver_hat
-                       ? motor_driver_hat_upper_header_height
-                         + motor_driver_hat_size[2]
-                       : 0) {
+                                                   ? motor_driver_hat_upper_header_height
+                                                     + motor_driver_hat_size[2]
+                                                   : 0) {
                     translate([0,
                                0,
                                (show_gpio_expansion_board

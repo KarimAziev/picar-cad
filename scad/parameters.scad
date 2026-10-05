@@ -1179,11 +1179,17 @@ rpi_on_off_button_plist                              = ["size", [3.85, 2, 1.8],
                                                         "offsets", [3.12, 0]];
 
 rpi_camera_ribbon_slot_size                          = [rpi_csi_size[1], 1.6];
-rpi_camera_ribbon_slot_gap                           = 1.4;
+rpi_camera_ribbon_slot_gap                           = 2.4;
 rpi_camera_ribbon_slot_rows                          = 3;
 
 rpi_plugged_usb_a                                    = ["left", [1],
                                                         "right", []];
+
+rpi_plugged_usb_c                                    = ["plug_shell", ["size", [8.2, 7.4, 2.4],
+                                                                       "color", metallic_silver_3],
+                                                        "plug_body", ["size", [11.23, 14.9, 7.7],
+                                                                      "color", matte_black],
+                                                        "strain_relief", ["size", [5.9, 7, 5.8]]];
 
 //The height of the standoffs for Raspberry Pi
 rpi_standoff_height                                  = 6;
