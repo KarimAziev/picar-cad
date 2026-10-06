@@ -344,18 +344,42 @@ function rear_suspension_chassis_size(layout=rear_chassis_layout()) =
 
   **Parameters:**
   - `layout`: Resolved rear layout shared by both mating plates.
-  - `inset`: Nonnegative distance into the deck along native -Y, in mm.
 
   **Returns:**
   `[min_y, max_y]` of the joint, from chassis root to suspension-mount root.
  */
-function rear_suspension_joint_y_bounds(layout=rear_chassis_layout(),
-                                        inset=rear_suspension_joint_inset) =
-  assert(is_num(inset) && inset >= 0, "Joint inset must be nonnegative")
-  let (start = plist_get("transition_y_start", layout) - inset,
-       end = plist_get("transition_y_end", layout) - inset)
+function rear_suspension_joint_y_bounds(layout=rear_chassis_layout()) =
+  let (lower_end = rear_suspension_mount_recess_end_y(layout),
+       center = lower_end - rear_suspension_joint_pin_l / 2
+                - front_chassis_joint_pin_end_clearance
+                - suspension_chassis_joint_bore_pin_land,
+       start = center + rear_suspension_chassis_transition_len / 2,
+       end = center - rear_suspension_chassis_transition_len / 2)
   assert(end > plist_get("min_y", layout), "Joint must fit within the deck")
+  assert(end - plist_get("motor_bounds", layout)[1][1] >= 2,
+         "Rear suspension joint needs 2 mm clearance from the motor bracket")
   [end, start];
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  rear_suspension_mount_recess_end_y
+  ─────────────────────────────────────────────────────────────────────────────
+  Return the motor-side end of the lowered suspension footprint.
+  **Parameters:** `layout`: Resolved rear layout.
+ */
+function rear_suspension_mount_recess_end_y(layout=rear_chassis_layout()) =
+  plist_get("rect_y", layout) - rear_suspension_arm_pad_rect_slot_size[1] / 2
+  - suspension_chassis_mount_clearance;
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  rear_suspension_joint_width
+  ─────────────────────────────────────────────────────────────────────────────
+  Return the joint width between the wheel-relief edges, in mm.
+  **Parameters:** `layout`: Resolved rear layout.
+ */
+function rear_suspension_joint_width(layout=rear_chassis_layout()) =
+  plist_get("join_w", layout) - 2 * rear_chassis_wheel_relief[0];
 
 function rear_chassis_outline_points(layout=rear_chassis_layout(),
                                      wheel_relief=rear_chassis_wheel_relief) =

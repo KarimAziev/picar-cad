@@ -39,7 +39,7 @@ bracket        = gearmotor_bracket_compute_params(motor_plist);
 bounds         = plist_get("bounds", bracket);
 encoder_bounds = plist_get("bounds", plist_get("encoder_mount", bracket));
 near(plist_get("side_widths", bracket), [28.65, encoder_bounds[1][0]]);
-near(plist_get("base_bounds", bracket)[1], [11.825, 37.6, 20.44]);
+near(plist_get("base_bounds", bracket)[1], [11.825, 37.6, 20.44 - suspension_chassis_mount_recess]);
 near([plist_get("drive_end_y", bracket)], [-48]);
 near(plist_get("size", bracket), bounds[1] - bounds[0]);
 assert(plist_get("min_parent_surface_size", bracket)[0] == 57.3);

@@ -1,4 +1,4 @@
-"""Check supported recesses, bolt floors, and printed rear-frame compatibility.
+"""Check supported recesses, bolt floors, and wide-joint reference compatibility.
 
 Author: Karim Aziiev <karim.aziiev@gmail.com>
 License: GPL-3.0-or-later
@@ -33,9 +33,9 @@ def main() -> None:
     # Probe the annulus between the through hole and the 6 mm head recess.
     cases = {
         "compact": (14.03939124, [0.0], [-23.0, 23.0]),
-        "wide": (14.03939124, [0.0], [-75.7, 75.7]),
-        "rear": (10.0, [], [-18.75, 18.75]),
-        "head": (7.3, [], [-22.990825, 22.990825]),
+        "wide": (14.03939124, [-37.85, 0.0, 37.85], [-75.7, 75.7]),
+        "rear": (10.0, [-30.25, 0.0, 30.25], [-60.5, 60.5]),
+        "head": (7.3, [], [-24.725, 24.725]),
     }
     for joint, (length, top_xs, side_xs) in cases.items():
         options = {"joint": f'"{joint}"'}
@@ -44,9 +44,6 @@ def main() -> None:
         y = -length / 2 + 2.2
         for x in top_xs:
             np.testing.assert_allclose(vertical_hits(male, x, y), [1.55, 3.05], atol=1e-5)
-        if joint == "wide":
-            for x in (-45.05, 45.05):
-                np.testing.assert_allclose(vertical_hits(male, x, y), [1.55, 6], atol=1e-5)
         for x in side_xs:
             np.testing.assert_allclose(vertical_hits(male, x, y), [4.5, 6], atol=1e-5)
             countersunk = joint in ("compact", "head")
@@ -61,12 +58,12 @@ def main() -> None:
         checks.assert_no_interference(
             checks.export("collision", name=f"{joint}-collision", empty=True, **options),
             joint)
-        if joint in ("wide", "rear"):
+        if joint == "wide":
             checks.assert_no_interference(
-                checks.export("printed_collision", name=f"{joint}-printed-fit",
+                checks.export("nominal_collision", name=f"{joint}-nominal-fit",
                               empty=True, **options), joint)
             checks.assert_no_interference(
-                checks.export("printed_difference", name=f"{joint}-printed-difference",
+                checks.export("nominal_difference", name=f"{joint}-nominal-difference",
                               empty=True, suspension_chassis_joint_counterbores=False,
                               **options), joint)
         print(f"PASS {joint}: supported bore depths, intact thin skins, mating fit")
@@ -77,7 +74,7 @@ def main() -> None:
         np.testing.assert_allclose(vertical_hits(female, 23, -14.03939124 / 2 + 2.2),
                                    [expected_floor, 4.3], atol=1e-5)
     print("PASS full counterbore selection and omission of unsupported countersinks")
-    print("PASS 0.2 mm sockets mate with the printed 0.4 mm rear-frame interfaces; "
+    print("PASS 0.2 mm sockets mate with the 0.4 mm wide-joint reference; "
           "nominal male profiles and hole patterns match")
 
 

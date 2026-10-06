@@ -252,7 +252,7 @@ These files correspond to logical entities and shared functionality. There is no
 
 Before adding similar functionality, inspect the relevant existing helpers and a representative component. Use examples for the specific behavior they demonstrate, with the migration caveats below.
 
-For polygons, use [debug.scad](scad/lib/debug.scad), including `debug_polygon_text`, and [polygon_util.scad](scad/lib/polygon_util.scad). The [front chassis front frame](scad/suspension/front_chassis/front_chassis_front_frame.scad) and [front chassis rear frame](scad/suspension/front_chassis/front_chassis_rear_frame.scad) are useful examples of polygon construction and debugging.
+For polygons, use [debug.scad](scad/lib/debug.scad), including `debug_polygon_text`, and [polygon_util.scad](scad/lib/polygon_util.scad). The [front chassis front frame](scad/suspension/front_chassis/front_frame_util.scad) and [front chassis rear frame](scad/suspension/front_chassis/rear_frame/front_chassis_rear_frame.scad) are useful examples of polygon construction and debugging.
 
 Frequently reused hardware placeholders:
 
@@ -289,4 +289,4 @@ The project is migrating toward these principles and a more complex vehicle with
 
 The author identifies agent-written code in [middle_chassis/](scad/suspension/middle_chassis/) and [rear_chassis/](scad/suspension/rear_chassis/) as needing manual refactoring. Treat these areas as existing implementations to understand and improve where relevant, rather than automatically copying their structure into new components.
 
-The draft also calls out [front_chassis_rear_frame.scad](scad/suspension/front_chassis/front_chassis_rear_frame.scad), while explaining that it is mostly the author's own work: imperfect, but readable. It remains useful for the polygon techniques mentioned above. An example can demonstrate a useful technique without every aspect of its structure being a project standard.
+The draft also calls out [front_chassis_rear_frame.scad](scad/suspension/front_chassis/rear_frame/front_chassis_rear_frame.scad), while explaining that it is mostly the author's own work: imperfect, but readable. It remains useful for the polygon techniques mentioned above. An example can demonstrate a useful technique without every aspect of its structure being a project standard.

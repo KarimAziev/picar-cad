@@ -5,20 +5,21 @@
   * License: GPL-3.0-or-later
   */
 
-include <../../colors.scad>
-include <../../parameters.scad>
-include <../../rc_params.scad>
-include <computed_params.scad>
+include <../../../colors.scad>
+include <../../../parameters.scad>
+include <../../../rc_params.scad>
+include <../computed_params.scad>
 
-use <../../lib/debug.scad>
-use <../../lib/functions.scad>
-use <../../lib/polygon_util.scad>
-use <../../lib/shapes3d.scad>
-use <../../lib/transforms.scad>
-use <../bellcrank_steering_slots.scad>
-use <../steering_servo_bracket/steering_servo_chassis_slots.scad>
-use <front_chassis_controls.scad>
-use <front_chassis_joint.scad>
+use <../../../lib/debug.scad>
+use <../../../lib/functions.scad>
+use <../../../lib/polygon_util.scad>
+use <../../../lib/shapes3d.scad>
+use <../../../lib/transforms.scad>
+use <../../bellcrank_steering_slots.scad>
+use <../../steering_servo_bracket/steering_servo_chassis_slots.scad>
+use <../front_chassis_controls.scad>
+use <../front_chassis_joint.scad>
+use <../front_chassis_mount_recesses.scad>
 use <front_chassis_ribbon_slots.scad>
 
 front_chassis_rear_frame_debug = false;
@@ -120,6 +121,7 @@ module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
       }
     }
 
+    front_chassis_mount_recesses();
     front_chassis_rpi(slot_mode=true);
     if (show_ribbon_slots) {
       front_chassis_ribbon_slots();
@@ -151,10 +153,6 @@ module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
       }
     }
   }
-}
-
-module front_chassis_rear_frame_printable(debug=false, color=white_smoke_1) {
-  front_chassis_rear_frame(debug=$preview ? debug : false, color=color);
 }
 
 front_chassis_rear_frame();

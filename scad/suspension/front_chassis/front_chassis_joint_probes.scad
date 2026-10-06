@@ -15,8 +15,9 @@ include <../../rc_params.scad>
 include <computed_params.scad>
 
 use <../../lib/shapes3d.scad>
-use <front_chassis_front_frame.scad>
-use <front_chassis_rear_frame.scad>
+use <front_frame_util.scad>
+use <rear_frame/front_chassis_rear_frame.scad>
+use <suspension_frame/front_chassis_suspension_frame.scad>
 
 module front_chassis_front_frame_probe(color=white_smoke_1,
                                        probe_len=2) {
@@ -30,7 +31,7 @@ module front_chassis_front_frame_probe(color=white_smoke_1,
   pin_hole_depth  = ((front_chassis_joint_pin_l - joint_l) / 2);
 
   difference() {
-    front_chassis_front_frame(debug=false, color=color);
+    front_chassis_suspension_frame(debug=false, color=color);
     translate([0, y_end + pin_hole_depth + probe_len, -0.5]) {
       cuboid([x, l, chassis_thickness + 1], anchor=[0, 1, 1]);
     }

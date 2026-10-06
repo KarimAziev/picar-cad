@@ -7,8 +7,8 @@
 include <../../scad/suspension/front_chassis/computed_params.scad>
 
 use <../../scad/suspension/bellcrank_steering_slots.scad>
-use <../../scad/suspension/front_chassis/front_chassis_rear_frame.scad>
-use <../../scad/suspension/front_chassis/front_chassis_ribbon_slots.scad>
+use <../../scad/suspension/front_chassis/rear_frame/front_chassis_rear_frame.scad>
+use <../../scad/suspension/front_chassis/rear_frame/front_chassis_ribbon_slots.scad>
 use <../../scad/suspension/steering_servo_bracket/steering_servo_bracket_assembly.scad>
 
 part  = "frame";

@@ -238,7 +238,7 @@ front_chassis_bulkhead_padding_x                   = 12.8;
 // Bellcrank slots
 // ─────────────────────────────────────────────────────────────────────────────
 front_chassis_bellcrank_bolt_d                     = m3_hole_dia;
-front_chassis_bellcrank_use_countersunk            = false;
+front_chassis_bellcrank_use_countersunk            = true;
 
 front_chassis_bellcrank_bolt_bore_d                = front_chassis_bellcrank_use_countersunk
                                                       ? m3_countersunk_bore_d
@@ -286,7 +286,13 @@ front_chassis_joint_bolt_pad                       = 2;
 front_chassis_joint_rail_bolt_clearance            = 0.05;
 front_chassis_joint_bolt_spacing                   = 46.0;
 front_chassis_joint_rail_w                         = 37.8;
+front_chassis_joint_pin_spacing                    = 12;
 front_chassis_joint_use_dovetail_rib               = true;
+
+// Suspension, steering and drivetrain share a lowered mounting plane.
+suspension_chassis_mount_recess                    = 2;
+suspension_chassis_mount_h                         = chassis_thickness - suspension_chassis_mount_recess;
+suspension_chassis_mount_clearance                 = 0.2;
 
 // Stock pin length; passages include clearance at both ends.
 front_chassis_joint_pin_l                          = 39.5;
@@ -351,7 +357,8 @@ middle_chassis_mount_land                          = 3.0;
 suspension_chassis_joint_wide_bolt_cols            = 5;
 // Material between each outer bolt hole and both the edge and the socket.
 suspension_chassis_joint_wide_bolt_pad             = 3;
-suspension_chassis_joint_wide_pin_spacing          = 80;
+// Central passages clear the steering pockets and equipment mounting bores.
+suspension_chassis_joint_wide_pin_spacing          = 12;
 suspension_chassis_joint_wide_pin_bolt_land        = 2;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -551,6 +558,7 @@ front_bulkhead_w                                   = 25.9;
 
 // The overall length of the bulkhead housing along the Y-axis,
 front_bulkhead_len                                 = 39.5;
+front_chassis_mount_end_y                          = front_bulkhead_len + 3;
 
 // Additional rear length for the upper steering plate
 front_bulkhead_extra_len                           = 4.7;
@@ -1530,7 +1538,7 @@ multi_lipo_packs_case                              = ["lipo_packs", lipo_packs,
                                                       "sink", false];
 
 // Rear harness: holes accept the complete insulated ring terminal end-first.
-rear_power_wiring                                  = ["enabled", true,
+rear_power_wiring                                  = ["enabled", false,
                                                       "d", 3.8,
                                                       "hole_d", 12,
                                                       "black_holes", true,
@@ -1549,7 +1557,7 @@ multi_power_case_size                              = plist_get("size",
 
 chassis_body_min_w                                 = multi_power_case_size[0];
 
-gearbox_bracket_thickness                          = 8.5;
+gearbox_bracket_thickness                          = 8.5 - suspension_chassis_mount_recess;
 
 gearbox_bracket_bolt_d                             = m3_hole_dia;
 gearbox_bracket_bolt_pad_x                         = 2.4;

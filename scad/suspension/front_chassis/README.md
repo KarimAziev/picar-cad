@@ -4,10 +4,50 @@
 and steering-servo plate at their existing vehicle coordinates. The complete
 vehicle entry point is `../../rc_robot_assembly.scad`.
 
+## Lowered suspension and steering
+
+`suspension_chassis_mount_recess=2` sets the hardware mounting plane at Z=4 mm
+above the chassis underside. Bulkhead, bellcranks, steering servo and rotary
+encoder share that plane. The pocket between the bulkhead and bellcranks clears
+the connecting arms. The suspension plate follows the HSP mounting footprint.
+Servo and encoder pockets follow their bracket footprints with 0.2 mm clearance
+per side, controlled by `suspension_chassis_mount_clearance`.
+The servo case rim has an additional 0.25 mm relief, while its bracket feet sit
+on Z=4 mm. Bellcrank dimensions, steering rod length and all suspension mounting
+centers are fixed by their hardware interfaces.
+
+The compact joint retains a full-height central spine around its pins at X=±6 mm.
+Its rounded tip begins beyond the blind passage ends to preserve their material cover.
+The wide joint also places its pins at X=±6 mm to clear the steering pockets
+and equipment fasteners; its five bolts distribute clamping across the width.
+The head joint and its pin passages sit beyond the suspension pocket. These
+interfaces require matching mating plates. Joint regions and the main equipment
+deck remain 6 mm thick.
+
+Bulkhead and bellcrank screws use 1.95 mm deep countersinks from the underside;
+servo and encoder screw seats are 2.05 mm deep. The remaining mounting material
+is 2.05 mm and 1.95 mm respectively. A 3 mm recess would leave less than the
+required 1.5 mm above these screw seats and is rejected. Use countersunk screws
+at these seats.
+
+`gearbox_bracket_thickness=8.5-suspension_chassis_mount_recess` gives a 6.5 mm
+motor bracket. The complete vehicle places front and rear suspension references
+2 mm lower relative to the chassis, increasing chassis ground clearance by
+2 mm at the same suspension pose. Wheelbase and assembled chassis length are
+independent of the recess depth.
+
+`tests/check_chassis_mount_recesses.py` checks mounting surfaces, printable
+solids and front hardware clearance at neutral, droop and steering poses.
+At a +25° lower-arm angle, the arm placeholders intersect the HSP footprint
+with both 6 mm and 4 mm mounting heights. The mesh check compares their overlap;
+it does not establish clearance at that pose. Verify the actual suspension
+travel on the fabricated hardware.
+The measured rear mounting pattern defines the narrowed rear footprint; its
+fabricated suspension's complete moving envelope is not modeled here.
+
 ## Removable head
 
-The split follows the taper between outline points 3 (`head_rear_y`) and 4
-(`y2`). It steps around a central tab so all three camera ribbon slots, their
+The split sits beyond the lowered suspension footprint. It steps around a central tab so all three camera ribbon slots, their
 retaining strips, and the rear supporting land stay on the head plate. The two
 side rails use `plate_joint`; the receiving bulkhead frame has the matching
 socket and clearance around the central tab.
@@ -17,11 +57,11 @@ sag compensated. The current configuration has:
 
 | Dimension                                                    |            Value |
 | ------------------------------------------------------------ | ---------------: |
-| Joint band in native Y                                       | 39.025–46.325 mm |
+| Joint band in native Y                                       | 48.5–55.8 mm |
 | Pin center X positions                                       |  −16.5, +16.5 mm |
-| Pin ends in native Y                                         | 34.425–68.225 mm |
-| Engagement beyond the socket into the bulkhead plate         |           4.6 mm |
-| Pin-end clearance to the front bulkhead countersink envelope |             3 mm |
+| Pin ends in native Y                                         | 45.5–79.3 mm |
+| Engagement beyond the socket into the bulkhead plate         |           3 mm |
+| Pin-end clearance to the mounting recess |             3 mm |
 | Pin passage to ribbon opening, edge to edge                  |          4.95 mm |
 
 The bulkhead-side pin ends are located from the mounting keepout plus the
@@ -31,7 +71,7 @@ Each pin must engage at least 3 mm beyond both ends of the joint band.
 
 The pin length, passage diameter, pin spacing, and rail width are configured in
 `scad/rc_params.scad` under `front_chassis_head_joint_*`. Placement and
-clearance checks live in `front_chassis_head_joint.scad` and derive the taper
+clearance checks live in `head_frame/head_joint.scad` and derive the taper
 and mounting-hole limits from the existing hardware interfaces.
 
 For an exploded view in the vehicle assembly, set
@@ -40,15 +80,19 @@ moves with its plate. In the lighter `front_chassis()` assembly, use
 `head_spacing=20`, and optionally select plates with `show_head_frame`,
 `show_front_frame`, and `show_rear_frame`.
 
-`front_chassis_head_frame()` and `front_chassis_front_frame()` are defined
-together in `front_chassis_front_frame.scad` to share the original outline and
-hardware cuts. Export the separate printable entries:
+The head and suspension plates share their outline and hardware cuts through
+`front_frame_util.scad`. Their component files live in `head_frame/` and
+`suspension_frame/`; the steering-servo plate lives in `rear_frame/`.
+Export the separate printable entries:
 
-- `front_chassis_head_frame_printable.scad`
-- `front_chassis_front_frame_printable.scad`
-- `front_chassis_rear_frame_printable.scad`
+- `head_frame/head_frame_printable.scad`
+- `suspension_frame/front_chassis_suspension_frame_printable.scad`
+- `rear_frame/front_chassis_rear_frame_printable.scad`
 
-Each sits on Z=0 with its top face on the bed. The head-frame geometry and
+Each sits on Z=0. The head plate prints top-face-down; the bulkhead and
+steering-servo plates print underside-down with their mounting pockets upward.
+Use local support beneath the bulkhead plate's raised male tongue; its main
+underside is a connected first layer. The head-frame geometry and
 pin clearances are checked by `tests/check_front_head_joint_mesh.py`.
 
 ## Joint fit and bolt recesses
@@ -65,10 +109,9 @@ Changing socket clearance does not move bolt or pin centers or resize the
 nominal rail. A printed female socket retains its printed allowance; changing
 the parameter only affects newly generated parts.
 
-The rear frame has male interfaces at both ends. Its 0.4 mm configuration
-mates with sockets generated at 0.2 mm using the same nominal dimensions.
-`tests/check_chassis_joint_bores.py` checks those printed-interface dimensions
-against the receiving sockets. Printer-dependent fit can be evaluated with
+The wide front-to-rear interface uses fixed nominal male dimensions.
+`tests/check_chassis_joint_bores.py` checks its nominal geometry at 0.4 mm clearance
+against sockets generated with 0.2 mm clearance. Printer-dependent fit can be evaluated with
 a small joint sample before printing a complete plate.
 
 Set `suspension_chassis_joint_counterbores=false` for through holes only.
@@ -87,8 +130,8 @@ If neither full recess fits the configured walls and floor, the hole remains
 a through hole.
 
 The compact joint's outer bolts are at X=±23 mm, with a 37.8 mm rail and
-25.515 mm pin-center spacing. The head joint has a 38.4 mm rail, outer bolt
-centers at approximately X=±22.991 mm, and 33 mm pin-center spacing.
+12 mm pin-center spacing. The head joint has a 38.4 mm rail, outer bolt
+centers at approximately X=±24.725 mm, and 33 mm pin-center spacing.
 Its rail retains at least 0.60 mm beside the pin passages at the narrow neck.
 Both mating parts share each bolt pattern and rail profile.
 
@@ -96,8 +139,8 @@ Both mating parts share each bolt pattern and rail profile.
 | --- | --- | --- |
 | Head / bulkhead plate | None | Both bolts countersunk, 1.95 mm deep |
 | Bulkhead / steering-servo plate | Center bolt, 2.95 mm deep | Both outer bolts countersunk, 1.95 mm deep |
-| Steering-servo plate / rear frame | Center bolt, 2.95 mm deep | Two outer bolts, 2.8 mm deep |
-| Rear frame / rear suspension mount | None | Both bolts, 2.8 mm deep |
+| Steering-servo plate / rear frame | Three middle bolts, 2.95 mm deep | Two outer bolts, 2.8 mm deep |
+| Rear frame / rear suspension mount | Three middle bolts, 2.95 mm deep | Both outer bolts, 2.8 mm deep |
 
 Top and underside refer to assembled vehicle coordinates. Cylindrical recesses are
 0.35 or 0.5 mm shallower than the configured 3.3 mm recess depth. Head protrusion

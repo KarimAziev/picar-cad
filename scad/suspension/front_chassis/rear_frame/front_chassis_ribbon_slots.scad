@@ -8,13 +8,13 @@
   * Author: Karim Aziiev <karim.aziiev@gmail.com>
   * License: GPL-3.0-or-later
   */
-include <computed_params.scad>
+include <../computed_params.scad>
 
-use <../../lib/functions.scad>
-use <../../lib/slots.scad>
-use <../../placeholders/rpi_5.scad>
-use <front_chassis_front_frame.scad>
-use <front_chassis_head_slots.scad>
+use <../../../lib/functions.scad>
+use <../../../lib/slots.scad>
+use <../../../placeholders/rpi_5.scad>
+use <../front_frame_util.scad>
+use <../head_frame/head_slots.scad>
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -46,10 +46,10 @@ function front_chassis_ribbon_curve() =
               y_front_chassis_rear_frame_main_start - joint_l - land - l / 2],
        horizontal = front_rpi_orientation == "lwh",
        start = horizontal
-         ? [min(bounds[1][0], front_chassis_rear_frame_w / 2) - land - l / 2,
-            max(rear_y, min(source[1], end[1] - w))]
-         : [max(end[0], source[0]),
-            max(rear_y, min(source[1], end[1] - w * 2.5))],
+               ? [min(bounds[1][0], front_chassis_rear_frame_w / 2) - land - l / 2,
+                  max(rear_y, min(source[1], end[1] - w))]
+               : [max(end[0], source[0]),
+                  max(rear_y, min(source[1], end[1] - w * 2.5))],
        dx = start[0] - end[0],
        dy = end[1] - start[1])
   assert(w > 0 && l > 0 && land > 0)

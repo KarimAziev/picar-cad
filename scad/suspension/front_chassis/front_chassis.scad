@@ -13,8 +13,18 @@ include <../../parameters.scad>
 include <../../rc_params.scad>
 include <computed_params.scad>
 
-use <front_chassis_front_frame.scad>
-use <front_chassis_rear_frame.scad>
+use <head_frame/front_chassis_head_frame.scad>
+use <rear_frame/front_chassis_rear_frame.scad>
+use <suspension_frame/front_chassis_suspension_frame.scad>
+
+show_front_frame   = true;
+show_head_frame    = true;
+show_rear_frame    = true;
+
+show_access_slots  = true;
+
+head_spacing       = 0;// [0:1:200]
+rear_frame_spacing = joint_l + 5; // [0:1:200]
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -31,17 +41,18 @@ use <front_chassis_rear_frame.scad>
   - `show_head_frame`: Show the head plate; undef follows `show_front_frame`.
   - `head_spacing`: Separate the head plate toward +Y.
  */
-module front_chassis(show_front_frame=true,
-                     show_rear_frame=true,
+module front_chassis(show_front_frame=show_front_frame,
+                     show_rear_frame=show_rear_frame,
                      debug=false,
-                     spacing=0,
-                     show_access_slots=true,
+                     spacing=rear_frame_spacing,
+                     show_access_slots=show_access_slots,
                      width=front_chassis_rear_frame_w,
-                     show_head_frame=undef,
-                     head_spacing=0) {
+                     show_head_frame=show_head_frame,
+                     head_spacing=head_spacing) {
 
   if (show_front_frame) {
-    front_chassis_front_frame(debug=debug, show_access_slots=show_access_slots);
+    front_chassis_suspension_frame(debug=debug,
+                                   show_access_slots=show_access_slots);
   }
   if (is_undef(show_head_frame) ? show_front_frame : show_head_frame) {
     translate([0, head_spacing, 0]) {
@@ -56,7 +67,4 @@ module front_chassis(show_front_frame=true,
   }
 }
 
-front_chassis(show_front_frame=true,
-              show_rear_frame=true,
-              debug=false,
-              spacing=joint_l + 5);
+front_chassis();

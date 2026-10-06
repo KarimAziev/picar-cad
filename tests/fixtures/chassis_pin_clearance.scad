@@ -16,17 +16,20 @@ use <../../scad/suspension/bellcrank_steering_slots.scad>
 use <../../scad/suspension/bulkhead/front_bulkhead_chassis.scad>
 use <../../scad/suspension/front_chassis/front_chassis_access_slots.scad>
 use <../../scad/suspension/front_chassis/front_chassis_controls.scad>
-use <../../scad/suspension/front_chassis/front_chassis_front_frame.scad>
-use <../../scad/suspension/front_chassis/front_chassis_head_joint.scad>
-use <../../scad/suspension/front_chassis/front_chassis_head_slots.scad>
 use <../../scad/suspension/front_chassis/front_chassis_joint.scad>
-use <../../scad/suspension/front_chassis/front_chassis_rear_frame.scad>
-use <../../scad/suspension/front_chassis/front_chassis_ribbon_slots.scad>
+use <../../scad/suspension/front_chassis/front_chassis_mount_recesses.scad>
+use <../../scad/suspension/front_chassis/front_frame_util.scad>
+use <../../scad/suspension/front_chassis/head_frame/front_chassis_head_frame.scad>
+use <../../scad/suspension/front_chassis/head_frame/head_joint.scad>
+use <../../scad/suspension/front_chassis/head_frame/head_slots.scad>
+use <../../scad/suspension/front_chassis/rear_frame/front_chassis_rear_frame.scad>
+use <../../scad/suspension/front_chassis/rear_frame/front_chassis_ribbon_slots.scad>
+use <../../scad/suspension/front_chassis/suspension_frame/front_chassis_suspension_frame.scad>
 use <../../scad/suspension/rear_chassis/computed_params.scad>
 use <../../scad/suspension/rear_chassis/rear_chassis_frame.scad>
 use <../../scad/suspension/rear_chassis/rear_chassis_slots.scad>
-use <../../scad/suspension/rear_suspension/rear_suspension_mount.scad>
 use <../../scad/suspension/rear_suspension/rear_suspension_joint.scad>
+use <../../scad/suspension/rear_suspension/rear_suspension_mount.scad>
 use <../../scad/suspension/rear_suspension/rear_suspension_slots.scad>
 use <../../scad/suspension/steering_servo_bracket/steering_servo_chassis_slots.scad>
 
@@ -35,28 +38,31 @@ part                = "collision";
 margin              = 0;
 candidate_spacing   = undef;
 candidate_length    = undef;
+candidate_y_offset  = 0;
 include_joint_bolts = true;
 layout              = rear_chassis_layout();
 width               = plist_get("join_w", layout);
 rear_joint_y        = rear_suspension_joint_y_bounds(layout);
 rear_start          = rear_joint_y[1];
 rear_end            = rear_joint_y[0];
-rear_p = rear_suspension_chassis_joint_params(layout);
+rear_p              = rear_suspension_chassis_joint_params(layout);
 head_p              = front_chassis_head_joint_params();
 wide_rail           = front_chassis_body_joint_rail_w(width);
 pattern             = joint == "head"
                        ? [front_chassis_head_joint_pin_spacing, front_chassis_head_joint_pin_l,
-                       plist_get("pin_center_y", head_p), plist_get("pin_z", head_p)]
+                         plist_get("pin_center_y", head_p), plist_get("pin_z",
+                                                                      head_p)]
                        : joint == "compact"
-                       ? [joint_rail_w / 2 + joint_recess_w / 2, front_chassis_joint_pin_l,
-                       y_front_chassis_rear_frame_joint_1_start - joint_l / 2,
-                       joint_base_h + (joint_base_h + joint_rail_h) / 2]
-                       : joint == "wide"
-                       ? [front_chassis_body_joint_pin_spacing(width), front_chassis_joint_pin_l,
-                       front_chassis_y_joint_2_end + joint_l / 2,
-                       joint_base_h + (joint_base_h + joint_rail_h) / 2]
-                       : [plist_get("pin_spacing", rear_p), rear_suspension_joint_pin_l,
-                       (rear_start + rear_end) / 2, plist_get("pin_z", rear_p)];
+                        ? [front_chassis_joint_pin_spacing, front_chassis_joint_pin_l,
+                           y_front_chassis_rear_frame_joint_1_start - joint_l / 2,
+                           joint_base_h + (joint_base_h + joint_rail_h) / 2]
+                        : joint == "wide"
+                          ? [front_chassis_body_joint_pin_spacing(width), front_chassis_joint_pin_l,
+                             front_chassis_y_joint_2_end + joint_l / 2,
+                             joint_base_h + (joint_base_h + joint_rail_h) / 2]
+                          : [plist_get("pin_spacing", rear_p), rear_suspension_joint_pin_l,
+                             (rear_start + rear_end) / 2, plist_get("pin_z",
+                                                                    rear_p)];
 span                = is_undef(candidate_spacing) ? pattern[0] : candidate_spacing;
 length              = is_undef(candidate_length) ? pattern[1] : candidate_length;
 echo(pattern=[span, length, pattern[2], pattern[3]],
@@ -67,7 +73,7 @@ echo(pattern=[span, length, pattern[2], pattern[3]],
 module pins() {
   d = part == "obstruction" || part == "view" ? 3 : front_chassis_joint_pin_d;
   for (x = [-span / 2, span / 2]) {
-    translate([x, pattern[2], pattern[3]]) {
+    translate([x, pattern[2] + candidate_y_offset, pattern[3]]) {
       rotate([90, 0, 0]) {
         cylinder(d=d + 2 * margin,
                  h=length + 2 * margin,
@@ -89,6 +95,7 @@ module rear_in_front_coordinates() {
 }
 
 module front_cutouts() {
+  front_chassis_mount_recesses();
   bumper_y = front_chassis_front_frame_start_y()
              - front_bumper_bolt_d / 2 - front_bumper_bolt_pad_y;
   translate([0, bumper_y, 0]) {
@@ -161,6 +168,11 @@ module cutouts() {
     joint_bolts();
   }
   if (joint == "rear") {
+    translate([-width,
+               rear_suspension_mount_recess_end_y(layout),
+               suspension_chassis_mount_h]) {
+      cube([width * 2, 100, suspension_chassis_mount_recess]);
+    }
     rear_chassis_slots(layout=layout);
     rear_suspension_mount_slots(layout=layout);
   } else {
@@ -179,9 +191,9 @@ module plates() {
     rear_suspension_mount(layout=layout);
   } else if (joint == "head") {
     front_chassis_head_frame();
-    front_chassis_front_frame(debug=false);
+    front_chassis_suspension_frame(debug=false);
   } else if (joint == "compact") {
-    front_chassis_front_frame(debug=false);
+    front_chassis_suspension_frame(debug=false);
     front_chassis_rear_frame(debug=false);
   } else {
     front_chassis_rear_frame(debug=false);

@@ -78,7 +78,6 @@ module rear_chassis_frame(debug=false,
   transition_y_start = plist_get("transition_y_start", layout);
   joint_y = rear_suspension_joint_y_bounds(layout);
 
-  suspension_w = plist_get("suspension_w", layout);
   join_w = plist_get("join_w", layout);
   min_y = plist_get("min_y", layout);
   center_y = (plist_get("min_y", layout) + plist_get("max_y", layout)) / 2;
@@ -104,11 +103,9 @@ module rear_chassis_frame(debug=false,
               linear_extrude(height=chassis_thickness, convexity=3) {
                 difference() {
                   rear_chassis_outline(layout);
-                  translate([-suspension_w / 2,
-                             joint_y[0],
-                             0]) {
-                    square([suspension_w, transition_y_start - joint_y[0] + 0.1],
-                            center=false);
+                  translate([-join_w, joint_y[0], 0]) {
+                    square([join_w * 2, transition_y_start - joint_y[0] + 1],
+                           center=false);
                   }
                 }
               }
@@ -158,4 +155,4 @@ module rear_chassis_frame(debug=false,
   }
 }
 
-rear_chassis_frame(debug=false);
+rear_chassis_frame(debug=false, show_rear_suspension_mount=true);

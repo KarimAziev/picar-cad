@@ -4,6 +4,11 @@
   * Author: Karim Aziiev <karim.aziiev@gmail.com>
   * License: GPL-3.0-or-later
   */
+
 use <front_chassis_rear_frame.scad>
 
-front_chassis_rear_frame_printable(debug=false, color=undef);
+module front_chassis_rear_frame_printable(debug=false) {
+  front_chassis_rear_frame(debug=$preview ? debug : false);
+}
+
+front_chassis_rear_frame_printable(debug=false);

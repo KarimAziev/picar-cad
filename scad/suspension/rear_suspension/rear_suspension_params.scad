@@ -5,8 +5,8 @@ include <../../bolt_parameters.scad>
 
 
 rear_suspension_chassis_bolt_d             = m3_hole_dia;
-rear_suspension_chassis_bolt_bore_d        = m3_countersunk_head_dia + 0.2;
-rear_suspension_chassis_bolt_bore_h        = m3_countersunk_head_h + 0.15;
+rear_suspension_chassis_bolt_bore_d        = m3_countersunk_bore_d_tight;
+rear_suspension_chassis_bolt_bore_h        = m3_countersunk_bore_h;
 rear_suspension_chassis_sink               = true;
 
 // ─────────────────────────────────────────────────────────────────────────────

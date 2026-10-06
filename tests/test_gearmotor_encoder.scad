@@ -16,7 +16,7 @@ bounds          = plist_get("bounds", e);
 module near(a, b) {
   assert(norm(a - b) < 0.000001, str(a, " != ", b));
 }
-near(shaft, [0, 29.1, 19.15]);
+near(shaft, [0, 29.1, 19.15 - suspension_chassis_mount_recess]);
 near(magnet - shaft,
      [0, motor_encoder_magnet_h + motor_encoder_sleeve_h_clearance, 0]);
 near(sensor - magnet, [0, motor_encoder_magnet_distance, 0]);
@@ -34,7 +34,7 @@ near([plist_get("bounds", p)[1][0]], [bounds[1][0]]);
 // The main bracket retains its native shape and datums when the feature is off.
 plain           = gearmotor_bracket_compute_params(encoder_plist=undef);
 assert(is_undef(plist_get("encoder_mount", plain)));
-near(plist_get("bounds", plain)[1], [11.825, 37.6, 20.44]);
+near(plist_get("bounds", plain)[1], [11.825, 37.6, 20.44 - suspension_chassis_mount_recess]);
 near(plist_get("bounds", plain)[0], [-28.65, -29, 0]);
 assert(plist_get("mount_hole_positions", plain) == plist_get("mount_hole_positions", p));
 
@@ -104,8 +104,8 @@ near(plist_get("pcb_back", gap_mount), plist_get("pcb_back", e) + [0, 0.3, 0]);
 near(plist_get("sensor_face", gap_mount) - plist_get("magnet_face", gap_mount),
      [0, 0.5, 0]);
 near([plist_get("magnet_bottom_z", s)], [plist_get("cup_h", s)]);
-near(magnet, [0, 31.5, 19.15]);
-near(plist_get("pcb_back", e), [0, 34.58, 19.15]);
+near(magnet, [0, 31.5, 19.15 - suspension_chassis_mount_recess]);
+near(plist_get("pcb_back", e), [0, 34.58, 19.15 - suspension_chassis_mount_recess]);
 // Bosses resolve their complete heights and diametral fits once for all consumers.
 near([plist_get("front", plist_get("boss_heights", p)),
       plist_get("rear", plist_get("boss_heights", p))],
@@ -116,5 +116,5 @@ custom = gearmotor_bracket_compute_params(boss_pocket_depth=1.5,
                                           motor_carrier_clearance=0.5);
 near([plist_get("front", plist_get("boss_heights", custom))], [10.43]);
 near([plist_get("boss_pocket_od", custom)], [6.4]);
-near(plist_get("base_bounds", custom)[1], [11.825, 37.6, 21.94]);
+near(plist_get("base_bounds", custom)[1], [11.825, 37.6, 21.94 - suspension_chassis_mount_recess]);
 echo("PASS: sleeve seat, lip, cross-hole, changed pad length and boss fits");

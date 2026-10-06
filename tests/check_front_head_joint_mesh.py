@@ -47,14 +47,14 @@ def main() -> None:
         assert len(pins.split()) == 2
         for pin in pins.split():
             np.testing.assert_allclose(pin.bounds[:, 1],
-                                       [34.425, 34.425 + length], atol=1e-5)
+                                       [45.5, 45.5 + length], atol=1e-5)
         for part in ("pin_keepout", "pin_obstruction"):
             checks.assert_no_interference(
                 checks.export(part, name=f"{part}-{length}", empty=True,
                               front_chassis_head_joint_pin_l=length), part)
     result = subprocess.run(
         [OPENSCAD, "--backend=Manifold", "--enable=textmetrics", "--hardwarnings",
-         "-D", "front_chassis_head_joint_pin_l=14",
+         "-D", "front_chassis_head_joint_pin_l=12",
          "-D", 'part="head"', "-o", str(checks.OUT / "invalid.stl"),
          str(checks.FIXTURE)], text=True, capture_output=True,
     )

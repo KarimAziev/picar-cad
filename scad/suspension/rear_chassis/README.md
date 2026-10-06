@@ -45,11 +45,11 @@ preset built on the reusable `plate_joint`. Width, bolt positions, and pin spaci
 come from the same preset. The compact front joint also uses this shared geometry.
 
 At the default 160.4 mm chassis width, the wide joint has pin centers at
-X = ±40 mm and bolt centers at X = −75.7, −45.05, 0, 45.05, and 75.7 mm.
+X = ±6 mm and bolt centers at X = −75.7, −37.85, 0, 37.85, and 75.7 mm.
 The outer through holes have at least 3 mm of material between their edges and
 both the chassis side and the female socket. The inner bolts retain 2 mm of material
-beside the pin passages. The fuse-wire outlet follows the pin spacing and
-preserves a 2 mm land beside its passage.
+beside the pin passages. An optional fuse-wire outlet follows the pin spacing and
+reserves a 2 mm land beside its passage.
 
 Configure these dimensions with `suspension_chassis_joint_wide_bolt_pad`,
 `suspension_chassis_joint_wide_pin_spacing`, and
@@ -106,6 +106,25 @@ The pin audit in `tests/check_chassis_pin_clearance.py` checks all four joints
 against equipment holes, joint bolts, wiring cutouts, and the assembled plates.
 It also checks the chassis envelopes and the outer bolt lands.
 
+## Lowered rear suspension mount
+
+The suspension footprint is 4 mm thick through the rectangular arm-pad slot.
+Its narrow sides clear the arms beside the bulkhead. Toward the motor, it flares
+symmetrically into a 6 mm thick joint region. The rear deck begins at that joint;
+the suspension mounting centers, motor XY position and outer longitudinal datums
+stay fixed. The central maintenance hole remains at its configured offset from
+the motor via `rc_motor_maintenance_hole_dist`.
+
+The joint spans native Y=-74.29 to -64.29 mm and is 130.4 mm wide. Its five bolt
+centers are X=-60.5, -30.25, 0, 30.25 and 60.5 mm. The two 39.5 mm pins lie at
+X=±7 mm. Their passages remain inside the full-thickness region with clearance
+to the lowered mounting footprint. Both mating parts must use this pattern.
+
+`rear_power_wiring.enabled=false` omits the optional deck wiring passages and
+external harness preview, keeping the joint region solid. The power case's
+internal wiring configuration is independent. Optional deck routing requires
+checking its passages against the configured joint and supporting material.
+
 ## Raised battery and lidar
 
 `rear_power_case_plist` selects the case; `undef` removes its supporting columns,
@@ -150,9 +169,9 @@ along Y relative to the motor center.
 With the current single-button configuration, the supports are 47 mm tall
 instead of 67 mm with the controls underneath. The low panel overlaps the case
 by 4.95 mm, while the lever clears the cover by 3 mm. This needs no additional
-chassis length: the plate is 177.8 × 159.69 × 6 mm, with the original taper.
-These are computed results, not fixed dimensions. The corrected motor offset
-remains -1.8 mm.
+chassis length: the combined rear plate envelope is 160.4 × 153.49 × 6 mm, including the
+separate lowered suspension mount.
+These are computed results, not fixed dimensions. The motor offset is -1.8 mm.
 
 The resolved case floor has recessed hex nuts to retain the standoffs' top studs.
 The nuts sit below the battery surface, with solid floor material beneath them.

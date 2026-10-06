@@ -25,7 +25,8 @@ use <suspension/bellcrank_steering_assembly.scad>
 use <suspension/computed.scad>
 use <suspension/front_chassis/front_chassis.scad>
 use <suspension/front_chassis/front_chassis_controls.scad>
-use <suspension/front_chassis/front_chassis_front_frame.scad>
+use <suspension/front_chassis/front_frame_util.scad>
+use <suspension/front_chassis/suspension_frame/front_chassis_suspension_frame.scad>
 use <suspension/front_suspension_assembly.scad>
 use <suspension/middle_chassis/middle_chassis.scad>
 use <suspension/rc_wheels.scad>
@@ -258,7 +259,7 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
 
   if (show_front_chassis_components) {
     if (show_steering_assembly) {
-      translate([0, 0, chassis_thickness]) {
+      translate([0, 0, suspension_chassis_mount_h]) {
         front_suspension_assembly(show_wheels=show_front_wheels,
                                   show_tires=show_wheel_tires,
                                   solve_linkage=solve_front_linkage,
@@ -288,7 +289,7 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
 
     translate([0,
                -bellcrank_y_distance_from_bulkhead,
-               chassis_thickness]) {
+               suspension_chassis_mount_h]) {
       if (show_upper_steering_plate) {
         upper_steering_plate_position() {
           upper_steering_plate(show_bolts=show_upper_steering_plate_bolts);

@@ -32,6 +32,7 @@ module bellcrank_slots() {
                              bore_d=front_chassis_bellcrank_bolt_bore_d,
                              bore_h=front_chassis_bellcrank_bolt_bore_h,
                              size=[chassis_bellcrank_spacing, 0],
+                             sink=front_chassis_bellcrank_use_countersunk,
                              reverse=true,
                              center=true);
   }

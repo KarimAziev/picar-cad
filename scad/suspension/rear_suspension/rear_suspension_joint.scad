@@ -11,6 +11,7 @@ include <../rear_chassis/rear_chassis_params.scad>
 use <../../components/plate_joint/plate_joint.scad>
 use <../../lib/plist.scad>
 use <../chassis_joint_bolts.scad>
+use <../front_chassis/front_chassis_joint.scad>
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -24,21 +25,23 @@ use <../chassis_joint_bolts.scad>
  */
 function rear_suspension_chassis_joint_params(layout=rear_chassis_layout()) =
   let (ys = rear_suspension_joint_y_bounds(layout),
+       w = rear_suspension_joint_width(layout),
        nominal = plate_joint_parameters(
          plate_h=chassis_thickness,
          bolt_d=chassis_bolt_d,
          bolt_bore_d=chassis_counterbore_bore_d,
          bolt_bore_h=chassis_counterbore_h,
-         w=plist_get("suspension_w", layout),
+         w=w,
+         rail_w=front_chassis_body_joint_rail_w(w),
          l=ys[1] - ys[0],
-         bolt_n_center=2,
+         bolt_n_center=5,
          clearance=suspension_chassis_joint_layout_clearance,
          axial_clearance=front_chassis_joint_axial_clearance,
          pin_use_pad=false,
          pin_d=front_chassis_joint_pin_d,
          pin_l=rear_suspension_joint_pin_l
                + 2 * front_chassis_joint_pin_end_clearance,
-         pin_spacing="60%",
+         pin_spacing=rear_suspension_joint_pin_spacing,
          include_pin_holes=true))
   plist_merge(nominal, ["clearance", front_chassis_joint_clearance]);
 
@@ -59,7 +62,7 @@ module rear_suspension_chassis_joint(mode,
   module _joint() {
     plate_joint(plate_h=chassis_thickness,
                 bolt_d=chassis_bolt_d,
-                bolt_n_center=2,
+                bolt_n_center=5,
                 pin_use_pad=false,
                 pin_d=front_chassis_joint_pin_d,
                 rail_w=plist_get("rail_w", p),

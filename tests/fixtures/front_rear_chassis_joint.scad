@@ -8,7 +8,7 @@ include <../../scad/suspension/front_chassis/computed_params.scad>
 
 use <../../scad/lib/plist.scad>
 use <../../scad/suspension/front_chassis/front_chassis_joint.scad>
-use <../../scad/suspension/front_chassis/front_chassis_rear_frame.scad>
+use <../../scad/suspension/front_chassis/rear_frame/front_chassis_rear_frame.scad>
 use <../../scad/suspension/rear_chassis/computed_params.scad>
 use <../../scad/suspension/rear_chassis/rear_chassis_frame.scad>
 

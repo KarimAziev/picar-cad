@@ -89,7 +89,7 @@ module rc_rear_wheels_preview(layout, show_tire=true) {
       + rc_rear_wheel_preview_y_offset;
   w = rc_touring_wheel_size(rc_wheel_plist)[2];
   for (side = [-1, 1]) {
-    translate([side * track / 2, y, chassis_thickness + z]) {
+    translate([side * track / 2, y, suspension_chassis_mount_h + z]) {
       rotate([0, side * 90, 0]) {
         translate([0, 0, -w / 2]) {
           rc_touring_wheel(pl=rc_wheel_plist, show_tire=show_tire);

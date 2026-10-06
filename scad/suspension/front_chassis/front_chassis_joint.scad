@@ -128,7 +128,7 @@ module front_chassis_joint(mode="male",
                            countersink_fallback=false) {
   anchor = normalize_anchor(anchor);
   spacing = is_undef(pin_spacing)
-    ? rail_w / 2 + joint_recess_w / 2
+    ? front_chassis_joint_pin_spacing
     : pin_spacing;
 
   module _profile() {
@@ -237,7 +237,6 @@ module front_chassis_body_joint(mode,
   - `center`: Center across the joint in the selected direction; false starts at Y=0.
   - `pad_side`: End flat side, `"bottom"` or `"top"`.
   - `l`: Nominal joint length.
-  - `rail_w`: Rail width for the default pin span.
   - `pin_spacing`: Explicit pin-center span; undef uses the compact front pattern.
  */
 module front_chassis_pin_joint_holes(direction=-1,
@@ -245,12 +244,11 @@ module front_chassis_pin_joint_holes(direction=-1,
                                      center=true,
                                      pad_side="bottom",
                                      l=joint_l,
-                                     rail_w=joint_rail_w,
                                      pin_spacing) {
   spacing = is_undef(pin_spacing)
-    ? rail_w / 2 + joint_recess_w / 2
+    ? front_chassis_joint_pin_spacing
     : pin_spacing;
-  // The old +Y entry is referenced from the other end of the joint.
+  // The +Y entry is referenced from the other end of the joint.
   translate([0, center && direction == 1 ? l : 0, 0]) {
     plate_joint_pin_holes(d=front_chassis_joint_pin_d,
                           pin_l=front_chassis_joint_pin_l

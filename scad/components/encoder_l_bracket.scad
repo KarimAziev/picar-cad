@@ -116,11 +116,11 @@ module encoder_l_bracket(plist,
   right_x = effective_w / 2 + extra_right_w;
   connector_clearance = plist_get("connector_clearance", plist, 0.2);
   connector_edges = !should_rotate
-    ? []
-    : [for (type = ["jst_shr", "pins"])
-      let (spec = encoder_connector_spec(plist, type),
-           direction = sin(plist_get("rotation", spec)[2] + 90),
-           x = -plist_get("position", spec)[1])
+                    ? []
+                    : [for (type = ["jst_shr", "pins"])
+                      let (spec = encoder_connector_spec(plist, type),
+                           direction = sin(plist_get("rotation", spec)[2] + 90),
+                           x = -plist_get("position", spec)[1])
          if (plist_get("enabled", spec) && abs(direction) > 0.5)
            [direction, x + direction * connector_clearance]];
   // Keep untrimmed upright sides just inside the foot to prevent coincident
@@ -172,7 +172,7 @@ module encoder_l_bracket(plist,
                 encoder_connector_clearance(plist,
                                             depth=side_thickness,
                                             edge_span=should_rotate
-                                            ? 2 * effective_l : undef);
+                                                      ? 2 * effective_l : undef);
               }
             }
           }
@@ -229,4 +229,4 @@ encoder_l_bracket(plist=steering_encoder_plist,
                   bottom_pan_bolt_d=steering_encoder_bottom_pan_bolt_d,
                   bottom_pan_bolt_pad=steering_encoder_bottom_pan_bolt_pad,
                   bottom_corner_r=steering_encoder_bottom_corner_r,
-                  show_encoder=true);
+                  show_encoder=false);

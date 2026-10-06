@@ -8,15 +8,15 @@
   * License: GPL-3.0-or-later
   */
 
-include <../../parameters.scad>
-include <../../rc_params.scad>
+include <../../../parameters.scad>
+include <../../../rc_params.scad>
 
-use <../../head/head_neck.scad>
-use <../../lib/functions.scad>
-use <../../lib/placement.scad>
-use <../../lib/slots.scad>
-use <../../lib/transforms.scad>
-use <../../lib/trapezoids.scad>
+use <../../../head/head_neck.scad>
+use <../../../lib/functions.scad>
+use <../../../lib/placement.scad>
+use <../../../lib/slots.scad>
+use <../../../lib/transforms.scad>
+use <../../../lib/trapezoids.scad>
 
 /**
   ─────────────────────────────────────────────────────────────────────────────

@@ -6,9 +6,10 @@
   */
 include <../scad/suspension/front_chassis/computed_params.scad>
 
-use <../scad/suspension/front_chassis/front_chassis_front_frame.scad>
-use <../scad/suspension/front_chassis/front_chassis_head_slots.scad>
-use <../scad/suspension/front_chassis/front_chassis_ribbon_slots.scad>
+use <../scad/suspension/front_chassis/front_frame_util.scad>
+use <../scad/suspension/front_chassis/head_frame/head_slots.scad>
+use <../scad/suspension/front_chassis/rear_frame/front_chassis_ribbon_slots.scad>
+use <../scad/suspension/front_chassis/suspension_frame/front_chassis_suspension_frame.scad>
 
 curve = front_chassis_ribbon_curve();
 path  = front_chassis_ribbon_path();

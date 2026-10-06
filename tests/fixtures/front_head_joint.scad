@@ -9,9 +9,12 @@ include <../../scad/suspension/front_chassis/computed_params.scad>
 use <../../scad/lib/plist.scad>
 use <../../scad/suspension/bulkhead/front_bulkhead_chassis.scad>
 use <../../scad/suspension/front_chassis/front_chassis_access_slots.scad>
-use <../../scad/suspension/front_chassis/front_chassis_front_frame.scad>
-use <../../scad/suspension/front_chassis/front_chassis_head_joint.scad>
-use <../../scad/suspension/front_chassis/front_chassis_head_slots.scad>
+use <../../scad/suspension/front_chassis/front_frame_util.scad>
+use <../../scad/suspension/front_chassis/head_frame/front_chassis_head_frame.scad>
+use <../../scad/suspension/front_chassis/head_frame/head_joint.scad>
+use <../../scad/suspension/front_chassis/head_frame/head_slots.scad>
+use <../../scad/suspension/front_chassis/suspension_frame/front_chassis_suspension_frame.scad>
+use <../../scad/suspension/front_chassis/suspension_frame/front_chassis_suspension_frame_printable.scad>
 
 part    = "assembly";
 spacing = 0;
@@ -24,7 +27,7 @@ module head() {
   }
 }
 module frame() {
-  front_chassis_front_frame(debug=false, color="lightsteelblue");
+  front_chassis_suspension_frame(debug=false, color="lightsteelblue");
 }
 module assembly() {
   head();
@@ -103,7 +106,7 @@ if (part == "head") {
     }
   }
 } else if (part == "frame_printable") {
-  front_chassis_front_frame_printable(debug=false);
+  front_chassis_suspension_frame_printable(debug=false);
 } else {
   assembly();
 }

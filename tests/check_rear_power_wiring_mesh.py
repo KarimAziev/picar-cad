@@ -16,6 +16,7 @@ include <{ROOT}/scad/suspension/rear_chassis/computed_params.scad>
 use <{ROOT}/scad/suspension/rear_chassis/rear_power_wiring.scad>
 use <{ROOT}/scad/suspension/rear_chassis/rear_equipment.scad>
 use <{ROOT}/scad/suspension/rear_chassis/rear_chassis_frame.scad>
+use <{ROOT}/scad/suspension/rear_chassis/rear_chassis_slots.scad>
 use <{ROOT}/scad/lipo_pack_case/lid_wiring.scad>
 use <{ROOT}/scad/lipo_pack_case/multi_lipo_pack_case.scad>
 use <{ROOT}/scad/lipo_pack_case/multi_lipo_pack_lid.scad>
@@ -23,7 +24,16 @@ use <{ROOT}/scad/placeholders/crimp_terminals/ring_terminal.scad>
 use <{ROOT}/scad/lib/wire.scad>
 l=rear_chassis_layout();
 payload=plist_get("power_case",l); pl=plist_get("plist",payload);
-p=rear_power_wiring_props(l);
+config=plist_merge(rear_power_wiring,["enabled",true,"fuse_outlet",false]);
+p=rear_power_wiring_props(l,config);
+// The optional harness is evaluated on an unsplit equipment deck.
+module harness_deck() {{
+ difference() {{
+  linear_extrude(chassis_thickness) {{rear_chassis_outline(l);}}
+  rear_chassis_slots(layout=l);
+  rear_power_harness(l,slot_mode=true,config=config);
+ }}
+}}
 paths=concat(plist_get("feeds",p),[plist_get("converter_path",p)]);
 module case_body() {{
  translate(plist_get("pos",payload)) {{
@@ -42,8 +52,8 @@ module lead(path) {{
 }}
 module fuse_passages() {{
  difference() {{
-  rear_power_harness(l,slot_mode=true);
-  rear_power_harness(l,slot_mode=true,config=plist_merge(rear_power_wiring,
+  rear_power_harness(l,slot_mode=true,config=config);
+  rear_power_harness(l,slot_mode=true,config=plist_merge(config,
       ["fuse_hole_columns",0,"fuse_outlet",false]));
  }}
 }}
@@ -69,7 +79,7 @@ def main() -> None:
             assert mesh_volume(mesh) < 0.00001, (mesh_volume(mesh), log)
 
         empty('''intersection() {
- rear_chassis_frame(layout=l);
+ harness_deck();
  fuse_passages();
 }''')
         print("PASS fuse wire passages cut through the complete chassis", flush=True)
@@ -81,12 +91,12 @@ def main() -> None:
   }
   translate([-200,-300,0.01]) {cube([400,600,plist_get("size",l)[2]-0.02]);}
  }
- union() {rear_chassis_frame(layout=l); fuse_passages();}
+ union() {harness_deck(); fuse_passages();}
 }''')
-        print("PASS fuse passages retain 2 mm lands at edges, mounts and joint pins", flush=True)
+        print("PASS optional fuse passages retain 2 mm lands on the unsplit equipment deck", flush=True)
         empty('''intersection() {
- rear_power_harness(l);
- union() {rear_chassis_frame(layout=l); case_body(); lid_body();}
+ rear_power_harness(l,config=config);
+ union() {harness_deck(); case_body(); lid_body();}
 }''')
         print("PASS rear wires and ring clear the chassis, case and closed lid", flush=True)
         empty('''union() {
@@ -94,7 +104,7 @@ def main() -> None:
   intersection() {lead(paths[i]); lead(paths[j]);}
  }
  intersection() {
-  rear_power_harness(l);
+  rear_power_harness(l,config=config);
   translate(plist_get("pos",payload)+[0,0,plist_get("mount_z",payload)]) {
    lid_wiring(pl);
   }
@@ -102,13 +112,13 @@ def main() -> None:
 }''')
         print("PASS distribution wires stay separate and clear the battery harness", flush=True)
         empty('''intersection() {
- rear_chassis_frame(layout=l);
+ harness_deck();
  for(h=plist_get("holes",p)) {
   translate(h+[0,0,-5]) {ring_terminal(plist_get("ring_terminal",p));}
  }
 }''')
         print("PASS complete insulated ring terminals pass through all four chassis holes", flush=True)
-        empty('''intersection() {rear_power_harness(l); rear_equipment(l);}''')
+        empty('''intersection() {rear_power_harness(l,config=config); rear_equipment(l);}''')
         print("PASS ring terminal rests above the converter PCB and clears its components", flush=True)
         empty('''intersection() {case_body(); lid_body();}''')
         print("PASS reversed case rails fit the unchanged lid frame", flush=True)

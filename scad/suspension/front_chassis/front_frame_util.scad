@@ -1,0 +1,243 @@
+/**
+  * Module: Separate head and bulkhead sections of the front chassis.
+  *
+  * The removable head retains the camera ribbon bank and bumper mounts.
+  * The bulkhead and bellcrank section carries the matching head socket and
+  * the existing rear joint for the steering-servo frame.
+  *
+  * Author: Karim Aziiev <karim.aziiev@gmail.com>
+  * License: GPL-3.0-or-later
+  */
+
+include <../../colors.scad>
+include <../../parameters.scad>
+include <../../rc_params.scad>
+include <computed_params.scad>
+
+use <../../lib/debug.scad>
+use <../../lib/functions.scad>
+use <../../lib/polygon_util.scad>
+use <../../lib/slots.scad>
+use <../../lib/transforms.scad>
+use <../bellcrank/bellcrank_slots.scad>
+use <../bulkhead/front_bulkhead_chassis.scad>
+use <../bulkhead/util.scad>
+use <front_chassis_access_slots.scad>
+use <front_chassis_joint.scad>
+use <front_chassis_mount_recesses.scad>
+use <head_frame/head_slots.scad>
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_front_frame_start_y
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Locate the nose from the front ribbon passage and bumper mounting lands.
+
+  **Returns:** Front-frame maximum Y, with the bumper hole pattern ahead of
+  the ribbon passage. The elevated camera projection does not set deck length.
+ */
+function front_chassis_front_frame_start_y() =
+  front_chassis_head_center_y() + front_chassis_head_front_ribbon_y()
+  + front_chassis_head_pan_servo_top_ribbon_cutout_h / 2 + front_chassis_head_wire_land
+  + front_bumper_center_bolt_y_offset
+  + front_bumper_bolt_d + front_bumper_bolt_pad_y * 2;
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_head_center_y
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Return the pan-axis center of the head mounting pad.
+
+  **Returns:**
+  - Head center on the front-frame Y axis.
+ */
+function front_chassis_head_center_y() =
+  front_bulkhead_pad_distance_to_hinge() + bulkhead_size_y
+  + front_chassis_head_rear_reach();
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_head_mount_z
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Return the head-neck assembly height at the top of the horn recess.
+
+  **Returns:**
+  - Head-neck placement coordinate on Z.
+ */
+function front_chassis_head_mount_z() =
+  chassis_thickness - front_chassis_head_pan_servo_slot_recess;
+
+function front_chassis_ear_pts() =
+  let (ear_y = front_chassis_ear_w / 2,
+       l = front_chassis_ear_l,
+       pts = [[0, ear_y + front_chassis_ear_extra_w],
+              [l * 0.4, ear_y],
+              [l * 0.75, ear_y * 0.85],
+              [l * 0.9, ear_y * 0.6],
+              [l * 0.97, ear_y * 0.3],
+              [l, 0],
+              [0, 0]],
+       mirrored_pts = [for (p = reverse(pts))
+         [p[0], -p[1]]])
+  concat(pts, mirrored_pts);
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_front_frame_bounds
+  ─────────────────────────────────────────────────────────────────────────────
+  Return a bounding box for the head, suspension outline and compact tongue.
+  **Returns:** `[minimum_xyz, maximum_xyz]` in assembled chassis coordinates.
+  The box includes the head mounting margins and bulkhead ears.
+ */
+function front_chassis_front_frame_bounds() =
+  let (half_w = max(front_frame_x_end,
+                   bulkhead_size_x / 2 + front_chassis_ear_l,
+                   front_bumper_bolt_spacing_x / 2
+                   + front_bumper_bolt_d / 2 + front_bumper_bolt_pad_x,
+                   front_chassis_head_mount_size()[0] / 2
+                   + front_chassis_head_side_slot_w + front_chassis_head_wire_land * 2))
+  [[-half_w, y_front_chassis_rear_frame_joint_1_start - joint_l, 0],
+   [half_w, front_chassis_front_frame_start_y(), chassis_thickness]];
+
+module _front_chassis_front_frame_unsplit(debug=false,
+                                          show_access_slots=true,
+                                          debug_font="Gill Sans:style=Bold",
+                                          debug_color=green_2,
+                                          color=white_smoke_1) {
+
+  start_y0 = front_chassis_front_frame_start_y();
+  head_mount_size = front_chassis_head_mount_size();
+  head_center_y = front_chassis_head_center_y();
+
+  bumper_x = front_bumper_bolt_spacing_x / 2
+             + front_bumper_bolt_d / 2
+             + front_bumper_bolt_pad_x;
+  x1 = max(bumper_x,
+           head_mount_size[0] / 2
+           + front_chassis_head_side_slot_w + front_chassis_head_wire_land * 2);
+  start_y1 = start_y0 - front_bumper_center_bolt_y_offset;
+
+  x2 = bulkhead_size_x / 2;
+  y2 = front_bulkhead_pad_distance_to_hinge()
+       + bulkhead_transition_len + front_bumper_bolt_y_offset
+       + front_bumper_bolt_d;
+
+  head_rear_y = head_center_y - front_chassis_head_rear_reach()
+                + bulkhead_transition_len;
+
+  y3 = bulkhead_transition_len
+       + front_chassis_bellcrank_tool_access_hole_d / 2
+       - front_lower_arm_lower_hinge_barrel_h;
+
+  x_end = front_frame_x_end;
+
+  y_end = -bellcrank_y_distance_from_bulkhead - bellcrank_mount_r;
+
+  pts = [[0, start_y0],
+         [bumper_x, start_y1],
+         [x1, head_center_y + head_mount_size[1] / 2],
+         [x1, head_rear_y],
+         [x2, y2],
+         [bumper_x, y3],
+         [x_end, y3 - bellcrank_mount_r],
+         [x_end, y_end],
+         [0, y_end]];
+
+  module _debug(rotation) {
+    let (x_size = polygon_x_len(pts) * 2,
+         font_size = constraint(x_size * 0.04, 1, 5)) {
+      debug_polygon_text(pts,
+                         rotation=rotation,
+                         font_size=font_size,
+                         font=debug_font,
+                         offset_x=font_size,
+                         offset_x_exclude=[0, len(pts) - 1],
+                         color=debug_color);
+    }
+  }
+
+  difference() {
+    union() {
+      difference() {
+        maybe_color(color) {
+          linear_extrude(height=chassis_thickness,
+                         center=false,
+                         convexity=2) {
+            mirror_copy([1, 0, 0]) {
+              polygon(pts);
+              // The chassis ears
+              translate([x2, y2, 0]) {
+                polygon(front_chassis_ear_pts());
+              }
+            }
+          }
+        }
+
+        // The bulkhead slots
+        front_bulkhead_housing_slots_non_center_y();
+
+        // Two holes for the bellcrank slots
+        translate([0, -bellcrank_y_distance_from_bulkhead, 0]) {
+          bellcrank_slots();
+        }
+
+        // Two through holes for metal pins used in the joint with the rear frame
+        translate([0, y_end, 0]) {
+          front_chassis_pin_joint_holes(center=true,
+                                        direction=-1,
+                                        use_pad=false,
+                                        pad_side="top");
+        }
+
+        // One center hole for the bumper
+        translate([0,
+                   start_y0
+                   - front_bumper_bolt_d / 2
+                   - front_bumper_bolt_pad_y,
+                   0]) {
+          counterbore(h=chassis_thickness,
+                      d=front_bumper_bolt_d);
+        }
+
+        // Two side holes for the bumper
+        translate([0,
+                   start_y1
+                   - front_bumper_bolt_d / 2
+                   - front_bumper_bolt_pad_y,
+                   0]) {
+
+          four_corner_counterbores(size=[front_bumper_bolt_spacing_x, 0],
+                                   center=true,
+                                   d=front_bumper_bolt_d,
+                                   h=chassis_thickness);
+        }
+
+        translate([0, head_center_y, 0]) {
+          front_chassis_head_slots();
+        }
+        if (show_access_slots) {
+          front_chassis_access_slots(head_center_y);
+        }
+      }
+
+      // Male joint for connection to the front rear frame
+      translate([0, y_end, 0]) {
+        front_chassis_joint_male(color=color);
+      }
+    }
+    front_chassis_mount_recesses();
+  }
+  if (debug) {
+    translate([0, 0, chassis_thickness + 0.1]) {
+      _debug();
+      mirror([1, 0, 0]) {
+        _debug(rotation=[0, 180, 0]);
+      }
+    }
+  }
+}
+
+_front_chassis_front_frame_unsplit();

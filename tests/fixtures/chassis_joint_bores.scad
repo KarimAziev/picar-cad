@@ -1,5 +1,5 @@
 /**
-  * Module: Chassis joint counterbores and printed male interface probes.
+  * Module: Chassis joint counterbores and nominal male interface probes.
   *
   * Author: Karim Aziiev <karim.aziiev@gmail.com>
   * License: GPL-3.0-or-later
@@ -10,7 +10,7 @@ include <../../scad/suspension/rear_chassis/rear_chassis_params.scad>
 use <../../scad/components/plate_joint/plate_joint.scad>
 use <../../scad/lib/plist.scad>
 use <../../scad/suspension/front_chassis/front_chassis_joint.scad>
-use <../../scad/suspension/front_chassis/front_chassis_head_joint.scad>
+use <../../scad/suspension/front_chassis/head_frame/head_joint.scad>
 use <../../scad/suspension/rear_suspension/rear_suspension_joint.scad>
 
 part = "male";
@@ -30,24 +30,17 @@ module half(mode) {
   }
 }
 
-// These dimensions describe the printed rear frame's two male interfaces.
-module printed_male() {
-  wide = joint == "wide";
+// Independent nominal interface checks keep socket fit separate from sizing.
+module nominal_male() {
   difference() {
-    plate_joint(plate_h=6, bolt_d=wide ? 3 : 3.2,
-                w=wide ? 160.4 : 45.5,
-                l=wide ? 14.03939124 : 10,
-                rail_w=wide ? 141.6 : 29.5,
-                rail_h=3, base_h=1.5, clearance=0.4, axial_clearance=0.4,
-                bolt_n_center=wide ? 0 : 2,
-                bolt_spacing_center=37.5,
-                pin_d=3.1, pin_l=40, pin_spacing=wide ? 80 : 17.7,
+    plate_joint(plate_h=6, bolt_d=3, w=160.4, l=14.03939124,
+                rail_w=141.6, rail_h=3, base_h=1.5,
+                clearance=0.4, axial_clearance=0.4, bolt_n_center=0,
+                pin_d=3.1, pin_l=40, pin_spacing=12,
                 include_pin_holes=true, pin_use_pad=false,
-                mode="male", root_side=wide ? 1 : -1);
-    if (wide) {
-      plate_joint_bolt_holes(bolt_d=3, plate_h=6, l=14.03939124,
-                             bolt_xs=[-75.7, -45.05, 0, 45.05, 75.7]);
-    }
+                mode="male", root_side=1);
+    plate_joint_bolt_holes(bolt_d=3, plate_h=6, l=14.03939124,
+                           bolt_xs=[-75.7, -37.85, 0, 37.85, 75.7]);
   }
 }
 
@@ -55,21 +48,21 @@ if (part == "male") {
   half("male");
 } else if (part == "female") {
   half("female");
-} else if (part == "printed") {
-  printed_male();
-} else if (part == "printed_collision") {
+} else if (part == "nominal") {
+  nominal_male();
+} else if (part == "nominal_collision") {
   intersection() {
-    printed_male();
+    nominal_male();
     half("female");
   }
-} else if (part == "printed_difference") {
+} else if (part == "nominal_difference") {
   difference() {
-    printed_male();
+    nominal_male();
     half("male");
   }
   difference() {
     half("male");
-    printed_male();
+    nominal_male();
   }
 } else if (part == "collision") {
   intersection() {

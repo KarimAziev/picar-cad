@@ -11,8 +11,8 @@ import check_suspension_mesh as checks
 # Native-coordinate envelopes of the adjoining plate pairs, in millimeters.
 BOUNDS = {
     "head": [[-32.15, -47.38939124, 0], [32.15, 123.825, 6]],
-    "compact": [[-80.2, -117.82878248, 0], [80.2, 46.325, 6]],
-    "wide": [[-80.2, -225.78385852, 0], [80.2, -33.75, 6]],
+    "compact": [[-80.2, -117.82878248, 0], [80.2, 55.8, 6]],
+    "wide": [[-80.2, -200.87878248, 0], [80.2, -33.75, 6]],
     "rear": [[-80.2, -161.37939124, 0], [80.2, 5.75, 6]],
 }
 
@@ -33,7 +33,7 @@ def main() -> None:
         assert plates.volume > 0
         np.testing.assert_allclose(plates.bounds, bounds, atol=0.00002)
         print(f"PASS {joint}: stock pins fit, cutouts clear with 1 mm margin, "
-              "and chassis width/length unchanged", flush=True)
+              "and the chassis section envelopes match", flush=True)
     checks.assert_no_interference(
         checks.export("side_lands", empty=True), "wide joint side-bolt lands")
     print("PASS wide joint: solid side-bolt lands with 3 mm nominal padding",

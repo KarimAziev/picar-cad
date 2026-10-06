@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def main() -> None:
     source_text = f'''
 include <{ROOT}/scad/suspension/front_chassis/computed_params.scad>
-use <{ROOT}/scad/suspension/front_chassis/front_chassis_rear_frame.scad>
+use <{ROOT}/scad/suspension/front_chassis/rear_frame/front_chassis_rear_frame.scad>
 echo(reference=rpi_5_size(), offset=rpi_bolts_offset,
      spacing=rpi_bolt_spacing, radius=rpi_bolt_cbore_dia/2 + 0.4,
      front_y=y_front_chassis_rear_frame_main_start + front_rpi_y_offset,

@@ -22,6 +22,7 @@ module candidate() {
               clearance=front_chassis_joint_clearance,
               axial_clearance=front_chassis_joint_axial_clearance,
               bolt_n_center=0,
+              pin_spacing=front_chassis_joint_pin_spacing,
               include_pin_holes=true,
               pin_use_pad=false,
               mode=part);

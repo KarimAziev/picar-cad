@@ -6,7 +6,7 @@
 include <computed_params.scad>
 
 use <../../lib/transforms.scad>
-use <front_chassis_head_slots.scad>
+use <head_frame/head_slots.scad>
 
 /**
   ─────────────────────────────────────────────────────────────────────────────

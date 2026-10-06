@@ -14,6 +14,8 @@ use <../scad/placeholders/crimp_terminals/ring_terminal.scad>
 use <../scad/suspension/rear_chassis/rear_power_wiring.scad>
 
 layout        = rear_chassis_layout();
+config        = plist_merge(rear_power_wiring, ["enabled", true, "fuse_outlet", false]);
+assert(!plist_get("enabled", rear_power_wiring_props(layout)));
 payload       = plist_get("power_case", layout);
 pl            = plist_get("plist", payload);
 original      = plist_put("power_rotation", 0, pl);
@@ -50,14 +52,14 @@ for (i = [0:len(routes) - 1]) {
     assert(norm(path[j] - rotZ(before[j], 180)) < 1e-6);
   }
 }
-p = rear_power_wiring_props(layout);
+p = rear_power_wiring_props(layout, config);
 assert(plist_get("enabled", p));
 assert(len(plist_get("feeds", p)) == 3);
 assert(plist_get("hole_d", p) == 12);
 assert(len(plist_get("holes", p)) == 4);
 assert(len(plist_get("black_holes", p)) == 2);
 assert(len(plist_get("holes", rear_power_wiring_props(layout,
-                                                      plist_put("black_holes", false, rear_power_wiring)))) == 2);
+                                                      plist_put("black_holes", false, config)))) == 2);
 ring = ring_terminal_props(plist_get("ring_terminal", p));
 assert(plist_get("hole_d", p) > max(plist_get("od", ring), plist_get("max_w", ring)) + 4);
 assert(abs(norm(plist_get("ring_bore", p) - plist_get("input_ports", p)[0])

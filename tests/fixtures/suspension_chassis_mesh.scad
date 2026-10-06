@@ -5,9 +5,9 @@ include <../../scad/suspension/front_chassis/computed_params.scad>
 
 use <../../scad/lib/shapes3d.scad>
 use <../../scad/suspension/front_chassis/front_chassis.scad>
-use <../../scad/suspension/front_chassis/front_chassis_front_frame.scad>
+use <../../scad/suspension/front_chassis/suspension_frame/front_chassis_suspension_frame.scad>
 use <../../scad/suspension/front_chassis/front_chassis_joint.scad>
-use <../../scad/suspension/front_chassis/front_chassis_rear_frame.scad>
+use <../../scad/suspension/front_chassis/rear_frame/front_chassis_rear_frame.scad>
 use <../../scad/suspension/middle_chassis/middle_chassis.scad>
 use <../../scad/suspension/middle_chassis/middle_chassis_printable.scad>
 
@@ -45,7 +45,7 @@ if (part == "first_layer") {
   }
 }
 if (part == "front") {
-  front_chassis_front_frame(debug=false);
+  front_chassis_suspension_frame(debug=false);
 }
 if (part == "rear") {
   front_chassis_rear_frame(debug=false);
@@ -64,7 +64,7 @@ if (part == "joint_collision") {
 }
 if (part == "front_collision") {
   intersection() {
-    front_chassis_front_frame(debug=false);
+    front_chassis_suspension_frame(debug=false);
     front_chassis_rear_frame(debug=false);
   }
 }
@@ -78,6 +78,7 @@ if (part == "middle_collision") {
 }
 if (part == "placed_rear") {
   front_chassis(show_front_frame=false,
+                show_head_frame=false,
                 show_rear_frame=true,
                 debug=false,
                 spacing=front_spacing);

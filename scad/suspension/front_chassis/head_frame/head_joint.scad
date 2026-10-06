@@ -4,28 +4,33 @@
   * Author: Karim Aziiev <karim.aziiev@gmail.com>
   * License: GPL-3.0-or-later
   */
-include <layout_params.scad>
+include <../layout_params.scad>
 
-use <../../components/plate_joint/plate_joint.scad>
-use <../../lib/plist.scad>
-use <../bulkhead/front_bulkhead_chassis.scad>
-use <../bulkhead/util.scad>
-use <../chassis_joint_bolts.scad>
-use <front_chassis_head_slots.scad>
+use <../../../components/plate_joint/plate_joint.scad>
+use <../../../lib/plist.scad>
+use <../../bulkhead/front_bulkhead_chassis.scad>
+use <../../bulkhead/util.scad>
+use <../../chassis_joint_bolts.scad>
+use <head_slots.scad>
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
   front_chassis_head_joint_params
   ─────────────────────────────────────────────────────────────────────────────
-  Locate the joint within the existing head-to-bulkhead taper.
+  Locate the head joint beyond the suspension mounting recess.
   **Returns:** Plist containing `root_y`, `end_y`, `w`, `l`, `tab_w`,
-  `pin_start_y`, `pin_center_y`, and `pin_z`. The head owns the central tab
+  `tab_end_y`, `pin_start_y`, `pin_center_y`, and `pin_z`. The head owns the central tab
   and all three ribbon openings. The bulkhead-side pin ends retain
   `front_chassis_head_wire_land` clearance from the mounting keepout;
   additional pin length extends toward the head along +Y.
  */
 function front_chassis_head_joint_params() =
-  let (end_y = front_bulkhead_pad_distance_to_hinge() + bulkhead_size_y,
+  let (outline_end_y = front_bulkhead_pad_distance_to_hinge() + bulkhead_size_y,
+       outline_root_y = outline_end_y + bulkhead_transition_len,
+       mount_keepout_y = suspension_chassis_mount_recess > 0
+                         ? front_chassis_mount_end_y + front_chassis_head_wire_land
+                         : 0,
+       end_y = max(outline_end_y, mount_keepout_y + 3),
        root_y = end_y + bulkhead_transition_len,
        taper_y = front_bulkhead_pad_distance_to_hinge() + bulkhead_transition_len
                  + front_bumper_bolt_y_offset + front_bumper_bolt_d,
@@ -35,15 +40,16 @@ function front_chassis_head_joint_params() =
                          + front_chassis_head_side_slot_w + front_chassis_head_wire_land * 2),
        bulkhead_half_w = bulkhead_size_x / 2,
        half_w = bulkhead_half_w + (head_half_w - bulkhead_half_w)
-                * (end_y - taper_y) / (root_y - taper_y),
+                * min(1, (end_y - taper_y) / (outline_root_y - taper_y)),
        tab_w = front_chassis_head_ribbon_slot_w + front_chassis_head_wire_land * 2,
        bulkhead_front_y = front_bulkhead_chassis_mount_origin_y()
                           + front_bulkhead_mount_bolt_spacing_1[1] + front_bulkhead_mount_bolt_d / 2
                           + max(front_bulkhead_mount_bolt_d, front_bulkhead_mount_bolt_bore_d) / 2,
-       pin_start_y = bulkhead_front_y + front_chassis_head_wire_land,
+       pin_start_y = max(bulkhead_front_y + front_chassis_head_wire_land,
+                         mount_keepout_y),
        pin_end_y = pin_start_y + front_chassis_head_joint_pin_l)
   assert(end_y > taper_y && root_y > end_y,
-         "Head joint must fit inside the existing taper")
+         "Head joint must follow the bulkhead taper")
   assert(end_y - pin_start_y >= 3,
          "Head pins need at least 3 mm engagement beyond the chassis socket")
   assert(pin_end_y - root_y >= 3,
@@ -61,6 +67,7 @@ function front_chassis_head_joint_params() =
    "w", half_w * 2,
    "l", root_y - end_y,
    "tab_w", tab_w,
+   "tab_end_y", outline_end_y,
    "pin_start_y", pin_start_y,
    "pin_center_y", pin_start_y + front_chassis_head_joint_pin_l / 2,
    "pin_z", joint_base_h + (joint_base_h + joint_rail_h) / 2];
@@ -93,29 +100,29 @@ module front_chassis_head_joint_pins(extra=0) {
   **Parameters:**
   - `mode`: `"male"` for the head or `"female"` for the bulkhead frame.
   - `slot_mode`: Emit joint and pin cutters for subtraction from the parent.
-  **Behavior:** The full-thickness central ribbon tab belongs to the head.
+  **Behavior:** The central ribbon tab belongs to the head.
   Its female clearance is part of the socket. Both halves retain their original
   vehicle coordinates; assembled parts need no translation.
  */
 module front_chassis_head_joint(mode="male", slot_mode=false) {
   p = front_chassis_head_joint_params();
-  bolt_params = plate_joint_parameters(
-    plate_h=chassis_thickness,
-    bolt_d=front_chassis_joint_bolt_d,
-    bolt_bore_d=chassis_counterbore_bore_d,
-    bolt_bore_h=chassis_counterbore_h,
-    w=plist_get("w", p),
-    l=plist_get("l", p),
-    rail_w=front_chassis_head_joint_rail_w,
-    bolt_n_center=2,
-    clearance=front_chassis_joint_clearance,
-    axial_clearance=front_chassis_joint_axial_clearance,
-    include_pin_holes=true,
-    pin_d=front_chassis_head_joint_pin_d,
-    pin_spacing=front_chassis_head_joint_pin_spacing);
+  bolt_params = plate_joint_parameters(plate_h=chassis_thickness,
+                                       bolt_d=front_chassis_joint_bolt_d,
+                                       bolt_bore_d=chassis_counterbore_bore_d,
+                                       bolt_bore_h=chassis_counterbore_h,
+                                       w=plist_get("w", p),
+                                       l=plist_get("l", p),
+                                       rail_w=front_chassis_head_joint_rail_w,
+                                       bolt_n_center=2,
+                                       clearance=front_chassis_joint_clearance,
+                                       axial_clearance=front_chassis_joint_axial_clearance,
+                                       include_pin_holes=true,
+                                       pin_d=front_chassis_head_joint_pin_d,
+                                       pin_spacing=front_chassis_head_joint_pin_spacing);
   module _bolts() {
     translate([0, plist_get("root_y", p), 0]) {
-      chassis_joint_bolt_holes(bolt_params, mode=mode,
+      chassis_joint_bolt_holes(bolt_params,
+                               mode=mode,
                                countersink_fallback=mode == "female");
     }
   }
@@ -142,10 +149,11 @@ module front_chassis_head_joint(mode="male", slot_mode=false) {
     if (mode == "female") {
       gap = front_chassis_joint_clearance;
       translate([-plist_get("tab_w", p) / 2 - gap,
-                 plist_get("end_y", p) - gap,
+                 plist_get("tab_end_y", p) - gap,
                  -gap]) {
         cube([plist_get("tab_w", p) + gap * 2,
-              plist_get("l", p) + gap * 2, chassis_thickness + gap * 2]);
+              plist_get("root_y", p) - plist_get("tab_end_y", p) + gap * 2,
+              chassis_thickness + gap * 2]);
       }
     }
   } else {
@@ -158,4 +166,4 @@ module front_chassis_head_joint(mode="male", slot_mode=false) {
 }
 
 // front_chassis_head_joint();
-front_chassis_head_joint_pins();
+// front_chassis_head_joint_pins();

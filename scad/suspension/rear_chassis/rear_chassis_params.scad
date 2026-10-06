@@ -24,7 +24,6 @@ rear_suspension_chassis_transition_len = 10;
 
 // Joint inset into the main deck along native -Y (vehicle front), in mm.
 // Provides screw access beside the suspension arm pad.
-rear_suspension_joint_inset            = 9.5;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // RC motor slot
@@ -71,3 +70,4 @@ rear_wago_mounts                       = [];
 
 // Rear suspension joint: two 39.5 x 3 mm stock pins.
 rear_suspension_joint_pin_l            = 39.5;
+rear_suspension_joint_pin_spacing      = 14;

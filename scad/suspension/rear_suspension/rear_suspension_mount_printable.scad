@@ -6,4 +6,8 @@
   */
 use <rear_suspension_mount.scad>
 
-rear_suspension_mount(debug=false, color=undef, joint_color=undef);
+module rear_suspension_mount_printable() {
+  rear_suspension_mount(debug=false, slot_mode=false);
+}
+
+rear_suspension_mount_printable();
