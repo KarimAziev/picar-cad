@@ -62,13 +62,14 @@ the nominal envelope placement remain unchanged, including with `[1,0,1]`.
 Pass the same flip/anchor to bodies and their cutters. Pin heights are specified
 in the unflipped coordinate frame.
 
-## Defaults from the working front joint
+## Standalone defaults
 
 Fit dimensions are fixed millimeters; they do not scale with bolt diameter.
+Chassis presets pass their socket and axial clearances explicitly.
 
-| Parameter | Default | Source |
+| Parameter | Default | Meaning or reference |
 | --- | --- | --- |
-| `clearance` | 0.4 mm | `front_chassis_joint_clearance` |
+| `clearance` | 0.4 mm | Female profile offset |
 | `axial_clearance` | resolved `clearance` | male free-tip setback |
 | `boolean_overlap` | 0.02 mm | `front_chassis_joint_boolean_overlap` |
 | `pin_compensation` | 0.4 mm | `sag_compensated_hole()` used by the front joint |

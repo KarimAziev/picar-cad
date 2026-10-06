@@ -267,7 +267,7 @@ module front_chassis_front_frame(debug=front_chassis_front_frame_debug,
   - `show_access_slots`: Include the side and front cable openings.
   - `color`: Body color; undef inherits the caller's color.
   **Behavior:** Native coordinates align with the bulkhead frame. The central
-  full-thickness tab keeps all ribbon slots on this part; two 23.8 x 3 mm pins
+  full-thickness tab keeps all ribbon slots on this part; two longitudinal pins
   reinforce the side rails. Cutters provide 3.1 mm sag-compensated passages.
  */
 module front_chassis_head_frame(debug=false,

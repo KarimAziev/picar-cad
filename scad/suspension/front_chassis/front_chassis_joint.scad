@@ -15,6 +15,7 @@ include <layout_params.scad>
 use <../../components/plate_joint/plate_joint.scad>
 use <../../lib/functions.scad>
 use <../../lib/transforms.scad>
+use <../chassis_joint_bolts.scad>
 
 joint_preview_spacing = 0; // [0:1:30]
 
@@ -30,7 +31,7 @@ joint_preview_spacing = 0; // [0:1:30]
 function front_chassis_body_joint_rail_w(w) =
   w - 2 * (front_chassis_joint_bolt_d
            + 2 * suspension_chassis_joint_wide_bolt_pad
-           + front_chassis_joint_clearance);
+           + suspension_chassis_joint_layout_clearance);
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -105,7 +106,10 @@ function front_chassis_joint_default_bolt_xs(spacing=front_chassis_joint_bolt_sp
   - `eps`: Attachment overlap in millimeters.
   - `slot_mode`: Emit the full parent cutters instead of a solid.
   - `anchor`: Nominal envelope anchor; default spans Y=-l..0.
-  **Behavior:** Retains the front joint's sag-compensated pins and bolt through holes.
+  - `countersink_fallback`: Use full countersinks where full counterbores
+    cannot fit in the selected half.
+  **Behavior:** Sag-compensated pins reinforce the joint. Bolt recesses enter
+  the thicker half where the configured floor and side walls fit.
   Parent calls must subtract
   slot mode from the complete plate so pin passages continue into the parent.
  */
@@ -120,7 +124,8 @@ module front_chassis_joint(mode="male",
                            root_side,
                            eps=front_chassis_joint_boolean_overlap,
                            slot_mode=false,
-                           anchor=[0, -1, 1]) {
+                           anchor=[0, -1, 1],
+                           countersink_fallback=false) {
   anchor = normalize_anchor(anchor);
   spacing = is_undef(pin_spacing)
     ? rail_w / 2 + joint_recess_w / 2
@@ -140,6 +145,7 @@ module front_chassis_joint(mode="male",
                 rail_corner_r=front_chassis_joint_rail_corner_r,
                 dovetail_rib=front_chassis_joint_use_dovetail_rib,
                 clearance=front_chassis_joint_clearance,
+                axial_clearance=front_chassis_joint_axial_clearance,
                 boolean_overlap=eps,
                 bolt_n_center=0,
                 include_pin_holes=include_pin_holes,
@@ -157,15 +163,24 @@ module front_chassis_joint(mode="male",
   }
 
   module _bolts() {
-    with_anchor(anchor=anchor, size=[w, l, chassis_thickness], centered=true) {
-      translate([0, l / 2, 0]) {
-        plate_joint_bolt_holes(bolt_d=front_chassis_joint_bolt_d,
-                               plate_h=chassis_thickness,
+    p = plate_joint_parameters(plate_h=chassis_thickness,
+                               bolt_d=front_chassis_joint_bolt_d,
+                               bolt_bore_d=chassis_counterbore_bore_d,
+                               bolt_bore_h=chassis_counterbore_h,
+                               w=w,
                                l=l,
-                               bolt_xs=bolt_xs,
-                               no_bore=true);
-      }
-    }
+                               rail_w=rail_w,
+                               rail_h=joint_rail_h,
+                               base_h=joint_base_h,
+                               angle=front_chassis_joint_rail_angle,
+                               dovetail_rib=front_chassis_joint_use_dovetail_rib,
+                               clearance=front_chassis_joint_clearance,
+                               axial_clearance=front_chassis_joint_axial_clearance,
+                               include_pin_holes=true,
+                               pin_spacing=spacing,
+                               pin_d=front_chassis_joint_pin_d);
+    chassis_joint_bolt_holes(p, mode=mode, bolt_xs=bolt_xs, anchor=anchor,
+                             countersink_fallback=countersink_fallback);
   }
 
   if (slot_mode) {
@@ -331,6 +346,7 @@ module front_chassis_joint_female(color,
                       include_pin_holes=include_pin_holes,
                       root_side=root_side,
                       eps=eps,
+                      countersink_fallback=true,
                       slot_mode=slot_mode,
                       anchor=anchor);
 }

@@ -46,8 +46,8 @@ come from the same preset. The compact front joint also uses this shared geometr
 
 At the default 160.4 mm chassis width, the wide joint has pin centers at
 X = ±40 mm and bolt centers at X = −75.7, −45.05, 0, 45.05, and 75.7 mm.
-The outer bolts have 3 mm of material between the hole edge and both the
-chassis side and the female socket. The inner bolts retain 2 mm of material
+The outer through holes have at least 3 mm of material between their edges and
+both the chassis side and the female socket. The inner bolts retain 2 mm of material
 beside the pin passages. The fuse-wire outlet follows the pin spacing and
 preserves a 2 mm land beside its passage.
 
@@ -86,7 +86,7 @@ All chassis reinforcing pins are 3 mm diameter.
 
 | Joint | Pin length | Quantity |
 | --- | ---: | ---: |
-| Head plate to bulkhead plate | 23.8 mm | 2 |
+| Head plate to bulkhead plate | 33.8 mm | 2 |
 | Bulkhead plate to steering-servo plate | 39.5 mm | 2 |
 | Steering-servo plate to rear chassis | 39.5 mm | 2 |
 | Rear chassis to rear suspension mount | 39.5 mm | 2 |
@@ -95,7 +95,12 @@ The three 39.5 mm pairs use 40 mm long, 3.1 mm sag-compensated passages,
 providing 0.25 mm of axial clearance at each end. The front joints engage
 each parent beyond the joint band by approximately 12.73 mm; the rear
 suspension joint provides 14.75 mm. The head joint uses its dedicated
-23.8 mm passage and offset described in the [front chassis guide](../front_chassis/README.md).
+33.8 mm passage and offset described in the [front chassis guide](../front_chassis/README.md).
+
+The rear frame's nominal male interfaces stay fixed as socket clearance is
+tuned. The [joint fit and bolt recess settings](../front_chassis/README.md#joint-fit-and-bolt-recesses)
+describe fit to printed parts and the supported recess positions on all four
+chassis joints.
 
 The pin audit in `tests/check_chassis_pin_clearance.py` checks all four joints
 against equipment holes, joint bolts, wiring cutouts, and the assembled plates.

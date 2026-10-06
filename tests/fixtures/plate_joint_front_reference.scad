@@ -19,13 +19,15 @@ module candidate() {
               w=joint_w,
               l=joint_l,
               rail_w=joint_rail_w,
+              clearance=front_chassis_joint_clearance,
+              axial_clearance=front_chassis_joint_axial_clearance,
               bolt_n_center=0,
               include_pin_holes=true,
               pin_use_pad=false,
               mode=part);
 }
 // Compare the actual geometry, including rails, fit and reinforcing passages.
-// Bolts are excluded because the new component intentionally defaults to no bore.
+// Bolt patterns and recesses are checked separately from the mating profile.
 difference() {
   candidate();
   reference();

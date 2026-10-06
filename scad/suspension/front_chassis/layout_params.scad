@@ -49,8 +49,7 @@ bellcrank_x                              = chassis_bellcrank_spacing / 2;
 
 joint_l                                  = abs(bellcrank_y_dist) - bellcrank_mount_r;
 
-joint_rail_w                             = front_chassis_joint_bolt_spacing - front_chassis_joint_bolt_pad
-                                            - front_chassis_joint_bolt_d;
+joint_rail_w                             = front_chassis_joint_rail_w;
 
 joint_w                                  = bellcrank_x * 2 + front_chassis_joint_bolt_d + front_chassis_joint_bolt_pad;
 

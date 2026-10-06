@@ -83,7 +83,7 @@ m6_lock_nut_h            = 8.92;
 m2_pan_counterbore_d     = 4;
 m2_pan_counterbore_h     = 1.58;
 
-m3_socket_counterbore_d  = 6.1;
+m3_socket_counterbore_d  = 6.0;
 m3_socket_counterbore_h  = 3.3;
 
 m3_countersunk_bore_d    = 6.1;

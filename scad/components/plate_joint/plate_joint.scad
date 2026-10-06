@@ -38,7 +38,7 @@ use <../../placeholders/suspension_arm_pin.scad>
   - `dovetail_rib`: Use the double-taper rib; false selects a single dovetail.
   - `edge_land`: Relief land; percent of `rail_h`; default 0.45 mm.
   - `relief_depth`: Relief depth; percent of `rail_h`; auto is zero (disabled).
-  - `clearance`: Female profile offset; percent of `bolt_d`; default 0.4 mm, as in the front joint.
+  - `clearance`: Female profile offset; percent of `bolt_d`; standalone default 0.4 mm.
   - `axial_clearance`: Male free-tip setback; percent of `l`; auto equals `clearance`.
   - `boolean_overlap`: Parent attachment overlap; percent of `plate_h`; default 0.02 mm, as in the front joint.
   - `wall`: Material reserved beside a side-bolt cutter during automatic sizing; percent of bolt_d; default 2 mm.

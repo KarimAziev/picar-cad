@@ -12,23 +12,22 @@ retaining strips, and the rear supporting land stay on the head plate. The two
 side rails use `plate_joint`; the receiving bulkhead frame has the matching
 socket and clearance around the central tab.
 
-Use **two 23.8 × 3 mm pins** from the four available. Passages are 3.1 mm and
+Use **two 33.8 × 3 mm pins**. Passages are 3.1 mm and
 sag compensated. The current configuration has:
 
 | Dimension                                                    |            Value |
 | ------------------------------------------------------------ | ---------------: |
 | Joint band in native Y                                       | 39.025–46.325 mm |
 | Pin center X positions                                       |  −16.5, +16.5 mm |
-| Pin ends in native Y                                         | 34.425–58.225 mm |
+| Pin ends in native Y                                         | 34.425–68.225 mm |
 | Engagement beyond the socket into the bulkhead plate         |           4.6 mm |
 | Pin-end clearance to the front bulkhead countersink envelope |             3 mm |
 | Pin passage to ribbon opening, edge to edge                  |          4.95 mm |
 
-The pin passages are centered on the head-side root, not the middle of the
-joint. This offset keeps their lower ends clear of the bulkhead holes.
-The 33, 38, 39.5, and 43–44 mm stock pins are too long for this placement;
-the component rejects lengths that enter the bulkhead mounting keepout.
-No frame length, head position, or bulkhead hole position changes.
+The bulkhead-side pin ends are located from the mounting keepout plus the
+configured wire land. Increasing pin length extends the passages toward the
+head along +Y while preserving the bulkhead clearance and chassis engagement.
+Each pin must engage at least 3 mm beyond both ends of the joint band.
 
 The pin length, passage diameter, pin spacing, and rail width are configured in
 `scad/rc_params.scad` under `front_chassis_head_joint_*`. Placement and
@@ -51,6 +50,60 @@ hardware cuts. Export the separate printable entries:
 
 Each sits on Z=0 with its top face on the bed. The head-frame geometry and
 pin clearances are checked by `tests/check_front_head_joint_mesh.py`.
+
+## Joint fit and bolt recesses
+
+The five chassis plates meet at four joints. `front_chassis_joint_clearance`
+sets the female profile offset at all four interfaces; its default is 0.2 mm.
+It affects X/Z fit, including the dovetail faces. It is a clearance fit, not a
+specified interference fit. Pins and bolts provide the joint's retention.
+
+`suspension_chassis_joint_layout_clearance=0.4` defines nominal rail sizing,
+and `front_chassis_joint_axial_clearance=0.4` sets the male tongue's free-end
+setback. Keep these datums fixed when fitting sockets to existing male parts.
+Changing socket clearance does not move bolt or pin centers or resize the
+nominal rail. A printed female socket retains its printed allowance; changing
+the parameter only affects newly generated parts.
+
+The rear frame has male interfaces at both ends. Its 0.4 mm configuration
+mates with sockets generated at 0.2 mm using the same nominal dimensions.
+`tests/check_chassis_joint_bores.py` checks those printed-interface dimensions
+against the receiving sockets. Printer-dependent fit can be evaluated with
+a small joint sample before printing a complete plate.
+
+Set `suspension_chassis_joint_counterbores=false` for through holes only.
+Enabled recesses use `chassis_counterbore_bore_d` and at most
+`chassis_counterbore_h`, retaining `suspension_chassis_joint_bore_floor` beneath
+the head and `suspension_chassis_joint_bore_wall` beside the bore. The defaults
+are a 6 mm diameter, 1.5 mm floor, and 0.5 mm side wall.
+`suspension_chassis_joint_bore_pin_land` reserves at least 1 mm beside pin passages.
+Positions lacking this material retain through holes.
+
+The compact front joint and head joint use a full counterbore when its depth
+fits. Otherwise their female halves use `chassis_countersunk_bore_d` and
+`chassis_countersunk_bore_h`: 6.1 mm diameter and 1.95 mm depth. These conical
+seats take countersunk screws and retain at least 2.35 mm above the narrow end.
+If neither full recess fits the configured walls and floor, the hole remains
+a through hole.
+
+The compact joint's outer bolts are at X=±23 mm, with a 37.8 mm rail and
+25.515 mm pin-center spacing. The head joint has a 38.4 mm rail, outer bolt
+centers at approximately X=±22.991 mm, and 33 mm pin-center spacing.
+Its rail retains at least 0.60 mm beside the pin passages at the narrow neck.
+Both mating parts share each bolt pattern and rail profile.
+
+| Interface | Top recesses in male half | Underside recesses in female half |
+| --- | --- | --- |
+| Head / bulkhead plate | None | Both bolts countersunk, 1.95 mm deep |
+| Bulkhead / steering-servo plate | Center bolt, 2.95 mm deep | Both outer bolts countersunk, 1.95 mm deep |
+| Steering-servo plate / rear frame | Center bolt, 2.95 mm deep | Two outer bolts, 2.8 mm deep |
+| Rear frame / rear suspension mount | None | Both bolts, 2.8 mm deep |
+
+Top and underside refer to assembled vehicle coordinates. Cylindrical recesses are
+0.35 or 0.5 mm shallower than the configured 3.3 mm recess depth. Head protrusion
+depends on the screw's actual head height. Hole centers and nominal mating profiles are
+independent of the recess toggle. Parts generated with the same bolt pattern
+and nominal rail dimensions can mate with either recess setting.
 
 ## Upper steering bridge
 

@@ -26,6 +26,7 @@ use <../../scad/suspension/rear_chassis/computed_params.scad>
 use <../../scad/suspension/rear_chassis/rear_chassis_frame.scad>
 use <../../scad/suspension/rear_chassis/rear_chassis_slots.scad>
 use <../../scad/suspension/rear_suspension/rear_suspension_mount.scad>
+use <../../scad/suspension/rear_suspension/rear_suspension_joint.scad>
 use <../../scad/suspension/rear_suspension/rear_suspension_slots.scad>
 use <../../scad/suspension/steering_servo_bracket/steering_servo_chassis_slots.scad>
 
@@ -40,20 +41,12 @@ width               = plist_get("join_w", layout);
 rear_joint_y        = rear_suspension_joint_y_bounds(layout);
 rear_start          = rear_joint_y[1];
 rear_end            = rear_joint_y[0];
-rear_p = plate_joint_parameters(plate_h=chassis_thickness,
-                                bolt_d=chassis_bolt_d,
-                                w=plist_get("suspension_w", layout),
-                                l=rear_start - rear_end,
-                                bolt_n_center=2,
-                                include_pin_holes=true,
-                                pin_d=front_chassis_joint_pin_d,
-                                pin_l=rear_suspension_joint_pin_l,
-                                pin_spacing="60%");
+rear_p = rear_suspension_chassis_joint_params(layout);
 head_p              = front_chassis_head_joint_params();
 wide_rail           = front_chassis_body_joint_rail_w(width);
 pattern             = joint == "head"
                        ? [front_chassis_head_joint_pin_spacing, front_chassis_head_joint_pin_l,
-                       plist_get("root_y", head_p), plist_get("pin_z", head_p)]
+                       plist_get("pin_center_y", head_p), plist_get("pin_z", head_p)]
                        : joint == "compact"
                        ? [joint_rail_w / 2 + joint_recess_w / 2, front_chassis_joint_pin_l,
                        y_front_chassis_rear_frame_joint_1_start - joint_l / 2,
@@ -148,6 +141,7 @@ module joint_bolts() {
                           w=width,
                           rail_w=wide_rail,
                           bolt_xs=xs,
+                          pin_spacing=front_chassis_body_joint_pin_spacing(width),
                           include_pin_holes=false,
                           slot_mode=true);
     }

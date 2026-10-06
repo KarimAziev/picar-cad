@@ -1,4 +1,4 @@
-"""Check stock head pins, intact ribbon lands, mating solids and print placement.
+"""Check head pin placement, intact ribbon lands, mating solids and print placement.
 
 Author: Karim Aziiev <karim.aziiev@gmail.com>
 License: GPL-3.0-or-later
@@ -41,17 +41,28 @@ def main() -> None:
         np.testing.assert_allclose(mesh.bounds[0, 2], 0, atol=1e-6)
     moved = checks.one_solid("head", name="head-spaced", spacing=20)
     np.testing.assert_allclose(moved.bounds - head.bounds, [[0, 20, 0]] * 2, atol=1e-5)
-    for length in (33, 38, 39.5, 43, 44, 54):
-        result = subprocess.run(
-            [OPENSCAD, "--backend=Manifold", "--enable=textmetrics", "--hardwarnings",
-             "-D", f"front_chassis_head_joint_pin_l={length}",
-             "-D", 'part="head"', "-o", str(checks.OUT / "invalid.stl"),
-             str(checks.FIXTURE)], text=True, capture_output=True,
-        )
-        assert result.returncode != 0 and "bulkhead mounting keepout" in result.stderr
-    print("PASS two stock 23.8 mm pins: hardware keepouts with 1 mm margin, "
+    for length in (23.8, 33.8):
+        pins = checks.export("pins", name=f"pins-{length}",
+                             front_chassis_head_joint_pin_l=length)
+        assert len(pins.split()) == 2
+        for pin in pins.split():
+            np.testing.assert_allclose(pin.bounds[:, 1],
+                                       [34.425, 34.425 + length], atol=1e-5)
+        for part in ("pin_keepout", "pin_obstruction"):
+            checks.assert_no_interference(
+                checks.export(part, name=f"{part}-{length}", empty=True,
+                              front_chassis_head_joint_pin_l=length), part)
+    result = subprocess.run(
+        [OPENSCAD, "--backend=Manifold", "--enable=textmetrics", "--hardwarnings",
+         "-D", "front_chassis_head_joint_pin_l=14",
+         "-D", 'part="head"', "-o", str(checks.OUT / "invalid.stl"),
+         str(checks.FIXTURE)], text=True, capture_output=True,
+    )
+    assert result.returncode != 0 and "engagement beyond the head root" in result.stderr
+    print("PASS 23.8 and 33.8 mm pins extend toward the head: "
+          "fixed bulkhead ends, hardware keepouts with 1 mm margin, "
           "open passages, intact ribbon strips, unchanged envelope, printable "
-          "solids and longer stock pins rejected")
+          "solids and insufficient head engagement rejected")
 
 
 if __name__ == "__main__":

@@ -55,28 +55,29 @@ module rear_suspension_mount(layout=rear_chassis_layout(),
   if (slot_mode) {
     rear_chassis_slots(layout=layout);
   } else {
-    difference() {
-      union() {
-        maybe_color(color) {
+    color(color, alpha=1) {
+      difference() {
+        union() {
           linear_extrude(height=chassis_thickness) {
             rear_suspension_mount_outline(layout);
           }
+          translate([0, min_y, 0]) {
+            rear_suspension_chassis_joint(anchor=[0, -1, 1],
+                                          layout=layout,
+                                          mode="female",
+                                          color=joint_color);
+          }
         }
+
+        rear_suspension_mount_slots(layout=layout);
+        rear_chassis_slots(layout=layout);
+
         translate([0, min_y, 0]) {
           rear_suspension_chassis_joint(anchor=[0, -1, 1],
                                         layout=layout,
                                         mode="female",
-                                        color=joint_color);
+                                        slot_mode=true);
         }
-      }
-      rear_suspension_mount_slots(layout=layout);
-      rear_chassis_slots(layout=layout);
-
-      translate([0, min_y, 0]) {
-        rear_suspension_chassis_joint(anchor=[0, -1, 1],
-                                      layout=layout,
-                                      mode="female",
-                                      slot_mode=true);
       }
     }
   }

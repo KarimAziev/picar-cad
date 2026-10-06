@@ -15,11 +15,11 @@ p = plate_joint_parameters(plate_h=6,
                            pin_l=30);
 assert_eq(plist_get("bolt_no_bore", p), true, "through holes by default");
 assert_eq(plist_get("clearance", p),
-          front_chassis_joint_clearance,
-          "proven rail clearance");
+          0.4,
+          "standalone rail clearance");
 assert_eq(plist_get("axial_clearance", p),
-          front_chassis_joint_clearance,
-          "proven axial fit");
+          plist_get("clearance", p),
+          "automatic axial clearance follows socket clearance");
 assert_eq(plist_get("boolean_overlap", p),
           front_chassis_joint_boolean_overlap,
           "proven root overlap");

@@ -284,7 +284,8 @@ front_chassis_joint_bolt_d                         = 3;
 front_chassis_joint_bolt_pad                       = 2;
 // Keep the wide rail clear of tangent bolt cutters, including binary STL export.
 front_chassis_joint_rail_bolt_clearance            = 0.05;
-front_chassis_joint_bolt_spacing                   = 42.8;
+front_chassis_joint_bolt_spacing                   = 46.0;
+front_chassis_joint_rail_w                         = 37.8;
 front_chassis_joint_use_dovetail_rib               = true;
 
 // Stock pin length; passages include clearance at both ends.
@@ -295,7 +296,16 @@ front_chassis_joint_pin_pad_l                      = 5.5;
 front_chassis_joint_pin_pad_w                      = 2.5;
 
 front_chassis_joint_clearance                      = 0.2;
+// Nominal rail sizing and tongue end clearance are independent of socket fit.
+suspension_chassis_joint_layout_clearance          = 0.4;
+front_chassis_joint_axial_clearance                = 0.4;
 front_chassis_joint_boolean_overlap                = 0.02;
+
+// Recesses enter the thicker half and retain material around and below the head.
+suspension_chassis_joint_counterbores              = true;
+suspension_chassis_joint_bore_floor                = 1.5;
+suspension_chassis_joint_bore_wall                 = 0.5;
+suspension_chassis_joint_bore_pin_land             = 1.0;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Head mount on the front chassis
@@ -313,13 +323,13 @@ front_chassis_head_side_slot_rows                  = 2;
 
 // Pan-servo mounting interface retained from the proven head mount.
 front_chassis_head_pan_servo_slot_dia              = 6.5;
-front_chassis_head_pan_servo_slot_recess           = constraint(2.0,
+front_chassis_head_pan_servo_slot_recess           = constraint(3.8,
                                                                 0,
                                                                 chassis_thickness - 1);
 front_chassis_head_pan_servo_top_ribbon_cutout_len = 18;
 front_chassis_head_pan_servo_top_ribbon_cutout_h   = 2;
-front_chassis_head_pan_servo_recess_y_len          = 14;
-front_chassis_head_pan_servo_recess_x_len          = 16;
+front_chassis_head_pan_servo_recess_y_len          = 18;
+front_chassis_head_pan_servo_recess_x_len          = 18;
 front_chassis_head_pan_servo_recess_thickness      = 5;
 front_chassis_head_pan_servo_screw_d               = 1.5;
 front_chassis_head_pan_servo_screws_gap            = 0.5;
@@ -327,11 +337,11 @@ front_chassis_head_pan_servo_screws_gap            = 0.5;
 front_chassis_head_mount_padding                   = 2.0;
 front_chassis_head_wire_land                       = 3.0;
 
-// Two of the four available 23.8 x 3 mm pins reinforce the removable head.
-front_chassis_head_joint_pin_l                     = 23.8;
+// 33.8 x 3 mm pins reinforce the removable head.
+front_chassis_head_joint_pin_l                     = 33.8;
 front_chassis_head_joint_pin_d                     = 3.1;
 front_chassis_head_joint_pin_spacing               = 33;
-front_chassis_head_joint_rail_w                    = 40;
+front_chassis_head_joint_rail_w                    = 38.4;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Middle chassis

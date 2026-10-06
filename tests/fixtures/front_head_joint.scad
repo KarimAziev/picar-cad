@@ -49,6 +49,8 @@ if (part == "head") {
     head();
     frame();
   }
+} else if (part == "pins") {
+  front_chassis_head_joint_pins();
 } else if (part == "pin_keepout") {
   intersection() {
     front_chassis_head_joint_pins(extra=1);
