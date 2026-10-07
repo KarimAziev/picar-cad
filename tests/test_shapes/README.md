@@ -14,13 +14,16 @@ Open these files in OpenSCAD and use Preview (F5) to inspect colors and placemen
 - `test_rounded_sides.scad`: side lists, independent numeric/percentage radii,
   and a square-corner override. Blue profiles show `rounded_rect()` above the
   matching orange `cuboid()` specimens.
+- `test_cuboid_axes.scad`: thin plates extruded along Z, Y, and X. Blue
+  specimens round all profile corners; orange specimens use different radii
+  for the top corners and bottom-right corner.
 
 Generate previews from the repository root (requires a nightly OpenSCAD with
 `roof` and `textmetrics`):
 
 ```sh
 mkdir -p build/skill-previews
-for name in test_cylindric_orientation test_cylindric_anchors test_colors test_rounded_sides; do
+for name in test_cylindric_orientation test_cylindric_anchors test_colors test_rounded_sides test_cuboid_axes; do
   openscad --backend=Manifold --enable=textmetrics --enable=roof \
     --hardwarnings --preview --projection=ortho --camera=0,0,0,35,0,0,700 \
     --colorscheme=Tomorrow --view=axes \

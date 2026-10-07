@@ -10,6 +10,6 @@ use <rear_chassis_frame.scad>
 
 translate([0, 0, chassis_thickness]) {
   rotate([180, 0, 0]) {
-    rear_chassis_frame(anchor=[0, 0, 1], color=undef);
+    rear_chassis_frame(anchor=[0, 0, 1]);
   }
 }

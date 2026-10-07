@@ -4,6 +4,7 @@
   * Author: Karim Aziiev <karim.aziiev@gmail.com>
   * License: GPL-3.0-or-later
   */
+use <step_down_enclosure/step_down_voltage_enclosure.scad>
 use <../lib/plist.scad>
 use <../lib/transforms.scad>
 use <../placeholders/perfboard.scad>
@@ -13,6 +14,7 @@ use <../placeholders/voltmeter.scad>
 function _deck_component_props(kind, pl=[]) =
   kind == "voltmeter" ? voltmeter_mount_props(pl) :
   kind == "step_down" ? step_down_mount_props(pl) :
+  kind == "step_down_enclosure" ? step_down_enclosure_props(pl) :
   kind == "perf_board" ? perf_board_mount_props(pl) :
   assert(false, str("Unknown deck component kind: ", kind)) [];
 
@@ -22,7 +24,7 @@ function _deck_component_props(kind, pl=[]) =
   ─────────────────────────────────────────────────────────────────────────────
   Resolve a component's envelope and mounting interface.
   **Parameters:**
-  - `kind`: voltmeter | step_down | perf_board.
+  - `kind`: voltmeter | step_down | step_down_enclosure | perf_board.
   - `pl`: Hardware-specific plist, passed unchanged to its mounting interface.
     Perfboards require the explicit mounting values from perfboard_default_plist.
   **Returns:** Component props including `size`, centered on XY above Z=0.
@@ -67,6 +69,13 @@ module deck_component(kind,
       voltmeter_mount(pl, parent_t, [0, 0, 1], slot_mode, show_hardware);
     } else if (kind == "step_down") {
       step_down_mount(pl, parent_t, [0, 0, 1], slot_mode, show_hardware);
+    } else if (kind == "step_down_enclosure") {
+      if (slot_mode || show_hardware) {
+        step_down_voltage_enclosure(pl,
+                                     anchor=[0, 0, 1],
+                                     parent_t=parent_t,
+                                     slot_mode=slot_mode);
+      }
     } else if (kind == "perf_board") {
       perf_board_mount(pl, parent_t, [0, 0, 1], slot_mode, show_hardware);
     }

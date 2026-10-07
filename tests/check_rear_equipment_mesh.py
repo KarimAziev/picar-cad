@@ -41,7 +41,7 @@ use <{ROOT}/scad/components/deck_component.scad>
                 assert mesh_volume(mesh) < 0.00001, log
             return log
 
-        for kind in ("voltmeter", "step_down", "perf_board"):
+        for kind in ("voltmeter", "step_down", "step_down_enclosure", "perf_board"):
             log = render(f'''
 component="{kind}"=="perf_board" ? perfboard_default_plist : [];
 p=deck_component_props("{kind}",component);
@@ -95,11 +95,13 @@ intersection() {
 for(p=parts) {
   props=plist_get("props",p);
   d=plist_get("bolt_d",props);
+  recess=plist_get("bore_d",props,2*d);
+  probe_r=(d+recess)/4;
   pitch=plist_get("bolt_spacing",props);
   translate(plist_get("pos",p)) {
     rotate([0,0,plist_get("rotation",p)]) {
       for(x=[-pitch[0]/2,pitch[0]/2], y=[-pitch[1]/2,pitch[1]/2]) {
-        translate([x+d*0.8,y,z]) { cube([0.05,0.05,0.05],center=true); }
+        translate([x+probe_r,y,z]) { cube([0.05,0.05,0.05],center=true); }
       }
     }
   }

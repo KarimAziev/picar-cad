@@ -22,7 +22,8 @@ use <{ROOT}/scad/lipo_pack_case/multi_lipo_pack_case.scad>
 use <{ROOT}/scad/lipo_pack_case/multi_lipo_pack_lid.scad>
 use <{ROOT}/scad/placeholders/crimp_terminals/ring_terminal.scad>
 use <{ROOT}/scad/lib/wire.scad>
-l=rear_chassis_layout();
+l=rear_chassis_layout(equipment=[["kind", "step_down",
+  "component", step_down_voltage_plist, "rotation", -90]]);
 payload=plist_get("power_case",l); pl=plist_get("plist",payload);
 config=plist_merge(rear_power_wiring,["enabled",true,"fuse_outlet",false]);
 p=rear_power_wiring_props(l,config);

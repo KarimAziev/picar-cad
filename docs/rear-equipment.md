@@ -15,10 +15,11 @@ rear_equipment_specs = rear_equipment_mixed;
 // Or: rear_equipment_meters, [], or a custom list.
 ```
 
-The selected `rear_equipment_mixed` loadout contains one voltmeter beside the
-fuse panel and a rotated regulator on the opposite side. The former voltmeter
-beside the regulator is omitted to leave room for its ring terminal and wiring
-passages. The two side displays on the battery lid remain in place.
+The selected `rear_equipment_mixed` loadout contains the combined D24V90F5 and
+INA260 enclosure in the right-hand corridor. Its regulator follows the −90°
+equipment rotation. The enclosure measures 84.2 × 29.3 mm in its native XY frame
+and uses four M3 chassis mounts. See [Power enclosure](power-enclosure.md) for
+printing, hardware and assembly. The two side displays sit on the battery lid.
 
 Open `scad/suspension/rear_chassis/rear_equipment_example.scad` for the mixed
 loadout with the case hidden and colored zones visible. It deliberately previews
@@ -31,16 +32,17 @@ assembly/printable callers through `rear_suspension_layout()`. A caller can
 supply `rear_suspension_layout(equipment=...)` directly. Pass the same resolved
 layout to the plate, hardware and cutters.
 
-**Sides refer to chassis coordinates:** `left` is −X, `right` is +X. The annotated
-September 30 screenshot looks in the opposite direction: its pictured left
-(fuse-panel side) is `right`, and its pictured right is `left`.
+**Sides refer to the native rear component:** `left` is −X and `right` is +X.
+`rc_robot_assembly` rotates this component 180° about Z, so native +X maps to
+vehicle left and native +Y maps to vehicle rear. Apply both equipment and
+assembly rotations before interpreting PCB directions.
 
 ## Entry options
 
 | Key | Default | Meaning |
 | --- | --- | --- |
-| `kind` | Required | `voltmeter`, `step_down`, or `perf_board` |
-| `component` | `[]` | The placeholder's hardware plist |
+| `kind` | Required | `voltmeter`, `step_down`, `step_down_enclosure`, or `perf_board` |
+| `component` | `[]` | The component's hardware or enclosure plist |
 | `zone` | `"auto"` | `"left"`, `"right"`, or first available zone |
 | `rotation` | `0` | Any Z rotation in degrees; 90/270 exchange width and length |
 | `count` | `1` | Positive integer; repeated copies are placed independently |
@@ -81,10 +83,14 @@ identifying the entry, dimensions, zone and rotation.
   `standoff_body_h`, `text`, etc. Its matching underside countersinks and central
   wiring passage are retained (`wire_d=4` by default).
 - **Regulator:** existing `placeholder_size`, `bolt_spacing`, `d`, `standoff_h`,
-  `vin` and `vout` terminal plists. The populated D24VXF5 model retains its
+  `vin` and `vout` terminal plists. The populated D24V90F5 model defines its
   physical PCB/component layout. Its deck mount uses four screw passages with
-  underside counterbores; it does not copy the old lid's large terminal slots.
+  underside counterbores.
   `wire_d` optionally adds a center passage (default 0).
+- **Power enclosure:** `step_down_enclosure_plist` combines `step_down_voltage`
+  and `sensor_current` hardware plists with the PCB gap, walls, floor, lid and
+  clearances. Four M3 passages and underside head recesses match captive nuts in
+  the base. Its envelope includes the lid screw heads.
 - **Perf board:** `size`, `slot_size` (mounting center spacing), `d`,
   `standoff_h`, `rows`, `cols`, copper-grid parameters and `component_h`.
   Defaults represent the existing 20 × 80 mm PCB, 16 × 76 mm mounting pattern,
@@ -97,8 +103,8 @@ pattern together. Adjust `rows` and `cols` when reducing its size, so the copper
 grid stays on the PCB. `component_h` reserves clearance; it does not invent a
 model of the components soldered to the board.
 
-`rear_chassis(show_equipment=false)` hides electronics while preserving the
-configured holes. `show_equipment_zones=true` shows corridors with occupied
+`rear_chassis(show_equipment=false)` hides electronics and their enclosures while
+preserving the configured holes. `show_equipment_zones=true` shows corridors with occupied
 areas removed. Hide the case/lid to inspect the deck. Selecting `equipment=[]`
 removes both electronics and their additional cutouts.
 
@@ -109,6 +115,10 @@ battery case, battery, WAGO pair and concealed fuse. Roof equipment placements
 are resolved in that power frame. The switch's own `rotation=180` counter-turns
 it so the lever still faces the lid voltmeters. The side displays, lidar and
 adapter retain their original positions and direction.
+
+The optional ring-terminal deck harness supports bare `step_down` entries. The
+combined enclosure uses its own cable exits; the production preset has
+`rear_power_wiring.enabled=false`.
 
 `rear_power_wiring` controls the three positive WAGO-to-fuse leads, the innermost
 fuse's red converter supply and the chassis passages. The supply goes down near
@@ -128,16 +138,17 @@ placeholder. The black return is deferred; its adjacent passages are present.
 
 The holes are checked against the existing deck boundary, motor, panel,
 electronics and support columns. Invalid placements assert without enlarging
-the chassis. The default plate envelope remains 166 × 153.49 × 6 mm.
+the chassis. The default plate envelope remains 160.4 × 153.49 × 6 mm.
 
 The converter currently has 5 mm input-hole spacing; two 6.61 mm outer-diameter
 ring terminals cannot lie beside each other on the same PCB face. The red ring
 is shown seated on its input pad. A mounting arrangement for the black ring
 remains to be chosen when its wire is added.
 
-`tests/test_rear_power_wiring.scad` checks placement, direction and fixed lid
-hardware. `tests/check_rear_power_wiring_mesh.py` checks wire separation,
-enclosure clearance, terminal passage, converter clearance and rail mating.
+`tests/test_rear_power_wiring.scad` checks a bare-regulator loadout for placement,
+direction and fixed lid hardware. `tests/check_rear_power_wiring_mesh.py` checks
+wire separation, enclosure clearance, terminal passage, converter clearance and
+rail mating.
 
 ## Add another component type
 

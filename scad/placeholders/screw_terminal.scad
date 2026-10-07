@@ -19,8 +19,8 @@ function screw_terminal_width(base_w,
                               contact_w,
                               wall_thickness) =
   let (needed_contacts_span = (contacts_n <= 1)
-       ? contact_w
-       : (contact_w + (contacts_n - 1) * pitch),
+                              ? contact_w
+                              : (contact_w + (contacts_n - 1) * pitch),
 
        side_margin = max(0.8, wall_thickness))
   is_undef(base_w)
@@ -132,7 +132,7 @@ module screw_terminal(base_w = undef,            // overall base width (optional
 
               translate([cx - pin_thickness / 2,
                          - pin_thickness / 2,
-                         -pin_h + wall_thickness]) {
+                         -pin_h]) {
                 cylinder(r1=pin_thickness * 0.25,
                          r2=pin_thickness / 2,
                          h=pin_h);
@@ -157,19 +157,18 @@ module screw_terminal_from_plist(plist,
                                  center=false,
                                  slot_thickness=2,
                                  slot_mode=false) {
-  plist = with_default(plist, []);
-  thickness = plist_get("thickness", plist, 7.6);
+  thickness = plist_get("thickness", plist);
   isosceles_trapezoid = plist_get("isosceles_trapezoid", plist, false);
-  base_h = plist_get("base_h", plist, 6.8);
-  top_l = plist_get("top_l", plist, 5.50);
-  top_h = plist_get("top_h", plist, 3.2);
-  contacts_n = plist_get("contacts_n", plist, 2);
-  contact_w = plist_get("contact_w", plist, 3.5);
-  contact_h = plist_get("contact_h", plist, 4.47);
-  pitch = plist_get("pitch", plist, 4.5);
-  colr = plist_get("colr", plist, medium_blue_2);
+  base_h = plist_get("base_h", plist);
+  top_l = plist_get("top_l", plist);
+  top_h = plist_get("top_h", plist);
+  contacts_n = plist_get("contacts_n", plist);
+  contact_w = plist_get("contact_w", plist);
+  contact_h = plist_get("contact_h", plist);
+  pitch = plist_get("pitch", plist);
+  colr = plist_get("colr", plist);
   pin_thickness = plist_get("pin_thickness", plist, 0.4);
-  pin_h = plist_get("pin_h", plist, 3.9);
+  pin_h = plist_get("pin_h", plist, 0);
   wall_thickness = plist_get("wall_thickness", plist, 0.6);
   base_w = plist_get("base_w",
                      plist,
@@ -205,7 +204,7 @@ screw_terminal_from_plist(["placeholder", "screw_terminal",
                            "pitch", 4.5,
                            "colr", medium_blue_2,
                            "pin_thickness", 0.4,
-                           "pin_h", 3.9,
+                           "pin_h", 3.3,
                            "wall_thickness", 0.6,
                            "isosceles_trapezoid", false],
                           center=false,

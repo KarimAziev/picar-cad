@@ -19,9 +19,11 @@
 include <../colors.scad>
 include <parameters.scad>
 
+use <../components/step_down_enclosure/step_down_voltage_enclosure.scad>
 use <../head/head_mount.scad>
 use <../head/head_neck.scad>
 use <../head/ir_case.scad>
+use <../lib/plist.scad>
 use <../motor_brackets/n20_motor_bracket.scad>
 use <../motor_brackets/standard_motor_bracket.scad>
 use <../panel_stack/panel_stack.scad>
@@ -45,6 +47,7 @@ use <wheels/rear_wheel.scad>
 use <wheels/tire.scad>
 use <wheels/wheel_hub.scad>
 
+show_power_enclosure  = true;
 show_wago_bracket     = true;
 show_chasssis         = true;
 show_power_case_stack = true;
@@ -70,6 +73,17 @@ show_buttons_panel    = true;
 show_fuse_panel       = true;
 
 module printable(spacing=5) {
+  half_of_chassis_len = chassis_len / 2;
+  half_of_chassis_width = chassis_body_w / 2;
+
+  if (show_power_enclosure) {
+    enclosure_size = plist_get("body_size", step_down_enclosure_props());
+    translate([-half_of_chassis_width - front_panel_width
+               - steering_panel_length - enclosure_size[0] / 2 - 3 * spacing,
+               -70, 0]) {
+      step_down_enclosure_printable();
+    }
+  }
   if (show_wago_bracket) {
     translate([0,
                chassis_body_len + chassis_upper_len + ir_case_height
@@ -78,9 +92,6 @@ module printable(spacing=5) {
       wago_bracket(anchor=[0, 1, 1]);
     }
   }
-  half_of_chassis_len = chassis_len / 2;
-  half_of_chassis_width = chassis_body_w / 2;
-
   rack_max_w = max(steering_rack_link_bearing_outer_d,
                    steering_rack_width) / 2;
 

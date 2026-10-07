@@ -66,7 +66,7 @@ use <transforms.scad>
 
   `r`:
     Absolute rounding radius or percentage string such as `"10%"`.
-    Percentages use the smallest X/Y dimension for the extruded version,
+    Percentages use the smaller profile dimension for the extruded version,
     or the smallest X/Y/Z dimension when `use_minkowski=true`.
 
     When `undef`, use `r_factor`; `0` leaves bare side selections square.
@@ -77,7 +77,7 @@ use <transforms.scad>
 
     When `r` is `undef`, the radius is computed from the smallest relevant
     dimension:
-    - for the extruded version: `min(size[0], size[1]) * r_factor`
+    - for the extruded version: the smaller profile dimension times `r_factor`
     - for the Minkowski version: `min(size[0], size[1], size[2]) * r_factor`
 
   `use_minkowski`:
@@ -85,8 +85,7 @@ use <transforms.scad>
     with a sphere.
 
     If `false` (default), creates a prism by extruding a 2D rounded rectangle.
-    This is faster, but only rounds the vertical edges and the top/bottom
-    perimeter, not all 3D corners equally.
+    Edges parallel to `axis` are rounded; the two extrusion end faces stay flat.
 
   `side`:
     Passed through to `rounded_rect()` when `use_minkowski=false`.
@@ -94,11 +93,12 @@ use <transforms.scad>
     Limits rounding to selected sides. Expected values are:
     `"all"` (default behavior), `"top"`, `"left"`, `"right"`, `"bottom"`,
     `"top_left"`, `"top_right"`, `"bottom_left"`, or `"bottom_right"`.
-    Corner names round only one corner of the XY profile; Z faces stay flat.
-    Top is +Y, bottom is -Y, left is -X, and right is +X.
+    Corner names round only one corner of the profile selected by `axis`.
+    Top/bottom and left/right refer to that profile's positive/negative
+    vertical and horizontal directions, respectively (see `axis`).
     Also accepts lists of names or `[name, radius]` pairs, including mixed
     lists. Bare names use `r`/`r_factor` (zero when both are omitted). Pairs
-    use non-negative absolute radii or percentages of the smaller X/Y
+    use non-negative absolute radii or percentages of the smaller profile
     dimension, capped at half that dimension. Later entries override earlier
     ones at shared corners; zero leaves a corner square. `[]` selects none.
     Ignored when `use_minkowski=true`.
@@ -110,6 +110,16 @@ use <transforms.scad>
   `color`:
     Optional color to use.
 
+  `axis`:
+    Extrusion axis: `"x"`, `"y"`, or `"z"` (default). The rounded profile's
+    horizontal/vertical directions are:
+    - `"z"`: X/Y; top is +Y, right is +X.
+    - `"y"`: X/Z; top is +Z, right is +X.
+    - `"x"`: Y/Z; top is +Z, right is +Y.
+
+    `size` and `anchor` always refer to the final X/Y/Z axes. `center`
+    still controls final X/Y placement only. Ignored for Minkowski rounding.
+
   **Behavior**
 
   - `center` only controls fallback placement for X and Y when `anchor` is
@@ -118,7 +128,7 @@ use <transforms.scad>
     unless `side` pairs supply radii in extruded mode.
   - If rounding is requested and `use_minkowski=true`, all 3D edges/corners are
     rounded.
-  - Otherwise, a rounded 2D profile is extruded along Z.
+  - Otherwise, a rounded 2D profile is extruded along `axis`.
 
   The effective radius is always clamped so it cannot exceed half of any
   relevant dimension.
@@ -152,6 +162,10 @@ use <transforms.scad>
   cuboid([20, 30, 10], r=2, side=["top_left", "bottom_right"]);
   cuboid([20, 30, 10], side=[["top", 4], ["bottom", "10%"]]);
 
+  // Thin vertical plate with rounded X/Z corners.
+  cuboid([30, 2, 10], r=1.5, axis="y");
+  cuboid([30, 2, 10], r=1.5, axis="y", side="top");
+
   // Fully 3D-rounded box
   cuboid([20, 30, 10], r=2, use_minkowski=true, fn=48);
   ```
@@ -164,13 +178,27 @@ module cuboid(size,
               use_minkowski=false,
               side,
               fn=36,
-              color) {
+              color,
+              axis="z") {
   assert(is_num(size) || is_list(size) && len([for (v = size)
     if (is_num(v)) v]) == 3,
          "Size should be number or [number, number, number]");
   size = is_num(size) ? [size, size, size] : size;
+  assert(axis == "x" || axis == "y" || axis == "z",
+         "cuboid: axis must be x, y, or z");
+  profile_size = axis == "x"
+    ? [size[1], size[2]]
+    : axis == "y"
+      ? [size[0], size[2]]
+      : [size[0], size[1]];
+  extrusion_h = axis == "x"
+    ? size[0]
+    : axis == "y" ? size[1] : size[2];
+  orientation = axis == "x"
+    ? "hwl"
+    : axis == "y" ? "whl" : "wlh";
   r = maybe_percent_string_to_num(r,
-                                  use_minkowski ? min(size) : min(size[0], size[1]));
+                                  use_minkowski ? min(size) : min(profile_size));
 
   anchor = [with_default(anchor[0], center ? 0 : 1),
             with_default(anchor[1], center ? 0 : 1),
@@ -195,13 +223,17 @@ module cuboid(size,
           }
         }
       } else {
-        linear_extrude(height=size[2], center=false) {
-          rounded_rect([size[0], size[1]],
-                       center=false,
-                       side=side,
-                       fn=fn,
-                       r=r,
-                       r_factor=with_default(r_factor, 0));
+        translate([0, axis == "y" ? size[1] : 0, 0]) {
+          multmatrix(orientation_matrix(orientation)) {
+            linear_extrude(height=extrusion_h, center=false) {
+              rounded_rect(profile_size,
+                           center=false,
+                           side=side,
+                           fn=fn,
+                           r=r,
+                           r_factor=with_default(r_factor, 0));
+            }
+          }
         }
       }
     }
@@ -463,8 +495,8 @@ module rounded_rect_recess(size,
                            color) {
   r = maybe_percent_string_to_num(r, min(size[0], size[1]));
   recess_t = is_undef(recess_thickness)
-    ? max(1, thickness / 2.2)
-    : recess_thickness;
+             ? max(1, thickness / 2.2)
+             : recess_thickness;
   recess_size = recess_size && recess_size[0] && recess_size[1] ? recess_size : undef;
   recess_z = recess_reverse ? thickness - recess_t : 0;
   reference_size = [max(size[0], is_undef(recess_size) ? 0 : recess_size[0]),

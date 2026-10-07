@@ -76,10 +76,11 @@ function truncate(val, dec=1) =
   */
 
 function truncate_all_nums(vals, dec=1) = is_num(vals)
-  ? truncate(vals, dec)
-  : is_list(vals)
-  ? [for (v = vals) truncate_all_nums(v, dec)]
-  : vals;
+                                          ? truncate(vals, dec)
+                                          : is_list(vals)
+                                            ? [for (v = vals) truncate_all_nums(v,
+                                                                                dec)]
+                                            : vals;
 
 /**
    ─────────────────────────────────────────────────────────────────────────────
@@ -139,8 +140,8 @@ function sum(list, count=undef) =
   length == 0
   ? 0
   : length < 2
-  ? with_default(list[0], 0)
-  : (with_default(list[length - 1], 0) + sum(list, length - 1));
+    ? with_default(list[0], 0)
+    : (with_default(list[length - 1], 0) + sum(list, length - 1));
 
 /**
    ─────────────────────────────────────────────────────────────────────────────
@@ -293,8 +294,8 @@ function non_empty(items) = items && len(items) > 0;
 */
 function map_idx(items, idx, def_val) = [for (i = [0 : len(items) - 1])
   is_undef(items[i][idx])
-      ? def_val
-      : items[i][idx]];
+  ? def_val
+  : items[i][idx]];
 
 /**
    ─────────────────────────────────────────────────────────────────────────────
@@ -613,7 +614,7 @@ function find_best_index(elems, idx, asc, i=0, best_i=0) =
        bk = key(elems[best_i], idx),
        better = asc ? (k < bk) : (k > bk))
     better ? find_best_index(elems, idx, asc, i + 1, i)
-  : find_best_index(elems, idx, asc, i + 1, best_i);
+    : find_best_index(elems, idx, asc, i + 1, best_i);
 
 /**
    ─────────────────────────────────────────────────────────────────────────────
@@ -724,7 +725,7 @@ function rot_x_bbox_align(size, angle, pos=[0, 0]) =
 function in_list(item, list, i = 0) =
   i >= len(list) ? false
   : (list[i] == item) ? true
-  : in_list(item, list, i + 1);
+    : in_list(item, list, i + 1);
 /**
    ─────────────────────────────────────────────────────────────────────────────
    with_default
@@ -747,12 +748,12 @@ function with_default(val, default, type = "any") =
   (is_undef(type) || type == "any")
   ? (is_undef(val) ? default : val)
   : in_list(type, ["str", "string", "s"])
-  ? (is_string(val) ? val : default)
-  : in_list(type, ["l", "arr", "list"])
-  ? (is_list(val) ? val : default)
-  : in_list(type, ["n", "number"])
-  ? (is_num(val) ? val : default)
-  : default;
+    ? (is_string(val) ? val : default)
+    : in_list(type, ["l", "arr", "list"])
+      ? (is_list(val) ? val : default)
+      : in_list(type, ["n", "number"])
+        ? (is_num(val) ? val : default)
+        : default;
 
 /*
   ─────────────────────────────────────────────────────────────────────────────
@@ -2146,10 +2147,10 @@ function orientation_matrix(orientation) =
                           [0,  1,  0, 0],
                           [1,  0,  0, 0],
                           [0,  0,  0, 1]] :
-                           [[0,  0,  1, 0],
-                            [1,  0,  0, 0],
-                            [0,  1,  0, 0],
-                            [0,  0,  0, 1]];
+  [[0,  0,  1, 0],
+   [1,  0,  0, 0],
+   [0,  1,  0, 0],
+   [0,  0,  0, 1]];
 
 /**
   ──────────────────────────────────────────────────────────────────────────────
@@ -2281,12 +2282,12 @@ function to_anchor(anchor, size, centered=false) =
     let (a = anchor[i],
          v = size[i])
     (centered && i != 2)
-        ? (a ==  1 ?  v/2 :
-           a ==  0 ?  0   :
-           -v/2)
-        : (a ==  1 ?  0   :
-           a ==  0 ? -v/2 :
-           -v)];
+    ? (a ==  1 ?  v/2 :
+       a ==  0 ?  0   :
+       -v/2)
+    : (a ==  1 ?  0   :
+       a ==  0 ? -v/2 :
+       -v)];
 
 /**
    ─────────────────────────────────────────────────────────────────────────────
@@ -2439,8 +2440,8 @@ function _dec_part(s, ret=0, i=0, divisor=10) =
 */
 function _find_dot(s, i=0) =
   i >= len(s) ? undef : s[i] == "."
-  ? i
-  : _find_dot(s, i + 1);
+                        ? i
+                        : _find_dot(s, i + 1);
 
 /**
    ─────────────────────────────────────────────────────────────────────────────
@@ -2503,8 +2504,8 @@ function str_to_num(s) =
 */
 function parse_percent(s) =
   let (str = s[len(s)-1] == "%"
-       ? substr(s, 0, len(s)-1)
-       : s)
+             ? substr(s, 0, len(s)-1)
+             : s)
   str_to_num(str);
 
 /**
@@ -2534,6 +2535,33 @@ function parse_percent(s) =
   ```
  */
 function maybe_percent_string_to_num(val, total) = is_string(val)
-  ? percent_to_mm(parse_percent(val),
-                  total=total)
-  : val;
+                                                   ? percent_to_mm(parse_percent(val),
+                                                                   total=total)
+                                                   : val;
+
+function rot_x_90(size, angle) =
+  angle == 0   ? size :
+  abs(angle)==90 ? [size[0], size[2], size[1]] :
+  assert(false, str("Unsupported X rotation: ", angle));
+
+function rot_y_90(size, angle) =
+  angle == 0   ? size :
+  abs(angle)==90 ? [size[2], size[1], size[0]] :
+  assert(false, str("Unsupported Y rotation: ", angle));
+
+function rot_z_90(size, angle) =
+  angle == 0   ? size :
+  abs(angle)==90 ? [size[1], size[0], size[2]] :
+  assert(false, str("Unsupported Z rotation: ", angle));
+
+function rotated_90_size(rotation, size) =
+  assert(in_list(rotation[0], [-90, 0, 90]),
+         str("Unsupported X rotation: ", rotation[0], ". Must be 90 | 0 | -90"))
+  assert(in_list(rotation[1], [-90, 0, 90]),
+         str("Unsupported Y rotation: ", rotation[1], ". Must be 90 | 0 | -90"))
+  assert(in_list(rotation[2], [-90, 0, 90]),
+         str("Unsupported Z rotation: ", rotation[2], ". Must be 90 | 0 | -90"))
+  let (s1 = rot_x_90(size, rotation[0]),
+       s2 = rot_y_90(s1,   rotation[1]),
+       s3 = rot_z_90(s2,   rotation[2]))
+  s3;

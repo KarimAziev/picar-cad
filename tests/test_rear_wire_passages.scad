@@ -9,7 +9,9 @@ include <../scad/suspension/rear_chassis/computed_params.scad>
 use <../scad/suspension/rear_chassis/rear_power_wiring.scad>
 use <../scad/suspension/front_chassis/front_chassis_joint.scad>
 
-layout      = rear_chassis_layout();
+layout      = rear_chassis_layout(equipment=[["kind", "step_down",
+                                             "component", step_down_voltage_plist,
+                                             "rotation", -90]]);
 config      = plist_merge(rear_power_wiring, ["enabled", true, "fuse_outlet", false]);
 assert(!plist_get("enabled", rear_power_wiring_props(layout)));
 wiring      = rear_power_wiring_props(layout, config);

@@ -11,7 +11,6 @@ include <../parameters.scad>
 use <../lib/functions.scad>
 use <../lib/placement.scad>
 use <../lib/plist.scad>
-use <../lib/shapes3d.scad>
 use <../lib/slots.scad>
 use <../lib/transforms.scad>
 use <bolt.scad>
@@ -29,8 +28,10 @@ function standoff_heights(min_h,
   min_h <= 0 || len(body_heights) == 0 ? [] :
   assert(min(body_heights) > 0, "Standoff body heights must be positive")
     len([for (h = body_heights) if (h != floor(h)) h]) == 0
-  ? _standoff_height_table(ceil(min_h), body_heights)
-  : best_height_combo(min_h, body_heights, ceil(min_h / min(body_heights)) + 1);
+    ? _standoff_height_table(ceil(min_h), body_heights)
+    : best_height_combo(min_h,
+                        body_heights,
+                        ceil(min_h / min(body_heights)) + 1);
 
 function calc_standoff_params(d, min_h) =
   let (norm_specs = [for (spec = standoff_specs)
@@ -45,15 +46,21 @@ function calc_standoff_params(d, min_h) =
              if (d == dia || (dia < d && (is_undef(next_dia) || next_dia > d)))
                spec][0],
        standoffs = is_undef(found)
-       ? []
-       : standoff_heights(min_h=min_h,
-                          body_heights=plist_get("body_heights", found, [])))
+                   ? []
+                   : standoff_heights(min_h=min_h,
+                                      body_heights=plist_get("body_heights", found, [])))
   [found, standoffs];
 
 function standoff_real_h(min_h, d) =
   let (params=calc_standoff_params(min_h=min_h, d=d),
        heights = params[1])
   sum(heights);
+
+function standoff_h_spec(min_h, d) =
+  let (params=calc_standoff_params(min_h=min_h, d=d),
+       found=params[0],
+       heights = params[1])
+  [sum(heights), plist_get("thread_h", found)];
 
 module standoff(thread_d=3,
                 thread_h=5,
@@ -82,8 +89,8 @@ module standoff(thread_d=3,
     difference() {
       color(colr, alpha=1) {
         cylinder(d=is_undef(body_d) ?
-                 thread_d * 2
-                 : body_d,
+                   thread_d * 2
+                   : body_d,
                  h=body_h,
                  $fn=$fn);
       }
@@ -356,7 +363,7 @@ module four_corner_standoffs(h,
   // Seat a countersunk head flush, rather than lifting it into a deeper
   // clearance cone (which would make its wider rim intersect the plate).
   seat_h = sink ? min(recess_h, find_bolt_head_h(bolt_d, "countersunk")) : recess_h;
-  visible_h = show_bolt ? max(0, parent_thickness - seat_h) : 0;
+  visible_h = show_bolt ? max(0, with_default(parent_thickness, 0) - seat_h) : 0;
   engagement = plist_get("thread_h", calc_standoff_params(bolt_d, h)[0], 0);
   offsets_xy = with_default(offsets_xy, [0, 0]);
   offset_x = with_default(offsets_xy[0], 0);
@@ -393,21 +400,22 @@ module four_corner_standoffs(h,
 
 four_corner_standoffs(h=20,
                       parent_thickness=4,
-                      thread_at_top=false,
+                      thread_at_top=true,
                       z_anchor=1,
                       bolt_d=2.5,
                       bolt_spacing=[43.0, 43.0]);
-difference() {
-  cuboid([50.0, 50.0, 4]);
-  four_corner_standoffs(h=20,
-                        parent_thickness=4,
-                        cbore_d=7,
-                        cbore_h=2,
-                        z_anchor=1,
-                        slot_mode=true,
-                        bolt_d=2.5,
-                        bolt_spacing=[43.0, 43.0]);
-}
+// difference() {
+//   cuboid([50.0, 50.0, 4]);
+//   four_corner_standoffs(h=20,
+//                         parent_thickness=4,
+//                         cbore_d=7,
+//                         cbore_h=2,
+//                         z_anchor=1,
+//                         slot_mode=true,
+//                         bolt_d=2.5,
+//                         bolt_spacing=[43.0, 43.0],
+//                         thread_at_top=true);
+// }
 // nut_pos = 0;
 // standoff(show_bolt=true,
 //          thread_at_top=false,

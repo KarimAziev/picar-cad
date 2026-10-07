@@ -22,6 +22,32 @@ use <rear_power_wiring.scad>
 rear_suspension_joint_spacing = 0; // [0:1:150]
 show_rear_suspension_mount    = true;
 
+show_panel_stack              = true;
+show_gearbox_bracket          = true;
+show_gearbox                  = true;
+show_motor                    = true;
+show_bearing                  = true;
+show_drive_shaft              = true;
+show_mount_bolts              = true;
+show_nuts                     = true;
+show_drive_shaft_seeve        = true;
+show_extra_drive_shaft        = true;
+show_motor_encoder_bracket    = true;
+show_motor_encoder            = true;
+show_motor_encoder_magnet     = true;
+show_power_case               = true;
+show_lipo_packs               = true;
+show_power_standoffs          = true;
+show_lidar                    = false;
+show_lidar_lid                = true;
+show_wago_brackets            = true;
+show_wagos                    = false;
+show_power_wiring             = undef;
+show_equipment                = true;
+show_equipment_zones          = false;
+
+front_joint                   = true;
+
 /**
   ─────────────────────────────────────────────────────────────────────────────
   rear_chassis_size
@@ -71,40 +97,40 @@ function rear_chassis_size(layout=rear_chassis_layout()) =
   - `show_power_wiring`: Undef follows lid/lidar visibility; true shows the
     configured battery and rear fuse/converter harnesses in a roof-hidden view.
     Wiring passages remain present when the harness is hidden.
-  - `show_equipment`: Display configured deck electronics; holes remain present.
+  - `show_equipment`: Display configured electronics and enclosures; holes remain present.
   - `show_equipment_zones`: Overlay available side corridors for placement.
   - `front_joint`: Include the direct front-frame tongue; false retains a flat edge.
   **Children:** Additional hardware in the unanchored native layout frame,
   transformed with the chassis (for example provisional rear wheels).
  */
-module rear_chassis(show_panel_stack=true,
-                    show_gearbox_bracket=true,
-                    show_gearbox=true,
-                    show_motor=true,
-                    show_bearing=true,
-                    show_drive_shaft=true,
-                    show_mount_bolts=true,
-                    show_nuts=true,
-                    show_drive_shaft_seeve=true,
-                    show_extra_drive_shaft=true,
+module rear_chassis(show_panel_stack=show_panel_stack,
+                    show_gearbox_bracket=show_gearbox_bracket,
+                    show_gearbox=show_gearbox,
+                    show_motor=show_motor,
+                    show_bearing=show_bearing,
+                    show_drive_shaft=show_drive_shaft,
+                    show_mount_bolts=show_mount_bolts,
+                    show_nuts=show_nuts,
+                    show_drive_shaft_seeve=show_drive_shaft_seeve,
+                    show_extra_drive_shaft=show_extra_drive_shaft,
+                    show_motor_encoder_bracket=show_motor_encoder_bracket,
+                    show_motor_encoder=show_motor_encoder,
+                    show_motor_encoder_magnet=show_motor_encoder_magnet,
+                    show_power_case=show_power_case,
+                    show_lipo_packs=show_lipo_packs,
+                    show_power_standoffs=show_power_standoffs,
+                    show_lidar=show_lidar,
+                    show_lidar_lid=show_lidar_lid,
+                    show_wago_brackets=show_wago_brackets,
+                    show_wagos=show_wagos,
+                    show_power_wiring=show_power_wiring,
+                    show_equipment=show_equipment,
+                    show_equipment_zones=show_equipment_zones,
+                    front_joint=front_joint,
                     anchor=[0, 1, 1],
                     layout=rear_chassis_layout(),
-                    show_motor_encoder_bracket=true,
-                    show_motor_encoder=true,
-                    show_motor_encoder_magnet=true,
-                    show_power_case=true,
-                    show_lipo_packs=true,
-                    show_power_standoffs=true,
-                    show_lidar=false,
-                    show_lidar_lid=true,
-                    show_wago_brackets=true,
-                    show_wagos=false,
-                    show_power_wiring=undef,
-                    show_equipment=true,
-                    show_equipment_zones=false,
                     rear_suspension_joint_spacing=rear_suspension_joint_spacing,
-                    show_rear_suspension_mount=show_rear_suspension_mount,
-                    front_joint=true) {
+                    show_rear_suspension_mount=show_rear_suspension_mount) {
   size = rear_chassis_size(layout);
   center_y = (plist_get("min_y", layout) + plist_get("max_y", layout)) / 2;
   with_anchor(is_undef(anchor) ? [0, 0, 1] : anchor, size, centered=true) {
@@ -121,7 +147,7 @@ module rear_chassis(show_panel_stack=true,
       }
       rear_power_harness(layout,
                          show_wiring=is_undef(show_power_wiring)
-                         ? show_lidar_lid || show_lidar : show_power_wiring);
+                                     ? show_lidar_lid || show_lidar : show_power_wiring);
       rear_equipment(layout,
                      show_hardware=show_equipment,
                      show_zones=show_equipment_zones);

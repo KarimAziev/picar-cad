@@ -6,9 +6,8 @@
   */
 use <front_chassis_suspension_frame.scad>
 
-module front_chassis_suspension_frame_printable(debug=false,
-                                                color=white_smoke_1) {
-  front_chassis_suspension_frame(debug=$preview ? debug : false, color=color);
+module front_chassis_suspension_frame_printable(debug=false) {
+  front_chassis_suspension_frame(debug=$preview ? debug : false);
 }
 
-front_chassis_suspension_frame_printable(debug=false, color=undef);
+front_chassis_suspension_frame_printable(debug=false);

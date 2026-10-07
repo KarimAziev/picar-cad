@@ -9,6 +9,7 @@
 
 include <../parameters.scad>
 
+use <../placeholders/battery_holder/util.scad>
 
 /* [Chassis dimensions] */
 // width of the chassis body

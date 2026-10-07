@@ -1,5 +1,5 @@
 /**
- * Module: Placeholder for Step Down Voltage Regulator (Pololu D24VXF5)
+ * Module: Placeholder for Step Down Voltage Regulator (Pololu D24V90F5)
  *
  * Author: Karim Aziiev <karim.aziiev@gmail.com>
  * License: GPL-3.0-or-later
@@ -20,7 +20,133 @@ use <smd/power_inductor.scad>
 use <smd/smd_chip.scad>
 use <standoff.scad>
 
-// [x, y, z, round_radius]
+plist_example                               = ["d", step_down_voltage_bolt_hole_dia,
+                                               "size", [step_down_voltage_regulator_len,
+                                                        step_down_voltage_regulator_w,
+                                                        step_down_voltage_regulator_thickness],
+                                               "terminal_size", step_down_voltage_screw_terminal_holes,
+                                               "bolt_spacing", [35.55, 15.2],
+                                               "vin_slot_offsets", [5, 0],
+                                               "vout_slot_offsets", [4, 0],
+                                               "vin_slot", [50.4, 9.5, 2.0],
+                                               "vout_slot", [8.4, 8.4, 2.0],
+                                               "inductor", ["size", [7.15, 7.4, 3.7],
+                                                            "corner_r", 0.8,
+                                                            "offsets", [3.3, 1.7]],
+                                               "can_capacitors", [["d", 7,
+                                                                   "base_h", 2.58,
+                                                                   "h", 6.85,
+                                                                   "marking_color", matte_black,
+                                                                   "can_color", metallic_silver_1,
+                                                                   "text_rows", ["47", "HFT", "S92"],
+                                                                   "position", [-step_down_voltage_screw_terminal_holes[0] / 2
+                                                                                - step_down_voltage_bolt_hole_dia / 2
+                                                                                + 8.3,
+                                                                                4.4,
+                                                                                0],
+                                                                   "x_offset", 2.6,
+                                                                   "y_offset", 2.6,
+                                                                   "rotation", 0],
+                                                                  ["d", 7,
+                                                                   "base_h", 2.58,
+                                                                   "h", 6.85,
+                                                                   "marking_color", cobalt_blue_metallic,
+                                                                   "position", [step_down_voltage_screw_terminal_holes[0] / 2
+                                                                                + step_down_voltage_bolt_hole_dia / 2
+                                                                                - 8.3,
+                                                                                4.4, 0],
+                                                                   "can_color", metallic_silver_1,
+                                                                   "text_rows", ["F28F", "330", "6.3V"],
+                                                                   "x_offset", 2.6,
+                                                                   "y_offset", 2.6,
+                                                                   "rotation", 0]],
+                                               // [[wight, len, height, j-lead-len, [translate_x, translate_y, translate_z], [rotation_x, rotation_y, rotation_z]]..]
+                                               "smd_chip_specs", [[4.6, 3.3, 1.58, 1, [-0.15, -9.0, 0], [0, 0, 0]],
+                                                                  [4.6, 3.2, 1.58, 1, [-0.9, -8.7, 0], [0, 0, 90]],
+                                                                  [4.6, 3.3, 1.58, 1, [-13.7, -8.7, 0], [0, 0, 0]],
+                                                                  [4.6, 3.3, 1.58, 1, [-3.50, -4.0, 0], [0, 0, 0]]],
+                                               // [[wight, len, height, j-lead-len, [translate_x, translate_y, translate_z], center_color]..]
+                                               "surface_mount_chips", [[2.0, 3.3, 2.5, 0.9, [-5.75, 3.2, 0], brown_2],
+                                                                       [1.95, 3.3, 2.5, 0.8,
+                                                                        [-3.6, 3.2, 0], brown_2],
+                                                                       [1.05, 1.75, 1.6, 0.2,
+                                                                        [-5.2, -3.8, 0], brown_2],
+                                                                       [1.05, 1.8, 1.6, 0.2,
+                                                                        [-6.7, -3.8, 0], matte_black],
+                                                                       [1.05, 1.8, 1.6, 0.2,
+                                                                        [-8.0, -4.3, 0], matte_black],
+                                                                       [1.05, 1.75, 1.6, 0.2,
+                                                                        [-7.0, -8.3, 0], brown_2],
+                                                                       [1.05, 1.75, 1.6, 0.2,
+                                                                        [14.54, -7.0, 0], brown_2],
+                                                                       [1.05, 1.75, 1.6, 0.2,
+                                                                        [14.72, 6.9, 0], brown_2],
+                                                                       [1.05, 1.75, 1.6, 0.2,
+                                                                        [-13.05, -1.2, 0], matte_black],
+                                                                       [1.05, 1.75, 1.6, 0.2,
+                                                                        [2.66, -1.2, 0], matte_black],
+                                                                       [1.35, 2.07, 2.1, 0.3,
+                                                                        [2.36, 6.0, 0], brown_2],
+                                                                       [1.35, 1.95, 2.1, 0.3,
+                                                                        [2.36, 2.9, 0], brown_2],
+                                                                       [1.45, 1.75, 1.8, 0.3,
+                                                                        [1.19, -1.1, 0], matte_black],
+                                                                       [1.85, 3.3, 2.6, 0.5,
+                                                                        [12.66, -1.78, 0], brown_2],
+                                                                       [1.85, 3.3, 2.5, 0.5,
+                                                                        [12.66, -6.45, 0], brown_2],
+                                                                       [3.3, 1.85, 2.5, 0.5,
+                                                                        [-9.96, -1.7, 0], brown_2],
+                                                                       [2.0, 1.45, 1.8, 0.5,
+                                                                        [-12.26, -3.7, 0], matte_black],
+                                                                       [1.8, 1.15, 1.6, 0.5,
+                                                                        [1.86, -3.4, 0], brown_2],
+                                                                       [1.8, 1.15, 1.6, 0.5,
+                                                                        [-2.86, -4.4, 0], matte_black],
+                                                                       [1.8, 1.10, 1.6, 0.5,
+                                                                        [2.8, 8.9, 0], brown_2],
+                                                                       [1.8, 1.10, 1.6, 0.5,
+                                                                        [-0.6, 6.7, 0], matte_black],
+                                                                       [1.60, 1.10, 1.6, 0.5,
+                                                                        [0.0, 2.1, 0], brown_2],
+                                                                       [1.60, 1.10, 1.6, 0.5,
+                                                                        [0.0, 5.1, 0], brown_2],
+                                                                       [1.70, 1.10, 1.6, 0.5,
+                                                                        [-5.3, 6.3, 0], matte_black],
+                                                                       [1.70, 1.10, 1.6, 0.5,
+                                                                        [-0.0, 3.5, 0], matte_black],
+                                                                       [1.70, 1.10, 1.6, 0.5,
+                                                                        [-6.0, -1.5, 0], brown_2],
+                                                                       [1.70, 1.10, 1.6, 0.5,
+                                                                        [-5.55, -0.2, 0], brown_2]],
+                                               "vin", ["thickness", step_down_voltage_screw_terminal_thickness,
+                                                       "isosceles_trapezoid", step_down_voltage_screw_terminal_isosceles_trapezoid,
+                                                       "base_h", step_down_voltage_screw_terminal_base_h,
+                                                       "top_l", step_down_voltage_screw_terminal_top_l,
+                                                       "top_h", step_down_voltage_screw_terminal_top_h,
+                                                       "contacts_n", step_down_voltage_screw_terminal_contacts_n,
+                                                       "contact_w", step_down_voltage_screw_terminal_contact_w,
+                                                       "contact_h", step_down_voltage_screw_terminal_contact_h,
+                                                       "pitch", step_down_voltage_screw_terminal_pitch,
+                                                       "bolt_spacing", [35.5, 5],
+                                                       "colr", step_down_voltage_screw_terminal_colr,
+                                                       "pin_thickness", step_down_voltage_screw_terminal_pin_thickness,
+                                                       "pin_h", step_down_voltage_screw_terminal_pin_h,
+                                                       "wall_thickness", step_down_voltage_screw_terminal_wall_thickness,],
+                                               "vout", ["thickness", step_down_voltage_screw_terminal_thickness,
+                                                        "isosceles_trapezoid", step_down_voltage_screw_terminal_isosceles_trapezoid,
+                                                        "base_h", step_down_voltage_screw_terminal_base_h,
+                                                        "top_l", step_down_voltage_screw_terminal_top_l,
+                                                        "top_h", step_down_voltage_screw_terminal_top_h,
+                                                        "contacts_n", step_down_voltage_screw_terminal_contacts_n,
+                                                        "contact_w", step_down_voltage_screw_terminal_contact_w,
+                                                        "contact_h", step_down_voltage_screw_terminal_contact_h,
+                                                        "pitch", step_down_voltage_screw_terminal_pitch,
+                                                        "bolt_spacing", [35.5, 5],
+                                                        "colr", step_down_voltage_screw_terminal_colr,
+                                                        "pin_thickness", step_down_voltage_screw_terminal_pin_thickness,
+                                                        "pin_h", step_down_voltage_screw_terminal_pin_h,
+                                                        "wall_thickness", step_down_voltage_screw_terminal_wall_thickness,]];
 
 step_down_voltage_can_capacitors            = [["d", 7,
                                                 "base_h", 2.58,
@@ -49,6 +175,8 @@ step_down_voltage_can_capacitors            = [["d", 7,
                                                 "x_offset", 2.6,
                                                 "y_offset", 2.6,
                                                 "rotation", 0]];
+
+inductor_size                               = [7.15, 7.4, 3.7, 0.8];
 
 // [[wight, len, height, j-lead-len, [translate_x, translate_y, translate_z], [rotation_x, rotation_y, rotation_z]]..]
 step_down_voltage_smd_chips_specs           = [[4.6, 3.3, 1.58, 1, [-0.15, -9.0, 0], [0, 0, 0]],
@@ -111,6 +239,21 @@ step_down_voltage_surface_mount_chips_specs = [[2.0, 3.3, 2.5, 0.9,
                                                 [-6.0, -1.5, 0], brown_2],
                                                [1.70, 1.10, 1.6, 0.5,
                                                 [-5.55, -0.2, 0], brown_2]];
+
+default_dc_screw_terminal_props             = ["thickness", step_down_voltage_screw_terminal_thickness,
+                                               "isosceles_trapezoid", step_down_voltage_screw_terminal_isosceles_trapezoid,
+                                               "base_h", step_down_voltage_screw_terminal_base_h,
+                                               "top_l", step_down_voltage_screw_terminal_top_l,
+                                               "top_h", step_down_voltage_screw_terminal_top_h,
+                                               "contacts_n", step_down_voltage_screw_terminal_contacts_n,
+                                               "contact_w", step_down_voltage_screw_terminal_contact_w,
+                                               "contact_h", step_down_voltage_screw_terminal_contact_h,
+                                               "pitch", step_down_voltage_screw_terminal_pitch,
+                                               "bolt_spacing", [35.5, 5],
+                                               "colr", step_down_voltage_screw_terminal_colr,
+                                               "pin_thickness", step_down_voltage_screw_terminal_pin_thickness,
+                                               "pin_h", step_down_voltage_screw_terminal_pin_h,
+                                               "wall_thickness", step_down_voltage_screw_terminal_wall_thickness];
 
 module step_down_voltage_surface_mount_chip(spec) {
   let (w = spec[0],
@@ -179,22 +322,8 @@ module step_down_voltage_smd_chip(w=step_down_voltage_smd_chip_w,
            center=false);
 }
 
-default_dc_screw_terminal_props = ["thickness", step_down_voltage_screw_terminal_thickness,
-                                   "isosceles_trapezoid", step_down_voltage_screw_terminal_isosceles_trapezoid,
-                                   "base_h", step_down_voltage_screw_terminal_base_h,
-                                   "top_l", step_down_voltage_screw_terminal_top_l,
-                                   "top_h", step_down_voltage_screw_terminal_top_h,
-                                   "contacts_n", step_down_voltage_screw_terminal_contacts_n,
-                                   "contact_w", step_down_voltage_screw_terminal_contact_w,
-                                   "contact_h", step_down_voltage_screw_terminal_contact_h,
-                                   "pitch", step_down_voltage_screw_terminal_pitch,
-                                   "bolt_spacing", [35.5, 5],
-                                   "colr", step_down_voltage_screw_terminal_colr,
-                                   "pin_thickness", step_down_voltage_screw_terminal_pin_thickness,
-                                   "pin_h", step_down_voltage_screw_terminal_pin_h,
-                                   "wall_thickness", step_down_voltage_screw_terminal_wall_thickness];
-
 module step_down_voltage_regulator(plist = [],
+                                   size_key="placeholder_size",
                                    bolt_visible_h=2,
                                    show_bolt=true,
                                    show_terminal_vout=true,
@@ -236,7 +365,7 @@ module step_down_voltage_regulator(plist = [],
                              plist,
                              [8.4, 8.4, 2.0]);
 
-  placeholder_size = plist_get("placeholder_size",
+  placeholder_size = plist_get(size_key,
                                plist,
                                [step_down_voltage_regulator_len,
                                 step_down_voltage_regulator_w,
@@ -245,6 +374,8 @@ module step_down_voltage_regulator(plist = [],
   standoff_h = plist_get("standoff_h",
                          plist,
                          step_down_voltage_regulator_standoff_h);
+
+  inductor = plist_get("inductor", plist);
 
   length = placeholder_size[0];
   w = placeholder_size[1];
@@ -273,12 +404,16 @@ module step_down_voltage_regulator(plist = [],
   vout_y_offset = plist_get("y_offset", screw_terminal_vout_pl, 0);
   vout_thickness = plist_get("thickness", screw_terminal_vout_pl, 0);
   vout_rotation_z = plist_get("rotation_z", screw_terminal_vout_pl, -90);
+  surface_mount_chips = plist_get("surface_mount_chips", plist, []);;
+  can_capacitors  = plist_get("can_capacitors", plist, []);;
   vout_width = screw_terminal_width_from_plist(screw_terminal_vout_pl);
   vout_rotated = (abs(vout_rotation_z) == 90);
   vin_rotated = (abs(vin_rotation_z) == 90);
-  show_terminal_vout= plist_get("show_terminal_vout",
-                                screw_terminal_vout_pl,
-                                true);
+  show_terminal_vout = plist_get("show_terminal_vout",
+                                 screw_terminal_vout_pl,
+                                 true);
+
+  smd_chip_specs = plist_get("smd_chip_specs", plist, []);
 
   z_offst = thickness / 2;
 
@@ -376,21 +511,24 @@ module step_down_voltage_regulator(plist = [],
           }
 
           translate([0, 0, z_offst]) {
-            translate([3.3,
-                       -w / 2 +
-                       step_down_voltage_power_regulator_y_distance,
-                       0]) {
-              shielded_power_inductor(size=[step_down_voltage_power_inductor_size[0],
-                                            step_down_voltage_power_inductor_size[1],
-                                            step_down_voltage_power_inductor_size[2]],
-                                      r=step_down_voltage_power_inductor_size[3]);
+            if (inductor) {
+              let (inductor_size = plist_get("size", inductor),
+                   inductor_offsets = plist_get("offsets", inductor, [0, 0])) {
+                translate([with_default(inductor_offsets[0], 0),
+                           -w / 2 +
+                           with_default(inductor_offsets[1], 0),
+                           0]) {
+                  shielded_power_inductor(size=inductor_size,
+                                          r=step_down_voltage_power_inductor_size[3]);
+                }
+              }
             }
 
-            for (item = step_down_voltage_surface_mount_chips_specs) {
+            for (item = surface_mount_chips) {
               step_down_voltage_surface_mount_chip(spec=item);
             }
 
-            for (spec = step_down_voltage_smd_chips_specs) {
+            for (spec=smd_chip_specs) {
               let (w = spec[0],
                    l=spec[1],
                    h=spec[2],
@@ -415,7 +553,7 @@ module step_down_voltage_regulator(plist = [],
               }
             }
 
-            for (pl = step_down_voltage_can_capacitors) {
+            for (pl = can_capacitors) {
               let (pos = plist_get("position", pl, [])) {
                 translate(pos) {
                   can_capacitor_from_plist(pl);

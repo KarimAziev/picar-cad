@@ -75,16 +75,19 @@ if (part == "frame") {{
             # Synthetic joint dimensions do not carry the stock deck's harness.
             wiring_args = ["-D", 'rear_power_wiring=["enabled", false]'] if changed else []
             for part in ("frame", "mount", "female_root", "collision", "blocked_slots"):
+                expect_empty = part in ("collision", "blocked_slots")
+                # Preserve coplanar cutout faces without binary STL's float32
+                # rounding, which can give empty intersections a residual volume.
+                export_format = "asciistl" if expect_empty else "binstl"
                 result = subprocess.run(
                     [OPENSCAD, "--backend=Manifold", "--enable=textmetrics",
-                     "--hardwarnings", "--export-format", "binstl",
+                     "--hardwarnings", "--export-format", export_format,
                      "-o", str(output), "-D", f'part="{part}"',
                      "-D", f"changed={str(changed).lower()}", *wiring_args, str(source)],
                     capture_output=True, text=True,
                 )
                 log = result.stdout + result.stderr
                 assert "WARNING:" not in log and "ERROR:" not in log, log
-                expect_empty = part in ("collision", "blocked_slots")
                 if expect_empty and "Current top level object is empty" in log:
                     continue
                 assert result.returncode == 0, log

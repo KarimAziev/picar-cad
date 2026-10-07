@@ -13,7 +13,9 @@ use <../scad/lipo_pack_case/multi_lipo_pack_lid.scad>
 use <../scad/placeholders/crimp_terminals/ring_terminal.scad>
 use <../scad/suspension/rear_chassis/rear_power_wiring.scad>
 
-layout        = rear_chassis_layout();
+layout        = rear_chassis_layout(equipment=[["kind", "step_down",
+                                               "component", step_down_voltage_plist,
+                                               "rotation", -90]]);
 config        = plist_merge(rear_power_wiring, ["enabled", true, "fuse_outlet", false]);
 assert(!plist_get("enabled", rear_power_wiring_props(layout)));
 payload       = plist_get("power_case", layout);

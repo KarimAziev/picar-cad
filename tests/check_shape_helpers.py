@@ -49,6 +49,8 @@ def check_percentages(folder):
         ('rounded_rect_two([40,20], r=VALUE, side="top_left");', '"10%"', '2'),
         ('rounded_rect([40,20], r=VALUE);', '"100%"', '10'),
         ('cuboid([40,20,10], r=VALUE);', '"10%"', '2'),
+        ('cuboid([40,2,10], r=VALUE, axis="y");', '"10%"', '1'),
+        ('cuboid([2,40,10], r=VALUE, axis="x");', '"10%"', '1'),
         ('cuboid([40,20,10], r=VALUE, use_minkowski=true);', '"10%"', '1'),
         ('cuboid([40,20,10], r=VALUE);', '"0%"', '0'),
         ('rect_border([20,30], border_w=VALUE, inner=false);', '"10%"', '2'),
@@ -114,6 +116,12 @@ def check_anchors(folder):
         ("border_2d", 'linear_extrude(height=2) { rect_border([20,30], border_w=2, inner=false, anchor=ANCHOR); }',
          [20,30,0], [-1,-1,0], [21,31,2]),
     ]
+    cases += [
+        (f"cuboid_{axis}",
+         f'cuboid([20,30,10], r=2, axis="{axis}", center=false, anchor=ANCHOR);',
+         [20,30,10], [0,0,0], [20,30,10])
+        for axis in "xyz"
+    ]
     anchors = list(itertools.product([-1, 0, 1], repeat=3)) + [(None, 0, None), None]
     for name, call, reference, low, high in cases:
         source = "\n".join(
@@ -156,19 +164,32 @@ def check_rounded_sides(folder):
         ('r=0, side=["all"]', [0, 0, 0, 0]),
     ]
     for i, (arguments, radii) in enumerate(cases):
-        for shape in ("rect", "cuboid"):
+        for shape, dimensions, profile_axes in [
+            ("rect", [40, 20, 6], (0, 1)),
+            ("z", [40, 20, 6], (0, 1)),
+            ("y", [40, 6, 20], (0, 2)),
+            ("x", [6, 40, 20], (1, 2)),
+        ]:
             source = (
                 f"linear_extrude(height=6) {{ rounded_rect([40,20], {arguments}, "
                 "fn=32, center=true, anchor=[-1,0,1]); }"
                 if shape == "rect" else
-                f"cuboid([40,20,6], {arguments}, fn=32, anchor=[-1,0,1]);"
+                f'cuboid({dimensions}, {arguments}, axis="{shape}", '
+                'fn=32, anchor=[-1,0,1]);'
             )
             points = list(vertices(render(folder, f"sides-{shape}-{i}", source, "stl")))
-            for axis, bounds in enumerate([(-40, 0), (-10, 10), (0, 6)]):
+            bounds_xyz = [(-dimensions[0], 0),
+                          (-dimensions[1] / 2, dimensions[1] / 2),
+                          (0, dimensions[2])]
+            for axis, bounds in enumerate(bounds_xyz):
                 assert abs(min(p[axis] for p in points) - bounds[0]) < 1e-5
                 assert abs(max(p[axis] for p in points) - bounds[1]) < 1e-5
-            for (x, y), radius in zip([(-40, -10), (0, -10), (0, 10), (-40, 10)], radii):
-                nearest = min(math.hypot(p[0] - x, p[1] - y) for p in points)
+            u, v = profile_axes
+            left, right = bounds_xyz[u]
+            bottom, top = bounds_xyz[v]
+            corners = [(left, bottom), (right, bottom), (right, top), (left, top)]
+            for (x, y), radius in zip(corners, radii):
+                nearest = min(math.hypot(p[u] - x, p[v] - y) for p in points)
                 assert abs(nearest - (math.sqrt(2) - 1) * radius) < 1e-5, (
                     shape, arguments, (x, y), nearest, radius)
             volume = 0.0
@@ -184,7 +205,42 @@ def check_rounded_sides(folder):
     # With no shared radius, bare names retain cuboid's square default.
     plain = render(folder, "sides-default", 'cuboid([40,20,6], side=["top"]);', "stl")
     assert len(list(vertices(plain))) == 36
-    print(f"PASS: {2 * len(cases) + 1} rounded-side meshes (corners, volume, bounds)", flush=True)
+    print(f"PASS: {4 * len(cases) + 1} rounded-side meshes (corners, volume, bounds)", flush=True)
+
+
+def check_cuboid_axes(folder):
+    # An independently placed vertical extrusion is the reference geometry.
+    reference = render(folder, "vertical-reference", """
+translate([0, 1, 5]) {
+  rotate([90, 0, 0]) {
+    cuboid([30,10,2], r=1.5, fn=32);
+  }
+}
+""", "stl")
+    expected = {tuple(round(v, 5) for v in p) for p in vertices(reference)}
+    for i, radius in enumerate(('r=1.5', 'r="15%"', 'r_factor=0.15')):
+        actual = render(folder, f"vertical-axis-{i}",
+                        f'cuboid([30,2,10], {radius}, axis="y", fn=32);', "stl")
+        assert {tuple(round(v, 5) for v in p) for p in vertices(actual)} == expected
+
+    for axis in "xyz":
+        for i, placement in enumerate(("", ", center=false", ", anchor=[undef,-1,undef]")):
+            low = ([0, 0, 0] if i == 1 else [-15, -4 if i == 2 else -2, 0])
+            mesh = render(folder, f"axis-placement-{axis}-{i}",
+                          f'cuboid([30,4,10], r=1.5, axis="{axis}"{placement});', "stl")
+            points = list(vertices(mesh))
+            for j, size in enumerate((30, 4, 10)):
+                assert abs(min(p[j] for p in points) - low[j]) < 1e-5
+                assert abs(max(p[j] for p in points) - low[j] - size) < 1e-5
+
+        for i, arguments in enumerate(("r=0", "r=1, use_minkowski=true")):
+            default = render(folder, f"axis-default-{axis}-{i}",
+                             f'cuboid(10, {arguments});', "csg")
+            explicit = render(folder, f"axis-explicit-{axis}-{i}",
+                              f'cuboid(10, {arguments}, axis="{axis}");', "csg")
+            assert default.read_bytes() == explicit.read_bytes()
+    print("PASS: cuboid axis placement, vertical reference, radius modes, and scalar/Minkowski behavior",
+          flush=True)
 
 
 def main() -> None:
@@ -193,6 +249,7 @@ def main() -> None:
         check_percentages(folder)
         check_anchors(folder)
         check_rounded_sides(folder)
+        check_cuboid_axes(folder)
 
 
 if __name__ == "__main__":

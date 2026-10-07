@@ -15,14 +15,21 @@ use <lib/shapes3d.scad>
 use <lib/slots.scad>
 use <lib/transforms.scad>
 
-probes_specs = [["bore_d", [for (i = [0 : 9]) m3_socket_counterbore_d + i * 0.1],
+probes_specs = [["bore_d", concat(reverse([for (i = [1 : 2]) m3_socket_counterbore_d - i * 0.1]),
+                                  [for (i = [0 : 1]) m3_socket_counterbore_d + i * 0.1]),
                  "d", m3_hole_dia,
-                 "bore_h", [m3_socket_counterbore_h,
+                 "bore_h", [m3_socket_counterbore_h - 0.2,
+                            m3_socket_counterbore_h - 0.1,
+                            m3_socket_counterbore_h,
                             m3_socket_counterbore_h + 0.1,
                             m3_socket_counterbore_h + 0.2]],
-                ["bore_d", [for (i = [0 : 4]) m3_countersunk_bore_d + i * 0.1],
+                ["bore_d", number_sequence(from=m3_countersunk_bore_d - 0.2,
+                                           to=m3_countersunk_bore_d + 0.1,
+                                           step=0.1),
                  "d", m3_hole_dia,
-                 "bore_h", [m3_countersunk_bore_h, 2],
+                 "bore_h", [1.85,
+                            m3_countersunk_bore_h,
+                            2],
                  "sink", true],
                 ["bore_d", [for (i = [0 : 5]) m2_pan_counterbore_d + i * 0.1],
                  "d", [m2_hole_dia, m2_hole_dia_tight],
@@ -85,18 +92,18 @@ function _probe_text(txt, text_size, font) =
 function _probe_row_layout(row, labels, text_size, text_gap, font) =
   let (dias = plist_get("bore_d", row),
        captions = labels
-       ? [for (d = dias) _probe_text(str(d), text_size, font)]
-       : [],
+                  ? [for (d = dias) _probe_text(str(d), text_size, font)]
+                  : [],
        legend = labels
-       ? [for (txt = [str(plist_get("sink", row) ? "CS" : "CB",
-                          " d=", plist_get("d", row)),
-                      str("h=", plist_get("bore_h", row))])
-         _probe_text(txt, text_size, font)]
-       : [],
+                ? [for (txt = [str(plist_get("sink", row) ? "CS" : "CB",
+                                   " d=", plist_get("d", row)),
+                               str("h=", plist_get("bore_h", row))])
+                  _probe_text(txt, text_size, font)]
+                : [],
        caption_h = labels ? max([for (t = captions) t[1].size[1]]) : 0,
        legend_h = labels
-       ? sum([for (t = legend) t[1].size[1]]) + text_gap
-       : 0,
+                  ? sum([for (t = legend) t[1].size[1]]) + text_gap
+                  : 0,
        widths = [for (i = [0 : len(dias) - 1])
          max(dias[i], labels ? captions[i][1].size[0] : 0)],
        hole_y = labels ? caption_h + text_gap : 0,
@@ -157,8 +164,8 @@ function hole_probes_layout(specs,
        heights = [for (r = rows) plist_get("h", r)],
        inner_h = sum(heights) + gap * (len(rows) - 1),
        legend_w = labels
-       ? max([for (r = rows, t = plist_get("legend", r)) t[1].size[0]])
-       : 0,
+                  ? max([for (r = rows, t = plist_get("legend", r)) t[1].size[0]])
+                  : 0,
        hole_x = pad + (labels ? legend_w + text_gap : 0),
        size = [hole_x + max([for (r = rows) plist_get("w", r)]) + pad,
                inner_h + 2 * pad, h],
@@ -180,22 +187,22 @@ function hole_probes_layout(specs,
         "bore_h", plist_get("bore_h", r),
         "sink", plist_get("sink", r)]],
    "labels", labels
-   ? [for (i = [0 : len(rows) - 1])
-     let (r = rows[i],
-          widths = plist_get("widths", r),
-          legend = plist_get("legend", r),
-          captions = plist_get("captions", r),
-          legend_y = row_ys[i] + (heights[i] - plist_get("legend_h", r)) / 2)
-       each concat([for (j = [0 : 1])
-         concat(legend[j], [[pad, legend_y + (j == 0
-                           ? legend[1][1].size[1] + text_gap : 0)]])],
-                   [for (j = [0 : len(captions) - 1])
-                     concat(captions[j],
-                            [[hole_x + sum(widths, j)
-                              + j * plist_get("gap", r)
-                              + (widths[j] - captions[j][1].size[0]) / 2,
-                              row_ys[i]]])])]
-   : []];
+             ? [for (i = [0 : len(rows) - 1])
+               let (r = rows[i],
+                    widths = plist_get("widths", r),
+                    legend = plist_get("legend", r),
+                    captions = plist_get("captions", r),
+                    legend_y = row_ys[i] + (heights[i] - plist_get("legend_h", r)) / 2)
+                 each concat([for (j = [0 : 1])
+                   concat(legend[j], [[pad, legend_y + (j == 0
+                                                        ? legend[1][1].size[1] + text_gap : 0)]])],
+                             [for (j = [0 : len(captions) - 1])
+                               concat(captions[j],
+                                      [[hole_x + sum(widths, j)
+                                        + j * plist_get("gap", r)
+                                        + (widths[j] - captions[j][1].size[0]) / 2,
+                                        row_ys[i]]])])]
+             : []];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -239,8 +246,8 @@ module hole_probes(specs,
                    pad=2,
                    base_h=2,
                    label_mode="raised",
-                   text_h=0.2,
-                   text_size=2.5,
+                   text_h=0.4,
+                   text_size=3.5,
                    text_gap=0.8,
                    font="Liberation Sans:style=Bold",
                    text_color="black",
