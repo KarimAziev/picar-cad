@@ -112,7 +112,7 @@ for (key = ["size", "bounds", "min_y", "max_y", "join_w",
   assert(plist_get(key, reference) == plist_get(key, layout),
          str("Enclosure changed fixed chassis or battery interface: ", key));
 }
-assert(norm(plist_get("size", layout) - [160.4, 153.49, 6]) < 1e-5);
+assert(norm(plist_get("size", layout) - [151.26, 153.49, 6]) < 1e-5);
 case_mount = plist_get("power_case", layout);
 assert(plist_get("mount_holes", case_mount)
        == plist_get("mount_holes", plist_get("power_case", reference)));

@@ -40,3 +40,17 @@ for (orientation = ["wlh", "lwh"]) {
 }
 
 echo("PASS: fixed rear battery mounting centers, recess settings and case orientation");
+
+// Larger screw recesses set the support width without moving their centers.
+for (bore_d = [6, 10, 14]) {
+  layout = rear_chassis_layout(equipment=[],
+                               power_case=plist_merge(rear_power_case_plist,
+                                                       ["bore_d", bore_d]));
+  payload = plist_get("power_case", layout);
+  support_w = expected_spacing[0] + 2 * (plist_get("radius", payload)
+                                         + rear_chassis_edge_pad);
+  assert(abs(plist_get("join_w", layout)
+             - max(front_chassis_required_width(), support_w)) < 0.000001);
+  assert(plist_get("mount_holes", payload) == plist_get("mount_holes", reference));
+  assert(abs(plist_get("size", layout)[1] - 153.49) < 0.000001);
+}

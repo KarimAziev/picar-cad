@@ -44,8 +44,8 @@ female socket in `front_chassis_rear_frame()`. Both use
 preset built on the reusable `plate_joint`. Width, bolt positions, and pin spacing
 come from the same preset. The compact front joint also uses this shared geometry.
 
-At the default 160.4 mm chassis width, the wide joint has pin centers at
-X = ±6 mm and bolt centers at X = −75.7, −37.85, 0, 37.85, and 75.7 mm.
+At the default 151.26 mm chassis width, the wide joint has pin centers at
+X = ±6 mm and bolt centers at X = −71.13, −35.565, 0, 35.565, and 71.13 mm.
 The outer through holes have at least 3 mm of material between their edges and
 both the chassis side and the female socket. The inner bolts retain 2 mm of material
 beside the pin passages. An optional fuse-wire outlet follows the pin spacing and
@@ -169,7 +169,7 @@ along Y relative to the motor center.
 With the current single-button configuration, the supports are 47 mm tall
 instead of 67 mm with the controls underneath. The low panel overlaps the case
 by 4.95 mm, while the lever clears the cover by 3 mm. This needs no additional
-chassis length: the combined rear plate envelope is 160.4 × 153.49 × 6 mm, including the
+chassis length: the combined rear plate envelope is 151.26 × 153.49 × 6 mm, including the
 separate lowered suspension mount.
 These are computed results, not fixed dimensions. The motor offset is -1.8 mm.
 
@@ -228,17 +228,23 @@ use it instead of the generic case when printing this rear configuration.
 ## Shared chassis width
 
 `suspension_chassis_width()` in `scad/suspension/computed.scad` selects the widest
-front/rear requirement and, when `include_middle=true`, the middle payload.
-The assembly passes that width to all three frames and recalculates the front
+front/rear requirement. The assembly passes that width to the frames and calculates the front
 joint holes and rails from it. Front and rear standalone defaults also agree.
 
-`rear_suspension_layout(min_width=0)` exposes the rear's own width candidate.
+`rear_chassis_layout(min_width=0)` exposes the rear's own width candidate.
 Its default minimum includes the front hardware and `chassis_body_min_w`.
 Use `min_width=resolved_width` for the final rear layout, and `width=resolved_width`
-for the front and middle frame modules when writing another orchestrator.
-The existing `chassis_body_min_w` remains a configured lower bound even when
-the middle section is absent. Selecting a middle payload as a candidate is
-conditional on its presence, independently of that lower bound.
+for the front frame when writing another orchestrator. The raised battery case
+may overhang the deck: its width requirement comes from the mounting centers,
+support/counterbore radius and `rear_chassis_edge_pad`.
+
+`rear_chassis_outline_points()` exposes `holes_bounds` in its `let` bindings.
+`rear_chassis_holes_bounds(layout, pad=0)` returns four `[x, y, d]` bounding-box
+corners per deck mounting hole, sorted by ascending Y and then X. XY includes
+the counterbore/countersink radius and optional padding; `d` is the unpadded
+outer cutter diameter. `rear_chassis_mount_holes(layout)` provides the matching
+centers and diameters. These functions include motor, gearbox, panel, battery,
+Wago and equipment mounts; joints and service openings have separate interfaces.
 
 ## Optional Wago mounts
 

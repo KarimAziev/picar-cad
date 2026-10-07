@@ -26,7 +26,6 @@ use <suspension/computed.scad>
 use <suspension/front_chassis/front_chassis.scad>
 use <suspension/front_chassis/front_chassis_controls.scad>
 use <suspension/front_chassis/front_frame_util.scad>
-use <suspension/front_chassis/suspension_frame/front_chassis_suspension_frame.scad>
 use <suspension/front_suspension_assembly.scad>
 use <suspension/middle_chassis/middle_chassis.scad>
 use <suspension/rc_wheels.scad>
@@ -240,7 +239,7 @@ module front_chassis_assembly(show_bellcrank_drive=show_bellcrank_drive,
   lipo_pack_case_props = multi_lipo_pack_props(plist=multi_lipo_packs_case);
 
   full_lipo_pack_size = plist_get("size", lipo_pack_case_props);
-  body_width = suspension_chassis_width(include_middle=show_middle_chassis);
+  body_width = suspension_chassis_width();
   rear_layout = rear_chassis_layout(min_width=body_width);
 
   front_chassis(width=body_width,

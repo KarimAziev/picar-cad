@@ -9,12 +9,14 @@ include <../../rc_params.scad>
 include <rear_chassis_params.scad>
 
 use <../../lib/plist.scad>
+use <../../lib/functions.scad>
 use <../../lipo_pack_case/multi_lipo_pack_case.scad>
 use <../../lipo_pack_case/multi_lipo_pack_lid.scad>
 use <../../motor_brackets/rc/util.scad>
 use <../../panel_stack/control_panel.scad>
 use <../../panel_stack/panel_stack.scad>
 use <../../wago/wago_mounts.scad>
+use <../../wago/wago_bracket.scad>
 use <../front_chassis/layout_params.scad>
 use <rear_equipment.scad>
 use <rear_payload.scad>
@@ -101,7 +103,7 @@ function _rear_panel_layout(specs,
   - `equipment_gap`: Separation from hardware and clearance beneath the case.
     Equipment never changes chassis dimensions or the battery mounting height.
   - `edge_pad`: Deck material outside mounted hardware and battery supports.
-    The raised case sets an unpadded width floor; its lid may overhang the deck.
+    The raised case and lid may overhang the deck.
 
   **Returns:**
   A plist in holder-row coordinates, with Z=0 below the plate. `size` and
@@ -168,9 +170,9 @@ function rear_chassis_layout(bracket=gearmotor_bracket_compute_params(motor_plis
                         bracket_bounds[1][2]]],
        side_widths = [-motor_bounds[0][0], motor_bounds[1][0]],
        panel_specs = is_undef(panels)
-       ? [["type", "stack",
-           "side", side,
-           "orientation", orientation]] : panels,
+                     ? [["type", "stack",
+                         "side", side,
+                         "orientation", orientation]] : panels,
        close_panels = _rear_panel_layout(panel_specs, motor_bounds, motor_bounds,
                                          panel_gap, panel_y_offset, orientation),
        mount = rear_power_case_mount(power_case,
@@ -181,16 +183,16 @@ function rear_chassis_layout(bracket=gearmotor_bracket_compute_params(motor_plis
        rail_enabled = !is_undef(mount)
                       && plist_get("enabled", plist_get("rail_props", multi_lipo_pack_props(plist_get("plist", mount)))),
        lid_props = !rail_enabled ? undef
-       : multi_lipo_pack_lid_props(rear_power_lid_plist(plist_get("plist", mount), lidar)),
+                   : multi_lipo_pack_lid_props(rear_power_lid_plist(plist_get("plist", mount), lidar)),
        lid_size = is_undef(lid_props) ? [0, 0, 0] : plist_get("size", lid_props),
        overhead = is_undef(mount) ? undef
-       : [plist_get("pos", mount) - [max(case_size[0], lid_size[0])/2,
-                                     max(case_size[1], lid_size[1])/2, 0],
-          plist_get("pos", mount) + [max(case_size[0], lid_size[0])/2,
-                                     max(case_size[1], lid_size[1])/2, 0]],
+                  : [plist_get("pos", mount) - [max(case_size[0], lid_size[0])/2,
+                                                max(case_size[1], lid_size[1])/2, 0],
+                     plist_get("pos", mount) + [max(case_size[0], lid_size[0])/2,
+                                                max(case_size[1], lid_size[1])/2, 0]],
        clearance_bounds = is_undef(overhead) ? undef
-       : [overhead[0] - [rear_control_case_gap, rear_control_case_gap, 0],
-          overhead[1] + [rear_control_case_gap, rear_control_case_gap, 0]],
+                          : [overhead[0] - [rear_control_case_gap, rear_control_case_gap, 0],
+                             overhead[1] + [rear_control_case_gap, rear_control_case_gap, 0]],
        transition_start = bh_2 - spacing_2[1] / 2 - r - suspension_pad,
        // Reserve the existing taper; relocating controls must not shorten it.
        fixed_bounds = concat([motor_bounds], is_undef(overhead) ? [] : [overhead],
@@ -201,7 +203,7 @@ function rear_chassis_layout(bracket=gearmotor_bracket_compute_params(motor_plis
          let (p = close_panels[i], b = plist_get("bounds", p),
               control = plist_get("type", p) == "control",
               regions = control ? control_panel_clearance_regions(plist_get("orientation", p))
-                : [],
+                        : [],
               outside = !is_undef(mount) && control
                         && plist_get("outside_case", panel_specs[i], control_outside),
               pos = plist_get("pos", p),
@@ -215,8 +217,8 @@ function rear_chassis_layout(bracket=gearmotor_bracket_compute_params(motor_plis
               new_pos = pos + shift,
               new_bounds = [b[0] + shift, b[1] + shift],
               clearances = control
-                ? [for (region = regions) [region[0] + new_pos, region[1] + new_pos]]
-                : [[new_bounds[0], [new_bounds[1][0], new_bounds[1][1], plist_get("height", p)]]])
+                           ? [for (region = regions) [region[0] + new_pos, region[1] + new_pos]]
+                           : [[new_bounds[0], [new_bounds[1][0], new_bounds[1][1], plist_get("height", p)]]])
          plist_merge(p, ["pos", new_pos,
                          "bounds", new_bounds,
                          "clearance_regions", clearances,
@@ -230,14 +232,14 @@ function rear_chassis_layout(bracket=gearmotor_bracket_compute_params(motor_plis
                                      region[1][2]])),
        target_h = chassis_thickness + occupied_h + rear_power_case_clearance,
        mount_z = is_undef(mount) ? 0
-       : multi_lipo_pack_mount_height(plist_get("plist", mount), target_h, chassis_thickness),
+                 : multi_lipo_pack_mount_height(plist_get("plist", mount), target_h, chassis_thickness),
        payload = is_undef(mount) ? undef
-       : plist_merge(mount, ["target_h", target_h,
-                             "mount_z", mount_z,
-                             "standoff_h", mount_z-chassis_thickness,
-                             "clearance_height", occupied_h,
-                             "lidar", lidar,
-                             "lid_size", lid_size]),
+                 : plist_merge(mount, ["target_h", target_h,
+                                       "mount_z", mount_z,
+                                       "standoff_h", mount_z - chassis_thickness,
+                                       "clearance_height", occupied_h,
+                                       "lidar", lidar,
+                                       "lid_size", lid_size]),
        wagos = wago_chassis_mounts(wago_mounts, payload,
                                    concat([motor_bounds,
                                            [[-rear_chassis_maintenance_hole_d/2,
@@ -260,10 +262,10 @@ function rear_chassis_layout(bracket=gearmotor_bracket_compute_params(motor_plis
              max(side_widths) + pad,
              reach + panel_gap + panel_size[0] + pad)],
        support_half_w = is_undef(mount) ? 0
-       : max([for (p = plist_get("mount_holes", mount)) abs(p[0])])
-         + plist_get("radius", mount) + pad,
+                        : max([for (p = plist_get("mount_holes", mount)) abs(p[0])])
+                          + plist_get("radius", mount) + pad,
        max_half_w = max(concat([suspension_half_w, min_width / 2,
-                                case_size[0] / 2, support_half_w],
+                                support_half_w],
                                [for (b = deck_bounds)
                                  max(abs(b[0][0]), abs(b[1][0])) + pad])),
        min_y = min(component_min_y,
@@ -275,6 +277,7 @@ function rear_chassis_layout(bracket=gearmotor_bracket_compute_params(motor_plis
        transition_y_end = max(transition_y_start - rear_suspension_chassis_transition_len,
                               component_max_y + pad),
        size = [half_w * 2, max_y - min_y, chassis_thickness])
+  echo("case_size", case_size, "mount", mount)
   assert(ear_start_y > ear_end_y,
          "Holder-to-bulkhead gap cannot contain the ear")
   assert(rear_suspension_chassis_transition_len > 0
@@ -381,33 +384,109 @@ function rear_suspension_mount_recess_end_y(layout=rear_chassis_layout()) =
 function rear_suspension_joint_width(layout=rear_chassis_layout()) =
   plist_get("join_w", layout) - 2 * rear_chassis_wheel_relief[0];
 
-function rear_chassis_outline_points(layout=rear_chassis_layout(),
-                                     wheel_relief=rear_chassis_wheel_relief) =
-  assert(is_list(wheel_relief) && len(wheel_relief) == 2
-         && is_num(wheel_relief[0]) && is_num(wheel_relief[1])
-         && min(wheel_relief) >= 0,
-         "Wheel relief must be [inward distance, forward distance] in mm")
-  assert(wheel_relief == [0, 0] || min(wheel_relief) > 0,
-         "Use two positive wheel-relief distances, or [0, 0] to disable")
+// Transform an XY hole center and preserve its outer cutter diameter.
+function _rear_hole_position(p, d, pos, rotation=0) =
+  [pos[0] + p[0] * cos(rotation) - p[1] * sin(rotation),
+   pos[1] + p[0] * sin(rotation) + p[1] * cos(rotation), d];
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  rear_chassis_mount_holes
+  ─────────────────────────────────────────────────────────────────────────────
+  Collect deck mounting circles including their counterbores and countersinks.
+  **Parameters:**
+  - `layout`: Resolved rear layout in native holder-row coordinates.
+  **Returns:** `[x, y, d]` centers and outer cutter diameters, in millimeters.
+  Includes motor/gearbox, panels, battery supports, Wagos and deck equipment.
+  Joint fasteners, suspension-mount holes and service openings are separate
+  interfaces and are not part of this mounting pattern.
+ */
+function rear_chassis_mount_holes(layout=rear_chassis_layout()) =
+  let (bracket = plist_get("bracket", layout),
+       motor_pos = plist_get("motor_pos", layout),
+       motor_rotation = plist_get("motor_rotation", layout)[2],
+       payload = plist_get("power_case", layout))
+  concat([for (p = plist_get("mount_hole_positions", bracket))
+           _rear_hole_position(p,
+                               max(plist_get("bolt_d", bracket),
+                                   gearbox_bracket_chassis_cbore_d),
+                               motor_pos, motor_rotation)],
+         [for (p = plist_get("gearbox_hole_positions", bracket))
+           _rear_hole_position(p,
+                               max(plist_get("mount_bolt_d", bracket),
+                                   plist_get("mount_cbore_d", bracket)),
+                               motor_pos, motor_rotation)],
+         [for (panel = plist_get("panels", layout), x = [-1, 1], y = [-1, 1])
+           let (span = plist_get("bolt_spacing", panel))
+           _rear_hole_position([x * span[0] / 2, y * span[1] / 2],
+                               max(panel_stack_bolt_dia,
+                                   panel_stack_bolt_cbore_dia),
+                               plist_get("pos", panel))],
+         is_undef(payload) ? [] :
+         [for (p = plist_get("mount_holes", payload))
+           let (pl = plist_get("plist", payload))
+           [p[0], p[1], max(plist_get("bolt_d", pl), plist_get("bore_d", pl))]],
+         [for (mount = plist_get("wago_mounts", layout, []))
+           let (props = wago_bracket_props(plist_get("bracket", mount, [])),
+                size = plist_get("size", props))
+           for (p = plist_get("mount_holes", props))
+             _rear_hole_position(p - [size[0], size[1]] / 2,
+                                 plist_get("hole_d", props),
+                                 plist_get("pos", mount),
+                                 plist_get("rotation", mount, 0))],
+         [for (item = plist_get("equipment", layout, []))
+           let (props = plist_get("props", item),
+                kind = plist_get("kind", item),
+                perf = kind == "perf_board",
+                span = plist_get("bolt_spacing", props),
+                offset = plist_get("mount_pos", props, [0, 0, 0]),
+                points = perf
+                    ? plist_get("bolt_positions", props)
+                    : [for (x = [-1, 1], y = span[1] == 0 ? [0] : [-1, 1])
+                        [offset[0] + x * span[0] / 2,
+                         offset[1] + y * span[1] / 2]],
+                d = plist_get("bolt_d", props),
+                bore_d = perf
+                    ? plist_get("slot_bore_d", plist_get("component", props))
+                    : plist_get("bore_d", props, 2 * d))
+           for (p = points)
+             _rear_hole_position(p, max(d + (perf ? 0 : 0.2), bore_d),
+                                 plist_get("pos", item),
+                                 plist_get("rotation", item))]);
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  rear_chassis_holes_bounds
+  ─────────────────────────────────────────────────────────────────────────────
+  Return sorted bounding-box corners of the deck mounting circles.
+  **Parameters:**
+  - `layout`: Resolved rear layout in native holder-row coordinates.
+  - `pad`: Nonnegative material margin outside each cutter, in millimeters.
+  **Returns:** Four `[x, y, d]` corners per mounting hole, sorted by ascending Y,
+  then ascending X. XY includes the outer cutter radius and `pad`; `d` remains
+  the counterbore/countersink or through-hole diameter without padding.
+  These are bounds for outline construction, not ordered polygon vertices.
+ */
+function rear_chassis_holes_bounds(layout=rear_chassis_layout(), pad=0) =
+  assert(is_num(pad) && pad >= 0, "Hole boundary padding must be nonnegative")
+  let (corners = [for (p = rear_chassis_mount_holes(layout),
+                      x = [-1, 1], y = [-1, 1])
+         [p[0] + x * (p[2] / 2 + pad),
+          p[1] + y * (p[2] / 2 + pad), p[2]]])
+  sort_by_idx(sort_by_idx(corners, idx=0), idx=1);
+
+function rear_chassis_outline_points(layout=rear_chassis_layout()) =
+
   let (corner_r = rear_chassis_corner_r,
+       join_y = rear_suspension_joint_y_bounds(layout),
+       join_w = rear_suspension_joint_width(layout),
+       join_y0 = join_y[0],
+       join_y1 = join_y[1],
        min_y = plist_get("min_y", layout),
        max_half_w = plist_get("max_half_w", layout),
-       half_w = plist_get("suspension_w", layout) / 2,
-       transition_y_start = plist_get("transition_y_start", layout),
-       transition_y_end = plist_get("transition_y_end", layout),
-       inset = wheel_relief[0],
-       forward = wheel_relief[1])
-  assert(wheel_relief == [0, 0]
-         || (inset < max_half_w - half_w
-             && forward < transition_y_end - min_y),
-         "Wheel relief must fit between the suspension joint and front joining edge")
-  [[-corner_r, transition_y_start],
-   [half_w, transition_y_start],
-   each wheel_relief == [0, 0]
-     ? [[max_half_w, transition_y_end]]
-     : [[max_half_w - inset,
-         transition_y_end + inset * (transition_y_start - transition_y_end)
-           / (max_half_w - half_w)],
-        [max_half_w, transition_y_end - forward]],
+       holes_bounds = rear_chassis_holes_bounds(layout))
+  [[-corner_r, join_y1],
+   [join_w / 2, join_y1],
+   [max_half_w, join_y0],
    [max_half_w, min_y],
    [-corner_r, min_y]];

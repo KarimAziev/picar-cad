@@ -1555,7 +1555,7 @@ multi_power_case_props                             = multi_lipo_pack_props(plist
 multi_power_case_size                              = plist_get("size",
                                                                multi_power_case_props);
 
-chassis_body_min_w                                 = multi_power_case_size[0];
+chassis_body_min_w                                 = 0;
 
 gearbox_bracket_thickness                          = 8.5 - suspension_chassis_mount_recess;
 

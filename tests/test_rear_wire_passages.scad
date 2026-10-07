@@ -20,14 +20,14 @@ passages    = rear_fuse_wire_passages(
   layout, plist_get("panels", layout)[0], plist_get("holes", wiring),
   plist_get("hole_d", wiring), [], plist_put("fuse_outlet", true, config));
 holes       = plist_get("holes", passages);
-assert(norm(plist_get("size", layout) - [160.4, 153.49, 6]) < 1e-6);
+assert(norm(plist_get("size", layout) - [151.26, 153.49, 6]) < 1e-6);
 assert(len(holes) == 4);
 assert(plist_get("hole_d", wiring) == 12);
 assert(norm(holes[0] - [-46.0254, -72.94, 0]) < 0.0001);
 assert(norm(holes[3] - [-61.0254, -57.94, 0]) < 0.0001);
 assert(abs(norm(holes[1] - holes[0]) - 15) < 1e-6);
 assert(abs(norm(holes[2] - holes[0]) - 15) < 1e-6);
-assert(norm(plist_get("outlet_size", passages) - [58.65, 7.5, 0]) < 0.0001);
+assert(norm(plist_get("outlet_size", passages) - [54.08, 7.5, 0]) < 0.0001);
 assert(plist_get("outlet_r", passages) == 3);
 outlet_pos  = plist_get("outlet_pos", passages);
 outlet_size = plist_get("outlet_size", passages);

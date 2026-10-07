@@ -23,6 +23,10 @@ use <../../lib/transforms.scad>
 use <../../lipo_pack_case/multi_lipo_pack_case.scad>
 use <../../placeholders/lidar.scad>
 
+front_middle_chassis_max_w = max(front_chassis_rear_frame_w,
+                                 plist_get("size", multi_lipo_pack_props(
+                                   multi_lipo_packs_case))[0]);
+
 show_middle_chassis               = true;
 show_middle_chassis_components    = true;
 show_middle_chassis_power_case    = false;
