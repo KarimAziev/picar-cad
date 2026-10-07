@@ -19,34 +19,36 @@ use <rear_equipment.scad>
 use <rear_payload.scad>
 use <rear_power_wiring.scad>
 
-rear_suspension_joint_spacing = 0; // [0:1:150]
-show_rear_suspension_mount    = true;
+rear_suspension_joint_spacing   = 0; // [0:1:150]
+show_rear_suspension_mount      = true;
 
-show_panel_stack              = true;
-show_gearbox_bracket          = true;
-show_gearbox                  = true;
-show_motor                    = true;
-show_bearing                  = true;
-show_drive_shaft              = true;
-show_mount_bolts              = true;
-show_nuts                     = true;
-show_drive_shaft_seeve        = true;
-show_extra_drive_shaft        = true;
-show_motor_encoder_bracket    = true;
-show_motor_encoder            = true;
-show_motor_encoder_magnet     = true;
-show_power_case               = true;
-show_lipo_packs               = true;
-show_power_standoffs          = true;
-show_lidar                    = false;
-show_lidar_lid                = true;
-show_wago_brackets            = true;
-show_wagos                    = false;
-show_power_wiring             = undef;
-show_equipment                = true;
-show_equipment_zones          = false;
+show_panel_stack                = true;
+show_gearbox_bracket            = true;
+show_gearbox                    = true;
+show_motor                      = true;
+show_bearing                    = true;
+show_drive_shaft                = true;
+show_mount_bolts                = true;
+show_nuts                       = true;
+show_drive_shaft_seeve          = true;
+show_drive_shaft_encoder_sleeve = true;
+show_extra_drive_shaft          = true;
+show_motor_encoder_bracket      = true;
+show_motor_encoder              = true;
+show_motor_encoder_magnet       = true;
+show_power_case                 = true;
+show_lipo_packs                 = true;
+show_power_standoffs            = true;
+show_lidar                      = false;
+show_lidar_lid                  = true;
+show_wago_brackets              = true;
+show_wagos                      = false;
+show_power_wiring               = undef;
+show_equipment                  = true;
+show_equipment_zones            = false;
+show_motor_gearbox_bosses       = false;
 
-front_joint                   = true;
+front_joint                     = true;
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -130,7 +132,9 @@ module rear_chassis(show_panel_stack=show_panel_stack,
                     anchor=[0, 1, 1],
                     layout=rear_chassis_layout(),
                     rear_suspension_joint_spacing=rear_suspension_joint_spacing,
-                    show_rear_suspension_mount=show_rear_suspension_mount) {
+                    show_rear_suspension_mount=show_rear_suspension_mount,
+                    show_drive_shaft_encoder_sleeve=show_drive_shaft_encoder_sleeve,
+                    show_motor_gearbox_bosses=show_motor_gearbox_bosses) {
   size = rear_chassis_size(layout);
   center_y = (plist_get("min_y", layout) + plist_get("max_y", layout)) / 2;
   with_anchor(is_undef(anchor) ? [0, 0, 1] : anchor, size, centered=true) {
@@ -179,7 +183,9 @@ module rear_chassis(show_panel_stack=show_panel_stack,
                               show_extra_drive_shaft=show_extra_drive_shaft,
                               show_encoder_bracket=show_motor_encoder_bracket,
                               show_encoder=show_motor_encoder,
-                              show_encoder_magnet=show_motor_encoder_magnet);
+                              show_encoder_magnet=show_motor_encoder_magnet,
+                              show_encoder_sleeve=show_drive_shaft_encoder_sleeve,
+                              show_gearbox_bosses=show_motor_gearbox_bosses);
           }
         }
         if (show_panel_stack) {
