@@ -8,15 +8,15 @@
 include <../../rc_params.scad>
 include <rear_chassis_params.scad>
 
-use <../../lib/plist.scad>
 use <../../lib/functions.scad>
+use <../../lib/plist.scad>
 use <../../lipo_pack_case/multi_lipo_pack_case.scad>
 use <../../lipo_pack_case/multi_lipo_pack_lid.scad>
 use <../../motor_brackets/rc/util.scad>
 use <../../panel_stack/control_panel.scad>
 use <../../panel_stack/panel_stack.scad>
-use <../../wago/wago_mounts.scad>
 use <../../wago/wago_bracket.scad>
+use <../../wago/wago_mounts.scad>
 use <../front_chassis/layout_params.scad>
 use <rear_equipment.scad>
 use <rear_payload.scad>
@@ -277,7 +277,6 @@ function rear_chassis_layout(bracket=gearmotor_bracket_compute_params(motor_plis
        transition_y_end = max(transition_y_start - rear_suspension_chassis_transition_len,
                               component_max_y + pad),
        size = [half_w * 2, max_y - min_y, chassis_thickness])
-  echo("case_size", case_size, "mount", mount)
   assert(ear_start_y > ear_end_y,
          "Holder-to-bulkhead gap cannot contain the ear")
   assert(rear_suspension_chassis_transition_len > 0
@@ -407,10 +406,10 @@ function rear_chassis_mount_holes(layout=rear_chassis_layout()) =
        motor_rotation = plist_get("motor_rotation", layout)[2],
        payload = plist_get("power_case", layout))
   concat([for (p = plist_get("mount_hole_positions", bracket))
-           _rear_hole_position(p,
-                               max(plist_get("bolt_d", bracket),
-                                   gearbox_bracket_chassis_cbore_d),
-                               motor_pos, motor_rotation)],
+    _rear_hole_position(p,
+                        max(plist_get("bolt_d", bracket),
+                            gearbox_bracket_chassis_cbore_d),
+                        motor_pos, motor_rotation)],
          [for (p = plist_get("gearbox_hole_positions", bracket))
            _rear_hole_position(p,
                                max(plist_get("mount_bolt_d", bracket),
@@ -429,7 +428,7 @@ function rear_chassis_mount_holes(layout=rear_chassis_layout()) =
          [for (mount = plist_get("wago_mounts", layout, []))
            let (props = wago_bracket_props(plist_get("bracket", mount, [])),
                 size = plist_get("size", props))
-           for (p = plist_get("mount_holes", props))
+             for (p = plist_get("mount_holes", props))
              _rear_hole_position(p - [size[0], size[1]] / 2,
                                  plist_get("hole_d", props),
                                  plist_get("pos", mount),
@@ -441,15 +440,15 @@ function rear_chassis_mount_holes(layout=rear_chassis_layout()) =
                 span = plist_get("bolt_spacing", props),
                 offset = plist_get("mount_pos", props, [0, 0, 0]),
                 points = perf
-                    ? plist_get("bolt_positions", props)
-                    : [for (x = [-1, 1], y = span[1] == 0 ? [0] : [-1, 1])
-                        [offset[0] + x * span[0] / 2,
-                         offset[1] + y * span[1] / 2]],
+                         ? plist_get("bolt_positions", props)
+                         : [for (x = [-1, 1], y = span[1] == 0 ? [0] : [-1, 1])
+                           [offset[0] + x * span[0] / 2,
+                            offset[1] + y * span[1] / 2]],
                 d = plist_get("bolt_d", props),
                 bore_d = perf
-                    ? plist_get("slot_bore_d", plist_get("component", props))
-                    : plist_get("bore_d", props, 2 * d))
-           for (p = points)
+                         ? plist_get("slot_bore_d", plist_get("component", props))
+                         : plist_get("bore_d", props, 2 * d))
+             for (p = points)
              _rear_hole_position(p, max(d + (perf ? 0 : 0.2), bore_d),
                                  plist_get("pos", item),
                                  plist_get("rotation", item))]);
@@ -470,9 +469,9 @@ function rear_chassis_mount_holes(layout=rear_chassis_layout()) =
 function rear_chassis_holes_bounds(layout=rear_chassis_layout(), pad=0) =
   assert(is_num(pad) && pad >= 0, "Hole boundary padding must be nonnegative")
   let (corners = [for (p = rear_chassis_mount_holes(layout),
-                      x = [-1, 1], y = [-1, 1])
-         [p[0] + x * (p[2] / 2 + pad),
-          p[1] + y * (p[2] / 2 + pad), p[2]]])
+                       x = [-1, 1], y = [-1, 1])
+    [p[0] + x * (p[2] / 2 + pad),
+     p[1] + y * (p[2] / 2 + pad), p[2]]])
   sort_by_idx(sort_by_idx(corners, idx=0), idx=1);
 
 function rear_chassis_outline_points(layout=rear_chassis_layout()) =

@@ -45,6 +45,32 @@ function rear_suspension_chassis_joint_params(layout=rear_chassis_layout()) =
          include_pin_holes=true))
   plist_merge(nominal, ["clearance", front_chassis_joint_clearance]);
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  rear_suspension_chassis_joint_pins
+  ─────────────────────────────────────────────────────────────────────────────
+  Emit the two pin passages in native rear-chassis layout coordinates.
+
+  **Parameters:**
+  - `layout`: Shared rear chassis layout.
+
+  Passages include sag compensation and pin-end clearance. Apply the chassis
+  anchor and assembly transforms to place them alongside the mounting holes.
+ */
+module rear_suspension_chassis_joint_pins(layout=rear_chassis_layout()) {
+  p = rear_suspension_chassis_joint_params(layout);
+  ys = rear_suspension_joint_y_bounds(layout);
+  translate([0, ys[1], 0]) {
+    plate_joint_pin_holes(d=plist_get("pin_d", p),
+                          pin_l=plist_get("pin_l", p),
+                          l=plist_get("l", p),
+                          spacing=plist_get("pin_spacing", p),
+                          z=plist_get("pin_z", p),
+                          compensation=plist_get("pin_compensation", p),
+                          use_pad=false);
+  }
+}
+
 module rear_suspension_chassis_joint(mode,
                                      layout=rear_chassis_layout(),
                                      color,
