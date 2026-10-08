@@ -40,6 +40,15 @@ layout = changed
 joint_y = rear_suspension_joint_y_bounds(layout);
 end = joint_y[0];
 w = plist_get("suspension_w", layout);
+half_joint_w = rear_suspension_joint_width(layout) / 2;
+shoulder_y = rear_suspension_mount_shoulder_y(layout);
+echo(shoulder_probes=[for (side = [-1, 1],
+                          y = [joint_y[1], shoulder_y - 0.1])
+                       [side * (half_joint_w + 0.05), y]]);
+echo(mount_probes=[for (side = [-1, 1],
+                       y = [joint_y[1] + 0.1, shoulder_y - 0.1])
+                    [side * (half_joint_w
+                             - front_chassis_joint_boolean_overlap - 0.05), y]]);
 echo(probes=[for (x = [-w / 4, 0, w / 4], dy = [-0.1, 0, 0.2])
                 if (norm([x, end + dy - plist_get("maintenance_y", layout)])
                     > rear_chassis_maintenance_hole_d / 2 + 0.1)
@@ -73,7 +82,8 @@ if (part == "frame") {{
 """)
         for changed in (False, True):
             # Synthetic joint dimensions do not carry the stock deck's harness.
-            wiring_args = ["-D", 'rear_power_wiring=["enabled", false]'] if changed else []
+            variant_args = ["-D", 'rear_power_wiring=["enabled", false]',
+                            "-D", "rear_suspension_chassis_shoulder_l=7"] if changed else []
             for part in ("frame", "mount", "female_root", "collision", "blocked_slots"):
                 expect_empty = part in ("collision", "blocked_slots")
                 # Preserve coplanar cutout faces without binary STL's float32
@@ -83,7 +93,7 @@ if (part == "frame") {{
                     [OPENSCAD, "--backend=Manifold", "--enable=textmetrics",
                      "--hardwarnings", "--export-format", export_format,
                      "-o", str(output), "-D", f'part="{part}"',
-                     "-D", f"changed={str(changed).lower()}", *wiring_args, str(source)],
+                     "-D", f"changed={str(changed).lower()}", *variant_args, str(source)],
                     capture_output=True, text=True,
                 )
                 log = result.stdout + result.stderr
@@ -106,9 +116,17 @@ if (part == "frame") {{
                     assert len(mesh.split()) == 1, (part, changed)
                 if part == "frame":
                     triangles = read_triangles(output)
-                    for x, y in ast.literal_eval(echo_value(log, "probes")):
+                    probes = ast.literal_eval(echo_value(log, "probes"))
+                    probes += ast.literal_eval(echo_value(log, "shoulder_probes"))
+                    for x, y in probes:
                         assert ray_hits(triangles, x, y), (
-                            "Slit at chassis joint attachment", changed, x, y,
+                            "Missing chassis joint or shoulder material", changed, x, y,
+                        )
+                if part == "mount":
+                    triangles = read_triangles(output)
+                    for x, y in ast.literal_eval(echo_value(log, "mount_probes")):
+                        assert ray_hits(triangles, x, y), (
+                            "Missing square suspension-mount corner", changed, x, y,
                         )
             print(f"PASS rear joint changed={changed}: solid attachment lands, "
                   "connected halves, female root overlap, open cutouts and no interference")

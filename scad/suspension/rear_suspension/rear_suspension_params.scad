@@ -50,4 +50,6 @@ rear_chassis_maintenance_hole_arm_pad_dist = 8.20;
 
 // Rear part of the chassis with suspension.
 rear_suspension_chassis_bolt_pad           = 2.75;
-rear_suspension_chassis_corner_r           = 2;
+// Straight side length beyond the joint and material above the service hole.
+rear_suspension_chassis_shoulder_l        = 4;
+rear_suspension_chassis_maintenance_pad   = 2;

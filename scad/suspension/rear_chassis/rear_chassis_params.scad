@@ -12,7 +12,6 @@ rear_chassis_maintenance_hole_d        = 8.40;
 // Material beyond deck-mounted hardware, independent of suspension bolt lands.
 // Raised case/lid envelopes do not receive this margin.
 rear_chassis_edge_pad                  = 2.75;
-rear_chassis_corner_r                  = 2;
 
 // Wheel relief at each suspension-side shoulder, in mm:
 // [inward X distance, distance along the side toward vehicle front].

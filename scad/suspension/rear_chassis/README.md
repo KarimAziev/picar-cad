@@ -80,6 +80,13 @@ The adjoining suspension plate has its own
 [`rear_suspension_mount_printable.scad`](../rear_suspension/rear_suspension_mount_printable.scad)
 entry, positioned on Z=0.
 
+The rear frame and suspension mount have square outline corners. The frame's
+side shoulders flank the mount up to `rear_suspension_mount_shoulder_y(layout)`.
+`rear_suspension_chassis_shoulder_l` in
+[`rear_suspension_params.scad`](../rear_suspension/rear_suspension_params.scad)
+sets their shared reach beyond the suspension-side joint edge (4 mm by default).
+This reach lies within the plate envelope.
+
 ### Reinforcing pins
 
 All chassis reinforcing pins are 3 mm diameter.
@@ -238,7 +245,6 @@ for the front frame when writing another orchestrator. The raised battery case
 may overhang the deck: its width requirement comes from the mounting centers,
 support/counterbore radius and `rear_chassis_edge_pad`.
 
-`rear_chassis_outline_points()` exposes `holes_bounds` in its `let` bindings.
 `rear_chassis_holes_bounds(layout, pad=0)` returns four `[x, y, d]` bounding-box
 corners per deck mounting hole, sorted by ascending Y and then X. XY includes
 the counterbore/countersink radius and optional padding; `d` is the unpadded

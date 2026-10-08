@@ -159,7 +159,7 @@ function _rear_equipment_place(specs,
     Position is optional [0..1, 0..1] alignment within the selected zone; omitted
     positions use automatic first-fit placement. Rotation is degrees about Z.
   - `layout`: Existing rear layout, with motor, panels and battery supports.
-  - `edge_margin`: Deck boundary inset (at least its outline corner radius).
+  - `edge_margin`: Nonnegative deck boundary inset.
   - `gap`: Minimum separation and overhead clearance in millimeters.
   **Returns:** Resolved equipment plists with pos, rotation, size and bounds.
   Repeated types are independent. Oversized/overlapping entries assert clearly.

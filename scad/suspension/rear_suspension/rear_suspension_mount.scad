@@ -19,25 +19,8 @@ use <rear_suspension_slots.scad>
 use <util.scad>
 
 module rear_suspension_mount_outline(layout=rear_chassis_layout()) {
-  pts = rear_suspension_outline(layout);
-  half_w = rear_suspension_joint_width(layout) / 2
-           - front_chassis_joint_boolean_overlap;
-
-  r = rear_suspension_chassis_corner_r;
-
-  min_y = polygon_min_y(pts);
-
-  union() {
-
-    mirror_copy([1, 0, 0]) {
-      offset_vertices_2d(r=r) {
-        polygon(pts);
-      }
-      // remove roundness for joint
-      translate([-half_w + r / 2, min_y + r / 2, 0]) {
-        square([r, r], center=true);
-      }
-    }
+  mirror_copy([1, 0, 0]) {
+    polygon(rear_suspension_outline(layout));
   }
 }
 
@@ -126,4 +109,4 @@ module rear_suspension_mount(layout=rear_chassis_layout(),
     }
   }
 }
-rear_suspension_mount(debug=false);
+rear_suspension_mount(debug=true);

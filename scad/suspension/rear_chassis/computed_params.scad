@@ -316,8 +316,8 @@ function rear_chassis_layout(bracket=gearmotor_bracket_compute_params(motor_plis
                       "panel_bounds", plist_get("bounds", first),
                       "candidate_half_widths", candidate_half_widths,
                       "max_half_w", max_half_w])
-  assert(equipment_edge_margin >= rear_chassis_corner_r,
-         "Equipment edge margin must cover the rounded deck corners")
+  assert(equipment_edge_margin >= 0,
+         "Equipment edge margin must be nonnegative")
   plist_merge(base_layout,
               ["equipment_zones", rear_equipment_zones(base_layout,
                                                        equipment_edge_margin, equipment_gap),
@@ -382,6 +382,10 @@ function rear_suspension_mount_recess_end_y(layout=rear_chassis_layout()) =
  */
 function rear_suspension_joint_width(layout=rear_chassis_layout()) =
   plist_get("join_w", layout) - 2 * rear_chassis_wheel_relief[0];
+
+// End of the straight mount sides flanked by the chassis shoulders, in native Y.
+function rear_suspension_mount_shoulder_y(layout=rear_chassis_layout()) =
+  rear_suspension_joint_y_bounds(layout)[1] + rear_suspension_chassis_shoulder_l;
 
 // Transform an XY hole center and preserve its outer cutter diameter.
 function _rear_hole_position(p, d, pos, rotation=0) =
@@ -475,18 +479,14 @@ function rear_chassis_holes_bounds(layout=rear_chassis_layout(), pad=0) =
   sort_by_idx(sort_by_idx(corners, idx=0), idx=1);
 
 function rear_chassis_outline_points(layout=rear_chassis_layout()) =
-
-  let (corner_r = rear_chassis_corner_r,
-       join_y = rear_suspension_joint_y_bounds(layout),
-       join_w = rear_suspension_joint_width(layout),
-       join_whf = join_w / 2,
+  let (join_y = rear_suspension_joint_y_bounds(layout),
+       join_whf = rear_suspension_joint_width(layout) / 2,
        join_y0 = join_y[0],
-       join_y1 = join_y[1],
        min_y = plist_get("min_y", layout),
        max_half_w = plist_get("max_half_w", layout))
-  [[-corner_r, join_y0],
-   [join_whf -corner_r, join_y0],
-   [join_whf -corner_r, join_y1 + corner_r],
+  [[0, join_y0],
+   [join_whf, join_y0],
+   [join_whf, rear_suspension_mount_shoulder_y(layout)],
    [max_half_w, join_y0],
    [max_half_w, min_y],
-   [-corner_r, min_y]];
+   [0, min_y]];
