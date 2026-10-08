@@ -329,7 +329,7 @@ front_chassis_head_side_slot_rows                  = 2;
 
 // Pan-servo mounting interface retained from the proven head mount.
 front_chassis_head_pan_servo_slot_dia              = 6.5;
-front_chassis_head_pan_servo_slot_recess           = constraint(3.8,
+front_chassis_head_pan_servo_slot_recess           = constraint(4.2,
                                                                 0,
                                                                 chassis_thickness - 1);
 front_chassis_head_pan_servo_top_ribbon_cutout_len = 18;
