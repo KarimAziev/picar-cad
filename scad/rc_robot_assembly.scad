@@ -105,7 +105,7 @@ show_motor_encoder_magnet                   = true;
 show_rear_chassis_nuts                      = true;
 show_rear_chassis_mount_bolts               = true;
 show_rear_chassis_equipment                 = true;
-show_rear_chassis_equipment_zones           = true;
+show_rear_chassis_equipment_zones           = false;
 show_motor_gearbox_bosses                   = true;
 
 show_rear_equipment                         = true;
