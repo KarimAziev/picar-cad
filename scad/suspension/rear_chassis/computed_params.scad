@@ -371,7 +371,7 @@ function rear_suspension_joint_y_bounds(layout=rear_chassis_layout()) =
  */
 function rear_suspension_mount_recess_end_y(layout=rear_chassis_layout()) =
   plist_get("rect_y", layout) - rear_suspension_arm_pad_rect_slot_size[1] / 2
-  - suspension_chassis_mount_clearance;
+  - suspension_chassis_mount_clearance - rear_suspension_mount_recess_extension;
 
 /**
   ─────────────────────────────────────────────────────────────────────────────

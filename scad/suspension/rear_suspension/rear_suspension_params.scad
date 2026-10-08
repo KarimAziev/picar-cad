@@ -53,3 +53,6 @@ rear_suspension_chassis_bolt_pad           = 2.75;
 // Straight side length beyond the joint and material above the service hole.
 rear_suspension_chassis_shoulder_l        = 4;
 rear_suspension_chassis_maintenance_pad   = 2;
+
+// Extra lowered footprint toward the motor, in mm along native -Y.
+rear_suspension_mount_recess_extension   = 1;

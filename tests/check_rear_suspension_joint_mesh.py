@@ -13,6 +13,7 @@ import numpy as np
 import trimesh
 
 from check_rear_chassis_mesh import ray_hits, read_triangles
+from check_chassis_joint_bores import vertical_hits
 from scad_test_support import OPENSCAD, echo_value
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -123,6 +124,11 @@ if (part == "frame") {{
                             "Missing chassis joint or shoulder material", changed, x, y,
                         )
                 if part == "mount":
+                    # The 1 mm recess extension leaves a 4 mm mounting floor
+                    # on one side of the step and 6 mm reinforcement on the other.
+                    for y, height in [(-48.79, 4), (-49.79, 6)]:
+                        np.testing.assert_allclose(vertical_hits(mesh, 10, y),
+                                                   [0, height], atol=1e-5)
                     triangles = read_triangles(output)
                     for x, y in ast.literal_eval(echo_value(log, "mount_probes")):
                         assert ray_hits(triangles, x, y), (
