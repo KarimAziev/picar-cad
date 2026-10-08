@@ -45,13 +45,13 @@ function tie_rod_full_len(shaft_nut_h,
                         : tie_rod_b_screw_out_depth),
        tie_rod_a_len=tie_rod_a_raw_len
                      + (limit_max_depth
-          ? min(max_screw_out_depth, tie_rod_a_screw_out_depth)
-          : tie_rod_a_screw_out_depth)
+                        ? min(max_screw_out_depth, tie_rod_a_screw_out_depth)
+                        : tie_rod_a_screw_out_depth)
        ,
        tie_rod_b_len=tie_rod_b_raw_len
                      + (limit_max_depth
-          ? min(max_screw_out_depth, tie_rod_b_screw_out_depth)
-          : tie_rod_b_screw_out_depth)
+                        ? min(max_screw_out_depth, tie_rod_b_screw_out_depth)
+                        : tie_rod_b_screw_out_depth)
        ,
        full_len = shaft_body_len + nut_h * 2 + tie_rod_a_len + tie_rod_b_len)
   [full_len,
@@ -520,55 +520,3 @@ function servo_tie_rod_b_center(angle=0) =
        full_l = dims[0],
        s = full_l - servo_tie_rod_a_eye_od/2 - servo_tie_rod_b_eye_od/2)
   [s*cos(angle), s*sin(angle), 0];
-
-dims = tie_rod_full_len(shaft_body_len=steering_servo_tie_rod_body_len,
-                        shaft_thread_len=steering_servo_tie_rod_thread_len,
-                        shaft_thread_d=steering_servo_tie_rod_thread_d,
-                        show_shaft_nuts=true,
-                        tie_rod_a_screw_out_depth=servo_tie_rod_a_screw_out_depth,
-                        tie_rod_a_eye_od=servo_tie_rod_a_eye_od,
-                        tie_rod_a_shank_len=servo_tie_rod_a_shank_len,
-                        tie_rod_b_shank_len=servo_tie_rod_b_shank_len,
-                        tie_rod_b_eye_od=servo_tie_rod_b_eye_od,
-                        tie_rod_b_screw_out_depth=servo_tie_rod_b_screw_out_depth,
-                        limit_max_depth=true);
-full_l = dims[0];
-angle = -30;
-max_tie_rod_a_h = dservo_tie_rod_a_max_h();
-max_tie_rod_b_h = dservo_tie_rod_b_max_h();
-w = max(max_tie_rod_a_h, max_tie_rod_b_h, steering_servo_tie_rod_body_d);
-
-// I need to have way to get distance from x0 and y0 (the center of anchored
-// tie_rod_a_eye_od) to the center of tie_rod_b_eye_od
-eye_center_spacing = full_l
-                     - servo_tie_rod_a_eye_od / 2
-                     - servo_tie_rod_b_eye_od / 2;
-
-bb = servo_tie_rod_bbox(angle);
-
-bb_center = servo_tie_rod_b_center();
-
-echo("bb_center", bb_center);
-
-translate([0, 0, 0]) {
-
-  rotate([0, 0, angle]) {
-    servo_tie_rod(tie_rod_b_bushing_rotation=[0, 0, 0]);
-  }
-}
-
-// translate([0, (angle > 0 ? 0 : -bb[1]), 0]) {
-//   translate([0, 0, 0]) {
-//     #cube([bb_center[0], bb[1], bb[2]]);
-//   }
-// }
-translate([0, 0, 10]) {
-
-  color("red") {
-    translate([eye_center_spacing*cos(angle),
-               eye_center_spacing*sin(angle),
-               0]) {
-      sphere(d=1);
-    }
-  }
-}
