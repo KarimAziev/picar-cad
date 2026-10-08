@@ -46,7 +46,7 @@ rear_suspension_arm_pad_bulkhead_slot_dist = 9.07;
 
 // Distance between the edge of the maintenance hole and the edge of the
 // `rear_suspension_arm_pad_rect_slot_size` slot.
-rear_chassis_maintenance_hole_arm_pad_dist = 8.40;
+rear_chassis_maintenance_hole_arm_pad_dist = 8.20;
 
 // Rear part of the chassis with suspension.
 rear_suspension_chassis_bolt_pad           = 2.75;
