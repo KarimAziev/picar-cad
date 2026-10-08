@@ -30,16 +30,26 @@ rear_suspension_joint_spacing = 0; // [0:1:100]
   **Notes:** Only the free boundary is rounded; the joining edge stays square.
  */
 module rear_chassis_outline(layout=rear_chassis_layout()) {
+  join_y = rear_suspension_joint_y_bounds(layout);
+  join_w = rear_suspension_joint_width(layout);
+  corner_r = rear_chassis_corner_r;
+  join_y0 = join_y[0];
+  join_y1 = join_y[1];
+  join_yl = abs(join_y0) - abs(join_y1);
 
-  r = rear_chassis_corner_r;
-  mirror_copy([1, 0, 0]) {
-    offset_vertices_2d(r=r) {
-      polygon(rear_chassis_outline_points(layout));
+  difference() {
+    mirror_copy([1, 0, 0]) {
+      offset_vertices_2d(r=corner_r) {
+        polygon(rear_chassis_outline_points(layout));
+      }
+    }
+    translate([-join_w / 2, join_y0, 0]) {
+      square([join_w, join_yl], center=false);
     }
   }
   // Keep the complete attachment edge square, including the mirrored center.
   translate([-plist_get("join_w", layout) / 2, plist_get("min_y", layout)]) {
-    square([plist_get("join_w", layout), r]);
+    square([plist_get("join_w", layout), corner_r]);
   }
 }
 
@@ -75,9 +85,7 @@ module rear_chassis_frame(debug=false,
                           front_joint=true) {
   pts = rear_chassis_outline_points(layout);
   size = plist_get("size", layout);
-  transition_y_start = plist_get("transition_y_start", layout);
   joint_y = rear_suspension_joint_y_bounds(layout);
-
   join_w = plist_get("join_w", layout);
   min_y = plist_get("min_y", layout);
   center_y = (plist_get("min_y", layout) + plist_get("max_y", layout)) / 2;
@@ -100,6 +108,7 @@ module rear_chassis_frame(debug=false,
                   front_chassis_body_joint(mode="male", w=join_w);
                 }
               }
+
               linear_extrude(height=chassis_thickness, convexity=3) {
                 rear_chassis_outline(layout);
               }

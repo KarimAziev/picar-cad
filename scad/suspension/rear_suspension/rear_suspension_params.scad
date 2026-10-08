@@ -22,7 +22,7 @@ rear_bulkhead_bolt_spacing_x               = 34;
 
 // Distance between the bore edges (not centers) of `rear_bulkhead_bolt_spacing_1`
 // and `rear_suspension_holder_bolt_spacing_x`.
-rear_bulkhead_bolt_spacing_1_holder_dist   = 9.22;
+rear_bulkhead_bolt_spacing_1_holder_dist   = 7.62;
 
 // First two holes.
 rear_bulkhead_bolt_spacing_1               = [rear_bulkhead_bolt_spacing_x, 0];
@@ -42,7 +42,7 @@ rear_suspension_arm_pad_rect_corner_r      = 1;
 
 // Distance between the edge of the last row of holes in
 // `rear_bulkhead_bolt_spacing_2` and the rectangular slot.
-rear_suspension_arm_pad_bulkhead_slot_dist = 7.47;
+rear_suspension_arm_pad_bulkhead_slot_dist = 9.07;
 
 // Distance between the edge of the maintenance hole and the edge of the
 // `rear_suspension_arm_pad_rect_slot_size` slot.
