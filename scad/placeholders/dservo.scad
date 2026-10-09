@@ -10,6 +10,7 @@ include <../rc_params.scad>
 
 use <../components/encoder_l_bracket.scad>
 use <../lib/functions.scad>
+use <../lib/shapes3d.scad>
 use <../suspension/bellcrank/bellcrank_drive.scad>
 use <rotary_encoder.scad>
 use <servo.scad>
@@ -70,8 +71,8 @@ function steering_servo_y_tie_rod() =
 
 function steering_servo_tie_rod_angle(bellcrank_lever_z_end) =
   let (bellcrank_lever_z_end = is_undef(bellcrank_lever_z_end)
-       ? bellcrank_servo_lever_z_coords()[1]
-       : bellcrank_lever_z_end,
+                               ? bellcrank_servo_lever_z_coords()[1]
+                               : bellcrank_lever_z_end,
        dims = tie_rod_full_len(shaft_body_len=steering_servo_tie_rod_body_len,
                                shaft_thread_len=steering_servo_tie_rod_thread_len,
                                shaft_thread_d=steering_servo_tie_rod_thread_d,
@@ -94,8 +95,8 @@ function steering_servo_tie_rod_angle(bellcrank_lever_z_end) =
 function steering_servo_bellcrank_y(center=false,
                                     bellcrank_lever_z_end) =
   let (bellcrank_lever_z_end = is_undef(bellcrank_lever_z_end)
-       ? bellcrank_servo_lever_z_coords()[1]
-       : bellcrank_lever_z_end,
+                               ? bellcrank_servo_lever_z_coords()[1]
+                               : bellcrank_lever_z_end,
        dims = tie_rod_full_len(shaft_body_len=steering_servo_tie_rod_body_len,
                                shaft_thread_len=steering_servo_tie_rod_thread_len,
                                shaft_thread_d=steering_servo_tie_rod_thread_d,
@@ -157,9 +158,7 @@ module servo_tie_rod(bushing_rotation,
           tie_rod_a_show_eye_bolt_nut=true,
           tie_rod_a_eye_bolt_through_h=steering_servo_arm_bolt_boss_h,
           tie_rod_a_eye_bolt_lock_nut=servo_tie_rod_a_eye_bolt_lock_nut,
-
           tie_rod_a_y_angle=y_angle,
-
           tie_rod_a_reverse_bolt=servo_tie_rod_a_reverse_bolt,
           tie_rod_a_bushing_rotation=bushing_rotation,
           tie_rod_a_screw_out_depth=servo_tie_rod_a_screw_out_depth,
@@ -190,6 +189,117 @@ module servo_tie_rod(bushing_rotation,
           tie_rod_b_color=servo_tie_rod_b_color);
 }
 
+module steering_servo_arm() {
+  servo_arm(arm_d=steering_servo_arm_d,
+            arm_len=steering_servo_arm_len,
+            arm_base_h=steering_servo_arm_base_h,
+            arm_bolt_boss_h=steering_servo_arm_bolt_boss_h,
+            arm_bolt_boss_w=steering_servo_arm_bolt_boss_w,
+            arm_bolt_boss_spacing=steering_servo_arm_bolt_boss_spacing,
+            arm_bolt_boss_padding=steering_servo_arm_bolt_boss_padding,
+            arm_thickness=steering_servo_arm_thickness,
+            arm_w=steering_servo_arm_w,
+            bolt_d=steering_servo_arm_bolt_d,
+            boss_inner_padding=steering_servo_arm_bolt_boss_inner_padding,
+            arm_center_bolt_d=steering_servo_arm_center_bolt_d,
+            arm_center_bolt_bore_d=steering_servo_arm_center_bolt_bore_d,
+            arm_center_bolt_bore_h=steering_servo_arm_center_bolt_bore_h,
+            reverse=true);
+}
+
+module steering_servo_encoder_bracket(plist=steering_encoder_plist,
+                                      target_h=dsservo_size[1] / 2,
+                                      show_encoder=true) {
+
+  encoder_l_bracket(plist=plist,
+                    target_h=target_h,
+                    bottom_thickness=steering_encoder_bottom_thickness,
+                    side_thickness=steering_encoder_side_thickness,
+                    top_side_padding=steering_encoder_top_side_padding,
+                    extra_left_w=steering_encoder_extra_left_w,
+                    extra_right_w=steering_encoder_extra_right_w,
+                    top_up_padding=steering_encoder_top_up_padding,
+                    top_bolt_min_padding=steering_encoder_top_bolt_min_padding,
+                    top_corner_r=steering_encoder_top_corner_r,
+                    bottom_pan_bolt_spacing=steering_encoder_bottom_pan_bolt_spacing,
+                    bottom_pan_bolt_d=steering_encoder_bottom_pan_bolt_d,
+                    bottom_pan_bolt_pad=steering_encoder_bottom_pan_bolt_pad,
+                    bottom_corner_r=steering_encoder_bottom_corner_r,
+                    show_encoder=show_encoder);
+}
+
+module steering_servo_encoder_magnet(d=steering_magnet_d,
+                                     h=steering_magnet_h,
+                                     color=metallic_silver_3,
+                                     $fn=28) {
+  color(color) {
+    cylinder(d=d, h=h, $fn=$fn);
+  }
+}
+
+module steering_servo_harness(show_servo_horn=true,
+                              show_tie_rod=true,
+                              show_magnet=true,
+                              show_encoder_bracket=true,
+                              show_encoder=true,
+                              bellcrank_lever_z_end,
+                              encoder_plist=steering_encoder_plist,
+                              servo_horn_angle=0,
+                              magnet_d=steering_magnet_d,
+                              magnet_h=steering_magnet_h) {
+  bellcrank_lever_z_end = is_undef(bellcrank_lever_z_end)
+                          ? bellcrank_servo_lever_z_coords()[1]
+                          : bellcrank_lever_z_end;
+
+  y_tie_rod = steering_servo_y_tie_rod();
+
+  angle = steering_servo_tie_rod_angle(bellcrank_lever_z_end=bellcrank_lever_z_end);
+
+  max_tie_rod_a_h = dservo_tie_rod_a_max_h();
+
+  if (show_servo_horn) {
+    rotate([0, 0, 180 + servo_horn_angle]) {
+      steering_servo_arm();
+      if (show_tie_rod) {
+        translate([-steering_servo_arm_w / 2 + servo_tie_rod_a_eye_od / 2,
+                   y_tie_rod,
+                   -max_tie_rod_a_h / 2]) {
+          rotate([0, 0, angle - servo_horn_angle]) {
+            servo_tie_rod(tie_rod_b_bushing_rotation=[angle, 0, 0],
+                          direction="left");
+          }
+        }
+      }
+    }
+  }
+
+  if (encoder_plist) {
+    encoder_target_h = dsservo_size[1] / 2;
+    translate([0, 0, steering_servo_arm_base_h]) {
+      if (show_magnet) {
+        steering_servo_encoder_magnet(d=magnet_d,
+                                      h=magnet_h,
+                                      $fn=28,
+                                      color=metallic_silver_3);
+      }
+      if (show_encoder_bracket) {
+        translate([0,
+                   0,
+                   dsservo_encoder_bracket_arm_offset(plist=encoder_plist,
+                                                      magnet_h=magnet_h)]) {
+          rotate([90, 0, 0]) {
+            translate([0, 0, -encoder_target_h]) {
+              steering_servo_encoder_bracket(target_h=encoder_target_h,
+                                             plist=encoder_plist,
+                                             show_encoder=show_encoder);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 module dsservo(center=false,
                servo_color=dsservo_color,
                alpha=1,
@@ -206,16 +316,6 @@ module dsservo(center=false,
                show_magnet=true,
                magnet_d=steering_magnet_d,
                magnet_h=steering_magnet_h) {
-
-  bellcrank_lever_z_end = is_undef(bellcrank_lever_z_end)
-    ? bellcrank_servo_lever_z_coords()[1]
-    : bellcrank_lever_z_end;
-
-  y_tie_rod = steering_servo_y_tie_rod();
-
-  angle = steering_servo_tie_rod_angle(bellcrank_lever_z_end=bellcrank_lever_z_end);
-
-  max_tie_rod_a_h = dservo_tie_rod_a_max_h();
 
   rotate([0, 0, 180]) {
     servo(size=[dsservo_size[0],
@@ -256,74 +356,15 @@ module dsservo(center=false,
           socket_z_offset=dsservo_socket_z_offset,
           wiring_path=[[-100, dsservo_size[1] / 2, dsservo_socket_z_offset]]) {
 
-      if (show_servo_horn) {
-        rotate([0, 0, 180 + servo_horn_angle]) {
-          servo_arm(arm_d=steering_servo_arm_d,
-                    arm_len=steering_servo_arm_len,
-                    arm_base_h=steering_servo_arm_base_h,
-                    arm_bolt_boss_h=steering_servo_arm_bolt_boss_h,
-                    arm_bolt_boss_w=steering_servo_arm_bolt_boss_w,
-                    arm_bolt_boss_spacing=steering_servo_arm_bolt_boss_spacing,
-                    arm_bolt_boss_padding=steering_servo_arm_bolt_boss_padding,
-                    arm_thickness=steering_servo_arm_thickness,
-                    arm_w=steering_servo_arm_w,
-                    bolt_d=steering_servo_arm_bolt_d,
-                    boss_inner_padding=steering_servo_arm_bolt_boss_inner_padding,
-                    arm_center_bolt_d=steering_servo_arm_center_bolt_d,
-                    arm_center_bolt_bore_d=steering_servo_arm_center_bolt_bore_d,
-                    arm_center_bolt_bore_h=steering_servo_arm_center_bolt_bore_h,
-                    reverse=true);
-
-          if (show_tie_rod) {
-            translate([-steering_servo_arm_w / 2 + servo_tie_rod_a_eye_od / 2,
-                       y_tie_rod,
-                       -max_tie_rod_a_h / 2]) {
-              rotate([0, 0, angle - servo_horn_angle]) {
-                servo_tie_rod(tie_rod_b_bushing_rotation=[angle, 0, 0],
-                              direction="left");
-              }
-            }
-          }
-        }
-      }
-
-      if (steering_encoder_plist) {
-        encoder_target_h = dsservo_size[1] / 2;
-        translate([0, 0, steering_servo_arm_base_h]) {
-          if (show_magnet) {
-            color(metallic_silver_3, alpha=1) {
-              cylinder(d=magnet_d, h=magnet_h, $fn=28);
-            }
-          }
-          if (show_encoder_bracket) {
-            translate([0,
-                       0,
-                       dsservo_encoder_bracket_arm_offset(plist=steering_encoder_plist,
-                                                          magnet_h=magnet_h)]) {
-              rotate([90, 0, 0]) {
-                translate([0, 0, -encoder_target_h]) {
-                  encoder_l_bracket(plist=steering_encoder_plist,
-                                    target_h=encoder_target_h,
-                                    bottom_thickness=steering_encoder_bottom_thickness,
-                                    side_thickness=steering_encoder_side_thickness,
-                                    top_side_padding=steering_encoder_top_side_padding,
-                                    extra_left_w=steering_encoder_extra_left_w,
-                                    extra_right_w=steering_encoder_extra_right_w,
-                                    top_up_padding=steering_encoder_top_up_padding,
-                                    top_bolt_min_padding=steering_encoder_top_bolt_min_padding,
-                                    top_corner_r=steering_encoder_top_corner_r,
-                                    bottom_pan_bolt_spacing=steering_encoder_bottom_pan_bolt_spacing,
-                                    bottom_pan_bolt_d=steering_encoder_bottom_pan_bolt_d,
-                                    bottom_pan_bolt_pad=steering_encoder_bottom_pan_bolt_pad,
-                                    bottom_corner_r=steering_encoder_bottom_corner_r,
-                                    show_encoder=show_encoder);
-                }
-              }
-            }
-          }
-        }
-      }
+      steering_servo_harness(bellcrank_lever_z_end=bellcrank_lever_z_end,
+                             show_encoder=show_encoder,
+                             show_encoder_bracket=show_encoder_bracket,
+                             show_servo_horn=show_servo_horn,
+                             show_tie_rod=show_tie_rod,
+                             show_magnet=show_magnet,
+                             servo_horn_angle=servo_horn_angle,
+                             magnet_d=magnet_d,
+                             magnet_h=magnet_h);
     }
   }
 }
-dsservo();
