@@ -23,18 +23,25 @@ use <../../placeholders/ina_current_sensor.scad>
 use <../../placeholders/nut.scad>
 use <../../placeholders/step-down-voltage-d24vxf5.scad>
 
-show_hardware        = true;
-show_lid             = true;
-show_fasteners       = true;
-show_enclosure       = true;
+show_hardware           = true;
+show_lid                = true;
+show_fasteners          = true;
+show_enclosure          = true;
 
-slot_mode            = false;
+show_step_down_standoff = true;
+show_step_down_bolt     = true;
+show_ina_terminal       = true;
+show_ina_pins           = true;
+show_ina_standoff       = true;
+show_nut                = true;
 
-lid_color_alpha      = 0.7; // [0:0.1:1]
-color_alpha          = 1.0; // [0:0.1:1]
-exploded_lid_h       = 0; // [0:5:100]
+slot_mode               = false;
 
-show_lid_at_the_side = false;
+lid_color_alpha         = 0.7; // [0:0.1:1]
+color_alpha             = 1.0; // [0:0.1:1]
+exploded_lid_h          = 0; // [0:5:100]
+
+show_lid_at_the_side    = false;
 
 function _power_enclosure_rect_distance(pos, size, point) =
   norm([for (axis = [0, 1])
@@ -50,22 +57,24 @@ function _power_enclosure_config(overrides) =
        lid = plist_get("lid", merged),
        lid_defaults = plist_get("lid", step_down_enclosure_plist),
        lid_override = plist_get("lid", overrides, []))
-  plist_merge(merged, ["lid", plist_merge(lid,
-    [for (key = ["vents", "text_style"])
-      each [key, plist_merge(plist_get(key, lid_defaults, []),
-                             plist_get(key, lid_override, []))]])]);
+  plist_merge(merged,
+              ["lid", plist_merge(lid,
+                                  [for (key = ["vents", "text_style"])
+                                    each [key, plist_merge(plist_get(key, lid_defaults, []),
+                                                           plist_get(key, lid_override, []))]])]);
 
 function _power_enclosure_text(spec, style, size, refs, t, depth) =
   let (pl = plist_merge(style, spec),
        at = plist_get("at", pl),
        xy = is_undef(at)
-             ? enclosure_dimensions(plist_get("pos", pl, ["50%", "50%"]), size)
-             : plist_get(at, refs),
+            ? enclosure_dimensions(plist_get("pos", pl, ["50%", "50%"]), size)
+            : plist_get(at, refs),
        delta = plist_get("translation", pl, [0, 0, 0]))
   assert(!is_undef(xy), str("Unknown text reference: ", at))
-  plist_merge(pl, ["size", enclosure_dimension(plist_get("size", pl), min(size)),
-                   "translation", [xy[0], xy[1], t - depth] + delta,
-                   "height", depth + 0.01]);
+  plist_merge(pl,
+              ["size", enclosure_dimension(plist_get("size", pl), min(size)),
+               "translation", [xy[0], xy[1], t - depth] + delta,
+               "height", depth + 0.01]);
 
 function _power_enclosure_text_bounds(pl) =
   let (tm = textmetrics(text=plist_get("text", pl),
@@ -126,36 +135,40 @@ function step_down_enclosure_props(plist=[]) =
        floor_t = enclosure_dimension(plist_get("bottom_thickness", pl), board_h),
        insert_spec = plist_get("insert", pl),
        insert = heat_insert_nut_props(plist_merge(insert_spec,
-         [for (key = ["d", "h", "flang_d", "flang_h", "top_flang_h", "bottom_flat_h"])
-           if (!is_undef(plist_get(key, insert_spec)))
+                                                  [for (key = ["d", "h",
+                                                               "flang_d", "flang_h",
+                                                               "top_flang_h", "bottom_flat_h"])
+                                                    if (!is_undef(plist_get(key, insert_spec)))
              each [key, enclosure_dimension(plist_get(key, insert_spec),
-                       member(key, ["d", "flang_d"]) ? min(board_span) : board_h)]])),
+                                            member(key, ["d", "flang_d"]) ? min(board_span) : board_h)]])),
        mount_spec = plist_get("insert_mount", pl),
        insert_mount = plist_merge(mount_spec,
-         [for (key = ["wall", "floor", "depth_clearance"])
-           each [key, enclosure_dimension(plist_get(key, mount_spec),
-                       key == "wall" ? min(board_span) : board_h)]]),
+                                  [for (key = ["wall", "floor", "depth_clearance"])
+                                    each [key, enclosure_dimension(plist_get(key, mount_spec),
+                                                                   key == "wall" ? min(board_span) : board_h)]]),
        insert_slot = heat_insert_nut_props(plist_merge(insert,
-         ["h", plist_get("h", insert) + plist_get("depth_clearance", insert_mount)])),
+                                                       ["h", plist_get("h", insert) + plist_get("depth_clearance", insert_mount)])),
        insert_depth = plist_get("h", insert_slot) - plist_get("slot_bottom", insert_slot),
        boss_d = max(plist_get("outer_d", insert), plist_get("slot_d", insert_slot))
-                  + 2 * plist_get("wall", insert_mount),
+                + 2 * plist_get("wall", insert_mount),
        automatic = [board_span[0] + 2 * (clear + end), board_span[1] + 2 * clear,
                     max(board_h + top, insert_depth + plist_get("floor", insert_mount))],
        inner = enclosure_dimensions(plist_get("inner_size", pl), automatic),
        wall_defaults = plist_get("walls", step_down_enclosure_plist),
        wall_overrides = plist_get("walls", plist, []),
-       walls = [for (name = ["left", "right", "rear", "front"])
+       walls = [for (name = ["left", "right",
+                             "rear", "front"])
          let (w = plist_merge(plist_get(name, wall_defaults, []),
                               plist_get(name, wall_overrides, [])),
               v = plist_merge_all([plist_get("wall_vents", pl, []),
                                    plist_get("vents", plist_get(name, wall_defaults, []), []),
                                    plist_get("vents", plist_get(name, wall_overrides, []), [])]))
-         each [name, plist_merge(w, ["t", enclosure_dimension(plist_get("t", w,
-                                         plist_get("side_thickness", pl)),
-                                         inner[member(name, ["left", "right"]) ? 0 : 1]),
-                                     "vents", v])]],
-       ts = [for (name = ["left", "right", "rear", "front"])
+           each [name, plist_merge(w, ["t", enclosure_dimension(plist_get("t", w,
+                                                                          plist_get("side_thickness", pl)),
+                                                                inner[member(name, ["left", "right"]) ? 0 : 1]),
+                                       "vents", v])]],
+       ts = [for (name = ["left", "right",
+                          "rear", "front"])
          plist_get("t", plist_get(name, walls))],
        body = [inner[0] + ts[0] + ts[1], inner[1] + ts[2] + ts[3], inner[2] + floor_t],
        center = [(ts[0] - ts[1]) / 2, (ts[2] - ts[3]) / 2],
@@ -173,9 +186,9 @@ function step_down_enclosure_props(plist=[]) =
        lid_spec = plist_get("lid", pl),
        lid = plist_merge(lid_spec, [for (key = ["t", "lip_h", "lip_w", "clearance", "text_depth"])
          each [key, enclosure_dimension(plist_get(key, lid_spec),
-                    key == "t" || key == "lip_h" ? inner[2]
-                      : key == "text_depth" ? enclosure_dimension(plist_get("t", lid_spec), inner[2])
-                        : min(inner[0], inner[1]))]]),
+                                        key == "t" || key == "lip_h" ? inner[2]
+                                        : key == "text_depth" ? enclosure_dimension(plist_get("t", lid_spec), inner[2])
+                                          : min(inner[0], inner[1]))]]),
        lid_t = plist_get("t", lid),
        lid_d = plist_get("hole_d", insert) + plist_get("bolt_clearance", insert_mount),
        lid_bolt_l = plist_get("bolt_l", insert_mount, lid_t + plist_get("h", insert)),
@@ -191,35 +204,35 @@ function step_down_enclosure_props(plist=[]) =
        board_mounts = concat([for (x = [-1, 1], y = [-1, 1])
          let (pitch = plist_get("bolt_spacing", rp))
          [regulator_pos + [x * pitch[0] / 2, y * pitch[1] / 2, -floor_t], plist_get("bolt_d", rp)]],
-         [for (x = [-1, 1], y = plist_get("bolt_spacing", ip)[1] == 0 ? [0] : [-1, 1])
-           let (pitch = plist_get("bolt_spacing", ip))
-           [sensor_pos + rotZ([x * pitch[0] / 2,
-                               y * pitch[1] / 2 + plist_get("mounting_y", ip), 0], 90)
-                         - [0, 0, floor_t], plist_get("bolt_d", ip)]]),
+                             [for (x = [-1, 1], y = plist_get("bolt_spacing", ip)[1] == 0 ? [0] : [-1, 1])
+                               let (pitch = plist_get("bolt_spacing", ip))
+                               [sensor_pos + rotZ([x * pitch[0] / 2,
+                                                   y * pitch[1] / 2 + plist_get("mounting_y", ip), 0], 90)
+                                - [0, 0, floor_t], plist_get("bolt_d", ip)]]),
        pcb_bore_h = max([for (m = board_mounts) find_bolt_head_h(m[1], "pan")])
                     + plist_get("head_depth", fit),
        keepouts = concat([for (m = board_mounts)
          [m[0], (find_bolt_head_d(m[1], "pan") + plist_get("head", fit)) / 2]],
-         [for (pos = mount_positions)
-           [pos,
-            max(mount_nut_d, find_bolt_head_d(mount_d, "pan") + plist_get("head", fit)) / 2]],
-         [for (pos = lid_positions) [pos, boss_d / 2]]),
+                         [for (pos = mount_positions)
+                           [pos,
+                            max(mount_nut_d, find_bolt_head_d(mount_d, "pan") + plist_get("head", fit)) / 2]],
+                         [for (pos = lid_positions) [pos, boss_d / 2]]),
        tie_spec = plist_get("cable_tie", pl),
        tie = plist_merge(tie_spec, ["slot_size", enclosure_dimensions(plist_get("slot_size", tie_spec), [inner[0], inner[1]]),
-         "bridge_w", enclosure_dimension(plist_get("bridge_w", tie_spec), inner[1]),
-         "recess_h", enclosure_dimension(plist_get("recess_h", tie_spec), floor_t),
-         "end_dist", enclosure_dimension(plist_get("end_dist", tie_spec), inner[0]),
-         "path_clearance", enclosure_dimension(plist_get("path_clearance", tie_spec), min(inner[0], inner[1])),
-         "bolt_clearance", enclosure_dimension(plist_get("bolt_clearance", tie_spec), min(inner[0], inner[1]))]),
+                                    "bridge_w", enclosure_dimension(plist_get("bridge_w", tie_spec), inner[1]),
+                                    "recess_h", enclosure_dimension(plist_get("recess_h", tie_spec), floor_t),
+                                    "end_dist", enclosure_dimension(plist_get("end_dist", tie_spec), inner[0]),
+                                    "path_clearance", enclosure_dimension(plist_get("path_clearance", tie_spec), min(inner[0], inner[1])),
+                                    "bolt_clearance", enclosure_dimension(plist_get("bolt_clearance", tie_spec), min(inner[0], inner[1]))]),
        tie_slot = plist_get("slot_size", tie),
        tie_path = [tie_slot[0] + 2 * plist_get("path_clearance", tie),
                    plist_get("bridge_w", tie) + 2 * tie_slot[1]],
        tie_end = plist_get("end_dist", tie) + tie_slot[0] / 2,
        tie_positions = !plist_get("enabled", tie) ? []
-         : concat([[inner_min[0] + tie_end, center[1], 0],
-                   [inner_min[0] + inner[0] - tie_end, center[1], 0]],
-                  plist_get("middle", tie)
-                    ? [[regulator_pos[0] + rb[0] / 2 + gap / 2, regulator_pos[1], 0]] : []),
+                       : concat([[inner_min[0] + tie_end, center[1], 0],
+                                 [inner_min[0] + inner[0] - tie_end, center[1], 0]],
+                                plist_get("middle", tie)
+                                ? [[regulator_pos[0] + rb[0] / 2 + gap / 2, regulator_pos[1], 0]] : []),
        header_pos = sensor_pos + rotZ(plist_get("header_pos", ip), 90),
        header_size = [plist_get("header_size", ip)[1], plist_get("header_size", ip)[0]],
        terminal_pos = sensor_pos + rotZ(plist_get("terminal_pos", ip), 90),
@@ -227,37 +240,41 @@ function step_down_enclosure_props(plist=[]) =
                "sensor", [sensor_pos[0], sensor_pos[1]],
                "sensor_header", [header_pos[0], header_pos[1]],
                "sensor_terminal", [terminal_pos[0], terminal_pos[1]]],
-       panels = [for (name = ["left", "right", "rear", "front"])
+       panels = [for (name = ["left", "right",
+                              "rear", "front"])
          let (axis = member(name, ["left", "right"]) ? 1 : 0,
               wall_refs = [for (key = plist_keys(refs))
                 each [key, [plist_get(key, refs)[axis] - inner_min[axis], inner[2] / 2]]],
               protected = [for (pos = lid_positions)
                 [[pos[axis] - inner_min[axis] - boss_d / 2, 0], [boss_d, inner[2]]]])
-         each [name, enclosure_panel_props(plist_get(name, walls), [inner[axis], inner[2]], wall_refs, protected)]],
+           each [name, enclosure_panel_props(plist_get(name, walls), [inner[axis], inner[2]], wall_refs, protected)]],
        lid_size = [body[0], body[1]],
        lid_refs = [for (key = plist_keys(refs)) each [key, plist_get(key, refs) + lid_size / 2]],
        texts = [for (spec = plist_get("texts", lid, []))
          _power_enclosure_text(spec, plist_get("text_style", lid), lid_size, lid_refs,
-                                lid_t, plist_get("text_depth", lid))],
+                               lid_t, plist_get("text_depth", lid))],
        header_slot = plist_get("header_slot", pl),
        lid_slots = concat(plist_get("slots", lid, []),
-         plist_get("enabled", header_slot) && min(header_size) > 0
-           ? [["at", "sensor_header", "size", header_size
-                 + 2 * enclosure_dimensions(plist_get("clearance", header_slot), header_size),
-               "corner_r", plist_get("corner_r", header_slot)]] : []),
+                          plist_get("enabled", header_slot) && min(header_size) > 0
+                          ? [["at", "sensor_header",
+                              "size", header_size
+                                      + 2 * enclosure_dimensions(plist_get("clearance", header_slot), header_size),
+                              "corner_r", plist_get("corner_r", header_slot)]] : []),
        lid_panel = enclosure_panel_props(plist_merge(lid, ["slots", lid_slots]), lid_size, lid_refs,
-         [for (pos = lid_positions)
-           [[pos[0] + body[0] / 2 - boss_d / 2, pos[1] + body[1] / 2 - boss_d / 2], [boss_d, boss_d]]]))
+                                         [for (pos = lid_positions)
+                                           [[pos[0] + body[0] / 2 - boss_d / 2, pos[1] + body[1] / 2 - boss_d / 2], [boss_d, boss_d]]]))
   assert(min(inner) > 0 && inner[0] >= board_span[0] && inner[1] >= board_span[1]
-         && inner[2] >= board_h, "inner_size must contain the populated board group")
+         && inner[2] >= board_h,
+         "inner_size must contain the populated board group")
   assert(len([for (i = [0, 1])
     if (group_min[i] < inner_min[i] || group_min[i] + board_span[i] > inner_min[i] + inner[i] + 0.000001) 1]) == 0,
          "board_pos must keep the board group inside the cavity")
   assert(len([for (pos = lid_positions, board = [[regulator_pos, [rb[0], rb[1]]],
-                                                [sensor_pos, [ib[1], ib[0]]]])
+                                                 [sensor_pos, [ib[1], ib[0]]]])
     if (_power_enclosure_rect_distance(board[0], board[1], pos) < boss_d / 2) 1]) == 0,
          "Insert bosses overlap a PCB; increase inner_size or end_clearance")
-  assert(min(ts) > 0 && floor_t > pcb_bore_h && lid_t > 0, "Walls, lid and PCB counterbore floors need positive material")
+  assert(min(ts) > 0 && floor_t > pcb_bore_h && lid_t > 0,
+         "Walls, lid and PCB counterbore floors need positive material")
   assert(plist_get("d", insert) > plist_get("hole_d", insert)
          && plist_get("h", insert) > 0 && plist_get("wall", insert_mount) > 0
          && inner[2] >= insert_depth + plist_get("floor", insert_mount),
@@ -271,7 +288,7 @@ function step_down_enclosure_props(plist=[]) =
          "Chassis nut pocket needs a closed supporting floor")
   assert(len([for (m = board_mounts, pos = mount_positions)
     if (norm(m[0] - pos) < mount_nut_d / 2
-          + (find_bolt_head_d(m[1], "pan") + plist_get("head", fit)) / 2) 1]) == 0,
+        + (find_bolt_head_d(m[1], "pan") + plist_get("head", fit)) / 2) 1]) == 0,
          "Chassis nut pockets overlap PCB screw recesses; adjust mount spacing or position")
   assert(len([for (pos = tie_positions, k = keepouts)
     if (_power_enclosure_rect_distance(pos, tie_path, k[0]) < k[1] + plist_get("bolt_clearance", tie)) 1]) == 0,
@@ -284,28 +301,55 @@ function step_down_enclosure_props(plist=[]) =
   assert(len([for (k = keepouts, i = [0, 1])
     if (abs(k[0][i]) + k[1] > body[i] / 2 + 0.000001) 1]) == 0,
          "Mounts and their pockets must fit the enclosure footprint")
-  ["plist", pl, "size", [body[0], body[1], body[2] + lid_t + find_bolt_head_h(plist_get("hole_d", insert), plist_get("bolt_head_type", insert))],
-   "body_size", body, "inner_size", inner, "inner_center", center, "inner_min", inner_min,
-   "corner_r", corner_r, "floor_t", floor_t, "walls", walls, "panels", panels,
-   "lid", lid, "lid_panel", lid_panel, "texts", texts,
-   "insert", insert, "insert_slot", insert_slot, "insert_mount", insert_mount,
-   "boss_d", boss_d, "insert_depth", insert_depth,
-   "lid_positions", lid_positions, "lid_bolt_d", lid_d, "lid_bolt_l", lid_bolt_l,
-   "regulator", regulator, "sensor", sensor, "regulator_props", rp, "sensor_props", ip,
-   "regulator_pos", regulator_pos, "sensor_pos", sensor_pos,
-   "board_mounts", board_mounts, "pcb_bore_h", pcb_bore_h,
-   "keepouts", keepouts, "mount_nut_d", mount_nut_d,
-   "mount_pos", mount_pos, "mount_positions", mount_positions,
-   "cable_tie", tie, "tie_positions", tie_positions, "tie_path_size", tie_path,
-   "bolt_spacing", mount_pitch, "bolt_d", mount_d,
+  ["plist", pl,
+   "size", [body[0], body[1], body[2] + lid_t + find_bolt_head_h(plist_get("hole_d", insert),
+                                                                 plist_get("bolt_head_type", insert))],
+   "body_size", body,
+   "inner_size", inner,
+   "inner_center", center,
+   "inner_min", inner_min,
+   "corner_r", corner_r,
+   "floor_t", floor_t,
+   "walls", walls,
+   "panels", panels,
+   "lid", lid,
+   "lid_panel", lid_panel,
+   "texts", texts,
+   "insert", insert,
+   "insert_slot", insert_slot,
+   "insert_mount", insert_mount,
+   "boss_d", boss_d,
+   "insert_depth", insert_depth,
+   "lid_positions", lid_positions,
+   "lid_bolt_d", lid_d,
+   "lid_bolt_l", lid_bolt_l,
+   "regulator", regulator,
+   "sensor", sensor,
+   "regulator_props", rp,
+   "sensor_props", ip,
+   "regulator_pos", regulator_pos,
+   "sensor_pos", sensor_pos,
+   "board_mounts", board_mounts,
+   "pcb_bore_h", pcb_bore_h,
+   "keepouts", keepouts,
+   "mount_nut_d", mount_nut_d,
+   "mount_pos", mount_pos,
+   "mount_positions", mount_positions,
+   "cable_tie", tie,
+   "tie_positions", tie_positions,
+   "tie_path_size", tie_path,
+   "bolt_spacing", mount_pitch,
+   "bolt_d", mount_d,
    "bore_d", find_bolt_head_d(mount_d, "pan") + plist_get("head", fit),
    "bore_h", find_bolt_head_h(mount_d, "pan") + plist_get("head_depth", fit),
-   "sink", false, "wire_d", 0];
+   "sink", false,
+   "wire_d", 0];
 
 module _power_enclosure_outline(p, inset=0, inner=false) {
   s = plist_get(inner ? "inner_size" : "body_size", p);
   center = inner ? plist_get("inner_center", p) : [0, 0];
-  ts = [for (name = ["left", "right", "rear", "front"])
+  ts = [for (name = ["left", "right",
+                     "rear", "front"])
     plist_get("t", plist_get(name, plist_get("walls", p)))];
   r = max(0, plist_get("corner_r", p) - (inner ? min(ts) : 0) - inset);
   translate(center) {
@@ -321,8 +365,8 @@ module _power_enclosure_wall_plane(p, name, extra=0) {
   x_wall = member(name, ["left", "right"]);
   sign = member(name, ["left", "rear"]) ? -1 : 1;
   pos = x_wall
-          ? [sign * (s[0] - t) / 2, lo[1], plist_get("floor_t", p)]
-          : [lo[0], sign * (s[1] - t) / 2, plist_get("floor_t", p)];
+        ? [sign * (s[0] - t) / 2, lo[1], plist_get("floor_t", p)]
+        : [lo[0], sign * (s[1] - t) / 2, plist_get("floor_t", p)];
   translate(pos) {
     rotate([90, 0, x_wall ? 90 : 0]) {
       linear_extrude(height=t + 2 * extra + 0.02, center=true) {
@@ -336,7 +380,8 @@ module _power_enclosure_bosses(p, clearance=0) {
   for (pos = plist_get("lid_positions", p)) {
     translate(pos) {
       cylinder(d=plist_get("boss_d", p) + 2 * clearance,
-                h=plist_get("body_size", p)[2], $fn=48);
+               h=plist_get("body_size", p)[2],
+               $fn=48);
     }
   }
 }
@@ -347,12 +392,13 @@ module _power_enclosure_vents(p, roof=false) {
     translate([-s[0] / 2, -s[1] / 2, -0.01]) {
       linear_extrude(height=plist_get("t", plist_get("lid", p)) + 0.02) {
         enclosure_panel_vents(plist_get("lid_panel", p),
-                               keepouts=[for (t = plist_get("texts", p))
-                                 _power_enclosure_text_bounds(t)]);
+                              keepouts=[for (t = plist_get("texts", p))
+                                _power_enclosure_text_bounds(t)]);
       }
     }
   } else {
-    for (name = ["left", "right", "rear", "front"]) {
+    for (name = ["left", "right",
+                 "rear", "front"]) {
       _power_enclosure_wall_plane(p, name) {
         enclosure_panel_vents(plist_get(name, plist_get("panels", p)));
       }
@@ -362,9 +408,11 @@ module _power_enclosure_vents(p, roof=false) {
 
 module _power_enclosure_ports(p, extra=0, top_only=false) {
   difference() {
-    for (name = ["left", "right", "rear", "front"]) {
+    for (name = ["left", "right",
+                 "rear", "front"]) {
       _power_enclosure_wall_plane(p, name, extra) {
-        enclosure_panel_openings(plist_get(name, plist_get("panels", p)), top_only);
+        enclosure_panel_openings(plist_get(name, plist_get("panels", p)),
+                                 top_only);
       }
     }
     _power_enclosure_bosses(p);
@@ -418,20 +466,21 @@ module step_down_enclosure_parent_slots(p, parent_t=0) {
     lo = plist_get("inner_min", p);
     margin = enclosure_dimensions(plist_get("margin", pl), size);
     axis = plist_get("axis", pl) == "x" ? 0 : 1;
-    other = 1 - axis;
     gap = enclosure_dimension(plist_get("bolt_clearance", pl), min(size));
     min_w = enclosure_dimension(plist_get("min_width", pl), size[axis]);
     r = enclosure_dimension(plist_get("corner_r", pl), min(size));
     intervals = concat([for (k = plist_get("keepouts", p))
       [k[0][axis] - k[1] - gap, k[0][axis] + k[1] + gap]],
-      [for (pos = plist_get("tie_positions", p))
-        [pos[axis] - plist_get("tie_path_size", p)[axis] / 2 - gap,
-         pos[axis] + plist_get("tie_path_size", p)[axis] / 2 + gap]]);
+                       [for (pos = plist_get("tie_positions", p))
+                         [pos[axis] - plist_get("tie_path_size", p)[axis] / 2 - gap,
+                          pos[axis] + plist_get("tie_path_size", p)[axis] / 2 + gap]]);
     ends = qsort(concat([lo[axis] + margin[axis], lo[axis] + size[axis] - margin[axis]],
-                       [for (v = intervals) each v]));
+                        [for (v = intervals) each v]));
     slots = plist_get("slots", pl);
-    assert(member(plist_get("axis", pl), ["x", "y"]), "parent_slots.axis must be x or y");
-    assert(min(size - 2 * margin) > 0 && min_w > 0, "Parent slot margins must leave an interior area");
+    assert(member(plist_get("axis", pl), ["x", "y"]),
+           "parent_slots.axis must be x or y");
+    assert(min(size - 2 * margin) > 0 && min_w > 0,
+           "Parent slot margins must leave an interior area");
     translate([0, 0, -parent_t - 0.01]) {
       linear_extrude(height=parent_t + plist_get("floor_t", p) + 0.02) {
         intersection() {
@@ -443,7 +492,7 @@ module step_down_enclosure_parent_slots(p, parent_t=0) {
                 if (a < v[1] && b > v[0]) 1]) == 0) {
                 pos = axis == 0 ? [a, lo[1] + margin[1]] : [lo[0] + margin[0], a];
                 dims = axis == 0 ? [b - a, size[1] - 2 * margin[1]]
-                                 : [size[0] - 2 * margin[0], b - a];
+                       : [size[0] - 2 * margin[0], b - a];
                 translate(pos) {
                   rounded_rect(dims, r=min(r, min(dims) / 2), fn=32);
                 }
@@ -497,9 +546,11 @@ module _power_enclosure_base(p) {
     }
     for (mount = plist_get("board_mounts", p)) {
       translate(mount[0]) {
-        counterbore(d=mount[1] + plist_get("hole", fit), h=floor_t,
+        counterbore(d=mount[1] + plist_get("hole", fit),
+                    h=floor_t,
                     bore_d=find_bolt_head_d(mount[1], "pan") + plist_get("head", fit),
-                    bore_h=plist_get("pcb_bore_h", p), reverse=true);
+                    bore_h=plist_get("pcb_bore_h", p),
+                    reverse=true);
       }
     }
     _power_enclosure_vents(p);
@@ -560,23 +611,30 @@ module _power_enclosure_lid(p) {
   }
 }
 
-module _power_enclosure_boards(p) {
+module _power_enclosure_boards(p,
+                               show_step_down_standoff,
+                               show_step_down_bolt,
+                               show_ina_terminal,
+                               show_ina_pins,
+                               show_ina_standoff,
+                               show_nut=true) {
   pl = plist_get("plist", p);
   floor_t = plist_get("floor_t", p);
   translate(plist_get("regulator_pos", p)) {
     step_down_voltage_regulator(plist_get("regulator", p),
                                 stand_up=true,
-                                show_bolt=true,
+                                show_bolt=show_step_down_bolt,
                                 bolt_visible_h=floor_t
-                                               - plist_get("pcb_bore_h", p));
+                                               - plist_get("pcb_bore_h", p),
+                                show_standoff=show_step_down_standoff);
   }
   translate(plist_get("sensor_pos", p)) {
     rotate([0, 0, 90]) {
       ina_current_sensor(plist_get("sensor", p),
                          anchor_z_mode="standoff",
-                         show_standoffs=true,
-                         show_terminal=true,
-                         show_pins=true,
+                         show_standoffs=show_ina_standoff,
+                         show_terminal=show_ina_terminal,
+                         show_pins=show_ina_pins,
                          parent_thickness=floor_t,
                          cbore_h=plist_get("pcb_bore_h", p),
                          cbore_d=find_bolt_head_d(plist_get("bolt_d",
@@ -585,25 +643,27 @@ module _power_enclosure_boards(p) {
     }
   }
   mounts = plist_get("board_mounts", p);
-  for (i = [0 : len(mounts) - 1]) {
-    m = mounts[i];
-    bp = plist_get(i < 4 ? "regulator_props" : "sensor_props", p);
-    board = i < 4
-            ? plist_get("placeholder_size", plist_get("regulator", p))
-            : plist_get("size", bp);
-    translate(m[0] + [0, 0, floor_t + plist_get("standoff_h", bp) + board[2]]) {
-      nut(d=m[1],
-          outer_d=find_nut_prop("outer_dia", m[1]) / cos(30),
-          h=find_nut_prop("height", m[1]),
-          show_text=false);
+  if (show_nut && mounts) {
+    for (i = [0 : len(mounts) - 1]) {
+      m = mounts[i];
+      bp = plist_get(i < 4 ? "regulator_props" : "sensor_props", p);
+      board = i < 4
+              ? plist_get("placeholder_size", plist_get("regulator", p))
+              : plist_get("size", bp);
+      translate(m[0] + [0, 0, floor_t + plist_get("standoff_h", bp) + board[2]]) {
+        nut(d=m[1],
+            outer_d=find_nut_prop("outer_dia", m[1]) / cos(30),
+            h=find_nut_prop("height", m[1]),
+            show_text=false);
+      }
     }
   }
 }
 
 module _power_enclosure_inserts(p,
-                                  slot_mode=false,
-                                  show_bolt=false,
-                                  exploded=0) {
+                                slot_mode=false,
+                                show_bolt=false,
+                                exploded=0) {
   s = plist_get("body_size", p);
   for (pos = plist_get("lid_positions", p)) {
     translate(pos + [0, 0, s[2]]) {
@@ -624,9 +684,11 @@ module _power_enclosure_fasteners(p, show_lid=true, exploded=0) {
   nut_h = find_nut_prop("height", mount_d);
   for (pos = plist_get("mount_positions", p)) {
     translate(pos + [0, 0, plist_get("floor_t", p) - nut_h
-                     - plist_get("nut_depth", plist_get("fit", pl))]) {
-      nut(d=mount_d, outer_d=find_nut_prop("outer_dia", mount_d) / cos(30),
-          h=nut_h, show_text=false);
+                           - plist_get("nut_depth", plist_get("fit", pl))]) {
+      nut(d=mount_d,
+          outer_d=find_nut_prop("outer_dia", mount_d) / cos(30),
+          h=nut_h,
+          show_text=false);
     }
   }
 }
@@ -668,10 +730,19 @@ module step_down_voltage_enclosure(plist=[],
                                    show_hardware=show_hardware,
                                    show_lid=show_lid,
                                    show_fasteners=show_fasteners,
+                                   show_step_down_standoff=show_step_down_standoff,
+                                   show_step_down_bolt=show_step_down_bolt,
+                                   show_ina_terminal=show_ina_terminal,
+                                   show_ina_pins=show_ina_pins,
+                                   show_ina_standoff=show_ina_standoff,
+                                   spin,
                                    exploded=exploded_lid_h) {
   p = step_down_enclosure_props(plist);
   pl = plist_get("plist", p);
-  with_orientation(to=orientation, anchor=anchor, size=plist_get("size", p)) {
+  with_orientation(to=orientation,
+                   anchor=anchor,
+                   size=plist_get("size", p),
+                   spin=spin) {
     if (slot_mode) {
       translate(plist_get("mount_pos", p)) {
         pcb_mount_slots(p, parent_t);
@@ -694,7 +765,12 @@ module step_down_voltage_enclosure(plist=[],
         }
       }
       if (show_hardware) {
-        _power_enclosure_boards(p);
+        _power_enclosure_boards(p,
+                                show_step_down_standoff=show_step_down_standoff,
+                                show_step_down_bolt=show_step_down_bolt,
+                                show_ina_terminal=show_ina_terminal,
+                                show_ina_pins=show_ina_pins,
+                                show_ina_standoff=show_ina_standoff);
       }
       if (show_fasteners) {
         _power_enclosure_fasteners(p=p, show_lid=show_lid, exploded=exploded);
@@ -718,7 +794,6 @@ module step_down_voltage_enclosure(plist=[],
 module step_down_enclosure_printable(part="both", plist=[], gap=6) {
   p = step_down_enclosure_props(plist);
   s = plist_get("body_size", p);
-  pl = plist_get("plist", p);
   assert(member(part, ["base", "lid", "both"]),
          "Part must be base, lid or both");
   if (part != "lid") {
