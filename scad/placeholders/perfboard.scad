@@ -300,8 +300,6 @@ module perfboard(plist,
   }
 }
 
-perfboard(perfboard_plist_example);
-
 /**
   ─────────────────────────────────────────────────────────────────────────────
   perf_board_mount_props
