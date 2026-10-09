@@ -42,7 +42,7 @@ rear_suspension_arm_pad_rect_corner_r      = 1;
 
 // Distance between the edge of the last row of holes in
 // `rear_bulkhead_bolt_spacing_2` and the rectangular slot.
-rear_suspension_arm_pad_bulkhead_slot_dist = 9.07;
+rear_suspension_arm_pad_bulkhead_slot_dist = 7.0;
 
 // Distance between the edge of the maintenance hole and the edge of the
 // `rear_suspension_arm_pad_rect_slot_size` slot.
@@ -51,8 +51,8 @@ rear_chassis_maintenance_hole_arm_pad_dist = 8.20;
 // Rear part of the chassis with suspension.
 rear_suspension_chassis_bolt_pad           = 2.75;
 // Straight side length beyond the joint and material above the service hole.
-rear_suspension_chassis_shoulder_l        = 4;
-rear_suspension_chassis_maintenance_pad   = 2;
+rear_suspension_chassis_shoulder_l         = 4;
+rear_suspension_chassis_maintenance_pad    = 2;
 
 // Extra lowered footprint toward the motor, in mm along native -Y.
-rear_suspension_mount_recess_extension   = 1;
+rear_suspension_mount_recess_extension     = 1;
