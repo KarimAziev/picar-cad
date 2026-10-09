@@ -52,16 +52,16 @@ function encoder_connector_spec(plist, type) =
        pads = plist_get(jst ? "interface_pads" : "wire_pads", plist, []),
        side = plist_get("side", pads, jst ? "top" : "bottom"),
        angle = side == "top" ? 0
-       : side == "bottom" ? 180
-       : side == "left" ? 90 : -90,
+               : side == "bottom" ? 180
+                 : side == "left" ? 90 : -90,
        contacts = plist_get("contacts", props,
                             jst ? 6 : plist_get("cols", pads, 3)),
        pitch = plist_get("pitch", props,
                          jst ? 1 : plist_get("w", pads, 1.74)
                                    + plist_get("gap", pads, 0.8)),
        size = jst
-       ? plist_get("size", props, [(contacts - 1) * pitch + 4.7, 4.83, 3.4])
-       : [contacts * pitch, pitch, plist_get("h", props, 4.56)],
+              ? plist_get("size", props, [(contacts - 1) * pitch + 4.7, 4.83, 3.4])
+              : [contacts * pitch, pitch, plist_get("h", props, 4.56)],
        edge = pcb[in_list(side, ["top", "bottom"]) ? 1 : 0] / 2,
        pad_l = plist_get("l", pads, size[1]),
        inner = edge - plist_get("padding", pads, 0)
@@ -205,21 +205,35 @@ function encoder_total_thickness(plist) =
   thickness + max_h;
 
 function text_to_plist(txt_or_plist) = is_string(txt_or_plist)
-  ? ["text", txt_or_plist]
-  : txt_or_plist;
+                                       ? ["text", txt_or_plist]
+                                       : txt_or_plist;
 
 function _get_text_plist(spec,
                          type,
                          defaults=["size", 1,
                                    "valign", "center"]) =
   let (value = spec && plist_get(type, spec)
-       ? plist_merge(defaults,
-                     text_to_plist(is_string(plist_get(type, spec)) ?
-                                   ["text",
-                                    plist_get(type, spec)]
-                                   : plist_get(type, spec)))
-       : undef)
+               ? plist_merge(defaults,
+                             text_to_plist(is_string(plist_get(type, spec)) ?
+                                           ["text",
+                                            plist_get(type, spec)]
+                                           : plist_get(type, spec)))
+               : undef)
   value;
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  encoder
+  ─────────────────────────────────────────────────────────────────────────────
+
+  **Example**:
+  ```scad
+
+  include <../parameters.scad>
+
+  encoder(as5048A_encoder_plist);
+  ```
+  */
 
 module encoder(plist,
                show_encoder=true,
@@ -313,8 +327,8 @@ module encoder(plist,
                nut_spec=plist_get(nut_type, bolt_spec, []),
                nut_h = plist_get("height", nut_spec, 0),
                bolt_h = is_undef(bolt_h)
-               ? (parent_thickness + nut_h + pcb_thickness)
-               : bolt_h,
+                        ? (parent_thickness + nut_h + pcb_thickness)
+                        : bolt_h,
                nut_head_distance=parent_thickness + pcb_thickness,
                head_type = plist_get("bolt_head_type", plist, "pan"),
                head_spec = plist_get(head_type,
@@ -458,12 +472,3 @@ module _capacitors(plist, pcb_w, pcb_l) {
     }
   }
 }
-
-encoder(plist=as5048A_encoder_plist,
-        bolt_reverse=false,
-        slot_mode=false,
-        parent_thickness=3,
-        counterbore_props=["teardrop_angle", 45,
-                           "teardrop_both_sides", true,
-                           "bore_d", 4,
-                           "bore_h", 2]);
