@@ -53,7 +53,10 @@ def main() -> None:
                 assert mesh_volume(mesh) < 0.00001, (mesh_volume(mesh), log)
             return log
 
-        for part, count in (("base", 1), ("lid", 1), ("both", 2)):
+        log = render('echo(raised=plist_get("text_mode",plist_get("lid",p)) == "raised"); '
+                     '_power_enclosure_lid(p);')
+        lid_count = 2 if echo_value(log, "raised") == "true" else 1
+        for part, count in (("base", 1), ("lid", lid_count), ("both", lid_count + 1)):
             render(f'step_down_enclosure_printable(part="{part}");')
             assert connected_components(mesh) == count, part
             assert abs(bounds(vertices(mesh))[0][2]) < 0.00001, part
@@ -118,10 +121,44 @@ def main() -> None:
             assert abs(bounds(vertices(mesh))[1][2]
                        - (3.2 if mode == "raised" else 2.4)) < 0.00001
             render(f'step_down_enclosure_printable(part="lid",plist={config});')
-            assert connected_components(mesh) == 1, mode
+            assert connected_components(mesh) == (2 if mode == "raised" else 1), mode
             assert abs(bounds(vertices(mesh))[0][2]) < 0.00001, mode
         print("PASS power-component footprints stay open with vents disabled; "
               "engraved/raised lids are connected and print on Z=0", flush=True)
+
+        for config, panel_t in (
+            ('["lid",["text_mode","raised"]]', 1),
+            ('["lid",["text_mode","raised","t",3.6,"lip_h",0]]', 0.8),
+            ('["lid",["text_mode","raised","t",3,"text_height",1.2],'
+             '"walls",["left",["t",6],"right",["t",3],'
+             '"rear",["t",4],"front",["t",5]]]', 1),
+        ):
+            setup = f'q=step_down_enclosure_props({config});\n'
+            for part in ("lid_main", "lid_text"):
+                log = render(setup + f'''echo(main_h=plist_get("t",plist_get("lid",q))-{panel_t}
+  +plist_get("lip_h",plist_get("lid",q)));
+echo(text_h=plist_get("lid_h",q)-plist_get("t",plist_get("lid",q))+{panel_t});
+step_down_enclosure_printable(part="{part}",plist={config},text_panel_t={panel_t});''')
+                assert connected_components(mesh) == 1, (config, part)
+                box = bounds(vertices(mesh))
+                expected_h = float(echo_value(log, "main_h" if part == "lid_main" else "text_h"))
+                assert abs(box[0][2]) < 0.00001, (config, part, box)
+                assert abs(box[1][2] - expected_h) < 0.00001, (config, part, box)
+            assembled = f'''module assembled_panels() {{
+  seam=plist_get("t",plist_get("lid",q))-{panel_t};
+  translate([0,0,seam]) {{
+    rotate([180,0,0]) {{
+      step_down_enclosure_printable(part="lid_main",plist={config},text_panel_t={panel_t});
+    }}
+    step_down_enclosure_printable(part="lid_text",plist={config},text_panel_t={panel_t});
+  }}
+}}
+'''
+            for first, second in (("assembled_panels();", "_power_enclosure_lid(q);"),
+                                  ("_power_enclosure_lid(q);", "assembled_panels();")):
+                render(setup + assembled + f'difference() {{{first} {second}}}', empty=True)
+        print("PASS raised panels are connected and bed-flat; assembled printable panels "
+              "exactly preserve lid geometry, holes, openings and lip, including asymmetric walls", flush=True)
 
         render('''q=step_down_enclosure_props([
   "step_down_voltage",plist_merge(step_down_voltage_plist,
@@ -263,7 +300,7 @@ module case_shell() {{
 }}
 '''
             render(setup + 'step_down_enclosure_printable(part="both",plist=' + config + ');')
-            assert connected_components(mesh) == 2, config
+            assert connected_components(mesh) == lid_count + 1, config
             render(setup + '''intersection() {
   _power_enclosure_base(q);
   translate([0,0,qb[2]]) {_power_enclosure_lid(q);}
@@ -362,15 +399,15 @@ module case_shell() {{
                                     ("whl", [0, -1, 0]), ("lhw", [1, 0, -1]),
                                     ("hlw", [-1, 1, 0]), ("hwl", [0, 0, 1])):
             log = render(f'''echo(size=s); echo(body=b);
-echo(lid_t=plist_get("t",plist_get("lid",p)));
+echo(lid_h=plist_get("lid_h",p));
 step_down_voltage_enclosure(anchor={anchor},orientation="{orientation}",
                            show_hardware=false,show_fasteners=false);''')
             size = ast.literal_eval(echo_value(log, "size"))
             body = ast.literal_eval(echo_value(log, "body"))
-            lid_t = float(echo_value(log, "lid_t"))
+            lid_h = float(echo_value(log, "lid_h"))
             expected = transformed_bounds(
                 [[-size[0]/2, -size[1]/2, 0],
-                 [size[0]/2, size[1]/2, body[2] + lid_t]],
+                 [size[0]/2, size[1]/2, body[2] + lid_h]],
                 size, orientation, anchor)
             actual = bounds(vertices(mesh))
             for face in range(2):

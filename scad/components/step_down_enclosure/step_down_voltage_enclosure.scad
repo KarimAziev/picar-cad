@@ -675,6 +675,26 @@ module _power_enclosure_lid(p) {
   }
 }
 
+module _power_enclosure_lid_panel(p, text_panel=false, text_panel_t=1) {
+  s = plist_get("body_size", p);
+  lid = plist_get("lid", p);
+  seam_z = plist_get("t", lid) - text_panel_t;
+  lip_h = plist_get("lip_h", lid);
+  assert(plist_get("text_mode", lid) == "raised",
+         "Split lid panels require raised text mode");
+  assert(is_num(text_panel_t) && text_panel_t > 0 && seam_z > 0,
+         "Text panel thickness must be positive and less than lid thickness");
+  intersection() {
+    _power_enclosure_lid(p);
+    translate([-s[0] / 2, -s[1] / 2,
+               text_panel ? seam_z : -lip_h]) {
+      cube([s[0], s[1], text_panel
+            ? plist_get("lid_h", p) - seam_z
+            : seam_z + lip_h]);
+    }
+  }
+}
+
 module _power_enclosure_boards(p,
                                show_step_down_standoff,
                                show_step_down_bolt,
@@ -851,29 +871,57 @@ module step_down_voltage_enclosure(plist=[],
    Place a base or lid on Z=0 for printing.
 
    **Parameters:**
-   - `part`: `"base"`, `"lid"`, or `"both"` for separated parts.
+   - `part`: `"base"`, `"lid"`, or `"both"` for separated parts. Raised lids
+     also accept `"lid_main"` and `"lid_text"` for individual panel exports.
    - `plist`: Enclosure overrides accepted by `step_down_enclosure_props`.
-   - `gap`: Edge gap between the base and lid in the combined layout.
+   - `gap`: Edge gap between printable parts along Y.
+   - `text_panel_t`: Raised lid's outer panel thickness, excluding lettering;
+     positive mm less than the lid thickness. Defaults to 1 mm.
 
-   Engraved lids face down with the lip upward. Raised labels face up with
-   the lip on the bed; the roof spans the lip and may need printing supports.
+   Engraved lids face down with the lip upward. Raised lids comprise a main
+   panel with its lip upward and an outer panel with lettering upward, both
+   flat on Z=0. Stack their flat mating faces and fasten through the shared
+   holes. The assembled lid thickness, openings and locating lip are preserved.
  */
-module step_down_enclosure_printable(part="both", plist=[], gap=6) {
+module step_down_enclosure_printable(part="both",
+                                     plist=[],
+                                     gap=6,
+                                     text_panel_t=1) {
   p = step_down_enclosure_props(plist);
   s = plist_get("body_size", p);
-  assert(member(part, ["base", "lid", "both"]),
-         "Part must be base, lid or both");
-  if (part != "lid") {
+  assert(member(part, ["base", "lid", "both", "lid_main", "lid_text"]),
+         "Part must be base, lid, both, lid_main or lid_text");
+  if (member(part, ["base", "both"])) {
     _power_enclosure_base(p);
   }
   if (part != "base") {
     lid = plist_get("lid", p);
     raised = plist_get("text_mode", lid) == "raised";
-    translate([0,
-               part == "both" ? s[1] + gap : 0,
-               plist_get(raised ? "lip_h" : "t", lid)]) {
-      rotate([raised ? 0 : 180, 0, 0]) {
-        _power_enclosure_lid(p);
+    lid_y = part == "both" ? s[1] + gap : 0;
+    assert(raised || !member(part, ["lid_main", "lid_text"]),
+           "Individual lid panels require raised text mode");
+    if (raised) {
+      seam_z = plist_get("t", lid) - text_panel_t;
+      if (part != "lid_text") {
+        translate([0, lid_y, seam_z]) {
+          rotate([180, 0, 0]) {
+            _power_enclosure_lid_panel(p, text_panel_t=text_panel_t);
+          }
+        }
+      }
+      if (part != "lid_main") {
+        translate([0,
+                   lid_y + (part == "lid_text" ? 0 : s[1] + gap),
+                   -seam_z]) {
+          _power_enclosure_lid_panel(p, text_panel=true,
+                                     text_panel_t=text_panel_t);
+        }
+      }
+    } else {
+      translate([0, lid_y, plist_get("t", lid)]) {
+        rotate([180, 0, 0]) {
+          _power_enclosure_lid(p);
+        }
       }
     }
   }

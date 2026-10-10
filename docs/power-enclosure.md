@@ -297,16 +297,42 @@ available corridor and height; it cannot enlarge the chassis. See
 Printable entry points:
 
 - `scad/printable_parts/step_down_enclosure_base.scad`: upright tray on Z=0.
-- `scad/printable_parts/step_down_enclosure_lid.scad`: engraved face down or
-  raised lettering up, with the lowest surface on Z=0.
-- `scad/components/step_down_enclosure/printable.scad`: both separated parts.
+- `scad/printable_parts/step_down_enclosure_lid.scad`: an engraved lid face
+  down, or two raised-text panels, each flat on Z=0.
+- `scad/components/step_down_enclosure/step_down_enclosure_lid_printable.scad`:
+  lid layout with `panel="both"`, `"main"`, or `"text"` selection for export.
+- `scad/components/step_down_enclosure/printable.scad`: tray and lid print layout.
 
 The upright tray has counterbore shoulders, tie-groove ceilings, nut-pocket
 edges and rounded vent tops. These can trigger slicer overhang detection.
 Support decisions depend on the material, layer settings and bridge capability.
-An engraved lid prints with its locating lip upward. A raised-text lid prints
-with the lip on the bed and lettering upward; the roof spans the lip and may
-need support depending on the printer's bridging capability. Preview hardware includes inserts,
+An engraved lid prints with its locating lip upward. A raised-text lid has a
+main panel with the locating lip and a separate outer panel carrying the text.
+The outer panel is 1 mm thick below the lettering; the main panel's plate is
+`lid.t - 1` mm thick. Their shared screw holes, vents and access openings align
+when assembled, and the stacked plate thickness remains `lid.t`. The lip and
+screw engagement retain their assembled dimensions.
+
+Both panels print with their flat mating faces on the bed: lip upward on the
+main panel and lettering upward on the outer panel. Print the outer panel
+separately and change filament at the first text-only layer above its 1 mm
+plate for contrasting lettering. At a uniform 0.2 mm layer height, the plate
+occupies five layers. The raised-text surface has no locating lip underneath
+to bridge. Assemble with the text facing outward and the main panel's lip
+inside the enclosure, using the shared lid screws.
+
+`step_down_enclosure_printable` accepts `part="lid_main"` or `"lid_text"` for
+individual raised-panel exports. `part="lid"` lays out both raised panels;
+`part="both"` adds the base. `gap` controls the edge gap along Y, and
+`text_panel_t` sets the outer panel thickness in mm, excluding text relief.
+It must be positive and less than `lid.t`.
+
+```scad
+step_down_enclosure_printable(
+  part="lid_text", plist=["lid", ["text_mode", "raised"]], text_panel_t=1);
+```
+
+Preview hardware includes inserts,
 lid screws, captive chassis nuts, PCB standoffs and PCB screws/nuts. Install
 inserts and captive nuts before fitting boards and wiring.
 
