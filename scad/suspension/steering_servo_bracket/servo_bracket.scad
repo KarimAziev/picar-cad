@@ -77,7 +77,11 @@ module servo_l_bracket(color=white_smoke_1,
           }
           translate([-servo_w / 2, 0, 0]) {
             four_corner_children(size=dsservo_bolt_spacing, center=true) {
-              circle(d=steering_servo_bracket_servo_bolt_d, $fn=hole_fn);
+              rotate([0, 0, 90]) {
+                teardrop_2d(d=steering_servo_mount_bolt_d,
+                            both_sides=true,
+                            fn=hole_fn);
+              }
             }
           }
         }
@@ -94,7 +98,11 @@ module servo_l_bracket(color=white_smoke_1,
                              side="top");
               }
               servo_l_bracket_chassis_slot_child(skip_rotation=true) {
-                circle(d=steering_servo_mount_bolt_d, $fn=hole_fn);
+                rotate([0, 0, 90]) {
+                  teardrop_2d(d=steering_servo_mount_bolt_d,
+                              both_sides=true,
+                              fn=hone_fn);
+                }
               }
             }
           }
