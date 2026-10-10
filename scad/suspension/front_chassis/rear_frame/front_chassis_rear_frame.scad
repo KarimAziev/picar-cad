@@ -55,6 +55,17 @@ function front_chassis_wiring_slot_pos(d=front_chassis_wiring_slot_d) =
      min((bounds[0][1] + bounds[1][1] - d) / 2,
          servo_end_y - d / 2 - front_chassis_wiring_slot_clearance * 2), 0];
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_rear_frame
+  ─────────────────────────────────────────────────────────────────────────────
+
+  **Example**:
+  ```scad
+  front_chassis_rear_frame();
+
+  ```
+  */
 module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
                                 color=white_smoke_1,
                                 debug_color=green_2,
@@ -154,5 +165,3 @@ module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
     }
   }
 }
-
-front_chassis_rear_frame();

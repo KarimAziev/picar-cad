@@ -209,8 +209,9 @@ dsservo_text_plist                                 = ["font", "Lucida Grande:sty
                                                                      "pad_right", -0.1,]];
 
 dsservo_gearbox_h                                  = 0;
+dsservo_gearbox_gear_od                            = 5.9;
 dsservo_gearbox_size                               = [[1, 12.95, matte_black, 20],
-                                                      [3.9, 5.9, metallic_gold_2, 25],
+                                                      [3.9, dsservo_gearbox_gear_od, metallic_gold_2, 25],
                                                       [0.05, 4.2, dark_gold_2, 25],
                                                       [0.05, 2.8, licorice, 25]];
 dsservo_gearbox_d1                                 = 12.95 + 3.8;
@@ -1182,8 +1183,14 @@ steering_servo_arm_bolt_boss_inner_padding         = 1.0;
 steering_servo_arm_thickness                       = 3.75;
 steering_servo_arm_bolt_d                          = m3_hole_dia;
 steering_servo_arm_center_bolt_d                   = m3_hole_dia;
-steering_servo_arm_center_bolt_bore_d              = 7.8;
-steering_servo_arm_center_bolt_bore_h              = 1.2;
+steering_servo_arm_center_bolt_bore_d              = 8.4;
+steering_servo_arm_center_bolt_bore_h              = 0.8;
+
+steering_servo_arm_gear_depth                      = 3.7;
+
+steering_servo_arm_gear_bolt_h                     = 5.46;
+steering_servo_arm_gear_bolt_head_h                = 1.9;
+steering_servo_arm_gear_bolt_head_d                = 4.9;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Steering servo encoder
@@ -1191,7 +1198,7 @@ steering_servo_arm_center_bolt_bore_h              = 1.2;
 
 steering_encoder_plist                             = as5048A_encoder_plist;
 steering_encoder_bottom_thickness                  = 1.6;
-steering_encoder_side_thickness                    = 3;
+steering_encoder_side_thickness                    = 2;
 steering_encoder_top_side_padding                  = 0;
 steering_encoder_extra_left_w                      = 10;
 steering_encoder_extra_right_w                     = 0;
@@ -1200,13 +1207,21 @@ steering_encoder_top_bolt_min_padding              = 1.5;
 steering_encoder_top_corner_r                      = 1;
 steering_encoder_bottom_pan_bolt_spacing           = 10;
 steering_encoder_bottom_pan_bolt_d                 = m3_hole_dia;
-steering_encoder_bottom_pan_bolt_pad               = 8;
+steering_encoder_bottom_pan_bolt_pad               = 3.9;
 steering_encoder_bottom_corner_r                   = 3;
 
 steering_encoder_magnet_distance                   = 0.5;
 
-steering_magnet_d                                  = 5;
-steering_magnet_h                                  = 2;
+steering_magnet_d                                  = 6;
+steering_magnet_h                                  = 2.5;
+
+steering_magnet_sleeve_d_clearance                 = 0.1;
+steering_magnet_sleeve_outer_h                     = 0.8;
+steering_magnet_sleeve_bottom_thickness            = 1.0;
+steering_magnet_sleeve_wall_thickness              = 1.2;
+
+steering_magnet_sleeve_bolt_head_h_clearance       = 0.2;
+steering_magnet_sleeve_bolt_head_d_clearance       = 0.8;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Upper steering panel

@@ -25,7 +25,8 @@ function steering_servo_encoder_bracket_bend_reach(plist=steering_encoder_plist,
     + dsservo_encoder_bracket_arm_offset(plist=plist,
                                          magnet_h=magnet_h,
                                          side_thickness=side_thickness,
-                                         magnet_distance=magnet_distance);
+                                         magnet_distance=magnet_distance,
+                                         arm_base_h=arm_base_h);
 
 function steering_servo_encoder_chassis_reach(plist=steering_encoder_plist,
                                               magnet_h=steering_magnet_h,

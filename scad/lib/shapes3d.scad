@@ -187,16 +187,16 @@ module cuboid(size,
   assert(axis == "x" || axis == "y" || axis == "z",
          "cuboid: axis must be x, y, or z");
   profile_size = axis == "x"
-    ? [size[1], size[2]]
-    : axis == "y"
-      ? [size[0], size[2]]
-      : [size[0], size[1]];
+                 ? [size[1], size[2]]
+                 : axis == "y"
+                   ? [size[0], size[2]]
+                   : [size[0], size[1]];
   extrusion_h = axis == "x"
-    ? size[0]
-    : axis == "y" ? size[1] : size[2];
+                ? size[0]
+                : axis == "y" ? size[1] : size[2];
   orientation = axis == "x"
-    ? "hwl"
-    : axis == "y" ? "whl" : "wlh";
+                ? "hwl"
+                : axis == "y" ? "whl" : "wlh";
   r = maybe_percent_string_to_num(r,
                                   use_minkowski ? min(size) : min(profile_size));
 
@@ -293,7 +293,15 @@ module cuboid(size,
   cyl(h=10, d1=8, d2=0, anchor=[0, 0, 0], $fn=48);
   ```
   */
-module cyl(h=0, d, d1, d2, $fn=20, anchor=[0, 0, 1], orientation="wlh", color) {
+module cyl(h=0,
+           d,
+           d1,
+           d2,
+           $fn=20,
+           anchor=[0, 0, 1],
+           orientation="wlh",
+           color,
+           alpha) {
   assert(is_num(h), "cyl: h (height) must be provided");
   assert(is_num(d) || is_num(d1) || is_num(d2),
          "cyl: d, d1 or d2 must be provided");
@@ -304,7 +312,7 @@ module cyl(h=0, d, d1, d2, $fn=20, anchor=[0, 0, 1], orientation="wlh", color) {
 
   max_d = max(d2, d1);
 
-  maybe_color(color) {
+  maybe_color(color, alpha=alpha) {
     with_orientation(from="wlh",
                      to=orientation,
                      anchor=anchor,
@@ -627,13 +635,14 @@ module ring(d,
             color,
             whole_color=true,
             anchor=[0, 0, 1],
-            orientation="wlh") {
+            orientation="wlh",
+            alpha) {
   fn = with_default(fn, 30);
   // Match cylinder()'s default diameter when an end is unspecified.
   max_d = max(with_default(od1, with_default(od, 2)),
               with_default(od2, with_default(od, 2)));
   with_orientation(to=orientation, anchor=anchor, size=[max_d, max_d, h]) {
-    maybe_color(whole_color ? color : undef) {
+    maybe_color(whole_color ? color : undef, alpha=alpha) {
       difference() {
         maybe_color(whole_color ? undef : color) {
           cylinder(d=od, d1=od1, d2=od2, h=h, $fn=fn);

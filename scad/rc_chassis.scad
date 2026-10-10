@@ -19,7 +19,6 @@ include <suspension/front_chassis/computed_params.scad>
 
 use <head/head_neck.scad>
 use <lib/plist.scad>
-use <lib/shapes3d.scad>
 use <lipo_pack_case/multi_lipo_pack_case.scad>
 use <suspension/bellcrank_steering_assembly.scad>
 use <suspension/computed.scad>
@@ -288,8 +287,8 @@ module rc_chassis(show_bellcrank_drive=show_bellcrank_drive,
   if ($preview && show_debug_pins) {
     // Pins follow the tongue plate, or the socket when only it is visible.
     head_visible = is_undef(show_head_frame)
-      ? show_chassis_front_frame
-      : show_head_frame;
+                   ? show_chassis_front_frame
+                   : show_head_frame;
     if (head_visible || show_chassis_front_frame) {
       translate([0, head_visible ? head_chassis_joint_spacing : 0, 0]) {
         #front_chassis_head_joint_pins();
@@ -307,8 +306,7 @@ module rc_chassis(show_bellcrank_drive=show_bellcrank_drive,
       translate([0,
                  front_chassis_y_joint_2_end + joint_l - front_chassis_joint_spacing,
                  0]) {
-        #front_chassis_pin_joint_holes(
-          pin_spacing=front_chassis_body_joint_pin_spacing(body_width));
+        #front_chassis_pin_joint_holes(pin_spacing=front_chassis_body_joint_pin_spacing(body_width));
       }
     }
   }
@@ -414,9 +412,7 @@ module rc_chassis(show_bellcrank_drive=show_bellcrank_drive,
             #rear_suspension_chassis_joint_pins(layout=rear_layout);
           }
           if (!show_middle_chassis) {
-            #front_chassis_pin_joint_holes(
-              pin_spacing=front_chassis_body_joint_pin_spacing(
-                plist_get("join_w", rear_layout)));
+            #front_chassis_pin_joint_holes(pin_spacing=front_chassis_body_joint_pin_spacing(plist_get("join_w", rear_layout)));
           }
         }
         _pin_inspection_context() {
@@ -461,8 +457,3 @@ module rc_chassis(show_bellcrank_drive=show_bellcrank_drive,
 }
 
 rc_chassis();
-if (show_ideal_length) {
-  translate([0, front_bulkhead_len / 2, 0]) {
-    #cuboid(size=[200, chassis_ideal_wheelbase, 40], anchor=[0, -1, 1]);
-  }
-}

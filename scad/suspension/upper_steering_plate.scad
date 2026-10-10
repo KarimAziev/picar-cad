@@ -92,7 +92,12 @@ module upper_steering_plate_position() {
   **Behavior:** Print top face down using the separate printable entry. The
   narrow rear feet contact stationary posts inside the bearing bores, avoiding
   the rotating housings. This is a fit model, not a strength certification.
- */
+
+  **Example**:
+  ```scad
+  upper_steering_plate();
+  ```
+  */
 module upper_steering_plate(anchor=[1, 1, 1],
                             slot_mode=false,
                             slot_h=undef,
@@ -211,5 +216,3 @@ module upper_steering_plate(anchor=[1, 1, 1],
     }
   }
 }
-
-upper_steering_plate();

@@ -169,8 +169,8 @@ module servo_body(size,
            bg_h = total_size[1] + bg_pad_top + bg_pad_bottom,
            bg_w = w + (bg_t * (bg_pad_left > 0 ? -1 : 1)),
            z_offset = center_flange_z
-           ? servo_flange_z_offset + servo_flange_thickness
-           : servo_flange_z_offset) {
+                      ? servo_flange_z_offset + servo_flange_thickness
+                      : servo_flange_z_offset) {
 
         _text(bg_pad_top=bg_pad_top,
               text_height=text_height,
@@ -388,9 +388,9 @@ module servo(size,
 
   gearbox_r1 = is_undef(gearbox_r1) ? gearbox_d1 / 2 : gearbox_r1;
   gearbox_r2 = is_undef(gearbox_r2) ? is_undef(gearbox_d2)
-    ? gearbox_r1 * 0.4
-    : gearbox_d2 / 2
-    : gearbox_r2;
+                                      ? gearbox_r1 * 0.4
+                                      : gearbox_d2 / 2
+               : gearbox_r2;
   gearbox_x_offset = is_undef(gearbox_x_offset) ? 0 : gearbox_x_offset;
 
   translate([center ? 0 : length / 2, center ? 0 : w / 2, 0]) {
@@ -484,36 +484,36 @@ module servo_slot_2d(size=[head_neck_tilt_servo_slot_width,
   }
 }
 
-servo(size=[dsservo_size[0],
-            dsservo_size[1],
-            dsservo_size[2]],
-      bolts_dia=dsservo_bolt_dia,
-      bolt_spacing=dsservo_bolt_spacing,
-      servo_flange_w=dsservo_flange_w,
-      center=true,
-      center_flange_z=false,
-      servo_flange_h=dsservo_flange_h,
-      servo_flange_thickness=dsservo_flange_thickness,
-      bolts_offset=dsservo_bolts_offset,
-      servo_flange_z_offset=dsservo_flange_z_offset,
-      servo_color=dsservo_color,
-      gearbox_box_color=dsservo_color,
-      servo_text=dsservo_text,
-      text_size=dsservo_text_size,
-      text_plist=dsservo_text_plist,
-      tolerance=0.3,
-      cut_len=dsservo_cut_len,
-      gearbox_h=dsservo_gearbox_h,
-      gearbox_d1=dsservo_gearbox_d1,
-      servo_horn_rotation=$t * ($t > 0.5 ? -90 : 45),
-      wiring_path=[[-100, 0, dsservo_socket_z_offset]],
-      gearbox_d2=dsservo_gearbox_d2,
-      gearbox_x_offset=dsservo_gearbox_x_offset,
-      show_servo_horn=false,
-      gearbox_mode=dsservo_gearbox_mode,
-      gearbox_gear_size=dsservo_gearbox_size,
-      cut_len_top_len=dsservo_cut_len_top,
-      cut_len_top_depth=dsservo_cut_top_depth,
-      socket_size=dsservo_socket_size,
-      socket_z_offset=dsservo_socket_z_offset,
-      socket_side=dsservo_socket_side);
+// servo(size=[dsservo_size[0],
+//             dsservo_size[1],
+//             dsservo_size[2]],
+//       bolts_dia=dsservo_bolt_dia,
+//       bolt_spacing=dsservo_bolt_spacing,
+//       servo_flange_w=dsservo_flange_w,
+//       center=true,
+//       center_flange_z=false,
+//       servo_flange_h=dsservo_flange_h,
+//       servo_flange_thickness=dsservo_flange_thickness,
+//       bolts_offset=dsservo_bolts_offset,
+//       servo_flange_z_offset=dsservo_flange_z_offset,
+//       servo_color=dsservo_color,
+//       gearbox_box_color=dsservo_color,
+//       servo_text=dsservo_text,
+//       text_size=dsservo_text_size,
+//       text_plist=dsservo_text_plist,
+//       tolerance=0.3,
+//       cut_len=dsservo_cut_len,
+//       gearbox_h=dsservo_gearbox_h,
+//       gearbox_d1=dsservo_gearbox_d1,
+//       servo_horn_rotation=$t * ($t > 0.5 ? -90 : 45),
+//       wiring_path=[[-100, 0, dsservo_socket_z_offset]],
+//       gearbox_d2=dsservo_gearbox_d2,
+//       gearbox_x_offset=dsservo_gearbox_x_offset,
+//       show_servo_horn=false,
+//       gearbox_mode=dsservo_gearbox_mode,
+//       gearbox_gear_size=dsservo_gearbox_size,
+//       cut_len_top_len=dsservo_cut_len_top,
+//       cut_len_top_depth=dsservo_cut_top_depth,
+//       socket_size=dsservo_socket_size,
+//       socket_z_offset=dsservo_socket_z_offset,
+//       socket_side=dsservo_socket_side);

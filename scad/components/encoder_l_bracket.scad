@@ -196,7 +196,7 @@ module encoder_l_bracket(plist,
         encoder_l_bracket_bottom_pan_bolt_children(bottom_pan_bolt_spacing=bottom_pan_bolt_spacing,
                                                    bottom_pan_bolt_d=bottom_pan_bolt_d,
                                                    bottom_pan_bolt_pad=bottom_pan_bolt_pad) {
-          rotate([0, 0, 90]) {
+          rotate([0, 0, 0]) {
             counterbore(h=bottom_thickness,
                         teardrop_both_sides=true,
                         teardrop_angle=45,

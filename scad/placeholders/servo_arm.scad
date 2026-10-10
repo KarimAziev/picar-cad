@@ -1,6 +1,13 @@
-include <../colors.scad>
-include <../rc_params.scad>
+/**
+  * Module: Servo Arm
+  *
+  * Author: Karim Aziiev <karim.aziiev@gmail.com>
+  * License: GPL-3.0-or-later
+  */
 
+include <../colors.scad>
+
+use <../lib/functions.scad>
 use <../lib/placement.scad>
 use <../lib/shapes2d.scad>
 use <../lib/slots.scad>
@@ -16,10 +23,13 @@ module servo_arm(arm_d,
                  boss_inner_padding=0,
                  arm_bolt_boss_padding,
                  arm_thickness,
-                 arm_center_bolt_d=steering_servo_arm_center_bolt_d,
-                 arm_center_bolt_bore_d=steering_servo_arm_center_bolt_bore_d,
-                 arm_center_bolt_bore_h=steering_servo_arm_center_bolt_bore_h,
+                 arm_center_bolt_d,
+                 arm_center_bolt_bore_d,
+                 arm_center_bolt_bore_h,
+                 gear_depth,
+                 gear_od,
                  bolt_n=2,
+                 alpha=1,
                  arm_bolt_boss_spacing=1.45,
                  color=cobalt_blue_metallic,
                  reverse=false,
@@ -36,7 +46,7 @@ module servo_arm(arm_d,
   maybe_translate([0, 0, reverse ? full_h : 0]) {
     maybe_rotate([0, y_angle, 0]) {
       difference() {
-        color(color, alpha=1) {
+        color(color, alpha=alpha) {
           linear_extrude(height=arm_thickness, center=false) {
             translate([-arm_w / 2, -arm_d / 2, 0]) {
               rounded_rect([arm_w, total_len], r_factor=0.5, center=false);
@@ -58,13 +68,23 @@ module servo_arm(arm_d,
             }
           }
         }
+        if (gear_od && gear_depth) {
+          counterbore(h=arm_base_h,
+                      d=arm_center_bolt_d,
+                      bore_d=gear_od,
+                      bore_h=gear_depth,
+                      sink=false,
+                      fn=10,
+                      reverse=false);
+        }
+
         counterbore(h=arm_base_h,
                     d=arm_center_bolt_d,
                     bore_d=arm_center_bolt_bore_d,
                     bore_h=arm_center_bolt_bore_h,
                     sink=false,
-                    fn=50,
-                    reverse=false);
+                    fn=10,
+                    reverse=true);
         translate([0,
                    arm_d / 2 + arm_len - total_y - bolt_d / 2
                    - arm_bolt_boss_padding - boss_inner_padding,
@@ -91,19 +111,3 @@ module servo_arm(arm_d,
     }
   }
 }
-
-servo_arm(arm_d=steering_servo_arm_d,
-          arm_len=steering_servo_arm_len,
-          arm_base_h=steering_servo_arm_base_h,
-          arm_bolt_boss_h=steering_servo_arm_bolt_boss_h,
-          arm_bolt_boss_w=steering_servo_arm_bolt_boss_w,
-          arm_bolt_boss_spacing=steering_servo_arm_bolt_boss_spacing,
-          arm_bolt_boss_padding=steering_servo_arm_bolt_boss_padding,
-          arm_thickness=steering_servo_arm_thickness,
-          arm_w=steering_servo_arm_w,
-          boss_inner_padding=steering_servo_arm_bolt_boss_inner_padding,
-          bolt_d=steering_servo_arm_bolt_d,
-          arm_center_bolt_d=steering_servo_arm_center_bolt_d,
-          arm_center_bolt_bore_d=steering_servo_arm_center_bolt_bore_d,
-          arm_center_bolt_bore_h=steering_servo_arm_center_bolt_bore_h,
-          bolt_n=3);

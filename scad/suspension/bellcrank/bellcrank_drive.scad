@@ -176,8 +176,3 @@ module bellcrank_drive_cap_ring(parent_od=bellcrank_idler_od,
                  parent_od=parent_od,
                  border_w=border_w);
 }
-
-z_dims = bellcrank_servo_lever_z_coords();
-z_end = z_dims[1];
-
-bellcrank_drive();
