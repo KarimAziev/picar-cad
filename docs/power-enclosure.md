@@ -26,31 +26,33 @@ Dimensions accept numbers in millimeters or percentage strings. Plain numbers
 are always millimeters, including values smaller than one. Percentage positions
 start at the minimum of their reference box, rather than the model origin.
 
-| Setting                                         | Percentage reference                                       |
-| ----------------------------------------------- | ---------------------------------------------------------- |
-| `distance`                                      | Smaller of the two PCB lengths along the packing direction |
-| `board_clearance`                               | Smaller XY dimension of the board group                    |
-| `end_clearance`                                 | Board-group length along X                                 |
-| `top_clearance`, `bottom_thickness`             | Populated board-group height                               |
-| `inner_size=[x,y,z]`                            | Automatically padded board envelope, axis by axis          |
-| `board_pos=[x,y]`                               | Free XY space after subtracting the board-group footprint  |
-| Wall `t` or fallback `side_thickness`           | Inner dimension perpendicular to that wall                 |
-| Wall cutout `l`, `offset`; slot X position/size | Inner span along that wall                                 |
-| Wall cutout `h`, `bottom`; slot Z position/size | Inner height above the floor                               |
-| Lid positions, slot sizes, vent sizes/gaps      | Outer lid XY dimensions                                    |
-| Vent `margin=[left,right,bottom,top]`           | Corresponding panel span or height                         |
-| Cutout/slot/vent `corner_r`                     | Smaller resolved opening dimension                         |
-| `rim_chamfer`                                   | Smaller cutout dimension                                   |
-| Vent `opening_gap`, opening `vent_gap`          | Smaller panel dimension                                    |
-| Lid `t`, `lip_h`                                | Inner height                                               |
-| Lid `lip_w`, `clearance`                        | Smaller inner XY dimension                                 |
-| Lid `text_depth`                                | Lid thickness                                              |
-| Text `size`                                     | Smaller lid XY dimension                                   |
-| `mount.spacing`, `mount.pos`                    | Inner XY dimensions                                        |
-| Tie `slot_size`, `bridge_w`, `end_dist`         | Corresponding inner XY dimension                           |
-| Tie `recess_h`                                  | Floor thickness                                            |
-| Parent slot `pos`, `size`, `margin`             | Inner XY dimensions                                        |
-| Parent slot `min_width`                         | Inner dimension along the selected strip axis              |
+| Setting                                         | Percentage reference                                        |
+| ----------------------------------------------- | ----------------------------------------------------------- |
+| `distance`                                      | Smaller of the two PCB lengths along the packing direction  |
+| `board_clearance`                               | Smaller XY dimension of the board group                     |
+| `end_clearance`                                 | Board-group length along X                                  |
+| `top_clearance`, `bottom_thickness`             | Populated board-group height                                |
+| `inner_size=[x,y,z]`                            | Automatically padded board envelope, axis by axis           |
+| `board_pos=[x,y]`                               | Free XY space after subtracting the board-group footprint   |
+| Wall `t` or fallback `side_thickness`           | Inner dimension perpendicular to that wall                  |
+| Wall cutout `l`, `offset`; slot X position/size | Inner span along that wall                                  |
+| Wall cutout `h`, `bottom`; slot Z position/size | Inner height above the floor                                |
+| Lid positions, slot sizes, vent sizes/gaps      | Outer lid XY dimensions                                     |
+| Vent `margin=[left,right,bottom,top]`           | Corresponding panel span or height                          |
+| Cutout/slot/vent `corner_r`                     | Smaller resolved opening dimension                          |
+| `rim_chamfer`                                   | Smaller cutout dimension                                    |
+| Vent `opening_gap`, opening `vent_gap`          | Smaller panel dimension                                     |
+| Lid `t`, `lip_h`                                | Inner height                                                |
+| Lid `lip_w`, `clearance`                        | Smaller inner XY dimension                                  |
+| Lid `terminal_clearance=[x,y]`                  | Each terminal's rotated XY footprint, axis by axis          |
+| Lid `component_clearance=[x,y]`                 | Each power component's projected XY footprint, axis by axis |
+| Lid `text_depth`, `text_height`                 | Lid thickness                                               |
+| Text `size`                                     | Smaller lid XY dimension                                    |
+| `mount.spacing`, `mount.pos`                    | Inner XY dimensions                                         |
+| Tie `slot_size`, `bridge_w`, `end_dist`         | Corresponding inner XY dimension                            |
+| Tie `recess_h`                                  | Floor thickness                                             |
+| Parent slot `pos`, `size`, `margin`             | Inner XY dimensions                                         |
+| Parent slot `min_width`                         | Inner dimension along the selected strip axis               |
 
 The board layout determines the required cavity; the four wall thicknesses add
 to it independently. Asymmetric walls move the cavity and its hardware together
@@ -137,6 +139,26 @@ cutouts continue through the lip, with their resolved widths and rim chamfers.
 per-axis clearance around the sensor header's real footprint; `enabled=false`
 omits that opening.
 
+The lid always provides dedicated access openings above regulator VIN, regulator
+VOUT, and the configured sensor terminal. Each opening contains the full terminal
+footprint, with `lid.terminal_clearance=[1,1]` adding 1 mm per side in the enclosure
+XY axes. Percentage clearances use each terminal's rotated footprint. Rounded
+corners stay outside that footprint. The openings pass through both the roof and
+locating lip, and follow board placement, connector offsets, dimensions and
+rotations. They remain present when lid vents, custom slots or hardware previews
+are disabled. Vent placement reserves the configured opening gap around them.
+`step_down_enclosure_props` exposes `terminal_footprints` as a list of
+`[center_xy, size_xy]` pairs in the enclosure frame, ordered VIN, VOUT, sensor.
+The sensor entry is omitted when its terminal specification is empty.
+
+The regulator's inductor, capacitor cans, and `smd_chip_specs` packages also
+have dedicated openings through the roof and lip. These follow their placeholder
+positions, sizes, and chip rotations, with `lid.component_clearance=[0.5,0.5]`
+adding 0.5 mm per side by default. Adjacent openings may join. They stay open
+with vents disabled and in either text mode. `component_footprints` exposes
+`[center_xy, size_xy]` pairs in the enclosure frame. These are geometric access
+regions; actual operating temperatures require measurements under load.
+
 ## Wall cutouts, slots and vents
 
 Every face accepts `t`, `cutouts`, `slots` and `vents`. Each cutout is open at
@@ -197,8 +219,13 @@ All label strings, positions and typography belong to `lid.texts` and
 `lid.text_style`. Each text plist supplies `text_from_plist` typography and
 rotation, plus `pos` or `at` for placement. `pos` is measured from the lid's minimum XY corner;
 `at` follows a hardware reference. An optional numeric `translation` adds a
-local XYZ adjustment. `text_depth` determines the engraving height and depth. The default
-preset's electrical labels describe its regulated-output wiring arrangement.
+local XYZ adjustment. `text_mode="engraved"` cuts labels into the outer face by
+`text_depth`; `text_mode="raised"` adds lettering above it by `text_height`.
+Both relief dimensions default to 0.8 mm and accept percentages of lid thickness.
+Raised lettering is clipped at the lid outline and all access openings remain
+clear through its full height. The closed component envelope includes raised
+lettering when it extends above the screw heads. The default preset's electrical
+labels describe its regulated-output wiring arrangement.
 
 ```scad
 step_down_voltage_enclosure(
@@ -206,6 +233,9 @@ step_down_voltage_enclosure(
                             "pos", ["50%", "50%"], "size", 2.2]],
                   "text_style", ["font", "Liberation Sans:style=Bold"],
                   "text_depth", 0.4]]);
+// Raised labels:
+step_down_voltage_enclosure(plist=["lid", ["text_mode", "raised",
+                                          "text_height", 0.8]]);
 // A plain lid: plist=["lid", ["texts", []]].
 ```
 
@@ -267,13 +297,16 @@ available corridor and height; it cannot enlarge the chassis. See
 Printable entry points:
 
 - `scad/printable_parts/step_down_enclosure_base.scad`: upright tray on Z=0.
-- `scad/printable_parts/step_down_enclosure_lid.scad`: outer lid face on Z=0.
+- `scad/printable_parts/step_down_enclosure_lid.scad`: engraved face down or
+  raised lettering up, with the lowest surface on Z=0.
 - `scad/components/step_down_enclosure/printable.scad`: both separated parts.
 
 The upright tray has counterbore shoulders, tie-groove ceilings, nut-pocket
 edges and rounded vent tops. These can trigger slicer overhang detection.
 Support decisions depend on the material, layer settings and bridge capability.
-The lid prints with its locating lip upward. Preview hardware includes inserts,
+An engraved lid prints with its locating lip upward. A raised-text lid prints
+with the lip on the bed and lettering upward; the roof spans the lip and may
+need support depending on the printer's bridging capability. Preview hardware includes inserts,
 lid screws, captive chassis nuts, PCB standoffs and PCB screws/nuts. Install
 inserts and captive nuts before fitting boards and wiring.
 
@@ -292,8 +325,8 @@ geometry does not establish a thermal rating.
 sizing, independent panels, asymmetric walls, shared hardware datums, installed
 rotation and fixed chassis/power-case interfaces.
 `tests/check_step_down_enclosure_mesh.py` checks connected printable parts,
-fit with hardware, counterbores, tool access, all four wall cutters and their
-rounded corners, larger/longer inserts, independent vent patterns, safe parent
+fit with hardware, counterbores, terminal and power-component access, both text modes, all four wall
+cutters and their rounded corners, larger/longer inserts, independent vent patterns, safe parent
 wiring slots, and all six orientations.
 `tests/check_rear_equipment_mesh.py` checks the installed enclosure against the
 motor, panels, battery case, columns and chassis mounting holes.

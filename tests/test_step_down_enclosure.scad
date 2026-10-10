@@ -35,6 +35,103 @@ for (gap = [2, 6, 8]) {
   assert(plist_get("size", q)[2] == s[2]);
 }
 
+// Terminal access follows hardware independently of vent and label settings.
+footprints = plist_get("terminal_footprints", p);
+assert(len(footprints) == 3);
+assert(norm(footprints[0][1] - [5.8, 9.6]) < 1e-6);
+assert(norm(footprints[1][1] - [5.8, 9.6]) < 1e-6);
+assert(norm(footprints[2][1] - [5.8, 10.1]) < 1e-6);
+access = step_down_enclosure_props([
+  "lid", ["slots", [], "texts", [], "vents", ["enabled", false]],
+  "header_slot", ["enabled", false]]);
+access_openings = plist_get("openings", plist_get("lid_panel", access));
+assert(len(access_openings) == 3 + len(plist_get("component_footprints", p)));
+for (i = [0 : 2]) {
+  opening = access_openings[i];
+  size = plist_get("size", opening);
+  pos = plist_get("pos", opening);
+  assert(norm(size - footprints[i][1] - [2, 2]) < 1e-6);
+  assert(norm(pos + size / 2 - [s[0], s[1]] / 2 - footprints[i][0]) < 1e-6);
+}
+shifted = step_down_enclosure_props([
+  "inner_size", ["120%", "150%", "100%"], "board_pos", ["60%", "40%"],
+  "cable_tie", ["enabled", false],
+  "walls", ["left", ["t", 6], "right", ["t", 3],
+            "rear", ["t", 4], "front", ["t", 5]]]);
+shift = plist_get("regulator_pos", shifted) - plist_get("regulator_pos", p);
+for (i = [0 : 2]) {
+  fp = plist_get("terminal_footprints", shifted)[i];
+  assert(norm(fp[0] - footprints[i][0] - [shift[0], shift[1]]) < 1e-6);
+  assert(fp[1] == footprints[i][1]);
+}
+custom_terminals = step_down_enclosure_props([
+  "step_down_voltage", plist_merge(step_down_voltage_plist,
+    ["vin", ["rotation_z", 0, "base_w", 12, "thickness", 7,
+             "x_offset", 1, "y_offset", 2],
+     "vout", ["rotation_z", 45, "base_w", 10, "thickness", 6,
+              "x_offset", 2, "y_offset", 3]]),
+  "sensor_current", plist_merge(ina_plist,
+    ["screw_terminal", ["base_w", 12, "thickness", 7, "y_offset", 1]])]);
+custom_fp = plist_get("terminal_footprints", custom_terminals);
+assert(norm(custom_fp[0][1] - [12, 7]) < 1e-6);
+assert(norm(custom_fp[1][1] - [16 / sqrt(2), 16 / sqrt(2)]) < 1e-6);
+assert(norm(custom_fp[2][1] - [7, 12]) < 1e-6);
+regulator_pos = plist_get("regulator_pos", custom_terminals);
+board = plist_get("placeholder_size", step_down_voltage_plist);
+assert(norm(custom_fp[0][0] - [regulator_pos[0] - board[0] / 2 + 7,
+                               regulator_pos[1] + board[1] / 2 - 5.5]) < 1e-6);
+percent_access = step_down_enclosure_props([
+  "lid", ["terminal_clearance", ["10%", "20%"]]]);
+percent_openings = plist_get("openings", plist_get("lid_panel", percent_access));
+for (i = [0 : 2]) {
+  assert(norm(plist_get("size", percent_openings[i])
+              - [footprints[i][1][0] * 1.2, footprints[i][1][1] * 1.4]) < 1e-6);
+}
+no_sensor_terminal = step_down_enclosure_props([
+  "sensor_current", plist_merge(ina_plist, ["screw_terminal", []])]);
+assert(len(plist_get("terminal_footprints", no_sensor_terminal)) == 2);
+echo("PASS terminal openings track board placement, terminal dimensions and rotations");
+
+components = plist_get("component_footprints", p);
+assert(len(components) == 7);
+rpos = plist_get("regulator_pos", p);
+assert(norm(components[0][0] - [rpos[0] + 6.875, rpos[1] - 4.8]) < 1e-6);
+assert(norm(components[0][1] - [7.15, 7.4]) < 1e-6);
+assert(components[1][1] == [7, 7] && components[2][1] == [7, 7]);
+assert(norm(components[4][1] - [4.6, 3.2]) < 1e-6);
+for (i = [0 : len(components) - 1]) {
+  opening = access_openings[i + 3];
+  size = plist_get("size", opening);
+  assert(norm(size - components[i][1] - [1, 1]) < 1e-6);
+  moved = plist_get("component_footprints", shifted)[i];
+  assert(norm(moved[0] - components[i][0] - [shift[0], shift[1]]) < 1e-6);
+}
+changed_components = step_down_enclosure_props([
+  "step_down_voltage", plist_merge(step_down_voltage_plist,
+    ["inductor", ["size", [8, 6, 4], "offsets", [2, 2]],
+     "can_capacitors", [["d", 8, "h", 7, "base_h", 2,
+                         "position", [-10, 4, 0]]],
+     "smd_chip_specs", [[4, 3, 1.5, 0.8, [-1, -7, 0], [0, 0, 30]]]])]);
+changed_fp = plist_get("component_footprints", changed_components);
+assert(len(changed_fp) == 3);
+assert(changed_fp[0][1] == [8, 6]);
+assert(changed_fp[1][1] == [8, 8]);
+assert(norm(changed_fp[2][1] - [3 * cos(30) + 4 * sin(30),
+                               3 * sin(30) + 4 * cos(30)]) < 1e-6);
+raised = step_down_enclosure_props(["lid", ["text_mode", "raised",
+                                           "text_height", "25%"]]);
+assert(abs(plist_get("lid_h", raised) - 3) < 1e-6);
+assert(plist_get("size", raised) == s);
+for (text = plist_get("texts", raised)) {
+  assert(abs(plist_get("translation", text)[2] - 2.39) < 1e-6);
+  assert(abs(plist_get("height", text) - 0.61) < 1e-6);
+}
+tall_text = step_down_enclosure_props(["lid", ["text_mode", "raised",
+                                             "text_height", 4]]);
+assert(abs(plist_get("size", tall_text)[2]
+           - plist_get("body_size", p)[2] - 6.4) < 1e-6);
+echo("PASS power-component windows and engraved/raised text dimensions");
+
 hardware = plist_get("insert", p);
 assert(plist_get("h", hardware) == 5 && plist_get("d", hardware) == 3.2);
 assert(plist_get("flang_d", hardware) == 4 && plist_get("hole_d", hardware) == 2);

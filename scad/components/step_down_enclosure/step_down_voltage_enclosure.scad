@@ -63,18 +63,21 @@ function _power_enclosure_config(overrides) =
                                     each [key, plist_merge(plist_get(key, lid_defaults, []),
                                                            plist_get(key, lid_override, []))]])]);
 
-function _power_enclosure_text(spec, style, size, refs, t, depth) =
+function _power_enclosure_text(spec, style, size, refs, lid) =
   let (pl = plist_merge(style, spec),
        at = plist_get("at", pl),
        xy = is_undef(at)
             ? enclosure_dimensions(plist_get("pos", pl, ["50%", "50%"]), size)
             : plist_get(at, refs),
-       delta = plist_get("translation", pl, [0, 0, 0]))
+       delta = plist_get("translation", pl, [0, 0, 0]),
+       raised = plist_get("text_mode", lid) == "raised",
+       relief = plist_get(raised ? "text_height" : "text_depth", lid),
+       z = plist_get("t", lid) - (raised ? 0.01 : relief))
   assert(!is_undef(xy), str("Unknown text reference: ", at))
   plist_merge(pl,
               ["size", enclosure_dimension(plist_get("size", pl), min(size)),
-               "translation", [xy[0], xy[1], t - depth] + delta,
-               "height", depth + 0.01]);
+               "translation", [xy[0], xy[1], z] + delta,
+               "height", relief + 0.01]);
 
 function _power_enclosure_text_bounds(pl) =
   let (tm = textmetrics(text=plist_get("text", pl),
@@ -115,7 +118,15 @@ function _power_enclosure_text_bounds(pl) =
    **Returns:**
    Centered XY bounds above Z=0, resolved hardware placement, per-face panels,
    lid panel, insert boss dimensions/positions and the parent mounting interface.
-   `size` includes the closed lid and screw heads. Slot mode uses the same frame.
+   `terminal_footprints` contains [center_xy, size_xy] pairs for VIN, VOUT and
+   the configured sensor terminal. Lid access uses `lid.terminal_clearance`
+   per side, in mm or percentages of each footprint's corresponding dimension.
+   `component_footprints` exposes the regulator inductor, capacitor cans and
+   power-chip packages; `lid.component_clearance` pads their access openings.
+   `lid.text_mode` selects engraved or raised labels; `text_depth` and
+   `text_height` set their respective relief. `lid_h` includes raised text.
+   `size` includes the closed lid, raised labels and screw heads.
+   Slot mode uses the same frame.
  */
 function step_down_enclosure_props(plist=[]) =
   let (pl = _power_enclosure_config(plist),
@@ -184,10 +195,11 @@ function step_down_enclosure_props(plist=[]) =
          [(x == 0 ? -body[0] / 2 + boss_insets[0] : body[0] / 2 - boss_insets[1]),
           (y == 0 ? -body[1] / 2 + boss_insets[2] : body[1] / 2 - boss_insets[3]), 0]],
        lid_spec = plist_get("lid", pl),
-       lid = plist_merge(lid_spec, [for (key = ["t", "lip_h", "lip_w", "clearance", "text_depth"])
+       lid = plist_merge(lid_spec, [for (key = ["t", "lip_h", "lip_w", "clearance",
+                                                        "text_depth", "text_height"])
          each [key, enclosure_dimension(plist_get(key, lid_spec),
                                         key == "t" || key == "lip_h" ? inner[2]
-                                        : key == "text_depth" ? enclosure_dimension(plist_get("t", lid_spec), inner[2])
+                                        : member(key, ["text_depth", "text_height"]) ? enclosure_dimension(plist_get("t", lid_spec), inner[2])
                                           : min(inner[0], inner[1]))]]),
        lid_t = plist_get("t", lid),
        lid_d = plist_get("hole_d", insert) + plist_get("bolt_clearance", insert_mount),
@@ -236,6 +248,19 @@ function step_down_enclosure_props(plist=[]) =
        header_pos = sensor_pos + rotZ(plist_get("header_pos", ip), 90),
        header_size = [plist_get("header_size", ip)[1], plist_get("header_size", ip)[0]],
        terminal_pos = sensor_pos + rotZ(plist_get("terminal_pos", ip), 90),
+       terminal_footprints = concat(
+         [for (input = [true, false])
+           let (tp = step_down_terminal_props(
+                  plist_get(input ? "vin" : "vout", regulator, []), rb, input),
+                pos = regulator_pos + plist_get("pos", tp))
+           [[pos[0], pos[1]], plist_get("size", tp)]],
+         min(plist_get("terminal_size", ip)) > 0
+           ? [[[terminal_pos[0], terminal_pos[1]],
+               [plist_get("terminal_size", ip)[1],
+                plist_get("terminal_size", ip)[0]]]]
+           : []),
+       component_footprints = [for (fp = step_down_component_footprints(regulator))
+         [fp[0] + [regulator_pos[0], regulator_pos[1]], fp[1]]],
        refs = ["regulator", [regulator_pos[0], regulator_pos[1]],
                "sensor", [sensor_pos[0], sensor_pos[1]],
                "sensor_header", [header_pos[0], header_pos[1]],
@@ -252,9 +277,26 @@ function step_down_enclosure_props(plist=[]) =
        lid_refs = [for (key = plist_keys(refs)) each [key, plist_get(key, refs) + lid_size / 2]],
        texts = [for (spec = plist_get("texts", lid, []))
          _power_enclosure_text(spec, plist_get("text_style", lid), lid_size, lid_refs,
-                               lid_t, plist_get("text_depth", lid))],
+                               lid)],
+       lid_h = plist_get("text_mode", lid) == "raised"
+         ? max(concat([lid_t], [for (text = texts)
+             plist_get("translation", text)[2] + plist_get("height", text)]))
+         : lid_t,
        header_slot = plist_get("header_slot", pl),
-       lid_slots = concat(plist_get("slots", lid, []),
+       terminal_slots = [for (footprint = terminal_footprints)
+         let (clearance = enclosure_dimensions(
+                plist_get("terminal_clearance", lid), footprint[1]),
+              size = footprint[1] + 2 * clearance)
+         ["pos", footprint[0] + lid_size / 2 - size / 2,
+          "size", size, "corner_r", min(clearance)]],
+       component_slots = [for (footprint = component_footprints)
+         let (clearance = enclosure_dimensions(
+                plist_get("component_clearance", lid), footprint[1]),
+              size = footprint[1] + 2 * clearance)
+         ["pos", footprint[0] + lid_size / 2 - size / 2,
+          "size", size, "corner_r", min(clearance)]],
+       lid_slots = concat(plist_get("slots", lid, []), terminal_slots,
+                          component_slots,
                           plist_get("enabled", header_slot) && min(header_size) > 0
                           ? [["at", "sensor_header",
                               "size", header_size
@@ -281,8 +323,11 @@ function step_down_enclosure_props(plist=[]) =
          "Insert needs radial wall and a closed bottom beneath its full pocket depth")
   assert(lid_bolt_l > lid_t && lid_bolt_l <= lid_t + insert_depth,
          "Lid screw must engage the insert without bottoming in its pocket")
+  assert(member(plist_get("text_mode", lid), ["engraved", "raised"]),
+         "Lid text_mode must be engraved or raised")
   assert(plist_get("lip_h", lid) < inner[2] && plist_get("lip_w", lid) > 0
-         && plist_get("clearance", lid) >= 0 && plist_get("text_depth", lid) < lid_t,
+         && plist_get("clearance", lid) >= 0
+         && (plist_get("text_mode", lid) == "raised" || plist_get("text_depth", lid) < lid_t),
          "Lid lip and engraving must fit the cavity and roof")
   assert(find_nut_prop("height", mount_d) + plist_get("nut_depth", fit) < floor_t,
          "Chassis nut pocket needs a closed supporting floor")
@@ -302,8 +347,8 @@ function step_down_enclosure_props(plist=[]) =
     if (abs(k[0][i]) + k[1] > body[i] / 2 + 0.000001) 1]) == 0,
          "Mounts and their pockets must fit the enclosure footprint")
   ["plist", pl,
-   "size", [body[0], body[1], body[2] + lid_t + find_bolt_head_h(plist_get("hole_d", insert),
-                                                                 plist_get("bolt_head_type", insert))],
+   "size", [body[0], body[1], body[2] + max(lid_h,
+     lid_t + find_bolt_head_h(plist_get("hole_d", insert), plist_get("bolt_head_type", insert)))],
    "body_size", body,
    "inner_size", inner,
    "inner_center", center,
@@ -314,6 +359,9 @@ function step_down_enclosure_props(plist=[]) =
    "panels", panels,
    "lid", lid,
    "lid_panel", lid_panel,
+   "lid_h", lid_h,
+   "component_footprints", component_footprints,
+   "terminal_footprints", terminal_footprints,
    "texts", texts,
    "insert", insert,
    "insert_slot", insert_slot,
@@ -390,7 +438,7 @@ module _power_enclosure_vents(p, roof=false) {
   if (roof) {
     s = plist_get("body_size", p);
     translate([-s[0] / 2, -s[1] / 2, -0.01]) {
-      linear_extrude(height=plist_get("t", plist_get("lid", p)) + 0.02) {
+      linear_extrude(height=plist_get("lid_h", p) + 0.02) {
         enclosure_panel_vents(plist_get("lid_panel", p),
                               keepouts=[for (t = plist_get("texts", p))
                                 _power_enclosure_text_bounds(t)]);
@@ -564,6 +612,8 @@ module _power_enclosure_lid(p) {
   s = plist_get("body_size", p);
   lid = plist_get("lid", p);
   t = plist_get("t", lid);
+  lid_h = plist_get("lid_h", p);
+  raised = plist_get("text_mode", lid) == "raised";
   lip_h = plist_get("lip_h", lid);
   lip_w = plist_get("lip_w", lid);
   clear = plist_get("clearance", lid);
@@ -571,6 +621,18 @@ module _power_enclosure_lid(p) {
     union() {
       linear_extrude(height=t) {
         _power_enclosure_outline(p);
+      }
+      if (raised) {
+        intersection() {
+          linear_extrude(height=lid_h) {
+            _power_enclosure_outline(p);
+          }
+          translate([-s[0] / 2, -s[1] / 2, 0]) {
+            for (spec = plist_get("texts", p)) {
+              text_from_plist(plist=spec);
+            }
+          }
+        }
       }
       if (lip_h > 0) {
         translate([0, 0, -lip_h]) {
@@ -585,13 +647,13 @@ module _power_enclosure_lid(p) {
     }
     for (pos = plist_get("lid_positions", p)) {
       translate(pos + [0, 0, -lip_h - 0.01]) {
-        cylinder(d=plist_get("lid_bolt_d", p), h=t + lip_h + 0.02, $fn=32);
+        cylinder(d=plist_get("lid_bolt_d", p), h=lid_h + lip_h + 0.02, $fn=32);
         cylinder(d=plist_get("boss_d", p) + 2 * clear, h=lip_h + 0.01, $fn=48);
       }
     }
     _power_enclosure_vents(p, roof=true);
     translate([-s[0] / 2, -s[1] / 2, -lip_h - 0.01]) {
-      linear_extrude(height=t + lip_h + 0.02) {
+      linear_extrude(height=lid_h + lip_h + 0.02) {
         enclosure_panel_openings(plist_get("lid_panel", p));
       }
     }
@@ -603,9 +665,11 @@ module _power_enclosure_lid(p) {
         cube([s[0], s[1], lip_h + 0.01]);
       }
     }
-    translate([-s[0] / 2, -s[1] / 2, 0]) {
-      for (spec = plist_get("texts", p)) {
-        text_from_plist(plist=spec);
+    if (!raised) {
+      translate([-s[0] / 2, -s[1] / 2, 0]) {
+        for (spec = plist_get("texts", p)) {
+          text_from_plist(plist=spec);
+        }
       }
     }
   }
@@ -702,7 +766,7 @@ module _power_enclosure_fasteners(p, show_lid=true, exploded=0) {
 
    **Parameters:**
    - `plist`: Enclosure overrides; see `step_down_enclosure_props`.
-   - `anchor`: Closed enclosure envelope anchor; default positive XYZ.
+   - `anchor`: Closed envelope including raised labels; default positive XYZ.
    - `orientation`: Logical axis order accepted by `with_orientation`.
    - `parent_t`: Chassis thickness below the enclosure's mounting surface.
    - `slot_mode`: Emit chassis mounting holes, head recesses and enabled
@@ -784,12 +848,15 @@ module step_down_voltage_enclosure(plist=[],
    step_down_enclosure_printable
    ─────────────────────────────────────────────────────────────────────────────
 
-   Place a base or an inverted lid flat on the print bed.
+   Place a base or lid on Z=0 for printing.
 
    **Parameters:**
    - `part`: `"base"`, `"lid"`, or `"both"` for separated parts.
    - `plist`: Enclosure overrides accepted by `step_down_enclosure_props`.
    - `gap`: Edge gap between the base and lid in the combined layout.
+
+   Engraved lids face down with the lip upward. Raised labels face up with
+   the lip on the bed; the roof spans the lip and may need printing supports.
  */
 module step_down_enclosure_printable(part="both", plist=[], gap=6) {
   p = step_down_enclosure_props(plist);
@@ -800,10 +867,12 @@ module step_down_enclosure_printable(part="both", plist=[], gap=6) {
     _power_enclosure_base(p);
   }
   if (part != "base") {
+    lid = plist_get("lid", p);
+    raised = plist_get("text_mode", lid) == "raised";
     translate([0,
                part == "both" ? s[1] + gap : 0,
-               plist_get("t", plist_get("lid", p))]) {
-      rotate([180, 0, 0]) {
+               plist_get(raised ? "lip_h" : "t", lid)]) {
+      rotate([raised ? 0 : 180, 0, 0]) {
         _power_enclosure_lid(p);
       }
     }

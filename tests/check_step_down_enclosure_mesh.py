@@ -74,6 +74,85 @@ def main() -> None:
         print("PASS lid lip, populated boards, lid screws, nuts and PCB screws clear the printed parts/deck",
               flush=True)
 
+        for config in (
+            '[]',
+            '["lid",["slots",[],"texts",[],"vents",["enabled",false]],'
+            '"header_slot",["enabled",false]]',
+            '["inner_size",["120%","150%","100%"],"board_pos",["60%","40%"],'
+            '"cable_tie",["enabled",false],'
+            '"walls",["left",["t",6],"right",["t",3],'
+            '"rear",["t",4],"front",["t",5]]]',
+            '["step_down_voltage",plist_merge(step_down_voltage_plist,'
+            '["vin",["rotation_z",0,"base_w",12,"thickness",7,"x_offset",1,"y_offset",2],'
+            '"vout",["rotation_z",45,"base_w",10,"thickness",6,"x_offset",2,"y_offset",3]]),'
+            '"sensor_current",plist_merge(ina_plist,'
+            '["screw_terminal",["base_w",12,"thickness",7,"y_offset",1]])]',
+        ):
+            setup = f'q=step_down_enclosure_props({config});\n'
+            render(setup + '''intersection() {
+  _power_enclosure_lid(q);
+  for(fp=plist_get("terminal_footprints",q)) {
+    translate([fp[0][0]-fp[1][0]/2-0.5,fp[0][1]-fp[1][1]/2-0.5,-10]) {
+      cube([fp[1][0]+1,fp[1][1]+1,30]);
+    }
+  }
+}''', empty=True)
+            render(setup + '_power_enclosure_lid(q);')
+            assert connected_components(mesh) == 1, config
+        print("PASS all three terminal footprints have clear top access through roof and lip, "
+              "including shifted boards, resized/rotated terminals and disabled vents", flush=True)
+
+        for mode in ("engraved", "raised"):
+            config = f'["lid",["text_mode","{mode}","vents",["enabled",false]]]'
+            setup = f'q=step_down_enclosure_props({config});\n'
+            render(setup + '''intersection() {
+  _power_enclosure_lid(q);
+  for(fp=plist_get("component_footprints",q)) {
+    translate([fp[0][0]-fp[1][0]/2,fp[0][1]-fp[1][1]/2,-10]) {
+      cube([fp[1][0],fp[1][1],30]);
+    }
+  }
+}''', empty=True)
+            render(setup + '_power_enclosure_lid(q);')
+            assert connected_components(mesh) == 1, mode
+            assert abs(bounds(vertices(mesh))[1][2]
+                       - (3.2 if mode == "raised" else 2.4)) < 0.00001
+            render(f'step_down_enclosure_printable(part="lid",plist={config});')
+            assert connected_components(mesh) == 1, mode
+            assert abs(bounds(vertices(mesh))[0][2]) < 0.00001, mode
+        print("PASS power-component footprints stay open with vents disabled; "
+              "engraved/raised lids are connected and print on Z=0", flush=True)
+
+        render('''q=step_down_enclosure_props([
+  "step_down_voltage",plist_merge(step_down_voltage_plist,
+    ["inductor",["size",[8,6,4],"offsets",[2,2]],
+     "can_capacitors",[["d",8,"h",7,"base_h",2,"position",[-10,4,0]]],
+     "smd_chip_specs",[[4,3,1.5,0.8,[-1,-7,0],[0,0,30]]]]),
+  "lid",["text_mode","raised","text_height",4,"vents",["enabled",false]]]);
+intersection() {
+  _power_enclosure_lid(q);
+  for(fp=plist_get("component_footprints",q)) {
+    translate([fp[0][0]-fp[1][0]/2,fp[0][1]-fp[1][1]/2,-10]) {
+      cube([fp[1][0],fp[1][1],30]);
+    }
+  }
+}''', empty=True)
+        print("PASS resized inductor/capacitor and rotated chip footprints retain lid access", flush=True)
+
+        render('''q=step_down_enclosure_props(["lid",["text_mode","raised",
+  "texts",[["text","MMMMMMMM","at","regulator","size",8]],
+  "text_height",2]]);
+intersection() {
+  _power_enclosure_lid(q);
+  for(fp=concat(plist_get("terminal_footprints",q),
+                plist_get("component_footprints",q))) {
+    translate([fp[0][0]-fp[1][0]/2,fp[0][1]-fp[1][1]/2,-10]) {
+      cube([fp[1][0],fp[1][1],30]);
+    }
+  }
+}''', empty=True)
+        print("PASS raised labels cannot cover terminal or power-component openings", flush=True)
+
         render('''intersection() {_power_enclosure_base(p); _power_enclosure_inserts(p,slot_mode=true);}''', empty=True)
         render('''intersection() {_power_enclosure_base(p); _power_enclosure_inserts(p);}''')
         assert connected_components(mesh) == 4

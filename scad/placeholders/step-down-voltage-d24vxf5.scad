@@ -9,6 +9,7 @@ include <../colors.scad>
 include <../parameters.scad>
 include <../power_lid_parameters.scad>
 
+use <../lib/functions.scad>
 use <../lib/plist.scad>
 use <../lib/shapes2d.scad>
 use <../lib/shapes3d.scad>
@@ -22,8 +23,8 @@ use <standoff.scad>
 
 plist_example                    = ["d", step_down_voltage_bolt_hole_dia,
                                     "size", [step_down_voltage_regulator_len,
-                                              step_down_voltage_regulator_w,
-                                              step_down_voltage_regulator_thickness],
+                                             step_down_voltage_regulator_w,
+                                             step_down_voltage_regulator_thickness],
                                     "terminal_size", step_down_voltage_screw_terminal_holes,
                                     "bolt_spacing", [35.55, 15.2],
                                     "vin_slot_offsets", [5, 0],
@@ -40,85 +41,85 @@ plist_example                    = ["d", step_down_voltage_bolt_hole_dia,
                                                         "can_color", metallic_silver_1,
                                                         "text_rows", ["47", "HFT", "S92"],
                                                         "position", [-step_down_voltage_screw_terminal_holes[0] / 2
-                                                                      - step_down_voltage_bolt_hole_dia / 2
-                                                                      + 8.3,
-                                                                      4.4,
-                                                                      0],
+                                                                     - step_down_voltage_bolt_hole_dia / 2
+                                                                     + 8.3,
+                                                                     4.4,
+                                                                     0],
                                                         "x_offset", 2.6,
                                                         "y_offset", 2.6,
                                                         "rotation", 0],
-                                                        ["d", 7,
-                                                         "base_h", 2.58,
-                                                         "h", 6.85,
-                                                         "marking_color", cobalt_blue_metallic,
-                                                         "position", [step_down_voltage_screw_terminal_holes[0] / 2
-                                                                      + step_down_voltage_bolt_hole_dia / 2
-                                                                      - 8.3,
-                                                                      4.4, 0],
-                                                         "can_color", metallic_silver_1,
-                                                         "text_rows", ["F28F", "330", "6.3V"],
-                                                         "x_offset", 2.6,
-                                                         "y_offset", 2.6,
-                                                         "rotation", 0]],
-                                     // [[wight, len, height, j-lead-len, [translate_x, translate_y, translate_z], [rotation_x, rotation_y, rotation_z]]..]
+                                                       ["d", 7,
+                                                        "base_h", 2.58,
+                                                        "h", 6.85,
+                                                        "marking_color", cobalt_blue_metallic,
+                                                        "position", [step_down_voltage_screw_terminal_holes[0] / 2
+                                                                     + step_down_voltage_bolt_hole_dia / 2
+                                                                     - 8.3,
+                                                                     4.4, 0],
+                                                        "can_color", metallic_silver_1,
+                                                        "text_rows", ["F28F", "330", "6.3V"],
+                                                        "x_offset", 2.6,
+                                                        "y_offset", 2.6,
+                                                        "rotation", 0]],
+                                    // [[wight, len, height, j-lead-len, [translate_x, translate_y, translate_z], [rotation_x, rotation_y, rotation_z]]..]
                                     "smd_chip_specs", [[4.6, 3.3, 1.58, 1, [-0.15, -9.0, 0], [0, 0, 0]],
-                                                        [4.6, 3.2, 1.58, 1, [-0.9, -8.7, 0], [0, 0, 90]],
-                                                        [4.6, 3.3, 1.58, 1, [-13.7, -8.7, 0], [0, 0, 0]],
-                                                        [4.6, 3.3, 1.58, 1, [-3.50, -4.0, 0], [0, 0, 0]]],
-                                     // [[wight, len, height, j-lead-len, [translate_x, translate_y, translate_z], center_color]..]
+                                                       [4.6, 3.2, 1.58, 1, [-0.9, -8.7, 0], [0, 0, 90]],
+                                                       [4.6, 3.3, 1.58, 1, [-13.7, -8.7, 0], [0, 0, 0]],
+                                                       [4.6, 3.3, 1.58, 1, [-3.50, -4.0, 0], [0, 0, 0]]],
+                                    // [[wight, len, height, j-lead-len, [translate_x, translate_y, translate_z], center_color]..]
                                     "surface_mount_chips", [[2.0, 3.3, 2.5, 0.9, [-5.75, 3.2, 0], brown_2],
-                                                             [1.95, 3.3, 2.5, 0.8,
-                                                              [-3.6, 3.2, 0], brown_2],
-                                                             [1.05, 1.75, 1.6, 0.2,
-                                                              [-5.2, -3.8, 0], brown_2],
-                                                             [1.05, 1.8, 1.6, 0.2,
-                                                              [-6.7, -3.8, 0], matte_black],
-                                                             [1.05, 1.8, 1.6, 0.2,
-                                                              [-8.0, -4.3, 0], matte_black],
-                                                             [1.05, 1.75, 1.6, 0.2,
-                                                              [-7.0, -8.3, 0], brown_2],
-                                                             [1.05, 1.75, 1.6, 0.2,
-                                                              [14.54, -7.0, 0], brown_2],
-                                                             [1.05, 1.75, 1.6, 0.2,
-                                                              [14.72, 6.9, 0], brown_2],
-                                                             [1.05, 1.75, 1.6, 0.2,
-                                                              [-13.05, -1.2, 0], matte_black],
-                                                             [1.05, 1.75, 1.6, 0.2,
-                                                              [2.66, -1.2, 0], matte_black],
-                                                             [1.35, 2.07, 2.1, 0.3,
-                                                              [2.36, 6.0, 0], brown_2],
-                                                             [1.35, 1.95, 2.1, 0.3,
-                                                              [2.36, 2.9, 0], brown_2],
-                                                             [1.45, 1.75, 1.8, 0.3,
-                                                              [1.19, -1.1, 0], matte_black],
-                                                             [1.85, 3.3, 2.6, 0.5,
-                                                              [12.66, -1.78, 0], brown_2],
-                                                             [1.85, 3.3, 2.5, 0.5,
-                                                              [12.66, -6.45, 0], brown_2],
-                                                             [3.3, 1.85, 2.5, 0.5,
-                                                              [-9.96, -1.7, 0], brown_2],
-                                                             [2.0, 1.45, 1.8, 0.5,
-                                                              [-12.26, -3.7, 0], matte_black],
-                                                             [1.8, 1.15, 1.6, 0.5,
-                                                              [1.86, -3.4, 0], brown_2],
-                                                             [1.8, 1.15, 1.6, 0.5,
-                                                              [-2.86, -4.4, 0], matte_black],
-                                                             [1.8, 1.10, 1.6, 0.5,
-                                                              [2.8, 8.9, 0], brown_2],
-                                                             [1.8, 1.10, 1.6, 0.5,
-                                                              [-0.6, 6.7, 0], matte_black],
-                                                             [1.60, 1.10, 1.6, 0.5,
-                                                              [0.0, 2.1, 0], brown_2],
-                                                             [1.60, 1.10, 1.6, 0.5,
-                                                              [0.0, 5.1, 0], brown_2],
-                                                             [1.70, 1.10, 1.6, 0.5,
-                                                              [-5.3, 6.3, 0], matte_black],
-                                                             [1.70, 1.10, 1.6, 0.5,
-                                                              [-0.0, 3.5, 0], matte_black],
-                                                             [1.70, 1.10, 1.6, 0.5,
-                                                              [-6.0, -1.5, 0], brown_2],
-                                                             [1.70, 1.10, 1.6, 0.5,
-                                                              [-5.55, -0.2, 0], brown_2]],
+                                                            [1.95, 3.3, 2.5, 0.8,
+                                                             [-3.6, 3.2, 0], brown_2],
+                                                            [1.05, 1.75, 1.6, 0.2,
+                                                             [-5.2, -3.8, 0], brown_2],
+                                                            [1.05, 1.8, 1.6, 0.2,
+                                                             [-6.7, -3.8, 0], matte_black],
+                                                            [1.05, 1.8, 1.6, 0.2,
+                                                             [-8.0, -4.3, 0], matte_black],
+                                                            [1.05, 1.75, 1.6, 0.2,
+                                                             [-7.0, -8.3, 0], brown_2],
+                                                            [1.05, 1.75, 1.6, 0.2,
+                                                             [14.54, -7.0, 0], brown_2],
+                                                            [1.05, 1.75, 1.6, 0.2,
+                                                             [14.72, 6.9, 0], brown_2],
+                                                            [1.05, 1.75, 1.6, 0.2,
+                                                             [-13.05, -1.2, 0], matte_black],
+                                                            [1.05, 1.75, 1.6, 0.2,
+                                                             [2.66, -1.2, 0], matte_black],
+                                                            [1.35, 2.07, 2.1, 0.3,
+                                                             [2.36, 6.0, 0], brown_2],
+                                                            [1.35, 1.95, 2.1, 0.3,
+                                                             [2.36, 2.9, 0], brown_2],
+                                                            [1.45, 1.75, 1.8, 0.3,
+                                                             [1.19, -1.1, 0], matte_black],
+                                                            [1.85, 3.3, 2.6, 0.5,
+                                                             [12.66, -1.78, 0], brown_2],
+                                                            [1.85, 3.3, 2.5, 0.5,
+                                                             [12.66, -6.45, 0], brown_2],
+                                                            [3.3, 1.85, 2.5, 0.5,
+                                                             [-9.96, -1.7, 0], brown_2],
+                                                            [2.0, 1.45, 1.8, 0.5,
+                                                             [-12.26, -3.7, 0], matte_black],
+                                                            [1.8, 1.15, 1.6, 0.5,
+                                                             [1.86, -3.4, 0], brown_2],
+                                                            [1.8, 1.15, 1.6, 0.5,
+                                                             [-2.86, -4.4, 0], matte_black],
+                                                            [1.8, 1.10, 1.6, 0.5,
+                                                             [2.8, 8.9, 0], brown_2],
+                                                            [1.8, 1.10, 1.6, 0.5,
+                                                             [-0.6, 6.7, 0], matte_black],
+                                                            [1.60, 1.10, 1.6, 0.5,
+                                                             [0.0, 2.1, 0], brown_2],
+                                                            [1.60, 1.10, 1.6, 0.5,
+                                                             [0.0, 5.1, 0], brown_2],
+                                                            [1.70, 1.10, 1.6, 0.5,
+                                                             [-5.3, 6.3, 0], matte_black],
+                                                            [1.70, 1.10, 1.6, 0.5,
+                                                             [-0.0, 3.5, 0], matte_black],
+                                                            [1.70, 1.10, 1.6, 0.5,
+                                                             [-6.0, -1.5, 0], brown_2],
+                                                            [1.70, 1.10, 1.6, 0.5,
+                                                             [-5.55, -0.2, 0], brown_2]],
                                     "vin", ["thickness", step_down_voltage_screw_terminal_thickness,
                                             "isosceles_trapezoid", step_down_voltage_screw_terminal_isosceles_trapezoid,
                                             "base_h", step_down_voltage_screw_terminal_base_h,
@@ -155,26 +156,26 @@ step_down_voltage_can_capacitors = [["d", 7,
                                      "can_color", metallic_silver_1,
                                      "text_rows", ["47", "HFT", "S92"],
                                      "position", [-step_down_voltage_screw_terminal_holes[0] / 2
-                                                   - step_down_voltage_bolt_hole_dia / 2
-                                                   + 8.3,
-                                                   4.4,
-                                                   0],
+                                                  - step_down_voltage_bolt_hole_dia / 2
+                                                  + 8.3,
+                                                  4.4,
+                                                  0],
                                      "x_offset", 2.6,
                                      "y_offset", 2.6,
                                      "rotation", 0],
-                                     ["d", 7,
-                                      "base_h", 2.58,
-                                      "h", 6.85,
-                                      "marking_color", cobalt_blue_metallic,
-                                      "position", [step_down_voltage_screw_terminal_holes[0] / 2
-                                                   + step_down_voltage_bolt_hole_dia / 2
-                                                   - 8.3,
-                                                   4.4, 0],
-                                      "can_color", metallic_silver_1,
-                                      "text_rows", ["F28F", "330", "6.3V"],
-                                      "x_offset", 2.6,
-                                      "y_offset", 2.6,
-                                      "rotation", 0]];
+                                    ["d", 7,
+                                     "base_h", 2.58,
+                                     "h", 6.85,
+                                     "marking_color", cobalt_blue_metallic,
+                                     "position", [step_down_voltage_screw_terminal_holes[0] / 2
+                                                  + step_down_voltage_bolt_hole_dia / 2
+                                                  - 8.3,
+                                                  4.4, 0],
+                                     "can_color", metallic_silver_1,
+                                     "text_rows", ["F28F", "330", "6.3V"],
+                                     "x_offset", 2.6,
+                                     "y_offset", 2.6,
+                                     "rotation", 0]];
 
 default_dc_screw_terminal_props  = ["thickness", step_down_voltage_screw_terminal_thickness,
                                     "isosceles_trapezoid", step_down_voltage_screw_terminal_isosceles_trapezoid,
@@ -263,6 +264,7 @@ module step_down_voltage_regulator(plist = [],
                                    bolt_visible_h=2,
                                    show_bolt=true,
                                    show_terminal_vout=true,
+                                   show_terminal_vin=true,
                                    slot_mode=false,
                                    slot_thickness=2,
                                    center=true,
@@ -321,33 +323,21 @@ module step_down_voltage_regulator(plist = [],
                                 plist,
                                 step_down_voltage_bolt_hole_dia + 0.4);
 
-  screw_terminal_vin_pl = plist_merge(default_dc_screw_terminal_props,
-                                      plist_get("vin", plist, []));
+  vin = step_down_terminal_props(plist_get("vin", plist, []),
+                                 placeholder_size,
+                                 input=true);
+  vout = step_down_terminal_props(plist_get("vout", plist, []),
+                                  placeholder_size);
+  screw_terminal_vin_pl = plist_get("plist", vin);
+  screw_terminal_vout_pl = plist_get("plist", vout);
   show_terminal_vin = plist_get("show_terminal_vin",
                                 screw_terminal_vin_pl,
-                                false);
-  vin_x_offset = plist_get("x_offset", screw_terminal_vin_pl, 0);
-
-  vin_y_offset = plist_get("y_offset", screw_terminal_vin_pl, 0);
-  vin_thickness = plist_get("thickness", screw_terminal_vin_pl, 0);
-  vin_rotation_z = plist_get("rotation_z", screw_terminal_vin_pl, 90);
-  vin_width = screw_terminal_width_from_plist(screw_terminal_vin_pl);
-
-  screw_terminal_vout_pl = plist_merge(default_dc_screw_terminal_props,
-                                       plist_get("vout", plist, []));
-
-  vout_x_offset = plist_get("x_offset", screw_terminal_vout_pl, 0);
-  vout_y_offset = plist_get("y_offset", screw_terminal_vout_pl, 0);
-  vout_thickness = plist_get("thickness", screw_terminal_vout_pl, 0);
-  vout_rotation_z = plist_get("rotation_z", screw_terminal_vout_pl, -90);
-  surface_mount_chips = plist_get("surface_mount_chips", plist, []);;
-  can_capacitors  = plist_get("can_capacitors", plist, []);;
-  vout_width = screw_terminal_width_from_plist(screw_terminal_vout_pl);
-  vout_rotated = (abs(vout_rotation_z) == 90);
-  vin_rotated = (abs(vin_rotation_z) == 90);
+                                true);
   show_terminal_vout = plist_get("show_terminal_vout",
                                  screw_terminal_vout_pl,
                                  true);
+  surface_mount_chips = plist_get("surface_mount_chips", plist, []);;
+  can_capacitors = plist_get("can_capacitors", plist, []);;
 
   smd_chip_specs = plist_get("smd_chip_specs", plist, []);
 
@@ -408,26 +398,16 @@ module step_down_voltage_regulator(plist = [],
           }
 
           if (show_terminal_vout) {
-            translate([(length / 2 - ((abs(vout_rotation_z) == 90)
-                                      ? vout_thickness / 2
-                                      : vout_width / 2)) - vout_x_offset,
-                       (!vout_rotated ? (w / 2 - vout_thickness / 2) : 0)
-                       - vout_y_offset,
-                       thickness]) {
-              rotate([0, 0, vout_rotation_z]) {
+            translate(plist_get("pos", vout)) {
+              rotate([0, 0, plist_get("rotation", vout)]) {
                 screw_terminal_from_plist(screw_terminal_vout_pl,
                                           center=true);
               }
             }
           }
           if (show_terminal_vin) {
-            translate([-(length / 2 - ((abs(vin_rotation_z) == 90)
-                                       ? vin_thickness / 2
-                                       : vin_width / 2)) + vin_x_offset,
-                       (!vin_rotated ? (w / 2 - vin_thickness / 2) : 0)
-                       - vin_y_offset,
-                       thickness]) {
-              rotate([0, 0, vin_rotation_z]) {
+            translate(plist_get("pos", vin)) {
+              rotate([0, 0, plist_get("rotation", vin)]) {
                 screw_terminal_from_plist(screw_terminal_vin_pl,
                                           center=true);
               }
@@ -523,18 +503,81 @@ function step_down_input_ports(pl=[]) =
     [-pitch[0] / 2, side * pitch[1] / 2,
      plist_get("standoff_h", mount) + board[2]]];
 
-// Conservative XY reach of a populated terminal about the board origin.
-function _step_down_terminal_reach(pl, board, input=false) =
-  let (r = plist_get("rotation_z", pl, input ? 90 : -90),
-       w = screw_terminal_width_from_plist(pl),
-       t = plist_get("thickness", pl),
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  step_down_component_footprints
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Return lid-access footprints for the regulator's populated power components.
+
+  **Parameters:**
+  - `pl`: Regulator specification accepted by `step_down_voltage_regulator`.
+
+  **Returns:**
+  [center_xy, size_xy] pairs in the centered board frame, ordered inductor,
+  capacitor cans, then `smd_chip_specs` packages including their lead span.
+  Omitted components contribute no footprint. Chip rotations follow the
+  placeholder's XYZ Euler convention; footprints are axis-aligned projections.
+ */
+function step_down_component_footprints(pl=[]) =
+  let (board = plist_get("placeholder_size", pl,
+                         [step_down_voltage_regulator_len,
+                          step_down_voltage_regulator_w,
+                          step_down_voltage_regulator_thickness]),
+       inductor = plist_get("inductor", pl, []))
+  concat(len(inductor) > 0
+           ? [let (size = plist_get("size", inductor),
+                   offsets = plist_get("offsets", inductor, [0, 0]))
+               [[with_default(offsets[0], 0) + size[0] / 2,
+                 -board[1] / 2 + with_default(offsets[1], 0) + size[1] / 2],
+                [size[0], size[1]]]]
+           : [],
+         [for (cap = plist_get("can_capacitors", pl, []))
+           let (pos = plist_get("position", cap), d = plist_get("d", cap))
+           [[pos[0], pos[1]], [d, d]]],
+         [for (chip = plist_get("smd_chip_specs", pl, []))
+           let (pos = with_default(chip[4], [0, 0, 0]),
+                rotation = with_default(chip[5], [0, 0, 0]),
+                corners = [for (x = [0, chip[1]], y = [0, chip[0]],
+                                z = [0, chip[2]])
+                  rotate_euler_xyz([x, y, z], rotation) + pos],
+                lo = [for (i = [0, 1]) min([for (c = corners) c[i]])],
+                hi = [for (i = [0, 1]) max([for (c = corners) c[i]])])
+           [(lo + hi) / 2, hi - lo]]);
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  step_down_terminal_props
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Resolve a regulator terminal's placement and footprint.
+
+  **Parameters:**
+  - `pl`: Terminal specification from the regulator's `vin` or `vout` group.
+  - `board`: PCB [X length, Y width, thickness].
+  - `input`: Select the input end (-X); false selects the output end (+X).
+
+  **Returns:**
+  `plist` contains the resolved terminal specification. `pos` is its base center
+  in the centered XY board frame, with Z measured from the PCB underside.
+  `rotation` is its Z angle; `size` is its rotated, axis-aligned XY footprint.
+ */
+function step_down_terminal_props(pl, board, input=false) =
+  let (terminal = plist_merge(default_dc_screw_terminal_props, pl),
+       r = plist_get("rotation_z", terminal, input ? 90 : -90),
+       w = screw_terminal_width_from_plist(terminal),
+       t = plist_get("thickness", terminal),
        quarter = abs(r) == 90,
        x = (input ? -1 : 1) * (board[0] / 2
-                               - (quarter ? t : w) / 2 - plist_get("x_offset", pl, 0)),
+                               - (quarter ? t : w) / 2
+                               - plist_get("x_offset", terminal, 0)),
        y = (quarter ? 0 : board[1] / 2 - t / 2)
-           - plist_get("y_offset", pl, 0))
-  [abs(x) + (abs(cos(r)) * w + abs(sin(r)) * t) / 2,
-   abs(y) + (abs(sin(r)) * w + abs(cos(r)) * t) / 2];
+           - plist_get("y_offset", terminal, 0))
+  ["plist", terminal,
+   "pos", [x, y, board[2]],
+   "rotation", r,
+   "size", [abs(cos(r)) * w + abs(sin(r)) * t,
+            abs(sin(r)) * w + abs(cos(r)) * t]];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -564,7 +607,10 @@ function step_down_mount_props(pl=[]) =
                               plist_get(input ? "vin" : "vout", pl, [])))
              if (plist_get(input ? "show_terminal_vin" : "show_terminal_vout",
                            t, !input))
-               [t, _step_down_terminal_reach(t, board, input)]],
+               let (props = step_down_terminal_props(t, board, input),
+                    pos = plist_get("pos", props),
+                    size = plist_get("size", props))
+           [t, [abs(pos[0]), abs(pos[1])] + size / 2]],
        wire_d = plist_get("wire_d", pl, 0),
        mount_d = max(2 * d, step_down_voltage_regulator_cbore_d),
        size = [max(concat([board[0], pitch[0] + mount_d, wire_d],
@@ -626,3 +672,5 @@ module step_down_mount(pl=[],
     }
   }
 }
+
+step_down_voltage_regulator(step_down_voltage_plist);

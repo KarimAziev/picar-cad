@@ -207,8 +207,8 @@ module _ina_i2c(i2c, size, style) {
    **Returns:**
    `size`, `bolt_spacing`, `bolt_d`, `mounting_y`, `bottom_h`, `standoff_h`,
    `standoff_thread_h` and `populated_h`. `header_pos` and `terminal_pos` are
-   connector centers in the native board frame; `header_size` is its XY
-   footprint (zero when omitted). Heights are measured from the PCB underside;
+   connector centers in the native board frame; `header_size` and `terminal_size`
+   are their XY footprints (zero when omitted). Heights are measured from the PCB underside;
    standoff height is measured from its mounting surface.
  */
 function ina_current_sensor_props(plist=ina_plist) =
@@ -259,6 +259,10 @@ function ina_current_sensor_props(plist=ina_plist) =
    "standoff_thread_h", with_default(standoff[1], 0),
    "header_pos", [0, -size[1] / 2 + _ina_get("y_offset", pin, 0), 0],
    "header_size", [header_size[1], header_size[0]],
+   "terminal_size", len(terminal) > 0
+     ? [screw_terminal_width_from_plist(terminal_pl),
+        plist_get("thickness", terminal_pl)]
+     : [0, 0],
    "terminal_pos", [0, size[1] / 2 - plist_get("thickness", terminal_pl) / 2
                        - _ina_get("y_offset", terminal, 0), size[2]],
    "populated_h", max(pin_h, size[2] + max(chip_h, terminal_h))];
