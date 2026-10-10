@@ -94,19 +94,19 @@ function front_chassis_ear_pts() =
  */
 function front_chassis_front_frame_bounds() =
   let (half_w = max(front_frame_x_end,
-                   bulkhead_size_x / 2 + front_chassis_ear_l,
-                   front_bumper_bolt_spacing_x / 2
-                   + front_bumper_bolt_d / 2 + front_bumper_bolt_pad_x,
-                   front_chassis_head_mount_size()[0] / 2
-                   + front_chassis_head_side_slot_w + front_chassis_head_wire_land * 2))
+                    bulkhead_size_x / 2 + front_chassis_ear_l,
+                    front_bumper_bolt_spacing_x / 2
+                    + front_bumper_bolt_d / 2 + front_bumper_bolt_pad_x,
+                    front_chassis_head_mount_size()[0] / 2
+                    + front_chassis_head_side_slot_w + front_chassis_head_wire_land * 2))
   [[-half_w, y_front_chassis_rear_frame_joint_1_start - joint_l, 0],
    [half_w, front_chassis_front_frame_start_y(), chassis_thickness]];
 
-module _front_chassis_front_frame_unsplit(debug=false,
-                                          show_access_slots=true,
-                                          debug_font="Gill Sans:style=Bold",
-                                          debug_color=green_2,
-                                          color=white_smoke_1) {
+module front_chassis_front_frame_unsplit(debug=false,
+                                         show_access_slots=true,
+                                         debug_font="Gill Sans:style=Bold",
+                                         debug_color=green_2,
+                                         color=white_smoke_1) {
 
   start_y0 = front_chassis_front_frame_start_y();
   head_mount_size = front_chassis_head_mount_size();
@@ -240,4 +240,4 @@ module _front_chassis_front_frame_unsplit(debug=false,
   }
 }
 
-_front_chassis_front_frame_unsplit();
+front_chassis_front_frame_unsplit();

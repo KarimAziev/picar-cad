@@ -49,9 +49,9 @@ module front_chassis_head_frame(debug=false,
     difference() {
       union() {
         intersection() {
-          _front_chassis_front_frame_unsplit(debug=debug,
-                                             show_access_slots=show_access_slots,
-                                             color=undef);
+          front_chassis_front_frame_unsplit(debug=debug,
+                                            show_access_slots=show_access_slots,
+                                            color=undef);
           union() {
             // Stay off the outline vertex plane to avoid zero-thickness slivers.
             // The tongue's root overlap still reaches this head body.

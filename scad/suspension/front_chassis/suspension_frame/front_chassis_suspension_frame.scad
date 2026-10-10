@@ -46,11 +46,11 @@ module front_chassis_suspension_frame(debug=front_chassis_front_frame_debug,
   clip_pad = debug ? norm(bounds[1] - bounds[0]) : eps;
   difference() {
     intersection() {
-      _front_chassis_front_frame_unsplit(debug=debug,
-                                         show_access_slots=show_access_slots,
-                                         debug_font=debug_font,
-                                         debug_color=debug_color,
-                                         color=color);
+      front_chassis_front_frame_unsplit(debug=debug,
+                                        show_access_slots=show_access_slots,
+                                        debug_font=debug_font,
+                                        debug_color=debug_color,
+                                        color=color);
       translate(bounds[0] - [clip_pad, clip_pad, clip_pad]) {
         cube([bounds[1][0] - bounds[0][0] + 2 * clip_pad,
               plist_get("root_y", p) - bounds[0][1] + clip_pad,
