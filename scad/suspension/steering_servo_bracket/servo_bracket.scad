@@ -72,7 +72,7 @@ module servo_l_bracket(color=white_smoke_1,
             rounded_rect([bracket_w - w_clearance,
                           dsservo_flange_h + bracket_extra_h],
                          center=false,
-                         side="top",
+                         side="top_right",
                          r_factor=0.5);
           }
           translate([-servo_w / 2, 0, 0]) {
@@ -101,7 +101,7 @@ module servo_l_bracket(color=white_smoke_1,
                 rotate([0, 0, 90]) {
                   teardrop_2d(d=steering_servo_mount_bolt_d,
                               both_sides=true,
-                              fn=hone_fn);
+                              fn=hole_fn);
                 }
               }
             }

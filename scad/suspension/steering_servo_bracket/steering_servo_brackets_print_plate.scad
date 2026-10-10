@@ -11,14 +11,16 @@
 use <left_steering_servo_bracket.scad>
 use <right_steering_servo_bracket.scad>
 
-module steering_servo_brackets_print_plate(spacing=3) {
+module steering_servo_brackets_print_plate(spacing=1) {
   sp = spacing / 2;
-  for (i = [-1:2:1]) {
-    translate([sp * i, 0, 0]) {
-      if (i < 0) {
-        right_steering_servo_bracket();
-      } else {
-        left_steering_servo_bracket();
+  rotate([-180, 0, 0]) {
+    for (i = [-1:2:1]) {
+      translate([sp * i, 0, 0]) {
+        if (i < 0) {
+          right_steering_servo_bracket();
+        } else {
+          left_steering_servo_bracket();
+        }
       }
     }
   }
