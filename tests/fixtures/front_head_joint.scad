@@ -77,27 +77,15 @@ if (part == "head") {
       }
     }
   }
-} else if (part == "ribbon_shape") {
-  front_chassis_head_ribbon_slots();
-} else if (part == "ribbon_land") {
-  ys = front_chassis_head_ribbon_slot_ys();
-  intersection() {
+} else if (part == "transition_void") {
+  difference() {
+    start_y = max(plist_get("tab_end_y", p), front_chassis_mount_end_y) + 0.1;
+    end_y = head_y - front_chassis_head_mount_size()[1] / 2
+            + front_chassis_head_wire_land;
+    translate([-10, start_y, 0]) {
+      cube([20, end_y - start_y, chassis_thickness]);
+    }
     head();
-    for (i = [0:len(ys) - 2]) {
-      translate([-front_chassis_head_ribbon_slot_w / 2,
-                 head_y + ys[i + 1] + front_chassis_head_ribbon_slot_l / 2,
-                 0]) {
-        cube([front_chassis_head_ribbon_slot_w,
-              front_chassis_head_ribbon_slot_gap, chassis_thickness]);
-      }
-    }
-  }
-} else if (part == "ribbon_obstruction") {
-  intersection() {
-    assembly();
-    translate([0, head_y, 0]) {
-      front_chassis_head_ribbon_slots();
-    }
   }
 } else if (part == "head_printable") {
   translate([0, 0, chassis_thickness]) {

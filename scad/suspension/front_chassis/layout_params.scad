@@ -29,9 +29,13 @@ bulkhead_base_size = front_bulkhead_base_size(outer_spacing=front_bulkhead_mount
                                               d=front_bulkhead_mount_bolt_d,
                                               padding_x=front_chassis_bulkhead_padding_x,
                                               padding_y=front_chassis_bulkhead_padding_y);
-bellcrank_mount_d                        = max(bellcrank_idler_od,
+bellcrank_mount_d                        = assert(front_chassis_joint_root_land > 0,
+                                                 "Joint root land must be positive")
+                                          max(bellcrank_idler_od,
                                                front_chassis_bellcrank_bolt_d,
-                                               front_chassis_bellcrank_bolt_bore_d);
+                                               front_chassis_bellcrank_bolt_bore_d)
+                                            + 2 * (suspension_chassis_mount_clearance
+                                                   + front_chassis_joint_root_land);
 
 bellcrank_mount_r                        = bellcrank_mount_d / 2;
 

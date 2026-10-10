@@ -23,6 +23,8 @@ module front_chassis_mount_recesses() {
   depth = suspension_chassis_mount_recess;
   gap = suspension_chassis_mount_clearance;
   cutter_half_w = front_chassis_required_width() / 2 + gap;
+  recess_start_y = y_front_chassis_rear_frame_joint_1_start
+                   + front_chassis_joint_root_land;
   pin_wall = 1.25;
   spine_w = front_chassis_joint_pin_spacing
             + front_chassis_joint_pin_d + 2 * pin_wall;
@@ -43,12 +45,9 @@ module front_chassis_mount_recesses() {
     translate([0, 0, suspension_chassis_mount_h]) {
       linear_extrude(height=depth + 0.02) {
         difference() {
-          translate([-cutter_half_w,
-                     -bellcrank_y_distance_from_bulkhead
-                     - bellcrank_mount_r - gap]) {
-            square([2 * cutter_half_w, front_chassis_mount_end_y
-                         + bellcrank_y_distance_from_bulkhead
-                         + bellcrank_mount_r + gap]);
+          translate([-cutter_half_w, recess_start_y]) {
+            square([2 * cutter_half_w,
+                    front_chassis_mount_end_y - recess_start_y]);
           }
           translate([-spine_w / 2, spine_start_y]) {
             rounded_rect([spine_w, spine_end_y - spine_start_y],

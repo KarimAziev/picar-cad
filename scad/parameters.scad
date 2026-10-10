@@ -2082,7 +2082,7 @@ step_down_enclosure_plist                            = ["step_down_voltage", ste
                                                                           "corner_r", "50%",
                                                                           "opening_gap", 1,
                                                                           "opening_mode", "omit"],
-                                                                "text_mode", "raised", // [engraved, raised]
+                                                                "text_mode", "engraved", // [engraved, raised]
                                                                 "text_depth", 0.8,
                                                                 "text_height", 0.8,
                                                                 "text_style", ["size", 1.5,

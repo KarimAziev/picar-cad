@@ -13,10 +13,10 @@ use <../scad/suspension/front_chassis/suspension_frame/front_chassis_suspension_
 
 curve = front_chassis_ribbon_curve();
 path  = front_chassis_ribbon_path();
-ys    = front_chassis_head_ribbon_slot_ys();
 assert(norm(path[0] - curve[0]) < 1e-6);
 assert(norm(path[len(path) - 1]
-            - [0, front_chassis_head_center_y() + ys[len(ys) - 1]]) < 1e-6);
+            - [0, front_chassis_head_center_y()
+                  - front_chassis_head_mount_size()[1] / 2]) < 1e-6);
 assert(norm(curve[3] - curve[2]) > 0);
 assert(curve[3][1] > curve[2][1]);
 assert(curve[3][0] == curve[2][0]);
@@ -28,4 +28,6 @@ for (rows = [3, 5, 6]) {
   assert(abs(poses[rows - 1][2]) < 1e-6);
   assert(abs(poses[0][2] - (front_rpi_orientation == "lwh" ? 90 : 0)) < 1e-6);
 }
-echo("PASS: Pi-side ribbon direction, configurable slot count and head endpoint");
+assert(abs(front_chassis_head_center_y() - 70.825) < 1e-6);
+assert(abs(front_chassis_front_frame_start_y() - 115.825) < 1e-6);
+echo("PASS: Pi-side ribbon route, configurable slots and compact head placement");

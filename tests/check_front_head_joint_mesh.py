@@ -1,4 +1,4 @@
-"""Check head pin placement, intact ribbon lands, mating solids and print placement.
+"""Check head pin placement, solid head transition, mating solids and print placement.
 
 Author: Karim Aziiev <karim.aziiev@gmail.com>
 License: GPL-3.0-or-later
@@ -23,19 +23,8 @@ def main() -> None:
                        np.maximum(head.bounds[1], frame.bounds[1])])
     np.testing.assert_allclose(bounds, original.bounds, atol=1e-5)
     for part in ("collision", "pin_keepout", "pin_obstruction", "bolt_obstruction",
-                 "ribbon_obstruction"):
+                 "transition_void"):
         checks.assert_no_interference(checks.export(part, empty=True), part)
-    ribbons = checks.export("ribbon_shape")
-    assert ribbons is not None
-    assert len(ribbons.split()) == 3
-    radius = 0.6
-    slot_area = 20 * 3 - 4 * radius**2 + 20 * radius**2 * np.sin(np.pi / 20)
-    np.testing.assert_allclose(ribbons.volume, 3 * slot_area * 6.04, atol=0.01)
-    lands = checks.export("ribbon_land")
-    assert lands is not None
-    assert len(lands.split()) == 2
-    # Both original 20 x 3 mm retaining strips remain full thickness on the head.
-    np.testing.assert_allclose(lands.volume, 2 * 20 * 3 * 6, atol=1e-5)
     for part in ("head_printable", "frame_printable"):
         mesh = checks.one_solid(part)
         np.testing.assert_allclose(mesh.bounds[0, 2], 0, atol=1e-6)
@@ -61,7 +50,7 @@ def main() -> None:
     assert result.returncode != 0 and "engagement beyond the head root" in result.stderr
     print("PASS 23.8 and 33.8 mm pins extend toward the head: "
           "fixed bulkhead ends, hardware keepouts with 1 mm margin, "
-          "open passages, intact ribbon strips, unchanged envelope, printable "
+          "open passages, solid head transition, matching envelope, printable "
           "solids and insufficient head engagement rejected")
 
 

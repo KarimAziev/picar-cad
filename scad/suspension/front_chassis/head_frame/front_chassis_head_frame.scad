@@ -1,9 +1,9 @@
 /**
   * Module: Removable head mount of the front chassis.
   *
-  * The removable head retains the camera ribbon bank and bumper mounts.
+  * The removable head carries the pan-axis and bumper mounts.
   * The bulkhead and bellcrank section carries the matching head socket and
-  * the existing rear joint for the steering-servo frame.
+  * the rear joint for the steering-servo frame.
   *
   * Author: Karim Aziiev <karim.aziiev@gmail.com>
   * License: GPL-3.0-or-later
@@ -27,13 +27,13 @@ show_head_frame_access_slots = true;
   ─────────────────────────────────────────────────────────────────────────────
   front_chassis_head_frame
   ─────────────────────────────────────────────────────────────────────────────
-  Build the removable head and bumper plate with its complete ribbon-slot bank.
+  Build the removable head mounting and bumper plate.
   **Parameters:**
   - `debug`: Show outline labels within this part.
   - `show_access_slots`: Include the side and front cable openings.
   - `color`: Body color; undef inherits the caller's color.
   **Behavior:** Native coordinates align with the bulkhead frame. The central
-  tab keeps all ribbon slots on this part; two longitudinal pins
+  tab supports the solid transition; two longitudinal pins
   reinforce the side rails. Cutters provide 3.1 mm sag-compensated passages.
  */
 module front_chassis_head_frame(debug=false,

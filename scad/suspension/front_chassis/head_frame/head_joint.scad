@@ -1,5 +1,5 @@
 /**
-  * Module: Stepped head-frame joint retaining the complete camera ribbon bank.
+  * Module: Stepped head-frame joint with a solid central tab.
   *
   * Author: Karim Aziiev <karim.aziiev@gmail.com>
   * License: GPL-3.0-or-later
@@ -20,7 +20,7 @@ use <head_slots.scad>
   Locate the head joint beyond the suspension mounting recess.
   **Returns:** Plist containing `root_y`, `end_y`, `w`, `l`, `tab_w`,
   `tab_end_y`, `pin_start_y`, `pin_center_y`, and `pin_z`. The head owns the central tab
-  and all three ribbon openings. The bulkhead-side pin ends retain
+  and its supporting transition. The bulkhead-side pin ends retain
   `front_chassis_head_wire_land` clearance from the mounting keepout;
   additional pin length extends toward the head along +Y.
  */
@@ -41,7 +41,7 @@ function front_chassis_head_joint_params() =
        bulkhead_half_w = bulkhead_size_x / 2,
        half_w = bulkhead_half_w + (head_half_w - bulkhead_half_w)
                 * min(1, (end_y - taper_y) / (outline_root_y - taper_y)),
-       tab_w = front_chassis_head_ribbon_slot_w + front_chassis_head_wire_land * 2,
+       tab_w = front_chassis_head_joint_tab_w,
        bulkhead_front_y = front_bulkhead_chassis_mount_origin_y()
                           + front_bulkhead_mount_bolt_spacing_1[1] + front_bulkhead_mount_bolt_d / 2
                           + max(front_bulkhead_mount_bolt_d, front_bulkhead_mount_bolt_bore_d) / 2,
@@ -57,7 +57,7 @@ function front_chassis_head_joint_params() =
   assert(front_chassis_head_joint_pin_spacing / 2
          - front_chassis_head_joint_pin_d / 2
          - tab_w / 2 - front_chassis_joint_clearance >= 1.5,
-         "Head pin passages need 1.5 mm wall beside the ribbon tab socket")
+         "Head pin passages need 1.5 mm wall beside the central tab socket")
   assert((front_chassis_head_joint_rail_w - joint_rail_h * tan(20)) / 2
          - front_chassis_head_joint_pin_spacing / 2
          - front_chassis_head_joint_pin_d / 2 >= 0.5,
@@ -100,8 +100,8 @@ module front_chassis_head_joint_pins(extra=0) {
   **Parameters:**
   - `mode`: `"male"` for the head or `"female"` for the bulkhead frame.
   - `slot_mode`: Emit joint and pin cutters for subtraction from the parent.
-  **Behavior:** The central ribbon tab belongs to the head.
-  Its female clearance is part of the socket. Both halves retain their original
+  **Behavior:** The central tab belongs to the head.
+  Its female clearance is part of the socket. Both halves use assembled
   vehicle coordinates; assembled parts need no translation.
  */
 module front_chassis_head_joint(mode="male", slot_mode=false) {

@@ -1,9 +1,9 @@
 /**
   * Module: Separate head and bulkhead sections of the front chassis.
   *
-  * The removable head retains the camera ribbon bank and bumper mounts.
+  * The removable head carries the pan-axis and bumper mounts.
   * The bulkhead and bellcrank section carries the matching head socket and
-  * the existing rear joint for the steering-servo frame.
+  * the rear joint for the steering-servo frame.
   *
   * Author: Karim Aziiev <karim.aziiev@gmail.com>
   * License: GPL-3.0-or-later
@@ -32,7 +32,7 @@ show_front_access_slots         = true;
   - `debug_font`: Outline label font.
   - `debug_color`: Outline label color.
   - `color`: Body color; undef inherits the caller's color.
-  **Behavior:** Original vehicle coordinates and the rear steering joint stay fixed.
+  **Behavior:** Uses assembled vehicle coordinates and the shared rear steering joint.
  */
 module front_chassis_suspension_frame(debug=front_chassis_front_frame_debug,
                                       show_access_slots=show_front_access_slots,

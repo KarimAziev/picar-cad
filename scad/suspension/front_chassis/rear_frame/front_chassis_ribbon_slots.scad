@@ -2,7 +2,8 @@
   * Module: Camera ribbon threading route beneath the front chassis.
   *
   * The two ribbons share transverse openings on the Pi side of the steering
-  * servo, then continue beneath the center passage to the head ribbon bank.
+  * servo, then continue beneath the center passage to the head mounting
+  * footprint.
   * Coordinates use the assembled chassis datum; Z=0 is the underside.
   *
   * Author: Karim Aziiev <karim.aziiev@gmail.com>
@@ -37,8 +38,8 @@ function front_chassis_ribbon_curve() =
        sign = front_rpi_rotate_z_180 ? -1 : 1,
        source = [for (i = [0:1])
          (bounds[0][i] + bounds[1][i]) / 2 + sign * oriented[i]],
-       w = front_chassis_head_ribbon_slot_w,
-       l = front_chassis_head_ribbon_slot_l,
+       w = front_chassis_ribbon_slot_w,
+       l = front_chassis_ribbon_slot_l,
        land = front_chassis_ribbon_land,
        rear_y = front_chassis_y_joint_2_end + joint_l
                 + land * 2 + rpi_bolt_cbore_dia / 2 + w / 2,
@@ -87,18 +88,19 @@ function _front_ribbon_slots_separate(a, b, size, land) =
   ─────────────────────────────────────────────────────────────────────────────
   front_chassis_ribbon_path
   ─────────────────────────────────────────────────────────────────────────────
-  Sample the underside route from the Pi entry to the head threading bank.
+  Sample the underside route from the Pi entry to the head mounting footprint.
   **Parameters:**
   - `steps`: Positive integer samples per curved segment.
-  **Returns:** XY centerline points, ending at the rearmost head ribbon slot.
+  **Returns:** XY centerline points, ending at the rear edge of the head
+  mounting footprint.
   **Behavior:** This is a plan-view routing guide. Cable installation needs
   slack for the entry loop, weaving through the slots and head motion.
  */
 function front_chassis_ribbon_path(steps=40) =
   assert(steps > 0 && steps == floor(steps))
   let (curve = front_chassis_ribbon_curve(),
-       ys = front_chassis_head_ribbon_slot_ys(),
-       target = [0, front_chassis_head_center_y() + ys[len(ys) - 1]],
+       target = [0, front_chassis_head_center_y()
+                    - front_chassis_head_mount_size()[1] / 2],
        reach = (target[1] - curve[3][1]) / 3,
        forward = [curve[3], curve[3] + [0, reach],
                   target - [0, reach], target])
@@ -128,7 +130,7 @@ function front_chassis_ribbon_slot_poses(rows=front_chassis_ribbon_slot_rows) =
        lengths = [for (i = [0:samples - 1])
          let (turn = acos(constraint(tangents[i] * tangents[i + 1], -1, 1)))
          max(0.000001, norm(points[i + 1] - points[i])
-                       - front_chassis_head_ribbon_slot_w * PI / 360 * turn)],
+                       - front_chassis_ribbon_slot_w * PI / 360 * turn)],
        distances = [for (i = [0:samples]) sum(lengths, i)],
        length = distances[samples])
   [for (row = [0:rows - 1])
@@ -150,14 +152,14 @@ function front_chassis_ribbon_slot_poses(rows=front_chassis_ribbon_slot_rows) =
   - `thickness`: Plate thickness crossed by the openings, starting at Z=0.
   - `rows`: Number of transverse openings along the route. Configurations
     that leave less than `front_chassis_ribbon_land` between slots are rejected.
-  **Behavior:** Opening dimensions match the head ribbon bank. Solid strips
-  separate the slots; the free cable run to the head stays beneath the chassis.
+  **Behavior:** Solid strips separate the slots; the free cable run to the
+  head stays beneath the chassis.
  */
 module front_chassis_ribbon_slots(thickness=chassis_thickness,
                                   rows=front_chassis_ribbon_slot_rows) {
   eps = front_chassis_joint_boolean_overlap;
   poses = front_chassis_ribbon_slot_poses(rows);
-  size = [front_chassis_head_ribbon_slot_w, front_chassis_head_ribbon_slot_l];
+  size = [front_chassis_ribbon_slot_w, front_chassis_ribbon_slot_l];
   for (i = [0:len(poses) - 2], j = [i + 1:len(poses) - 1]) {
     assert(_front_ribbon_slots_separate(poses[i], poses[j], size,
                                         front_chassis_ribbon_land),

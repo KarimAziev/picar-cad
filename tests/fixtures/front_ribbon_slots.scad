@@ -13,8 +13,8 @@ use <../../scad/suspension/steering_servo_bracket/steering_servo_bracket_assembl
 
 part  = "frame";
 poses = front_chassis_ribbon_slot_poses();
-w     = front_chassis_head_ribbon_slot_w;
-l     = front_chassis_head_ribbon_slot_l;
+w     = front_chassis_ribbon_slot_w;
+l     = front_chassis_ribbon_slot_l;
 
 module slot_prism(p, pad=0) {
   translate([p[0], p[1], 0.05]) {

@@ -73,7 +73,7 @@ bellcrank_bearing_clearance                        = 0.2;
 bellcrank_post_hole_clearance                      = 0.5;
 
 // The outer diameter of the bellcrank cylinder
-bellcrank_idler_od                                 = bellcrank_idler_bearing_od + 4.5;
+bellcrank_idler_od                                 = bellcrank_idler_bearing_od + 3.5;
 
 bellcrank_idler_extra_h                            = 0.8;
 
@@ -307,6 +307,8 @@ front_chassis_joint_clearance                      = 0.2;
 suspension_chassis_joint_layout_clearance          = 0.4;
 front_chassis_joint_axial_clearance                = 0.4;
 front_chassis_joint_boolean_overlap                = 0.02;
+// Full-height attachment land between the bellcrank recess and joint.
+front_chassis_joint_root_land                      = 0.3;
 
 // Recesses enter the thicker half and retain material around and below the head.
 suspension_chassis_joint_counterbores              = true;
@@ -318,11 +320,8 @@ suspension_chassis_joint_bore_pin_land             = 1.0;
 // Head mount on the front chassis
 // ─────────────────────────────────────────────────────────────────────────────
 // Suspension chassis cable passages; placement derives from component datums.
-// Preserve the proven head-side ribbon threading bank, not a single cable exit.
-front_chassis_head_ribbon_slot_rows                = 3;
-front_chassis_head_ribbon_slot_w                   = 20;
-front_chassis_head_ribbon_slot_l                   = 3;
-front_chassis_head_ribbon_slot_gap                 = 3;
+front_chassis_ribbon_slot_w                        = 20;
+front_chassis_ribbon_slot_l                        = 3;
 front_chassis_ribbon_slot_corner_r                 = 0.6;
 front_chassis_head_side_slot_w                     = 7.5;
 front_chassis_head_side_slot_l                     = 11.0;
@@ -342,6 +341,9 @@ front_chassis_head_pan_servo_screw_d               = 1.5;
 front_chassis_head_pan_servo_screws_gap            = 0.5;
 
 front_chassis_head_mount_padding                   = 2.0;
+// Solid transition behind the head mounting footprint.
+front_chassis_head_transition_l                    = 13.0;
+front_chassis_head_joint_tab_w                     = 26.0;
 front_chassis_head_wire_land                       = 3.0;
 
 // 33.8 x 3 mm pins reinforce the removable head.
