@@ -262,9 +262,31 @@ module bolt_head_pan_phillips(head_d = 4.8,
   Note: The total height is equal to the `h` parameter only if `head_type` is
   `"none"`.
 
-  **Example**:
+  **Examples**:
   ```scad
    bolt(d=3, h=20, threaded=false, head_type="countersunk", reverse=true);
+
+   h = 30;
+   d = 6;
+   d3 = 13;
+   nut_distance = 4;
+
+   bolt(d=d,
+        h=h,
+        head_d=d3,
+        head_h=5.5,
+        threaded = true,
+        unthreaded=20,
+        show_nut=false,
+        lock_nut=false,
+        unthreaded_d=8,
+        reverse=true,
+        nut_head_distance=nut_distance,
+        bolt_color=matte_black,
+        unthreaded_color=metallic_silver_2,
+        anchor=[0, 0, -1],
+        head_type="socket");
+
 
   ```
   */
@@ -318,10 +340,10 @@ module bolt(d=2.5,                 // major diameter (mm)
                                   head_spec,
                                   d * 1.5));
   head_h = head_type == "none" ? 0
-    : with_default(head_h,
-                   plist_get("height",
-                             head_spec,
-                             with_default(head_h, 0.7 * d)));
+           : with_default(head_h,
+                          plist_get("height",
+                                    head_spec,
+                                    with_default(head_h, 0.7 * d)));
 
   with_orientation(from="wlh", to=orientation, anchor=anchor, size=[d, d, h]) {
     maybe_translate([0, 0, reverse ? (h + head_h) : 0]) {
@@ -444,24 +466,3 @@ module bolt(d=2.5,                 // major diameter (mm)
     }
   }
 }
-
-h = 30;
-d = 6;
-d3 = 13;
-nut_distance = 4;
-
-bolt(d=d,
-     h=h,
-     head_d=d3,
-     head_h=5.5,
-     threaded = true,
-     unthreaded=20,
-     show_nut=false,
-     lock_nut=false,
-     unthreaded_d=8,
-     reverse=true,
-     nut_head_distance=nut_distance,
-     bolt_color=matte_black,
-     unthreaded_color=metallic_silver_2,
-     anchor=[0, 0, -1],
-     head_type="socket");
