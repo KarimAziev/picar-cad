@@ -13,4 +13,4 @@ module front_chassis_suspension_frame_printable(debug=false,
   front_chassis_suspension_frame(debug=$preview ? debug : false, color=color);
 }
 
-front_chassis_suspension_frame_printable(debug=false, color=undef);
+front_chassis_suspension_frame_printable(debug=false);
