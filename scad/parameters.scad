@@ -2090,7 +2090,7 @@ step_down_enclosure_plist                            = ["step_down_voltage", ste
                                                                                "valign", "center",
                                                                                "spacing", 1,
                                                                                "font", "Arial Black:style=Regular"],
-                                                                "texts", [["text", "+IN-",
+                                                                "texts", [["text", "-IN+",
                                                                            "pos", ["4%", "50%"],
                                                                            "rotation", [0, 0, -90],
                                                                            "size", 3.5,
