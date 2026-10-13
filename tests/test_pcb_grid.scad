@@ -12,10 +12,14 @@ assert(sum_prefix([8, 20, 7], 2) == 28);
 
 for (type = ["cuboid", "bcm_processor",
              "ethernet_socket", "board_edge_socket",
-             "shrouded_connector", "multi_usb_socket"]) {
+             "shrouded_connector", "multi_usb_socket", "micro_sd_socket"]) {
   assert(pcb_placeholder_size(["type", type,
                                "size", [12, 8, 3]]) == [12, 8, 3]);
 }
+
+// An omitted USB socket body uses the same plug defaults as its renderer.
+assert(norm(pcb_placeholder_size(["type", "usb_socket"])
+            - [8.7, 9.4, 5.4]) < 0.000001);
 
 // Orientation must inform cell fitting rather than using the unrotated size.
 assert(pcb_placeholder_size(["type", "pci_connector",
@@ -24,7 +28,7 @@ assert(pcb_placeholder_size(["type", "pci_connector",
 assert(pcb_placeholder_size(["type", "pcb_button",
                              "size", [4, 2, 3]])
        == [4, 2, 3]);
-for (type = ["pci_connector", "pcb_button"],
+for (type = ["pci_connector", "pcb_button", "usb_socket"],
      orientation = ["wlh", "whl",
                     "lwh", "lhw",
                     "hwl", "hlw"]) {

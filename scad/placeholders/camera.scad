@@ -38,8 +38,8 @@ module camera_module(board_color=green_2,
                      right_text_spacing=1.1) {
   max_lens_y = max([for (i = [0 : len(camera_lens_items) - 1])
     camera_lens_items[i][4] == "circle" ?
-                         camera_lens_items[i][0] :
-                         camera_lens_items[i][1]]);
+    camera_lens_items[i][0] :
+    camera_lens_items[i][1]]);
 
   max_lens_x = max([for (i = [0 : len(camera_lens_items) - 1])
     camera_lens_items[i][0]]);
@@ -222,8 +222,8 @@ module camera_ffc_connector(opened=false) {
      - camera_module_ffc_inner_thickness) / 2;
 
   latch_y = opened ?
-    -camera_module_ffc_zif_h
-    : -camera_module_ffc_zif_base_h;
+            -camera_module_ffc_zif_h
+            : -camera_module_ffc_zif_base_h;
 
   union() {
     color(brown_1, alpha=1) {
@@ -289,4 +289,6 @@ module camera_module_ffc_latch() {
   }
 }
 
-camera_module();
+camera_ffc_connector();
+
+// camera_module_ffc_latch();

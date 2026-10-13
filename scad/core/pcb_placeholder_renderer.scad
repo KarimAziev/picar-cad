@@ -12,6 +12,7 @@ use <../lib/plist.scad>
 use <../lib/shapes3d.scad>
 use <../lib/transforms.scad>
 use <../placeholders/bcm.scad>
+use <../placeholders/micro_sd.scad>
 use <../placeholders/pcb/board_connectors.scad>
 use <../placeholders/pcb/pcb_button.scad>
 use <../placeholders/pcb/pci_connector.scad>
@@ -35,31 +36,35 @@ function _pcb_text_metrics(plist) =
 
   **Parameters:**
   - `plist`: Component properties including `type`. Box, processor and connector
-    types use `size=[w,l,h]`; PCI/button types also honor their `orientation`.
+    types use `size=[w,l,h]`; PCI/button/USB types honor their `orientation`.
+    USB sizes are local width/depth/height, before orientation or cell spin.
     `pcb_text` uses text metrics with numeric font `size`, `text`, optional
     `font`, `spacing`, `halign`, `valign` and extrusion `height` (default 0.1).
 
   **Returns:** `[w,l,h]` before cell spin, or `undef` for legacy SMD/unknown types.
   Text uses its ink bounds. Other sizes describe the nominal body, excluding
-  latches, processor steps, button caps and attached USB plugs.
+  latches, processor steps, button caps, inserted cards and USB plugs.
  */
 function pcb_placeholder_size(plist) =
   let (type = plist_get("type", plist),
        size = plist_get("size", plist))
   type == "pci_connector" ? pci_connector_size_from_plist(plist)
   : type == "pcb_button" ? pcb_button_size_from_plist(plist)
-  : type == "pcb_text"
-  ? let (tm = _pcb_text_metrics(plist))
-    [tm.size[0], tm.size[1], plist_get("height", plist, 0.1)]
-  : member(type,
-           ["cuboid", "bcm_processor",
-            "ethernet_socket", "board_edge_socket",
-            "shrouded_connector", "multi_usb_socket"])
-  ? assert(is_list(size) && len(size) == 3
-           && len([for (v = size) if (is_num(v) && v > 0) v]) == 3,
-           str("PCB component ", type, " requires positive size=[w,l,h]"))
-    size
-  : undef;
+    : type == "usb_socket"
+      ? usb_socket_size(plist, plist_get("usb_plist", plist, usb_c_plist),
+                         plist_get("orientation", plist, "wlh"))
+    : type == "pcb_text"
+      ? let (tm = _pcb_text_metrics(plist))
+      [tm.size[0], tm.size[1], plist_get("height", plist, 0.1)]
+      : member(type,
+               ["cuboid", "bcm_processor",
+                "ethernet_socket", "board_edge_socket",
+                "shrouded_connector", "multi_usb_socket", "micro_sd_socket"])
+        ? assert(is_list(size) && len(size) == 3
+                 && len([for (v = size) if (is_num(v) && v > 0) v]) == 3,
+                 str("PCB component ", type, " requires positive size=[w,l,h]"))
+        size
+        : undef;
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -71,7 +76,8 @@ function pcb_placeholder_size(plist) =
   **Parameters:**
   - `plist`: Component properties. Supported types are `cuboid`, `bcm_processor`,
     `ethernet_socket`, `board_edge_socket`, `shrouded_connector`,
-    `multi_usb_socket`, `pci_connector`, `pcb_button` and `pcb_text`.
+    `usb_socket`, `multi_usb_socket`, `micro_sd_socket`, `pci_connector`,
+    `pcb_button` and `pcb_text`.
     Other types use `smd_placeholder_renderer` unchanged.
   - `cell_size`: Available `[w,l]` footprint; omitted dimensions skip alignment.
   - `align_x`: -1 aligns the minimum X side, 0 centers, 1 aligns the maximum side.
@@ -141,6 +147,19 @@ module pcb_placeholder_renderer(plist,
                                detailed=plist_get("detailed", plist, false),
                                anchor=[1, 1, 1]);
           }
+        } else if (type == "usb_socket") {
+          usb_socket(plist=plist,
+                      usb_plist=plist_get("usb_plist", plist, usb_c_plist),
+                      orientation=plist_get("orientation", plist, "wlh"),
+                      rotate_z_180=plist_get("rotate_z_180", plist, false),
+                      show_usb_plug=plist_get("show_usb_plug", plist, false),
+                      anchor=[1, 1, 1]);
+        } else if (type == "micro_sd_socket") {
+          micro_sd_socket(size=reference_size,
+                           card=plist_get("card", plist, []),
+                           insertion=plist_get("insertion", plist, 10.75),
+                           show_card=plist_get("show_card", plist, true),
+                           anchor=[1, 1, 1]);
         } else if (type == "multi_usb_socket") {
           multi_usb_socket(size=reference_size,
                            usb_rows=plist_get("usb_rows", plist, 2),

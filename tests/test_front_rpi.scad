@@ -6,8 +6,11 @@ module near(a, b) {
   assert(norm(a - b) < 0.000001, str(a, " != ", b));
 }
 
-near(rpi_5_size(), [56, 88, 1.9]);
-near(rpi_5_oriented_size("lwh"), [88, 56, 1.9]);
+// Raspberry Pi 5 mechanical drawing: mounting centers and PCB dimensions.
+near(rpi_bolt_spacing, [49, 58]);
+near([rpi_bolts_offset], [3.5]);
+near(rpi_5_size(), [56, 88, 1.276]);
+near(rpi_5_oriented_size("lwh"), [88, 56, 1.276]);
 near(rpi_5_oriented_size("lwh", [60, 90, 2], 5), [95, 60, 2]);
 
 for (orientation = ["wlh", "lwh"], x = [-150, -5, 0, 120], y = [-40, -20, 0]) {

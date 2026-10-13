@@ -57,7 +57,14 @@ module front_chassis_controls(slot_mode=false) {
   maximum Y of its reference box fixed. Chassis width follows the mounting
   footprint; connector overhang does not require supporting plate material.
  */
-module front_chassis_rpi(slot_mode=false) {
+module front_chassis_rpi(slot_mode=false,
+                         show_rpi_sd_card=true,
+                         show_rpi_standoffs=true,
+                         show_rpi_usb_c_plug=false,
+                         show_rpi_ai_hat=false,
+                         show_rpi_motor_driver_hat=false,
+                         show_rpi_servo_driver_hat=false,
+                         show_rpi_gpio_expansion_board=false) {
   bounds = front_chassis_rpi_bounds();
   translate([bounds[0][0], bounds[1][1], 0]) {
     rpi_5(anchor=[1, -1, 1],
@@ -65,8 +72,14 @@ module front_chassis_rpi(slot_mode=false) {
           rotate_z_180=front_rpi_rotate_z_180,
           slot_thickness=chassis_thickness,
           bolt_visible_h=chassis_thickness - chassis_counterbore_h,
-          show_standoffs=true,
           show_camera_ribbon_slot=false,
+          show_sd_card=show_rpi_sd_card,
+          show_standoffs=show_rpi_standoffs,
+          show_usb_c_plug=show_rpi_usb_c_plug,
+          show_ai_hat=show_rpi_ai_hat,
+          show_motor_driver_hat=show_rpi_motor_driver_hat,
+          show_servo_driver_hat=show_rpi_servo_driver_hat,
+          show_gpio_expansion_board=show_rpi_gpio_expansion_board,
           slot_mode=slot_mode);
   }
 }

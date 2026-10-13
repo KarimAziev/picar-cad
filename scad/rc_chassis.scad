@@ -86,8 +86,17 @@ show_front_lower_arm_ball_stud              = false;
 show_front_upper_arm                        = false;
 
 show_front_bulkhead                         = false;
-show_front_rpi                              = false;
 show_front_bulkhead_upper_suspension_holder = false;
+
+// Raspberry PI
+show_front_rpi                              = false;
+show_rpi_sd_card                            = false;
+show_rpi_standoffs                          = false;
+show_rpi_usb_c_plug                         = false;
+show_rpi_ai_hat                             = false;
+show_rpi_motor_driver_hat                   = false;
+show_rpi_servo_driver_hat                   = false;
+show_rpi_gpio_expansion_board               = false;
 
 show_upper_arm_ball_stud                    = false;
 show_front_upper_arm_pin                    = false;
@@ -213,6 +222,13 @@ module rc_chassis(show_bellcrank_drive=show_bellcrank_drive,
                   show_head=show_head,
                   show_front_chassis_components=show_front_chassis_components,
                   show_front_rpi=show_front_rpi,
+                  show_rpi_sd_card=show_rpi_sd_card,
+                  show_rpi_standoffs=show_rpi_standoffs,
+                  show_rpi_usb_c_plug=show_rpi_usb_c_plug,
+                  show_rpi_ai_hat=show_rpi_ai_hat,
+                  show_rpi_motor_driver_hat=show_rpi_motor_driver_hat,
+                  show_rpi_servo_driver_hat=show_rpi_servo_driver_hat,
+                  show_rpi_gpio_expansion_board=show_rpi_gpio_expansion_board,
                   front_chassis_joint_spacing=front_chassis_joint_spacing,
                   head_chassis_joint_spacing=head_chassis_joint_spacing,
                   rear_suspension_joint_spacing=rear_suspension_joint_spacing,
@@ -313,7 +329,14 @@ module rc_chassis(show_bellcrank_drive=show_bellcrank_drive,
 
   if (show_front_chassis_components && show_front_rpi) {
     translate([0, -front_chassis_joint_spacing, 0]) {
-      front_chassis_rpi(slot_mode=false);
+      front_chassis_rpi(slot_mode=false,
+                        show_rpi_sd_card=show_rpi_sd_card,
+                        show_rpi_standoffs=show_rpi_standoffs,
+                        show_rpi_usb_c_plug=show_rpi_usb_c_plug,
+                        show_rpi_ai_hat=show_rpi_ai_hat,
+                        show_rpi_motor_driver_hat=show_rpi_motor_driver_hat,
+                        show_rpi_servo_driver_hat=show_rpi_servo_driver_hat,
+                        show_rpi_gpio_expansion_board=show_rpi_gpio_expansion_board);
     }
   }
 

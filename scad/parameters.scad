@@ -1092,8 +1092,8 @@ n20_motor_bolts_panel_len                            = n20_can_dia
 // ─────────────────────────────────────────────────────────────────────────────
 
 // The X and Y dimensions of the bolt positions for the Raspberry Pi 5 slot.
-// This forms a square with a bolt hole centered on each corner.
-rpi_bolt_spacing                                     = [50, 58];
+// Hole centers form a 49 × 58 mm rectangle.
+rpi_bolt_spacing                                     = [49, 58];
 
 // The diameter of the bolt holes for the Raspberry Pi 5 slot.
 rpi_bolt_hole_dia                                    = m2_hole_dia;
@@ -1102,22 +1102,23 @@ rpi_chassis_cbore_h                                  = m2_pan_counterbore_h;
 rpi_bolt_head_type                                   = "pan";
 rpi_use_countersunk                                  = false;
 
-rpi_bolts_offset                                     = m25_hole_dia + 0.4;
+rpi_bolts_offset                                     = 3.5;
 rpi_pin_headers_cols                                 = 20;
 rpi_pin_headers_rows                                 = 2;
 
 rpi_len                                              = 85;
 
 rpi_width                                            = 56;
-rpi_thickness                                        = 1.9;
+// PCB substrate thickness measured in stl/rpi-5b_with_graphics.stl.
+rpi_thickness                                        = 1.276;
 
 rpi_usb_y_offset                                     = 3;
 
-// The amount by which to offset the Raspberry Pi
-rpi_offset_rad                                       = 2.4;
+// PCB corner radius
+rpi_offset_rad                                       = 3;
 
-// The height of the pin
-rpi_pin_height                                       = 8.54;
+// Full contact length, including the 1.9 mm tail below the housing.
+rpi_pin_height                                       = 10.44;
 
 // The width of the single pin black header
 rpi_pin_header_width                                 = 2.54;
@@ -1132,51 +1133,59 @@ rpi_model_detailed                                   = false;
 rpi_model_text                                       = "Raspberry Pi [5]";
 rpi_text_font                                        = "Ubuntu:style=Bold";
 
-// Raspberry Pi parts dimensions (x, y, z)
+// Raspberry Pi component body sizes (x, y, z), measured from the official STL.
+// Connector spring tabs and solder tails are outside these simplified bodies.
 
-rpi_ram_size                                         = [10.2, 15, 1]; // Size of the SRAM
-rpi_processor_size                                   = [15, 15, 0.5]; // BCM2712 processor
+rpi_ram_size                                         = [10, 14.5, 0.72]; // LPDDR memory package
+rpi_processor_size                                   = [17, 17, 1.218]; // BCM2712 processor
 
 // USB 2.0 and USB 3.0 jacks
-rpi_usb_a_size                                       = [13.25, 17.60, 15.04];
-rpi_usb_a_gap                                        = 5;
-rpi_usb_a_edge_gap                                   = 2;
+rpi_usb_a_size                                       = [13.1, 17.53, 15.49];
+rpi_usb_a_gap                                        = 4.8;
+rpi_usb_a_edge_gap                                   = 2.45;
 rpi_usb_a_n                                          = 2;
 
 // Ethernet jack
-rpi_ethernet_jack_size                               = [16.15, 21.34, 13.40];
+rpi_ethernet_jack_size                               = [15.93, 21.6, 13.3];
 
 // PCI Express interface
-rpi_pci_size                                         = [2, 12.85, 3];
+rpi_pci_size                                         = [2.3, 13, 3.45];
 
 // 2 x 4-lane MIPI DSI/CSI connectors
-rpi_csi_size                                         = [2, 16.0, 2.5];
+rpi_csi_size                                         = [2.3, 16, 3.45];
 
 rpi_pad_hole_specs                                   = [[4.5, yellow_3]];
 
-// USB-c power jack
-rpi_usb_c_jack_size                                  = [8.2, 7.8, 3];
+// USB-C local [width across opening, insertion depth, height].
+// Its opening faces +X after rotation onto the PCB.
+rpi_usb_c_jack_size                                  = [8.2, 7.6, 3.16];
+
+// MicroSD socket and inserted card, in local width/depth/height coordinates.
+rpi_sd_socket_size                                  = [11.95, 11.4, 1.42];
+rpi_sd_card_plist                                    = ["size", [11, 15, 1]];
+// Clearance allowance beyond the PCB -Y edge; configurable for the fitted card.
+rpi_sd_card_overhang                                 = 2;
 
 // 2 x micro-HDMI
-rpi_micro_hdmi_jack_size                             = [8.2, 6.5, 3];
+rpi_micro_hdmi_jack_size                             = [8.5, 6.5, 2.9];
 
 // UART connector
-rpi_uart_connector_size                              = [2.5, 4.0, 5];
+rpi_uart_connector_size                              = [2.9, 5, 4.25];
 
 // RTC battery connector
-rpi_rtc_connector_size                               = [2.5, 3.4, 5];
+rpi_rtc_connector_size                               = [2.9, 4, 4.25];
 
 // Dual-band 902.11ac Wireless + Bluetooth 5
-rpi_wifi_bt_size                                     = [14, 11, 1.5];
+rpi_wifi_bt_size                                     = [13, 10.8, 1.7];
 
 // RP1 I/O controller
-rpi_io_size                                          = [14, 10, 1.5];
+rpi_io_size                                          = [12, 12, 0.99];
 
 // On-off button
-rpi_on_off_button_plist                              = ["size", [3.85, 2, 1.8],
+rpi_on_off_button_plist                              = ["size", [4.5, 3.3, 2.55],
                                                         "button_d", 1.5,
                                                         "button_h", 0.8,
-                                                        "offsets", [3.12, 0]];
+                                                        "offsets", [2.85, 0.4]];
 
 rpi_camera_ribbon_slot_size                          = [rpi_csi_size[1], 1.6];
 rpi_camera_ribbon_slot_gap                           = 2.4;
@@ -1196,9 +1205,9 @@ rpi_standoff_height                                  = 6;
 
 // CSI
 rpi_csi_cameras_n                                    = 2; // number of camera CSI connectors on the Raspberry PI
-rpi_csi_position_x                                   = rpi_bolt_spacing[0] - rpi_csi_size[1] / 2 - 2;
-rpi_csi_position_y                                   = rpi_bolt_spacing[1] - m25_hole_dia;
-rpi_csi_camera_gap                                   = 3.84;
+rpi_csi_position_x                                   = rpi_width - 16.5;
+rpi_csi_position_y                                   = 55.205;
+rpi_csi_camera_gap                                   = 6.2 - rpi_csi_size[0];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // AI HAT+
@@ -2312,17 +2321,29 @@ usb_a_plist = ["plug_shell", ["size", [12.0, 12.52, 4.4],
                               "color", metallic_silver_3],
                "plug_body", ["size", [15.46, 15.35, 8.08],
                              "color", matte_black],
-               "strain_relief", ["size", [5.9, 7, 5.8]],];
+               "strain_relief", ["size", [5.9, 7, 5.8]]];
 
 usb_a_socket_plist = ["size", [rpi_usb_a_size[0], rpi_usb_a_size[1], rpi_usb_a_size[2] / 2],
                       "color", metallic_yellow_silver,
                       "offsets", [0, 0, 1]];
 
 usb_c_plist = ["plug_shell", ["size", [8.2, 7.4, 2.4],
-                              "color", metallic_silver_3],
+                              "color", metallic_silver_3,
+                              "round_axis", "y",
+                              "corner_r", "50%"],
                "plug_body", ["size", [11.23, 14.9, 7.7],
-                             "color", matte_black],
-               "strain_relief", ["size", [5.9, 7, 5.8]]];
+                             "color", matte_black,
+                             "round_axis", "y",
+                             "corner_r", "50%"],
+               "strain_relief", ["size", [5.9, 7, 5.8],
+                                 "round_axis", "y",
+                                 "corner_r", "50%"]];
+
+usb_c_socket_plist = ["size", rpi_usb_c_jack_size,
+                      "corner_r", "50%",
+                      "round_axis", "y",
+                      "color", metallic_yellow_silver,
+                      "offsets", [0, 0, 0]];
 
 wago_conductor_size = [6.9, 20.2, 9.8];
 wago_hole_size_xz   = [6.1, 5.15];

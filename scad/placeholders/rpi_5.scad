@@ -23,12 +23,15 @@ use <pad_hole.scad>
 use <rpi_5_grid.scad>
 use <standoff.scad>
 
-show_standoffs            = true;
-show_ai_hat               = true;
-show_motor_driver_hat     = true;
-show_servo_driver_hat     = true;
-show_gpio_expansion_board = true;
-show_camera_ribbon_slot   = true;
+show_reference_stl        = false;
+show_usb_c_plug           = true;
+show_sd_card              = true;
+show_standoffs            = false;
+show_ai_hat               = false;
+show_motor_driver_hat     = false;
+show_servo_driver_hat     = false;
+show_gpio_expansion_board = false;
+show_camera_ribbon_slot   = false;
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -173,6 +176,7 @@ module rpi_camera_ribbon_slots(thickness, anchor=[1, 1, 1]) {
 
   The PCB starts at `[0, 0, 0]`; the placement reference includes the +Y port
   overhang, but excludes component height, inserted plugs and accessories.
+  GPIO solder tails and the microSD socket extend below the PCB underside.
   `anchor`, `orientation` and `rotate_z_180` apply equally to solid and slot
   modes. The grid contains the visible components, not the mounting interfaces.
 
@@ -204,6 +208,13 @@ module rpi_camera_ribbon_slots(thickness, anchor=[1, 1, 1]) {
     `rpi_5_grid` from the component parameters above. A supplied grid controls
     visible components only; it does not change holes or accessory mounting.
   - `debug_grid`: Show the component grid's cell outlines and dimensions.
+  - `show_usb_c_plug`, `usb_c_plug`: Power-plug visibility and plug plist.
+  - `show_sd_card`, `sd_card`: Inserted microSD visibility and card plist.
+  - `sd_card_overhang`: Card projection beyond the PCB's -Y edge in mm.
+
+  Accessory visibility is applied by the default component grid. A supplied
+  `component_grid` owns its accessory properties. Cards and plugs share the
+  board transform; they do not change its mounting/anchoring reference box.
 
   **Examples:**
   ```scad
@@ -216,7 +227,7 @@ module rpi_5(size=[rpi_width, rpi_len, rpi_thickness],
              corner_rad=rpi_offset_rad,
              slot_thickness=chassis_thickness,
              mount_dia=rpi_bolt_hole_dia,
-             placeholder_hole_dia=2.5,
+             placeholder_hole_dia=2.7,
              bolt_offset=rpi_bolts_offset,
              header_height=rpi_pin_header_height,
              header_width=rpi_pin_header_width,
@@ -253,7 +264,12 @@ module rpi_5(size=[rpi_width, rpi_len, rpi_thickness],
              rotate_z_180=false,
              slot_mode=false,
              component_grid,
-             debug_grid=false) {
+             debug_grid=false,
+             show_usb_c_plug=show_usb_c_plug,
+             usb_c_plug=usb_c_plist,
+             show_sd_card=show_sd_card,
+             sd_card=rpi_sd_card_plist,
+             sd_card_overhang=rpi_sd_card_overhang) {
 
   w = size[0];
   length = size[1];
@@ -279,7 +295,12 @@ module rpi_5(size=[rpi_width, rpi_len, rpi_thickness],
                       usb_a_edge_gap=usb_a_edge_gap,
                       usb_a_y_offset=usb_a_y_offset,
                       usb_a_n=rpi_usb_a_n,
-                      plugged_usb_a=plugged_usb_a)
+                      plugged_usb_a=plugged_usb_a,
+                      show_usb_c_plug=show_usb_c_plug,
+                      usb_c_plug=usb_c_plug,
+                      show_sd_card=show_sd_card,
+                      sd_card=sd_card,
+                      sd_card_overhang=sd_card_overhang)
          : component_grid;
 
   with_orientation(from="wlh",
@@ -334,6 +355,13 @@ module rpi_5(size=[rpi_width, rpi_len, rpi_thickness],
                       four_corner_holes_2d(size=bolt_spacing,
                                            center=false,
                                            d=placeholder_hole_dia);
+                    }
+                    // Cooler spring-pin holes, 6 mm inward from opposite mounts.
+                    for (p = [[bolt_offset + 6, bolt_offset + bolt_spacing[1]],
+                              [bolt_offset + bolt_spacing[0] - 6, bolt_offset]]) {
+                      translate(p) {
+                        circle(d=3, $fn=48);
+                      }
                     }
                   }
                 }
@@ -423,4 +451,19 @@ module rpi_5(size=[rpi_width, rpi_len, rpi_thickness],
   }
 }
 
-rpi_5(anchor=[1, 1, 1]);
+module rpi_stl() {
+  import("../../stl/rpi-5b_with_graphics.stl");
+}
+
+rpi_5(anchor=[1, 1, 1], plugged_usb_a=[]);
+
+// Register the official STL against the PCB's minimum X/Y and underside Z.
+// if ($preview && show_reference_stl) {
+//   translate([156.81517, -84.2, -1.48]) {
+//     rotate([0, 0, 90]) {
+//       color("white", alpha=1) {
+//         #rpi_stl();
+//       }
+//     }
+//   }
+// }

@@ -17,9 +17,13 @@ function usb_plug_params(plist) =
   let (plug_shell=plist_get("plug_shell", plist, []),
        plug_shell_size=plist_get("size", plug_shell, [0, 0, 0]),
        plug_shell_color=plist_get("color", plug_shell, metallic_silver_3),
+       plug_shell_round_axis=plist_get("round_axis", plug_shell, "y"),
+       plug_shell_corner_r=plist_get("corner_r", plug_shell),
        plug_body=plist_get("plug_body", plist, []),
        plug_body_color=plist_get("color", plug_body, matte_black),
        plug_body_size=plist_get("size", plug_body),
+       plug_body_round_axis=plist_get("round_axis", plug_body, "y"),
+       plug_body_corner_r=plist_get("corner_r", plug_body, "50%"),
        strain_relief=plist_get("strain_relief", plist, []),
        strain_relief_d=plist_get("d", strain_relief, 0),
        strain_relief_l=plist_get("l", strain_relief),
@@ -52,9 +56,13 @@ function usb_plug_params(plist) =
   ["plug_shell", plug_shell,
    "plug_shell_size", plug_shell_size,
    "plug_shell_color", plug_shell_color,
+   "plug_shell_round_axis", plug_shell_round_axis,
+   "plug_shell_corner_r", plug_shell_corner_r,
    "plug_body", plug_body,
    "plug_body_color", plug_body_color,
    "plug_body_size", plug_body_size,
+   "plug_body_round_axis", plug_body_round_axis,
+   "plug_body_corner_r", plug_body_corner_r,
    "strain_relief", strain_relief,
    "strain_relief_d", strain_relief_d,
    "strain_relief_l", strain_relief_l,
@@ -84,9 +92,13 @@ module generic_usb_plug(plist,
 
   plug_shell_size = plist_get("plug_shell_size", params);
   plug_shell_color = plist_get("plug_shell_color", params);
+  plug_shell_round_axis = plist_get("plug_shell_round_axis", params);
+  plug_shell_corner_r = plist_get("plug_shell_corner_r", params);
 
   plug_body_color = plist_get("plug_body_color", params);
   plug_body_size = plist_get("plug_body_size", params);
+  plug_body_round_axis = plist_get("plug_body_round_axis", params);
+  plug_body_corner_r = plist_get("plug_body_corner_r", params);
 
   strain_relief_d = plist_get("strain_relief_d", params);
   strain_relief_l = plist_get("strain_relief_l", params);
@@ -111,16 +123,10 @@ module generic_usb_plug(plist,
         if (plug_body_size) {
           color(plug_body_color) {
             union() {
-              let (size = [plug_body_size[0], plug_body_size[2], plug_body_l]) {
-                with_orientation(from="wlh",
-                                 to="whl",
-                                 anchor=_anchor,
-                                 size=size) {
-                  cuboid(size=size,
-                         anchor=[0, 0, 1],
-                         r_factor=0.5);
-                }
-              }
+              cuboid(size=plug_body_size,
+                     anchor=_anchor,
+                     axis=plug_body_round_axis,
+                     r=plug_body_corner_r);
             }
           }
         }
@@ -128,7 +134,10 @@ module generic_usb_plug(plist,
         if (plug_shell_size) {
           translate([0, plug_body_l, 0]) {
             color(plug_shell_color, alpha=1) {
-              cuboid(size=plug_shell_size, anchor=_anchor);
+              cuboid(size=plug_shell_size,
+                     anchor=_anchor,
+                     r=plug_shell_corner_r,
+                     axis=plug_shell_round_axis);
             }
           }
         }
@@ -161,7 +170,6 @@ module generic_usb_plug(plist,
 }
 
 generic_usb_plug(plist=usb_c_plist,
-
                  anchor=[1, 1, 0]);
 
 generic_usb_plug(plist=usb_a_plist,
