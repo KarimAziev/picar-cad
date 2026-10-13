@@ -55,13 +55,13 @@ module front_chassis(show_front_frame=show_front_frame,
                                    show_access_slots=show_access_slots);
   }
   if (is_undef(show_head_frame) ? show_front_frame : show_head_frame) {
-    translate([0, head_spacing, 0]) {
+    translate([0, split_head_chassis ? head_spacing : 0, 0]) {
       front_chassis_head_frame(debug=debug,
                                show_access_slots=show_access_slots);
     }
   }
   if (show_rear_frame) {
-    translate([0, -spacing, 0]) {
+    translate([0, split_front_chassis ? -spacing : 0, 0]) {
       front_chassis_rear_frame(debug=debug, width=width);
     }
   }

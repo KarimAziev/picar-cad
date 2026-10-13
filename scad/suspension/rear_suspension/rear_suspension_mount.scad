@@ -37,6 +37,7 @@ module rear_suspension_mount_outline(layout=rear_chassis_layout()) {
   - `color`: Mount body color.
   - `joint_color`: Socket color.
   - `slot_mode`: Emit the recess, mounting holes and joint cutters.
+  - `joint`: Include the detachable socket and its fastener passages.
   **Behavior:** The suspension footprint sits at `suspension_chassis_mount_h`;
   the flared joint region retains the full chassis thickness.
  */
@@ -46,7 +47,8 @@ module rear_suspension_mount(layout=rear_chassis_layout(),
                              debug_color=green_2,
                              color=white_smoke_1,
                              joint_color=light_grey,
-                             slot_mode=false) {
+                             slot_mode=false,
+                             joint=split_rear_suspension) {
   assert(suspension_chassis_mount_recess >= 0
          && suspension_chassis_mount_h - rear_suspension_chassis_bolt_bore_h >= 1.5,
          "Rear suspension mounts need 1.5 mm above the screw-head seats");
@@ -67,11 +69,13 @@ module rear_suspension_mount(layout=rear_chassis_layout(),
     rear_suspension_mount_slots(layout=layout);
     rear_chassis_slots(layout=layout);
 
-    translate([0, min_y, 0]) {
-      rear_suspension_chassis_joint(anchor=[0, -1, 1],
-                                    layout=layout,
-                                    mode="female",
-                                    slot_mode=true);
+    if (joint) {
+      translate([0, min_y, 0]) {
+        rear_suspension_chassis_joint(anchor=[0, -1, 1],
+                                      layout=layout,
+                                      mode="female",
+                                      slot_mode=true);
+      }
     }
   }
 
@@ -84,11 +88,13 @@ module rear_suspension_mount(layout=rear_chassis_layout(),
           linear_extrude(height=chassis_thickness) {
             rear_suspension_mount_outline(layout);
           }
-          translate([0, min_y, 0]) {
-            rear_suspension_chassis_joint(anchor=[0, -1, 1],
-                                          layout=layout,
-                                          mode="female",
-                                          color=joint_color);
+          if (joint) {
+            translate([0, min_y, 0]) {
+              rear_suspension_chassis_joint(anchor=[0, -1, 1],
+                                            layout=layout,
+                                            mode="female",
+                                            color=joint_color);
+            }
           }
         }
 

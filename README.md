@@ -105,7 +105,9 @@ The current single RC gearmotor assembly has a separate
 [bracket, shaft magnet sleeve and encoder workflow](scad/motor_brackets/rc/README.md),
 including its own five-part print plate and dimensional calculations.
 
-The suspension vehicle entry is `scad/rc_robot_assembly.scad`. Its front wheel
+The suspension vehicle entry is `scad/rc_robot_assembly.scad`.
+[Chassis split controls, printable groups and reference dimensions](scad/suspension/front_chassis/README.md#chassis-split-controls-and-printing)
+configure its structural sections and measurement overlays. Its front wheel
 linkages now have a [rigid articulated assembly mode](scad/suspension/steering_characterization/README.md):
 wishbones rotate about their pins, the knuckles follow their ball joints, and
 fixed-length rods determine wheel heading. `front_lower_arm_angle` prescribes

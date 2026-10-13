@@ -3,6 +3,16 @@ include <parameters.scad>
 
 use <lipo_pack_case/multi_lipo_pack_case.scad>
 
+/* [Chassis splits] */
+// Separate head plate from the front suspension plate.
+split_head_chassis = true;
+// Separate front suspension plate from the steering-servo plate.
+split_front_chassis = true;
+// Separate steering-servo plate from the rear equipment deck.
+split_rear_chassis = true;
+// Separate rear equipment deck from the rear suspension mount.
+split_rear_suspension = true;
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Bellcrank link arm. Part of both the drive and idler arms.
 // It has two bolt holes:
@@ -353,9 +363,9 @@ front_chassis_head_joint_pin_spacing               = 33;
 front_chassis_head_joint_rail_w                    = 38.4;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Middle chassis
+// Chassis joints and front controls
 // ─────────────────────────────────────────────────────────────────────────────
-middle_chassis_mount_land                          = 3.0;
+front_chassis_controls_mount_land                 = 3.0;
 
 suspension_chassis_joint_wide_bolt_cols            = 5;
 // Material between each outer bolt hole and both the edge and the socket.

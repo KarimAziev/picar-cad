@@ -4,6 +4,85 @@
 and steering-servo plate at their existing vehicle coordinates. The complete
 vehicle entry point is `../../rc_robot_assembly.scad`.
 
+## Chassis split controls and printing
+
+The shared controls in `scad/rc_params.scad` define four detachable boundaries.
+All default to `true`.
+
+| Control | Boundary |
+| --- | --- |
+| `split_head_chassis` | Head plate / front suspension plate |
+| `split_front_chassis` | Front suspension plate / steering-servo plate |
+| `split_rear_chassis` | Steering-servo plate / rear equipment deck |
+| `split_rear_suspension` | Rear equipment deck / rear suspension mount |
+
+Set a control to `false` to form continuous material across that boundary.
+Joint tongues, sockets, retaining-pin passages and joint fastener holes are
+omitted there. Equipment mounting holes, cable passages, suspension recesses
+and the assembled chassis envelope remain fixed. Exploded spacing applies only
+to detachable boundaries. Section visibility controls still select individual
+regions for inspection; display every region in a merged group to see its full
+shape.
+
+Use `scad/suspension/chassis_printable.scad` to export a connected group. Its
+`chassis_print_section` selector accepts any member of the group:
+
+| Index | Section |
+| --- | --- |
+| 0 | Head |
+| 1 | Front suspension |
+| 2 | Steering servo |
+| 3 | Rear equipment deck |
+| 4 | Rear suspension |
+
+For a single front suspension and steering plate:
+
+```sh
+openscad --backend=Manifold --enable=textmetrics --hardwarnings \
+  -D split_front_chassis=false -D chassis_print_section=1 \
+  -o build/front-suspension-steering.stl scad/suspension/chassis_printable.scad
+```
+
+For the front suspension, steering plate and rear deck as one part:
+
+```sh
+openscad --backend=Manifold --enable=textmetrics --hardwarnings \
+  -D split_front_chassis=false -D split_rear_chassis=false \
+  -D chassis_print_section=1 -o build/front-through-rear-deck.stl \
+  scad/suspension/chassis_printable.scad
+```
+
+With all four controls false, every section selects the complete chassis.
+With all four true, each index selects one plate. Group exports contain one
+solid, sit on Z=0, and exclude hardware and annotations. Use this group entry
+point for merged parts; component-local printable files emit their named region.
+
+## Reference dimensions
+
+Both `scad/rc_chassis.scad` and `scad/rc_robot_assembly.scad` provide these
+preview toggles:
+
+| Toggle | Measurement |
+| --- | --- |
+| `show_wheelbase` | Front-to-rear axle-center distance |
+| `show_track_width` | Front and rear tire-center spacing across X |
+| `show_ground_clearance` | Nominal tire ground plane to chassis underside |
+| `show_overall_length` | Deck-and-tire envelope length, plus chassis-only length |
+| `show_chassis_width` | Maximum chassis width, plus deck-and-tire envelope width |
+
+Measurements use the assembled, unsteered reference pose, independently of
+visibility, exploded spacing and articulated suspension settings. Track width
+is center-to-center; overall width includes tire width. Overall dimensions cover
+the deck and nominal upright tire envelopes, excluding elevated payloads and
+accessories. Ground clearance is the chassis clearance with nominal tires; it
+does not estimate loaded spring sag or clearance beneath protruding hardware.
+The ground outline uses the lower of the front and rear upright tire tangents.
+Rear axle position, track and height share the `rc_rear_wheel_preview_*` settings
+with the wheel placeholders, so rear-dependent dimensions are packaging estimates.
+
+Read horizontal dimensions from above and clearance from the right side. The
+annotations appear only in preview and are excluded from STL and 3MF exports.
+
 ## Lowered suspension and steering
 
 `suspension_chassis_mount_recess=2` sets the hardware mounting plane at Z=4 mm

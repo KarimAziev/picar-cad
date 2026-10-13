@@ -51,6 +51,7 @@ module rear_chassis_outline(layout=rear_chassis_layout()) {
   - `layout`: Resolved rear layout shared with components and cutters.
   - `show_rear_suspension_mount`: Display the separate suspension mount.
   - `front_joint`: Include the tongue for direct connection to the front frame.
+  - `suspension_joint`: Provide the rear detachable joint; false fills its band.
   **Behavior:** The front joining edge remains at `min_y`. Its male tongue
   projects toward -Y into the front frame's existing socket; the anchor envelope
   excludes that projection and the assembled chassis length stays unchanged.
@@ -64,7 +65,8 @@ module rear_chassis_frame(debug=false,
                           rear_suspension_joint_spacing=rear_suspension_joint_spacing,
                           layout=rear_chassis_layout(),
                           show_rear_suspension_mount=false,
-                          front_joint=true) {
+                          front_joint=split_rear_chassis,
+                          suspension_joint=split_rear_suspension) {
   pts = rear_chassis_outline_points(layout);
   size = plist_get("size", layout);
   joint_y = rear_suspension_joint_y_bounds(layout);
@@ -91,21 +93,35 @@ module rear_chassis_frame(debug=false,
                 }
               }
 
+              if (!suspension_joint) {
+                eps = front_chassis_joint_boolean_overlap;
+                translate([-rear_suspension_joint_width(layout) / 2 - eps,
+                           joint_y[0] - eps, 0]) {
+                  cube([rear_suspension_joint_width(layout) + 2 * eps,
+                        joint_y[1] - joint_y[0] + 2 * eps,
+                        chassis_thickness]);
+                }
+              }
+
               linear_extrude(height=chassis_thickness, convexity=3) {
                 rear_chassis_outline(layout);
               }
-              translate([0, joint_y[1], 0]) {
-                rear_suspension_chassis_joint(anchor=[0, -1, 1],
-                                              layout=layout,
-                                              mode="male");
+              if (suspension_joint) {
+                translate([0, joint_y[1], 0]) {
+                  rear_suspension_chassis_joint(anchor=[0, -1, 1],
+                                                layout=layout,
+                                                mode="male");
+                }
               }
             }
 
-            translate([0, joint_y[1], 0]) {
-              rear_suspension_chassis_joint(anchor=[0, -1, 1],
-                                            layout=layout,
-                                            mode="male",
-                                            slot_mode=true);
+            if (suspension_joint) {
+              translate([0, joint_y[1], 0]) {
+                rear_suspension_chassis_joint(anchor=[0, -1, 1],
+                                              layout=layout,
+                                              mode="male",
+                                              slot_mode=true);
+              }
             }
 
             rear_chassis_slots(layout=layout);
@@ -119,8 +135,8 @@ module rear_chassis_frame(debug=false,
       }
 
       if (show_rear_suspension_mount) {
-        translate([0, rear_suspension_joint_spacing, 0]) {
-          rear_suspension_mount(layout=layout);
+        translate([0, suspension_joint ? rear_suspension_joint_spacing : 0, 0]) {
+          rear_suspension_mount(layout=layout, joint=suspension_joint);
         }
       }
       if (debug && !slot_mode) {

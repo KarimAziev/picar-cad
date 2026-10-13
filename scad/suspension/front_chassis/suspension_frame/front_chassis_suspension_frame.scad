@@ -32,13 +32,17 @@ show_front_access_slots         = true;
   - `debug_font`: Outline label font.
   - `debug_color`: Outline label color.
   - `color`: Body color; undef inherits the caller's color.
+  - `head_joint`: Cut the head socket and its fastener passages.
+  - `rear_joint`: Include the steering-plate tongue and pin passages.
   **Behavior:** Uses assembled vehicle coordinates and the shared rear steering joint.
  */
 module front_chassis_suspension_frame(debug=front_chassis_front_frame_debug,
                                       show_access_slots=show_front_access_slots,
                                       debug_font="Gill Sans:style=Bold",
                                       debug_color=green_2,
-                                      color=white_smoke_1) {
+                                      color=white_smoke_1,
+                                      head_joint=split_head_chassis,
+                                      rear_joint=split_front_chassis) {
   p = front_chassis_head_joint_params();
   bounds = front_chassis_front_frame_bounds();
   eps = front_chassis_joint_boolean_overlap;
@@ -50,14 +54,17 @@ module front_chassis_suspension_frame(debug=front_chassis_front_frame_debug,
                                         show_access_slots=show_access_slots,
                                         debug_font=debug_font,
                                         debug_color=debug_color,
-                                        color=color);
+                                        color=color,
+                                        rear_joint=rear_joint);
       translate(bounds[0] - [clip_pad, clip_pad, clip_pad]) {
         cube([bounds[1][0] - bounds[0][0] + 2 * clip_pad,
               plist_get("root_y", p) - bounds[0][1] + clip_pad,
               chassis_thickness + 2 * clip_pad]);
       }
     }
-    front_chassis_head_joint(mode="female", slot_mode=true);
+    if (head_joint) {
+      front_chassis_head_joint(mode="female", slot_mode=true);
+    }
   }
 }
 

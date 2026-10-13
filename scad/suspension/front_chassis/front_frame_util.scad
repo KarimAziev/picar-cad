@@ -102,11 +102,25 @@ function front_chassis_front_frame_bounds() =
   [[-half_w, y_front_chassis_rear_frame_joint_1_start - joint_l, 0],
    [half_w, front_chassis_front_frame_start_y(), chassis_thickness]];
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_front_frame_unsplit
+  ─────────────────────────────────────────────────────────────────────────────
+  Build the head and suspension plate body in vehicle coordinates.
+  **Parameters:**
+  - `debug`: Display outline labels.
+  - `show_access_slots`: Include head cable passages.
+  - `debug_font`: Outline label font.
+  - `debug_color`: Outline label color.
+  - `color`: Plate color; undef inherits the caller's color.
+  - `rear_joint`: Include the steering-plate tongue and retaining-pin passages.
+ */
 module front_chassis_front_frame_unsplit(debug=false,
                                          show_access_slots=true,
                                          debug_font="Gill Sans:style=Bold",
                                          debug_color=green_2,
-                                         color=white_smoke_1) {
+                                         color=white_smoke_1,
+                                         rear_joint=split_front_chassis) {
 
   start_y0 = front_chassis_front_frame_start_y();
   head_mount_size = front_chassis_head_mount_size();
@@ -134,7 +148,8 @@ module front_chassis_front_frame_unsplit(debug=false,
 
   x_end = front_frame_x_end;
 
-  y_end = y_front_chassis_rear_frame_joint_1_start;
+  y_end = y_front_chassis_rear_frame_joint_1_start
+          - (rear_joint ? 0 : front_chassis_joint_boolean_overlap);
 
   pts = [[0, start_y0],
          [bumper_x, start_y1],
@@ -185,11 +200,13 @@ module front_chassis_front_frame_unsplit(debug=false,
         }
 
         // Two through holes for metal pins used in the joint with the rear frame
-        translate([0, y_end, 0]) {
-          front_chassis_pin_joint_holes(center=true,
-                                        direction=-1,
-                                        use_pad=false,
-                                        pad_side="top");
+        if (rear_joint) {
+          translate([0, y_end, 0]) {
+            front_chassis_pin_joint_holes(center=true,
+                                          direction=-1,
+                                          use_pad=false,
+                                          pad_side="top");
+          }
         }
 
         // One center hole for the bumper
@@ -224,8 +241,10 @@ module front_chassis_front_frame_unsplit(debug=false,
       }
 
       // Male joint for connection to the front rear frame
-      translate([0, y_end, 0]) {
-        front_chassis_joint_male(color=color);
+      if (rear_joint) {
+        translate([0, y_end, 0]) {
+          front_chassis_joint_male(color=color);
+        }
       }
     }
     front_chassis_mount_recesses();

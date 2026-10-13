@@ -48,7 +48,7 @@ show_equipment                  = true;
 show_equipment_zones            = false;
 show_motor_gearbox_bosses       = false;
 
-front_joint                     = true;
+front_joint                     = split_rear_chassis;
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -144,7 +144,7 @@ module rear_chassis(show_panel_stack=show_panel_stack,
       union() {
         rear_chassis_frame(layout=layout, front_joint=front_joint);
         if (show_rear_suspension_mount) {
-          translate([0, rear_suspension_joint_spacing, 0]) {
+          translate([0, split_rear_suspension ? rear_suspension_joint_spacing : 0, 0]) {
             rear_suspension_mount(layout=layout);
           }
         }

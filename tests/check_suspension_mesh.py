@@ -87,28 +87,19 @@ def assert_no_interference(mesh: trimesh.Trimesh | None, part: str) -> None:
 
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
-    for part in ("front", "rear", "middle"):
+    for part in ("front", "rear"):
         one_solid(part)
-    printable = one_solid("printable")
-    assert abs(printable.bounds[0, 2]) < 1e-6, "Printable must sit on Z=0"
-    layer = one_solid("first_layer")
-    np.testing.assert_allclose(layer.bounds[:, :2], printable.bounds[:, :2],
-                               atol=1e-6)
-    print("PASS first layer: connected deck footprint reaches the bed")
-
     for wide in (False, True):
         for part in ("male", "female"):
             one_solid(part, name=f"{part}-{wide}", wide=wide)
         collision = export("joint_collision", name=f"joint_collision-{wide}",
                            empty=True, wide=wide)
         assert_no_interference(collision, f"joint_collision-{wide}")
-    for part in ("front_collision", "middle_collision"):
+    for part in ("front_collision",):
         collision = export(part, empty=True)
         assert_no_interference(collision, part)
     print("PASS compact/wide joints and complete frames: no solid interference")
 
-    # The current middle deck no longer uses the former two-joint spacing API.
-    # Check the active front-chassis assembly's rear-frame spacing instead.
     base = one_solid("placed_rear", name="spacing-zero")
     for spacing in (10, 20):
         moved = one_solid("placed_rear", name=f"spacing-{spacing}",

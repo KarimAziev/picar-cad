@@ -8,10 +8,8 @@ use <../../scad/suspension/front_chassis/front_chassis.scad>
 use <../../scad/suspension/front_chassis/suspension_frame/front_chassis_suspension_frame.scad>
 use <../../scad/suspension/front_chassis/front_chassis_joint.scad>
 use <../../scad/suspension/front_chassis/rear_frame/front_chassis_rear_frame.scad>
-use <../../scad/suspension/middle_chassis/middle_chassis.scad>
-use <../../scad/suspension/middle_chassis/middle_chassis_printable.scad>
 
-part          = "middle";
+part          = "front";
 wide          = true;
 front_spacing = 0;
 
@@ -30,20 +28,6 @@ module female() {
                              include_pin_holes=true);
 }
 
-if (part == "middle") {
-  middle_chassis();
-}
-if (part == "printable") {
-  middle_chassis_printable();
-}
-if (part == "first_layer") {
-  intersection() {
-    middle_chassis_printable();
-    translate([-1000, -1000, 0]) {
-      cube([2000, 2000, 0.2]);
-    }
-  }
-}
 if (part == "front") {
   front_chassis_suspension_frame(debug=false);
 }
@@ -66,14 +50,6 @@ if (part == "front_collision") {
   intersection() {
     front_chassis_suspension_frame(debug=false);
     front_chassis_rear_frame(debug=false);
-  }
-}
-if (part == "middle_collision") {
-  intersection() {
-    front_chassis_rear_frame(debug=false);
-    translate([0, front_chassis_y_joint_2_end, 0]) {
-      middle_chassis(anchor=[0, -1, 1]);
-    }
   }
 }
 if (part == "placed_rear") {

@@ -25,13 +25,24 @@ use <front_chassis_ribbon_slots.scad>
 front_chassis_rear_frame_debug = false;
 show_front_controls_slots      = true;
 
-function front_chassis_pts(width=front_chassis_rear_frame_w) =
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_pts
+  ─────────────────────────────────────────────────────────────────────────────
+  Return the right half of the steering plate outline in vehicle coordinates.
+  **Parameters:**
+  - `width`: Maximum plate width.
+  - `rear_extension`: Boolean overlap into the rear deck, with an equal side inset
+    to keep overlapping side faces away from the deck's exterior planes.
+  **Returns:** Ordered 2D polygon vertices, including both centerline endpoints.
+ */
+function front_chassis_pts(width=front_chassis_rear_frame_w, rear_extension=0) =
   let (half_of_main_w = width / 2)
   [[0, y_front_chassis_rear_frame_joint_1_start],
    [front_frame_x_end, y_front_chassis_rear_frame_joint_1_start],
    [half_of_main_w, y_front_chassis_rear_frame_main_start],
-   [half_of_main_w, front_chassis_y_joint_2_end],
-   [0, front_chassis_y_joint_2_end]];
+   [half_of_main_w - rear_extension, front_chassis_y_joint_2_end - rear_extension],
+   [0, front_chassis_y_joint_2_end - rear_extension]];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -60,11 +71,18 @@ function front_chassis_wiring_slot_pos(d=front_chassis_wiring_slot_d) =
   front_chassis_rear_frame
   ─────────────────────────────────────────────────────────────────────────────
 
-  **Example**:
-  ```scad
-  front_chassis_rear_frame();
-
-  ```
+  Build the steering-servo plate in vehicle coordinates.
+  **Parameters:**
+  - `debug`: Display outline labels.
+  - `color`: Plate color.
+  - `debug_color`: Outline label color.
+  - `debug_font`: Outline label font.
+  - `width`: Plate width; must accommodate the front hardware.
+  - `show_ribbon_slots`: Include the camera ribbon passages.
+  - `show_wiring_slot`: Include the round wiring passage.
+  - `front_joint`: Cut the front suspension socket and pin passages.
+  - `rear_joint`: Cut the rear equipment deck socket and fastener passages.
+  **Behavior:** Disabled joints form continuous boundaries with adjacent sections.
   */
 module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
                                 color=white_smoke_1,
@@ -72,10 +90,13 @@ module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
                                 debug_font="Gill Sans:style=Bold",
                                 width=front_chassis_rear_frame_w,
                                 show_ribbon_slots=true,
-                                show_wiring_slot=true) {
+                                show_wiring_slot=true,
+                                front_joint=split_front_chassis,
+                                rear_joint=split_rear_chassis) {
   assert(width >= front_chassis_required_width(),
          "Frame width cannot exclude the front hardware");
-  pts = front_chassis_pts(width);
+  rear_extension = rear_joint ? 0 : front_chassis_joint_boolean_overlap;
+  pts = front_chassis_pts(width, rear_extension);
 
   module _debug(rotation) {
     let (x_size = polygon_x_len(pts) * 2,
@@ -110,8 +131,8 @@ module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
                  anchor=[0, -1, 1]);
         }
         // remove rounded part at the end
-        translate([0, front_chassis_y_joint_2_end, 0]) {
-          cuboid(size=[width,
+        translate([0, front_chassis_y_joint_2_end - rear_extension, 0]) {
+          cuboid(size=[width - 2 * rear_extension,
                        front_chassis_rear_frame_corner_r,
                        chassis_thickness],
                  anchor=[0, 1, 1]);
@@ -119,8 +140,10 @@ module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
       }
     }
 
-    translate([0, y_front_chassis_rear_frame_joint_1_start, 0]) {
-      front_chassis_joint_female(slot_mode=true);
+    if (front_joint) {
+      translate([0, y_front_chassis_rear_frame_joint_1_start, 0]) {
+        front_chassis_joint_female(slot_mode=true);
+      }
     }
 
     if (show_wiring_slot) {
@@ -138,11 +161,13 @@ module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
       front_chassis_ribbon_slots();
     }
 
-    translate([0, y_front_chassis_rear_frame_main_start, 0]) {
-      front_chassis_pin_joint_holes(center=true,
-                                    direction=1,
-                                    use_pad=false,
-                                    pad_side="bottom");
+    if (front_joint) {
+      translate([0, y_front_chassis_rear_frame_main_start, 0]) {
+        front_chassis_pin_joint_holes(center=true,
+                                      direction=1,
+                                      use_pad=false,
+                                      pad_side="bottom");
+      }
     }
     translate([0, -bellcrank_y_distance_from_bulkhead, 0]) {
       bellcrank_steering_with_servo_position() {
@@ -151,8 +176,10 @@ module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
       }
     }
 
-    translate([0, front_chassis_y_joint_2_end + joint_l, 0]) {
-      front_chassis_body_joint(mode="female", w=width, slot_mode=true);
+    if (rear_joint) {
+      translate([0, front_chassis_y_joint_2_end + joint_l, 0]) {
+        front_chassis_body_joint(mode="female", w=width, slot_mode=true);
+      }
     }
   }
 

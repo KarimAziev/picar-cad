@@ -16,7 +16,7 @@ use <../../placeholders/rpi_5.scad>
  */
 function front_chassis_controls_pos() =
   let (size = panel_stack_size(),
-       land = middle_chassis_mount_land,
+       land = front_chassis_controls_mount_land,
        rear_y = -bellcrank_y_distance_from_bulkhead + bellcrank_zone_y_len,
        front_y = -bellcrank_y_distance_from_bulkhead + bellcrank_y_dist)
   assert(size[1] + land * 2 <= front_y - rear_y,

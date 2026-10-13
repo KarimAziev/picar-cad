@@ -287,6 +287,6 @@ The project is migrating toward these principles and a more complex vehicle with
 
 ### Code needing refactoring
 
-The author identifies agent-written code in [middle_chassis/](scad/suspension/middle_chassis/) and [rear_chassis/](scad/suspension/rear_chassis/) as needing manual refactoring. Treat these areas as existing implementations to understand and improve where relevant, rather than automatically copying their structure into new components.
+The author identifies agent-written code in [rear_chassis/](scad/suspension/rear_chassis/) as needing manual refactoring. Treat these areas as existing implementations to understand and improve where relevant, rather than automatically copying their structure into new components.
 
 The draft also calls out [front_chassis_rear_frame.scad](scad/suspension/front_chassis/rear_frame/front_chassis_rear_frame.scad), while explaining that it is mostly the author's own work: imperfect, but readable. It remains useful for the polygon techniques mentioned above. An example can demonstrate a useful technique without every aspect of its structure being a project standard.

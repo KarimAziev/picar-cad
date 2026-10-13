@@ -68,6 +68,26 @@ function rc_front_wheel_reference_center() =
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
+  rc_rear_wheel_reference_center
+  ─────────────────────────────────────────────────────────────────────────────
+  Locate the right rear preview tire center in native rear-deck coordinates.
+  **Parameters:** `layout`: Resolved rear chassis layout.
+  **Returns:** [x, y, z], including the suspension mounting height.
+ */
+function rc_rear_wheel_reference_center(layout) =
+  let (reference = rc_front_wheel_reference_center(),
+       track = is_undef(rc_rear_wheel_preview_track)
+         ? 2 * reference[0]
+         : rc_rear_wheel_preview_track,
+       z = is_undef(rc_rear_wheel_preview_axis_z)
+         ? reference[2]
+         : rc_rear_wheel_preview_axis_z,
+       y = (plist_get("bulkhead_1_y", layout) + plist_get("bulkhead_2_y", layout)) / 2
+      + rc_rear_wheel_preview_y_offset)
+  [track / 2, y, suspension_chassis_mount_h + z];
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
   rc_rear_wheels_preview
   ─────────────────────────────────────────────────────────────────────────────
   Show two upright rear wheels in the rear chassis's unanchored native frame.
@@ -80,16 +100,10 @@ function rc_front_wheel_reference_center() =
   These are packaging placeholders, not a completed rear mechanical assembly.
  */
 module rc_rear_wheels_preview(layout, show_tire=true) {
-  reference = rc_front_wheel_reference_center();
-  track = is_undef(rc_rear_wheel_preview_track)
-    ? 2 * reference[0] : rc_rear_wheel_preview_track;
-  z = is_undef(rc_rear_wheel_preview_axis_z)
-    ? reference[2] : rc_rear_wheel_preview_axis_z;
-  y = (plist_get("bulkhead_1_y", layout) + plist_get("bulkhead_2_y", layout)) / 2
-      + rc_rear_wheel_preview_y_offset;
+  center = rc_rear_wheel_reference_center(layout);
   w = rc_touring_wheel_size(rc_wheel_plist)[2];
   for (side = [-1, 1]) {
-    translate([side * track / 2, y, suspension_chassis_mount_h + z]) {
+    translate([side * center[0], center[1], center[2]]) {
       rotate([0, side * 90, 0]) {
         translate([0, 0, -w / 2]) {
           rc_touring_wheel(pl=rc_wheel_plist, show_tire=show_tire);

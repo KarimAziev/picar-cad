@@ -3,11 +3,11 @@
   *
   * Assembles the front chassis, including its front and rear frame sections,
   * together with the front suspension, bellcrank steering assembly, and
-  * steering servo components, middle chassis, electronics and rear drivetrain.
+  * steering servo components, electronics and rear drivetrain.
   * This is the suspension vehicle entry point. Joint-spacing controls are measured
   * in millimeters; zero assembles the frames and positive values separate them
   * along Y. The servo follows the rear front-chassis frame, the bellcranks stay
-  * on the front frame, and the middle payload follows the middle frame.
+  * on the front frame.
   *
   * Author: Karim Aziiev <karim.aziiev@gmail.com>
   * License: GPL-3.0-or-later
@@ -19,6 +19,12 @@ include <suspension/front_chassis/computed_params.scad>
 
 use <lib/shapes3d.scad>
 use <rc_chassis.scad>
+
+show_wheelbase = false;
+show_track_width = false;
+show_ground_clearance = false;
+show_overall_length = false;
+show_chassis_width = false;
 
 show_chassis_front_frame                    = true;
 show_chassis_rear_frame                     = true;
@@ -121,28 +127,15 @@ show_rear_equipment                         = true;
 show_rear_power_wiring                      = true;
 show_rear_panel_stack                       = true;
 
-show_middle_chassis_motor_slots             = true;
-
 show_rear_power_case                        = true;
 show_rear_lipo_packs                        = true;
 show_rear_power_standoffs                   = true;
 show_rear_lidar                             = true;
 show_rear_lidar_lid                         = true;
 
-show_middle_chassis                         = false;
-show_middle_chassis_components              = false;
-show_middle_chassis_power_case              = false;
-show_middle_chassis_lipo_packs              = false;
-show_middle_chassis_lidar                   = false;
-show_middle_chassis_lidar_support           = false;
-
-show_middle_chassis_rpi                     = false;
 show_front_controls                         = true;
 show_front_controls_slots                   = true;
 show_front_access_slots                     = true;
-show_middle_camera_slots                    = true;
-show_middle_chassis_power_case_slots        = true;
-show_middle_chassis_rpi_slots               = true;
 
 show_debug_pins                             = false;
 
@@ -216,12 +209,6 @@ module rc_robot_assembly(show_bellcrank_drive=show_bellcrank_drive,
                          front_chassis_joint_spacing=front_chassis_joint_spacing,
                          head_chassis_joint_spacing=head_chassis_joint_spacing,
                          rear_suspension_joint_spacing=rear_suspension_joint_spacing,
-                         show_middle_chassis=show_middle_chassis,
-                         show_middle_chassis_components=show_middle_chassis_components,
-                         show_middle_chassis_power_case=show_middle_chassis_power_case,
-                         show_middle_chassis_lipo_packs=show_middle_chassis_lipo_packs,
-                         show_middle_chassis_lidar=show_middle_chassis_lidar,
-                         show_middle_chassis_lidar_support=show_middle_chassis_lidar_support,
                          show_front_access_slots=show_front_access_slots,
                          rear_chassis_joint_spacing=rear_chassis_joint_spacing,
                          show_rear_chassis=show_rear_chassis,
@@ -255,8 +242,18 @@ module rc_robot_assembly(show_bellcrank_drive=show_bellcrank_drive,
                          show_rear_chassis_equipment_zones=show_rear_chassis_equipment_zones,
                          show_drive_shaft_encoder_sleeve=show_drive_shaft_encoder_sleeve,
                          show_motor_gearbox_bosses=show_motor_gearbox_bosses,
-                         show_debug_pins=show_debug_pins) {
-  rc_chassis(show_bellcrank_drive=show_bellcrank_drive,
+                         show_debug_pins=show_debug_pins,
+                         show_wheelbase=show_wheelbase,
+                         show_track_width=show_track_width,
+                         show_ground_clearance=show_ground_clearance,
+                         show_overall_length=show_overall_length,
+                         show_chassis_width=show_chassis_width) {
+  rc_chassis(show_wheelbase=show_wheelbase,
+             show_track_width=show_track_width,
+             show_ground_clearance=show_ground_clearance,
+             show_overall_length=show_overall_length,
+             show_chassis_width=show_chassis_width,
+             show_bellcrank_drive=show_bellcrank_drive,
              show_bellcrank_idler=show_bellcrank_idler,
              show_bellcrank_post=show_bellcrank_post,
              show_bellcrank_idler_lever=show_bellcrank_idler_lever,
@@ -313,12 +310,6 @@ module rc_robot_assembly(show_bellcrank_drive=show_bellcrank_drive,
              front_chassis_joint_spacing=front_chassis_joint_spacing,
              head_chassis_joint_spacing=head_chassis_joint_spacing,
              rear_suspension_joint_spacing=rear_suspension_joint_spacing,
-             show_middle_chassis=show_middle_chassis,
-             show_middle_chassis_components=show_middle_chassis_components,
-             show_middle_chassis_power_case=show_middle_chassis_power_case,
-             show_middle_chassis_lipo_packs=show_middle_chassis_lipo_packs,
-             show_middle_chassis_lidar=show_middle_chassis_lidar,
-             show_middle_chassis_lidar_support=show_middle_chassis_lidar_support,
              show_front_access_slots=show_front_access_slots,
              rear_chassis_joint_spacing=rear_chassis_joint_spacing,
              show_rear_chassis=show_rear_chassis,

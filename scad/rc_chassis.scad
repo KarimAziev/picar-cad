@@ -3,11 +3,11 @@
   *
   * Assembles the front chassis, including its front and rear frame sections,
   * together with the front suspension, bellcrank steering assembly, and
-  * steering servo components, middle chassis, electronics and rear drivetrain.
+  * steering servo components, electronics and rear drivetrain.
   * This is the suspension vehicle entry point. Joint-spacing controls are measured
   * in millimeters; zero assembles the frames and positive values separate them
   * along Y. The servo follows the rear front-chassis frame, the bellcranks stay
-  * on the front frame, and the middle payload follows the middle frame.
+  * on the front frame.
   *
   * Author: Karim Aziiev <karim.aziiev@gmail.com>
   * License: GPL-3.0-or-later
@@ -19,16 +19,15 @@ include <suspension/front_chassis/computed_params.scad>
 
 use <head/head_neck.scad>
 use <lib/plist.scad>
-use <lipo_pack_case/multi_lipo_pack_case.scad>
 use <suspension/bellcrank_steering_assembly.scad>
 use <suspension/computed.scad>
+use <suspension/chassis_dimensions.scad>
 use <suspension/front_chassis/front_chassis.scad>
 use <suspension/front_chassis/front_chassis_controls.scad>
 use <suspension/front_chassis/front_chassis_joint.scad>
 use <suspension/front_chassis/front_frame_util.scad>
 use <suspension/front_chassis/head_frame/head_joint.scad>
 use <suspension/front_suspension_assembly.scad>
-use <suspension/middle_chassis/middle_chassis.scad>
 use <suspension/rc_wheels.scad>
 use <suspension/rear_chassis/computed_params.scad>
 use <suspension/rear_chassis/rear_chassis.scad>
@@ -136,28 +135,15 @@ show_rear_equipment                         = false;
 show_rear_power_wiring                      = false;
 show_rear_panel_stack                       = false;
 
-show_middle_chassis_motor_slots             = false;
-
 show_rear_power_case                        = false;
 show_rear_lipo_packs                        = false;
 show_rear_power_standoffs                   = false;
 show_rear_lidar                             = false;
 show_rear_lidar_lid                         = false;
 
-show_middle_chassis                         = false;
-show_middle_chassis_components              = false;
-show_middle_chassis_power_case              = false;
-show_middle_chassis_lipo_packs              = false;
-show_middle_chassis_lidar                   = false;
-show_middle_chassis_lidar_support           = false;
-
-show_middle_chassis_rpi                     = false;
 show_front_controls                         = false;
 show_front_controls_slots                   = false;
 show_front_access_slots                     = false;
-show_middle_camera_slots                    = false;
-show_middle_chassis_power_case_slots        = false;
-show_middle_chassis_rpi_slots               = false;
 
 // Preview-only pin passages with fit allowances and translucent chassis plates.
 show_debug_pins                             = false;
@@ -174,6 +160,13 @@ steering_servo_angle                        = 0; // [-25:1:25]
 show_ideal_length                           = false;
 
 chassis_ideal_wheelbase                     = 260;
+
+// Measurements use the assembled reference pose and nominal tire envelopes.
+show_wheelbase = false;
+show_track_width = false;
+show_ground_clearance = false;
+show_overall_length = false;
+show_chassis_width = false;
 
 module rc_chassis(show_bellcrank_drive=show_bellcrank_drive,
                   show_bellcrank_idler=show_bellcrank_idler,
@@ -232,12 +225,6 @@ module rc_chassis(show_bellcrank_drive=show_bellcrank_drive,
                   front_chassis_joint_spacing=front_chassis_joint_spacing,
                   head_chassis_joint_spacing=head_chassis_joint_spacing,
                   rear_suspension_joint_spacing=rear_suspension_joint_spacing,
-                  show_middle_chassis=show_middle_chassis,
-                  show_middle_chassis_components=show_middle_chassis_components,
-                  show_middle_chassis_power_case=show_middle_chassis_power_case,
-                  show_middle_chassis_lipo_packs=show_middle_chassis_lipo_packs,
-                  show_middle_chassis_lidar=show_middle_chassis_lidar,
-                  show_middle_chassis_lidar_support=show_middle_chassis_lidar_support,
                   show_front_access_slots=show_front_access_slots,
                   rear_chassis_joint_spacing=rear_chassis_joint_spacing,
                   show_rear_chassis=show_rear_chassis,
@@ -272,10 +259,29 @@ module rc_chassis(show_bellcrank_drive=show_bellcrank_drive,
                   show_rear_chassis_equipment_zones=show_rear_chassis_equipment_zones,
                   show_drive_shaft_encoder_sleeve=show_drive_shaft_encoder_sleeve,
                   show_motor_gearbox_bosses=show_motor_gearbox_bosses,
-                  show_debug_pins=show_debug_pins) {
-  lipo_pack_case_props = multi_lipo_pack_props(plist=multi_lipo_packs_case);
-
-  full_lipo_pack_size = plist_get("size", lipo_pack_case_props);
+                  show_debug_pins=show_debug_pins,
+                  show_wheelbase=show_wheelbase,
+                  show_track_width=show_track_width,
+                  show_ground_clearance=show_ground_clearance,
+                  show_overall_length=show_overall_length,
+                  show_chassis_width=show_chassis_width) {
+  chassis_dimension_annotations(wheelbase=show_wheelbase,
+                                 track=show_track_width,
+                                 clearance=show_ground_clearance,
+                                 length=show_overall_length,
+                                 width=show_chassis_width);
+  resolved_front_chassis_joint_spacing = split_front_chassis
+    ? front_chassis_joint_spacing
+    : 0;
+  resolved_head_chassis_joint_spacing = split_head_chassis
+    ? head_chassis_joint_spacing
+    : 0;
+  resolved_rear_chassis_joint_spacing = split_rear_chassis
+    ? rear_chassis_joint_spacing
+    : 0;
+  resolved_rear_suspension_joint_spacing = split_rear_suspension
+    ? rear_suspension_joint_spacing
+    : 0;
   body_width = suspension_chassis_width();
   rear_layout = rear_chassis_layout(min_width=body_width);
 
@@ -294,8 +300,8 @@ module rc_chassis(show_bellcrank_drive=show_bellcrank_drive,
                   show_front_frame=show_chassis_front_frame,
                   show_rear_frame=show_chassis_rear_frame,
                   debug=false,
-                  spacing=front_chassis_joint_spacing,
-                  head_spacing=head_chassis_joint_spacing,
+                  spacing=resolved_front_chassis_joint_spacing,
+                  head_spacing=resolved_head_chassis_joint_spacing,
                   show_access_slots=show_front_access_slots,
                   show_head_frame=show_head_frame);
   }
@@ -305,22 +311,22 @@ module rc_chassis(show_bellcrank_drive=show_bellcrank_drive,
     head_visible = is_undef(show_head_frame)
                    ? show_chassis_front_frame
                    : show_head_frame;
-    if (head_visible || show_chassis_front_frame) {
-      translate([0, head_visible ? head_chassis_joint_spacing : 0, 0]) {
+    if (split_head_chassis && (head_visible || show_chassis_front_frame)) {
+      translate([0, head_visible ? resolved_head_chassis_joint_spacing : 0, 0]) {
         #front_chassis_head_joint_pins();
       }
     }
-    if (show_chassis_front_frame || show_chassis_rear_frame) {
+    if (split_front_chassis && (show_chassis_front_frame || show_chassis_rear_frame)) {
       translate([0,
                  y_front_chassis_rear_frame_joint_1_start
-                 - (show_chassis_front_frame ? 0 : front_chassis_joint_spacing),
+                 - (show_chassis_front_frame ? 0 : resolved_front_chassis_joint_spacing),
                  0]) {
         #front_chassis_pin_joint_holes();
       }
     }
-    if (show_chassis_rear_frame && (!show_rear_chassis || show_middle_chassis)) {
+    if (split_rear_chassis && show_chassis_rear_frame && !show_rear_chassis) {
       translate([0,
-                 front_chassis_y_joint_2_end + joint_l - front_chassis_joint_spacing,
+                 front_chassis_y_joint_2_end + joint_l - resolved_front_chassis_joint_spacing,
                  0]) {
         #front_chassis_pin_joint_holes(pin_spacing=front_chassis_body_joint_pin_spacing(body_width));
       }
@@ -328,7 +334,7 @@ module rc_chassis(show_bellcrank_drive=show_bellcrank_drive,
   }
 
   if (show_front_chassis_components && show_front_rpi) {
-    translate([0, -front_chassis_joint_spacing, 0]) {
+    translate([0, -resolved_front_chassis_joint_spacing, 0]) {
       front_chassis_rpi(slot_mode=false,
                         show_rpi_sd_card=show_rpi_sd_card,
                         show_rpi_standoffs=show_rpi_standoffs,
@@ -398,50 +404,40 @@ module rc_chassis(show_bellcrank_drive=show_bellcrank_drive,
                                   show_steering_servo_encoder_bracket=show_steering_servo_encoder_bracket,
                                   show_steering_servo_magnet=show_steering_servo_magnet,
                                   steering_servo_angle=steering_servo_angle,
-                                  steering_servo_spacing=front_chassis_joint_spacing);
+                                  steering_servo_spacing=resolved_front_chassis_joint_spacing);
     }
   }
 
   if (show_head) {
     translate([0,
-               front_chassis_head_center_y() + head_chassis_joint_spacing,
+               front_chassis_head_center_y() + resolved_head_chassis_joint_spacing,
                front_chassis_head_mount_z()]) {
       head_neck(center_pan_servo_slot=true,
                 pan_servo_rotation=0);
     }
   }
 
-  translate([0, front_chassis_y_joint_2_end - front_chassis_joint_spacing, 0]) {
-    middle_chassis_assembly(width=body_width,
-                            show_middle_chassis=show_middle_chassis,
-                            show_middle_chassis_components=show_middle_chassis_components,
-                            show_middle_chassis_power_case=show_middle_chassis_power_case,
-                            show_middle_chassis_lipo_packs=show_middle_chassis_lipo_packs,
-                            show_middle_chassis_lidar_support=show_middle_chassis_lidar_support,
-                            show_middle_chassis_lidar=show_middle_chassis_lidar,
-                            power_case_plist=multi_lipo_packs_case);
-  }
-
   if (show_rear_chassis) {
     // The tongue fills the existing front socket; the rear deck starts at its lip.
     translate([0,
-               front_chassis_y_joint_2_end - front_chassis_joint_spacing
-               - (show_middle_chassis ? full_lipo_pack_size[1] : 0)
-               - rear_chassis_joint_spacing,
+               front_chassis_y_joint_2_end - resolved_front_chassis_joint_spacing
+               - resolved_rear_chassis_joint_spacing,
                0]) {
       rotate([0, 0, 180]) {
         if ($preview && show_debug_pins) {
-          translate([0, -plist_get("min_y", rear_layout), 0]) {
-            #rear_suspension_chassis_joint_pins(layout=rear_layout);
+          if (split_rear_suspension) {
+            translate([0, -plist_get("min_y", rear_layout), 0]) {
+              #rear_suspension_chassis_joint_pins(layout=rear_layout);
+            }
           }
-          if (!show_middle_chassis) {
+          if (split_rear_chassis) {
             #front_chassis_pin_joint_holes(pin_spacing=front_chassis_body_joint_pin_spacing(plist_get("join_w", rear_layout)));
           }
         }
         _pin_inspection_context() {
           rear_chassis(anchor=[0, 1, 1],
                        layout=rear_layout,
-                       front_joint=!show_middle_chassis,
+                       front_joint=split_rear_chassis,
                        show_power_case=show_rear_chassis_components && show_rear_power_case,
                        show_lipo_packs=show_rear_chassis_components && show_rear_lipo_packs,
                        show_power_standoffs=show_rear_chassis_components && show_rear_power_standoffs,
@@ -456,7 +452,7 @@ module rc_chassis(show_bellcrank_drive=show_bellcrank_drive,
                        show_motor_encoder_bracket=show_motor_encoder_bracket,
                        show_motor_encoder=show_motor_encoder,
                        show_motor_encoder_magnet=show_motor_encoder_magnet,
-                       rear_suspension_joint_spacing=rear_suspension_joint_spacing,
+                       rear_suspension_joint_spacing=resolved_rear_suspension_joint_spacing,
                        show_rear_suspension_mount=show_rear_suspension_mount,
                        show_power_wiring=show_rear_power_wiring,
                        show_panel_stack=show_rear_panel_stack,
@@ -467,7 +463,7 @@ module rc_chassis(show_bellcrank_drive=show_bellcrank_drive,
                        show_drive_shaft_encoder_sleeve=show_drive_shaft_encoder_sleeve,
                        show_motor_gearbox_bosses=show_motor_gearbox_bosses) {
             if (show_rear_wheels_preview) {
-              translate([0, rear_suspension_joint_spacing, 0]) {
+              translate([0, resolved_rear_suspension_joint_spacing, 0]) {
                 rc_rear_wheels_preview(layout=rear_layout,
                                        show_tire=show_wheel_tires);
               }

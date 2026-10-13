@@ -64,12 +64,12 @@ socket; it does not increase the assembled chassis length. The anchor reference
 and `rear_chassis_size()` describe the original plate envelope, excluding the
 tongue projection.
 
-In [`rc_robot_assembly.scad`](../../rc_robot_assembly.scad),
-leave `show_middle_chassis=false` for the direct connection. Set
-`rear_suspension_joint_spacing=0` for the fitted position, or increase it to slide
+In [`rc_robot_assembly.scad`](../../rc_robot_assembly.scad), set
+`rear_chassis_joint_spacing=0` for the fitted position, or increase it to slide
 the rear chassis rearward for inspection. The rear chassis also follows
-`front_chassis_joint_spacing`. With the optional middle deck enabled, the
-assembly selects `front_joint=false` to retain its existing flat rear interface.
+`front_chassis_joint_spacing`. `rear_suspension_joint_spacing` separates the
+suspension mount from the rear deck. Spacing applies only at enabled
+[split boundaries](../front_chassis/README.md#chassis-split-controls-and-printing).
 
 For a geometry-only view, open
 [`front_rear_chassis_joint.scad`](../../../tests/fixtures/front_rear_chassis_joint.scad)
