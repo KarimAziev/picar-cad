@@ -5,13 +5,13 @@ use <lipo_pack_case/multi_lipo_pack_case.scad>
 
 /* [Chassis splits] */
 // Separate head plate from the front suspension plate.
-split_head_chassis = true;
+split_head_chassis                                 = true;
 // Separate front suspension plate from the steering-servo plate.
-split_front_chassis = true;
+split_front_chassis                                = false;
 // Separate steering-servo plate from the rear equipment deck.
-split_rear_chassis = true;
+split_rear_chassis                                 = true;
 // Separate rear equipment deck from the rear suspension mount.
-split_rear_suspension = true;
+split_rear_suspension                              = true;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Bellcrank link arm. Part of both the drive and idler arms.
@@ -365,7 +365,7 @@ front_chassis_head_joint_rail_w                    = 38.4;
 // ─────────────────────────────────────────────────────────────────────────────
 // Chassis joints and front controls
 // ─────────────────────────────────────────────────────────────────────────────
-front_chassis_controls_mount_land                 = 3.0;
+front_chassis_controls_mount_land                  = 3.0;
 
 suspension_chassis_joint_wide_bolt_cols            = 5;
 // Material between each outer bolt hole and both the edge and the socket.
@@ -1360,7 +1360,7 @@ motor_plist                                        = ["body", ["d", 24.3,
 
 // Offsets locate the oriented reference box: minimum X and maximum Y.
 // Y is relative to the front rear-frame main-section start.
-front_rpi_y_offset                                 = 0;
+front_rpi_y_offset                                 = 5;
 front_rpi_x_offset                                 = -5;
 front_rpi_orientation                              = "lwh"; // wlh | lwh (flat PCB)
 front_rpi_rotate_z_180                             = true; // 180-degree turn in the PCB plane
@@ -1368,8 +1368,11 @@ front_rpi_rotate_z_180                             = true; // 180-degree turn in
 front_rpi_mount_pad                                = 2;
 
 // Shared camera-ribbon threading bank beneath the Pi, turning toward the head.
+front_chassis_use_ribbon_slots                     = false;
 front_chassis_ribbon_slot_rows                     = 5;
 front_chassis_ribbon_land                          = 3;
+
+front_chassis_use_wiring_slot                      = true;
 front_chassis_wiring_slot_d                        = 14;
 front_chassis_wiring_slot_clearance                = 3;
 

@@ -11,8 +11,8 @@ include <front_chassis/computed_params.scad>
 use <../lib/plist.scad>
 use <computed.scad>
 use <front_chassis/head_frame/front_chassis_head_frame.scad>
-use <front_chassis/suspension_frame/front_chassis_suspension_frame.scad>
 use <front_chassis/rear_frame/front_chassis_rear_frame.scad>
+use <front_chassis/suspension_frame/front_chassis_suspension_frame.scad>
 use <rear_chassis/computed_params.scad>
 use <rear_chassis/rear_chassis_frame.scad>
 use <rear_suspension/rear_suspension_mount.scad>
