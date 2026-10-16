@@ -7,6 +7,7 @@
 include <layout_params.scad>
 
 use <../../lib/shapes2d.scad>
+use <../../placeholders/dservo.scad>
 use <../bellcrank_steering_slots.scad>
 use <../steering_servo_bracket/steering_servo_bracket_assembly.scad>
 
@@ -18,6 +19,7 @@ use <../steering_servo_bracket/steering_servo_bracket_assembly.scad>
   **Behavior:** Coordinates match the assembled front chassis. The compact
   joint's central pin spine remains full thickness. Servo pockets follow the
   lower hardware envelope, including both brackets and the encoder foot.
+  A rounded pocket below the servo horn provides clearance at the same depth.
  */
 module front_chassis_mount_recesses() {
   depth = suspension_chassis_mount_recess;
@@ -36,6 +38,10 @@ module front_chassis_mount_recesses() {
   // Local servo X spans the case, mounting brackets and encoder support.
   servo_clip_half_w = servo_chassis_reach + dsservo_size[2]
                       + steering_servo_bracket_thickness;
+  horn_clearance = 2;
+  horn_reach = dsservo_output_attachment_height()
+               + 2 * steering_servo_arm_base_h - steering_servo_arm_gear_depth;
+  horn_y = -(dsservo_flange_w + dsservo_size[0] - dsservo_gearbox_d1) / 2;
   assert(depth >= 0 && suspension_chassis_mount_h
          - max(front_bulkhead_mount_bolt_bore_h,
                front_chassis_bellcrank_bolt_bore_h,
@@ -57,6 +63,13 @@ module front_chassis_mount_recesses() {
         }
         translate([0, -bellcrank_y_distance_from_bulkhead]) {
           bellcrank_steering_with_servo_position() {
+            translate([-horn_reach - horn_clearance,
+                       horn_y - steering_servo_arm_d / 2 - horn_clearance]) {
+              rounded_rect([horn_reach - dsservo_size[2] + 2 * horn_clearance,
+                            steering_servo_arm_d + 2 * horn_clearance],
+                           r=horn_clearance,
+                           fn=40);
+            }
             offset(delta=gap) {
               projection() {
                 intersection() {
