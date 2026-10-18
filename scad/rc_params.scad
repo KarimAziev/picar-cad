@@ -5,13 +5,13 @@ use <lipo_pack_case/multi_lipo_pack_case.scad>
 
 /* [Chassis splits] */
 // Separate head plate from the front suspension plate.
-split_head_chassis                                 = true;
+split_head_chassis                             = true;
 // Separate front suspension plate from the steering-servo plate.
-split_front_chassis                                = false;
+split_front_chassis                            = false;
 // Separate steering-servo plate from the rear equipment deck.
-split_rear_chassis                                 = false;
+split_rear_chassis                             = false;
 // Separate rear equipment deck from the rear suspension mount.
-split_rear_suspension                              = true;
+split_rear_suspension                          = true;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Bellcrank link arm. Part of both the drive and idler arms.
@@ -22,91 +22,91 @@ split_rear_suspension                              = true;
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Diameter of the bolt holes in the bellcrank idler and bellcrank drive arms
-bellcrank_arm_bolt_d                               = 3.6;
+bellcrank_arm_bolt_d                           = 3.6;
 
 // Height of the heat-set insert nut
-bellcrank_arm_heat_insert_nut_h                    = 5.2;
+bellcrank_arm_heat_insert_nut_h                = 5.2;
 
 // Diameter of the cylindrical recess around the bolt holes for the heat-set insert nut
-bellcrank_arm_bolt_bore_d                          = 4.4;
+bellcrank_arm_bolt_bore_d                      = 4.4;
 
 // Depth of the cylindrical recess around the bolt hole for the heat-set insert nut
-bellcrank_arm_bolt_bore_h                          = 1.5;
+bellcrank_arm_bolt_bore_h                      = 1.5;
 
 // Total length of the arm, measured from the center of the bellcrank
-bellcrank_arm_l                                    = 25.45;
+bellcrank_arm_l                                = 25.45;
 
 // Thickness of the arm
-bellcrank_arm_thickness                            = bellcrank_arm_heat_insert_nut_h + 1.8;
+bellcrank_arm_thickness                        = bellcrank_arm_heat_insert_nut_h + 1.8;
 
 // Width at the outer/tip end
-bellcrank_arm_tip_w                                = 6.10;
+bellcrank_arm_tip_w                            = 6.10;
 
 // Width at the cylinder/pivot end
-bellcrank_arm_root_w                               = 9.10;
+bellcrank_arm_root_w                           = 9.10;
 
 // Height of the lower boss
-bellcrank_arm_lower_boss_h                         = 2.4;
+bellcrank_arm_lower_boss_h                     = 2.4;
 
 // Outer diameter of the lower boss
-bellcrank_arm_lower_boss_d                         = 7.0;
+bellcrank_arm_lower_boss_d                     = 7.0;
 
 // Distance from the edge of the arm to the start of the hole
-bellcrank_arm_bolt_edge_offset                     = 2;
+bellcrank_arm_bolt_edge_offset                 = 2;
 
 // Distance between hole centers
-bellcrank_arm_bolt_spacing                         = 9.5;
+bellcrank_arm_bolt_spacing                     = 9.5;
 
 // Distance from the bottom of the pivot base to the bellcrank arm root
-bellcrank_arm_z                                    = 12.1;
+bellcrank_arm_z                                = 12.1;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Bellcrank idler (shared with the bellcrank drive)
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Outer diameter of the bearing
-bellcrank_idler_bearing_od                         = 8;
+bellcrank_idler_bearing_od                     = 8;
 // Inner (bore) diameter of the bearing
-bellcrank_idler_bearing_d                          = 5;
+bellcrank_idler_bearing_d                      = 5;
 
 // Width of the bearing
-bellcrank_idler_bearing_w                          = 2.5;
+bellcrank_idler_bearing_w                      = 2.5;
 
-bellcrank_idler_bearing_outer_recess_d             = 7;
+bellcrank_idler_bearing_outer_recess_d         = 7;
 
-bellcrank_idler_bearing_shoulder_d                 = 6.5;
+bellcrank_idler_bearing_shoulder_d             = 6.5;
 
 // The clearance for the bearing diameter
-bellcrank_bearing_clearance                        = 0.2;
+bellcrank_bearing_clearance                    = 0.2;
 
 // The clearance for the bellcrank post's hole
-bellcrank_post_hole_clearance                      = 0.5;
+bellcrank_post_hole_clearance                  = 0.5;
 
 // The outer diameter of the bellcrank cylinder
-bellcrank_idler_od                                 = bellcrank_idler_bearing_od + 3.5;
+bellcrank_idler_od                             = bellcrank_idler_bearing_od + 3.5;
 
-bellcrank_idler_extra_h                            = 0.8;
+bellcrank_idler_extra_h                        = 0.8;
 
-bellcrank_idler_support_thickness                  = 2;
+bellcrank_idler_support_thickness              = 2;
 
 // The addional height of the bellcrank for the upper's bearing chamfer
-bellcrank_idler_chamfer_h                          = 0.0;
+bellcrank_idler_chamfer_h                      = 0.0;
 
-bellcrank_idler_chamfer_angle                      = 30;
+bellcrank_idler_chamfer_angle                  = 30;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Bellcrank lever (used both in bellcrank drive and idler)
 // ─────────────────────────────────────────────────────────────────────────────
-bellcrank_lever_border_w                           = 1.5;
+bellcrank_lever_border_w                       = 1.5;
 
 // If true, the lever's outer end will be wider and smoothly "hulled"
-bellcrank_lever_use_hull                           = false;
+bellcrank_lever_use_hull                       = false;
 
 // Whether to add a hole in the lever for a screw to secure it to the bellcrank thread
-bellcrank_lever_add_through_hole                   = true;
+bellcrank_lever_add_through_hole               = true;
 
 // Diameter of the hole in the lever for a screw to secure it to the bellcrank thread
-bellcrank_lever_through_hole_d                     = 1.4;
+bellcrank_lever_through_hole_d                 = 1.4;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Pivot bush
@@ -117,50 +117,50 @@ bellcrank_lever_through_hole_d                     = 1.4;
 // ─────────────────────────────────────────────────────────────────────────────
 
 // The height of the pivot bush where the top and bottom bearings are inserted
-bellcrank_post_h                                   = 32.55;
+bellcrank_post_h                               = 32.55;
 
 // The outer diameter of the pivot bush
-bellcrank_post_od                                  = bellcrank_idler_bearing_d - 0.1;
+bellcrank_post_od                              = bellcrank_idler_bearing_d - 0.1;
 
 // The hole diameter for the bolt
-bellcrank_post_bolt_d                              = 3.1;
+bellcrank_post_bolt_d                          = 3.1;
 
 // The diameter of the bottom flange (shoulder)
-bellcrank_post_flang_d                             = bellcrank_idler_bearing_d + 1.2;
+bellcrank_post_flang_d                         = bellcrank_idler_bearing_d + 1.2;
 
 // The height of the bottom flange (shoulder)
-bellcrank_post_flang_h                             = 1.0;
+bellcrank_post_flang_h                         = 1.0;
 
 // The depth of the bolt hole at the bottom
-bellcrank_post_lower_hole_depth                    = 12.0;
+bellcrank_post_lower_hole_depth                = 12.0;
 
 // The depth of the bolt hole at the top
-bellcrank_post_upper_hole_depth                    = 12.0;
+bellcrank_post_upper_hole_depth                = 12.0;
 
 // Whether to use threads for the bolt hole
-bellcrank_post_use_threading                       = false;
+bellcrank_post_use_threading                   = false;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Bellcrank drive (servo lever parameters)
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Distance between the lower bellcrank lever and the upper servo lever
-bellcrank_servo_lever_z_offset                     = 2.6;
+bellcrank_servo_lever_z_offset                 = 2.6;
 // Distance between the edges of the holes in the servo lever
-bellcrank_servo_lever_holes_gap                    = 1.5;
+bellcrank_servo_lever_holes_gap                = 1.5;
 // Distance between the edge of the lever and the edge of the holes
-bellcrank_servo_lever_holes_edge_offset            = 1.2;
+bellcrank_servo_lever_holes_edge_offset        = 1.2;
 // Height of the upper boss
-bellcrank_servo_lever_boss_h                       = 3.5;
+bellcrank_servo_lever_boss_h                   = 3.5;
 // Number of mounting holes for the servo tie-rod end
-bellcrank_servo_lever_holes_n                      = 3;
+bellcrank_servo_lever_holes_n                  = 3;
 // Padding between the center pivot cylinder and the servo lever holes
-bellcrank_servo_lever_boss_pad_x                   = 2;
+bellcrank_servo_lever_boss_pad_x               = 2;
 
 // Total length of the arm starting from the center of bellcrank
-bellcrank_servo_lever_l                            = 25.45;
+bellcrank_servo_lever_l                        = 25.45;
 
-bellcrank_servo_lever_thickness                    = 4;
+bellcrank_servo_lever_thickness                = 4;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Bellcrank positioning on the chassis
@@ -168,151 +168,149 @@ bellcrank_servo_lever_thickness                    = 4;
 
 // The distance from the end of the bulkhead housing to the center of the
 // bellcrank drive/idler holes
-bellcrank_y_distance_from_bulkhead                 = 27.5;
+bellcrank_y_distance_from_bulkhead             = 27.5;
 
 // Spacing between the centers of the bellcrank drive and bellcrank idler holes
-chassis_bellcrank_spacing                          = 48.8;
+chassis_bellcrank_spacing                      = 48.8;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Steering servo DSSERVO
 // ─────────────────────────────────────────────────────────────────────────────
 
-dsservo_size                                       = [40.00, 20.0, 40.5];
-dsservo_bolt_dia                                   = 4.05;
+dsservo_size                                   = [40.00, 20.0, 40.5];
+dsservo_bolt_dia                               = 4.05;
 
-dsservo_bolt_spacing                               = [49.5, 10];
+dsservo_bolt_spacing                           = [49.5, 10];
 
 // offset between the servo slot and the fastening bolts
-dsservo_bolts_offset                               = 3.2;
+dsservo_bolts_offset                           = 3.2;
 
-dsservo_flange_w                                   = 54.5;
+dsservo_flange_w                               = 54.5;
 
-dsservo_flange_h                                   = 18.63;
-dsservo_flange_thickness                           = 4.0;
-dsservo_flange_z_offset                            = 12.8;
-dsservo_gearbox_x_offset                           = 0;
-dsservo_gearbox_mode                               = "union";
-dsservo_text                                       = [["20KG", "size", 9,
-                                                       "color", "white"],
-                                                      ["__________________________",
-                                                       "size", 2,
-                                                       "halign", "center",
-                                                       "gap_before", 1,
-                                                       "color", "white"],
-                                                      ["DSSERVO",
-                                                       "translation", [2, 0, 0],
-                                                       "gap_before", 2,
-                                                       "halign", "left",
-                                                       "color", "white",
-                                                       "size", 2,],
-                                                      ["(S) DIGITAL SERVO",
-                                                       "size", 2,
-                                                       "translation", [2, 0, 0],
-                                                       "gap_before", 1,
-                                                       "halign", "left",
-                                                       "color", "white"]];
-dsservo_text_size                                  = 2;
-dsservo_text_plist                                 = ["font", "Lucida Grande:style=Bold",
-                                                      "text_both_sides", true,
-                                                      "background", ["color", pink_1,
-                                                                     "pad_left", -0.1,
-                                                                     "pad_right", -0.1,]];
+dsservo_flange_h                               = 18.63;
+dsservo_flange_thickness                       = 4.0;
+dsservo_flange_z_offset                        = 12.8;
+dsservo_gearbox_x_offset                       = 0;
+dsservo_gearbox_mode                           = "union";
+dsservo_text                                   = [["20KG", "size", 9,
+                                                   "color", "white"],
+                                                  ["__________________________",
+                                                   "size", 2,
+                                                   "halign", "center",
+                                                   "gap_before", 1,
+                                                   "color", "white"],
+                                                  ["DSSERVO",
+                                                   "translation", [2, 0, 0],
+                                                   "gap_before", 2,
+                                                   "halign", "left",
+                                                   "color", "white",
+                                                   "size", 2,],
+                                                  ["(S) DIGITAL SERVO",
+                                                   "size", 2,
+                                                   "translation", [2, 0, 0],
+                                                   "gap_before", 1,
+                                                   "halign", "left",
+                                                   "color", "white"]];
+dsservo_text_size                              = 2;
+dsservo_text_plist                             = ["font", "Lucida Grande:style=Bold",
+                                                  "text_both_sides", true,
+                                                  "background", ["color", pink_1,
+                                                                 "pad_left", -0.1,
+                                                                 "pad_right", -0.1,]];
 
-dsservo_gearbox_h                                  = 0;
-dsservo_gearbox_gear_od                            = 5.9;
-dsservo_gearbox_size                               = [[1, 12.95, matte_black, 20],
-                                                      [3.9, dsservo_gearbox_gear_od, metallic_gold_2, 25],
-                                                      [0.05, 4.2, dark_gold_2, 25],
-                                                      [0.05, 2.8, licorice, 25]];
-dsservo_gearbox_d1                                 = 12.95 + 3.8;
+dsservo_gearbox_h                              = 0;
+dsservo_gearbox_gear_od                        = 5.9;
+dsservo_gearbox_size                           = [[1, 12.95, matte_black, 20],
+                                                  [3.9, dsservo_gearbox_gear_od, metallic_gold_2, 25],
+                                                  [0.05, 4.2, dark_gold_2, 25],
+                                                  [0.05, 2.8, licorice, 25]];
+dsservo_gearbox_d1                             = 12.95 + 3.8;
 
-dsservo_gearbox_d2                                 = 6;
-dsservo_color                                      = jet_black;
-dsservo_cut_len                                    = 0;
-dsservo_cut_len_top                                = 7.7;
-dsservo_cut_top_depth                              = 3.0;
+dsservo_gearbox_d2                             = 6;
+dsservo_color                                  = jet_black;
+dsservo_cut_len                                = 0;
+dsservo_cut_len_top                            = 7.7;
+dsservo_cut_top_depth                          = 3.0;
 
-dsservo_socket_size                                = [5.3, 6.3, 3.4];
-dsservo_socket_z_offset                            = 3.0;
-dsservo_socket_side                                = -1;
+dsservo_socket_size                            = [5.3, 6.3, 3.4];
+dsservo_socket_z_offset                        = 3.0;
+dsservo_socket_side                            = -1;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Bulkhead slots
 // ─────────────────────────────────────────────────────────────────────────────
 // The upper spacing above the bulkhead slots
-front_chassis_bulkhead_padding_y                   = 4;
+front_chassis_bulkhead_padding_y               = 4;
 
 // The x-padding for the bulkhead slots
-front_chassis_bulkhead_padding_x                   = 12.8;
+front_chassis_bulkhead_padding_x               = 12.8;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Bellcrank slots
 // ─────────────────────────────────────────────────────────────────────────────
-front_chassis_bellcrank_bolt_d                     = m3_hole_dia;
-front_chassis_bellcrank_use_countersunk            = true;
+front_chassis_bellcrank_bolt_d                 = m3_hole_dia;
+front_chassis_bellcrank_use_countersunk        = true;
 
-front_chassis_bellcrank_bolt_bore_d                = front_chassis_bellcrank_use_countersunk
-                                                      ? m3_countersunk_bore_d
-                                                      : m3_socket_counterbore_d;
-front_chassis_bellcrank_bolt_bore_h                = front_chassis_bellcrank_use_countersunk
-                                                      ? m3_countersunk_bore_h
-                                                      : m3_socket_counterbore_h;
+front_chassis_bellcrank_bolt_bore_d            = front_chassis_bellcrank_use_countersunk
+                                                  ? m3_countersunk_bore_d
+                                                  : m3_socket_counterbore_d;
+front_chassis_bellcrank_bolt_bore_h            = front_chassis_bellcrank_use_countersunk
+                                                  ? m3_countersunk_bore_h
+                                                  : m3_socket_counterbore_h;
 
 // The hole for easier access to the bellcrank (e.g., for fastening the steering arm)
-front_chassis_bellcrank_tool_access_hole_d         = 8;
+front_chassis_bellcrank_tool_access_hole_d     = 8;
 
 // The x-padding of the access hole
-front_chassis_bellcrank_tool_access_hole_pad_x     = 1.5;
+front_chassis_bellcrank_tool_access_hole_pad_x = 1.5;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Front chassis ears above the bulkhead slots
 // ─────────────────────────────────────────────────────────────────────────────
 // Width of the ear
-front_chassis_ear_w                                = 6.3;
+front_chassis_ear_w                            = 6.3;
 
 // Additional width near the chassis for a smoother shape
-front_chassis_ear_extra_w                          = 0.8;
+front_chassis_ear_extra_w                      = 0.8;
 
 // Outer X-length of the ear
-front_chassis_ear_l                                = 5.1;
+front_chassis_ear_l                            = 5.1;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Bumper slot
 // ─────────────────────────────────────────────────────────────────────────────
 // Extra forward clearance between the head's cable passage and bumper mounting lands.
-front_chassis_bumper_extension                     = 18;
-front_bumper_bolt_d                                = m3_hole_dia;
-front_bumper_bolt_spacing_x                        = 38.0;
-front_bumper_bolt_pad_x                            = 4.4;
-front_bumper_center_bolt_y_offset                  = 7;
-front_bumper_bolt_pad_y                            = 4;
-front_bumper_bolt_y_offset                         = 11.4;
+front_chassis_bumper_extension                 = 18;
+front_bumper_bolt_d                            = m3_hole_dia;
+front_bumper_bolt_spacing_x                    = 38.0;
+front_bumper_bolt_pad_x                        = 4.4;
+front_bumper_center_bolt_y_offset              = 7;
+front_bumper_bolt_pad_y                        = 4;
+front_bumper_bolt_y_offset                     = 11.4;
 
 // Front bumper dimensions in millimeters: X is width, +Y is forward, Z is height.
 // Shared by the TPU body, rigid retainer, printable entries and chassis measurements.
-front_bumper_plist = [
-  // TPU 95A impact-body envelope; compliance is set by slicer walls and infill.
-  "foam_w",         163,
-  "foam_l",          42,
-  // Also sets the height of the retainer's integral compression posts.
-  "foam_h",          21,
 
-  // Rigid retainer footprint, inside the TPU envelope.
-  "plate_w",        110,
-  "plate_l",         30,
-  // Plate thickness above the posts; total retainer height is foam_h + plate_h.
-  "plate_h",          3,
-  // Width of the perimeter and diagonal reinforcing ribs.
-  "rib_w",            5,
+front_bumper_plist = ["foam_w", 163, // TPU 95A impact-body envelope; compliance is set by slicer walls and infill.
+                      "foam_l", 42,
+                      // Also sets the height of the retainer's integral compression posts.
+                      "foam_h", 21,
 
-  // Post outside diameter; the bolt bore uses front_bumper_bolt_d.
-  "post_d",           8,
-  // Diametral clearance: TPU passage diameter = post_d + post_clearance.
-  "post_clearance",   0.6,
-  // Screw length beneath the head, through plate, posts and chassis to the nut.
-  // Must be at least foam_h + plate_h + chassis_thickness + 4 mm.
-  "bolt_l",          35
-];
+                      // Rigid retainer footprint, inside the TPU envelope.
+                      "plate_w", 110,
+                      "plate_l", 30,
+                      // Plate thickness above the posts; total retainer height is foam_h + plate_h.
+                      "plate_h", 3,
+                      // Width of the perimeter and diagonal reinforcing ribs.
+                      "rib_w", 5,
+
+                      // Post outside diameter; the bolt bore uses front_bumper_bolt_d.
+                      "post_d", 8,
+                      // Diametral clearance: TPU passage diameter = post_d + post_clearance.
+                      "post_clearance", 0.6,
+                      // Screw length beneath the head, through plate, posts and chassis to the nut.
+                      // Must be at least foam_h + plate_h + chassis_thickness + 4 mm.
+                      "bolt_l", 35];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Front chasssis joint
@@ -515,7 +513,7 @@ front_lower_arm_use_lower_edge_cutout              = true;
 
 // The depth of the hole for the ball stud
 front_lower_arm_ball_stud_hole_depth               = front_arm_ball_stud_len
-                                                      - front_arm_ball_stud_unthreaded_h;
+                                                     - front_arm_ball_stud_unthreaded_h;
 
 // How far to screw out the ball stud. A higher value means the bolt is screwed in less
 front_lower_arm_ball_stud_insert_out_depth         = 1;
@@ -907,7 +905,7 @@ knuckle_arm_bolt_hole_offset                       = 2.0;
 
 // The outer diameter of the ring that reinforces the steering arm mount in the knuckle
 knuckle_arm_ring_outer_d                           = knuckle_inner_bearing_seat_d
-                                                      + knuckle_outer_wall_thickness * 2;
+                                                     + knuckle_outer_wall_thickness * 2;
 // The width of the arm at the base where it connects to the knuckle
 knuckle_arm_base_w                                 = 9;
 
@@ -1014,7 +1012,7 @@ knuckle_ball_stud_mount_thickness                  = 1.6;
 
 // The outer diameter of the mounting flange for the ball stud housing, which includes clearance for the bolt holes.
 knuckle_ball_stud_mount_outer_d                    = knuckle_ball_stud_mount_hole_d
-                                                      + knuckle_ball_stud_mount_thickness * 2;
+                                                     + knuckle_ball_stud_mount_thickness * 2;
 
 // The height of the mounting flange for the ball stud housing (Z direction for extrusion)
 knuckle_ball_stud_house_h                          = 14.5;
@@ -1215,7 +1213,7 @@ servo_tie_rod_b_color                              = cobalt_blue_metallic;
 steering_servo_arm_total_l                         = 35.4;
 steering_servo_arm_d                               = 14.75;
 steering_servo_arm_len                             = steering_servo_arm_total_l
-                                                      - steering_servo_arm_d;
+                                                     - steering_servo_arm_d;
 steering_servo_arm_w                               = 7.6;
 steering_servo_arm_base_h                          = 6.0;
 
@@ -1518,8 +1516,8 @@ multi_lipo_lid_equipment_presets                   = ["meter", [multi_lipo_lid_b
 multi_lipo_lid_equipment                           = assert(multi_lipo_lid_equipment_preset == "meter"
                                                             || multi_lipo_lid_equipment_preset == "dual_wago",
                                                             "Unknown multi-LiPo lid equipment preset")
-                                                      plist_get(multi_lipo_lid_equipment_preset,
-                                                      multi_lipo_lid_equipment_presets);
+  plist_get(multi_lipo_lid_equipment_preset,
+            multi_lipo_lid_equipment_presets);
 
 multi_lipo_packs_case                              = ["lipo_packs", lipo_packs,
                                                       "power_rotation", 180,
@@ -1638,11 +1636,11 @@ gearbox_bracket_nut_pocket_h_clearance             = 0.5;
 
 gearbox_bracket_chassis_use_countersunk            = false;
 gearbox_bracket_chassis_cbore_h                    = gearbox_bracket_chassis_use_countersunk
-                                                      ? chassis_countersunk_bore_h
-                                                      : chassis_counterbore_h;
+                                                     ? chassis_countersunk_bore_h
+                                                     : chassis_counterbore_h;
 gearbox_bracket_chassis_cbore_d                    = gearbox_bracket_chassis_use_countersunk
-                                                      ? chassis_countersunk_bore_d
-                                                      : chassis_counterbore_bore_d;
+                                                     ? chassis_countersunk_bore_d
+                                                     : chassis_counterbore_bore_d;
 
 // The wall thickness of the bracket boss; the outer diameter is
 // motor_plist.gearbox.mount_bolt_d + gearbox_bracket_boss_thickness * 2.
