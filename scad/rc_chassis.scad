@@ -20,8 +20,10 @@ include <suspension/front_chassis/computed_params.scad>
 use <head/head_neck.scad>
 use <lib/plist.scad>
 use <suspension/bellcrank_steering_assembly.scad>
-use <suspension/computed.scad>
 use <suspension/chassis_dimensions.scad>
+use <suspension/computed.scad>
+use <suspension/front_bumper/common.scad>
+use <suspension/front_bumper/front_bumper_assembly.scad>
 use <suspension/front_chassis/front_chassis.scad>
 use <suspension/front_chassis/front_chassis_controls.scad>
 use <suspension/front_chassis/front_chassis_joint.scad>
@@ -34,11 +36,12 @@ use <suspension/rear_chassis/rear_chassis.scad>
 use <suspension/rear_suspension/rear_suspension_joint.scad>
 use <suspension/upper_steering_plate.scad>
 
+show_head_frame                             = true;
 show_chassis_front_frame                    = true;
 show_chassis_rear_frame                     = true;
-show_head_frame                             = true;
 show_rear_chassis                           = true;
 show_rear_suspension_mount                  = true;
+
 // Joint separation for assembly inspection.
 front_chassis_joint_spacing                 = 0; // [0:1:30]
 head_chassis_joint_spacing                  = 0; // [0:1:30]
@@ -46,6 +49,9 @@ rear_chassis_joint_spacing                  = 0; // [0:1:30]
 rear_suspension_joint_spacing               = 0; // [0:1:50]
 
 show_front_wheels                           = false;
+show_front_bumper_top_plate                 = false;
+show_front_bumper_foam                      = false;
+show_front_bumper_bolts                     = false;
 show_rear_wheels_preview                    = false;
 show_wheel_tires                            = false;
 
@@ -142,8 +148,8 @@ show_rear_lidar                             = false;
 show_rear_lidar_lid                         = false;
 
 show_front_controls                         = false;
-show_front_controls_slots                   = false;
-show_front_access_slots                     = false;
+show_front_controls_slots                   = true;
+show_front_access_slots                     = true;
 
 // Preview-only pin passages with fit allowances and translucent chassis plates.
 show_debug_pins                             = false;
@@ -157,16 +163,12 @@ front_steering_hole                         = 0; // [0,1]
 // Steering angle
 steering_servo_angle                        = 0; // [-25:1:25]
 
-show_ideal_length                           = false;
-
-chassis_ideal_wheelbase                     = 260;
-
 // Measurements use the assembled reference pose and nominal tire envelopes.
-show_wheelbase = false;
-show_track_width = false;
-show_ground_clearance = false;
-show_overall_length = false;
-show_chassis_width = false;
+show_wheelbase                              = true;
+show_track_width                            = true;
+show_ground_clearance                       = true;
+show_overall_length                         = true;
+show_chassis_width                          = true;
 
 module rc_chassis(show_bellcrank_drive=show_bellcrank_drive,
                   show_bellcrank_idler=show_bellcrank_idler,
@@ -252,6 +254,9 @@ module rc_chassis(show_bellcrank_drive=show_bellcrank_drive,
                   show_rear_wheels_preview=show_rear_wheels_preview,
                   show_wheel_tires=show_wheel_tires,
                   show_head_frame=show_head_frame,
+                  show_front_bumper_top_plate=show_front_bumper_top_plate,
+                  show_front_bumper_foam=show_front_bumper_foam,
+                  show_front_bumper_bolts=show_front_bumper_bolts,
                   show_motor_encoder_bracket=show_motor_encoder_bracket,
                   show_rear_chassis_nuts=show_rear_chassis_nuts,
                   show_rear_chassis_mount_bolts=show_rear_chassis_mount_bolts,
@@ -266,22 +271,25 @@ module rc_chassis(show_bellcrank_drive=show_bellcrank_drive,
                   show_overall_length=show_overall_length,
                   show_chassis_width=show_chassis_width) {
   chassis_dimension_annotations(wheelbase=show_wheelbase,
-                                 track=show_track_width,
-                                 clearance=show_ground_clearance,
-                                 length=show_overall_length,
-                                 width=show_chassis_width);
+                                track=show_track_width,
+                                clearance=show_ground_clearance,
+                                length=show_overall_length,
+                                width=show_chassis_width,
+                                bumper_top_plate=show_front_bumper_top_plate,
+                                bumper_foam=show_front_bumper_foam,
+                                bumper_pl=front_bumper_plist);
   resolved_front_chassis_joint_spacing = split_front_chassis
-    ? front_chassis_joint_spacing
-    : 0;
+                                         ? front_chassis_joint_spacing
+                                         : 0;
   resolved_head_chassis_joint_spacing = split_head_chassis
-    ? head_chassis_joint_spacing
-    : 0;
+                                        ? head_chassis_joint_spacing
+                                        : 0;
   resolved_rear_chassis_joint_spacing = split_rear_chassis
-    ? rear_chassis_joint_spacing
-    : 0;
+                                        ? rear_chassis_joint_spacing
+                                        : 0;
   resolved_rear_suspension_joint_spacing = split_rear_suspension
-    ? rear_suspension_joint_spacing
-    : 0;
+                                           ? rear_suspension_joint_spacing
+                                           : 0;
   body_width = suspension_chassis_width();
   rear_layout = rear_chassis_layout(min_width=body_width);
 
@@ -406,6 +414,14 @@ module rc_chassis(show_bellcrank_drive=show_bellcrank_drive,
                                   steering_servo_angle=steering_servo_angle,
                                   steering_servo_spacing=resolved_front_chassis_joint_spacing);
     }
+  }
+
+  translate(front_bumper_position(front_bumper_plist)
+            + [0, resolved_head_chassis_joint_spacing, 0]) {
+    front_bumper_assembly(pl=front_bumper_plist,
+                          show_top_plate=show_front_bumper_top_plate,
+                          show_foam=show_front_bumper_foam,
+                          show_bolts=show_front_bumper_bolts);
   }
 
   if (show_head) {

@@ -9,7 +9,7 @@ split_head_chassis                                 = true;
 // Separate front suspension plate from the steering-servo plate.
 split_front_chassis                                = false;
 // Separate steering-servo plate from the rear equipment deck.
-split_rear_chassis                                 = true;
+split_rear_chassis                                 = false;
 // Separate rear equipment deck from the rear suspension mount.
 split_rear_suspension                              = true;
 
@@ -279,12 +279,40 @@ front_chassis_ear_l                                = 5.1;
 // ─────────────────────────────────────────────────────────────────────────────
 // Bumper slot
 // ─────────────────────────────────────────────────────────────────────────────
+// Extra forward clearance between the head's cable passage and bumper mounting lands.
+front_chassis_bumper_extension                     = 18;
 front_bumper_bolt_d                                = m3_hole_dia;
 front_bumper_bolt_spacing_x                        = 38.0;
 front_bumper_bolt_pad_x                            = 4.4;
 front_bumper_center_bolt_y_offset                  = 7;
 front_bumper_bolt_pad_y                            = 4;
 front_bumper_bolt_y_offset                         = 11.4;
+
+// Front bumper dimensions in millimeters: X is width, +Y is forward, Z is height.
+// Shared by the TPU body, rigid retainer, printable entries and chassis measurements.
+front_bumper_plist = [
+  // TPU 95A impact-body envelope; compliance is set by slicer walls and infill.
+  "foam_w",         163,
+  "foam_l",          42,
+  // Also sets the height of the retainer's integral compression posts.
+  "foam_h",          21,
+
+  // Rigid retainer footprint, inside the TPU envelope.
+  "plate_w",        110,
+  "plate_l",         30,
+  // Plate thickness above the posts; total retainer height is foam_h + plate_h.
+  "plate_h",          3,
+  // Width of the perimeter and diagonal reinforcing ribs.
+  "rib_w",            5,
+
+  // Post outside diameter; the bolt bore uses front_bumper_bolt_d.
+  "post_d",           8,
+  // Diametral clearance: TPU passage diameter = post_d + post_clearance.
+  "post_clearance",   0.6,
+  // Screw length beneath the head, through plate, posts and chassis to the nut.
+  // Must be at least foam_h + plate_h + chassis_thickness + 4 mm.
+  "bolt_l",          35
+];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Front chasssis joint
@@ -329,13 +357,18 @@ suspension_chassis_joint_bore_pin_land             = 1.0;
 // ─────────────────────────────────────────────────────────────────────────────
 // Head mount on the front chassis
 // ─────────────────────────────────────────────────────────────────────────────
-// Suspension chassis cable passages; placement derives from component datums.
+// Suspension chassis cable passages, placement derives from component datums.
 front_chassis_ribbon_slot_w                        = 20;
 front_chassis_ribbon_slot_l                        = 3;
 front_chassis_ribbon_slot_corner_r                 = 0.6;
+
 front_chassis_head_side_slot_w                     = 7.5;
 front_chassis_head_side_slot_l                     = 11.0;
 front_chassis_head_side_slot_rows                  = 2;
+
+head_servo_cable_slot_size                         = [4, 8.8];
+head_servo_cable_corner_r                          = "15%";
+head_servo_cable_slot_offsets                      = [2, 8]; // [x, y] offsets
 
 // Pan-servo mounting interface retained from the proven head mount.
 front_chassis_head_pan_servo_slot_dia              = 6.5;

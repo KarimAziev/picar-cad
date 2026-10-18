@@ -13,6 +13,29 @@ def main() -> None:
     checks.FIXTURE = checks.ROOT / "tests/fixtures/front_ribbon_slots.scad"
     checks.OUT = checks.ROOT / "build/skill-previews/front-ribbon/mesh-checks"
     checks.OUT.mkdir(parents=True, exist_ok=True)
+    for split in (False, True):
+        frame = checks.one_solid("camera_frame", name=f"camera-frame-{split}",
+                                 split_front_chassis=split)
+        base = checks.one_solid("camera_baseline", name=f"camera-base-{split}",
+                                split_front_chassis=split)
+        np.testing.assert_allclose(frame.bounds, base.bounds, atol=1e-5)
+        removed = checks.export("camera_removed", name=f"camera-removed-{split}",
+                                empty=True, split_front_chassis=split)
+        if split:
+            checks.assert_no_interference(removed, "split joint camera passage")
+            np.testing.assert_allclose(frame.volume, base.volume, atol=1e-5)
+        else:
+            assert removed is not None
+            assert removed.is_watertight and len(removed.split()) == 1
+            np.testing.assert_allclose(removed.extents, [18, 2, 6], atol=1e-5)
+            np.testing.assert_allclose(removed.volume, (18 - 2) * 2 * 6, atol=0.02)
+            np.testing.assert_allclose(base.volume - frame.volume, removed.volume,
+                                       atol=0.02)
+            checks.assert_no_interference(
+                checks.export("camera_land", empty=True, split_front_chassis=split),
+                "camera passage 2 mm surrounding land",
+            )
+    print("PASS: 18 x 2 mm camera passage only in continuous front/rear frame")
     for orientation in ("wlh", "lwh"):
         for reverse in (False, True):
             params = {"front_rpi_orientation": f'"{orientation}"',

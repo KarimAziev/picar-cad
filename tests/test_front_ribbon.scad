@@ -29,5 +29,6 @@ for (rows = [3, 5, 6]) {
   assert(abs(poses[0][2] - (front_rpi_orientation == "lwh" ? 90 : 0)) < 1e-6);
 }
 assert(abs(front_chassis_head_center_y() - 70.825) < 1e-6);
-assert(abs(front_chassis_front_frame_start_y() - 115.825) < 1e-6);
+assert(abs(front_chassis_front_frame_start_y()
+           - (115.825 + front_chassis_bumper_extension)) < 1e-6);
 echo("PASS: Pi-side ribbon route, configurable slots and compact head placement");

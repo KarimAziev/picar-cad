@@ -1,5 +1,5 @@
 /**
-  * Module: Empty assembly for RC-style robot with suspension.
+  * Module: Assembly for RC-style robot with suspension.
   *
   * Assembles the front chassis, including its front and rear frame sections,
   * together with the front suspension, bellcrank steering assembly, and
@@ -17,18 +17,17 @@ include <parameters.scad>
 include <rc_params.scad>
 include <suspension/front_chassis/computed_params.scad>
 
-use <lib/shapes3d.scad>
 use <rc_chassis.scad>
 
-show_wheelbase = false;
-show_track_width = false;
-show_ground_clearance = false;
-show_overall_length = false;
-show_chassis_width = false;
+show_wheelbase                              = false;
+show_track_width                            = false;
+show_ground_clearance                       = false;
+show_overall_length                         = false;
+show_chassis_width                          = false;
 
+show_head_frame                             = true;
 show_chassis_front_frame                    = true;
 show_chassis_rear_frame                     = true;
-show_head_frame                             = true;
 show_rear_chassis                           = true;
 show_rear_suspension_mount                  = true;
 // Joint separation for assembly inspection.
@@ -38,6 +37,10 @@ rear_chassis_joint_spacing                  = 0; // [0:1:30]
 rear_suspension_joint_spacing               = 0; // [0:1:50]
 
 show_front_wheels                           = true;
+show_front_bumper_top_plate                 = true;
+show_front_bumper_foam                      = true;
+show_front_bumper_bolts                     = true;
+
 show_rear_wheels_preview                    = true;
 show_wheel_tires                            = true;
 
@@ -148,10 +151,6 @@ front_steering_hole                         = 0; // [0,1]
 // Steering angle
 steering_servo_angle                        = 0; // [-25:1:25]
 
-show_ideal_length                           = false;
-
-chassis_ideal_wheelbase                     = 260;
-
 module rc_robot_assembly(show_bellcrank_drive=show_bellcrank_drive,
                          show_bellcrank_idler=show_bellcrank_idler,
                          show_bellcrank_post=show_bellcrank_post,
@@ -236,6 +235,9 @@ module rc_robot_assembly(show_bellcrank_drive=show_bellcrank_drive,
                          show_rear_wheels_preview=show_rear_wheels_preview,
                          show_wheel_tires=show_wheel_tires,
                          show_head_frame=show_head_frame,
+                         show_front_bumper_top_plate=show_front_bumper_top_plate,
+                         show_front_bumper_foam=show_front_bumper_foam,
+                         show_front_bumper_bolts=show_front_bumper_bolts,
                          show_rear_chassis_nuts=show_rear_chassis_nuts,
                          show_rear_chassis_mount_bolts=show_rear_chassis_mount_bolts,
                          show_rear_chassis_equipment=show_rear_chassis_equipment,
@@ -337,6 +339,9 @@ module rc_robot_assembly(show_bellcrank_drive=show_bellcrank_drive,
              show_rear_wheels_preview=show_rear_wheels_preview,
              show_wheel_tires=show_wheel_tires,
              show_head_frame=show_head_frame,
+             show_front_bumper_top_plate=show_front_bumper_top_plate,
+             show_front_bumper_foam=show_front_bumper_foam,
+             show_front_bumper_bolts=show_front_bumper_bolts,
              show_rear_chassis_nuts=show_rear_chassis_nuts,
              show_rear_chassis_mount_bolts=show_rear_chassis_mount_bolts,
              show_rear_chassis_equipment=show_rear_chassis_equipment,
@@ -347,8 +352,3 @@ module rc_robot_assembly(show_bellcrank_drive=show_bellcrank_drive,
 }
 
 rc_robot_assembly();
-if (show_ideal_length) {
-  translate([0, front_bulkhead_len / 2, 0]) {
-    #cuboid(size=[200, chassis_ideal_wheelbase, 40], anchor=[0, -1, 1]);
-  }
-}

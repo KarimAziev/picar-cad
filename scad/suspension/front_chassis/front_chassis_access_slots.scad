@@ -1,6 +1,5 @@
 /**
-  * Module: Head-side cable and upper ribbon access openings.
-  * Adapts the legacy side trapezoids and ribbon passage to the new outline.
+  * Module: Chassis camera ribbon and head-side cable openings.
   */
 
 include <computed_params.scad>
@@ -24,6 +23,33 @@ function front_chassis_head_front_ribbon_y() =
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_camera_ribbon_slot
+  ─────────────────────────────────────────────────────────────────────────────
+  Cut a trapezoidal camera ribbon passage with the shared head-zone dimensions.
+  **Parameters:**
+  - `thickness`: Frame thickness crossed by the passage, starting at Z=0.
+  - `anchor`: Anchor on the `[width, length, thickness]` reference box.
+  **Behavior:** The wider edge faces -Y. The cutter overlaps both frame faces.
+ */
+module front_chassis_camera_ribbon_slot(thickness=chassis_thickness,
+                                        anchor=[1, 1, 1]) {
+  eps = front_chassis_joint_boolean_overlap;
+  w = front_chassis_head_pan_servo_top_ribbon_cutout_len;
+  l = front_chassis_head_pan_servo_top_ribbon_cutout_h;
+  assert(w > 2 * l && l > 0 && thickness > 0,
+         "Camera ribbon passage needs positive dimensions and width > 2 * length");
+  with_anchor(anchor, [w, l, thickness], centered=true) {
+    translate([0, 0, -eps]) {
+      linear_extrude(height=thickness + eps * 2) {
+        polygon([[-w / 2, -l / 2], [w / 2, -l / 2],
+                 [w / 2 - l, l / 2], [-w / 2 + l, l / 2]]);
+      }
+    }
+  }
+}
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
   front_chassis_head_front_ribbon_slot
   ─────────────────────────────────────────────────────────────────────────────
 
@@ -36,15 +62,9 @@ function front_chassis_head_front_ribbon_y() =
 module front_chassis_head_front_ribbon_slot(thickness=chassis_thickness,
                                             anchor=[0, 0, 1]) {
   head = front_chassis_head_mount_size();
-  eps = front_chassis_joint_boolean_overlap;
-  w = front_chassis_head_pan_servo_top_ribbon_cutout_len;
-  l = front_chassis_head_pan_servo_top_ribbon_cutout_h;
   with_anchor(anchor, [head[0], head[1], thickness], centered=true) {
-    translate([0, front_chassis_head_front_ribbon_y(), -eps]) {
-      linear_extrude(height=thickness + eps * 2) {
-        polygon([[-w / 2, -l / 2], [w / 2, -l / 2],
-                 [w / 2 - l, l / 2], [-w / 2 + l, l / 2]]);
-      }
+    translate([0, front_chassis_head_front_ribbon_y(), 0]) {
+      front_chassis_camera_ribbon_slot(thickness=thickness, anchor=[0, 0, 1]);
     }
   }
 }

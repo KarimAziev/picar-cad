@@ -17,6 +17,7 @@ use <../../../lib/shapes3d.scad>
 use <../../../lib/transforms.scad>
 use <../../bellcrank_steering_slots.scad>
 use <../../steering_servo_bracket/steering_servo_chassis_slots.scad>
+use <../front_chassis_access_slots.scad>
 use <../front_chassis_controls.scad>
 use <../front_chassis_joint.scad>
 use <../front_chassis_mount_recesses.scad>
@@ -68,6 +69,18 @@ function front_chassis_wiring_slot_pos(d=front_chassis_wiring_slot_d) =
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_rear_camera_slot_pos
+  ─────────────────────────────────────────────────────────────────────────────
+  Locate the centered ribbon passage behind the suspension-frame boundary.
+  **Returns:** XYZ center on the underside, leaving `front_chassis_head_wire_land`
+  between the passage's forward edge and the frame boundary.
+ */
+function front_chassis_rear_camera_slot_pos() =
+  [0, y_front_chassis_rear_frame_joint_1_start - front_chassis_head_wire_land
+      - front_chassis_head_pan_servo_top_ribbon_cutout_h / 2, 0];
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
   front_chassis_rear_frame
   ─────────────────────────────────────────────────────────────────────────────
 
@@ -82,6 +95,8 @@ function front_chassis_wiring_slot_pos(d=front_chassis_wiring_slot_d) =
   - `show_wiring_slot`: Include the round wiring passage.
   - `front_joint`: Cut the front suspension socket and pin passages.
   - `rear_joint`: Cut the rear equipment deck socket and fastener passages.
+  - `show_camera_slot`: Include the head-size ribbon passage when `front_joint`
+    is false, independently of the ribbon threading bank.
   **Behavior:** Disabled joints form continuous boundaries with adjacent sections.
   */
 module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
@@ -92,7 +107,8 @@ module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
                                 show_ribbon_slots=front_chassis_use_ribbon_slots,
                                 show_wiring_slot=front_chassis_use_wiring_slot,
                                 front_joint=split_front_chassis,
-                                rear_joint=split_rear_chassis) {
+                                rear_joint=split_rear_chassis,
+                                show_camera_slot=true) {
   assert(width >= front_chassis_required_width(),
          "Frame width cannot exclude the front hardware");
   rear_extension = rear_joint ? 0 : front_chassis_joint_boolean_overlap;
@@ -146,6 +162,12 @@ module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
       }
     }
 
+    if (!front_joint && show_camera_slot) {
+      translate(front_chassis_rear_camera_slot_pos()) {
+        front_chassis_camera_ribbon_slot(anchor=[0, 0, 1]);
+      }
+    }
+
     if (show_wiring_slot) {
       eps = front_chassis_joint_boolean_overlap;
       translate(front_chassis_wiring_slot_pos() - [0, 0, eps]) {
@@ -192,3 +214,5 @@ module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
     }
   }
 }
+
+front_chassis_rear_frame();

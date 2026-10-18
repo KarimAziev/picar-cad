@@ -14,7 +14,7 @@ include <../../../rc_params.scad>
 use <../../../head/head_neck.scad>
 use <../../../lib/functions.scad>
 use <../../../lib/placement.scad>
-use <../../../lib/slots.scad>
+use <../../../lib/shapes3d.scad>
 use <../../../lib/transforms.scad>
 use <../../../lib/trapezoids.scad>
 
@@ -63,7 +63,8 @@ function front_chassis_head_front_reach() =
   **Returns:** Positive distance to the rear edge of the head transition.
  */
 function front_chassis_head_rear_reach() =
-  assert(front_chassis_head_transition_l > 0, "Head transition must be positive")
+  assert(front_chassis_head_transition_l > 0,
+         "Head transition must be positive")
   front_chassis_head_mount_size()[1] / 2 + front_chassis_head_transition_l;
 
 /**
@@ -99,10 +100,14 @@ module front_chassis_head_slots(thickness=chassis_thickness,
   total_x = cols_params[1];
   total_y = rows_params[1];
 
-  recess_w = total_x * 2 + slot_r * 2 + front_chassis_head_pan_servo_screw_d
+  recess_l = total_x * 2 + slot_r * 2 + front_chassis_head_pan_servo_screw_d
              + front_chassis_head_pan_servo_screws_gap;
-  recess_l = total_y * 2 + slot_r * 2 + front_chassis_head_pan_servo_screw_d
+  recess_w = total_y * 2 + slot_r * 2 + front_chassis_head_pan_servo_screw_d
              + front_chassis_head_pan_servo_screws_gap;
+
+  half_of_thickness = front_chassis_head_pan_servo_recess_thickness / 2;
+
+  pan_servo_slot_r = front_chassis_head_pan_servo_slot_dia / 2;
 
   with_anchor(anchor=anchor,
               size=[size[0], size[1], thickness],
@@ -111,24 +116,24 @@ module front_chassis_head_slots(thickness=chassis_thickness,
       translate([0, 0, thickness - recess_h]) {
         linear_extrude(height=recess_h + eps, center=false) {
           mirror_copy([0, 1, 0]) {
-            translate([-front_chassis_head_pan_servo_recess_thickness / 2,
+            translate([-half_of_thickness,
                        0,
                        0]) {
               trapezoid_rounded_top(b=front_chassis_head_pan_servo_slot_dia,
                                     t=front_chassis_head_pan_servo_recess_thickness,
-                                    h=recess_w / 2,
+                                    h=recess_l / 2,
                                     center=false,
                                     r_factor=0.5);
             }
           }
           rotate([0, 0, 90]) {
             mirror_copy([0, 1, 0]) {
-              translate([-front_chassis_head_pan_servo_recess_thickness / 2,
+              translate([-half_of_thickness,
                          0,
                          0]) {
                 trapezoid_rounded_top(b=front_chassis_head_pan_servo_slot_dia,
                                       t=front_chassis_head_pan_servo_recess_thickness,
-                                      h=recess_l / 2,
+                                      h=recess_w / 2,
                                       center=false,
                                       r_factor=0.5);
               }
@@ -138,6 +143,20 @@ module front_chassis_head_slots(thickness=chassis_thickness,
       }
 
       translate([0, 0, -eps]) {
+        mirror_copy([1, 0, 0]) {
+          translate([pan_servo_slot_r + head_servo_cable_slot_offsets[0],
+                     -pan_servo_slot_r - head_servo_cable_slot_offsets[1],
+                     0]) {
+            cuboid([head_servo_cable_slot_size[0], head_servo_cable_slot_size[1],
+                    thickness + eps * 2],
+                   r=head_servo_cable_corner_r,
+                   anchor=[1, -1, 1]);
+          }
+        }
+      }
+
+      translate([0, 0, -eps]) {
+
         cylinder(d=front_chassis_head_pan_servo_slot_dia,
                  h=thickness + eps * 2,
                  $fn=$preview ? 40 : 120);

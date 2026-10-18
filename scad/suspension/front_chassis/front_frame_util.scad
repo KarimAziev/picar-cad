@@ -34,14 +34,35 @@ use <head_frame/head_slots.scad>
 
   Locate the nose from the front ribbon passage and bumper mounting lands.
 
-  **Returns:** Front-frame maximum Y, with the bumper hole pattern ahead of
-  the ribbon passage. The elevated camera projection does not set deck length.
+  **Returns:** Front-frame maximum Y. Bumper mounting lands include the forward
+  clearance `front_chassis_bumper_extension` beyond the ribbon-passage padding.
+  The head mount and chassis joints retain their vehicle datums.
  */
 function front_chassis_front_frame_start_y() =
+  assert(is_num(front_chassis_bumper_extension)
+         && front_chassis_bumper_extension >= 0,
+         "Bumper extension must be a non-negative length")
   front_chassis_head_center_y() + front_chassis_head_front_ribbon_y()
   + front_chassis_head_pan_servo_top_ribbon_cutout_h / 2 + front_chassis_head_wire_land
   + front_bumper_center_bolt_y_offset
-  + front_bumper_bolt_d + front_bumper_bolt_pad_y * 2;
+  + front_bumper_bolt_d + front_bumper_bolt_pad_y * 2
+  + front_chassis_bumper_extension;
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_bumper_mount_positions
+  ─────────────────────────────────────────────────────────────────────────────
+  Locate the three vertical bumper fasteners in the front-frame coordinates.
+  **Returns:** `[left, center, right]` XYZ centers at the chassis top face.
+ */
+function front_chassis_bumper_mount_positions() =
+  let (y = front_chassis_front_frame_start_y()
+           - front_bumper_bolt_d / 2 - front_bumper_bolt_pad_y)
+  [[-front_bumper_bolt_spacing_x / 2,
+    y - front_bumper_center_bolt_y_offset, chassis_thickness],
+   [0, y, chassis_thickness],
+   [front_bumper_bolt_spacing_x / 2,
+    y - front_bumper_center_bolt_y_offset, chassis_thickness]];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -209,27 +230,10 @@ module front_chassis_front_frame_unsplit(debug=false,
           }
         }
 
-        // One center hole for the bumper
-        translate([0,
-                   start_y0
-                   - front_bumper_bolt_d / 2
-                   - front_bumper_bolt_pad_y,
-                   0]) {
-          counterbore(h=chassis_thickness,
-                      d=front_bumper_bolt_d);
-        }
-
-        // Two side holes for the bumper
-        translate([0,
-                   start_y1
-                   - front_bumper_bolt_d / 2
-                   - front_bumper_bolt_pad_y,
-                   0]) {
-
-          four_corner_counterbores(size=[front_bumper_bolt_spacing_x, 0],
-                                   center=true,
-                                   d=front_bumper_bolt_d,
-                                   h=chassis_thickness);
+        for (pos = front_chassis_bumper_mount_positions()) {
+          translate([pos[0], pos[1], 0]) {
+            counterbore(h=chassis_thickness, d=front_bumper_bolt_d);
+          }
         }
         // Head zone
         translate([0, head_center_y, 0]) {

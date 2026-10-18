@@ -10,7 +10,7 @@ import check_suspension_mesh as checks
 
 # Native-coordinate envelopes of the adjoining plate pairs, in millimeters.
 BOUNDS = {
-    "head": [[-32.15, -47.38939124, 0], [32.15, 115.825, 6]],
+    "head": [[-32.15, -47.38939124, 0], [32.15, 130.825, 6]],
     "compact": [[-75.63, -117.82878248, 0], [75.63, 55.8, 6]],
     "wide": [[-75.63, -204.07878248, 0], [75.63, -33.75, 6]],
     "rear": [[-75.63, -161.37939124, 0], [75.63, 5.75, 6]],
