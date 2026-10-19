@@ -235,6 +235,7 @@ module front_chassis_front_frame_unsplit(debug=false,
             counterbore(h=chassis_thickness,
                         d=front_bumper_bolt_d,
                         bore_h=front_bumper_bolt_cbore_h,
+                        sink=front_bumper_use_countersunk,
                         bore_d=front_bumper_bolt_cbore_d,
                         reverse=true);
           }
