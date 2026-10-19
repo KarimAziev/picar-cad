@@ -9,12 +9,12 @@ vehicle entry point is `../../rc_robot_assembly.scad`.
 The shared controls in `scad/rc_params.scad` define four detachable boundaries.
 All default to `true`.
 
-| Control | Boundary |
-| --- | --- |
-| `split_head_chassis` | Head plate / front suspension plate |
-| `split_front_chassis` | Front suspension plate / steering-servo plate |
-| `split_rear_chassis` | Steering-servo plate / rear equipment deck |
-| `split_rear_suspension` | Rear equipment deck / rear suspension mount |
+| Control                 | Boundary                                      |
+| ----------------------- | --------------------------------------------- |
+| `split_head_chassis`    | Head plate / front suspension plate           |
+| `split_front_chassis`   | Front suspension plate / steering-servo plate |
+| `split_rear_chassis`    | Steering-servo plate / rear equipment deck    |
+| `split_rear_suspension` | Rear equipment deck / rear suspension mount   |
 
 Set a control to `false` to form continuous material across that boundary.
 Joint tongues, sockets, retaining-pin passages and joint fastener holes are
@@ -27,13 +27,13 @@ shape.
 Use `scad/suspension/chassis_printable.scad` to export a connected group. Its
 `chassis_print_section` selector accepts any member of the group:
 
-| Index | Section |
-| --- | --- |
-| 0 | Head |
-| 1 | Front suspension |
-| 2 | Steering servo |
-| 3 | Rear equipment deck |
-| 4 | Rear suspension |
+| Index | Section             |
+| ----- | ------------------- |
+| 0     | Head                |
+| 1     | Front suspension    |
+| 2     | Steering servo      |
+| 3     | Rear equipment deck |
+| 4     | Rear suspension     |
 
 For a single front suspension and steering plate:
 
@@ -62,13 +62,13 @@ point for merged parts; component-local printable files emit their named region.
 Both `scad/rc_chassis.scad` and `scad/rc_robot_assembly.scad` provide these
 preview toggles:
 
-| Toggle | Measurement |
-| --- | --- |
-| `show_wheelbase` | Front-to-rear axle-center distance |
-| `show_track_width` | Front and rear tire-center spacing across X |
-| `show_ground_clearance` | Nominal tire ground plane to chassis underside |
-| `show_overall_length` | Deck-and-tire envelope length, plus chassis-only length |
-| `show_chassis_width` | Maximum chassis width, plus deck-and-tire envelope width |
+| Toggle                  | Measurement                                              |
+| ----------------------- | -------------------------------------------------------- |
+| `show_wheelbase`        | Front-to-rear axle-center distance                       |
+| `show_track_width`      | Front and rear tire-center spacing across X              |
+| `show_ground_clearance` | Nominal tire ground plane to chassis underside           |
+| `show_overall_length`   | Deck-and-tire envelope length, plus chassis-only length  |
+| `show_chassis_width`    | Maximum chassis width, plus deck-and-tire envelope width |
 
 Measurements use the assembled, unsteered reference pose, independently of
 visibility, exploded spacing and articulated suspension settings. Track width
@@ -82,6 +82,77 @@ with the wheel placeholders, so rear-dependent dimensions are packaging estimate
 
 Read horizontal dimensions from above and clearance from the right side. The
 annotations appear only in preview and are excluded from STL and 3MF exports.
+
+### Robot geometry settings
+
+For the default `rc_robot_assembly.scad` reference pose with the head frame,
+bumper plate and foam present, `chassis_dimensions()` gives these nominal values:
+
+| Measurement                                   |          CAD (mm) | `picar-x-racer` setting (metres)                 |
+| --------------------------------------------- | ----------------: | ------------------------------------------------ |
+| Wheelbase                                     |           263.976 | `ackermann_odometry.wheelbase_m = 0.263976`      |
+| Tyre radius, from the 65 mm hardware envelope |              32.5 | `ackermann_odometry.wheel_radius_m = 0.0325`     |
+| Front / rear preview track                    | 182.356 / 182.356 | Reference only; track is not an odometry setting |
+| Deck, tyre and bumper overall length          |           432.479 | Candidate `navigation.body_length_m = 0.432479`  |
+| Deck, tyre and bumper overall width           |           208.356 | Candidate `navigation.body_width_m = 0.208356`   |
+| Rear preview axle to rear tyre tangent        |              32.5 | Candidate `navigation.rear_overhang_m = 0.0325`  |
+| Chassis width / length                        |  151.26 / 403.154 | Structural envelope, not wheelbase               |
+| Nominal chassis ground clearance              |             9.386 | Reference only                                   |
+
+These are CAD reference dimensions. Measure axle centers on the assembled car
+and determine effective rolling radius under load before enabling odometry.
+Navigation dimensions must also enclose elevated payloads, cables, accessories,
+and the steered wheel envelope; the reference dimension helper excludes them.
+Keep `navigation.use_body_clearance` disabled until that envelope is measured.
+The backend uses a rear-axle reference: CAD +Y is forward and +X is right;
+backend +X is forward and +Y is left. Sensor mounting translations therefore
+use `[(cad_y - rear_axle_y) / 1000, -cad_x / 1000, cad_z / 1000]`
+when the chosen backend Z=0 is the CAD chassis underside. Choose the Z datum
+explicitly and measure each sensor's sensing origin and orientation.
+
+The steering magnet rotates with the servo horn, ahead of the bellcrank and
+wheel linkages. `wheel_degrees_per_sensor_degree = 1` is not established by
+this placement. Record the raw sensor center with straight wheels, then measure
+left/right wheel angles across the working range to populate steering
+`calibration_points`. The articulated CAD inspection does not solve a complete
+servo-to-wheel calibration; see the [steering characterization notes](../steering_characterization/README.md).
+
+### Steering encoder gap and bracket
+
+`steering_encoder_magnet_distance = 1.5` specifies the face-to-face gap between
+the 6 × 2.5 mm magnet and the AS5048A IC package. The upright behind the PCB is
+1 mm thick; the foot is 1.6 mm thick. Gap plus upright thickness is 2.5 mm,
+which keeps the bracket bend at 58.68 mm and total chassis reach at 65.78 mm.
+The bracket footprint and chassis mounting holes fit the 151.26 mm body width.
+
+Print [the separate encoder bracket](../../components/servo_encoder_bracket/steering_servo_encoder_bracket_printable.scad)
+and check the thin upright for flex and the PCB fasteners for clamping without
+distortion. Keep the magnet concentric and the gap stable through steering
+travel. CAD clearances do not predict field strength: validate the actual gap
+with AS5048A diagnostics over the full range. Strong/weak field flags must stay
+clear; small stationary angle noise can remain even with a sound mount.
+
+### AS5048A package reference
+
+The [AS5048A datasheet](https://download.mikroe.com/documents/datasheets/AS5048A_datasheet.pdf)
+places the Hall array at the package center (pages 31–32). The 0.286 mm die-center
+offset is not a magnet-placement offset. The PCB preset assumes the package is
+centered on the board and its mounting-hole pattern; verify this on the module.
+
+| Package dimension     | CAD preset (mm) |                   Datasheet, page 34 (mm) |
+| --------------------- | --------------: | ----------------------------------------: |
+| Body length           |            5.19 |                                 4.90–5.10 |
+| Body width            |            4.26 |                                 4.30–4.50 |
+| Lead span             |             7.5 |                               6.4 nominal |
+| Height used above PCB |            0.84 | Body A2: 0.80–1.05; total A: 1.20 maximum |
+
+Remeasure the package and soldered height before revising the measured preset.
+Body thickness and height above the PCB are distinct measurements. The gap
+calculation needs the latter. PCB dimensions and mounting holes are module-specific.
+
+The typical 0.5–2.5 mm face gap is specified for a recommended 6 × 3 mm magnet
+(page 31). The 6 × 2.5 mm steering and 5 × 2 mm drive magnets require diagnostic
+validation at their actual gaps; 1.5 mm is a fitting target, not a field guarantee.
 
 ## Lowered suspension and steering
 
@@ -134,14 +205,14 @@ socket and clearance around the central tab.
 Use **two 33.8 × 3 mm pins**. Passages are 3.1 mm and
 sag compensated. The current configuration has:
 
-| Dimension                                                    |            Value |
-| ------------------------------------------------------------ | ---------------: |
-| Joint band in native Y                                       | 48.5–55.8 mm |
-| Pin center X positions                                       |  −16.5, +16.5 mm |
-| Pin ends in native Y                                         | 45.5–79.3 mm |
-| Engagement beyond the socket into the bulkhead plate         |           3 mm |
-| Pin-end clearance to the mounting recess |             3 mm |
-| Pin passage to ribbon opening, edge to edge                  |          4.95 mm |
+| Dimension                                            |           Value |
+| ---------------------------------------------------- | --------------: |
+| Joint band in native Y                               |    48.5–55.8 mm |
+| Pin center X positions                               | −16.5, +16.5 mm |
+| Pin ends in native Y                                 |    45.5–79.3 mm |
+| Engagement beyond the socket into the bulkhead plate |            3 mm |
+| Pin-end clearance to the mounting recess             |            3 mm |
+| Pin passage to ribbon opening, edge to edge          |         4.95 mm |
 
 The bulkhead-side pin ends are located from the mounting keepout plus the
 configured wire land. Increasing pin length extends the passages toward the
@@ -214,12 +285,12 @@ centers at approximately X=±24.725 mm, and 33 mm pin-center spacing.
 Its rail retains at least 0.60 mm beside the pin passages at the narrow neck.
 Both mating parts share each bolt pattern and rail profile.
 
-| Interface | Top recesses in male half | Underside recesses in female half |
-| --- | --- | --- |
-| Head / bulkhead plate | None | Both bolts countersunk, 1.95 mm deep |
-| Bulkhead / steering-servo plate | Center bolt, 2.95 mm deep | Both outer bolts countersunk, 1.95 mm deep |
-| Steering-servo plate / rear frame | Three middle bolts, 2.95 mm deep | Two outer bolts, 2.8 mm deep |
-| Rear frame / rear suspension mount | Three middle bolts, 2.95 mm deep | Both outer bolts, 2.8 mm deep |
+| Interface                          | Top recesses in male half        | Underside recesses in female half          |
+| ---------------------------------- | -------------------------------- | ------------------------------------------ |
+| Head / bulkhead plate              | None                             | Both bolts countersunk, 1.95 mm deep       |
+| Bulkhead / steering-servo plate    | Center bolt, 2.95 mm deep        | Both outer bolts countersunk, 1.95 mm deep |
+| Steering-servo plate / rear frame  | Three middle bolts, 2.95 mm deep | Two outer bolts, 2.8 mm deep               |
+| Rear frame / rear suspension mount | Three middle bolts, 2.95 mm deep | Both outer bolts, 2.8 mm deep              |
 
 Top and underside refer to assembled vehicle coordinates. Cylindrical recesses are
 0.35 or 0.5 mm shallower than the configured 3.3 mm recess depth. Head protrusion

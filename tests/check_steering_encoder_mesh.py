@@ -45,9 +45,12 @@ def main() -> None:
     frame = export("frame")
     bracket = export("bracket")
     assert frame is not None and bracket is not None
-    np.testing.assert_allclose(frame.bounds[:, 0], [-75.63, 75.63], atol=1e-5)
-    assert bracket.bounds[0, 0] >= frame.bounds[0, 0] - 1e-5
-    assert bracket.bounds[1, 0] <= frame.bounds[1, 0] + 1e-5
+    nominal_x = [-75.63, 75.63]
+    # Polygonized rounded edges can fall inside the analytic extent by 1 micron.
+    np.testing.assert_allclose(frame.bounds[:, 0], nominal_x,
+                               rtol=0, atol=1e-3)
+    assert bracket.bounds[0, 0] >= nominal_x[0] - 1e-5
+    assert bracket.bounds[1, 0] <= nominal_x[1] + 1e-5
     print("PASS connected bracket and rear frame within 151.26 mm chassis width", flush=True)
     for mode in ("placement_difference", "frame_collision", "hole_obstruction",
                  "magnet_collision"):

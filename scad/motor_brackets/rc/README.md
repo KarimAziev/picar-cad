@@ -7,7 +7,7 @@ bracket, a shaft magnet sleeve, and separate front/rear gearbox supports. Open
 
 The hardware preset and fit allowances live in
 [`rc_params.scad`](../../rc_params.scad). The default hardware preset
-uses a 61.10 mm shaft, a 13 mm drive-side extension, 7.2 mm end flats, a 3.95 mm
+uses a 61.10 mm shaft, a 14 mm drive-side extension, 7.2 mm end flats, a 3.95 mm
 shaft diameter, a 3 mm single-flat thickness, and 2.1 mm cross-holes. The bracket
 base is 6.5 mm thick. These measured values belong to the hardware plist; the
 printed parts derive their interfaces from it.
@@ -74,14 +74,21 @@ The default resolved dimensions are:
 | Shaft bore diameter / remaining flat thickness |   4.05 / 3.10 |
 | Shaft cup outer diameter                       |          6.05 |
 | Magnet pocket diameter / outer diameter        |   5.10 / 7.50 |
-| Shaft tip to magnet pocket shoulder            |          0.20 |
-| Printed sleeve height / magnet protrusion      |   9.10 / 0.30 |
+| Shaft tip to magnet pocket shoulder            |          0.40 |
+| Printed sleeve height / magnet protrusion      |   9.10 / 0.50 |
 | Sleeve cross-hole center above open end        |          2.25 |
-| Assembly sleeve origin Y / shaft tip Y         | 22.90 / 30.10 |
+| Assembly sleeve origin Y / shaft tip Y         | 21.90 / 29.10 |
 | Assembly shaft and sensor axis Z               |         17.15 |
-| Assembly cross-hole center Y                   |         25.15 |
-| Magnet face Y / sensor face Y                  | 32.30 / 32.80 |
-| PCB back Y                                     |         35.38 |
+| Assembly cross-hole center Y                   |         24.15 |
+| Magnet face Y / sensor face Y                  | 31.50 / 33.00 |
+| PCB back Y                                     |         35.58 |
+| Magnet-to-IC gap / upright wall                |   1.50 / 2.00 |
+
+The gap and upright wall total 3.5 mm, placing the outer wall at Y=37.58 mm.
+The foot holes and supporting base fit within the 66.6 mm motor-bracket length.
+Changing this total can move the mount and affect chassis clearance. Field
+strength must be checked on the assembled sensor over a full shaft revolution;
+the modeled face-to-face gap is not a magnetic-field measurement.
 
 `gearmotor_bracket_compute_params()` in [`util.scad`](util.scad) includes the
 encoder mount in the bracket's bounds and parent mounting-surface requirements.
@@ -95,6 +102,26 @@ For an alternative sleeve, pass a resolved `sleeve_params` to
 Changing pad length moves the sleeve's open end while preserving the seated
 magnet's distance from the shaft tip. Changing axial shaft clearance moves the magnet
 and PCB together while retaining the configured face-to-face sensor gap.
+
+## Drive encoder settings
+
+This AS5048A measures the gearbox's output shaft. Its native resolution is
+16,384 counts per shaft revolution. In `picar-x-racer`, a common drivetrain
+sensor uses `role = "rear_axle_average"` and
+`ackermann_odometry.encoder_ticks_per_revolution = 16384`.
+`gear_ratio` means encoder-shaft revolutions per driven-wheel revolution:
+measure the reduction between this shaft and the wheels, including any axle
+gearing. The motor's internal reduction ratio is upstream of this sensor.
+The gearbox placeholder contains mounting geometry, not gear-tooth counts.
+
+Keep drive acquisition and odometry disabled until the sensor is wired and its
+direction, reduction ratio, and speed limits are measured. A second AS5048A on
+the steering sensor's SPI bus needs its own chip select. If wired to SPI0 CE1,
+configure `bus = 0, device = 1`; the steering sensor on CE0 uses `device = 0`.
+Do not assign both sensors the same bus/device pair. Confirm that forward wheel
+motion gives positive encoder deltas and set `invert_direction` accordingly.
+The unwrapping speed bound and maximum sample gap must be selected together so
+the shaft cannot rotate half a revolution between accepted samples.
 
 ## Removable supports
 

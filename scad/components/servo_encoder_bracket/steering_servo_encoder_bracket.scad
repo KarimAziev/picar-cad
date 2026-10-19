@@ -29,3 +29,5 @@ module steering_servo_encoder_bracket(plist=steering_encoder_plist,
                     bottom_corner_r=steering_encoder_bottom_corner_r,
                     show_encoder=show_encoder);
 }
+
+steering_servo_encoder_bracket(show_encoder=true);

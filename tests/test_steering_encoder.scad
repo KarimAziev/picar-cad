@@ -19,10 +19,12 @@ near(front_chassis_rear_frame_w, 151.26);
 near(bellcrank_params[0], -9.85);
 near(steering_servo_encoder_chassis_reach(), 65.78);
 near(dsservo_magnet_sleeve_offset(), 7.5);
+near(steering_encoder_magnet_distance, 1.5);
+near(steering_encoder_magnet_distance + steering_encoder_side_thickness, 2.5);
 
 pcb = plist_get("size", steering_encoder_plist);
 chip = plist_get("chip_size", plist_get("sensor_ic", steering_encoder_plist));
-for (magnet_h = [1.5, 2.5, 3], arm_base_h = [5.5, 6, 7], wall = [2, 3]) {
+for (magnet_h = [1.5, 2.5, 3], arm_base_h = [5.5, 6, 7], wall = [1, 2, 3]) {
   // Physical stack from the gearbox attachment through the seated horn,
   // recessed sleeve floor, screw-head pocket, and magnet.
   magnet_face = dsservo_output_attachment_height()

@@ -1241,7 +1241,7 @@ steering_servo_arm_gear_bolt_head_d                = 4.9;
 
 steering_encoder_plist                             = as5048A_encoder_plist;
 steering_encoder_bottom_thickness                  = 1.6;
-steering_encoder_side_thickness                    = 2;
+steering_encoder_side_thickness                    = 1;
 steering_encoder_top_side_padding                  = 0;
 steering_encoder_extra_left_w                      = 10;
 steering_encoder_extra_right_w                     = 0;
@@ -1253,7 +1253,8 @@ steering_encoder_bottom_pan_bolt_d                 = m3_hole_dia;
 steering_encoder_bottom_pan_bolt_pad               = 3.9;
 steering_encoder_bottom_corner_r                   = 3;
 
-steering_encoder_magnet_distance                   = 0.5;
+// IC package face to magnet face; gap plus upright thickness fixes chassis reach.
+steering_encoder_magnet_distance                   = 1.5;
 
 steering_magnet_d                                  = 6;
 steering_magnet_h                                  = 2.5;
@@ -1289,13 +1290,13 @@ upper_steering_plate_rear_scallop                  = 0.22;
 // Set the plist to undef to omit the encoder mounting feature entirely.
 motor_encoder_plist                                = as5048A_encoder_plist;
 motor_encoder_bottom_thickness                     = 2;
-motor_encoder_side_thickness                       = 3;
+motor_encoder_side_thickness                       = 2;
 motor_encoder_pcb_padding                          = 1;
 motor_encoder_mount_bolt_d                         = m3_hole_dia;
 motor_encoder_mount_wall                           = 1.5;
 motor_encoder_nut_clearance                        = 0.4; // radial and axial pocket clearance
 motor_encoder_clearance                            = 0.6; // bolt-head and PCB clearance
-motor_encoder_magnet_distance                      = 0.5; // IC package face to magnet face
+motor_encoder_magnet_distance                      = 1.5; // IC package face to magnet face
 motor_encoder_magnet_d                             = 5;
 motor_encoder_magnet_h                             = 2;
 // ─────────────────────────────────────────────────────────────────────────────

@@ -20,6 +20,9 @@ near(shaft, [0, 29.1, 19.15 - suspension_chassis_mount_recess]);
 near(magnet - shaft,
      [0, motor_encoder_magnet_h + motor_encoder_sleeve_h_clearance, 0]);
 near(sensor - magnet, [0, motor_encoder_magnet_distance, 0]);
+near([motor_encoder_magnet_distance], [1.5]);
+near([motor_encoder_magnet_distance + motor_encoder_side_thickness], [3.5]);
+near([plist_get("wall_y", e)], [37.58]);
 near(plist_get("pcb_back", e) - sensor, [0, 2.58, 0]);
 assert(plist_get("rotated", e));
 assert(plist_get("pcb_h", e) == 14.75);
@@ -102,10 +105,10 @@ gap_mount = gearmotor_encoder_params(motor_plist,
                                      sleeve_params=gap_sleeve);
 near(plist_get("pcb_back", gap_mount), plist_get("pcb_back", e) + [0, 0.3, 0]);
 near(plist_get("sensor_face", gap_mount) - plist_get("magnet_face", gap_mount),
-     [0, 0.5, 0]);
+     [0, motor_encoder_magnet_distance, 0]);
 near([plist_get("magnet_bottom_z", s)], [plist_get("cup_h", s)]);
 near(magnet, [0, 31.5, 19.15 - suspension_chassis_mount_recess]);
-near(plist_get("pcb_back", e), [0, 34.58, 19.15 - suspension_chassis_mount_recess]);
+near(plist_get("pcb_back", e), [0, 35.58, 19.15 - suspension_chassis_mount_recess]);
 // Bosses resolve their complete heights and diametral fits once for all consumers.
 near([plist_get("front", plist_get("boss_heights", p)),
       plist_get("rear", plist_get("boss_heights", p))],
