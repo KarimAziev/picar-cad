@@ -1,3 +1,4 @@
+
 /**
   * Module: Removable head mount of the front chassis.
   *
@@ -12,14 +13,13 @@
 include <../../../colors.scad>
 include <../../../parameters.scad>
 include <../../../rc_params.scad>
-include <../computed_params.scad>
+include <../layout_params.scad>
 
 use <../../../lib/plist.scad>
 use <../../../lib/transforms.scad>
-use <../front_chassis_access_slots.scad>
+use <../front_chassis_mount_recesses.scad>
 use <../front_frame_util.scad>
 use <head_joint.scad>
-use <head_slots.scad>
 
 show_head_frame_access_slots = true;
 
@@ -51,9 +51,10 @@ module front_chassis_head_frame(debug=false,
     difference() {
       union() {
         intersection() {
-          front_chassis_front_frame_unsplit(debug=debug,
-                                            show_access_slots=show_access_slots,
-                                            color=undef);
+          difference() {
+            front_chassis_front_frame_blank(debug=debug, color=undef);
+            front_chassis_suspension_mount_recess();
+          }
           union() {
             // Stay off the outline vertex plane to avoid zero-thickness slivers.
             // The tongue's root overlap still reaches this head body.
@@ -80,12 +81,7 @@ module front_chassis_head_frame(debug=false,
       if (split) {
         front_chassis_head_joint(mode="male", slot_mode=true);
       }
-      translate([0, front_chassis_head_center_y(), 0]) {
-        front_chassis_head_slots();
-      }
-      if (show_access_slots) {
-        front_chassis_access_slots(front_chassis_head_center_y());
-      }
+      front_chassis_front_frame_head_slots(show_access_slots=show_access_slots);
     }
   }
 }

@@ -47,7 +47,12 @@ module steering_servo_bracket_assembly(color=white_smoke_1,
                                        show_encoder_bracket=show_encoder_bracket,
                                        show_magnet=show_magnet,
                                        steering_servo_angle=steering_servo_angle,
-                                       center_y=false) {
+                                       center_y=false,
+                                       show_tie_rod=true,
+                                       show_servo_horn=true,
+                                       show_magnet_sleeve=true,
+                                       show_servo_gear_bolt=true,
+                                       show_servo_wiring=true) {
 
   bellcrank_z_coords = bellcrank_servo_lever_z_coords();
   bellcrank_lever_z_end = bellcrank_z_coords[1];
@@ -77,13 +82,44 @@ module steering_servo_bracket_assembly(color=white_smoke_1,
                       show_encoder=show_encoder,
                       show_encoder_bracket=show_encoder_bracket,
                       show_magnet=show_magnet,
-                      servo_horn_angle=steering_servo_angle);
+                      servo_horn_angle=steering_servo_angle,
+                      show_tie_rod=show_tie_rod,
+                      show_servo_horn=show_servo_horn,
+                      show_magnet_sleeve=show_magnet_sleeve,
+                      show_bolt=show_servo_gear_bolt,
+                      show_wiring=show_servo_wiring);
             }
           }
         }
       }
     }
   }
+}
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  steering_servo_mount_envelope
+  ─────────────────────────────────────────────────────────────────────────────
+  Build the servo case, mounting brackets and encoder support for recess cutters.
+  **Behavior:** Uses the assembly's default flange-relative coordinates and
+  hardware dimensions. The encoder support follows `steering_encoder_plist`.
+  The case label backing extends below the mounting plane and is included.
+ */
+module steering_servo_mount_envelope() {
+  steering_servo_bracket_assembly(show_servo_brackets=true,
+                                  show_servo=true,
+                                  show_encoder_bracket=true,
+                                  show_servo_bolt=false,
+                                  show_chassis_bolt=false,
+                                  show_chassis_bolt_nut=false,
+                                  show_servo_bolt_nut=false,
+                                  show_encoder=false,
+                                  show_magnet=false,
+                                  show_tie_rod=false,
+                                  show_servo_horn=false,
+                                  show_magnet_sleeve=false,
+                                  show_servo_gear_bolt=false,
+                                  show_servo_wiring=false);
 }
 
 steering_servo_bracket_assembly(center_y=false);

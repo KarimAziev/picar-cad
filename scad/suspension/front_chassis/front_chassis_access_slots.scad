@@ -2,7 +2,7 @@
   * Module: Chassis camera ribbon and head-side cable openings.
   */
 
-include <computed_params.scad>
+include <layout_params.scad>
 
 use <../../lib/transforms.scad>
 use <head_frame/head_slots.scad>

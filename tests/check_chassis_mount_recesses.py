@@ -19,6 +19,7 @@ def main() -> None:
     # Independent probes span the suspension floor, connecting steering area,
     # full-height pin spine, rear footprint and rear joint reinforcement.
     probes = {
+        "head": [(0, 40, [0, 4])],
         "front": [(0, 15, [0, 4]), (10, -10, [0, 4]),
                   (0, -25, [0, 6]),
                   (-23, -33.6, [0, 6]), (23, -33.6, [0, 6]),

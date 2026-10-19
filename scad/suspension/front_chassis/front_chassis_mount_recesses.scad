@@ -13,28 +13,15 @@ use <../steering_servo_bracket/steering_servo_bracket_assembly.scad>
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
-  front_chassis_mount_recesses
+  front_chassis_servo_mount_recesses
   ─────────────────────────────────────────────────────────────────────────────
-  Cut the common suspension, bellcrank, servo and encoder mounting plane.
-  **Behavior:** Coordinates match the assembled front chassis. The compact
-  joint's central pin spine remains full thickness. Servo pockets follow the
-  lower hardware envelope, including both brackets and the encoder foot.
-  A rounded pocket below the servo horn provides clearance at the same depth.
+  Cut the servo case rim, bracket feet, encoder support and horn clearance.
+  **Behavior:** Uses assembled front-chassis coordinates and the configured
+  mounting depth and clearance.
  */
-module front_chassis_mount_recesses() {
+module front_chassis_servo_mount_recesses() {
   depth = suspension_chassis_mount_recess;
   gap = suspension_chassis_mount_clearance;
-  cutter_half_w = front_chassis_required_width() / 2 + gap;
-  recess_start_y = y_front_chassis_rear_frame_joint_1_start
-                   + front_chassis_joint_root_land;
-  pin_wall = 1.25;
-  spine_w = front_chassis_joint_pin_spacing
-            + front_chassis_joint_pin_d + 2 * pin_wall;
-  spine_start_y = y_front_chassis_rear_frame_joint_1_start - joint_l - spine_w;
-  pin_end_y = y_front_chassis_rear_frame_joint_1_start - joint_l / 2
-              + front_chassis_joint_pin_l / 2 + front_chassis_joint_pin_end_clearance;
-  // Keep the full spine width over the blind pin ends before the round tip.
-  spine_end_y = pin_end_y + pin_wall + spine_w / 2;
   // Local servo X spans the case, mounting brackets and encoder support.
   servo_clip_half_w = servo_chassis_reach + dsservo_size[2]
                       + steering_servo_bracket_thickness;
@@ -42,25 +29,9 @@ module front_chassis_mount_recesses() {
   horn_reach = dsservo_output_attachment_height()
                + 2 * steering_servo_arm_base_h - steering_servo_arm_gear_depth;
   horn_y = -(dsservo_flange_w + dsservo_size[0] - dsservo_gearbox_d1) / 2;
-  assert(depth >= 0 && suspension_chassis_mount_h
-         - max(front_bulkhead_mount_bolt_bore_h,
-               front_chassis_bellcrank_bolt_bore_h,
-               steering_servo_mount_bolt_bore_h) >= 1.5,
-         "Mount recesses need 1.5 mm above their screw-head seats");
   if (depth > 0) {
     translate([0, 0, suspension_chassis_mount_h]) {
       linear_extrude(height=depth + 0.02) {
-        difference() {
-          translate([-cutter_half_w, recess_start_y]) {
-            square([2 * cutter_half_w,
-                    front_chassis_mount_end_y - recess_start_y]);
-          }
-          translate([-spine_w / 2, spine_start_y]) {
-            rounded_rect([spine_w, spine_end_y - spine_start_y],
-                         center=false,
-                         r_factor=0.5);
-          }
-        }
         translate([0, -bellcrank_y_distance_from_bulkhead]) {
           bellcrank_steering_with_servo_position() {
             translate([-horn_reach - horn_clearance,
@@ -73,10 +44,7 @@ module front_chassis_mount_recesses() {
             offset(delta=gap) {
               projection() {
                 intersection() {
-                  steering_servo_bracket_assembly(show_servo_bolt=false,
-                                                  show_chassis_bolt=false,
-                                                  show_chassis_bolt_nut=false,
-                                                  show_servo_bolt_nut=false);
+                  steering_servo_mount_envelope();
                   translate([-servo_clip_half_w,
                              -dsservo_flange_w - 0.5, -0.01]) {
                     cube([2 * servo_clip_half_w, dsservo_flange_w + 1,
@@ -98,10 +66,7 @@ module front_chassis_mount_recesses() {
           offset(delta=gap + 0.01) {
             projection() {
               intersection() {
-                steering_servo_bracket_assembly(show_servo_bolt=false,
-                                                show_chassis_bolt=false,
-                                                show_chassis_bolt_nut=false,
-                                                show_servo_bolt_nut=false);
+                steering_servo_mount_envelope();
                 translate([-servo_clip_half_w,
                            -dsservo_flange_w - 0.5, -0.25]) {
                   cube([2 * servo_clip_half_w, dsservo_flange_w + 1, 0.249]);
@@ -113,6 +78,63 @@ module front_chassis_mount_recesses() {
       }
     }
   }
+}
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_suspension_mount_recess
+  ─────────────────────────────────────────────────────────────────────────────
+  Cut the suspension mounting plane while preserving the rear joint's pin spine.
+  **Behavior:** Uses assembled front-chassis coordinates. The recess extends
+  through the head's central tab up to `front_chassis_mount_end_y`.
+ */
+module front_chassis_suspension_mount_recess() {
+  depth = suspension_chassis_mount_recess;
+  gap = suspension_chassis_mount_clearance;
+  cutter_half_w = front_chassis_required_width() / 2 + gap;
+  recess_start_y = y_front_chassis_rear_frame_joint_1_start
+                   + front_chassis_joint_root_land;
+  pin_wall = 1.25;
+  spine_w = front_chassis_joint_pin_spacing
+            + front_chassis_joint_pin_d + 2 * pin_wall;
+  spine_start_y = y_front_chassis_rear_frame_joint_1_start - joint_l - spine_w;
+  pin_end_y = y_front_chassis_rear_frame_joint_1_start - joint_l / 2
+              + front_chassis_joint_pin_l / 2 + front_chassis_joint_pin_end_clearance;
+  // Keep the full spine width over the blind pin ends before the round tip.
+  spine_end_y = pin_end_y + pin_wall + spine_w / 2;
+  assert(depth >= 0 && suspension_chassis_mount_h
+         - max(front_bulkhead_mount_bolt_bore_h,
+               front_chassis_bellcrank_bolt_bore_h,
+               steering_servo_mount_bolt_bore_h) >= 1.5,
+         "Mount recesses need 1.5 mm above their screw-head seats");
+  if (depth > 0) {
+    translate([0, 0, suspension_chassis_mount_h]) {
+      linear_extrude(height=depth + 0.02) {
+        difference() {
+          translate([-cutter_half_w, recess_start_y]) {
+            square([2 * cutter_half_w,
+                    front_chassis_mount_end_y - recess_start_y]);
+          }
+          translate([-spine_w / 2, spine_start_y]) {
+            rounded_rect([spine_w, spine_end_y - spine_start_y],
+                         center=false,
+                         r_factor=0.5);
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_mount_recesses
+  ─────────────────────────────────────────────────────────────────────────────
+  Cut the suspension and steering hardware mounting surfaces in vehicle coordinates.
+ */
+module front_chassis_mount_recesses() {
+  front_chassis_suspension_mount_recess();
+  front_chassis_servo_mount_recesses();
 }
 
 front_chassis_mount_recesses();

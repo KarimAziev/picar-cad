@@ -330,7 +330,8 @@ module dsservo(center=false,
                show_bolt=true,
                horn_alpha=1,
                magnet_d=steering_magnet_d,
-               magnet_h=steering_magnet_h) {
+               magnet_h=steering_magnet_h,
+               show_wiring=true) {
 
   rotate([0, 0, 180]) {
     servo(size=[dsservo_size[0],
@@ -369,7 +370,9 @@ module dsservo(center=false,
           socket_side=dsservo_socket_side,
           socket_size=dsservo_socket_size,
           socket_z_offset=dsservo_socket_z_offset,
-          wiring_path=[[-100, dsservo_size[1] / 2, dsservo_socket_z_offset]]) {
+          wiring_path=show_wiring
+                        ? [[-100, dsservo_size[1] / 2, dsservo_socket_z_offset]]
+                        : undef) {
 
       steering_servo_harness(bellcrank_lever_z_end=bellcrank_lever_z_end,
                              show_encoder=show_encoder,

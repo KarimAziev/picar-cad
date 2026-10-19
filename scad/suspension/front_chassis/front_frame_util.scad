@@ -12,7 +12,7 @@
 include <../../colors.scad>
 include <../../parameters.scad>
 include <../../rc_params.scad>
-include <computed_params.scad>
+include <layout_params.scad>
 
 use <../../lib/debug.scad>
 use <../../lib/functions.scad>
@@ -125,6 +125,152 @@ function front_chassis_front_frame_bounds() =
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_front_frame_points
+  ─────────────────────────────────────────────────────────────────────────────
+  Locate the right half of the front-frame outline in vehicle coordinates.
+  **Parameters:**
+  - `rear_joint`: End at the rear joint; false overlaps the adjoining plate.
+  **Returns:** Ordered XY polygon vertices, including the centerline edge.
+  Vertex 4 is the bulkhead ear root.
+ */
+function front_chassis_front_frame_points(rear_joint=split_front_chassis) =
+  let (start_y0 = front_chassis_front_frame_start_y(),
+       head_mount_size = front_chassis_head_mount_size(),
+       head_center_y = front_chassis_head_center_y(),
+       bumper_x = front_bumper_bolt_spacing_x / 2
+                  + front_bumper_bolt_d / 2 + front_bumper_bolt_pad_x,
+       x1 = max(bumper_x,
+                head_mount_size[0] / 2
+                + front_chassis_head_side_slot_w + front_chassis_head_wire_land * 2),
+       start_y1 = start_y0 - front_bumper_center_bolt_y_offset,
+       x2 = bulkhead_size_x / 2,
+       y2 = front_bulkhead_pad_distance_to_hinge()
+            + bulkhead_transition_len + front_bumper_bolt_y_offset
+            + front_bumper_bolt_d,
+       head_rear_y = head_center_y - front_chassis_head_rear_reach()
+                     + bulkhead_transition_len,
+       y3 = bulkhead_transition_len
+            + front_chassis_bellcrank_tool_access_hole_d / 2
+            - front_lower_arm_lower_hinge_barrel_h,
+       x_end = front_frame_x_end,
+       y_end = y_front_chassis_rear_frame_joint_1_start
+               - (rear_joint ? 0 : front_chassis_joint_boolean_overlap))
+  [[0, start_y0],
+   [bumper_x, start_y1],
+   [x1, head_center_y + head_mount_size[1] / 2],
+   [x1, head_rear_y],
+   [x2, y2],
+   [bumper_x, y3],
+   [x_end, y3 - bellcrank_mount_r],
+   [x_end, y_end],
+   [0, y_end]];
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_front_frame_labels
+  ─────────────────────────────────────────────────────────────────────────────
+  Label both halves of the front-frame outline above the plate.
+  **Parameters:**
+  - `font`: Outline label font.
+  - `color`: Outline label color.
+  - `rear_joint`: Select the joint or overlapping rear boundary.
+ */
+module front_chassis_front_frame_labels(font="Gill Sans:style=Bold",
+                                        color=green_2,
+                                        rear_joint=split_front_chassis) {
+  pts = front_chassis_front_frame_points(rear_joint);
+  module _debug(rotation) {
+    let (x_size = polygon_x_len(pts) * 2,
+         font_size = constraint(x_size * 0.04, 1, 5)) {
+      debug_polygon_text(pts,
+                         rotation=rotation,
+                         font_size=font_size,
+                         font=font,
+                         offset_x=font_size,
+                         offset_x_exclude=[0, len(pts) - 1],
+                         color=color);
+    }
+  }
+
+  translate([0, 0, chassis_thickness + 0.1]) {
+    _debug();
+    mirror([1, 0, 0]) {
+      _debug(rotation=[0, 180, 0]);
+    }
+  }
+}
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_front_frame_blank
+  ─────────────────────────────────────────────────────────────────────────────
+  Build the unperforated head and suspension plate in vehicle coordinates.
+  **Parameters:**
+  - `debug`: Display outline labels.
+  - `debug_font`: Outline label font.
+  - `debug_color`: Outline label color.
+  - `color`: Plate color; undef inherits the caller's color.
+  - `rear_joint`: End the plate at the steering joint; false overlaps the adjoining plate.
+ */
+module front_chassis_front_frame_blank(debug=false,
+                                       debug_font="Gill Sans:style=Bold",
+                                       debug_color=green_2,
+                                       color=white_smoke_1,
+                                       rear_joint=split_front_chassis) {
+
+  pts = front_chassis_front_frame_points(rear_joint);
+
+  maybe_color(color) {
+    linear_extrude(height=chassis_thickness,
+                   center=false,
+                   convexity=2) {
+      mirror_copy([1, 0, 0]) {
+        polygon(pts);
+        // The chassis ears
+        translate(concat(pts[4], [0])) {
+          polygon(front_chassis_ear_pts());
+        }
+      }
+    }
+  }
+  if (debug) {
+    front_chassis_front_frame_labels(font=debug_font,
+                                     color=debug_color,
+                                     rear_joint=rear_joint);
+  }
+}
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_front_frame_head_slots
+  ─────────────────────────────────────────────────────────────────────────────
+  Cut bumper fasteners, the head mount and cable passages in vehicle coordinates.
+  **Parameters:**
+  - `show_access_slots`: Include the head-side and front cable passages.
+ */
+module front_chassis_front_frame_head_slots(show_access_slots=true) {
+  head_center_y = front_chassis_head_center_y();
+  for (pos = front_chassis_bumper_mount_positions()) {
+    translate([pos[0], pos[1], 0]) {
+      counterbore(h=chassis_thickness,
+                  d=front_bumper_bolt_d,
+                  bore_h=front_bumper_bolt_cbore_h,
+                  sink=front_bumper_use_countersunk,
+                  bore_d=front_bumper_bolt_cbore_d,
+                  reverse=true);
+    }
+  }
+  // Head zone
+  translate([0, head_center_y, 0]) {
+    front_chassis_head_slots();
+  }
+  if (show_access_slots) {
+    front_chassis_access_slots(head_center_y);
+  }
+}
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
   front_chassis_front_frame_unsplit
   ─────────────────────────────────────────────────────────────────────────────
   Build the head and suspension plate body in vehicle coordinates.
@@ -143,74 +289,13 @@ module front_chassis_front_frame_unsplit(debug=false,
                                          color=white_smoke_1,
                                          rear_joint=split_front_chassis) {
 
-  start_y0 = front_chassis_front_frame_start_y();
-  head_mount_size = front_chassis_head_mount_size();
-  head_center_y = front_chassis_head_center_y();
-
-  bumper_x = front_bumper_bolt_spacing_x / 2
-             + front_bumper_bolt_d / 2
-             + front_bumper_bolt_pad_x;
-  x1 = max(bumper_x,
-           head_mount_size[0] / 2
-           + front_chassis_head_side_slot_w + front_chassis_head_wire_land * 2);
-  start_y1 = start_y0 - front_bumper_center_bolt_y_offset;
-
-  x2 = bulkhead_size_x / 2;
-  y2 = front_bulkhead_pad_distance_to_hinge()
-       + bulkhead_transition_len + front_bumper_bolt_y_offset
-       + front_bumper_bolt_d;
-
-  head_rear_y = head_center_y - front_chassis_head_rear_reach()
-                + bulkhead_transition_len;
-
-  y3 = bulkhead_transition_len
-       + front_chassis_bellcrank_tool_access_hole_d / 2
-       - front_lower_arm_lower_hinge_barrel_h;
-
-  x_end = front_frame_x_end;
-
-  y_end = y_front_chassis_rear_frame_joint_1_start
-          - (rear_joint ? 0 : front_chassis_joint_boolean_overlap);
-
-  pts = [[0, start_y0],
-         [bumper_x, start_y1],
-         [x1, head_center_y + head_mount_size[1] / 2],
-         [x1, head_rear_y],
-         [x2, y2],
-         [bumper_x, y3],
-         [x_end, y3 - bellcrank_mount_r],
-         [x_end, y_end],
-         [0, y_end]];
-
-  module _debug(rotation) {
-    let (x_size = polygon_x_len(pts) * 2,
-         font_size = constraint(x_size * 0.04, 1, 5)) {
-      debug_polygon_text(pts,
-                         rotation=rotation,
-                         font_size=font_size,
-                         font=debug_font,
-                         offset_x=font_size,
-                         offset_x_exclude=[0, len(pts) - 1],
-                         color=debug_color);
-    }
-  }
-
+  y_end = y_front_chassis_rear_frame_joint_1_start;
   difference() {
     union() {
       difference() {
-        maybe_color(color) {
-          linear_extrude(height=chassis_thickness,
-                         center=false,
-                         convexity=2) {
-            mirror_copy([1, 0, 0]) {
-              polygon(pts);
-              // The chassis ears
-              translate([x2, y2, 0]) {
-                polygon(front_chassis_ear_pts());
-              }
-            }
-          }
-        }
+        front_chassis_front_frame_blank(color=color,
+                                         rear_joint=rear_joint);
+        front_chassis_front_frame_head_slots(show_access_slots=show_access_slots);
 
         // The bulkhead slots
         front_bulkhead_housing_slots_non_center_y();
@@ -229,24 +314,6 @@ module front_chassis_front_frame_unsplit(debug=false,
                                           pad_side="top");
           }
         }
-
-        for (pos = front_chassis_bumper_mount_positions()) {
-          translate([pos[0], pos[1], 0]) {
-            counterbore(h=chassis_thickness,
-                        d=front_bumper_bolt_d,
-                        bore_h=front_bumper_bolt_cbore_h,
-                        sink=front_bumper_use_countersunk,
-                        bore_d=front_bumper_bolt_cbore_d,
-                        reverse=true);
-          }
-        }
-        // Head zone
-        translate([0, head_center_y, 0]) {
-          front_chassis_head_slots();
-        }
-        if (show_access_slots) {
-          front_chassis_access_slots(head_center_y);
-        }
       }
 
       // Male joint for connection to the front rear frame
@@ -256,15 +323,12 @@ module front_chassis_front_frame_unsplit(debug=false,
         }
       }
     }
-    front_chassis_mount_recesses();
+    front_chassis_suspension_mount_recess();
   }
   if (debug) {
-    translate([0, 0, chassis_thickness + 0.1]) {
-      _debug();
-      mirror([1, 0, 0]) {
-        _debug(rotation=[0, 180, 0]);
-      }
-    }
+    front_chassis_front_frame_labels(font=debug_font,
+                                     color=debug_color,
+                                     rear_joint=rear_joint);
   }
 }
 

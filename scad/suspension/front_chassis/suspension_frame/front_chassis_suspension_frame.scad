@@ -12,7 +12,7 @@
 include <../../../colors.scad>
 include <../../../parameters.scad>
 include <../../../rc_params.scad>
-include <../computed_params.scad>
+include <../layout_params.scad>
 
 use <../../../lib/plist.scad>
 use <../front_frame_util.scad>
