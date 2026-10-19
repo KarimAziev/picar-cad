@@ -22,8 +22,11 @@ use <common.scad>
   - `anchor`: Reference-box anchor, including the posts beneath the plate.
   - `slot_mode`: Emit the three bolt passages through the full reference height.
   - `slot_h`: Cutter height from z=0; undef uses the reference height.
-  - `show_bolts`: Show mounting screws and underside nuts in solid mode.
+  - `show_bolts`: Show mounting screws and nuts in solid mode.
   - `color`: Retainer color; undef inherits the caller's color.
+  - `reverse_bolts`: Assembly hardware direction. True places heads in the
+    underside chassis recesses and nuts above the plate; false puts heads above.
+    The default follows `front_bumper_reverse_bolts` in `rc_params.scad`.
   **Behavior:** Canonical bounds start at zero, with +Y forward. Posts stand
   on z=0; the plate underside is at `foam_h`. Print with the plate's top face
   on the bed, using `top_plate_printable.scad`.
@@ -33,7 +36,8 @@ module front_bumper_top_plate(pl=front_bumper_plist,
                               slot_mode=false,
                               slot_h=undef,
                               show_bolts=false,
-                              color=undef) {
+                              color=undef,
+                              reverse_bolts=front_bumper_reverse_bolts) {
   p = front_bumper_params(pl);
   size = front_bumper_size(p, "plate");
   mounts = front_bumper_mount_positions(p, "plate");
@@ -91,16 +95,26 @@ module front_bumper_top_plate(pl=front_bumper_plist,
       }
       if (show_bolts) {
         for (pos = mounts) {
-          translate(pos + [0, 0, size[2] - bolt_l]) {
-            bolt(d=front_bumper_bolt_d,
-                 h=bolt_l,
-                 threaded=false,
-                 head_type="socket",
-                 bolt_color=[0.7, 0.72, 0.75],
-                 head_color=[0.7, 0.72, 0.75],
-                 show_nut=true,
-                 nut_head_distance=size[2] + chassis_thickness,
-                 $fn=48);
+          recess_h = reverse_bolts && front_bumper_bolt_cbore_d > 0
+                     && front_bumper_bolt_cbore_h > 0
+                     ? front_bumper_bolt_cbore_h
+                     : 0;
+          seat_z = reverse_bolts ? -chassis_thickness + recess_h : size[2];
+          grip = size[2] + chassis_thickness - recess_h;
+          translate(pos + [0, 0, seat_z]) {
+            rotate([reverse_bolts ? 180 : 0, 0, 0]) {
+              translate([0, 0, -bolt_l]) {
+                bolt(d=front_bumper_bolt_d,
+                     h=bolt_l,
+                     threaded=false,
+                     head_type=front_bumper_use_countersunk ? "countersunk" : "socket",
+                     bolt_color=[0.7, 0.72, 0.75],
+                     head_color=[0.7, 0.72, 0.75],
+                     show_nut=true,
+                     nut_head_distance=grip,
+                     $fn=48);
+              }
+            }
           }
         }
       }

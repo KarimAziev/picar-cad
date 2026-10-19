@@ -290,6 +290,11 @@ front_bumper_bolt_cbore_d                      = front_bumper_use_countersunk
 front_bumper_bolt_cbore_h                      = front_bumper_use_countersunk
                                                   ? m3_countersunk_bore_h
                                                   : m3_socket_counterbore_h;
+// Assembly hardware only: true seats screw heads in the underside recesses
+// and nuts above the top plate. Set false for heads above and nuts below.
+front_bumper_reverse_bolts = front_bumper_bolt_cbore_d > 0
+                              && front_bumper_bolt_cbore_h > 0;
+
 front_bumper_bolt_spacing_x                    = 38.0;
 front_bumper_bolt_pad_x                        = 4.4;
 front_bumper_center_bolt_y_offset              = 7;
@@ -1412,9 +1417,22 @@ front_chassis_use_ribbon_slots                     = false;
 front_chassis_ribbon_slot_rows                     = 5;
 front_chassis_ribbon_land                          = 3;
 
+// Paired head-servo cable passages beside the front camera ribbon opening.
+// Dimensions and corner radius use head_servo_cable_slot_size/corner_r.
+// These openings are available only with split_front_chassis=false.
+front_chassis_use_servo_cable_slots                = true;
+// Edge-to-edge Y gap behind the camera ribbon opening.
+front_chassis_servo_cable_slot_gap                 = 3;
+
 front_chassis_use_wiring_slot                      = true;
-front_chassis_wiring_slot_d                        = 14;
-front_chassis_wiring_slot_clearance                = 3;
+front_chassis_wiring_slot_plist = [
+  // Rounded passage footprint [X width, Y length], in millimeters.
+  "size",      [12, 20],
+  // Corner radius in millimeters.
+  "r",         2,
+  // Minimum passage-edge clearance to the steering-servo envelope.
+  "clearance", 3
+];
 
 front_chassis_rear_frame_corner_r                  = 4;
 

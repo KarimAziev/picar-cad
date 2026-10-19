@@ -3,35 +3,42 @@
 The bumper pairs a rigid, triangulated top retainer with a swept TPU 95A impact
 body. Its silhouette takes inspiration from HSP 94122 parts 02009 and 02052;
 its mounting interface fits this chassis. It is not a dimensioned replacement
-for either commercial part. The head frame includes a 15 mm forward bumper
+for either commercial part. The head frame includes a 17 mm forward bumper
 extension to provide clearance from the neutral camera head.
 
 ## Parts and mounting
 
 | Feature                    | Default                                      |
 | -------------------------- | -------------------------------------------- |
-| TPU envelope               | 163 × 42 × 21 mm                             |
+| TPU envelope               | 163 × 42 × 16 mm                             |
 | Top plate footprint        | 110 × 30 mm                                  |
 | Top plate thickness        | 3 mm                                         |
-| Integral compression posts | Three, Ø8 × 21 mm                            |
+| Integral compression posts | Three, Ø8 × 16 mm                            |
 | TPU post passages          | Ø8.6 mm                                      |
 | Side mounting centers      | 38 mm apart                                  |
 | Center mounting hole       | 7 mm forward of the side holes               |
-| Fasteners                  | Three M3 × 35 socket-head screws and M3 nuts |
+| Fasteners                  | Three M3 × 30 socket-head screws and M3 nuts |
 
-The posts pass through the TPU and seat on the head frame. Screws enter from
-above the retainer and nuts bear against the frame underside. The rigid stack
-is 30 mm tall with the default 6 mm chassis: 21 mm posts plus 3 mm plate plus
-6 mm frame. A 35 mm screw leaves 5 mm below the chassis for a nut and thread
-protrusion. The screw heads bear on the plate's solid circular pads.
+The posts pass through the TPU and seat on the head frame. The rigid stack
+is 25 mm tall with the configured 6 mm chassis: 16 mm posts plus 3 mm plate
+plus 6 mm frame. Screw heads seat in the underside counterbores and nuts bear
+on the retainer's solid circular pads. The distance between the screw-head
+seat and the nut is the stack height minus the counterbore depth.
+
+Hardware direction is controlled by `front_bumper_reverse_bolts` in
+`scad/rc_params.scad`. It defaults to true when both chassis counterbore dimensions
+are positive. Set it to false for screw heads above the retainer and nuts beneath
+the chassis. The plate and assembly also accept `reverse_bolts` for a per-call
+preview override. Hardware direction affects assembly placeholders only; the
+printable retainer and its mounting passages have the same geometry in both modes.
 
 The three centers come from `front_chassis_bumper_mount_positions()` in
 `../front_chassis/front_frame_util.scad`. The mounting holes, bumper datums,
 and hardware therefore share the same frame interface.
 `front_chassis_bumper_extension` in `scad/rc_params.scad` controls the forward
 nose extension independently of the head mounting position and chassis joints.
-Its default is 15 mm; zero places the mounting lands directly ahead of the
-head cable passage. The default frame nose is at vehicle Y = 130.825 mm.
+Its default is 17 mm; zero places the mounting lands directly ahead of the
+head cable passage. The default frame nose is at vehicle Y = 132.825 mm.
 The TPU projects about 23.4 mm forward of the frame nose with the default
 configuration.
 
@@ -112,8 +119,8 @@ The vehicle entry points `scad/rc_chassis.scad` and
 `tests/check_front_bumper_mesh.py` checks connected, watertight solids, anchor
 agreement between bodies and slots, clear bolt passages, supported post feet,
 print orientation, and intersections with the TPU, head frame, and neutral
-head. It exercises the default stack and a shorter stack with wider posts,
-checks a connected 15 mm frame extension with fixed rear/X/Z bounds, and tests
+head. It exercises the configured stack and a variant with wider posts,
+checks the nose extension with fixed rear/X/Z bounds, and tests
 head tilt at -30 and +30 degrees with pan at zero.
 These are geometric checks; they do not establish impact strength or fatigue
 life, nor certify the head's complete pan/tilt swept volume.

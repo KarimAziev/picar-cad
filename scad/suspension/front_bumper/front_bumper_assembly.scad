@@ -29,7 +29,12 @@ top_plate_z_offset = 0; // [-200:1:200]
   - `anchor`: Anchor for the complete assembly, excluding hardware.
   - `show_top_plate`: Show the rigid retainer and posts.
   - `show_foam`: Show the TPU body.
-  - `show_bolts`: Show screws and underside nuts when the retainer is visible.
+  - `show_bolts`: Show screws and nuts when the retainer is visible.
+  - `foam_z_offset`: Vertical preview separation of the TPU body.
+  - `foam_alpha`: TPU preview opacity, from 0 to 1.
+  - `top_plate_z_offset`: Vertical preview separation of the retainer and hardware.
+  - `reverse_bolts`: Put screw heads underneath the chassis and nuts on the plate.
+    Defaults to the counterbore-driven `front_bumper_reverse_bolts` setting.
   **Behavior:** Use `front_bumper_position(pl)` to place the default anchor
   on the chassis. The bumper follows the head frame's +Y assembly separation.
  */
@@ -40,7 +45,8 @@ module front_bumper_assembly(pl=front_bumper_plist,
                              show_bolts=show_bolts,
                              foam_z_offset=foam_z_offset,
                              foam_alpha=foam_alpha,
-                             top_plate_z_offset=top_plate_z_offset) {
+                             top_plate_z_offset=top_plate_z_offset,
+                             reverse_bolts=front_bumper_reverse_bolts) {
   size = front_bumper_size(pl);
   plate_size = front_bumper_size(pl, "plate");
   with_anchor(size=size, anchor=anchor) {
@@ -55,6 +61,7 @@ module front_bumper_assembly(pl=front_bumper_plist,
       translate([(size[0] - plate_size[0]) / 2, 0, top_plate_z_offset]) {
         front_bumper_top_plate(pl,
                                show_bolts=show_bolts,
+                               reverse_bolts=reverse_bolts,
                                color=[0.14, 0.52, 0.72]);
       }
     }
@@ -70,5 +77,6 @@ translate(front_bumper_position(bumper_pl)) {
                         show_foam=show_foam,
                         foam_z_offset=foam_z_offset,
                         foam_alpha=foam_alpha,
-                        top_plate_z_offset=top_plate_z_offset);
+                        top_plate_z_offset=top_plate_z_offset,
+                        reverse_bolts=front_bumper_reverse_bolts);
 }

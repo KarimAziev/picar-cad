@@ -12,6 +12,7 @@ include <../computed_params.scad>
 
 use <../../../lib/debug.scad>
 use <../../../lib/functions.scad>
+use <../../../lib/plist.scad>
 use <../../../lib/polygon_util.scad>
 use <../../../lib/shapes3d.scad>
 use <../../../lib/transforms.scad>
@@ -21,6 +22,7 @@ use <../front_chassis_access_slots.scad>
 use <../front_chassis_controls.scad>
 use <../front_chassis_joint.scad>
 use <../front_chassis_mount_recesses.scad>
+use <../head_frame/head_slots.scad>
 use <front_chassis_ribbon_slots.scad>
 
 front_chassis_rear_frame_debug = false;
@@ -51,21 +53,48 @@ function front_chassis_pts(width=front_chassis_rear_frame_w, rear_extension=0) =
   ─────────────────────────────────────────────────────────────────────────────
   Locate a general wiring passage beside the steering servo.
   **Parameters:**
-  - `d`: Passage diameter in millimeters.
+  - `pl`: Passage `size`, corner radius `r` and servo `clearance` settings.
   **Returns:** Center `[x, y, 0]` on the chassis underside.
   With a crosswise Pi, the passage clears the servo flange toward +X and
   its forward edge meets the Pi reference-box midpoint. A lengthwise Pi
   places the passage behind the servo, beside the ribbon bank.
  */
-function front_chassis_wiring_slot_pos(d=front_chassis_wiring_slot_d) =
-  assert(d > 0, "Wiring passage diameter must be positive")
-  let (bounds = front_chassis_rpi_bounds())
+function front_chassis_wiring_slot_pos(pl=front_chassis_wiring_slot_plist) =
+  let (size = plist_get("size", pl),
+       gap = plist_get("clearance", pl),
+       bounds = front_chassis_rpi_bounds())
+  assert(size[0] > 0 && size[1] > 0 && gap >= 0,
+         "Wiring passage needs positive dimensions and nonnegative clearance")
   front_rpi_orientation == "lwh"
-  ? [bellcrank_params[0] + d / 2 + front_chassis_wiring_slot_clearance,
-     (bounds[0][1] + bounds[1][1] - d) / 2, 0]
-  : [bellcrank_params[0] - d,
-     min((bounds[0][1] + bounds[1][1] - d) / 2,
-         servo_end_y - d / 2 - front_chassis_wiring_slot_clearance * 2), 0];
+  ? [bellcrank_params[0] + size[0] / 2 + gap,
+     (bounds[0][1] + bounds[1][1] - size[1]) / 2, 0]
+  : [bellcrank_params[0] - size[0] - gap,
+     min((bounds[0][1] + bounds[1][1] - size[1]) / 2,
+         servo_end_y - size[1] / 2 - gap * 2), 0];
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_wiring_slot
+  ─────────────────────────────────────────────────────────────────────────────
+  Cut the rounded wiring passage at its chassis mounting datum.
+  **Parameters:**
+  - `pl`: Explicit passage settings from `front_chassis_wiring_slot_plist`.
+  - `thickness`: Plate thickness crossed from Z=0.
+  - `pad`: Additional XY clearance around the passage for fit checks.
+ */
+module front_chassis_wiring_slot(pl=front_chassis_wiring_slot_plist,
+                                 thickness=chassis_thickness,
+                                 pad=0) {
+  size = plist_get("size", pl);
+  r = plist_get("r", pl);
+  eps = front_chassis_joint_boolean_overlap;
+  assert(r >= 0 && r <= min(size) / 2 && pad >= 0);
+  translate(front_chassis_wiring_slot_pos(pl) - [0, 0, eps]) {
+    cuboid([size[0] + pad * 2, size[1] + pad * 2, thickness + eps * 2],
+           r=r + pad,
+           anchor=[0, 0, 1]);
+  }
+}
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -81,6 +110,23 @@ function front_chassis_rear_camera_slot_pos() =
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_rear_servo_cable_positions
+  ─────────────────────────────────────────────────────────────────────────────
+  Locate the two servo-cable opening centers behind the camera ribbon passage.
+  **Returns:** Left and right XYZ centers on the chassis underside. X spacing
+  matches the head openings; Y leaves `front_chassis_servo_cable_slot_gap`.
+ */
+function front_chassis_rear_servo_cable_positions() =
+  let (x = front_chassis_head_pan_servo_slot_dia / 2
+           + head_servo_cable_slot_offsets[0] + head_servo_cable_slot_size[0] / 2,
+       y = front_chassis_rear_camera_slot_pos()[1]
+           - front_chassis_head_pan_servo_top_ribbon_cutout_h / 2
+           - front_chassis_servo_cable_slot_gap - head_servo_cable_slot_size[1] / 2)
+  assert(front_chassis_servo_cable_slot_gap > 0)
+  [[-x, y, 0], [x, y, 0]];
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
   front_chassis_rear_frame
   ─────────────────────────────────────────────────────────────────────────────
 
@@ -92,11 +138,13 @@ function front_chassis_rear_camera_slot_pos() =
   - `debug_font`: Outline label font.
   - `width`: Plate width; must accommodate the front hardware.
   - `show_ribbon_slots`: Include the camera ribbon passages.
-  - `show_wiring_slot`: Include the round wiring passage.
+  - `show_wiring_slot`: Include the rounded rectangular wiring passage.
   - `front_joint`: Cut the front suspension socket and pin passages.
   - `rear_joint`: Cut the rear equipment deck socket and fastener passages.
   - `show_camera_slot`: Include the head-size ribbon passage when `front_joint`
     is false, independently of the ribbon threading bank.
+  - `show_servo_cable_slots`: Include the paired head-size cable openings when
+    `front_joint` is false.
   **Behavior:** Disabled joints form continuous boundaries with adjacent sections.
   */
 module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
@@ -108,7 +156,8 @@ module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
                                 show_wiring_slot=front_chassis_use_wiring_slot,
                                 front_joint=split_front_chassis,
                                 rear_joint=split_rear_chassis,
-                                show_camera_slot=true) {
+                                show_camera_slot=true,
+                                show_servo_cable_slots=front_chassis_use_servo_cable_slots) {
   assert(width >= front_chassis_required_width(),
          "Frame width cannot exclude the front hardware");
   rear_extension = rear_joint ? 0 : front_chassis_joint_boolean_overlap;
@@ -168,13 +217,16 @@ module front_chassis_rear_frame(debug=front_chassis_rear_frame_debug,
       }
     }
 
-    if (show_wiring_slot) {
-      eps = front_chassis_joint_boolean_overlap;
-      translate(front_chassis_wiring_slot_pos() - [0, 0, eps]) {
-        cylinder(d=front_chassis_wiring_slot_d,
-                 h=chassis_thickness + eps * 2,
-                 $fn=80);
+    if (!front_joint && show_servo_cable_slots) {
+      for (pos = front_chassis_rear_servo_cable_positions()) {
+        translate(pos) {
+          front_chassis_servo_cable_slot(anchor=[0, 0, 1]);
+        }
       }
+    }
+
+    if (show_wiring_slot) {
+      front_chassis_wiring_slot();
     }
 
     front_chassis_mount_recesses();

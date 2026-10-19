@@ -22,6 +22,7 @@ anchor = [1, 1, 1];
 slot = false;
 head_pan = 0;
 head_tilt = 0;
+reverse_bolts = front_bumper_reverse_bolts;
 pl = variant ? ["foam_h", 16, "post_d", 9, "bolt_l", 30] : [];
 
 module placed_bumper() {
@@ -96,5 +97,32 @@ if (part == "head_frame") {
     rotate([180, 0, 0]) {
       front_bumper_top_plate(pl);
     }
+  }
+}
+
+module bumper_hardware() {
+  difference() {
+    front_bumper_top_plate(pl, show_bolts=true, reverse_bolts=reverse_bolts);
+    front_bumper_top_plate(pl, show_bolts=false);
+  }
+}
+
+if (part == "hardware") {
+  bumper_hardware();
+} else if (part == "hardware_frame") {
+  intersection() {
+    translate(front_bumper_position(pl, "plate")) {
+      bumper_hardware();
+    }
+    front_chassis_head_frame();
+  }
+} else if (part == "plate_direction_difference") {
+  difference() {
+    front_bumper_top_plate(pl, reverse_bolts=true);
+    front_bumper_top_plate(pl, reverse_bolts=false);
+  }
+  difference() {
+    front_bumper_top_plate(pl, reverse_bolts=false);
+    front_bumper_top_plate(pl, reverse_bolts=true);
   }
 }

@@ -67,12 +67,12 @@ def main() -> None:
             assert len(solids) == 1, f"{case}: expected one wiring passage"
             wiring = solids[0]
             assert wiring.is_watertight and wiring.is_winding_consistent
-            np.testing.assert_allclose(wiring.extents, [14, 14, 6], atol=1e-5)
+            np.testing.assert_allclose(wiring.extents, [12, 20, 6], atol=1e-5)
             np.testing.assert_allclose(wiring.volume,
-                                       40 * 7**2 * np.sin(np.pi / 40) * 6,
+                                       (12 * 20 - 4 * 2**2 + 18 * 2**2 * np.sin(np.pi / 18)) * 6,
                                        atol=0.01)
             print(f"PASS {case}: {count} full 20 x 3 mm passages, 1.5 mm hardware "
-                  "clearance, rounded corners, a 14 mm wiring passage and intact frame bounds")
+                  "clearance, rounded corners, a 12 x 20 mm wiring passage and intact frame bounds")
 
 
 if __name__ == "__main__":

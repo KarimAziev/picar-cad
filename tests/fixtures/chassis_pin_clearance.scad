@@ -119,9 +119,7 @@ module front_cutouts() {
   front_chassis_access_slots(front_chassis_head_center_y());
   front_chassis_rpi(slot_mode=true);
   front_chassis_ribbon_slots();
-  translate(front_chassis_wiring_slot_pos() - [0, 0, 0.1]) {
-    cylinder(d=front_chassis_wiring_slot_d, h=chassis_thickness + 0.2, $fn=80);
-  }
+  front_chassis_wiring_slot();
 }
 
 module joint_bolts() {

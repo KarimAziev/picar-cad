@@ -69,6 +69,28 @@ function front_chassis_head_rear_reach() =
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_servo_cable_slot
+  ─────────────────────────────────────────────────────────────────────────────
+  Cut a rounded servo-cable opening using the shared head cable settings.
+  **Parameters:**
+  - `thickness`: Plate thickness crossed by the opening, starting at Z=0.
+  - `anchor`: Anchor on the opening's `[width, length, thickness]` envelope.
+  **Behavior:** The cutter overlaps both plate faces by the chassis Boolean margin.
+ */
+module front_chassis_servo_cable_slot(thickness=chassis_thickness,
+                                      anchor=[1, 1, 1]) {
+  eps = front_chassis_joint_boolean_overlap;
+  size = concat(head_servo_cable_slot_size, [thickness]);
+  with_anchor(size=size, anchor=anchor) {
+    translate([0, 0, -eps]) {
+      cuboid([size[0], size[1], thickness + eps * 2],
+             r=head_servo_cable_corner_r, anchor=[1, 1, 1]);
+    }
+  }
+}
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
   front_chassis_head_slots
   ─────────────────────────────────────────────────────────────────────────────
 
@@ -142,16 +164,10 @@ module front_chassis_head_slots(thickness=chassis_thickness,
         }
       }
 
-      translate([0, 0, -eps]) {
-        mirror_copy([1, 0, 0]) {
-          translate([pan_servo_slot_r + head_servo_cable_slot_offsets[0],
-                     -pan_servo_slot_r - head_servo_cable_slot_offsets[1],
-                     0]) {
-            cuboid([head_servo_cable_slot_size[0], head_servo_cable_slot_size[1],
-                    thickness + eps * 2],
-                   r=head_servo_cable_corner_r,
-                   anchor=[1, -1, 1]);
-          }
+      mirror_copy([1, 0, 0]) {
+        translate([pan_servo_slot_r + head_servo_cable_slot_offsets[0],
+                   -pan_servo_slot_r - head_servo_cable_slot_offsets[1], 0]) {
+          front_chassis_servo_cable_slot(thickness=thickness, anchor=[1, -1, 1]);
         }
       }
 

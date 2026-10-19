@@ -8,6 +8,8 @@ include <../../scad/suspension/front_chassis/computed_params.scad>
 
 use <../../scad/suspension/bellcrank_steering_slots.scad>
 use <../../scad/suspension/front_chassis/front_chassis_access_slots.scad>
+use <../../scad/suspension/front_chassis/head_frame/head_slots.scad>
+use <../../scad/lib/shapes3d.scad>
 use <../../scad/suspension/front_chassis/rear_frame/front_chassis_rear_frame.scad>
 use <../../scad/suspension/front_chassis/rear_frame/front_chassis_ribbon_slots.scad>
 use <../../scad/suspension/steering_servo_bracket/steering_servo_bracket_assembly.scad>
@@ -52,16 +54,16 @@ if (part == "frame" || part == "baseline") {
   }
 }
 
-if (part == "servo") {
+if (part == "servo" || part == "wiring_servo") {
   intersection() {
     union() {
-      for (p = poses) {
-        slot_prism(p, pad=1.5);
+      if (part == "servo") {
+        for (p = poses) {
+          slot_prism(p, pad=1.5);
+        }
       }
-      translate(front_chassis_wiring_slot_pos() + [0, 0, 0.05]) {
-        cylinder(d=front_chassis_wiring_slot_d + 3,
-                 h=chassis_thickness - 0.1,
-                 $fn=80);
+      translate([0, 0, 0.05]) {
+        front_chassis_wiring_slot(thickness=chassis_thickness - 0.1, pad=1.5);
       }
     }
     linear_extrude(height=chassis_thickness) {
@@ -78,10 +80,8 @@ if (part == "servo") {
 
 if (part == "wiring_land") {
   difference() {
-    translate(front_chassis_wiring_slot_pos() + [0, 0, 0.05]) {
-      cylinder(d=front_chassis_wiring_slot_d + 3,
-               h=chassis_thickness - 0.1,
-               $fn=80);
+    translate([0, 0, 0.05]) {
+      front_chassis_wiring_slot(thickness=chassis_thickness - 0.1, pad=1.5);
     }
     front_chassis_rear_frame(debug=false, show_wiring_slot=false);
   }
@@ -114,5 +114,23 @@ if (part == "camera_frame" || part == "camera_baseline") {
     translate(front_chassis_rear_camera_slot_pos()) {
       front_chassis_camera_ribbon_slot(anchor=[0, 0, 1]);
     }
+  }
+}
+
+if (part == "servo_cables") {
+  difference() {
+    front_chassis_rear_frame(show_servo_cable_slots=false);
+    front_chassis_rear_frame(show_servo_cable_slots=true);
+  }
+} else if (part == "servo_cable_land") {
+  difference() {
+    for (pos = front_chassis_rear_servo_cable_positions()) {
+      translate(pos + [0, 0, 0.05]) {
+        cuboid([head_servo_cable_slot_size[0] + 2,
+                head_servo_cable_slot_size[1] + 2, chassis_thickness - 0.1],
+               anchor=[0, 0, 1]);
+      }
+    }
+    front_chassis_rear_frame(show_servo_cable_slots=false);
   }
 }
