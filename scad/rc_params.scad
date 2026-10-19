@@ -280,8 +280,16 @@ front_chassis_ear_l                            = 5.1;
 // Bumper slot
 // ─────────────────────────────────────────────────────────────────────────────
 // Extra forward clearance between the head's cable passage and bumper mounting lands.
-front_chassis_bumper_extension                 = 18;
+front_chassis_bumper_extension                 = 17;
 front_bumper_bolt_d                            = m3_hole_dia;
+front_bumper_use_countersunk                   = false;
+
+front_bumper_bolt_cbore_d                      = front_bumper_use_countersunk
+                                                  ? m3_countersunk_bore_d
+                                                  : m3_socket_counterbore_d;
+front_bumper_bolt_cbore_h                      = front_bumper_use_countersunk
+                                                  ? m3_countersunk_bore_h
+                                                  : m3_socket_counterbore_h;
 front_bumper_bolt_spacing_x                    = 38.0;
 front_bumper_bolt_pad_x                        = 4.4;
 front_bumper_center_bolt_y_offset              = 7;
@@ -294,7 +302,7 @@ front_bumper_bolt_y_offset                     = 11.4;
 front_bumper_plist = ["foam_w", 163, // TPU 95A impact-body envelope; compliance is set by slicer walls and infill.
                       "foam_l", 42,
                       // Also sets the height of the retainer's integral compression posts.
-                      "foam_h", 21,
+                      "foam_h", 16,
 
                       // Rigid retainer footprint, inside the TPU envelope.
                       "plate_w", 110,
@@ -310,7 +318,7 @@ front_bumper_plist = ["foam_w", 163, // TPU 95A impact-body envelope; compliance
                       "post_clearance", 0.6,
                       // Screw length beneath the head, through plate, posts and chassis to the nut.
                       // Must be at least foam_h + plate_h + chassis_thickness + 4 mm.
-                      "bolt_l", 35];
+                      "bolt_l", 30];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Front chasssis joint

@@ -232,7 +232,11 @@ module front_chassis_front_frame_unsplit(debug=false,
 
         for (pos = front_chassis_bumper_mount_positions()) {
           translate([pos[0], pos[1], 0]) {
-            counterbore(h=chassis_thickness, d=front_bumper_bolt_d);
+            counterbore(h=chassis_thickness,
+                        d=front_bumper_bolt_d,
+                        bore_h=front_bumper_bolt_cbore_h,
+                        bore_d=front_bumper_bolt_cbore_d,
+                        reverse=true);
           }
         }
         // Head zone
