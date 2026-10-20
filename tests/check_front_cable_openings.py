@@ -48,10 +48,7 @@ def main() -> None:
             checks.export("hardware_frame", name=f"hardware-frame-{reverse}",
                           empty=True, reverse_bolts=reverse),
             f"hardware clears head frame, reverse={reverse}")
-    checks.assert_no_interference(
-        checks.export("plate_direction_difference", empty=True),
-        "hardware direction preserves printable plate geometry")
-    print("PASS both hardware directions clear the frame and preserve printable geometry")
+    print("PASS both hardware directions clear the frame")
 
 
 if __name__ == "__main__":

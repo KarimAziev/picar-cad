@@ -8,7 +8,10 @@ include <../../scad/parameters.scad>
 include <../../scad/rc_params.scad>
 
 use <../../scad/head/head_neck.scad>
+use <../../scad/lib/plist.scad>
 use <../../scad/lib/transforms.scad>
+use <../../scad/placeholders/bolt.scad>
+use <../../scad/placeholders/nut.scad>
 use <../../scad/suspension/front_chassis/front_frame_util.scad>
 use <../../scad/suspension/front_chassis/head_frame/front_chassis_head_frame.scad>
 use <../../scad/suspension/front_bumper/common.scad>
@@ -23,11 +26,14 @@ slot = false;
 head_pan = 0;
 head_tilt = 0;
 reverse_bolts = front_bumper_reverse_bolts;
-pl = variant ? ["foam_h", 16, "post_d", 9, "bolt_l", 30] : [];
+test_bolt_l = undef;
+pl = plist_merge(variant ? ["foam_h", 21, "post_d", 9, "bolt_l", 30] : [],
+                 is_undef(test_bolt_l) ? [] : ["bolt_l", test_bolt_l]);
+hardware_pl = reverse_bolts ? pl : plist_merge(pl, ["bolt_l", variant ? 40 : 35]);
 
 module placed_bumper() {
   translate(front_bumper_position(pl)) {
-    front_bumper_assembly(pl);
+    front_bumper_assembly(pl, show_top_plate=true, show_foam=true);
   }
 }
 
@@ -102,8 +108,8 @@ if (part == "head_frame") {
 
 module bumper_hardware() {
   difference() {
-    front_bumper_top_plate(pl, show_bolts=true, reverse_bolts=reverse_bolts);
-    front_bumper_top_plate(pl, show_bolts=false);
+    front_bumper_top_plate(hardware_pl, show_bolts=true, reverse_bolts=reverse_bolts);
+    front_bumper_top_plate(hardware_pl, show_bolts=false, reverse_bolts=reverse_bolts);
   }
 }
 
@@ -116,13 +122,29 @@ if (part == "hardware") {
     }
     front_chassis_head_frame();
   }
-} else if (part == "plate_direction_difference") {
+} else if (part == "nut_pockets") {
   difference() {
+    front_bumper_top_plate(plist_merge(pl, ["bolt_l", variant ? 40 : 35]),
+                           reverse_bolts=false);
     front_bumper_top_plate(pl, reverse_bolts=true);
-    front_bumper_top_plate(pl, reverse_bolts=false);
   }
-  difference() {
-    front_bumper_top_plate(pl, reverse_bolts=false);
-    front_bumper_top_plate(pl, reverse_bolts=true);
+} else if (part == "nut_fit") {
+  intersection() {
+    front_bumper_top_plate(pl);
+    for (pos = front_bumper_mount_positions(pl, "plate")) {
+      translate(pos + [0, 0, plist_get("nut_z", front_bumper_bolt_params(pl))]) {
+        nut(d=snap_bolt_d(front_bumper_bolt_d),
+            outer_d=find_nut_prop("outer_dia", front_bumper_bolt_d) / cos(30),
+            h=find_nut_prop("height", front_bumper_bolt_d),
+            show_text=false);
+      }
+    }
+  }
+} else if (part == "hardware_above") {
+  intersection() {
+    bumper_hardware();
+    translate([-1, -1, front_bumper_size(pl, "plate")[2] + 0.001]) {
+      cube([200, 100, 50]);
+    }
   }
 }

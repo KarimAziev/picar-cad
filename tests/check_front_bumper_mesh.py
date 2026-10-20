@@ -4,6 +4,8 @@ Author: Karim Aziiev <karim.aziiev@gmail.com>
 License: GPL-3.0-or-later
 """
 
+import subprocess
+
 import numpy as np
 
 import check_suspension_mesh as checks
@@ -18,8 +20,8 @@ def main() -> None:
     for variant in (False, True):
         for part in ("plate", "foam"):
             base = checks.one_solid(part, name=f"{part}-{variant}", variant=variant)
-            expected = ([110, 30, 19 if variant else 24] if part == "plate"
-                        else [163, 42, 16 if variant else 21])
+            expected = ([110, 30, 27.4 if variant else 22.4] if part == "plate"
+                        else [163, 42, 21 if variant else 16])
             np.testing.assert_allclose(base.bounds[0], [0, 0, 0], atol=0.02)
             np.testing.assert_allclose(base.extents, expected, atol=0.02)
             # Every anchor must apply identically to the body and mounting cutters.
@@ -41,14 +43,28 @@ def main() -> None:
         printable = checks.one_solid("print_plate", name=f"print-{variant}",
                                       variant=variant)
         np.testing.assert_allclose(printable.bounds[0], [0, 0, 0], atol=0.02)
-        for part in ("mutual", "frame", "bores", "support", "head"):
+        for part in ("mutual", "frame", "bores", "support", "head",
+                     "nut_fit", "hardware_above", "hardware_frame"):
             checks.assert_no_interference(
                 checks.export(part, name=f"{part}-{variant}", empty=True,
                               variant=variant), f"{part}-{variant}")
         print(f"PASS bumper variant={variant}: aligned clear bores, supported posts, "
-              "no overlap with TPU, frame or neutral head")
+              "recessed hardware, no overlap with TPU, frame or neutral head")
+        pockets = checks.export("nut_pockets", name=f"nut-pockets-{variant}",
+                                variant=variant)
+        shells = pockets.split()
+        assert len(shells) == 3
+        for shell in shells:
+            np.testing.assert_allclose(shell.extents,
+                                       [5.75 / np.cos(np.pi / 6), 5.75, 2.49],
+                                       atol=0.002)
+        hardware = checks.export("hardware", name=f"hardware-{variant}",
+                                 variant=variant)
+        np.testing.assert_allclose(hardware.bounds[1][2],
+                                   27.3 if variant else 22.3, atol=0.002)
 
-    frame = checks.one_solid("head_frame", name="head-frame-extended")
+    frame = checks.one_solid("head_frame", name="head-frame-extended",
+                            front_chassis_bumper_extension=15)
     reference = checks.one_solid("head_frame", name="head-frame-zero-extension",
                                  front_chassis_bumper_extension=0)
     np.testing.assert_allclose(frame.bounds - reference.bounds,
@@ -60,6 +76,16 @@ def main() -> None:
             checks.export("head", name=f"head-tilt-{tilt}", empty=True,
                           head_tilt=tilt), f"head tilt {tilt}")
     print("PASS bumper clearance at head tilt -30 and +30 degrees, pan zero")
+    for length, message in ((24, "fully engage the nut"),
+                            (26, "stay below the top face")):
+        result = subprocess.run(
+            [checks.OPENSCAD, "--backend=Manifold", "--enable=textmetrics",
+             "--hardwarnings", "-o", str(checks.OUT / f"invalid-{length}.csg"),
+             "-D", f"test_bolt_l={length}", str(checks.FIXTURE)],
+            capture_output=True, text=True)
+        assert "ERROR: Assertion" in result.stderr and message in result.stderr, (
+            length, result.stdout, result.stderr)
+    print("PASS too-short and protruding bolts rejected")
 
 
 if __name__ == "__main__":

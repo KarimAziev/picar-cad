@@ -280,7 +280,7 @@ front_chassis_ear_l                            = 5.1;
 // Bumper slot
 // ─────────────────────────────────────────────────────────────────────────────
 // Extra forward clearance between the head's cable passage and bumper mounting lands.
-front_chassis_bumper_extension                 = 17;
+front_chassis_bumper_extension                 = 14;
 front_bumper_bolt_d                            = m3_hole_dia;
 front_bumper_use_countersunk                   = false;
 
@@ -290,8 +290,8 @@ front_bumper_bolt_cbore_d                      = front_bumper_use_countersunk
 front_bumper_bolt_cbore_h                      = front_bumper_use_countersunk
                                                   ? m3_countersunk_bore_h
                                                   : m3_socket_counterbore_h;
-// Assembly hardware only: true seats screw heads in the underside recesses
-// and nuts above the top plate. Set false for heads above and nuts below.
+// True seats screw heads in the underside recesses and nuts in top-plate pockets.
+// False uses a flat top plate with screw heads above and nuts below the chassis.
 front_bumper_reverse_bolts                     = front_bumper_bolt_cbore_d > 0
                                                   && front_bumper_bolt_cbore_h > 0;
 
@@ -313,7 +313,13 @@ front_bumper_plist = ["foam_w", 163, // TPU 95A impact-body envelope; compliance
                       "plate_w", 110,
                       "plate_l", 30,
                       // Plate thickness above the posts; total retainer height is foam_h + plate_h.
-                      "plate_h", 3,
+                      "plate_h", 6.4,
+                      // Pocket depth is the hardware nut height plus this allowance.
+                      "nut_depth", 0.15,
+                      // Diametral clearance across the nut's flats.
+                      "nut_clearance", 0.25,
+                      // Minimum distance from the bolt tip to the retainer's top face.
+                      "bolt_tip_clearance", 0.1,
                       // Width of the perimeter and diagonal reinforcing ribs.
                       "rib_w", 5,
 
@@ -322,8 +328,9 @@ front_bumper_plist = ["foam_w", 163, // TPU 95A impact-body envelope; compliance
                       // Diametral clearance: TPU passage diameter = post_d + post_clearance.
                       "post_clearance", 0.6,
                       // Screw length beneath the head, through plate, posts and chassis to the nut.
-                      // Must be at least foam_h + plate_h + chassis_thickness + 4 mm.
-                      "bolt_l", 30];
+                      // Must fully engage the recessed nut and keep the tip below the top face.
+                      // front_bumper_bolt_params accounts for both nut and chassis recesses.
+                      "bolt_l", 25];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Front chasssis joint
