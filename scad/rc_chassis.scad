@@ -150,7 +150,7 @@ steering_servo_angle                        = 0; // [-25:1:25]
 /* [Raspberry PI] */
 show_front_rpi                              = false;
 show_rpi_sd_card                            = false;
-show_rpi_standoffs                          = false;
+show_rpi_standoffs                          = true;
 show_rpi_usb_c_plug                         = false;
 show_rpi_ai_hat                             = false;
 show_rpi_motor_driver_hat                   = false;
