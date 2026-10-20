@@ -45,7 +45,7 @@ show_servo_horn         = false;
 show_servo_horn_screws  = false;
 show_servo_horn_bolt    = false;
 servo_horn_single       = false;
-servo_horn_screw_side   = "horizontal";
+servo_horn_screw_side   = "horizontal";  // [vertical, horizontal]
 
 echo_bolts_info         = true;
 
@@ -149,8 +149,8 @@ module head_front_plate(show_camera=false,
                         show_bolts=false) {
   cameras_len = len(head_cameras);
   single_camera_y_shift = cameras_len > 1
-    ? 0
-    : head_cameras_y_distance / 2;
+                          ? 0
+                          : head_cameras_y_distance / 2;
 
   // plate cutouts
   translate([0, 0, -head_plate_thickness]) {

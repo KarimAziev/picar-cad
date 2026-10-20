@@ -71,7 +71,7 @@ show_pan_servo_horn         = true;
 
 show_tilt_servo_horn_screws = true;
 show_tilt_servo_horn_bolt   = true;
-head_servo_horn_screw_side  = "horizontal";
+head_servo_horn_screw_side  = "horizontal"; // [vertical, horizontal]
 
 show_tilt_servo_horn        = true;
 show_tilt_servo_bolts       = true;
@@ -215,12 +215,12 @@ function _head_neck_head_points() =
                                              ir_t + ir_case_carriage_h + ir_case_rail_h
                                              + ir_case_rail_protrusion_h)], ir_pad)) p + ir_pos],
        ir=is_ir_case_bracket_enabled("both")
-       ? concat(ir_points, [for (p=ir_points) [-p[0], p[1], p[2]]])
-       : is_ir_case_bracket_enabled("left") ? ir_points
-       : is_ir_case_bracket_enabled("right")
-       ? [for (p=ir_points)
-         p + [-head_plate_width - ir_case_width - 2*t
-              - 2*ir_case_l_bracket_len, 0, 0]] : [])
+          ? concat(ir_points, [for (p=ir_points) [-p[0], p[1], p[2]]])
+          : is_ir_case_bracket_enabled("left") ? ir_points
+            : is_ir_case_bracket_enabled("right")
+              ? [for (p=ir_points)
+                p + [-head_plate_width - ir_case_width - 2*t
+                     - 2*ir_case_l_bracket_len, 0, 0]] : [])
   concat(frame, horn, cameras, ir);
 
 // Bounding points relative to the tilt axis, before its Z rotation in the
@@ -408,8 +408,8 @@ module servo_mount_bolts(d=head_neck_pan_servo_bolt_dia,
        bolt_h = ceil(nut_h + flang_thickness + slot_thickness),
        nut_head_distance=flang_thickness + slot_thickness,
        init_z = reverse
-       ? -slot_thickness / 2 + bolt_h
-       : slot_thickness / 2 - bolt_h) {
+                ? -slot_thickness / 2 + bolt_h
+                : slot_thickness / 2 - bolt_h) {
 
     translate([0,
                0,

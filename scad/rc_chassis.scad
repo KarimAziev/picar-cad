@@ -51,6 +51,34 @@ rear_suspension_joint_spacing               = 0; // [0:1:50]
 
 /* [Front Chassis Head Frame] */
 show_head                                   = false;
+show_camera                                 = true;
+show_camera_bolts                           = true;
+show_camera_nuts                            = true;
+
+show_pan_servo                              = true;
+pan_servo_rotation                          = 0; // [-179:179]
+show_pan_servo_horn                         = true;
+show_pan_servo_bolts                        = true;
+show_pan_servo_nuts                         = true;
+
+show_tilt_servo                             = true;
+tilt_servo_rotation                         = 0; // [-90:90]
+show_tilt_servo_horn_screws                 = true;
+show_tilt_servo_horn_bolt                   = true;
+head_servo_horn_screw_side                  = "horizontal"; // [vertical, horizontal]
+show_tilt_servo_horn                        = true;
+show_tilt_servo_bolts                       = true;
+show_tilt_servo_nuts                        = true;
+
+show_ir_case                                = true;
+show_ir_case_bolts                          = true;
+show_ir_case_nuts                           = true;
+show_ir_led                                 = true;
+show_ir_case_rail                           = true;
+show_ir_case_rail_bolts                     = true;
+show_ir_case_rail_nuts                      = true;
+
+/* [Front Bumper] */
 show_front_bumper_top_plate                 = false;
 show_front_bumper_foam                      = false;
 show_front_bumper_bolts                     = false;
@@ -272,7 +300,30 @@ module rc_chassis(show_bellcrank_drive=show_bellcrank_drive,
                   show_track_width=show_track_width,
                   show_ground_clearance=show_ground_clearance,
                   show_overall_length=show_overall_length,
-                  show_chassis_width=show_chassis_width) {
+                  show_chassis_width=show_chassis_width,
+                  pan_servo_rotation=pan_servo_rotation,
+                  tilt_servo_rotation=tilt_servo_rotation,
+                  show_pan_servo=show_pan_servo,
+                  show_tilt_servo=show_tilt_servo,
+                  show_camera=show_camera,
+                  show_camera_bolts=show_camera_bolts,
+                  show_camera_nuts=show_camera_nuts,
+                  show_pan_servo_horn=show_pan_servo_horn,
+                  show_tilt_servo_horn_screws=show_tilt_servo_horn_screws,
+                  show_tilt_servo_horn_bolt=show_tilt_servo_horn_bolt,
+                  head_servo_horn_screw_side=head_servo_horn_screw_side,
+                  show_tilt_servo_horn=show_tilt_servo_horn,
+                  show_tilt_servo_bolts=show_tilt_servo_bolts,
+                  show_tilt_servo_nuts=show_tilt_servo_nuts,
+                  show_pan_servo_bolts=show_pan_servo_bolts,
+                  show_pan_servo_nuts=show_pan_servo_nuts,
+                  show_ir_case=show_ir_case,
+                  show_ir_case_bolts=show_ir_case_bolts,
+                  show_ir_case_nuts=show_ir_case_nuts,
+                  show_ir_led=show_ir_led,
+                  show_ir_case_rail=show_ir_case_rail,
+                  show_ir_case_rail_bolts=show_ir_case_rail_bolts,
+                  show_ir_case_rail_nuts=show_ir_case_rail_nuts) {
   chassis_dimension_annotations(wheelbase=show_wheelbase,
                                 track=show_track_width,
                                 clearance=show_ground_clearance,
@@ -432,7 +483,30 @@ module rc_chassis(show_bellcrank_drive=show_bellcrank_drive,
                front_chassis_head_center_y() + resolved_head_chassis_joint_spacing,
                front_chassis_head_mount_z()]) {
       head_neck(center_pan_servo_slot=true,
-                pan_servo_rotation=0);
+                show_head=show_head,
+                show_pan_servo=show_pan_servo,
+                show_tilt_servo=show_tilt_servo,
+                pan_servo_rotation=pan_servo_rotation,
+                tilt_servo_rotation=tilt_servo_rotation,
+                show_camera=show_camera,
+                show_camera_bolts=show_camera_bolts,
+                show_camera_nuts=show_camera_nuts,
+                show_pan_servo_horn=show_pan_servo_horn,
+                show_tilt_servo_horn_screws=show_tilt_servo_horn_screws,
+                show_tilt_servo_horn_bolt=show_tilt_servo_horn_bolt,
+                head_servo_horn_screw_side=head_servo_horn_screw_side,
+                show_tilt_servo_horn=show_tilt_servo_horn,
+                show_tilt_servo_bolts=show_tilt_servo_bolts,
+                show_tilt_servo_nuts=show_tilt_servo_nuts,
+                show_pan_servo_bolts=show_pan_servo_bolts,
+                show_pan_servo_nuts=show_pan_servo_nuts,
+                show_ir_case=show_ir_case,
+                show_ir_case_bolts=show_ir_case_bolts,
+                show_ir_case_nuts=show_ir_case_nuts,
+                show_ir_led=show_ir_led,
+                show_ir_case_rail=show_ir_case_rail,
+                show_ir_case_rail_bolts=show_ir_case_rail_bolts,
+                show_ir_case_rail_nuts=show_ir_case_rail_nuts);
     }
   }
 
