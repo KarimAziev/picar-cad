@@ -80,11 +80,15 @@ function steering_servo_y_tie_rod() =
   - steering_servo_arm_bolt_d
   + (steering_servo_arm_bolt_d - servo_tie_rod_a_bushing_d);
 
-function steering_servo_tie_rod_angle(bellcrank_lever_z_end) =
-  let (bellcrank_lever_z_end = is_undef(bellcrank_lever_z_end)
-                               ? bellcrank_servo_lever_z_coords()[1]
-                               : bellcrank_lever_z_end,
-       dims = tie_rod_full_len(shaft_body_len=steering_servo_tie_rod_body_len,
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  steering_servo_tie_rod_length
+  ─────────────────────────────────────────────────────────────────────────────
+  Return the assembled eye-center spacing in mm, including shaft nuts and
+  rod-end extension limited by the available thread.
+ */
+function steering_servo_tie_rod_length() =
+  let (dims = tie_rod_full_len(shaft_body_len=steering_servo_tie_rod_body_len,
                                shaft_thread_len=steering_servo_tie_rod_thread_len,
                                shaft_thread_d=steering_servo_tie_rod_thread_d,
                                show_shaft_nuts=true,
@@ -93,40 +97,78 @@ function steering_servo_tie_rod_angle(bellcrank_lever_z_end) =
                                tie_rod_a_shank_len=servo_tie_rod_a_shank_len,
                                tie_rod_b_shank_len=servo_tie_rod_b_shank_len,
                                tie_rod_b_eye_od=servo_tie_rod_b_eye_od,
-
                                tie_rod_b_screw_out_depth=servo_tie_rod_b_screw_out_depth,
-                               limit_max_depth=true),
-       full_l = dims[0],
-       y_tie_rod = steering_servo_y_tie_rod(),
-       y_rod_zh = y_tie_rod + dsservo_size[1] / 2 - servo_tie_rod_b_eye_h / 2,
-       bellcrank_lever_z = y_rod_zh - bellcrank_lever_z_end,
-       angle = y_angle_from_zshift(bellcrank_lever_z, full_l))
-  angle;
+                               limit_max_depth=true))
+  dims[0] - (servo_tie_rod_a_eye_od + servo_tie_rod_b_eye_od) / 2;
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  steering_servo_tie_rod_origin
+  ─────────────────────────────────────────────────────────────────────────────
+  Return the servo-side eye center before horn rotation, relative to the
+  output attachment, in mm.
+ */
+function steering_servo_tie_rod_origin() =
+  [-steering_servo_arm_w / 2 + servo_tie_rod_a_eye_od / 2,
+   steering_servo_y_tie_rod(),
+   -dservo_tie_rod_a_max_h() / 2];
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  steering_servo_neutral_pose
+  ─────────────────────────────────────────────────────────────────────────────
+  Return the horn and rod pose for the configured longitudinal neutral trim.
+  **Parameters:**
+  - `bellcrank_lever_z_end`: Lever mounting height; undef uses the drive lever.
+  - `offset`: Reduction in longitudinal reach, in mm. Positive values move the
+    servo mounting position toward the bellcrank without changing rod length.
+  **Returns:** `[horn_angle, rod_angle, rod_a, rod_b]`, with angles in degrees
+  and eye centers in the horn's local frame before its 180-degree rotation.
+  **Behavior:** Preserves the bellcrank-end height and selects the horn solution
+  nearest the upright pose. Steering input is relative to this neutral horn.
+ */
+function steering_servo_neutral_pose(bellcrank_lever_z_end,
+                                      offset=steering_servo_neutral_offset) =
+  let (lever_z = is_undef(bellcrank_lever_z_end)
+                  ? bellcrank_servo_lever_z_coords()[1]
+                  : bellcrank_lever_z_end,
+       rod_l = steering_servo_tie_rod_length(),
+       full_l = rod_l + (servo_tie_rod_a_eye_od + servo_tie_rod_b_eye_od) / 2,
+       origin = steering_servo_tie_rod_origin(),
+       height = origin[1] + dsservo_size[1] / 2
+                - servo_tie_rod_b_eye_h / 2 - lever_z,
+       pitch = y_angle_from_zshift(height, full_l),
+       rod_b = origin + [-rod_l * cos(pitch) + offset,
+                          -rod_l * sin(pitch), 0],
+       radius = norm([origin[0], origin[1]]),
+       reach = norm([rod_b[0], rod_b[1]]))
+  assert(radius > 0 && reach > 0, "Neutral steering needs nonzero lever radii")
+  let (cos_angle = (radius * radius + reach * reach - rod_l * rod_l)
+                  / (2 * radius * reach))
+  assert(abs(cos_angle) <= 1, "Neutral servo offset exceeds tie-rod reach")
+  let (bearing = atan2(rod_b[1], rod_b[0]) - atan2(origin[1], origin[0]),
+       candidates = [for (side = [-1, 1])
+         let (angle = bearing + side * acos(cos_angle))
+         atan2(sin(angle), cos(angle))],
+       horn_angle = abs(candidates[0]) <= abs(candidates[1])
+                      ? candidates[0]
+                      : candidates[1],
+       rod_a = rotate_euler_xyz(origin, [0, 0, horn_angle]),
+       rod_angle = atan2(rod_a[1] - rod_b[1], rod_a[0] - rod_b[0]))
+  [horn_angle, rod_angle, rod_a, rod_b];
+
+function steering_servo_tie_rod_angle(bellcrank_lever_z_end) =
+  steering_servo_neutral_pose(bellcrank_lever_z_end)[1];
 
 function steering_servo_bellcrank_y(center=false,
                                     bellcrank_lever_z_end) =
-  let (bellcrank_lever_z_end = is_undef(bellcrank_lever_z_end)
-                               ? bellcrank_servo_lever_z_coords()[1]
-                               : bellcrank_lever_z_end,
-       dims = tie_rod_full_len(shaft_body_len=steering_servo_tie_rod_body_len,
-                               shaft_thread_len=steering_servo_tie_rod_thread_len,
-                               shaft_thread_d=steering_servo_tie_rod_thread_d,
-                               show_shaft_nuts=true,
-                               tie_rod_a_screw_out_depth=servo_tie_rod_a_screw_out_depth,
-                               tie_rod_a_eye_od=servo_tie_rod_a_eye_od,
-                               tie_rod_a_shank_len=servo_tie_rod_a_shank_len,
-                               tie_rod_b_shank_len=servo_tie_rod_b_shank_len,
-                               tie_rod_b_eye_od=servo_tie_rod_b_eye_od,
-                               tie_rod_b_screw_out_depth=servo_tie_rod_b_screw_out_depth,
-                               limit_max_depth=true),
-       full_l = dims[0],
-       angle = steering_servo_tie_rod_angle(bellcrank_lever_z_end=bellcrank_lever_z_end),
-       eye_center_spacing = full_l
-                            - servo_tie_rod_a_eye_od / 2
-                            - servo_tie_rod_b_eye_od / 2,
-       eye_center_spacing_x = eye_center_spacing * cos(angle),
-       flang_x = -eye_center_spacing_x - dsservo_gearbox_d1 / 2,
-       flang_x_adjusted = center ? flang_x + dsservo_size[0] / 2 : flang_x,
+  let (pose = steering_servo_neutral_pose(bellcrank_lever_z_end),
+       eye_center_spacing_x = steering_servo_tie_rod_length() * cos(pose[1]),
+       horn_x_shift = pose[2][0] - steering_servo_tie_rod_origin()[0],
+       flang_x = horn_x_shift - eye_center_spacing_x - dsservo_gearbox_d1 / 2,
+       flang_x_adjusted = center
+                           ? flang_x + dsservo_size[0] / 2
+                           : flang_x,
        flange_w = (dsservo_flange_w - dsservo_size[0]) / 2,
        bellcrank_distance = flang_x_adjusted + dsservo_size[0] + flange_w)
   bellcrank_distance;
@@ -246,13 +288,11 @@ module steering_servo_harness(show_servo_horn=true,
                           ? bellcrank_servo_lever_z_coords()[1]
                           : bellcrank_lever_z_end;
 
-  y_tie_rod = steering_servo_y_tie_rod();
+  neutral = steering_servo_neutral_pose(bellcrank_lever_z_end);
+  horn_angle = neutral[0] + servo_horn_angle;
+  angle = neutral[1];
 
-  angle = steering_servo_tie_rod_angle(bellcrank_lever_z_end=bellcrank_lever_z_end);
-
-  max_tie_rod_a_h = dservo_tie_rod_a_max_h();
-
-  rotate([0, 0, 180 + servo_horn_angle]) {
+  rotate([0, 0, 180 + horn_angle]) {
     translate([0, 0, servo_horn_z_offset]) {
       if (show_servo_horn) {
         steering_servo_arm(alpha=horn_alpha);
@@ -280,10 +320,8 @@ module steering_servo_harness(show_servo_horn=true,
       }
     }
     if (show_tie_rod) {
-      translate([-steering_servo_arm_w / 2 + servo_tie_rod_a_eye_od / 2,
-                 y_tie_rod,
-                 -max_tie_rod_a_h / 2]) {
-        rotate([0, 0, angle - servo_horn_angle]) {
+      translate(steering_servo_tie_rod_origin()) {
+        rotate([0, 0, angle - horn_angle]) {
           servo_tie_rod(tie_rod_b_bushing_rotation=[angle, 0, 0],
                         direction="left");
         }

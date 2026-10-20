@@ -10,7 +10,6 @@ include <../../rc_params.scad>
 
 use <../../lib/functions.scad>
 use <../../placeholders/dservo.scad>
-use <../../placeholders/tie_rod.scad>
 use <../bellcrank/bellcrank_drive.scad>
 use <../bellcrank_steering_slots.scad>
 use <../knuckle/util.scad>
@@ -126,18 +125,10 @@ function steering_audit_datums() =
                                                                      knuckle_tie_rod_eye_od / 2, rod_h / 2], rod_angles), [-90, 0, 0])],
        rod_a = rod_centers[0],
        rod_b = rod_centers[1],
-       servo_dims = tie_rod_full_len(shaft_body_len=steering_servo_tie_rod_body_len,
-                                     shaft_thread_len=steering_servo_tie_rod_thread_len,
-                                     shaft_thread_d=steering_servo_tie_rod_thread_d, show_shaft_nuts=true,
-                                     tie_rod_a_screw_out_depth=servo_tie_rod_a_screw_out_depth,
-                                     tie_rod_a_eye_od=servo_tie_rod_a_eye_od, tie_rod_a_shank_len=servo_tie_rod_a_shank_len,
-                                     tie_rod_b_eye_od=servo_tie_rod_b_eye_od, tie_rod_b_shank_len=servo_tie_rod_b_shank_len,
-                                     tie_rod_b_screw_out_depth=servo_tie_rod_b_screw_out_depth, limit_max_depth=true),
-       servo_l = servo_dims[0] - (servo_tie_rod_a_eye_od + servo_tie_rod_b_eye_od) / 2,
-       servo_a = [-steering_servo_arm_w / 2 + servo_tie_rod_a_eye_od / 2,
-                  steering_servo_y_tie_rod(), -dservo_tie_rod_a_max_h() / 2],
-       servo_b = servo_a + rotate_euler_xyz([-servo_l, 0, 0],
-                                            [0, 0, steering_servo_tie_rod_angle(bellcrank_servo_lever_z_coords()[1])]))
+       servo_pose = steering_servo_neutral_pose(),
+       servo_l = steering_servo_tie_rod_length(),
+       servo_a = servo_pose[2],
+       servo_b = servo_pose[3])
   ["bellcrank_pivots", [for (s = [-1, 1]) [s * chassis_bellcrank_spacing / 2, 0, 0]],
    "center_mounts", [for (s = [-1, 1]) [s * chassis_bellcrank_spacing / 2, inner_r,
                                         bellcrank_post_flang_h + bellcrank_arm_z]],

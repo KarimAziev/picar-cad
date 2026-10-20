@@ -1168,7 +1168,9 @@ steering_servo_chassis_mount_bolt_head_type        = "countersunk"; // [pan:Pan,
 // Bellcrank arm to steering servo arm tie rod
 // ─────────────────────────────────────────────────────────────────────────────
 
-steering_servo_tie_rod_angle                       = 0;
+// Longitudinal neutral trim in mm; positive values reduce shaft-to-lever reach.
+// The horn and rod angles follow this trim while retaining the rod length.
+steering_servo_neutral_offset                      = 0.9;
 
 steering_servo_tie_rod_body_total_len              = 68.5;
 steering_servo_tie_rod_thread_len                  = 8.8;
