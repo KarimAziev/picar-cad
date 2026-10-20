@@ -14,6 +14,37 @@ use <../../scad/suspension/steering_servo_bracket/helpers.scad>
 use <../../scad/suspension/steering_servo_bracket/steering_servo_bracket_assembly.scad>
 
 mode = "bracket";
+show_encoder = false;
+
+module upright(x_offset) {
+  intersection() {
+    steering_servo_encoder_bracket(x_offset=x_offset,
+                                   show_encoder=show_encoder);
+    translate([-100, -100, steering_encoder_bottom_thickness + 0.01]) {
+      cube([200, 200, 100]);
+    }
+  }
+}
+
+module foot(x_offset) {
+  intersection() {
+    steering_servo_encoder_bracket(x_offset=x_offset);
+    translate([-100, 0, 0]) {
+      cube([200, 100, steering_encoder_bottom_thickness]);
+    }
+  }
+}
+
+module symmetric_difference() {
+  difference() {
+    children(0);
+    children(1);
+  }
+  difference() {
+    children(1);
+    children(0);
+  }
+}
 
 module servo_position() {
   translate([0,
@@ -52,7 +83,21 @@ module assembly_bracket() {
   }
 }
 
-if (mode == "placement_difference") {
+if (mode == "upright_difference") {
+  symmetric_difference() {
+    upright(steering_encoder_x_offset);
+    translate([steering_encoder_x_offset, 0, 0]) {
+      upright(0);
+    }
+  }
+} else if (mode == "foot_difference") {
+  symmetric_difference() {
+    foot(steering_encoder_x_offset);
+    foot(0);
+  }
+} else if (mode == "local_bracket") {
+  steering_servo_encoder_bracket();
+} else if (mode == "placement_difference") {
   union() {
     difference() {
       bracket(); assembly_bracket();

@@ -9,9 +9,28 @@ include <../../rc_params.scad>
 
 use <../encoder_l_bracket.scad>
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  steering_servo_encoder_bracket
+  ─────────────────────────────────────────────────────────────────────────────
+
+  Create a steering encoder bracket with a fixed chassis mounting foot.
+
+  **Parameters:**
+  - `plist`: Encoder dimensions, connectors, and mounting hardware.
+  - `target_h`: Encoder center height above the foot's bottom, in millimeters.
+  - `show_encoder`: Include the encoder and its mounting hardware.
+  - `x_offset`: Signed displacement of the upright and encoder along bracket
+    local X, in millimeters. Positive points toward vehicle +Y (front).
+
+  The upright, PCB holes, connector clearances, and encoder move together.
+  The foot and chassis mounting holes keep their nominal positions. The offset
+  must keep the upright within the foot's width.
+ */
 module steering_servo_encoder_bracket(plist=steering_encoder_plist,
                                       target_h=dsservo_size[1] / 2,
-                                      show_encoder=false) {
+                                      show_encoder=false,
+                                      x_offset=steering_encoder_x_offset) {
 
   encoder_l_bracket(plist=plist,
                     target_h=target_h,
@@ -27,7 +46,8 @@ module steering_servo_encoder_bracket(plist=steering_encoder_plist,
                     bottom_pan_bolt_d=steering_encoder_bottom_pan_bolt_d,
                     bottom_pan_bolt_pad=steering_encoder_bottom_pan_bolt_pad,
                     bottom_corner_r=steering_encoder_bottom_corner_r,
-                    show_encoder=show_encoder);
+                    show_encoder=show_encoder,
+                    x_offset=x_offset);
 }
 
 steering_servo_encoder_bracket(show_encoder=true);

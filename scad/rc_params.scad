@@ -1,7 +1,6 @@
 include <colors.scad>
 include <parameters.scad>
 
-use <lipo_pack_case/multi_lipo_pack_case.scad>
 
 /* [Chassis splits] */
 // Separate head plate from the front suspension plate.
@@ -224,7 +223,8 @@ dsservo_gearbox_size                           = [[1, 12.95, matte_black, 20],
                                                   [3.9, dsservo_gearbox_gear_od, metallic_gold_2, 25],
                                                   [0.05, 4.2, dark_gold_2, 25],
                                                   [0.05, 2.8, licorice, 25]];
-dsservo_gearbox_d1                             = 12.95 + 3.8;
+
+dsservo_gearbox_d1                             = 18.55;
 
 dsservo_gearbox_d2                             = 6;
 dsservo_color                                  = jet_black;
@@ -292,8 +292,8 @@ front_bumper_bolt_cbore_h                      = front_bumper_use_countersunk
                                                   : m3_socket_counterbore_h;
 // Assembly hardware only: true seats screw heads in the underside recesses
 // and nuts above the top plate. Set false for heads above and nuts below.
-front_bumper_reverse_bolts = front_bumper_bolt_cbore_d > 0
-                              && front_bumper_bolt_cbore_h > 0;
+front_bumper_reverse_bolts                     = front_bumper_bolt_cbore_d > 0
+                                                  && front_bumper_bolt_cbore_h > 0;
 
 front_bumper_bolt_spacing_x                    = 38.0;
 front_bumper_bolt_pad_x                        = 4.4;
@@ -1253,6 +1253,8 @@ steering_servo_arm_gear_bolt_head_d                = 4.9;
 // ─────────────────────────────────────────────────────────────────────────────
 
 steering_encoder_plist                             = as5048A_encoder_plist;
+// Upright and encoder displacement along bracket X (vehicle +Y), in millimeters.
+steering_encoder_x_offset                          = 0.0;
 steering_encoder_bottom_thickness                  = 1.6;
 steering_encoder_side_thickness                    = 1;
 steering_encoder_top_side_padding                  = 0;
@@ -1425,14 +1427,12 @@ front_chassis_use_servo_cable_slots                = true;
 front_chassis_servo_cable_slot_gap                 = 3;
 
 front_chassis_use_wiring_slot                      = true;
-front_chassis_wiring_slot_plist = [
-  // Rounded passage footprint [X width, Y length], in millimeters.
-  "size",      [12, 20],
-  // Corner radius in millimeters.
-  "r",         2,
-  // Minimum passage-edge clearance to the steering-servo envelope.
-  "clearance", 3
-];
+front_chassis_wiring_slot_plist = [// Rounded passage footprint [X width, Y length], in millimeters.
+                                   "size", [12, 20],
+                                   // Corner radius in millimeters.
+                                   "r", 2,
+                                   // Minimum passage-edge clearance to the steering-servo envelope.
+                                   "clearance", 3];
 
 front_chassis_rear_frame_corner_r                  = 4;
 

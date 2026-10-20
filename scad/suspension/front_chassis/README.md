@@ -125,6 +125,20 @@ the 6 × 2.5 mm magnet and the AS5048A IC package. The upright behind the PCB is
 which keeps the bracket bend at 58.68 mm and total chassis reach at 65.78 mm.
 The bracket footprint and chassis mounting holes fit the 151.26 mm body width.
 
+Set `steering_encoder_x_offset` in `scad/rc_params.scad` to compensate for
+lateral printing or servo measurement tolerances. The value is a signed offset
+in millimeters along the bracket's local X axis: positive points toward the
+vehicle front (+Y), negative toward the rear. For example, `0.5` shifts the
+upright and encoder 0.5 mm toward the front. The PCB holes and connector
+clearances follow the encoder; the foot and chassis mounting holes stay fixed.
+The upright must remain within the foot's width; out-of-range values report
+the permitted interval. The default is `0`.
+
+The assembly and separate printable bracket both use this setting. Reprint
+only the encoder bracket for an offset adjustment. Individual calls can also
+use `steering_servo_encoder_bracket(x_offset=0.5, show_encoder=true)` or
+`steering_servo_encoder_bracket_printable(x_offset=0.5)`.
+
 Print [the separate encoder bracket](../../components/servo_encoder_bracket/steering_servo_encoder_bracket_printable.scad)
 and check the thin upright for flex and the PCB fasteners for clamping without
 distortion. Keep the magnet concentric and the gap stable through steering

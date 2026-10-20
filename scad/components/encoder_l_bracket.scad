@@ -73,7 +73,9 @@ module encoder_l_bracket(plist,
                          bottom_corner_r=3,
                          show_encoder=false,
                          color=white_smoke_1,
-                         slot_mode=false) {
+                         slot_mode=false,
+                         x_offset=0) {
+  assert(is_num(x_offset), "x_offset must be a number in millimeters");
   size = plist_get("size", plist);
   bottom_pan_l = bottom_pan_bolt_pad + bottom_pan_bolt_d;
   bolt_spacing = plist_get("bolt_spacing", plist);
@@ -135,6 +137,10 @@ module encoder_l_bracket(plist,
 
   assert(upper_right_x > upper_left_x,
          "Encoder connectors leave no width for the upright");
+  assert(upper_left_x + x_offset >= left_x
+         && upper_right_x + x_offset <= right_x,
+         str("x_offset must keep the upright on the mounting foot: ",
+             left_x - upper_left_x, " to ", right_x - upper_right_x, " mm"));
 
   module _encoder(slot_mode=true) {
     translate([0,
@@ -207,8 +213,11 @@ module encoder_l_bracket(plist,
     }
   }
   union() {
-    rotate([90, 0, 0]) {
-      _upper_pan();
+    // Local X runs across the upright; the mounting foot stays at its datum.
+    translate([x_offset, 0, 0]) {
+      rotate([90, 0, 0]) {
+        _upper_pan();
+      }
     }
     _lower_pan();
   }
