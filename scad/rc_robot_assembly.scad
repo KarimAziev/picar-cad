@@ -126,7 +126,6 @@ show_rear_chassis_equipment                 = true;
 show_rear_chassis_equipment_zones           = false;
 show_motor_gearbox_bosses                   = true;
 
-show_rear_equipment                         = true;
 show_rear_power_wiring                      = true;
 show_rear_panel_stack                       = true;
 
@@ -136,8 +135,6 @@ show_rear_power_standoffs                   = true;
 show_rear_lidar                             = true;
 show_rear_lidar_lid                         = true;
 
-show_front_controls                         = true;
-show_front_controls_slots                   = true;
 show_front_access_slots                     = true;
 
 show_debug_pins                             = false;

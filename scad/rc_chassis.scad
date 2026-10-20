@@ -36,38 +36,50 @@ use <suspension/rear_chassis/rear_chassis.scad>
 use <suspension/rear_suspension/rear_suspension_joint.scad>
 use <suspension/upper_steering_plate.scad>
 
+/* [Chassis Parts] */
 show_head_frame                             = true;
 show_chassis_front_frame                    = true;
 show_chassis_rear_frame                     = true;
 show_rear_chassis                           = true;
 show_rear_suspension_mount                  = true;
 
-// Joint separation for assembly inspection.
+/* [Joint separation] */
 front_chassis_joint_spacing                 = 0; // [0:1:30]
 head_chassis_joint_spacing                  = 0; // [0:1:30]
 rear_chassis_joint_spacing                  = 0; // [0:1:30]
 rear_suspension_joint_spacing               = 0; // [0:1:50]
 
-show_front_wheels                           = false;
+/* [Front Chassis Head Frame] */
+show_head                                   = false;
 show_front_bumper_top_plate                 = false;
 show_front_bumper_foam                      = false;
 show_front_bumper_bolts                     = false;
-show_rear_wheels_preview                    = false;
-show_wheel_tires                            = false;
 
-show_upper_steering_plate                   = false;
-show_upper_steering_plate_bolts             = false;
+/* [Front Chassis] */
+show_front_chassis_components               = false;
+show_front_access_slots                     = true;
+
+/* [Steering] */
+show_steering_assembly                      = false;
+
+show_front_bulkhead_housing                 = false;
+show_front_bulkhead                         = false;
+show_front_bulkhead_upper_suspension_holder = false;
+show_front_shock_tower                      = false;
+show_front_suspension_arm_pad               = false;
+
 show_bellcrank_drive                        = false;
 show_bellcrank_drive_idler_lever            = false;
 show_bellcrank_drive_servo_lever            = false;
 show_bellcrank_drive_upper_cap              = false;
-
 show_bellcrank_idler                        = false;
 show_bellcrank_post                         = false;
 show_bellcrank_idler_lever                  = false;
-
 show_idler_upper_bearing                    = false;
 show_idler_lower_bearing                    = false;
+
+show_upper_steering_plate                   = false;
+show_upper_steering_plate_bolts             = false;
 
 show_steering_servo                         = false;
 show_steering_servo_bracket_bolt            = false;
@@ -79,8 +91,6 @@ show_steering_servo_encoder                 = false;
 show_steering_servo_encoder_bracket         = false;
 show_steering_servo_magnet                  = false;
 
-show_steering_assembly                      = false;
-
 show_center_link                            = false;
 
 show_front_lower_arm                        = false;
@@ -89,11 +99,27 @@ show_front_lower_pin_e_clip                 = false;
 show_front_lower_arm_ball_stud              = false;
 
 show_front_upper_arm                        = false;
+show_upper_arm_ball_stud                    = false;
+show_front_upper_arm_pin                    = false;
 
-show_front_bulkhead                         = false;
-show_front_bulkhead_upper_suspension_holder = false;
+show_left_knuckle                           = false;
+show_right_knuckle                          = false;
+show_knuckle_bushing                        = false;
+show_knuckle_inner_bearing                  = false;
+show_knuckle_outer_bearing                  = false;
+show_knuckle_tie_rod                        = false;
 
-// Raspberry PI
+/* [Front steering kinematics] */
+// Closes the wheel linkages
+solve_front_linkage                         = false;
+// positive arm angle lowers the wheel
+front_lower_arm_angle                       = 0; // [-15:1:25]
+// Selects the zero-based knuckle attachment
+front_steering_hole                         = 0; // [0,1]
+// Steering angle
+steering_servo_angle                        = 0; // [-25:1:25]
+
+/* [Raspberry PI] */
 show_front_rpi                              = false;
 show_rpi_sd_card                            = false;
 show_rpi_standoffs                          = false;
@@ -103,24 +129,9 @@ show_rpi_motor_driver_hat                   = false;
 show_rpi_servo_driver_hat                   = false;
 show_rpi_gpio_expansion_board               = false;
 
-show_upper_arm_ball_stud                    = false;
-show_front_upper_arm_pin                    = false;
-
-show_front_shock_tower                      = false;
-show_front_suspension_arm_pad               = false;
-
-show_left_knuckle                           = false;
-show_right_knuckle                          = false;
-show_knuckle_bushing                        = false;
-show_knuckle_inner_bearing                  = false;
-show_knuckle_outer_bearing                  = false;
-show_knuckle_tie_rod                        = false;
-
-show_front_bulkhead_housing                 = false;
-show_head                                   = false;
-show_front_chassis_components               = false;
-
+/* [Rear chassis] */
 show_rear_chassis_components                = false;
+
 show_rear_gearbox_bracket                   = false;
 show_rear_motor                             = false;
 show_rear_gearbox                           = false;
@@ -137,7 +148,6 @@ show_rear_chassis_equipment                 = false;
 show_rear_chassis_equipment_zones           = false;
 show_motor_gearbox_bosses                   = false;
 
-show_rear_equipment                         = false;
 show_rear_power_wiring                      = false;
 show_rear_panel_stack                       = false;
 
@@ -147,23 +157,16 @@ show_rear_power_standoffs                   = false;
 show_rear_lidar                             = false;
 show_rear_lidar_lid                         = false;
 
-show_front_controls                         = false;
-show_front_controls_slots                   = true;
-show_front_access_slots                     = true;
+/* [Wheels] */
+show_front_wheels                           = false;
+show_rear_wheels_preview                    = false;
+show_wheel_tires                            = false;
 
+/* [Debug] */
 // Preview-only pin passages with fit allowances and translucent chassis plates.
 show_debug_pins                             = false;
 
-// Prescribed suspension pose; positive arm angle lowers the wheel.
-// This closes the wheel linkages, not the servo/center-bar calibration.
-solve_front_linkage                         = false;
-front_lower_arm_angle                       = 0; // [-15:1:25]
-front_steering_hole                         = 0; // [0,1]
-
-// Steering angle
-steering_servo_angle                        = 0; // [-25:1:25]
-
-// Measurements use the assembled reference pose and nominal tire envelopes.
+/* [Measurements] */
 show_wheelbase                              = true;
 show_track_width                            = true;
 show_ground_clearance                       = true;
