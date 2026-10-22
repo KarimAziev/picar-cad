@@ -110,17 +110,14 @@ module rows_children(rows,
   assert(is_list(anchor) || is_undef(anchor) || in_list(anchor, [1, 0, -1]),
          "Invalid anchor");
 
-  translate([0, 0, 0]) {
-
-    with_anchor(anchor=is_num(anchor) ? [1, anchor, 1] : anchor,
-                size=[0, total_y, 0],
-                centered=false) {
-      for (i = [0 : rows - 1]) {
-        let (by = i * step + w / 2) {
-          translate([0, by, 0]) {
-            $i = i;
-            children();
-          }
+  with_anchor(anchor=is_num(anchor) ? [1, anchor, 1] : anchor,
+              size=[0, total_y, 0],
+              centered=false) {
+    for (i = [0 : rows - 1]) {
+      let (by = i * step + w / 2) {
+        translate([0, by, 0]) {
+          $i = i;
+          children();
         }
       }
     }

@@ -12,11 +12,11 @@ include <../../../parameters.scad>
 include <../../../rc_params.scad>
 
 use <../../../head/head_neck.scad>
+use <../../../head/servo_horn_recess.scad>
 use <../../../lib/functions.scad>
 use <../../../lib/placement.scad>
 use <../../../lib/shapes3d.scad>
 use <../../../lib/transforms.scad>
-use <../../../lib/trapezoids.scad>
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -46,8 +46,8 @@ function front_chassis_head_mount_size() =
   not a limit on the head's pan or tilt motion or a minimum deck length.
  */
 function front_chassis_head_front_reach() =
-  max(head_side_panel_width,
-      head_side_panel_width / 2 + camera_thickness
+  max(head_side_panel_depth,
+      head_side_panel_depth / 2 + camera_thickness
       + sum([for (item = camera_lens_items) item[2]])
       + abs(pan_servo_size[0] - pan_servo_gearbox_d1) / 2
       + abs(tilt_servo_size[0] - tilt_servo_gearbox_d1) / 2,
@@ -112,23 +112,6 @@ module front_chassis_head_slots(thickness=chassis_thickness,
   x_screw_cols = round((front_chassis_head_pan_servo_recess_x_len / 2) / screw_step);
   y_screw_rows = round((front_chassis_head_pan_servo_recess_y_len / 2) / screw_step);
 
-  cols_params = calc_cols_params(gap=front_chassis_head_pan_servo_screws_gap,
-                                 cols=x_screw_cols,
-                                 w=front_chassis_head_pan_servo_screw_d);
-  rows_params = calc_cols_params(gap=front_chassis_head_pan_servo_screws_gap,
-                                 cols=y_screw_rows,
-                                 w=front_chassis_head_pan_servo_screw_d);
-
-  total_x = cols_params[1];
-  total_y = rows_params[1];
-
-  recess_l = total_x * 2 + slot_r * 2 + front_chassis_head_pan_servo_screw_d
-             + front_chassis_head_pan_servo_screws_gap;
-  recess_w = total_y * 2 + slot_r * 2 + front_chassis_head_pan_servo_screw_d
-             + front_chassis_head_pan_servo_screws_gap;
-
-  half_of_thickness = front_chassis_head_pan_servo_recess_thickness / 2;
-
   pan_servo_slot_r = front_chassis_head_pan_servo_slot_dia / 2;
 
   with_anchor(anchor=anchor,
@@ -137,30 +120,7 @@ module front_chassis_head_slots(thickness=chassis_thickness,
     union() {
       translate([0, 0, thickness - recess_h]) {
         linear_extrude(height=recess_h + eps, center=false) {
-          mirror_copy([0, 1, 0]) {
-            translate([-half_of_thickness,
-                       0,
-                       0]) {
-              trapezoid_rounded_top(b=front_chassis_head_pan_servo_slot_dia,
-                                    t=front_chassis_head_pan_servo_recess_thickness,
-                                    h=recess_l / 2,
-                                    center=false,
-                                    r_factor=0.5);
-            }
-          }
-          rotate([0, 0, 90]) {
-            mirror_copy([0, 1, 0]) {
-              translate([-half_of_thickness,
-                         0,
-                         0]) {
-                trapezoid_rounded_top(b=front_chassis_head_pan_servo_slot_dia,
-                                      t=front_chassis_head_pan_servo_recess_thickness,
-                                      h=recess_w / 2,
-                                      center=false,
-                                      r_factor=0.5);
-              }
-            }
-          }
+          head_servo_horn_recess_2d();
         }
       }
 

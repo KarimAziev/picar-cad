@@ -56,6 +56,8 @@ use <ir_case.scad>
 pan_servo_rotation          = 0; // [-179:179]
 tilt_servo_rotation         = 0; // [-90:90]
 
+show_bbox                   = false;
+
 show_camera                 = true;
 show_camera_bolts           = true;
 show_camera_nuts            = true;
@@ -95,8 +97,8 @@ function head_neck_full_w(base_width=max(head_neck_pan_servo_slot_width,
 function head_neck_full_pan_panel_h() =
   let (nominal_h = head_neck_pan_servo_slot_height
                    + head_neck_tilt_servo_slot_thickness / 2,
-       diff = (head_plate_width / 2 + head_plate_thickness) - nominal_h)
-  nominal_h + diff + head_plate_thickness * 2;
+       diff = (head_front_width / 2 + head_front_thickness) - nominal_h)
+  nominal_h + diff + head_front_thickness * 2;
 
 function head_neck_full_tilt_panel_h() =
   head_neck_tilt_servo_slot_height
@@ -149,86 +151,64 @@ function _head_neck_tilt_pivot() =
 // Points in head_mount coordinates. The frame's nonrectangular outline and
 // accessory hardware are enclosed rather than tessellated here.
 function _head_neck_head_points() =
-  let (t=head_plate_thickness,
-       side_y=[for (y=[-head_side_panel_top, -head_side_panel_notch_y,
-                       -head_side_panel_bottom, -head_side_panel_curve_end])
-         y + head_side_panel_curve_end - head_plate_height / 2],
-       frame=_head_neck_box([-max(head_plate_width / 2 + t, head_upper_plate_width / 2,
-                                  head_upper_connector_width / 2, head_lower_connector_width / 2),
-                             min(-head_plate_height / 2 - head_lower_connector_height / 2,
-                                 min(side_y)), 0],
-                            [max(head_plate_width / 2 + t, head_upper_plate_width / 2,
-                                 head_upper_connector_width / 2, head_lower_connector_width / 2),
-                             max(head_plate_height / 2 + head_upper_connector_height + t,
-                                 max(side_y)),
-                             max(t, head_side_panel_width, head_upper_plate_height,
-                                 head_upper_connector_len)]),
+  let (t=head_front_thickness,
+       frame=_head_neck_box([-head_bridge_size()[0] / 2,
+                             -head_front_height / 2, 0],
+                            [head_bridge_size()[0] / 2,
+                             head_bridge_underside_y() + head_bridge_thickness,
+                             max(head_side_panel_depth, head_bridge_depth,
+                                 head_front_flange_depth)],
+                            _head_neck_fastener_padding(head_frame_bolt_d)),
        // Horn coordinates before head_mount's outer Y rotation.
        horn_r=max(servo_horn_center_ring_outer_dia / 2,
                   servo_horn_ending_arm_w / 2
                   + servo_horn_center_ring_outer_dia / 2 + servo_horn_len / 4),
        horn_pad=_head_neck_fastener_padding(servo_horn_screw_d),
-       horn_center=side_panel_servo_center(),
+       horn_center=head_tilt_axis_position(),
        horn=[for (p=_head_neck_box([-horn_r, -horn_r, -servo_horn_ring_height],
                                    [horn_r, horn_r, servo_horn_arm_z_offset
                                                     + servo_horn_arm_thickness], horn_pad))
-         rotY([head_plate_width / 2,
-               -head_plate_height / 2 + head_side_panel_curve_end, 0]
-              + rotY([horn_center[0], horn_center[1], t] +
-                     rotZ(p, atan2(head_side_panel_bottom
-                                   - head_side_panel_curve_end,
-                                   head_side_panel_curve_start
-                                   - head_side_panel_width)), 90), 180)],
-       camera_pad=_head_neck_fastener_padding(head_camera_bolt_dia),
+         rotY([head_front_width / 2,
+               -head_front_height / 2, 0]
+              + rotY([horn_center[0], horn_center[1], head_horn_seat_thickness] +
+                     rotZ(p, head_tilt_horn_angle()), 90), 180)],
+       camera_pad=_head_neck_fastener_padding(head_camera_bolt_d),
        cameras=[for (i=[0:len(head_cameras)-1])
          let (spec=head_cameras[i],
-              single_shift=len(head_cameras) > 1 ? 0 : head_cameras_y_distance / 2,
-              y=camera_final_y(i) + single_shift + spec[2][1] / 2
-                + head_camera_bolt_dia / 2 + spec[1] + camera_h / 2
+              single_shift=len(head_cameras) > 1 ? 0 : head_camera_gap / 2,
+              y=head_camera_y(i) + single_shift + spec[2][1] / 2
+                + head_camera_bolt_d / 2 + spec[1] + camera_h / 2
                 - camera_holes_size[1] / 2 - camera_bolt_hole_dia / 2
                 - camera_holes_distance_from_top,
               lens_h=sum([for (s=camera_lens_items) s[2]]),
               lens_w=max([for (s=camera_lens_items) s[0]]),
               connector_h=max([for (s=camera_lens_connectors) s[2]]))
            each _head_neck_box([-max(camera_w, lens_w, spec[2][0]) / 2,
-                                head_plate_height / 2 - y - camera_h / 2
+                                head_front_height / 2 - y - camera_h / 2
                                 - camera_module_ffc_zif_h,
                                 t - max(lens_h, connector_h)],
                                [max(camera_w, lens_w, spec[2][0]) / 2,
-                                head_plate_height / 2 - y + camera_h / 2
+                                head_front_height / 2 - y + camera_h / 2
                                 + camera_module_ffc_zif_h,
                                 t + camera_thickness + camera_module_socket_thickness], camera_pad)],
-       ir_t=ir_case_full_thickness(),
-       ir_pad=max(_head_neck_fastener_padding(ir_case_bolt_dia),
+       ir_t=ir_case_face_thickness(),
+       ir_pad=max(_head_neck_fastener_padding(ir_case_mount_bolt_d),
                   _head_neck_fastener_padding(ir_case_rail_bolt_dia, true)),
-       ir_pos=[head_plate_width / 2 + t + ir_case_l_bracket_len,
-               head_side_panel_curve_end / 2 - ir_case_slider_y_pos()
-               + ir_case_head_bolts_side_panel_positions[0][1] + ir_case_bolt_dia / 2,
-               -ir_case_l_bracket_h / 2 - ir_t / 2 + ir_case_bolt_dia / 2
-               + t + ir_case_head_bolts_side_panel_positions[0][0]],
-       ir_points=[for (p=_head_neck_box([-ir_case_l_bracket_len - ir_t, 0,
-                                         min(0, ir_t - max(ir_led_height,
-                                                           ir_led_light_detector_h) - 0.1)],
-                                        [ir_case_width + ir_case_l_bracket_len + ir_t,
-                                         max(ir_case_height, ir_led_board_len),
-                                         max(ir_case_l_bracket_h + ir_t / 2,
-                                             ir_t + ir_case_carriage_h + ir_case_rail_h
-                                             + ir_case_rail_protrusion_h)], ir_pad)) p + ir_pos],
-       ir=is_ir_case_bracket_enabled("both")
-          ? concat(ir_points, [for (p=ir_points) [-p[0], p[1], p[2]]])
-          : is_ir_case_bracket_enabled("left") ? ir_points
-            : is_ir_case_bracket_enabled("right")
-              ? [for (p=ir_points)
-                p + [-head_plate_width - ir_case_width - 2*t
-                     - 2*ir_case_l_bracket_len, 0, 0]] : [])
+       ir_pos=head_ir_position(),
+       ir=[for (p=_head_neck_box([0, -max(ir_case_mount_foot_thickness, ir_case_mount_bolt_length(head_bridge_thickness)),
+                                  min(0, ir_t - max(ir_led_height, ir_led_light_detector_h) - 0.1)],
+                                 [ir_case_width, max(ir_case_height, ir_led_board_len),
+                                  max(ir_case_mount_foot_size()[1],
+                                      ir_t + ir_case_carriage_h + ir_case_rail_h
+                                      + ir_case_rail_protrusion_h)], ir_pad)) p + ir_pos])
   concat(frame, horn, cameras, ir);
 
 // Bounding points relative to the tilt axis, before its Z rotation in the
 // vertical plate's local frame (which becomes X rotation in assembly space).
 function _head_neck_tilting_points() =
-  let (c=side_panel_servo_center())
+  let (c=head_tilt_axis_position())
   [for (p=_head_neck_head_points())
-    rotY(p, 90) + [-c[0], -c[1] / 2, -head_plate_width / 2]];
+    rotY(p, 90) + [-c[0], head_front_height / 2 - c[1], -head_front_width / 2]];
 
 function _head_neck_fixed_points() =
   let (w=head_neck_full_w(),
@@ -283,8 +263,8 @@ function _head_neck_fixed_points() =
   `[minimum, maximum]`, each an `[x, y, z]` vector in millimeters.
 
   **Behavior:**
-  Encloses the fully populated assembly, including both cameras, configured IR
-  case side(s), servos, horns, and fasteners. Visibility toggles do not shrink
+  Encloses the fully populated assembly, including both cameras, the top-mounted IR
+  case, servos, horns, and fasteners. Visibility toggles do not shrink
   this clearance envelope. Component boxes and hardware allowances make it
   conservative, especially in X/Y; this is not a tight mesh measurement.
   Pan affects assembly orientation only with `center_pan_servo_slot=true`.
@@ -438,6 +418,8 @@ module servo_mount_bolts(d=head_neck_pan_servo_bolt_dia,
 }
 
 module head_neck_base(show_tilt_servo=false,
+                      show_frame_bolts=false,
+                      show_frame_nuts=false,
                       show_head=false,
                       show_camera=true,
                       show_pan_servo=false,
@@ -565,14 +547,16 @@ module head_neck_base(show_tilt_servo=false,
                      show_servo_horn=false,
                      alpha=show_tilt_servo ? 1 : 0) {
             if (show_head) {
-              head_centers = side_panel_servo_center();
+              head_centers = head_tilt_axis_position();
 
               rotate([0, 0, tilt_servo_rotation]) {
                 translate([-head_centers[0],
-                           -head_centers[1] / 2,
-                           -head_plate_width / 2]) {
+                           head_front_height / 2 - head_centers[1],
+                           -head_front_width / 2]) {
                   rotate([0, 90, 0]) {
                     head_mount(head_color=head_color,
+                               show_frame_bolts=show_frame_bolts,
+                               show_frame_nuts=show_frame_nuts,
                                show_ir_case=show_ir_case,
                                show_servo_horn=show_tilt_servo_horn,
                                show_camera=show_camera,
@@ -599,6 +583,8 @@ module head_neck_base(show_tilt_servo=false,
 }
 
 module head_neck(center_pan_servo_slot=false,
+                 show_frame_bolts=false,
+                 show_frame_nuts=false,
                  show_tilt_servo=true,
                  show_head=true,
                  show_pan_servo=true,
@@ -628,6 +614,8 @@ module head_neck(center_pan_servo_slot=false,
 
   module head_neck_mod() {
     head_neck_base(show_tilt_servo=show_tilt_servo,
+                   show_frame_bolts=show_frame_bolts,
+                   show_frame_nuts=show_frame_nuts,
                    show_head=show_head,
                    show_camera=show_camera,
                    show_pan_servo=show_pan_servo,
@@ -695,12 +683,14 @@ module head_neck_printable() {
 
 head_neck(center_pan_servo_slot=true);
 
-bounds = head_neck_bounds(pan_servo_rotation=pan_servo_rotation,
-                          tilt_servo_rotation=tilt_servo_rotation,
-                          center_pan_servo_slot=true);
-bbox = bounds[1] - bounds[0];
+if (show_bbox) {
+  bounds = head_neck_bounds(pan_servo_rotation=pan_servo_rotation,
+                            tilt_servo_rotation=tilt_servo_rotation,
+                            center_pan_servo_slot=true);
+  bbox = bounds[1] - bounds[0];
 
-// The size alone does not describe the assembly's asymmetric placement.
-#translate(bounds[0]) {
-  cube(size=bbox);
+  // The size alone does not describe the assembly's asymmetric placement.
+  #translate(bounds[0]) {
+    cube(size=bbox);
+  }
 }

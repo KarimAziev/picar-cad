@@ -12,26 +12,39 @@ use <../lib/transforms.scad>
 use <../lib/trapezoids.scad>
 use <bolt.scad>
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  servo_horn_hole_offsets
+  ─────────────────────────────────────────────────────────────────────────────
+  Return positive screw-center distances from the horn axis along one arm.
+  **Parameters:**
+  - `center_ring_dia`: Hub diameter.
+  - `screw_d`: Horn hole diameter.
+  - `screw_holes_count`: Number of holes per arm.
+  - `screws_gap`: Edge gap between successive holes, also used from hub to
+    the first hole center by this horn's measured layout.
+ */
+function servo_horn_hole_offsets(center_ring_dia=servo_horn_center_ring_outer_dia,
+                                 screw_d=servo_horn_screw_d,
+                                 screw_holes_count=servo_horn_holes_n,
+                                 screws_gap=servo_horn_screws_distance) =
+  assert(center_ring_dia > 0 && screw_d > 0 && screws_gap >= 0)
+  assert(screw_holes_count >= 0 && floor(screw_holes_count) == screw_holes_count)
+  screw_holes_count == 0 ? []
+    : [for (i=[0:screw_holes_count - 1])
+        center_ring_dia / 2 + screws_gap + i * (screw_d + screws_gap)];
+
 module with_servo_horn_holes(center_ring_dia=servo_horn_center_ring_outer_dia,
                              screw_d=servo_horn_screw_d,
                              screw_holes_count=servo_horn_holes_n,
                              screws_gap=servo_horn_screws_distance) {
-  rad = center_ring_dia / 2;
-  step = screw_d + screws_gap;
-  for (dir = [-1, 1]) {
-    group_offst = (dir < 0
-                   ? -rad
-                     - screws_gap
-                   : rad
-                     + screws_gap);
-
-    translate([0, group_offst, 0]) {
-      for (i = [0 : screw_holes_count - 1]) {
+  offsets = servo_horn_hole_offsets(center_ring_dia, screw_d,
+                                    screw_holes_count, screws_gap);
+  if (len(offsets) > 0) {
+    for (dir=[-1, 1], i=[0:len(offsets) - 1]) {
+      translate([0, dir * offsets[i], 0]) {
         $i = i;
-        x = i * step * dir;
-        translate([0, x, 0]) {
-          children();
-        }
+        children();
       }
     }
   }

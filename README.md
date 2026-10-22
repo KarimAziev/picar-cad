@@ -479,11 +479,24 @@ You should use either 4 or 8 M3 standoffs. If you use 8 standoffs, the nuts list
 
 #### Head
 
+The head has four separately printable frame parts: a camera/front plate, an upper bridge, a side panel carrying the tilt horn, and an opposite cover panel. The bridge seats on the side panels and bolts through its downward flanges. The front plate has rearward flanges for the side-panel joints.
+
+| Joint                       | Bolts at default dimensions | Nuts   |
+| --------------------------- | --------------------------- | ------ |
+| Upper bridge to side panels | 4 × M3×12                   | 4 × M3 |
+| Front plate to side panels  | 4 × M3×12                   | 4 × M3 |
+
+The side panels are 4 mm thick. The driven panel’s outward face has the same cross-shaped horn recess profile as the chassis pan-servo mounting pad, aligned with the tilt horn. The floor beneath the horn is 2 mm thick; increasing `head_side_panel_thickness` deepens the recess without moving the horn seat. `head_frame_bolt_l` derives the bolt length from the panel/flange stack and nut thickness.
+
+Print [head_printable.scad](scad/printable_parts/head_printable.scad) for the four-part frame layout. Individual entry points are [head_front_printable.scad](scad/printable_parts/head_front_printable.scad), [head_bridge_printable.scad](scad/printable_parts/head_bridge_printable.scad), [head_side_panel_printable.scad](scad/printable_parts/head_side_panel_printable.scad), and [head_side_cover_printable.scad](scad/printable_parts/head_side_cover_printable.scad). Print one of each. Each entry places its bed face at Z=0. Side-panel recesses and front/top flanges face upward on the bed.
+
+Mount the cameras to the front plate, then bolt both side panels to its flanges with the nuts accessible from inside. Attach the IR enclosure to the upper bridge before installing the bridge. Seat the bridge over the panels and install its four side bolts. `show_frame_bolts` and `show_frame_nuts` display these fasteners in `head_mount` and `head_neck`.
+
 ##### For two Raspberry Pi Camera Module 3 boards
 
 | Size | Length (mm) | Amount                | Nuts | Variable               |
 | ---- | ----------- | --------------------- | ---- | ---------------------- |
-| M2   | 5 or higher | 8 (4 for each camera) | 8    | `head_camera_bolt_dia` |
+| M2   | 5 or higher | 8 (4 for each camera) | 8    | `head_camera_bolt_d` |
 
 As with the steering servo, your servo pack should already include bolts, a servo arm, and self-tapping bolts to secure the servo arm. The diameter of the hole on the head where the tilt-servo gearbox mounts is defined by `head_servo_mount_dia`.
 
@@ -498,12 +511,18 @@ The corresponding hole for the pan servo on the chassis is controlled by `chassi
 
 #### IR Case for the Infrared LED Light Board
 
-| Size | Length (mm)  | Amount | Nuts | Variable                |
-| ---- | ------------ | ------ | ---- | ----------------------- |
-| M2   | 7 or higher  | 2      | 2    | `ir_case_bolt_dia`      |
-| M2   | 10 or higher | 2      | 2    | `ir_case_rail_bolt_dia` |
+The head carries one forward-facing IR enclosure centered above the upper bridge. Its bottom foot has four mounting holes and two side gussets. Print [head_ir_case_printable.scad](scad/printable_parts/head_ir_case_printable.scad) and the separate [IR retaining rail](scad/printable_parts/ir_case_rail_printable.scad).
 
-Variable `ir_case_bolt_dia` defines the diameter of the bolt holes that attach the case to the head; `ir_case_rail_bolt_dia` defines the diameter of the rail holes that secure the IR LED to the case itself.
+| Joint                   | Bolts at default dimensions | Nuts   | Hole diameter parameter |
+| ----------------------- | --------------------------- | ------ | ----------------------- |
+| IR foot to upper bridge | 4 × M3×10                   | 4 × M3 | `ir_case_mount_bolt_d`    |
+| IR retaining rail       | 2 × M2×10 or longer         | 2 × M2 | `ir_case_rail_bolt_dia` |
+
+`ir_case_mount_bolt_length(mount_thickness)` derives the foot bolt length from the foot, bridge, and nut thicknesses. The generic `ir_case` and `ir_case_printable` interfaces accept `mount="top"` for the bottom foot or `mount="side"` for lateral brackets. The head assembly uses `mount="top"`.
+
+`ir_case_mount_interface()` exposes the foot size, hole-grid origin, center spacing, clearance diameter, and hardware radius. `ir_case_mount_bolt_spacing_y` sets the spacing along the foot’s depth; the X spacing follows the available width between the gussets. `ir_case_mount_rear_pad` sets the rear hole-center to foot-edge distance. Front and side pads provide clearance from the bolt heads to the enclosure and gussets.
+
+`head_bridge_ir_mount()` places this interface on the bridge. `head_bridge_slot_layout()` fits the rear cutouts into the remaining depth, preserving `head_bridge_slot_mount_pad` before the foot and `head_bridge_slot_side_pad` beside the flanges. Slot width and edge-to-edge gap are controlled by `head_bridge_slot_width` and `head_bridge_slot_gap`. The first slot is centered on Y=0, forming a half-slot at the rear edge. The default layout contains that half-slot and two enclosed slots. `head_cutout_corner_r="50%"` rounds the bridge and side-panel slots.
 
 #### Ultrasonic case for HC-SR04
 
@@ -566,9 +585,9 @@ Fuse routing: LiPo -> fuse -> toggle -> fuse -> RPi; dedicated fuses feed the mo
 | Battery holders on chassis (2×)                             | M3×8+ (4)                                                                | 4    | —                                                                 |
 | Switch buttons & fuse panels                                | M3×6+ (4)                                                                | 4    | 6–8 standoffs (12–15 mm) for button panel, 4×12 mm for fuse panel |
 | Motor brackets (N20 pair)                                   | M2.5×8+ (4)                                                              | 4    | —                                                                 |
-| Head (2 cameras)                                            | M2×5+ (8)                                                                | 8    | —                                                                 |
+| Head (2 cameras)                                            | M2×5+ (8), M3×12 (8)                                                     | 16   | Camera and frame fasteners                                        |
 | Head neck                                                   | M2×6+ (4)                                                                | 4    | —                                                                 |
-| IR case                                                     | M2×7+ (2), M2×10+ (2)                                                    | 4    | —                                                                 |
+| IR case                                                     | M3×10 (4), M2×10+ (2)                                                    | 6    | Top mounting foot and retaining rail                              |
 | Ultrasonic bracket                                          | M2.5×6+ (2), M2.5×10+ (2)                                                | 4    | —                                                                 |
 | Wheel hubs (pair)                                           | M2.5×12+ (12)                                                            | 12   | Use M3 for tighter fit                                            |
 
@@ -604,8 +623,8 @@ Fuse routing: UPS -> fuse -> RPi; dedicated fuses feed the motor and servo HATs.
 | Battery holders on chassis (2×) | M3×8+ (4)                                       | 4    | —                                                                 |
 | Switch buttons & fuse panels    | M3×6+ (4)                                       | 4    | 6–8 standoffs (12–15 mm) for button panel, 4×12 mm for fuse panel |
 | Motor brackets (N20 pair)       | M2.5×8+ (4)                                     | 4    | —                                                                 |
-| Head (2 cameras)                | M2×5+ (8)                                       | 8    | —                                                                 |
+| Head (2 cameras)                | M2×5+ (8), M3×12 (8)                            | 16   | Camera and frame fasteners                                        |
 | Head neck                       | M2×6+ (4)                                       | 4    | —                                                                 |
-| IR case                         | M2×7+ (2), M2×10+ (2)                           | 4    | —                                                                 |
+| IR case                         | M3×10 (4), M2×10+ (2)                           | 6    | Top mounting foot and retaining rail                              |
 | Ultrasonic bracket              | M2.5×6+ (2), M2.5×10+ (2)                       | 4    | —                                                                 |
 | Wheel hubs (pair)               | M2.5×12+ (12)                                   | 12   | Use M3 for tighter fit                                            |

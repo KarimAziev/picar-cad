@@ -87,7 +87,7 @@ module printable(spacing=5) {
   if (show_wago_bracket) {
     translate([0,
                chassis_body_len + chassis_upper_len + ir_case_height
-               + head_plate_height + 4*spacing,
+               + head_front_height + 4*spacing,
                0]) {
       wago_bracket(anchor=[0, 1, 1]);
     }
@@ -96,8 +96,8 @@ module printable(spacing=5) {
                    steering_rack_width) / 2;
 
   initial_x = half_of_chassis_width
-              + head_plate_width / 2
-              + head_plate_thickness / 2
+              + head_front_width / 2
+              + head_front_thickness / 2
               + spacing;
 
   inner_tire_r = wheel_dia / 2;
@@ -131,10 +131,7 @@ module printable(spacing=5) {
     }
     if (show_tie_rod_shafts) {
       translate([0,
-                 head_plate_height / 2
-                 + head_plate_thickness
-                 + head_upper_connector_height
-                 + head_lower_connector_height
+                 head_mount_printable_size()[1]
                  + spacing
                  + tie_rod_shaft_dia
                  / 2,
@@ -144,7 +141,8 @@ module printable(spacing=5) {
     }
 
     translate([0,
-               head_plate_height
+               head_mount_printable_size()[1]
+               + tie_rod_shaft_dia + spacing * 2
                + knuckle_shaft_lower_horiz_len
                + knuckle_dia
                + knuckle_shaft_dia,
@@ -156,7 +154,7 @@ module printable(spacing=5) {
     }
 
     translate([0,
-               -head_plate_height
+               -head_front_height
                - head_neck_pan_servo_slot_height / 2,
                0]) {
       if (show_head_neck) {
@@ -199,7 +197,7 @@ module printable(spacing=5) {
              + ir_case_rail_h,
              0]) {
     rotate([0, 0, 90]) {
-      ir_case_printable(show_case=show_ir_case,
+      ir_case_printable(mount="top", show_case=show_ir_case,
                         spacing=-2,
                         show_rail=show_ir_case_rail);
     }

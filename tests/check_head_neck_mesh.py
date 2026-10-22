@@ -39,10 +39,10 @@ def main() -> None:
         (90, 90, True, {}),
         (28, -90, False, {}),
         (31, 24, True, {"head_neck_pan_servo_assembly_reversed": True,
-                        "ir_case_bracket_position": "both"}),
-        (65, -128, True, {"head_plate_width": 46,
-                          "head_upper_plate_height": 38,
-                          "ir_case_bracket_position": "right"}),
+                        "head_side_panel_thickness": 6}),
+        (65, -128, True, {"head_front_width": 46,
+                          "head_bridge_depth": 38,
+                          "head_bridge_thickness": 4}),
     ]
     with tempfile.TemporaryDirectory(prefix="head-neck-bbox-") as folder:
         source = Path(folder) / "head.scad"
@@ -54,7 +54,8 @@ def main() -> None:
             'echo(max_z=head_neck_max_z(centered));\n'
             'echo(max_height=head_neck_max_height());\n'
             'head_neck(pan_servo_rotation=pan, tilt_servo_rotation=tilt,\n'
-            '          center_pan_servo_slot=centered);\n'
+            '          center_pan_servo_slot=centered,\n'
+            '          show_frame_bolts=true, show_frame_nuts=true);\n'
         )
         for pan, tilt, centered, params in cases:
             command = [OPENSCAD, "--backend=Manifold", "--enable=textmetrics",
@@ -79,7 +80,7 @@ def main() -> None:
             assert actual[1][2] - actual[0][2] <= max_height + tolerance
             print(f"PASS pan={pan}, tilt={tilt}, centered={centered}, "
                   f"mesh Z={actual[0][2]:.3f}..{actual[1][2]:.3f}", flush=True)
-    print("PASS: 7 fully populated meshes enclosed, including changed dimensions and IR sides")
+    print("PASS: 7 fully populated meshes enclosed, including changed dimensions and frame fasteners")
 
 
 if __name__ == "__main__":
