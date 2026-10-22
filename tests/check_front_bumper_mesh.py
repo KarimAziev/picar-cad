@@ -9,6 +9,7 @@ import subprocess
 import numpy as np
 
 import check_suspension_mesh as checks
+from scad_test_support import echo_value
 
 
 def main() -> None:
@@ -76,6 +77,26 @@ def main() -> None:
             checks.export("head", name=f"head-tilt-{tilt}", empty=True,
                           head_tilt=tilt), f"head tilt {tilt}")
     print("PASS bumper clearance at head tilt -30 and +30 degrees, pan zero")
+    for variant in (False, True):
+        result = subprocess.run(
+            [checks.OPENSCAD, "--backend=Manifold", "--enable=textmetrics",
+             "--hardwarnings", "-o", str(checks.OUT / f"clearance-{variant}.csg"),
+             "-D", 'part="clearance"', "-D", f"variant={str(variant).lower()}",
+             str(checks.FIXTURE)], capture_output=True, text=True)
+        log = result.stdout + result.stderr
+        assert result.returncode == 0 and "WARNING:" not in log and "ERROR:" not in log, log
+        extension = float(echo_value(log, "required_extension"))
+        # Check both retainer-pad tangencies near neutral and the bracket stop,
+        # with rearward bumper displacement to check the gap.
+        for pan, tilt in ((11.75, -0.58), (56.3, -0.58), (0, 32.8873),
+                          (90, 32.8873), (179, -90), (135, -60)):
+            name = f"swept-head-{variant}-{pan}-{tilt}"
+            checks.assert_no_interference(
+                checks.export("head", name=name, empty=True, variant=variant,
+                              head_pan=pan, head_tilt=tilt, head_clearance=2,
+                              front_chassis_bumper_extension=extension), name)
+        print(f"PASS continuous-sweep extension {extension:.4f} mm, variant={variant}: "
+              "populated head clears bumper with 2 mm forward gap at six poses")
     for length, message in ((24, "fully engage the nut"),
                             (26, "stay below the top face")):
         result = subprocess.run(

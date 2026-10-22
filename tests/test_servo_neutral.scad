@@ -29,7 +29,7 @@ near(steering_servo_bellcrank_y(center=true),
 
 layout = rear_chassis_layout(min_width=suspension_chassis_width());
 dimensions = chassis_dimensions(layout=layout);
-near(plist_get("chassis_length", dimensions), 399.154, 0.001);
+near(plist_get("chassis_length", dimensions), 399.144, 0.001);
 near(plist_get("wheelbase", dimensions), 263.976, 0.001);
 near(plist_get("chassis_width", dimensions), 151.26);
 

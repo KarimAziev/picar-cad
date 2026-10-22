@@ -672,14 +672,33 @@ module head_tilt_horn_holes() {
   }
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  head_side_panel_outline
+  ─────────────────────────────────────────────────────────────────────────────
+  Return the solid side-panel perimeter in printable depth/height coordinates.
+  Cutouts and fastener holes are excluded from this outer profile.
+ */
+function head_side_panel_outline() =
+  let (points=[for (p=side_panel_points) p + [0, head_side_panel_curve_end]],
+       size=head_side_panel_size())
+  _head_side_clip(_head_side_clip(
+    _head_side_clip(_head_side_clip(points, 0, 0, true), 0, size[0], false),
+    1, 0, true), 1, size[1], false);
+
+function _head_side_clip(points, axis, boundary, above) =
+  [for (i=[0:len(points) - 1])
+    let (a=points[i], b=points[(i + 1) % len(points)],
+         inside_a=above ? a[axis] >= boundary : a[axis] <= boundary,
+         inside_b=above ? b[axis] >= boundary : b[axis] <= boundary)
+    each concat(inside_a ? [a] : [],
+                inside_a != inside_b
+                ? [a + (b - a) * ((boundary - a[axis]) / (b[axis] - a[axis]))]
+                : [])];
+
 module head_side_panel_profile() {
   difference() {
-    intersection() {
-      translate([0, head_side_panel_curve_end]) {
-        polygon(points=side_panel_points);
-      }
-      square([head_side_panel_size()[0], head_side_panel_size()[1]]);
-    }
+    polygon(head_side_panel_outline());
     translate([0, head_side_panel_curve_end]) {
       head_side_panel_cutouts();
     }

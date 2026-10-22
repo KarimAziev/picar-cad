@@ -82,6 +82,25 @@ def main() -> None:
                   f"mesh Z={actual[0][2]:.3f}..{actual[1][2]:.3f}", flush=True)
     print("PASS: 7 fully populated meshes enclosed, including changed dimensions and frame fasteners")
 
+    with tempfile.TemporaryDirectory(prefix="head-neck-stop-") as folder:
+        for offset in (-0.2, 0.2):
+            mesh = Path(folder) / f"contact-{offset}.stl"
+            result = subprocess.run(
+                [OPENSCAD, "--backend=Manifold", "--enable=textmetrics",
+                 "--hardwarnings", "--export-format", "binstl",
+                 "-D", f"offset={offset}", "-o", str(mesh),
+                 str(ROOT / "tests/fixtures/head_neck_tilt_stop.scad")],
+                capture_output=True, text=True)
+            log = result.stdout + result.stderr
+            assert "WARNING:" not in log and "ERROR:" not in log, log
+            if offset < 0:
+                assert "Current top level object is empty" in log, log
+            else:
+                assert result.returncode == 0 and mesh.exists(), log
+                bounds = mesh_bounds(mesh)
+                assert all(bounds[1][axis] > bounds[0][axis] for axis in range(3))
+    print("PASS: camera plate clears the upright before the tilt stop and intersects after it")
+
 
 if __name__ == "__main__":
     main()

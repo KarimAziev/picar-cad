@@ -56,10 +56,7 @@ module front_bumper_top_plate(pl=front_bumper_plist,
               + plist_get("nut_clearance", p)) / cos(30);
   cut_h = is_undef(slot_h) ? size[2] : slot_h;
   bow = _front_bumper_bow(size[0], size[1], rib / 2, size[1] * 0.46);
-  left = bow[0];
   front = bow[len(bow) / 2];
-  right = bow[len(bow) - 1];
-  rear = [mounts[1][0], mounts[1][1]];
   assert(cut_h > 0, "Slot height must be positive");
   assert(plist_get("grip", hardware) > 0, "Bolt grip must be positive");
 
@@ -86,9 +83,7 @@ module front_bumper_top_plate(pl=front_bumper_plist,
             translate([0, 0, foam_h]) {
               linear_extrude(height=plate_h) {
                 _front_bumper_rail(bow, rib);
-                _front_bumper_rail([left, [mounts[0][0], mounts[0][1]], rear,
-                                    [mounts[2][0], mounts[2][1]], right],
-                                   rib);
+                _front_bumper_rail(front_bumper_plate_rear_path(p), rib);
                 for (pos = mounts) {
                   _front_bumper_rail([[pos[0], pos[1]], front], rib);
                   translate([pos[0], pos[1]]) {

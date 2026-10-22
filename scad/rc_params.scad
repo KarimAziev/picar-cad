@@ -279,8 +279,14 @@ front_chassis_ear_l                            = 5.1;
 // ─────────────────────────────────────────────────────────────────────────────
 // Bumper slot
 // ─────────────────────────────────────────────────────────────────────────────
-// Extra forward clearance between the head's cable passage and bumper mounting lands.
-front_chassis_bumper_extension                 = 14;
+// "auto" sizes the mounting lands for the configured head travel and clearance.
+// A nonnegative number specifies a fixed extension in millimeters.
+front_chassis_bumper_extension                 = "auto";
+// Clearance to the populated head envelope throughout the joint travel.
+front_chassis_bumper_head_clearance            = 2;
+// "auto" covers upward travel and the camera-plate/neck stop. A numeric pair
+// can restrict travel; its positive end is capped at the same structural stop.
+front_chassis_bumper_tilt_range                 = "auto";
 front_bumper_bolt_d                            = m3_hole_dia;
 front_bumper_use_countersunk                   = false;
 

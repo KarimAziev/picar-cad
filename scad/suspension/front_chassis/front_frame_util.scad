@@ -14,14 +14,18 @@ include <../../parameters.scad>
 include <../../rc_params.scad>
 include <layout_params.scad>
 
+use <../../head/head_neck.scad>
 use <../../lib/debug.scad>
 use <../../lib/functions.scad>
+use <../../lib/plist.scad>
 use <../../lib/polygon_util.scad>
 use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
+use <../../placeholders/bolt.scad>
 use <../bellcrank/bellcrank_slots.scad>
 use <../bulkhead/front_bulkhead_chassis.scad>
 use <../bulkhead/util.scad>
+use <../front_bumper/common.scad>
 use <front_chassis_access_slots.scad>
 use <front_chassis_joint.scad>
 use <front_chassis_mount_recesses.scad>
@@ -34,19 +38,108 @@ use <head_frame/head_slots.scad>
 
   Locate the nose from the front ribbon passage and bumper mounting lands.
 
+  **Parameters:**
+  - `extension`: Forward length beyond the ribbon-passage mounting lands, or
+    `"auto"` for `front_chassis_bumper_min_extension()`.
+    Defaults to `front_chassis_bumper_extension`; zero is the base datum.
+
   **Returns:** Front-frame maximum Y. Bumper mounting lands include the forward
   clearance `front_chassis_bumper_extension` beyond the ribbon-passage padding.
   The head mount and chassis joints retain their vehicle datums.
  */
-function front_chassis_front_frame_start_y() =
-  assert(is_num(front_chassis_bumper_extension)
-         && front_chassis_bumper_extension >= 0,
-         "Bumper extension must be a non-negative length")
+function front_chassis_front_frame_start_y(
+  extension=front_chassis_bumper_extension) =
+  assert(extension == "auto" || (is_num(extension) && extension >= 0),
+         "Bumper extension must be auto or a non-negative length")
   front_chassis_head_center_y() + front_chassis_head_front_ribbon_y()
   + front_chassis_head_pan_servo_top_ribbon_cutout_h / 2 + front_chassis_head_wire_land
   + front_bumper_center_bolt_y_offset
   + front_bumper_bolt_d + front_bumper_bolt_pad_y * 2
-  + front_chassis_bumper_extension;
+  + (extension == "auto" ? _front_chassis_bumper_auto_extension : extension);
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_chassis_bumper_min_extension
+  ─────────────────────────────────────────────────────────────────────────────
+  Size the bumper mounting lands for the head's mechanically reachable travel.
+
+  **Parameters:**
+  - `pl`: Bumper dimension overrides, merged with `front_bumper_plist`.
+  - `clearance`: Nonnegative gap in millimeters, radially and at both Z faces.
+  - `tilt_range`: `"auto"` for upward travel through the camera-plate/neck stop,
+    or requested numeric limits clipped at that stop.
+
+  **Returns:** Minimum nonnegative extension for the head's component envelopes
+  and the bumper's rounded rear profiles over a full pan turn. The foam,
+  retainer and hardware are checked at their respective height intervals.
+
+  **Behavior:** The head envelopes include the side-panel outline, separate
+  camera components and fasteners. Cutouts, circular tessellation and bounding
+  boxes around small hardware make the result conservative relative to meshes.
+  Preview poses and visibility toggles do not affect the calculation.
+ */
+function front_chassis_bumper_min_extension(
+  pl=front_bumper_plist,
+  clearance=front_chassis_bumper_head_clearance,
+  tilt_range=front_chassis_bumper_tilt_range) =
+  assert(is_num(clearance) && clearance >= 0,
+         "Bumper head clearance must be a non-negative length")
+  assert(tilt_range == "auto" || (is_list(tilt_range) && len(tilt_range) == 2
+         && is_num(tilt_range[0]) && is_num(tilt_range[1])
+         && tilt_range[0] <= tilt_range[1]),
+         "Bumper tilt range must be auto or ordered numeric limits")
+  let (p=front_bumper_params(pl),
+       travel=tilt_range == "auto"
+              ? [-90, head_neck_lower_tilt_stop()]
+              : [max(-90, tilt_range[0]),
+                 min(head_neck_lower_tilt_stop(), tilt_range[1])],
+       foam_h=plist_get("foam_h", p),
+       top=front_bumper_size(p)[2],
+       z=front_chassis_head_pan_servo_slot_recess,
+       foam_reach=head_neck_swept_front_reach(
+         [z - clearance, z + foam_h + clearance], [-180, 180], travel),
+       plate_reach=head_neck_swept_front_reach(
+         [z + foam_h - clearance, z + top + clearance], [-180, 180], travel),
+       foam=front_bumper_foam_profile(p),
+       foam_w=front_bumper_size(p, "foam")[0],
+       plate_w=front_bumper_size(p, "plate")[0],
+       foam_path=[for (v=concat(foam[0], [foam[0][0]])) v - [foam_w / 2, 0]],
+       plate_path=[for (v=front_bumper_plate_rear_path(p)) v - [plate_w / 2, 0]],
+       mounts=[for (v=front_bumper_mount_positions(p, "plate"))
+         [v[0] - plate_w / 2, v[1]]],
+       post_r=plist_get("post_d", p) / 2,
+       hardware=front_bumper_bolt_params(p),
+       head_type=front_bumper_use_countersunk ? "countersunk" : "socket",
+       head_h=find_bolt_head_h(front_bumper_bolt_d, head_type),
+       head_z=plist_get("head_z", hardware),
+       nut_z=plist_get("nut_z", hardware),
+       tip_z=plist_get("tip_z", hardware),
+       bottom=min(0, tip_z, nut_z,
+                  head_z - (front_bumper_reverse_bolts ? head_h : 0)),
+       hardware_top=max(top, tip_z,
+                        nut_z + find_nut_prop("height", front_bumper_bolt_d),
+                        head_z + (front_bumper_reverse_bolts ? 0 : head_h)),
+       hardware_r=max(find_bolt_head_prop("dia", front_bumper_bolt_d, head_type),
+                      find_nut_prop("outer_dia", front_bumper_bolt_d) / cos(30)) / 2,
+       hardware_reach=head_neck_swept_front_reach(
+         [z + bottom - clearance, z + hardware_top + clearance], [-180, 180], travel),
+       required_y=max(concat(
+         [front_bumper_profile_front_y(foam_path, foam_reach + clearance + foam[1]),
+          front_bumper_profile_front_y(plate_path,
+            plate_reach + clearance + plist_get("rib_w", p) / 2)],
+         [for (v=mounts)
+           max(front_bumper_profile_front_y([v], plate_reach + clearance + post_r + 2),
+               front_bumper_profile_front_y([v], foam_reach + clearance + post_r),
+               front_bumper_profile_front_y([v], hardware_reach + clearance + hardware_r))])),
+       rear_y=front_chassis_front_frame_start_y(extension=0)
+              - front_chassis_head_center_y()
+              - front_bumper_bolt_d / 2 - front_bumper_bolt_pad_y
+              - front_bumper_center_bolt_y_offset
+              - front_bumper_mount_positions(p)[0][1])
+  max(0, required_y - rear_y);
+
+// Shared by the frame outline and all three mounting datums.
+_front_chassis_bumper_auto_extension = front_chassis_bumper_min_extension();
 
 /**
   ─────────────────────────────────────────────────────────────────────────────

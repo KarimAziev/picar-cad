@@ -35,15 +35,7 @@ module front_bumper_foam(pl=front_bumper_plist,
   mounts = front_bumper_mount_positions(p, "foam");
   post_d = plist_get("post_d", p);
   passage_d = post_d + plist_get("post_clearance", p);
-  r = 3;
-  bow = _front_bumper_bow(size[0], size[1], r, size[1] * 0.55);
-  rear = [[size[0] - r, bow[0][1]],
-          [size[0] * 0.75, 8],
-          [mounts[2][0], r],
-          [size[0] / 2, 7],
-          [mounts[0][0], r],
-          [size[0] * 0.25, 8],
-          [r, bow[0][1]]];
+  profile = front_bumper_foam_profile(p);
   cut_h = is_undef(slot_h) ? size[2] : slot_h;
   assert(cut_h > 0, "Slot height must be positive");
 
@@ -61,8 +53,8 @@ module front_bumper_foam(pl=front_bumper_plist,
     } else {
       difference() {
         linear_extrude(height=size[2], convexity=6) {
-          offset(r=r, $fn=48) {
-            polygon(concat(bow, rear));
+          offset(r=profile[1], $fn=48) {
+            polygon(profile[0]);
           }
         }
         holes();

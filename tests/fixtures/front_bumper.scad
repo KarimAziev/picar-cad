@@ -9,27 +9,30 @@ include <../../scad/rc_params.scad>
 
 use <../../scad/head/head_neck.scad>
 use <../../scad/lib/plist.scad>
-use <../../scad/lib/transforms.scad>
 use <../../scad/placeholders/bolt.scad>
 use <../../scad/placeholders/nut.scad>
+use <../../scad/suspension/front_bumper/common.scad>
+use <../../scad/suspension/front_bumper/front_bumper_assembly.scad>
+use <../../scad/suspension/front_bumper/front_bumper_foam.scad>
+use <../../scad/suspension/front_bumper/front_bumper_top_plate.scad>
 use <../../scad/suspension/front_chassis/front_frame_util.scad>
 use <../../scad/suspension/front_chassis/head_frame/front_chassis_head_frame.scad>
-use <../../scad/suspension/front_bumper/common.scad>
-use <../../scad/suspension/front_bumper/front_bumper_top_plate.scad>
-use <../../scad/suspension/front_bumper/front_bumper_foam.scad>
-use <../../scad/suspension/front_bumper/front_bumper_assembly.scad>
 
-part = "plate";
-variant = false;
-anchor = [1, 1, 1];
-slot = false;
-head_pan = 0;
-head_tilt = 0;
+part          = "plate";
+variant       = false;
+anchor        = [1, 1, 1];
+slot          = false;
+head_pan      = 0;
+head_tilt     = 0;
+head_clearance = 0;
 reverse_bolts = front_bumper_reverse_bolts;
-test_bolt_l = undef;
-pl = plist_merge(variant ? ["foam_h", 21, "post_d", 9, "bolt_l", 30] : [],
+test_bolt_l   = undef;
+pl            = plist_merge(variant ? ["foam_h", 21,
+                                       "post_d", 9,
+                                       "bolt_l", 30] : [],
                  is_undef(test_bolt_l) ? [] : ["bolt_l", test_bolt_l]);
-hardware_pl = reverse_bolts ? pl : plist_merge(pl, ["bolt_l", variant ? 40 : 35]);
+hardware_pl   = reverse_bolts ? pl : plist_merge(pl,
+                                               ["bolt_l", variant ? 40 : 35]);
 
 module placed_bumper() {
   translate(front_bumper_position(pl)) {
@@ -37,7 +40,9 @@ module placed_bumper() {
   }
 }
 
-if (part == "head_frame") {
+if (part == "clearance") {
+  echo(required_extension=front_chassis_bumper_min_extension(pl));
+} else if (part == "head_frame") {
   front_chassis_head_frame();
 } else if (part == "plate") {
   front_bumper_top_plate(pl, anchor=anchor, slot_mode=slot);
@@ -59,11 +64,15 @@ if (part == "head_frame") {
   }
 } else if (part == "head") {
   intersection() {
-    placed_bumper();
+    translate([0, -head_clearance, 0]) {
+      placed_bumper();
+    }
     translate([0, front_chassis_head_center_y(), front_chassis_head_mount_z()]) {
       head_neck(center_pan_servo_slot=true,
-                 pan_servo_rotation=head_pan,
-                 tilt_servo_rotation=head_tilt);
+                pan_servo_rotation=head_pan,
+                tilt_servo_rotation=head_tilt,
+                show_frame_bolts=true,
+                show_frame_nuts=true);
     }
   }
 } else if (part == "bores") {
@@ -108,8 +117,12 @@ if (part == "head_frame") {
 
 module bumper_hardware() {
   difference() {
-    front_bumper_top_plate(hardware_pl, show_bolts=true, reverse_bolts=reverse_bolts);
-    front_bumper_top_plate(hardware_pl, show_bolts=false, reverse_bolts=reverse_bolts);
+    front_bumper_top_plate(hardware_pl,
+                           show_bolts=true,
+                           reverse_bolts=reverse_bolts);
+    front_bumper_top_plate(hardware_pl,
+                           show_bolts=false,
+                           reverse_bolts=reverse_bolts);
   }
 }
 

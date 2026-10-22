@@ -144,9 +144,10 @@ function front_bumper_size(pl=front_bumper_plist, part="assembly") =
 function front_bumper_mount_positions(pl=front_bumper_plist, part="assembly") =
   let (p = front_bumper_params(pl),
        size = front_bumper_size(p, part),
-       mounts = front_chassis_bumper_mount_positions(),
-       rear_y = mounts[0][1] - (plist_get("post_d", p) + 4) / 2)
-  [for (pos = mounts) [pos[0] + size[0] / 2, pos[1] - rear_y, 0]];
+       rear_y = (plist_get("post_d", p) + 4) / 2)
+  [for (side = [-1, 0, 1])
+    [size[0] / 2 + side * front_bumper_bolt_spacing_x / 2,
+     rear_y + (side == 0 ? front_bumper_center_bolt_y_offset : 0), 0]];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -167,6 +168,68 @@ function _front_bumper_bow(w, l, r, sweep, steps=48) =
   [for (i = [0:steps])
     let (t = 2 * i / steps - 1)
     [w / 2 + t * (w / 2 - r), l - r - sweep * t * t]];
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_bumper_foam_profile
+  ─────────────────────────────────────────────────────────────────────────────
+  Return `[polygon, radius]` for the TPU body's rounded XY outline.
+  **Parameters:**
+  - `pl`: Bumper dimension overrides.
+ */
+function front_bumper_foam_profile(pl=front_bumper_plist) =
+  let (size=front_bumper_size(pl, "foam"),
+       mounts=front_bumper_mount_positions(pl, "foam"),
+       r=3,
+       bow=_front_bumper_bow(size[0], size[1], r, size[1] * 0.55),
+       rear=[[size[0] - r, bow[0][1]], [size[0] * 0.75, 8],
+             [mounts[2][0], r], [size[0] / 2, 7], [mounts[0][0], r],
+             [size[0] * 0.25, 8], [r, bow[0][1]]])
+  [concat(bow, rear), r];
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_bumper_plate_rear_path
+  ─────────────────────────────────────────────────────────────────────────────
+  Return the rear retainer rail's XY centerline in canonical plate coordinates.
+  **Parameters:**
+  - `pl`: Bumper dimension overrides.
+ */
+function front_bumper_plate_rear_path(pl=front_bumper_plist) =
+  let (p=front_bumper_params(pl),
+       size=front_bumper_size(p, "plate"),
+       mounts=front_bumper_mount_positions(p, "plate"),
+       bow=_front_bumper_bow(size[0], size[1], plist_get("rib_w", p) / 2,
+                             size[1] * 0.46))
+  [bow[0], [mounts[0][0], mounts[0][1]], [mounts[1][0], mounts[1][1]],
+   [mounts[2][0], mounts[2][1]], bow[len(bow) - 1]];
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_bumper_profile_front_y
+  ─────────────────────────────────────────────────────────────────────────────
+  Return the Y translation that places a path ahead of a circular envelope.
+  **Parameters:**
+  - `points`: Ordered XY path, centered on the pan axis in X. A single point
+    represents a mounting pad; repeat the first vertex to close a polygon.
+  - `radius`: Swept head radius plus clearance and the path's rounding radius.
+  **Returns:** Required forward Y translation. Callers clamp the resulting
+  extension to zero when their mounting datum already provides sufficient room.
+ */
+// On each segment sqrt(radius² - x²) - y is concave; its stationary point
+// and clamped endpoints give the exact maximum without profile sampling.
+function front_bumper_profile_front_y(points, radius) =
+  max([for (i=[0:max(0, len(points) - 2)])
+    let (p=points[i], q=points[min(i + 1, len(points) - 1)],
+         a=p[0] <= q[0] ? p : q, b=p[0] <= q[0] ? q : p,
+         lo=max(a[0], -radius), hi=min(b[0], radius), dx=b[0] - a[0])
+    lo > hi ? 0
+    : dx < 1e-10
+      ? sqrt(max(0, radius * radius - a[0] * a[0])) - min(a[1], b[1])
+      : let (slope=(b[1] - a[1]) / dx,
+             x=min(hi, max(lo, -slope * radius / sqrt(1 + slope * slope))),
+             y=a[1] + slope * (x - a[0]))
+        sqrt(max(0, radius * radius - x * x)) - y]);
 
 module _front_bumper_rail(points, d) {
   for (i = [0:len(points) - 2]) {

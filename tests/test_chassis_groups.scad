@@ -7,6 +7,7 @@
 include <../scad/rc_params.scad>
 
 use <../scad/lib/plist.scad>
+use <../scad/suspension/front_chassis/front_frame_util.scad>
 use <../scad/suspension/chassis_dimensions.scad>
 use <../scad/suspension/chassis_printable.scad>
 use <../scad/suspension/computed.scad>
@@ -41,7 +42,7 @@ assert(plist_get("overall_width", d) >= plist_get("chassis_width", d));
 echo("PASS: all 16 split configurations and reference measurement datums");
 
 assert(abs(plist_get("chassis_front_y", d)
-           - (115.825 + front_chassis_bumper_extension)) < 1e-6);
+           - front_chassis_front_frame_start_y()) < 1e-6);
 for (plate = [false, true], foam = [false, true]) {
   for (pl = [[], ["foam_w", 210,
                   "foam_l", 48]]) {
