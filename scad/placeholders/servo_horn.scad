@@ -8,6 +8,7 @@ include <../colors.scad>
 include <../parameters.scad>
 
 use <../lib/shapes2d.scad>
+use <../lib/shapes3d.scad>
 use <../lib/transforms.scad>
 use <../lib/trapezoids.scad>
 use <bolt.scad>
@@ -27,19 +28,24 @@ use <bolt.scad>
 function servo_horn_hole_offsets(center_ring_dia=servo_horn_center_ring_outer_dia,
                                  screw_d=servo_horn_screw_d,
                                  screw_holes_count=servo_horn_holes_n,
-                                 screws_gap=servo_horn_screws_distance) =
+                                 screws_gap=servo_horn_screws_distance,
+                                 initial_screws_gap=servo_horn_screws_initital_distance) =
   assert(center_ring_dia > 0 && screw_d > 0 && screws_gap >= 0)
   assert(screw_holes_count >= 0 && floor(screw_holes_count) == screw_holes_count)
   screw_holes_count == 0 ? []
-    : [for (i=[0:screw_holes_count - 1])
-        center_ring_dia / 2 + screws_gap + i * (screw_d + screws_gap)];
+  : [for (i=[0:screw_holes_count - 1])
+    (center_ring_dia / 2 + initial_screws_gap) + i * (screw_d + screws_gap)];
 
 module with_servo_horn_holes(center_ring_dia=servo_horn_center_ring_outer_dia,
                              screw_d=servo_horn_screw_d,
                              screw_holes_count=servo_horn_holes_n,
-                             screws_gap=servo_horn_screws_distance) {
-  offsets = servo_horn_hole_offsets(center_ring_dia, screw_d,
-                                    screw_holes_count, screws_gap);
+                             screws_gap=servo_horn_screws_distance,
+                             initial_screws_gap=servo_horn_screws_initital_distance) {
+  offsets = servo_horn_hole_offsets(center_ring_dia,
+                                    screw_d,
+                                    screw_holes_count,
+                                    screws_gap,
+                                    initial_screws_gap=initial_screws_gap);
   if (len(offsets) > 0) {
     for (dir=[-1, 1], i=[0:len(offsets) - 1]) {
       translate([0, dir * offsets[i], 0]) {
@@ -56,7 +62,8 @@ module servo_horn_single(arm_len=(servo_horn_len / 2),
                          screw_holes_count=servo_horn_holes_n,
                          arm_bottom_width=servo_horn_starting_arm_w,
                          arm_top_width=servo_horn_ending_arm_w,
-                         screws_gap=servo_horn_screws_distance) {
+                         screws_gap=servo_horn_screws_distance,
+                         initial_screws_gap=servo_horn_screws_initital_distance) {
   rad = center_ring_dia / 2;
   screw_rad = screw_d / 2;
 
@@ -77,7 +84,8 @@ module servo_horn_single(arm_len=(servo_horn_len / 2),
       with_servo_horn_holes(center_ring_dia=center_ring_dia,
                             screw_d=screw_d,
                             screw_holes_count=screw_holes_count,
-                            screws_gap=screws_gap) {
+                            screws_gap=screws_gap,
+                            initial_screws_gap=initial_screws_gap) {
         circle(r=screw_rad, $fn=10);
       }
     }
@@ -102,6 +110,7 @@ module servo_horn(single=false,
                   screw_side="vertical", // | "vertical" | "horizontal"
                   show_bolt=true,
                   show_screws=true,
+                  initial_screws_gap=servo_horn_screws_initital_distance,
                   center=true) {
   rad = center_ring_dia / 2;
 
@@ -112,7 +121,8 @@ module servo_horn(single=false,
                       screw_holes_count=screw_holes_count,
                       arm_bottom_width=arm_bottom_width,
                       arm_top_width=arm_top_width,
-                      screws_gap=screws_gap);
+                      screws_gap=screws_gap,
+                      initial_screws_gap=initial_screws_gap);
   }
   translate([center ? 0 : arm_len, center ? 0 : arm_len, 0]) {
     union() {
@@ -197,4 +207,13 @@ module servo_horn(single=false,
   }
 }
 
-servo_horn(center=false);
+servo_horn(center=true);
+
+// translate([0, 0, 0]) {
+//   #cuboid(12.11);
+// }
+
+// translate([(12.1 / 2) + servo_horn_screw_d, 0, 0]) {
+//   #cuboid([servo_horn_screws_distance, servo_horn_screws_distance, 10],
+//           anchor=[1, 0, 1]);
+// }

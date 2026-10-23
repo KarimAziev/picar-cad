@@ -58,8 +58,8 @@ tilt_servo_rotation         = 0; // [-90:90]
 
 show_bbox                   = false;
 
-show_frame_bolts            = false;
-show_frame_nuts             = false;
+show_frame_bolts            = true;
+show_frame_nuts             = true;
 show_camera                 = true;
 show_camera_bolts           = true;
 show_camera_nuts            = true;
@@ -184,19 +184,18 @@ function _head_neck_frame_points() =
        pad=_head_neck_fastener_padding(head_frame_bolt_d),
        head_h=find_bolt_head_h(head_frame_bolt_d, "pan"),
        joint_points=concat(head_front_joint_points(), head_bridge_joint_points()))
-  concat(
-    _head_neck_box([-half_w, -h / 2, 0],
-                   [half_w, h / 2, head_front_flange_depth]),
-    _head_neck_box([-outer, head_bridge_underside_y() - head_bridge_flange_height, 0],
-                   [outer, head_bridge_underside_y() + head_bridge_thickness,
-                    head_bridge_depth]),
-    [for (i=[1:len(profile) - 2],
-          p=[profile[0], profile[i], profile[i + 1], profile[i + 1]],
-          x=[-outer, outer])
-      [x, p[1] - h / 2, p[0]]],
-    [for (p=joint_points)
-      each _head_neck_box([-outer - head_h, p[1] - h / 2 - pad, p[0] - pad],
-                          [outer + head_h, p[1] - h / 2 + pad, p[0] + pad])]);
+  concat(_head_neck_box([-half_w, -h / 2, 0],
+                        [half_w, h / 2, head_front_flange_depth]),
+         _head_neck_box([-outer, head_bridge_underside_y() - head_bridge_flange_height, 0],
+                        [outer, head_bridge_underside_y() + head_bridge_thickness,
+                         head_bridge_depth]),
+         [for (i=[1:len(profile) - 2],
+               p=[profile[0], profile[i], profile[i + 1], profile[i + 1]],
+               x=[-outer, outer])
+           [x, p[1] - h / 2, p[0]]],
+         [for (p=joint_points)
+           each _head_neck_box([-outer - head_h, p[1] - h / 2 - pad, p[0] - pad],
+                               [outer + head_h, p[1] - h / 2 + pad, p[0] + pad])]);
 
 function _head_neck_camera_points(i) =
   let (spec=head_cameras[i],
@@ -208,30 +207,29 @@ function _head_neck_camera_points(i) =
                 + camera_holes_distance_from_top,
        lens_y=max([for (s=camera_lens_items) s[4] == "circle" ? s[0] : s[1]]),
        lens_center=camera_h / 2 - lens_y / 2 - camera_lens_distance_from_top,
-       camera_points=concat(
-         _head_neck_box([-camera_w / 2, -camera_h / 2, -0.05],
-                        [camera_w / 2, camera_h / 2, camera_thickness + 0.1]),
-         [for (j=[0:len(camera_lens_items) - 1])
-           let (s=camera_lens_items[j],
-                y=s[4] == "circle" ? s[0] : s[1],
-                z=camera_thickness + (j == 0 ? 0
-                   : sum([for (k=[0:j - 1]) camera_lens_items[k][2]])))
-           each _head_neck_box([-s[0] / 2, lens_center - y / 2, z],
-                               [s[0] / 2, lens_center + y / 2, z + s[2]])],
-         [for (j=[0:len(camera_lens_connectors) - 1])
-           let (s=camera_lens_connectors[j],
-                x=len(s) > 5 && is_num(s[5]) ? s[5] : 0,
-                y=camera_h / 2 - camera_lens_distance_from_top
-                  + (j == 0 ? 0
-                     : sum([for (k=[0:j - 1]) camera_lens_connectors[k][1]])))
-           each _head_neck_box([x - s[0] / 2, y, camera_thickness],
-                               [x + s[0] / 2, y + s[1], camera_thickness + s[2]])],
-         _head_neck_box([-camera_module_ffc_zif_len / 2,
-                         -camera_h / 2 + camera_module_socket_y_offset
-                         - camera_module_ffc_zif_h, -camera_module_socket_thickness],
-                        [camera_module_ffc_zif_len / 2,
-                         -camera_h / 2 + camera_module_socket_y_offset
-                         + camera_module_socket_base_h + camera_module_socket_upper_h, 0])),
+       camera_points=concat(_head_neck_box([-camera_w / 2, -camera_h / 2, -0.05],
+                                           [camera_w / 2, camera_h / 2, camera_thickness + 0.1]),
+                            [for (j=[0:len(camera_lens_items) - 1])
+                              let (s=camera_lens_items[j],
+                                   y=s[4] == "circle" ? s[0] : s[1],
+                                   z=camera_thickness + (j == 0 ? 0
+                                                         : sum([for (k=[0:j - 1]) camera_lens_items[k][2]])))
+                                each _head_neck_box([-s[0] / 2, lens_center - y / 2, z],
+                                                    [s[0] / 2, lens_center + y / 2, z + s[2]])],
+                            [for (j=[0:len(camera_lens_connectors) - 1])
+                              let (s=camera_lens_connectors[j],
+                                   x=len(s) > 5 && is_num(s[5]) ? s[5] : 0,
+                                   y=camera_h / 2 - camera_lens_distance_from_top
+                                     + (j == 0 ? 0
+                                        : sum([for (k=[0:j - 1]) camera_lens_connectors[k][1]])))
+                                each _head_neck_box([x - s[0] / 2, y, camera_thickness],
+                                                    [x + s[0] / 2, y + s[1], camera_thickness + s[2]])],
+                            _head_neck_box([-camera_module_ffc_zif_len / 2,
+                                            -camera_h / 2 + camera_module_socket_y_offset
+                                            - camera_module_ffc_zif_h, -camera_module_socket_thickness],
+                                           [camera_module_ffc_zif_len / 2,
+                                            -camera_h / 2 + camera_module_socket_y_offset
+                                            + camera_module_socket_base_h + camera_module_socket_upper_h, 0])),
        d=snap_bolt_d(head_camera_bolt_d),
        nut_h=find_nut_prop("height", d),
        bolt_l=ceil(head_front_thickness + camera_thickness + nut_h),
@@ -239,11 +237,11 @@ function _head_neck_camera_points(i) =
              find_nut_prop("outer_dia", d) / cos(30)) / 2)
   concat([for (p=camera_points)
     [-p[0], center_y + p[1], head_front_thickness + camera_thickness - p[2]]],
-    [for (x=[-spec[2][0] / 2, spec[2][0] / 2],
-          y=[-spec[2][1] / 2, spec[2][1] / 2])
-      each _head_neck_box([x - r, head_front_height / 2 - hole_y + y - r,
-                           -find_bolt_head_h(d, "pan")],
-                          [x + r, head_front_height / 2 - hole_y + y + r, bolt_l])]);
+         [for (x=[-spec[2][0] / 2, spec[2][0] / 2],
+               y=[-spec[2][1] / 2, spec[2][1] / 2])
+           each _head_neck_box([x - r, head_front_height / 2 - hole_y + y - r,
+                                -find_bolt_head_h(d, "pan")],
+                               [x + r, head_front_height / 2 - hole_y + y + r, bolt_l])]);
 
 // Component envelopes in head_mount coordinates, including installed hardware.
 function _head_neck_head_points() =
@@ -403,8 +401,8 @@ function _head_neck_box_edges() =
 function _head_neck_clip_box(box, z_range) =
   concat([for (p=box)
     if (p[2] >= z_range[0] && p[2] <= z_range[1]) p],
-    [for (edge=_head_neck_box_edges(), z=z_range)
-      let (a=box[edge[0]], b=box[edge[1]], dz=b[2] - a[2])
+         [for (edge=_head_neck_box_edges(), z=z_range)
+           let (a=box[edge[0]], b=box[edge[1]], dz=b[2] - a[2])
       if (abs(dz) > 1e-10)
         let (t=(z - a[2]) / dz)
         if (t >= 0 && t <= 1) a + t * (b - a)]);
@@ -428,8 +426,8 @@ function _head_neck_pan_front(points, pan_range) =
 // height clipping is independent of position along that extrusion.
 function _head_neck_tilt_events(box, z_range, tilt_range) =
   let (feet=[for (edge=_head_neck_box_edges())
-         let (a=box[edge[0]], b=box[edge[1]],
-              v=[b[0] - a[0], b[1] - a[1]], vv=v * v)
+    let (a=box[edge[0]], b=box[edge[1]],
+         v=[b[0] - a[0], b[1] - a[1]], vv=v * v)
          if (vv > 1e-10)
            let (t=-([a[0], a[1]] * v) / vv)
            if (t > 0 && t < 1) a + t * (b - a)])
@@ -438,11 +436,15 @@ function _head_neck_tilt_events(box, z_range, tilt_range) =
            let (r=norm([p[0], p[1]]))
            if (r > 1e-10 && abs(z) <= r)
              let (phase=atan2(p[1], p[0]), a=asin(z / r))
-             for (angle=[a - phase, 180 - a - phase])
+               for (angle=[a - phase, 180 - a - phase])
                each _head_neck_periodic_angles(angle, tilt_range)]);
 
-function _head_neck_tilt_box_front(box, z_range, pan_range, tilt_range,
-                                   pivot, offset) =
+function _head_neck_tilt_box_front(box,
+                                   z_range,
+                                   pan_range,
+                                   tilt_range,
+                                   pivot,
+                                   offset) =
   let (local_z=z_range - [pivot[2] + offset[2], pivot[2] + offset[2]],
        angles=_head_neck_tilt_events(box, local_z, tilt_range))
   max([for (angle=angles)
@@ -478,7 +480,8 @@ function head_neck_swept_front_reach(z_range,
                                      tilt_range=[-90, head_neck_lower_tilt_stop()]) =
   assert(is_list(z_range) && len(z_range) == 2
          && is_num(z_range[0]) && is_num(z_range[1])
-         && z_range[0] <= z_range[1], "z_range must be ordered numeric limits")
+         && z_range[0] <= z_range[1],
+         "z_range must be ordered numeric limits")
   assert(is_list(pan_range) && len(pan_range) == 2
          && is_num(pan_range[0]) && is_num(pan_range[1])
          && pan_range[0] <= pan_range[1]
@@ -493,13 +496,11 @@ function head_neck_swept_front_reach(z_range,
        pivot=_head_neck_tilt_pivot(),
        fixed=[for (p=_head_neck_fixed_points()) rotZ(p, -90) + offset],
        moving=_head_neck_tilting_points())
-  max(concat(
-    [for (i=[0:8:len(fixed) - 1])
-      _head_neck_pan_front(_head_neck_clip_box(
-        [for (j=[0:7]) fixed[i + j]], z_range), pan_range)],
-    [for (i=[0:8:len(moving) - 1])
-      _head_neck_tilt_box_front([for (j=[0:7]) moving[i + j]],
-                               z_range, pan_range, tilt_range, pivot, offset)]));
+  max(concat([for (i=[0:8:len(fixed) - 1])
+    _head_neck_pan_front(_head_neck_clip_box([for (j=[0:7]) fixed[i + j]], z_range), pan_range)],
+             [for (i=[0:8:len(moving) - 1])
+               _head_neck_tilt_box_front([for (j=[0:7]) moving[i + j]],
+                                         z_range, pan_range, tilt_range, pivot, offset)]));
 
 // Maximum of each possible upper/lower support pair over a full tilt turn.
 // Taking the diameter handles moving extrema at the SAME angle, instead of

@@ -144,25 +144,36 @@ module head_frame_hardware(joint="both", show_nuts=false, show_bolts=true) {
     points = part == "front"
              ? head_front_joint_points()
              : head_bridge_joint_points();
+    bolt_head_h = with_default(find_bolt_head_h(inner_d=head_frame_bolt_d,
+                                                head_type=head_frame_bolt_head_type),
+                               head_frame_bolt_bore_h);
     mirror_copy([1, 0, 0]) {
       for (p=points) {
-        translate([head_front_width / 2 + head_side_panel_thickness
-                   - head_frame_bolt_l,
-                   p[1] - head_front_height / 2,
+        translate([head_front_width / 2
+                   + head_side_panel_thickness
+                   - head_frame_bolt_l
+                   - bolt_head_h,
+                   p[1]
+                   - head_front_height / 2,
                    -p[0]]) {
           rotate([0, 90, 0]) {
             rotate([0, 0, part == "front" ? 90 : 0]) {
               if (show_bolts) {
-                bolt(d=head_frame_bolt_d, h=head_frame_bolt_l);
+                bolt(d=head_frame_bolt_d,
+                     h=head_frame_bolt_l,
+                     head_type=head_frame_bolt_head_type);
               }
               if (show_nuts) {
                 d = snap_bolt_d(head_frame_bolt_d);
                 nut_h = find_nut_prop("height", d);
-                translate([0, 0, head_frame_bolt_l - grip - nut_h]) {
+                translate([0,
+                           0,
+                           head_frame_bolt_l - grip - nut_h
+                           + head_frame_bolt_bore_h]) {
                   nut(d=d,
                       h=nut_h,
                       outer_d=find_nut_prop("outer_dia", d),
-                      nut_color=with_default(find_nut_prop("color", d), matte_black));
+                      nut_color=with_default(find_nut_prop("color", d), metallic_silver_2));
                 }
               }
             }
@@ -774,28 +785,36 @@ module head_side_panel(anchor=[1, 1, 1],
                        servo_horn_single=false,
                        servo_horn_screw_side="horizontal",
                        color="white") {
+
   size = head_side_panel_size();
+  h = size[2];
+
   assert(head_side_panel_thickness >= head_horn_seat_thickness);
   assert(head_horn_seat_thickness > 0 && head_horn_seat_thickness <= 2,
          "The tilt horn requires at most 2 mm of material beneath its seat");
   module slots() {
     for (p=concat(head_front_joint_points(), head_bridge_joint_points())) {
-      translate([p[0], p[1], -0.1]) {
-        cylinder(d=head_frame_bolt_d, h=size[2] + 0.2, $fn=40);
+      translate([p[0], p[1], 0]) {
+        counterbore(h=h,
+                    d=head_frame_bolt_d,
+                    bore_d= + head_frame_bolt_bore_d,
+                    bore_h= + head_frame_bolt_bore_h,
+                    sink=head_frame_bolt_use_countersunk,
+                    fn=100,
+                    reverse=!with_horn_mount);
       }
     }
     if (with_horn_mount) {
       translate([0, 0, -0.1]) {
-        linear_extrude(height=size[2] + 0.2) {
+        linear_extrude(height=h + 0.2) {
           head_tilt_horn_holes();
         }
       }
       if (head_side_panel_thickness > head_horn_seat_thickness) {
-
         translate([0, 0, head_horn_seat_thickness]) {
           at_head_tilt_axis() {
             rotate([0, 0, head_tilt_horn_angle()]) {
-              linear_extrude(height=size[2] - head_horn_seat_thickness + 0.1) {
+              linear_extrude(height=h - head_horn_seat_thickness + 0.1) {
                 head_servo_horn_recess_2d();
               }
             }
@@ -808,14 +827,16 @@ module head_side_panel(anchor=[1, 1, 1],
     if (slot_mode) {
       slots();
     } else {
-      color(color) {
-        difference() {
-          linear_extrude(height=size[2], convexity=2) {
+      difference() {
+        color(color) {
+          linear_extrude(height=h, convexity=2) {
             head_side_panel_profile();
           }
-          slots();
         }
+
+        slots();
       }
+
       if (with_horn_mount && show_servo_horn) {
         head_tilt_horn(show_servo_horn_screws=show_servo_horn_screws,
                        show_servo_horn_bolt=show_servo_horn_bolt,
@@ -1004,10 +1025,11 @@ module head_mount_printable(show_bolts=false, show_nuts=false) {
     let (with_horn_mount = i == 1,
          rotation = with_horn_mount ? 0 : 180,
          size = head_side_panel_size(),
-         w = size[0]) {
+         w = size[0],
+         h = size[2]) {
       translate([i * (w + gap) + (with_horn_mount ? 0 : w),
                  max(head_front_height, head_bridge_size()[1]) + gap,
-                 0]) {
+                 with_horn_mount ? 0 : h]) {
         rotate([rotation, 0, rotation]) {
           head_side_panel(with_horn_mount=with_horn_mount);
         }
@@ -1016,6 +1038,6 @@ module head_mount_printable(show_bolts=false, show_nuts=false) {
   }
 }
 
-// head_mount(show_ir_case=true);
+head_mount(show_ir_case=true, show_frame_bolts=true);
 
-head_mount_printable(show_bolts=show_frame_bolts, show_nuts=show_frame_nuts);
+// head_mount_printable(show_bolts=false, show_nuts=false);

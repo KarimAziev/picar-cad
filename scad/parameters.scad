@@ -490,7 +490,7 @@ head_front_height                                    = max(40,
 head_front_thickness                                 = 2;
 
 // Bolted head frame. The horn bears on a 2 mm floor in each side panel.
-head_side_panel_thickness                            = 4;
+head_side_panel_thickness                            = 4.5;
 head_horn_seat_thickness                             = 2;
 head_bridge_thickness                                = 3;
 
@@ -513,6 +513,15 @@ head_frame_bolt_l                                    = ceil((head_side_panel_thi
                                                              + head_joint_clearance
                                                              - head_frame_pocket_nut_h
                                                              + m3_nut_h + 1) / 2) * 2;
+
+head_frame_bolt_use_countersunk                      = false;
+head_frame_bolt_bore_d                               = head_frame_bolt_use_countersunk
+                                                        ? m3_countersunk_bore_d
+                                                        : m3_socket_counterbore_d;
+head_frame_bolt_bore_h                               = head_frame_bolt_use_countersunk
+                                                        ? m3_countersunk_bore_h
+                                                        : m3_socket_counterbore_h;
+head_frame_bolt_head_type                            = head_frame_bolt_use_countersunk ? "countersunk" : "hex";
 
 head_face_corner_r                                   = "6%";
 head_camera_slot_corner_r                            = "10%";
@@ -2200,8 +2209,12 @@ servo_horn_len                                       = 24;
 
 // The diameter of fastening screw holes
 servo_horn_screw_d                                   = 0.8;
+
+// This is the distance between screw hole and center ring
+servo_horn_screws_initital_distance                  = 3.45;
 // This is the distance between screw holes.
-servo_horn_screws_distance                           = 2.84;
+servo_horn_screws_distance                           = 2.6;
+
 // This is the number of screw holes on each arm.
 servo_horn_holes_n                                   = 2;
 
