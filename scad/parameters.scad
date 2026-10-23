@@ -429,25 +429,25 @@ camera_module_socket_y_offset                        = 1;
 // Head
 // ─────────────────────────────────────────────────────────────────────────────
 
-head_camera_bolt_d                                  = m2_hole_dia;
+head_camera_bolt_d                                   = m2_hole_dia;
 
-head_camera_lens_width                              = 14;
-head_camera_lens_height                             = 23;
+head_camera_lens_width                               = 14;
+head_camera_lens_height                              = 23;
 
 // Dimensions of the hole for the Camera Module (lens opening).
-head_camera_opening_size                            = [head_camera_lens_width,
+head_camera_opening_size                             = [head_camera_lens_width,
                                                         head_camera_lens_height];
 
 // Dimensions for the bolt hole area of the Camera Module.
 // These form a rectangle around the camera hole, with a bolt hole
 // centered at each corner to secure the camera module.
-head_camera_bolt_spacing                            = [head_camera_lens_width +
+head_camera_bolt_spacing                             = [head_camera_lens_width +
                                                         head_camera_bolt_d + 4.2,
                                                         12.73];
 
 // Vertical offset to move the bolt hole grid below the top edge
 // of the camera lens hole.
-head_camera_bolt_y_offset_from_camera_hole          = 2.0;
+head_camera_bolt_y_offset_from_camera_hole           = 2.0;
 
 // List of camera mounting configurations.
 // Each item is an array of:
@@ -458,7 +458,7 @@ head_camera_bolt_y_offset_from_camera_hole          = 2.0;
 //  ]
 //
 // To configure a single camera, remove one of the internal elements.
-head_cameras                                        = [[head_camera_opening_size,
+head_cameras                                         = [[head_camera_opening_size,
                                                          1,
                                                          head_camera_bolt_spacing,
                                                          green_2],
@@ -470,94 +470,97 @@ head_cameras                                        = [[head_camera_opening_size
 // Gap between successive camera lens openings along Y.
 // If more than one camera is present, a fixed spacing of 2 mm is used.
 // If only one camera is mounted, use half of its height for centering.
-head_camera_gap                                     = len(head_cameras) > 1
+head_camera_gap                                      = len(head_cameras) > 1
                                                         ? 2.0
                                                         : (head_cameras[0][0][1] / 2);
 
 // Width of the front face plate where the camera modules are mounted.
-head_front_width                                    = 38;
+head_front_width                                     = 38;
 
 // Height of the front face plate, automatically calculated based on
 // the total height of all camera lens holes plus their vertical spacing.
 // Ensures a minimum height of 40 mm.
-head_front_height                                   = max(40,
+head_front_height                                    = max(40,
                                                            sum([for (j = [0:len(head_cameras)-1])
                                                              head_cameras[j][0][1]])
                                                            + head_camera_gap *
                                                            len(head_cameras) - 1);
 
 // Thickness of the camera face plate.
-head_front_thickness                                = 2;
+head_front_thickness                                 = 2;
 
 // Bolted head frame. The horn bears on a 2 mm floor in each side panel.
-head_side_panel_thickness                           = 4;
-head_horn_seat_thickness                            = 2;
-head_bridge_thickness                               = 3;
+head_side_panel_thickness                            = 4;
+head_horn_seat_thickness                             = 2;
+head_bridge_thickness                                = 3;
 
-head_bridge_slot_width                              = 3;
-head_bridge_slot_gap                                = 2;
+head_bridge_slot_width                               = 3;
+head_bridge_slot_gap                                 = 2;
 // Material between slots and each flange, and between slots and the IR foot.
-head_bridge_slot_side_pad                           = 5.1;
-head_bridge_slot_mount_pad                          = 0.5;
-head_cutout_corner_r                                = "50%";
+head_bridge_slot_side_pad                            = 5.1;
+head_bridge_slot_mount_pad                           = 0.5;
+head_cutout_corner_r                                 = "50%";
 
-head_mount_flange_thickness                         = 4;
-head_bridge_flange_height                           = 9;
-head_front_flange_depth                             = 13;
-head_joint_clearance                                = 0.2;
-head_frame_bolt_d                                   = m3_hole_dia;
-head_frame_bolt_l                                   = ceil((head_side_panel_thickness
+head_mount_flange_thickness                          = 4;
+head_bridge_flange_height                            = 9;
+head_front_flange_depth                              = 13;
+head_joint_clearance                                 = 0.2;
+head_frame_bolt_d                                    = m3_hole_dia;
+head_frame_pocket_nut_d                              = m3_nut_pocket_d_tight; // Across corners.
+head_frame_pocket_nut_h                              = 2.49; // Depth from the inner flange face.
+head_frame_bolt_l                                    = ceil((head_side_panel_thickness
                                                              + head_mount_flange_thickness
                                                              + head_joint_clearance
+                                                             - head_frame_pocket_nut_h
                                                              + m3_nut_h + 1) / 2) * 2;
 
-head_face_corner_r                                  = "6%";
-head_camera_slot_corner_r                           = "10%";
-head_bridge_bolt_edge                               = 7;
-head_bridge_bolt_drop                               = 5;
-head_bridge_corner_r                                = "2%"; // number or percent string, e.g. "5%"
-head_joint_corner_r                                 = "50%"; // number or percent string, e.g. "5%"
-head_front_bolt_depth                               = 8;
-head_front_bolt_edge                                = 9.5;
-head_ir_setback                                     = 10;
+head_face_corner_r                                   = "6%";
+head_camera_slot_corner_r                            = "10%";
+head_bridge_bolt_edge                                = 7;
+head_bridge_bolt_drop                                = 5;
+head_bridge_corner_r                                 = "2%"; // number or percent string, e.g. "5%"
+head_joint_corner_r                                  = "50%"; // number or percent string, e.g. "5%"
+head_front_bolt_depth                                = 8;
+head_front_bolt_edge                                 = 9.5;
+head_ir_setback                                      = 10;
 
 // Diameter of the central hole in the side panel for mounting the servo motor.
-head_servo_mount_dia                                = 6.5;
+head_servo_mount_dia                                 = 6.5;
 
 // Diameter of the screws used to mount the servo motor.
 // The screws are placed radially around the main servo mounting hole.
-head_servo_horn_screw_dia                           = 1.5;
+head_servo_horn_screw_dia                            = 1.5;
 
 // Height of the side panel of the head, matching the height of the front plate.
-head_side_panel_height                              = head_front_height;
+head_side_panel_height                               = head_front_height;
 
 // Width of the side panel, based on a scaling factor relative to front plate width
 // to ensure appropriate coverage for the mounting surface.
-head_side_panel_depth                               = head_front_width * 1.2;
+head_side_panel_depth                                = head_front_width * 1.2;
 
 // Don't try to find a lot of sense in the calculations of the side panel polygon, this is an aesthetic choice.
-head_side_panel_top                                 = -head_side_panel_height * (4 / 15);
-head_side_panel_curve_start                         = head_side_panel_depth * (1 / 2.1);
-head_side_panel_notch_y                             = -head_side_panel_height * (7 / 14.2);
-head_side_panel_bottom                              = head_side_panel_height * (1 / 4.9);
-head_side_panel_curve_end                           = head_side_panel_height * (3 / 4.0);
+head_side_panel_top                                  = -head_side_panel_height * (4 / 15);
+head_side_panel_curve_start                          = head_side_panel_depth * (1 / 2.1);
+head_side_panel_notch_y                              = -head_side_panel_height * (7 / 14.2);
+head_side_panel_bottom                               = head_side_panel_height * (1 / 4.9);
+head_side_panel_curve_end                            = head_side_panel_height * (3 / 4.0);
 
-head_side_slot_span                                 = head_side_panel_depth * 0.8;
-head_side_slot_width                                = 2;
-head_side_slot_y                                    = [-9, 0.2];
+head_side_slot_span                                  = head_side_panel_depth * 0.8;
+head_side_slot_width                                 = 2;
+head_side_slot_y                                     = [-9, 0.2];
 
-head_bridge_depth                                   = 38;
+head_bridge_depth                                    = 38;
 
-head_side_aux_hole_depths                           = [head_side_panel_depth * 0.25,
+head_side_aux_hole_depths                            = [head_side_panel_depth * 0.25,
                                                         head_side_panel_depth * 0.5,
                                                         head_side_panel_depth * 0.75];
-head_bridge_rise                                    = 4;
+head_bridge_rise                                     = 4;
 
-head_side_aux_pitch                                 = 4;
+head_side_aux_pitch                                  = 4;
 
-head_side_aux_row_offsets                           = [head_side_aux_pitch * 3];
+head_side_aux_row_offsets                            = [head_side_aux_pitch * 3];
 
-head_side_aux_hole_d                                = 3;
+head_side_aux_hole_d                                 = 3;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Head neck bracket
@@ -618,109 +621,109 @@ head_neck_pan_servo_assembly_reversed                = false;
 ir_case_led_dia                                      = 19.1;
 
 // Overall vertical size of the case part
-ir_case_height                                      = 28;
+ir_case_height                                       = 28;
 
 // Overall horizontal size of the case part (X dimension).
-ir_case_width                                       = 29;
+ir_case_width                                        = 29;
 
 // Base plate thickness of the case (main wall thickness).
-ir_case_thickness                                   = 2;
+ir_case_thickness                                    = 2;
 
 // Additional boss thickness around the LED pocket on top of ir_case_thickness.
 // Used to raise the LED boss above the base plate.
-ir_case_led_boss_thickness                          = 1;
+ir_case_led_boss_thickness                           = 1;
 
 // Light detector (small photodiode/receiver) diameter.
-ir_light_detector_dia                               = 6.4;
+ir_light_detector_dia                                = 6.4;
 
 // Vertical distance from the top edge where the LED + detector holes are positioned.
-ir_case_holes_distance_from_top                     = 2;
+ir_case_holes_distance_from_top                      = 2;
 
 // Y offset of the light detector relative to the LED center (negative moves it up).
 // Positive = move detector down, Negative = move detector up (depends on coordinate system).
-ir_light_offset_from_led_y                          = -1.4;
+ir_light_offset_from_led_y                           = -1.4;
 
 // X offset of the light detector relative to the LED center (positive -> to the right).
-ir_light_offset_from_led_x                          = 0.1;
+ir_light_offset_from_led_x                           = 0.1;
 
 // Which side(s) the (optional) light detector hole is created on.
 // Allowed values: "left" | "right" | "both"
-ir_light_detector_position                          = "right"; // left | right | both
+ir_light_detector_position                           = "right"; // left | right | both
 
 // Which side(s) the L-bracket is added on the case.
 // Allowed values: "left" | "right" | "both"
-ir_case_bracket_position                            = "left";  // left | right | both
+ir_case_bracket_position                             = "left";  // left | right | both
 
 // Small carriage height above the stacked case thicknesses (clearance for rail carriage).
-ir_case_carriage_h                                  = 1;
+ir_case_carriage_h                                   = 1;
 
 // Length of the carriage feature (along rail direction).
-ir_case_carriage_len                                = 4;
+ir_case_carriage_len                                 = 4;
 
 // Wall thickness of the carriage walls.
-ir_case_carriage_wall_thickness                     = 2;
+ir_case_carriage_wall_thickness                      = 2;
 
 // Fillet/rounding radius used for the carriage / rail corners.
 // Typical small value (0..1).
-ir_case_carriage_offset_rad                         = 0.8;
+ir_case_carriage_offset_rad                          = 0.8;
 
 // Rail (slot) inner width (inside the carriage).
-ir_case_rail_w                                      = 5;
+ir_case_rail_w                                       = 5;
 
 // Rail (slot) inner height (thickness of the rail profile).
-ir_case_rail_h                                      = 1.5;
+ir_case_rail_h                                       = 1.5;
 
 // Height of the rail protruding above the carriage
-ir_case_rail_protrusion_h                           = 1.0;
+ir_case_rail_protrusion_h                            = 1.0;
 
 // Angle of the rail protruding above the carriage
-ir_case_rail_protrusion_angle                       = 3;
+ir_case_rail_protrusion_angle                        = 3;
 
 // Angle of the rail protruding above the carriage
-ir_case_rail_protrusion_offset_rad                  = 0.2;
+ir_case_rail_protrusion_offset_rad                   = 0.2;
 
 // Rail incline angle (degrees) used for trapezoid/angled rail profile.
-ir_case_rail_angle                                  = 10;
+ir_case_rail_angle                                   = 10;
 
 // Rail corner rounding radius.
-ir_case_rail_offset_rad                             = 0.0;
+ir_case_rail_offset_rad                              = 0.0;
 
 // Diameter for the holes in the rail meant for M2 bolts.
-ir_case_rail_bolt_dia                               = m2_hole_dia;
+ir_case_rail_bolt_dia                                = m2_hole_dia;
 
 // Additional clearance for the rail (gap to allow slider movement).
-ir_case_rail_clearance                              = 0.3;
+ir_case_rail_clearance                               = 0.3;
 
 // L-bracket width (horizontal flange) that attaches to the case.
-ir_case_l_bracket_w                                 = 8;
+ir_case_l_bracket_w                                  = 8;
 
 // L-bracket height (vertical flange).
-ir_case_l_bracket_h                                 = 20;
+ir_case_l_bracket_h                                  = 20;
 
 // L-bracket leg length (depth of bracket from case wall).
-ir_case_l_bracket_len                               = 5;
+ir_case_l_bracket_len                                = 5;
 
 // Bolt hole diameter used across the case / bracket (M2 holes).
-ir_case_side_bolt_d                                 = m2_hole_dia;
+ir_case_side_bolt_d                                  = m2_hole_dia;
 
 // Top mounting foot, in the IR case's X/Z plane below Y=0.
-ir_case_mount_foot_thickness                        = 3;
-ir_case_mount_gusset_width                          = 3;
+ir_case_mount_foot_thickness                         = 3;
+ir_case_mount_gusset_width                           = 3;
 
-ir_case_mount_bolt_d                                = m3_hole_dia;
+ir_case_mount_bolt_d                                 = m3_hole_dia;
 // Thread protrusion beyond the ordinary nut.
 ir_case_mount_thread_allowance                       = 1;
 // Bolt center spacing along the mounting foot's depth.
-ir_case_mount_bolt_spacing_y                        = 7;
+ir_case_mount_bolt_spacing_y                         = 7;
 // Rear hole-center to foot edge; includes the nut's bearing footprint.
-ir_case_mount_rear_pad                              = 3.4;
+ir_case_mount_rear_pad                               = 3.4;
 // Gaps from the bolt head to the side gussets and enclosure face.
-ir_case_mount_side_pad                              = 0.6;
-ir_case_mount_front_pad                             = 0.2;
+ir_case_mount_side_pad                               = 0.6;
+ir_case_mount_front_pad                              = 0.2;
 
 // X offsets for additional pan holes along the bolt row (relative offsets).
 // Array of offsets in mm; used to create multiple holes along the bolt line.
-ir_case_side_bolt_offsets                           = [0, 5];
+ir_case_side_bolt_offsets                            = [0, 5];
 
 // Actual LED physical diameter (measured component). Note: very close to ir_case_led_dia.
 // Keep consistent: ir_led_dia is the real LED, ir_case_led_dia is the case cutout dimension.

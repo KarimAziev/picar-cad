@@ -78,6 +78,21 @@ module floor_probe(z) {{
       + [6 * sin(angle), -6 * cos(angle)];
   translate([p[0] - 0.25, p[1] - 0.25, z]) {{ cube([0.5, 0.5, 0.5]); }}
 }}
+module at_flange_probes(part, depth) {{
+  front_part = part == "front";
+  width = front_part ? head_front_width : head_bridge_size()[0];
+  outer_x = head_joint_clearance + (front_part ? 0 : head_side_panel_thickness);
+  points = front_part ? head_front_joint_points() : head_bridge_joint_points();
+  for (x=[outer_x + depth, width - outer_x - depth]) {{
+    for (p=points) {{
+      translate([x,
+                 front_part ? head_front_height - p[1] : head_bridge_depth - p[0],
+                 front_part ? p[0] : head_bridge_thickness + head_bridge_bolt_drop]) {{
+        children();
+      }}
+    }}
+  }}
+}}
 module roof_corner_probes(toward_front) {{
   size = head_bridge_size();
   slope = (head_side_panel_top - head_side_panel_notch_y)
@@ -139,7 +154,8 @@ def main() -> None:
     with tempfile.TemporaryDirectory(prefix="head-joints-") as directory:
         folder = Path(directory)
         for params in [{}, {"head_side_panel_thickness": 6},
-                       {"head_front_width": 46, "head_bridge_depth": 38}]:
+                       {"head_front_width": 46, "head_bridge_depth": 38,
+                        "head_mount_flange_thickness": 5, "head_frame_pocket_nut_h": 2}]:
             for body in ["head_front_printable();", "head_bridge();",
                          "head_side_panel(with_horn_mount=true);",
                          'ir_case_printable(mount="top", show_rail=false);']:
@@ -148,6 +164,49 @@ def main() -> None:
                 assert mesh.is_watertight and mesh.is_volume, body
                 assert len(mesh.split()) == 1, body
                 assert abs(float(mesh.bounds[0][2])) < 0.00001, body
+            for part, model in [("front", "head_front_printable"),
+                                ("bridge", "head_bridge")]:
+                pocket = f"""
+at_flange_probes("{part}", head_mount_flange_thickness - head_frame_pocket_nut_h / 2) {{
+  rotate([0, 90, 0]) {{
+    rotate([0, 0, 90]) {{
+      cylinder(d=head_frame_pocket_nut_d - 0.02,
+               h=head_frame_pocket_nut_h - 0.02, center=true, $fn=6);
+    }}
+  }}
+}}
+"""
+                no_overlap(folder, f"intersection() {{ {model}(); {pocket} }}", params)
+                no_overlap(folder,
+                           f"difference() {{ {pocket} {model}(slot_mode=true); }}",
+                           params)
+                # The seating floor surrounds the screw hole on both outer faces.
+                floor = render(folder, f"""
+intersection() {{
+  {model}();
+  at_flange_probes("{part}",
+                  (head_mount_flange_thickness - head_frame_pocket_nut_h) / 2) {{
+    translate([0, 2.5, 0]) {{ cube([0.2, 0.2, 0.2], center=true); }}
+  }}
+}}
+""", params)
+                assert floor is not None and abs(float(floor.volume) - 0.032) < 0.00001
+                # Material just beyond a hex flat distinguishes the pocket from a round bore.
+                flats = render(folder, f"""
+intersection() {{
+  {model}();
+  at_flange_probes("{part}",
+                  head_mount_flange_thickness - head_frame_pocket_nut_h / 2) {{
+    r = head_frame_pocket_nut_d / 2 * (1 + cos(30)) / 2;
+    translate([0, r * cos(30), r * sin(30)]) {{
+      cube([0.1, 0.1, 0.1], center=true);
+    }}
+  }}
+}}
+""", params)
+                assert flats is not None and abs(float(flats.volume) - 0.004) < 0.00001
+            print(f"PASS: eight inner hex pockets, seating floors and slot modes: {params}",
+                  flush=True)
             for a, b in [("front()", "head_bridge_assembled()"),
                          ("front()", "head_side_panel_assembled()"),
                          ("head_bridge_assembled()", "head_side_panel_assembled()"),

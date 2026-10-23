@@ -24,12 +24,13 @@ use <../lib/slots.scad>
 use <../lib/transforms.scad>
 use <../placeholders/bolt.scad>
 use <../placeholders/camera.scad>
+use <../placeholders/nut.scad>
 use <../placeholders/servo_horn.scad>
 use <ir_case.scad>
 use <servo_horn_recess.scad>
 
 show_frame_bolts        = false;
-show_frame_nuts         = false;
+show_frame_nuts         = true;
 show_camera             = false;
 show_camera_bolts       = false;
 show_camera_nuts        = false;
@@ -134,27 +135,38 @@ function head_bridge_corner_setback() =
   assert(rise > 0, "The side panel's upper edge must rise toward the rear")
   max(0, head_side_panel_curve_start * (y - start) / rise);
 
-module head_frame_hardware(joint="both", show_nuts=false) {
+module head_frame_hardware(joint="both", show_nuts=false, show_bolts=true) {
   grip = head_side_panel_thickness + head_mount_flange_thickness
-         + head_joint_clearance;
+         + head_joint_clearance - head_frame_pocket_nut_h;
   assert(in_list(joint, ["front", "bridge", "both"]),
          "Unknown head frame joint");
-  points = joint == "front"
-           ? head_front_joint_points()
-           : joint == "bridge"
-             ? head_bridge_joint_points()
-             : concat(head_front_joint_points(), head_bridge_joint_points());
-  mirror_copy([1, 0, 0]) {
-    for (p=points) {
-      translate([head_front_width / 2 + head_side_panel_thickness
-                 - head_frame_bolt_l,
-                 p[1] - head_front_height / 2,
-                 -p[0]]) {
-        rotate([0, 90, 0]) {
-          bolt(d=head_frame_bolt_d,
-               h=head_frame_bolt_l,
-               show_nut=show_nuts,
-               nut_head_distance=grip);
+  for (part=joint == "both" ? ["front", "bridge"] : [joint]) {
+    points = part == "front"
+             ? head_front_joint_points()
+             : head_bridge_joint_points();
+    mirror_copy([1, 0, 0]) {
+      for (p=points) {
+        translate([head_front_width / 2 + head_side_panel_thickness
+                   - head_frame_bolt_l,
+                   p[1] - head_front_height / 2,
+                   -p[0]]) {
+          rotate([0, 90, 0]) {
+            rotate([0, 0, part == "front" ? 90 : 0]) {
+              if (show_bolts) {
+                bolt(d=head_frame_bolt_d, h=head_frame_bolt_l);
+              }
+              if (show_nuts) {
+                d = snap_bolt_d(head_frame_bolt_d);
+                nut_h = find_nut_prop("height", d);
+                translate([0, 0, head_frame_bolt_l - grip - nut_h]) {
+                  nut(d=d,
+                      h=nut_h,
+                      outer_d=find_nut_prop("outer_dia", d),
+                      nut_color=with_default(find_nut_prop("color", d), matte_black));
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -266,6 +278,25 @@ module _head_camera_plate() {
   }
 }
 
+// Local Z runs from the flange's outer face to its inner nut-pocket mouth.
+module _head_frame_joint_slot() {
+  assert(head_frame_pocket_nut_h > 0
+         && head_frame_pocket_nut_h < head_mount_flange_thickness,
+         "Nut pockets must leave a positive flange seating thickness");
+  assert(head_frame_pocket_nut_d > head_frame_bolt_d,
+         "Nut pockets must be wider than the screw holes");
+  counterbore(d=head_frame_bolt_d,
+              h=head_mount_flange_thickness,
+              no_bore=true,
+              teardrop_angle=45,
+              teardrop_both_sides=true);
+  counterbore(d=head_frame_bolt_d,
+              h=head_mount_flange_thickness,
+              bore_d=head_frame_pocket_nut_d,
+              bore_h=head_frame_pocket_nut_h,
+              cbore_fn=6);
+}
+
 /**
   ─────────────────────────────────────────────────────────────────────────────
   head_front_plate
@@ -274,13 +305,14 @@ module _head_camera_plate() {
   **Parameters:**
   - `show_camera`, `show_nuts`, `show_bolts`: Camera hardware visibility.
   - `head_color`: Printed part color.
-  - `slot_mode`: Emit the flange mounting holes only.
+  - `slot_mode`: Emit the flange screw holes and inner hex nut pockets.
   - `anchor`: Anchor on the complete part; [0,1,-1] locates its front face.
   - `show_frame_bolts`, `show_frame_nuts`: Side-panel joint hardware.
   **Behavior:**
   At the default anchor, X is centered, Y spans 0..head_front_height, and the
   front face is Z=0.
   The flanges extend toward negative Z. Use head_front_printable for printing.
+  Nut pockets open toward the space between the flanges.
  */
 module head_front_plate(show_camera=false,
                         head_color="white",
@@ -294,16 +326,15 @@ module head_front_plate(show_camera=false,
   assert(head_front_bolt_edge > head_bridge_flange_height
          - head_bridge_rise + head_joint_clearance + head_frame_bolt_d);
   module slots() {
-    for (p=head_front_joint_points()) {
-      translate([-head_front_width / 2 - 1,
-                 head_front_height - p[1],
-                 -p[0]]) {
-        rotate([0, 90, 0]) {
-          rotate([0, 0, 90]) {
-            counterbore(d=head_frame_bolt_d,
-                        h=head_front_width + 2,
-                        teardrop_angle=45,
-                        teardrop_both_sides=true);
+    mirror_copy([1, 0, 0]) {
+      for (p=head_front_joint_points()) {
+        translate([-head_front_width / 2 + head_joint_clearance,
+                   head_front_height - p[1],
+                   -p[0]]) {
+          rotate([0, 90, 0]) {
+            rotate([0, 0, 90]) {
+              _head_frame_joint_slot();
+            }
           }
         }
       }
@@ -358,10 +389,12 @@ module head_front_plate(show_camera=false,
             }
           }
         }
-        if (show_frame_bolts) {
+        if (show_frame_bolts || show_frame_nuts) {
           translate([0, head_front_height / 2, 0]) {
             rotate([0, 0, 180]) {
-              head_frame_hardware(joint="front", show_nuts=show_frame_nuts);
+              head_frame_hardware(joint="front",
+                                  show_bolts=show_frame_bolts,
+                                  show_nuts=show_frame_nuts);
             }
           }
         }
@@ -426,11 +459,12 @@ function head_bridge_slot_layout() =
   Printable upper bridge with side flanges and IR-foot mounting holes.
   **Parameters:**
   - `anchor`: Anchor on head_bridge_size(); default [1,1,1].
-  - `slot_mode`: Emit joint holes, IR mounting holes, and rear slots.
+  - `slot_mode`: Emit joint holes and nut pockets, IR mounting holes, and rear slots.
   - `show_bolts`, `show_nuts`: Side-panel joint hardware.
   - `color`: Printed part color.
   **Behavior:**
   The roof lies on Z=0 with the flanges extending upward.
+  Hex nut pockets open toward the space between the flanges.
   Its front outline tapers from the side-panel corner to each flange's front end.
   The roof covers the full mounting-flange footprints.
   The rectangular front lip spans the width between the mounting flanges.
@@ -485,14 +519,17 @@ module head_bridge(anchor=[1, 1, 1],
     slot_size = plist_get("size", slot_layout);
     extra_cutout_n = plist_get("count", slot_layout);
 
-    for (p=head_bridge_joint_points()) {
-      translate([-1, l - p[0], head_bridge_thickness + head_bridge_bolt_drop]) {
-        rotate([0, 90, 0]) {
-          rotate([0, 0, 90]) {
-            counterbore(d=head_frame_bolt_d,
-                        h=w + 2,
-                        teardrop_angle=45,
-                        teardrop_both_sides=true);
+    translate([w / 2, 0, 0]) {
+      mirror_copy([1, 0, 0]) {
+        for (p=head_bridge_joint_points()) {
+          translate([flange_x - w / 2,
+                     l - p[0],
+                     head_bridge_thickness + head_bridge_bolt_drop]) {
+            rotate([0, 90, 0]) {
+              rotate([0, 0, 90]) {
+                _head_frame_joint_slot();
+              }
+            }
           }
         }
       }
@@ -553,12 +590,14 @@ module head_bridge(anchor=[1, 1, 1],
         }
         slots();
       }
-      if (show_bolts) {
+      if (show_bolts || show_nuts) {
         rotate([-90, 0, 0]) {
           translate([w / 2,
                      -head_bridge_underside_y() - head_bridge_thickness,
                      l]) {
-            head_frame_hardware(joint="bridge", show_nuts=show_nuts);
+            head_frame_hardware(joint="bridge",
+                                show_bolts=show_bolts,
+                                show_nuts=show_nuts);
           }
         }
       }
@@ -682,19 +721,22 @@ module head_tilt_horn_holes() {
 function head_side_panel_outline() =
   let (points=[for (p=side_panel_points) p + [0, head_side_panel_curve_end]],
        size=head_side_panel_size())
-  _head_side_clip(_head_side_clip(
-    _head_side_clip(_head_side_clip(points, 0, 0, true), 0, size[0], false),
-    1, 0, true), 1, size[1], false);
+  _head_side_clip(_head_side_clip(_head_side_clip(_head_side_clip(points, 0, 0, true), 0, size[0], false),
+                                  1, 0, true),
+                  1,
+                  size[1],
+                  false);
 
 function _head_side_clip(points, axis, boundary, above) =
   [for (i=[0:len(points) - 1])
-    let (a=points[i], b=points[(i + 1) % len(points)],
+    let (a=points[i],
+         b=points[(i + 1) % len(points)],
          inside_a=above ? a[axis] >= boundary : a[axis] <= boundary,
          inside_b=above ? b[axis] >= boundary : b[axis] <= boundary)
-    each concat(inside_a ? [a] : [],
-                inside_a != inside_b
-                ? [a + (b - a) * ((boundary - a[axis]) / (b[axis] - a[axis]))]
-                : [])];
+      each concat(inside_a ? [a] : [],
+                  inside_a != inside_b
+                  ? [a + (b - a) * ((boundary - a[axis]) / (b[axis] - a[axis]))]
+                  : [])];
 
 module head_side_panel_profile() {
   difference() {
@@ -907,8 +949,9 @@ module head_mount(head_color="white",
                                   color=head_color);
       }
     }
-    if (show_frame_bolts) {
-      head_frame_hardware(show_nuts=show_frame_nuts);
+    if (show_frame_bolts || show_frame_nuts) {
+      head_frame_hardware(show_bolts=show_frame_bolts,
+                          show_nuts=show_frame_nuts);
     }
   }
 
@@ -925,13 +968,19 @@ module head_mount(head_color="white",
   **Parameters:**
   - `anchor`: Anchor on [head_front_width, head_front_height, flange depth].
   - `slot_mode`: Emit the flange holes in printable coordinates.
+  - `show_bolts`, `show_nuts`: Independently show frame hardware for inspection.
  */
-module head_front_printable(anchor=[1, 1, 1], slot_mode=false) {
+module head_front_printable(anchor=[1, 1, 1],
+                            slot_mode=false,
+                            show_bolts=false,
+                            show_nuts=false) {
   size = [head_front_width, head_front_height, head_front_flange_depth];
   with_anchor(size=size, anchor=anchor) {
     translate([head_front_width / 2, 0, 0]) {
       mirror([0, 0, 1]) {
-        head_front_plate(slot_mode=slot_mode);
+        head_front_plate(slot_mode=slot_mode,
+                         show_frame_bolts=show_bolts,
+                         show_frame_nuts=show_nuts);
       }
     }
   }
@@ -942,12 +991,14 @@ module head_front_printable(anchor=[1, 1, 1], slot_mode=false) {
   head_mount_printable
   ─────────────────────────────────────────────────────────────────────────────
   Lay out the front plate, top bridge, and two side panels on Z=0.
+  **Parameters:**
+  - `show_bolts`, `show_nuts`: Independently show frame hardware for inspection.
  */
-module head_mount_printable() {
+module head_mount_printable(show_bolts=false, show_nuts=false) {
   gap = 6;
-  head_front_printable();
+  head_front_printable(show_bolts=show_bolts, show_nuts=show_nuts);
   translate([head_front_width + gap, 0, 0]) {
-    head_bridge();
+    head_bridge(show_bolts=show_bolts, show_nuts=show_nuts);
   }
   for (i=[0, 1]) {
     let (with_horn_mount = i == 1,
@@ -967,4 +1018,4 @@ module head_mount_printable() {
 
 // head_mount(show_ir_case=true);
 
-head_mount_printable();
+head_mount_printable(show_bolts=show_frame_bolts, show_nuts=show_frame_nuts);

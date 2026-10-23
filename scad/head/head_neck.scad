@@ -58,6 +58,8 @@ tilt_servo_rotation         = 0; // [-90:90]
 
 show_bbox                   = false;
 
+show_frame_bolts            = false;
+show_frame_nuts             = false;
 show_camera                 = true;
 show_camera_bolts           = true;
 show_camera_nuts            = true;
@@ -594,8 +596,8 @@ module servo_mount_bolts(d=head_neck_pan_servo_bolt_dia,
 }
 
 module head_neck_base(show_tilt_servo=false,
-                      show_frame_bolts=false,
-                      show_frame_nuts=false,
+                      show_frame_bolts=show_frame_bolts,
+                      show_frame_nuts=show_frame_nuts,
                       show_head=false,
                       show_camera=true,
                       show_pan_servo=false,
@@ -759,8 +761,8 @@ module head_neck_base(show_tilt_servo=false,
 }
 
 module head_neck(center_pan_servo_slot=false,
-                 show_frame_bolts=false,
-                 show_frame_nuts=false,
+                 show_frame_bolts=show_frame_bolts,
+                 show_frame_nuts=show_frame_nuts,
                  show_tilt_servo=true,
                  show_head=true,
                  show_pan_servo=true,
