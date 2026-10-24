@@ -286,7 +286,7 @@ front_chassis_bumper_extension                 = "auto";
 front_chassis_bumper_head_clearance            = 2;
 // "auto" covers upward travel and the camera-plate/neck stop. A numeric pair
 // can restrict travel; its positive end is capped at the same structural stop.
-front_chassis_bumper_tilt_range                 = "auto";
+front_chassis_bumper_tilt_range                = "auto";
 front_bumper_bolt_d                            = m3_hole_dia;
 front_bumper_use_countersunk                   = false;
 
@@ -1271,7 +1271,7 @@ steering_encoder_plist                             = as5048A_encoder_plist;
 // Upright and encoder displacement along bracket X (vehicle +Y), in millimeters.
 steering_encoder_x_offset                          = 0.0;
 steering_encoder_bottom_thickness                  = 1.6;
-steering_encoder_side_thickness                    = 1;
+steering_encoder_side_thickness                    = 1.5;
 steering_encoder_top_side_padding                  = 0;
 steering_encoder_extra_left_w                      = 10;
 steering_encoder_extra_right_w                     = 0;
@@ -1319,14 +1319,16 @@ upper_steering_plate_rear_scallop                  = 0.22;
 // ─────────────────────────────────────────────────────────────────────────────
 // Set the plist to undef to omit the encoder mounting feature entirely.
 motor_encoder_plist                                = as5048A_encoder_plist;
+// Upright and encoder displacement along the motor bracket's local X, in millimeters.
+motor_encoder_x_offset                             = 1.2;
 motor_encoder_bottom_thickness                     = 2;
-motor_encoder_side_thickness                       = 2;
+motor_encoder_side_thickness                       = 1.5;
 motor_encoder_pcb_padding                          = 1;
 motor_encoder_mount_bolt_d                         = m3_hole_dia;
 motor_encoder_mount_wall                           = 1.5;
 motor_encoder_nut_clearance                        = 0.4; // radial and axial pocket clearance
 motor_encoder_clearance                            = 0.6; // bolt-head and PCB clearance
-motor_encoder_magnet_distance                      = 1.5; // IC package face to magnet face
+motor_encoder_magnet_distance                      = 2; // IC package face to magnet face
 motor_encoder_magnet_d                             = 5;
 motor_encoder_magnet_h                             = 2;
 // ─────────────────────────────────────────────────────────────────────────────

@@ -12,14 +12,15 @@ use <gearbox_bracket.scad>
 use <gearmotor_encoder_bracket.scad>
 use <util.scad>
 
-p          = gearmotor_bracket_compute_params();
-e          = plist_get("encoder_mount", p);
-gap        = 5;
-base_right = plist_get("bounds", p)[1][0];
-encoder_w  = is_undef(e) ? 0 : plist_get("size", e)[0];
-sleeve     = is_undef(e) ? undef : plist_get("sleeve", e);
-sleeve_d   = is_undef(sleeve) ? 0 : plist_get("size", sleeve)[0];
-boss_d     = plist_get("boss_od", p);
+p             = gearmotor_bracket_compute_params();
+encoder_mount = plist_get("encoder_mount", p);
+gap           = 5;
+base_right    = plist_get("bounds", p)[1][0];
+encoder_w     = is_undef(encoder_mount) ? 0 : plist_get("size", encoder_mount)[0];
+sleeve        = is_undef(encoder_mount) ? undef : plist_get("sleeve",
+                                                            encoder_mount);
+sleeve_d      = is_undef(sleeve) ? 0 : plist_get("size", sleeve)[0];
+boss_d        = plist_get("boss_od", p);
 
 gearmotor_bracket(params=p,
                   anchor=[0, 0, 1],
@@ -36,9 +37,9 @@ gearmotor_bracket(params=p,
                   show_encoder_magnet=false,
                   show_encoder_sleeve=false,
                   show_gearbox_bosses=false);
-if (!is_undef(e)) {
+if (!is_undef(encoder_mount)) {
   translate([base_right + gap + encoder_w / 2, 0, 0]) {
-    gearmotor_encoder_bracket(e, anchor=[0, 0, 1]);
+    gearmotor_encoder_bracket(encoder_mount, anchor=[0, 0, 1]);
   }
   translate([base_right + 2 * gap + encoder_w + sleeve_d / 2, 0, 0]) {
     driveshaft_magnet_sleeve(params=sleeve);

@@ -62,14 +62,23 @@ use <{ROOT}/scad/motor_brackets/rc/driveshaft_magnet_sleeve.scad>
 use <{ROOT}/scad/motor_brackets/rc/gearbox_boss.scad>
 p=gearmotor_bracket_compute_params();
 e=plist_get("encoder_mount",p);
-module base() {{
-  gearmotor_bracket(params=p, anchor=[0,0,1], show_gearbox=false, show_motor=false,
+assert(plist_get("pcb_back",e)[0] == motor_encoder_x_offset);
+e_zero=gearmotor_encoder_params(plist_get("motor",p),
+  plist_get("bracket_thickness",p),
+  chassis_holes=plist_get("chassis_holes",e), x_offset=0);
+p_zero=plist_put("encoder_mount",e_zero,p);
+module base(params=p) {{
+  gearmotor_bracket(params=params, anchor=[0,0,1], show_gearbox=false, show_motor=false,
     show_bearing=false, show_drive_shaft=false, show_mount_bolts=false, show_nuts=false,
     show_shaft_seeve=false, show_extra_drive_shaft=false,
     show_encoder_bracket=false, show_encoder=false, show_encoder_magnet=false,
     show_encoder_sleeve=false, show_gearbox_bosses=false);
 }}
-module mount() {{ gearmotor_encoder_bracket(e); }}
+module mount(params=e) {{ gearmotor_encoder_bracket(params); }}
+module symmetric_difference() {{
+  difference() {{ children(0); children(1); }}
+  difference() {{ children(1); children(0); }}
+}}
 module sleeve(magnet=false, body=true) {{
   translate(plist_get("sleeve_origin",e)) {{
     rotate(plist_get("sleeve_rotation",e)) {{
@@ -121,9 +130,35 @@ module fasteners() {{
         ("base-fasteners", "intersection() { base(); fasteners(); }", True),
         ("mount-fasteners", "intersection() { mount(); fasteners(); }", True),
     ]
+    offset_cases = [
+        ("offset-mount", "mount();", False),
+        ("offset-base-interface", "symmetric_difference() { base(); base(p_zero); }", True),
+        (
+            "offset-slots",
+            "symmetric_difference() {"
+            " gearmotor_encoder_bracket(e, slot_mode=true, anchor=[0,0,1]);"
+            " gearmotor_encoder_bracket(e_zero, slot_mode=true, anchor=[0,0,1]); }",
+            True,
+        ),
+        (
+            "offset-foot",
+            "intersection() { symmetric_difference() { mount(); mount(e_zero); }"
+            ' translate([-100,-100,plist_get("base_h",e)])'
+            ' { cube([200,200,plist_get("bottom_thickness",e)]); } }',
+            True,
+        ),
+        ("offset-pcb-mount", "intersection() { electronics(); mount(); }", True),
+        ("offset-fasteners", "intersection() { fasteners(); mount(); }", True),
+    ]
+    runs = [(label, call, empty, 0.0) for label, call, empty in cases]
+    runs.extend(
+        (f"{label}-{offset:+g}", call, empty, offset)
+        for offset in (-0.5, 0.5)
+        for label, call, empty in offset_cases
+    )
     with tempfile.TemporaryDirectory(prefix="gearmotor-encoder-") as folder:
         source = Path(folder) / "fixture.scad"
-        for label, call, empty in cases:
+        for label, call, empty, offset in runs:
             source.write_text(common + call + "\n")
             mesh = Path(folder) / f"{label}.stl"
             result = subprocess.run(
@@ -132,6 +167,8 @@ module fasteners() {{
                     "--backend=Manifold",
                     "--enable=textmetrics",
                     "--hardwarnings",
+                    "-D",
+                    f"motor_encoder_x_offset={offset}",
                     "--export-format",
                     "binstl",
                     "-o",

@@ -472,3 +472,5 @@ module _capacitors(plist, pcb_w, pcb_l) {
     }
   }
 }
+
+encoder(as5048A_encoder_plist);

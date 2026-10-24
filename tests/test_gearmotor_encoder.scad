@@ -34,6 +34,27 @@ near([plist_get("size", p)[1]], [66.6]);
 assert(plist_get("bounds", p)[1][0] > plist_get("base_bounds", p)[1][0]);
 near([plist_get("bounds", p)[1][0]], [bounds[1][0]]);
 
+// Lateral calibration preserves the printed base interface and anchor datums.
+for (pcb_spec = [motor_encoder_plist,
+                plist_put("size", [18, 14, 1.74], motor_encoder_plist)]) {
+  nominal = gearmotor_encoder_params(motor_plist, gearbox_bracket_thickness,
+                                     encoder_plist=pcb_spec, x_offset=0);
+  for (offset = [-0.5, 0, 0.5]) {
+    shifted = gearmotor_encoder_params(motor_plist, gearbox_bracket_thickness,
+                                       encoder_plist=pcb_spec, x_offset=offset);
+    for (key = ["pcb_back", "sensor_face"]) {
+      near(plist_get(key, shifted), plist_get(key, nominal) + [offset, 0, 0]);
+    }
+    for (key = ["mount_holes", "chassis_holes", "base_extension_bounds",
+                "bounds", "size", "foot_x", "foot_r", "wall_y",
+                "mount_bolt_d", "nut_pocket_d", "nut_pocket_h",
+                "shaft_tip", "magnet_face", "sleeve_origin", "sleeve"]) {
+      assert(plist_get(key, shifted) == plist_get(key, nominal),
+             str("Encoder X offset must preserve ", key));
+    }
+  }
+}
+
 // The main bracket retains its native shape and datums when the feature is off.
 plain           = gearmotor_bracket_compute_params(encoder_plist=undef);
 assert(is_undef(plist_get("encoder_mount", plain)));

@@ -9,8 +9,7 @@ include <../../rc_params.scad>
 
 use <steering_servo_encoder_bracket.scad>
 
-module steering_servo_encoder_bracket_printable(
-  x_offset=steering_encoder_x_offset) {
+module steering_servo_encoder_bracket_printable(x_offset=steering_encoder_x_offset) {
   rotate([90, 0, 0]) {
     steering_servo_encoder_bracket(show_encoder=false, x_offset=x_offset);
   }
