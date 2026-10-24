@@ -9,6 +9,7 @@
   */
 
 use <functions.scad>
+use <plist.scad>
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -162,18 +163,35 @@ module offset_vertices_2d(r, fn) {
   - `center`: If `true`, the corner grid is centered on the origin.
  */
 module four_corner_children(size=[10, 10],
-                            center=true) {
-  for (x_ind = [0, 1])
+                            center=true,
+                            include) {
+  _include = with_default(include,
+                          ["bottom_left", "top_left",
+                           "top_right", "bottom_right"]);
+
+  include_by_keys = ["0-0", "bottom_left",
+                     "0-1", "top_left",
+                     "1-1", "top_right",
+                     "1-0", "bottom_right"];
+
+  for (x_ind = [0, 1]) {
     for (y_ind = [0, 1]) {
+
       x_pos = (center ? -size[0] / 2 : 0) + x_ind * size[0];
       y_pos = (center ? -size[1] / 2 : 0) + y_ind * size[1];
+      key = str(x_ind, "-", y_ind);
+      name = plist_get(key, include_by_keys);
 
-      translate([x_pos, y_pos]) {
-        $x_i = x_ind;
-        $y_i = y_ind;
-        children();
+      if (member(name, _include)) {
+        translate([x_pos, y_pos]) {
+          $x_i = x_ind;
+          $y_i = y_ind;
+          $key = key;
+          children();
+        }
       }
     }
+  }
 }
 
 /**
@@ -308,16 +326,16 @@ module align_children(parent_size,
     dy = cell_y - full_y;
 
     x = align_x == -1
-      ? 0
-      : align_x == 0
-      ? dx / 2
-      : dx;
+        ? 0
+        : align_x == 0
+          ? dx / 2
+          : dx;
 
     y = align_y == 0
-      ? dy / 2
-      : align_y == 1
-      ? dy
-      : 0;
+        ? dy / 2
+        : align_y == 1
+          ? dy
+          : 0;
 
     translate([x, y, 0]) {
       children();
