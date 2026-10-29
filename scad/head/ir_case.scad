@@ -29,7 +29,6 @@ include <../colors.scad>
 include <../parameters.scad>
 
 use <../lib/debug.scad>
-use <../lib/functions.scad>
 use <../lib/l_bracket.scad>
 use <../lib/plist.scad>
 use <../lib/shapes3d.scad>
@@ -49,8 +48,8 @@ function ir_case_face_thickness() = ir_case_thickness
                                     + ir_case_led_boss_thickness;
 
 function ir_case_optical_opening_height() = ir_case_led_dia
-                                  + ir_light_detector_dia
-                                  + ir_light_offset_from_led_y;
+                                            + ir_light_detector_dia
+                                            + ir_light_offset_from_led_y;
 
 function ir_case_back_depth() =
   ir_case_face_thickness() + ir_case_carriage_h
@@ -107,7 +106,8 @@ function ir_case_mount_interface() =
   ─────────────────────────────────────────────────────────────────────────────
   Return the mounting footprint [width, depth, thickness] in millimeters.
  */
-function ir_case_mount_foot_size() = plist_get("size", ir_case_mount_interface());
+function ir_case_mount_foot_size() = plist_get("size",
+                                               ir_case_mount_interface());
 
 function ir_case_mount_foot_corner_r() =
   min(ir_case_mount_foot_size()[0], ir_case_mount_foot_size()[1]) / 4;
@@ -161,11 +161,11 @@ module at_ir_case_mount_bolts() {
   size is ir_case_mount_foot_size(). Gussets meet the slider's lower edge.
  */
 module ir_case_mount_foot(slot_mode=false,
-                        show_bolts=false,
-                        show_nuts=false,
-                        mount_thickness=3,
-                        debug=false,
-                        color="white") {
+                          show_bolts=false,
+                          show_nuts=false,
+                          mount_thickness=3,
+                          debug=false,
+                          color="white") {
   mount = ir_case_mount_interface();
   size = plist_get("size", mount);
   t = size[2];
@@ -556,9 +556,9 @@ module ir_case(show_bolts=false,
 
       if (mount == "top") {
         ir_case_mount_foot(show_bolts=show_bolts,
-                         show_nuts=show_nuts,
-                         color=color,
-                         mount_thickness=mount_thickness);
+                           show_nuts=show_nuts,
+                           color=color,
+                           mount_thickness=mount_thickness);
       }
       if (mount == "side") {
         for (spec = [["right",
@@ -659,7 +659,7 @@ module ir_case_printable(show_rail=true,
 }
 
 // ir_case_printable(show_case=true, show_rail=true, mount="top");
-ir_case_assembly(mount="top");
+ir_case_printable(mount="top");
 
 // ir_case_mount_foot(show_bolts=false,
 //                  show_nuts=false,
