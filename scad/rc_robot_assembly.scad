@@ -88,10 +88,10 @@ show_front_rpi                              = true;
 show_rpi_sd_card                            = true;
 show_rpi_standoffs                          = true;
 show_rpi_usb_c_plug                         = false;
-show_rpi_ai_hat                             = false;
-show_rpi_motor_driver_hat                   = false;
-show_rpi_servo_driver_hat                   = false;
-show_rpi_gpio_expansion_board               = false;
+show_rpi_ai_hat                             = true;
+show_rpi_motor_driver_hat                   = true;
+show_rpi_servo_driver_hat                   = true;
+show_rpi_gpio_expansion_board               = true;
 
 show_front_bulkhead_upper_suspension_holder = true;
 
