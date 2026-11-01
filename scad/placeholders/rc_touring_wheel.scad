@@ -18,13 +18,15 @@ use <../lib/transforms.scad>
   ─────────────────────────────────────────────────────────────────────────────
   Resolve and validate the visual wheel's hardware dimensions.
   **Parameters:**
-  - `pl`: Overrides: tire_d, width, rim_d, hex_af, hex_depth, axle_d, mount_z.
+  - `pl`: Overrides: tire_d, width, tire_bevel, rim_d, hex_af, hex_depth,
+    axle_d, mount_z. `tire_bevel` is the radial and axial sidewall chamfer.
   **Returns:** A plist. mount_z is the hex contact plane measured from the
   inboard tire face; it is explicit backspacing, not a vendor offset number.
  */
 function rc_touring_wheel_spec(pl=[]) =
   let (p = plist_merge(["tire_d", 65,
                         "width", 26,
+                        "tire_bevel", 2,
                         "rim_d", 52,
                         "hex_af", 12,
                         "hex_depth", 3,
@@ -35,11 +37,32 @@ function rc_touring_wheel_spec(pl=[]) =
        rim = plist_get("rim_d", p),
        mount = plist_get("mount_z", p),
        hex = plist_get("hex_af", p),
-       depth = plist_get("hex_depth", p))
+       depth = plist_get("hex_depth", p),
+       bevel = plist_get("tire_bevel", p))
   assert(d > rim + 4 && rim > hex * 2 && w > 12)
   assert(hex > plist_get("axle_d", p) && depth > 0)
   assert(mount > depth && mount + 6 < w)
+  assert(bevel >= 0 && bevel < w / 2 && bevel < (d - rim) / 2)
   p;
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  rc_touring_tire_profile
+  ─────────────────────────────────────────────────────────────────────────────
+  Return the tire's meridian profile before the tread grooves are cut.
+  **Parameters:**
+  - `pl`: Wheel dimensions accepted by `rc_touring_wheel_spec()`.
+  **Returns:** Polygon vertices `[radius, axial_z]` in millimeters. Axial zero
+  is the inboard tire face; the profile is symmetric about half its width.
+ */
+function rc_touring_tire_profile(pl=[]) =
+  let (p = rc_touring_wheel_spec(pl),
+       radius = plist_get("tire_d", p) / 2,
+       rim_radius = plist_get("rim_d", p) / 2,
+       width = plist_get("width", p),
+       bevel = plist_get("tire_bevel", p))
+  [[rim_radius, 0], [radius - bevel, 0], [radius, bevel],
+   [radius, width - bevel], [radius - bevel, width], [rim_radius, width]];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -125,8 +148,7 @@ module rc_touring_wheel(pl=[],
         color("#24272b") {
           difference() {
             rotate_extrude($fn=fn) {
-              polygon([[rim / 2, 0], [d / 2 - 2, 0], [d / 2, 2],
-                       [d / 2, w - 2], [d / 2 - 2, w], [rim / 2, w]]);
+              polygon(rc_touring_tire_profile(p));
             }
             for (z = [w * 0.3, w * 0.5, w * 0.7]) {
               translate([0, 0, z - 0.4]) {

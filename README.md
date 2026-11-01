@@ -124,14 +124,32 @@ Use `show_front_wheels`, `show_rear_wheels_preview`, and `show_wheel_tires` in
 inboard tire face, provisionally 15 mm, not a commercial offset specification.
 
 Front wheels inherit the actual knuckle/bearing transforms, including solved
-suspension and steering motion. The rear suspension is not modeled yet: rear
-wheels are packaging placeholders at the midpoint of the two rear bulkhead
-mounting groups. Their track and height follow the neutral front reference unless
-`rc_rear_wheel_preview_track` or `rc_rear_wheel_preview_axis_z` is set;
-`rc_rear_wheel_preview_y_offset` adjusts that provisional axle location. The
+suspension and steering motion. Rear wheels seat on the rear axle's hex faces
+and follow its hub and shaft datums. `show_rear_wheels_preview` and
+`show_wheel_tires` control wheel and tire visibility. With
+`show_rear_suspension=false`, rear wheels use the packaging settings
+`rc_rear_wheel_preview_track`, `rc_rear_wheel_preview_axis_z`, and
+`rc_rear_wheel_preview_y_offset`. The
 [wheel placeholder](scad/placeholders/rc_touring_wheel.scad) has an illustrative
 rim, tire grooves, and hub section; it is not a printable wheel or a verified
 fit for a specific purchased wheel.
+
+The [rear suspension prototype](scad/suspension/rear_axle/README.md) is enabled by
+`show_rear_suspension` in both vehicle entry points. Its complete
+`rear_suspension_settings` plist controls component visibility and fit inspection.
+The inspection entry is `scad/suspension/rear_suspension_assembly.scad`. It includes
+a split differential housing, HSP 02149-inspired lower arms, paired ball-socket
+hubs, a shock tower, hardware placeholders and a direct 4 mm-to-5 mm motor sleeve.
+Its mounting datums follow the existing rear chassis and its joint spacing.
+The 49 mm nominal arm envelope is supported by a 48.6–49 mm caliper measurement.
+Measured differential geometry is defined by `differential_spec()` in
+[`scad/placeholders/differential.scad`](scad/placeholders/differential.scad).
+The dogbone's caliper dimensions—61.2 mm overall, 5.8 mm balls, 3.8 mm shank,
+and 9.82 × 2 mm pins—are recorded in `rear_dogbone_spec` in
+[`hardware_params.scad`](scad/suspension/rear_axle/hardware_params.scad).
+The stock-dogbone fit and pinion/crown mesh require hardware measurements before
+fitted printing. Integrated fit reports also expose the modeled motor shaft's
+3.45 mm offset from the sleeve axis; the motor mounting position is fixed.
 
 ### Configurations
 
@@ -494,8 +512,8 @@ Mount the cameras to the front plate, then bolt both side panels to its flanges 
 
 ##### For two Raspberry Pi Camera Module 3 boards
 
-| Size | Length (mm) | Amount                | Nuts | Variable               |
-| ---- | ----------- | --------------------- | ---- | ---------------------- |
+| Size | Length (mm) | Amount                | Nuts | Variable             |
+| ---- | ----------- | --------------------- | ---- | -------------------- |
 | M2   | 5 or higher | 8 (4 for each camera) | 8    | `head_camera_bolt_d` |
 
 As with the steering servo, your servo pack should already include bolts, a servo arm, and self-tapping bolts to secure the servo arm. The diameter of the hole on the head where the tilt-servo gearbox mounts is defined by `head_servo_mount_dia`.
@@ -515,7 +533,7 @@ The head carries one forward-facing IR enclosure centered above the upper bridge
 
 | Joint                   | Bolts at default dimensions | Nuts   | Hole diameter parameter |
 | ----------------------- | --------------------------- | ------ | ----------------------- |
-| IR foot to upper bridge | 4 × M3×10                   | 4 × M3 | `ir_case_mount_bolt_d`    |
+| IR foot to upper bridge | 4 × M3×10                   | 4 × M3 | `ir_case_mount_bolt_d`  |
 | IR retaining rail       | 2 × M2×10 or longer         | 2 × M2 | `ir_case_rail_bolt_dia` |
 
 `ir_case_mount_bolt_length(mount_thickness)` derives the foot bolt length from the foot, bridge, and nut thicknesses. The generic `ir_case` and `ir_case_printable` interfaces accept `mount="top"` for the bottom foot or `mount="side"` for lateral brackets. The head assembly uses `mount="top"`.

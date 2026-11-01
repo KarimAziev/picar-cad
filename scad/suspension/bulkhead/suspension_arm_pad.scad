@@ -77,18 +77,20 @@ module suspension_arm_pad(color=cobalt_blue_light_3,
       linear_extrude(height=thickness, center=false) {
         _shape();
       }
-      hull() {
-        linear_extrude(height=thickness, center=false) {
-          translate([0, h + hook_h - hook_upper_corner_r - 0.1, 0]) {
-            square([hook_w, 0.1], center=true);
+      if (hook_h > 0) {
+        hull() {
+          linear_extrude(height=thickness, center=false) {
+            translate([0, h + hook_h - hook_upper_corner_r - 0.1, 0]) {
+              square([hook_w, 0.1], center=true);
+            }
           }
-        }
-        linear_extrude(height=thickness * 0.6, center=false) {
-          translate([0, h + hook_h - hook_upper_corner_r / 2 , 0]) {
-            trapezoid(t=hook_w - hook_upper_corner_r * 2,
-                      b=hook_w,
-                      h=hook_upper_corner_r,
-                      center=true);
+          linear_extrude(height=thickness * 0.6, center=false) {
+            translate([0, h + hook_h - hook_upper_corner_r / 2 , 0]) {
+              trapezoid(t=hook_w - hook_upper_corner_r * 2,
+                        b=hook_w,
+                        h=hook_upper_corner_r,
+                        center=true);
+            }
           }
         }
       }
@@ -103,4 +105,4 @@ module suspension_arm_pad(color=cobalt_blue_light_3,
   }
 }
 
-suspension_arm_pad(debug=false);
+suspension_arm_pad(debug=false, hook_h=0, hook_lower_corner_r=0);

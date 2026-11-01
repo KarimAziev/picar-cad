@@ -17,7 +17,7 @@ use <front_bumper_top_plate.scad>
 show_foam                   = true;
 show_top_plate              = false;
 show_bolts                  = false;
-foam_alpha                  = 0.4; // [0:0.1:1]
+foam_alpha                  = 1.0; // [0:0.1:1]
 foam_z_offset               = 0; // [-200:1:200]
 top_plate_z_offset          = 0; // [-200:1:200]
 

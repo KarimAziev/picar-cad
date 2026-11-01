@@ -20,11 +20,27 @@ use <../wishbone_arms/front_lower_arm.scad>
 use <../wishbone_arms/util.scad>
 use <front_bulkhead_chassis.scad>
 
-show_front_lower_arm           = true;
-show_front_lower_arm_pin       = true;
-show_front_lower_pin_e_clip    = true;
+show_front_lower_arm           = false;
+show_front_lower_arm_pin       = false;
+show_front_lower_pin_e_clip    = false;
 show_front_lower_arm_ball_stud = false;
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_bulkhead_housing
+  ─────────────────────────────────────────────────────────────────────────────
+  Build the lower housing and integral hinge barrels.
+  Dimension defaults are defined in `scad/rc_params.scad`.
+  **Interface options:**
+  - `center_y`: Center the body along Y; otherwise its rear edge starts at Y=0.
+  - `center_by_hinges`: Center the hinge span along Y, taking precedence over
+    `center_y`.
+  - `cut_mount_holes`, `cut_hinge_holes`: Emit the corresponding through cutters.
+  - `quality_fn`: Explicit curved-feature fragment count; `undef` uses each
+    feature's resolution.
+  - `join_overlap`: Extend hinge solids inward into the body without shifting
+    their outer ends or pin datum.
+ */
 module front_bulkhead_housing(color=cobalt_blue_metallic,
                               barrel_w=front_bulkhead_barrel_hinge_w,
                               rear_hole_bolt_d=front_bulkhead_rear_bolt_d,
@@ -40,7 +56,11 @@ module front_bulkhead_housing(color=cobalt_blue_metallic,
                               show_front_lower_pin_e_clip=show_front_lower_pin_e_clip,
                               show_front_lower_arm_ball_stud=show_front_lower_arm_ball_stud,
                               center_y=false,
-                              center_by_hinges=false) {
+                              center_by_hinges=false,
+                              cut_mount_holes=true,
+                              quality_fn=undef,
+                              join_overlap=0,
+                              cut_hinge_holes=true) {
 
   barrel_size = front_lower_arm_mount_cutout_size();
   barrel_len = barrel_size[1] - hinge_clearance;
@@ -51,39 +71,41 @@ module front_bulkhead_housing(color=cobalt_blue_metallic,
   full_bolt_spacing_y = bolt_spacing_max_y + front_bulkhead_mount_bolt_d;
 
   maybe_translate([0, center_by_hinges
-                   ? ((front_bulkhead_len / 2)
-                      -
-                      (front_bulkhead_len - barrel_y_offset - barrel_len)
-                      - barrel_len / 2)
-                   : center_y
-                   ? 0
-                   : front_bulkhead_len / 2,
+                      ? ((front_bulkhead_len / 2)
+                         -
+                         (front_bulkhead_len - barrel_y_offset - barrel_len)
+                         - barrel_len / 2)
+                      : center_y
+                        ? 0
+                        : front_bulkhead_len / 2,
                    0]) {
     union() {
-      translate([0, 0, 0]) {
-        maybe_color(color) {
-          render() {
-            difference() {
-              union() {
-                difference() {
-                  cuboid([front_bulkhead_w,
-                          front_bulkhead_len,
-                          barrel_thickness]);
-                }
-                mirror_copy([1, 0, 0]) {
-                  translate([-front_bulkhead_w / 2 - barrel_w,
-                             front_bulkhead_len / 2 - barrel_len - barrel_y_offset,
-                             0]) {
-                    difference() {
-                      barrel_hinge(size=[barrel_w,
-                                         barrel_len,
-                                         barrel_thickness],
-                                   d=lower_pin_hole_d,
-                                   distance=pin_hole_offset);
-                    }
+      maybe_color(color) {
+        render() {
+          difference() {
+            union() {
+              difference() {
+                cuboid([front_bulkhead_w,
+                        front_bulkhead_len,
+                        barrel_thickness]);
+              }
+              mirror_copy([1, 0, 0]) {
+                translate([-front_bulkhead_w / 2 - barrel_w,
+                           front_bulkhead_len / 2 - barrel_len - barrel_y_offset,
+                           0]) {
+                  difference() {
+                    barrel_hinge(size=[barrel_w + join_overlap,
+                                       barrel_len,
+                                       barrel_thickness],
+                                 d=lower_pin_hole_d,
+                                 distance=pin_hole_offset,
+                                 fn=quality_fn,
+                                 cut_hole=cut_hinge_holes);
                   }
                 }
               }
+            }
+            if (cut_mount_holes) {
               translate([0,
                          -front_bulkhead_len / 2 + rear_hole_bolt_d / 2
                          + rear_hole_bolt_offset,
@@ -105,18 +127,18 @@ module front_bulkhead_housing(color=cobalt_blue_metallic,
                          0]) {
                 front_bulkhead_chassis_mount_slots(center_y=false);
               }
+            }
 
-              mirror_copy([1, 0, 0]) {
-                let (dia = barrel_len * front_bulkhead_hinge_cutout_d_factor) {
-                  translate([front_bulkhead_mount_bolt_spacing_x / 2 + dia / 2
-                             + front_bulkhead_mount_bolt_d / 2
-                             + front_bulkhead_hinge_cutout_bolt_offset,
-                             front_bulkhead_len / 2
-                             - barrel_len / 2
-                             - barrel_y_offset,
-                             0]) {
-                    cylinder(d=dia, h=barrel_w, $fn=$preview ? 40 : 360);
-                  }
+            mirror_copy([1, 0, 0]) {
+              let (dia = barrel_len * front_bulkhead_hinge_cutout_d_factor) {
+                translate([front_bulkhead_mount_bolt_spacing_x / 2 + dia / 2
+                           + front_bulkhead_mount_bolt_d / 2
+                           + front_bulkhead_hinge_cutout_bolt_offset,
+                           front_bulkhead_len / 2
+                           - barrel_len / 2
+                           - barrel_y_offset,
+                           0]) {
+                  cylinder(d=dia, h=barrel_w, $fn=is_undef(quality_fn) ? ($preview ? 40 : 360) : quality_fn);
                 }
               }
             }

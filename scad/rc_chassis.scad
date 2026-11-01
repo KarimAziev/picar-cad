@@ -16,6 +16,8 @@ include <colors.scad>
 include <parameters.scad>
 include <rc_params.scad>
 include <suspension/front_chassis/computed_params.scad>
+include <suspension/rear_axle/structure_params.scad>
+include <suspension/rear_axle/hardware_params.scad>
 
 use <head/head_neck.scad>
 use <lib/plist.scad>
@@ -31,6 +33,8 @@ use <suspension/front_chassis/front_frame_util.scad>
 use <suspension/front_chassis/head_frame/head_joint.scad>
 use <suspension/front_suspension_assembly.scad>
 use <suspension/rc_wheels.scad>
+use <suspension/rear_suspension_assembly.scad>
+use <suspension/rear_axle/motor_fit.scad>
 use <suspension/rear_chassis/computed_params.scad>
 use <suspension/rear_chassis/rear_chassis.scad>
 use <suspension/rear_suspension/rear_suspension_joint.scad>
@@ -42,6 +46,8 @@ show_chassis_front_frame                    = true;
 show_chassis_rear_frame                     = true;
 show_rear_chassis                           = true;
 show_rear_suspension_mount                  = true;
+show_rear_suspension                        = true;
+rear_suspension_settings                    = rear_axle_settings;
 
 /* [Joint separation] */
 front_chassis_joint_spacing                 = 0; // [0:1:30]
@@ -277,6 +283,8 @@ module rc_chassis(show_bellcrank_drive=show_bellcrank_drive,
                   show_motor_encoder=show_motor_encoder,
                   show_motor_encoder_magnet=show_motor_encoder_magnet,
                   show_rear_suspension_mount=show_rear_suspension_mount,
+                  show_rear_suspension=show_rear_suspension,
+                  rear_suspension_settings=rear_suspension_settings,
                   show_rear_power_wiring=show_rear_power_wiring,
                   show_rear_panel_stack=show_rear_panel_stack,
                   show_upper_steering_plate=show_upper_steering_plate,
@@ -331,7 +339,12 @@ module rc_chassis(show_bellcrank_drive=show_bellcrank_drive,
                                 width=show_chassis_width,
                                 bumper_top_plate=show_front_bumper_top_plate,
                                 bumper_foam=show_front_bumper_foam,
-                                bumper_pl=front_bumper_plist);
+                                bumper_pl=front_bumper_plist,
+                                rear_reference=show_rear_suspension
+                                  ? rear_suspension_wheel_reference_center(
+                                      rear_layout, suspension_chassis_mount_h,
+                                      settings=rear_suspension_settings)
+                                  : rc_rear_wheel_reference_center(rear_layout));
   resolved_front_chassis_joint_spacing = split_front_chassis
                                          ? front_chassis_joint_spacing
                                          : 0;
@@ -540,8 +553,8 @@ module rc_chassis(show_bellcrank_drive=show_bellcrank_drive,
                        show_motor=show_rear_chassis_components && show_rear_motor,
                        show_gearbox_bracket=show_rear_chassis_components && show_rear_gearbox_bracket,
                        show_drive_shaft=show_drive_shaft,
-                       show_extra_drive_shaft=show_extra_drive_shaft,
-                       show_drive_shaft_seeve=show_drive_shaft_seeve,
+                       show_extra_drive_shaft=show_extra_drive_shaft && !show_rear_suspension,
+                       show_drive_shaft_seeve=show_drive_shaft_seeve && !show_rear_suspension,
                        show_motor_encoder_bracket=show_motor_encoder_bracket,
                        show_motor_encoder=show_motor_encoder,
                        show_motor_encoder_magnet=show_motor_encoder_magnet,
@@ -555,7 +568,39 @@ module rc_chassis(show_bellcrank_drive=show_bellcrank_drive,
                        show_equipment_zones=show_rear_chassis_equipment_zones,
                        show_drive_shaft_encoder_sleeve=show_drive_shaft_encoder_sleeve,
                        show_motor_gearbox_bosses=show_motor_gearbox_bosses) {
-            if (show_rear_wheels_preview) {
+            if (show_rear_suspension) {
+              motor_fit = rear_axle_motor_fit(
+                layout=rear_layout, housing=rear_housing_spec,
+                differential=rear_differential_spec, pinion=rear_pinion_spec,
+                sleeve=rear_motor_sleeve_spec,
+                mount_h=suspension_chassis_mount_h,
+                joint_spacing=resolved_rear_suspension_joint_spacing);
+              reference_dimensions = chassis_dimensions(
+                layout=rear_layout,
+                rear_reference=rear_suspension_wheel_reference_center(
+                  rear_layout, suspension_chassis_mount_h,
+                  settings=rear_suspension_settings));
+              echo(rear_front_axle_height_delta=plist_get(
+                "rear_front_axle_height_delta", reference_dimensions),
+                   rear_front_ground_height_delta=plist_get(
+                "rear_front_ground_height_delta", reference_dimensions));
+              echo(rear_motor_radial_offset=plist_get("radial_offset", motor_fit),
+                   rear_motor_engagement=plist_get("engagement_available", motor_fit),
+                   rear_motor_engagement_deficit=plist_get("engagement_deficit", motor_fit));
+              translate(rear_suspension_chassis_datum(
+                  rear_layout, suspension_chassis_mount_h,
+                  resolved_rear_suspension_joint_spacing)) {
+                rotate([0, 0, 180]) {
+                  rear_suspension_assembly(
+                    layout=rear_layout,
+                    settings=plist_put("show_mount", false,
+                                        rear_suspension_settings),
+                    wheel=rc_wheel_plist,
+                    show_wheels=show_rear_wheels_preview,
+                    show_tires=show_wheel_tires);
+                }
+              }
+            } else if (show_rear_wheels_preview) {
               translate([0, resolved_rear_suspension_joint_spacing, 0]) {
                 rc_rear_wheels_preview(layout=rear_layout,
                                        show_tire=show_wheel_tires);

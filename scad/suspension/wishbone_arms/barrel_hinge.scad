@@ -12,13 +12,20 @@ use <../../lib/shapes2d.scad>
  barrel_hinge
  ─────────────────────────────────────────────────────────────────────────────
 
+ **Parameters:**
+ - `size`: Width, extrusion length and thickness.
+ - `distance`: Edge-to-edge distance from the rounded end to the pin hole.
+ - `d`: Pin-hole diameter.
+ - `fn`: Explicit fragment count; `undef` uses each feature's resolution.
+ - `cut_hole`: Emit the axial pin bore.
+
  **Example**:
  ```scad
  barrel_hinge(size=[10, 8, 5], d=3, distance=2);
 
  ```
 */
-module barrel_hinge(size, distance, d) {
+module barrel_hinge(size, distance, d, fn=undef, cut_hole=true) {
   length = size[0];
   h = size[1];
   thickness = size[2];
@@ -31,11 +38,13 @@ module barrel_hinge(size, distance, d) {
                        center=false,
                        r_factor=0.5,
                        side="left",
-                       fn=$preview ? 20 : 100);
-          translate([hole_r + distance,
-                     thickness / 2,
-                     0]) {
-            circle(r=hole_r, $fn=$preview ? 20 : 360);
+                       fn=is_undef(fn) ? ($preview ? 20 : 100) : fn);
+          if (cut_hole) {
+            translate([hole_r + distance,
+                       thickness / 2,
+                       0]) {
+              circle(r=hole_r, $fn=is_undef(fn) ? ($preview ? 20 : 360) : fn);
+            }
           }
         }
       }

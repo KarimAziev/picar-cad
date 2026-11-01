@@ -11,6 +11,7 @@ include <rear_suspension_params.scad>
 use <../../lib/plist.scad>
 use <../../lib/slots.scad>
 use <../../lib/transforms.scad>
+use <../bulkhead/front_bulkhead_chassis.scad>
 use <../rear_chassis/computed_params.scad>
 
 /**
@@ -35,14 +36,27 @@ module rear_suspension_arm_pad_rect_slot() {
             center=true);
 }
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  rear_suspension_bulkhead_mount_positions
+  ─────────────────────────────────────────────────────────────────────────────
+  Locate the shared front-housing bolt pattern on the native rear chassis plate.
+  **Parameters:** `layout`: `rear_chassis_layout()` in
+  `../rear_chassis/computed_params.scad`, including the axle datum `bulkhead_2_y`.
+  **Returns:** Eight XYZ bolt centers at Z=0. Vehicle X/Y reverse under the
+  axle's 180-degree chassis placement; the existing plate envelope stays fixed.
+ */
+function rear_suspension_bulkhead_mount_positions(layout) =
+  [for (p = front_bulkhead_housing_mount_positions())
+    [-p[0], plist_get("bulkhead_2_y", layout) - p[1], 0]];
+
 module rear_suspension_mount_slots(layout=rear_chassis_layout()) {
-  for (row = [[0, [rear_suspension_holder_bolt_spacing_x, 0]],
-              [plist_get("bulkhead_1_y", layout), rear_bulkhead_bolt_spacing_1],
-              [plist_get("bulkhead_2_y", layout), rear_bulkhead_bolt_spacing_2]]) {
-    translate([0, row[0], 0]) {
-      four_corner_children(size=row[1]) {
-        rear_suspension_counterbore();
-      }
+  four_corner_children(size=[rear_suspension_holder_bolt_spacing_x, 0]) {
+    rear_suspension_counterbore();
+  }
+  for (p = rear_suspension_bulkhead_mount_positions(layout)) {
+    translate(p) {
+      rear_suspension_counterbore();
     }
   }
 

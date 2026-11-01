@@ -2,7 +2,7 @@
   * Module: Assembly for RC-style robot with suspension.
   *
   * Assembles the front chassis, including its front and rear frame sections,
-  * together with the front suspension, bellcrank steering assembly, and
+  * together with front and rear suspension, bellcrank steering assembly,
   * steering servo components, electronics and rear drivetrain.
   * This is the suspension vehicle entry point. Joint-spacing controls are measured
   * in millimeters; zero assembles the frames and positive values separate them
@@ -16,6 +16,7 @@ include <colors.scad>
 include <parameters.scad>
 include <rc_params.scad>
 include <suspension/front_chassis/computed_params.scad>
+include <suspension/rear_axle/structure_params.scad>
 
 use <rc_chassis.scad>
 
@@ -30,6 +31,8 @@ show_chassis_front_frame                    = true;
 show_chassis_rear_frame                     = true;
 show_rear_chassis                           = true;
 show_rear_suspension_mount                  = true;
+show_rear_suspension                        = true;
+rear_suspension_settings                    = rear_axle_settings;
 // Joint separation for assembly inspection.
 front_chassis_joint_spacing                 = 0; // [0:1:30]
 head_chassis_joint_spacing                  = 0; // [0:1:30]
@@ -224,6 +227,8 @@ module rc_robot_assembly(show_bellcrank_drive=show_bellcrank_drive,
                          show_motor_encoder=show_motor_encoder,
                          show_motor_encoder_magnet=show_motor_encoder_magnet,
                          show_rear_suspension_mount=show_rear_suspension_mount,
+                         show_rear_suspension=show_rear_suspension,
+                         rear_suspension_settings=rear_suspension_settings,
                          show_rear_power_wiring=show_rear_power_wiring,
                          show_rear_panel_stack=show_rear_panel_stack,
                          show_upper_steering_plate=show_upper_steering_plate,
@@ -328,6 +333,8 @@ module rc_robot_assembly(show_bellcrank_drive=show_bellcrank_drive,
              show_motor_encoder=show_motor_encoder,
              show_motor_encoder_magnet=show_motor_encoder_magnet,
              show_rear_suspension_mount=show_rear_suspension_mount,
+             show_rear_suspension=show_rear_suspension,
+             rear_suspension_settings=rear_suspension_settings,
              show_rear_power_wiring=show_rear_power_wiring,
              show_rear_panel_stack=show_rear_panel_stack,
              show_upper_steering_plate=show_upper_steering_plate,

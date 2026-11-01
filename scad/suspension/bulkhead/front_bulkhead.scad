@@ -39,6 +39,20 @@ show_upper_arm_ball_stud     = false;
 show_front_upper_arm_pin     = false;
 show_front_upper_pin_e_clip  = false;
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_bulkhead
+  ─────────────────────────────────────────────────────────────────────────────
+  Build the upper bulkhead in its centered-X/Y frame, with its base at Z=0.
+  Dimension defaults are defined in `scad/rc_params.scad`.
+  **Interface options:**
+  - `motor_shaft_axis_z`: Explicit local input-support height; `undef` uses the
+    support placement calculated from the upper suspension dimensions.
+  - `cut_mount_holes`, `cut_tower_holes`: Emit the shared mounting cutters.
+  - `quality_fn`: Explicit fragment count; `undef` uses each feature's resolution.
+  - `join_overlap`: Internal overlap between adjoining solids; zero preserves
+    their nominal construction boundaries.
+ */
 module front_bulkhead(color=cobalt_blue_light_1,
                       shock_tower_color=cobalt_blue_metallic,
                       show_upper_suspension_holder=show_upper_suspension_holder,
@@ -84,7 +98,13 @@ module front_bulkhead(color=cobalt_blue_light_1,
                       upper_bolt_boss_od=upper_steering_panel_boss_od,
                       upper_bolt_bore_h=upper_steering_panel_bulkhead_bore_h,
                       upper_bolt_bore_d=upper_steering_panel_bulkhead_bore_d,
-                      shoulder_h=bellcrank_post_flang_h) {
+                      shoulder_h=bellcrank_post_flang_h,
+                      motor_shaft_bearing_d,
+                      motor_shaft_axis_z=undef,
+                      cut_mount_holes=true,
+                      cut_tower_holes=true,
+                      quality_fn=undef,
+                      join_overlap=0) {
 
   l2 = bulkhead_l / 2;
 
@@ -136,7 +156,7 @@ module front_bulkhead(color=cobalt_blue_light_1,
                               bulkhead_l],
                              center=false,
                              side="left",
-                             fn=$preview ? 6 : 360,
+                             fn=is_undef(quality_fn) ? ($preview ? 6 : 360) : quality_fn,
                              r_factor=0.5);
               }
             }
@@ -150,7 +170,7 @@ module front_bulkhead(color=cobalt_blue_light_1,
           }
 
           // bosses for the upper steering panel
-          let (fn = $preview ? 30 : 360) {
+          let (fn = is_undef(quality_fn) ? ($preview ? 30 : 360) : quality_fn) {
             translate([0, -l2, bellcrank_z_end + rear_h]) {
               cylinder(d=upper_bolt_boss_od,
                        h=upper_panel_boss_h,
@@ -166,9 +186,9 @@ module front_bulkhead(color=cobalt_blue_light_1,
           }
 
           // front lower protrusion for the arm pad
-          translate([0, l2, 0]) {
+          translate([0, l2 - join_overlap, 0]) {
             cuboid(size=[bulkhead_w,
-                         arm_pad_holder_thickness + arm_pad_thickness,
+                         arm_pad_holder_thickness + arm_pad_thickness + join_overlap,
                          arm_pad_hook_h + arm_pad_holder_thickness],
                    anchor=[0, 1, 1]);
           }
@@ -187,7 +207,11 @@ module front_bulkhead(color=cobalt_blue_light_1,
                                  pin_d=pin_d,
                                  upper_holder_bore_y_offset=upper_holder_bore_y_offset,
                                  upper_holder_bolt_d=upper_holder_bolt_d,
-                                 extra_rear_len=extra_rear_len);
+                                 extra_rear_len=extra_rear_len,
+                                 motor_shaft_bearing_d=motor_shaft_bearing_d,
+                                 motor_shaft_axis_z=motor_shaft_axis_z,
+                                 quality_fn=quality_fn,
+                                 join_overlap=join_overlap);
         }
         // front lower cutout for the arm pad
         translate([0, -arm_pad_clearance / 2, -1]) {
@@ -201,7 +225,7 @@ module front_bulkhead(color=cobalt_blue_light_1,
         }
 
         // holes for the upper steering panel
-        let (fn = $preview ? 20 : 360) {
+        let (fn = is_undef(quality_fn) ? ($preview ? 20 : 360) : quality_fn) {
           translate([0, -l2, bellcrank_z_end]) {
             counterbore(d=upper_bolt_d,
                         h=upper_panel_hole_depth,
@@ -243,8 +267,10 @@ module front_bulkhead(color=cobalt_blue_light_1,
       }
 
       translate([0, -l2, 0]) {
-        front_bulkhead_mount_hinges();
-        front_bulkhead_mount_hinges(rear=true);
+        front_bulkhead_mount_hinges(cut_mount_holes=cut_mount_holes,
+                                     quality_fn=quality_fn);
+        front_bulkhead_mount_hinges(rear=true, cut_mount_holes=cut_mount_holes,
+                                     quality_fn=quality_fn);
       }
     }
 
@@ -261,7 +287,10 @@ module front_bulkhead(color=cobalt_blue_light_1,
                                          shock_tower_bolt_d=shock_tower_bolt_d,
                                          shock_tower_pad_y=shock_tower_pad_y,
                                          pad_y_top=shock_tower_mount_pad_y_top,
-                                         pad_x=shock_tower_mount_pad_x);
+                                         pad_x=shock_tower_mount_pad_x,
+                                         quality_fn=quality_fn,
+                                         cut_holes=cut_tower_holes,
+                                         join_overlap=join_overlap);
       }
     }
 
@@ -330,7 +359,10 @@ module front_bulkhead_shock_tower_mount(color=cobalt_blue_metallic,
                                         mount_offset=front_bulkhead_shock_tower_mount_offset,
                                         pad_y_top=front_bulkhead_shock_tower_mount_pad_y_top,
                                         shock_tower_pad_y=front_shock_tower_damper_holes_pad_y,
-                                        pad_x=front_bulkhead_shock_tower_mount_pad_x) {
+                                        pad_x=front_bulkhead_shock_tower_mount_pad_x,
+                                        quality_fn=undef,
+                                        cut_holes=true,
+                                        join_overlap=0) {
 
   shock_mount_size_x = shock_tower_mount_size_x(bolt_d=shock_tower_bolt_d,
                                                 pad_x=pad_x,
@@ -350,25 +382,27 @@ module front_bulkhead_shock_tower_mount(color=cobalt_blue_metallic,
                            center=false,
                            side="top",
                            r=tower_mount_corner_r,
-                           fn=$preview ? 40 : 300);
+                           fn=is_undef(quality_fn) ? ($preview ? 40 : 300) : quality_fn);
             }
             translate([0,
                        -mount_offset / 4
                        -shock_mount_size_y / 2,
                        0]) {
-              trapezoid(b=bulkhead_w,
+              trapezoid(b=bulkhead_w - 2 * join_overlap,
                         t=shock_mount_size_x,
                         h=mount_offset / 2,
                         center=true);
             }
           }
-          four_corner_holes_2d(size=shock_tower_bolt_spacing,
-                               d=shock_tower_bolt_d,
-                               center=true) {
-            teardrop_2d(d=shock_tower_bolt_d,
-                        ang=45,
-                        fn=$preview ? 40 : 300,
-                        both_sides=true);
+          if (cut_holes) {
+            four_corner_holes_2d(size=shock_tower_bolt_spacing,
+                                 d=shock_tower_bolt_d,
+                                 center=true) {
+              teardrop_2d(d=shock_tower_bolt_d,
+                          ang=45,
+                          fn=is_undef(quality_fn) ? ($preview ? 40 : 300) : quality_fn,
+                          both_sides=true);
+            }
           }
         }
       }
@@ -393,7 +427,9 @@ module front_bulkhead_mount_hinges(bolt_d=front_bulkhead_mount_bolt_d,
                                    h=front_bulkhead_hinge_thickness,
                                    rear=false,
                                    barrel_y_offset=front_bulkhead_barrel_y_offset,
-                                   hinge_clearance=front_bulkhead_barrel_hinge_clearance) {
+                                   hinge_clearance=front_bulkhead_barrel_hinge_clearance,
+                                   cut_mount_holes=true,
+                                   quality_fn=undef) {
   barrel_size = front_lower_arm_mount_cutout_size();
   barrel_len = barrel_size[1] - hinge_clearance;
 
@@ -410,7 +446,7 @@ module front_bulkhead_mount_hinges(bolt_d=front_bulkhead_mount_bolt_d,
       rounded_rect([x, y],
                    center=true,
                    r_factor=0.5,
-                   fn=$preview ? 30 : 200);
+                   fn=is_undef(quality_fn) ? ($preview ? 30 : 200) : quality_fn);
     }
   }
 
@@ -440,14 +476,17 @@ module front_bulkhead_mount_hinges(bolt_d=front_bulkhead_mount_bolt_d,
         }
       }
 
-      front_bulkhead_chassis_with_slots_positions(outer_spacing=outer_spacing,
-                                                  inner_spacing=inner_spacing,
-                                                  d=d,
-                                                  padding=padding,
-                                                  center_x=true,
-                                                  center_y=false) {
-        counterbore(d=d, h=h, sink=true);
+      if (cut_mount_holes) {
+        front_bulkhead_chassis_with_slots_positions(outer_spacing=outer_spacing,
+                                                    inner_spacing=inner_spacing,
+                                                    d=d,
+                                                    padding=padding,
+                                                    center_x=true,
+                                                    center_y=false) {
+          counterbore(d=d, h=h, sink=true);
+        }
       }
+
     }
   }
 }
@@ -467,7 +506,11 @@ module front_bulkhead_support(bulkhead_w=front_bulkhead_w,
                               pin_d=front_upper_arm_hinge_barrel_hole_d,
                               upper_holder_bore_y_offset=front_upper_suspension_holder_bolt_y_offset,
                               upper_holder_bolt_d=front_upper_suspension_holder_bolt_d,
-                              extra_rear_len=front_bulkhead_extra_len) {
+                              extra_rear_len=front_bulkhead_extra_len,
+                              motor_shaft_bearing_d=motor_shaft_bearing_d,
+                              motor_shaft_axis_z=undef,
+                              quality_fn=undef,
+                              join_overlap=0) {
   l2 = bulkhead_l / 2;
 
   upper_suspension_holder_z_pos =
@@ -481,10 +524,10 @@ module front_bulkhead_support(bulkhead_w=front_bulkhead_w,
   bellcrank_z_end = bellcrank_idler_arm_z_end();
 
   upper_holder_mount_thickness = upper_holder_barrel_h - upper_holder_thickness;
-  z = shock_tower_bolt_spacing[1]
-      + upper_holder_round_cutout_d / 2
-      - upper_holder_bore_d / 2
-      - upper_holder_round_cutout_y_offset;
+  z = is_undef(motor_shaft_axis_z)
+      ? shock_tower_bolt_spacing[1] + upper_holder_round_cutout_d / 2
+        - upper_holder_bore_d / 2 - upper_holder_round_cutout_y_offset
+      : motor_shaft_axis_z;
 
   rear_h = shock_tower_mount_offset + upper_holder_w - bellcrank_z_end;
   min_rear_h = (upper_suspension_holder_z_pos[2] - upper_suspension_holder_z_pos[0]) + 0.5;
@@ -502,23 +545,27 @@ module front_bulkhead_support(bulkhead_w=front_bulkhead_w,
 
   module _cyl() {
     rotate([90, 0, 0]) {
-      hull() {
-        difference() {
-          cylinder(d=upper_holder_round_cutout_d,
-                   h=length,
-                   $fn=$preview ? 30 : 360);
-          translate([0, -upper_holder_round_cutout_d, -0.5]) {
-            cuboid([upper_holder_round_cutout_d,
-                    upper_holder_round_cutout_d,
-                    length + 1],
+      if (motor_shaft_bearing_d) {
+        ring(od=upper_holder_round_cutout_d, h=length, d=motor_shaft_bearing_d);
+      } else {
+        hull() {
+          difference() {
+            cylinder(d=upper_holder_round_cutout_d,
+                     h=length,
+                     $fn=is_undef(quality_fn) ? ($preview ? 30 : 360) : quality_fn);
+            translate([0, -upper_holder_round_cutout_d, -0.5]) {
+              cuboid([upper_holder_round_cutout_d,
+                      upper_holder_round_cutout_d,
+                      length + 1],
+                     anchor=[0, 1, 1]);
+            }
+          }
+          translate([0, -upper_holder_round_cutout_d / 2, -0.5]) {
+            cuboid([poly_h,
+                    upper_holder_round_cutout_d / 2,
+                    poly_h],
                    anchor=[0, 1, 1]);
           }
-        }
-        translate([0, -upper_holder_round_cutout_d / 2, -0.5]) {
-          cuboid([poly_h,
-                  upper_holder_round_cutout_d / 2,
-                  poly_h],
-                 anchor=[0, 1, 1]);
         }
       }
     }
@@ -526,10 +573,10 @@ module front_bulkhead_support(bulkhead_w=front_bulkhead_w,
 
   union() {
     hull() {
-      translate([0, -l2, 0]) {
+      translate([0, -l2 + join_overlap, 0]) {
         translate([0, 0, shock_tower_mount_offset + upper_holder_w]) {
           cuboid(size=[bulkhead_w,
-                       rear_l,
+                       rear_l + join_overlap,
                        holder_h],
                  anchor=[0, -1, -1]);
         }
@@ -548,4 +595,4 @@ module front_bulkhead_support(bulkhead_w=front_bulkhead_w,
   }
 }
 
-front_bulkhead();
+front_bulkhead(motor_shaft_bearing_d=10);

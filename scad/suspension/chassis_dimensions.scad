@@ -26,9 +26,11 @@ use <rear_chassis/computed_params.scad>
   - `bumper_top_plate`: Include the rigid bumper plate in overall bounds.
   - `bumper_foam`: Include the TPU bumper in overall bounds.
   - `bumper_pl`: Bumper dimension overrides; see `front_bumper_params`.
+  - `rear_reference`: Native rear-deck tire center; `undef` uses preview settings.
   **Returns:** A plist of millimeter measurements and their vehicle datums.
-  **Behavior:** Rear axle locations use the rear-wheel preview settings. Ground
-  is the lower upright tire tangent; clearance is to the flat chassis underside.
+  **Behavior:** Rear axle locations use the supplied tire-center datum. Ground
+  follows the lower tire tangent, including front-wheel camber; clearance is
+  to the flat chassis underside.
   Overall bounds include the deck, upright tires and selected bumper parts.
   Chassis-only bounds include the head-frame extension. Elevated payloads,
   other accessories, exploded spacing and articulated poses are excluded.
@@ -37,10 +39,13 @@ function chassis_dimensions(layout=rear_chassis_layout(
                               min_width=suspension_chassis_width()),
                             bumper_top_plate=false,
                             bumper_foam=false,
-                            bumper_pl=front_bumper_plist) =
+                            bumper_pl=front_bumper_plist,
+                            rear_reference=undef) =
   let (front = rc_front_wheel_reference_center()
                + [0, 0, suspension_chassis_mount_h],
-       rear = rc_rear_wheel_reference_center(layout),
+       rear = is_undef(rear_reference)
+         ? rc_rear_wheel_reference_center(layout)
+         : rear_reference,
        rear_y = front_chassis_y_joint_2_end + plist_get("min_y", layout) - rear[1],
        wheel = rc_touring_wheel_spec(rc_wheel_plist),
        radius = plist_get("tire_d", wheel) / 2,
@@ -50,7 +55,9 @@ function chassis_dimensions(layout=rear_chassis_layout(
        chassis_rear = front_chassis_y_joint_2_end
                       + plist_get("min_y", layout) - plist_get("max_y", layout),
        chassis_w = max(bounds[1][0] * 2, plist_get("size", layout)[0]),
-       ground = min(front[2], rear[2]) - radius,
+       front_ground = rc_front_wheel_ground_z() + suspension_chassis_mount_h,
+       rear_ground = rear[2] - radius,
+       ground = min(front_ground, rear_ground),
        bumper_parts = concat(bumper_top_plate ? ["plate"] : [],
                              bumper_foam ? ["foam"] : []),
        bumper_fronts = [for (part = bumper_parts)
@@ -67,6 +74,8 @@ function chassis_dimensions(layout=rear_chassis_layout(
    "rear_track", 2 * rear[0],
    "ground_clearance", -ground,
    "ground_z", ground,
+   "rear_front_axle_height_delta", rear[2] - front[2],
+   "rear_front_ground_height_delta", rear_ground - front_ground,
    "chassis_width", chassis_w,
    "chassis_length", chassis_front - chassis_rear,
    "overall_length", front_y - back_y,
@@ -103,7 +112,7 @@ module _chassis_dimension_line(length, label, text_size) {
   ─────────────────────────────────────────────────────────────────────────────
   Show preview-only dimensions around the assembled reference envelope.
   **Parameters:**
-  - `wheelbase`: Axle-to-axle distance using the estimated rear axle.
+  - `wheelbase`: Axle-to-axle distance in the reference pose.
   - `track`: Front and rear tire-center spacing.
   - `clearance`: Nominal upright-tire ground plane to chassis underside.
   - `length`: Overall deck/tire/selected-bumper length and chassis-only length.
@@ -113,6 +122,7 @@ module _chassis_dimension_line(length, label, text_size) {
   - `bumper_top_plate`: Include the rigid bumper plate in overall bounds.
   - `bumper_foam`: Include the TPU bumper in overall bounds.
   - `bumper_pl`: Bumper dimension overrides; see `front_bumper_params`.
+  - `rear_reference`: Native rear-deck tire center; `undef` uses preview settings.
   **Behavior:** Top-view labels lie above the chassis; clearance is read from
   the right side. Annotations never enter STL or 3MF geometry exports.
  */
@@ -125,10 +135,12 @@ module chassis_dimension_annotations(wheelbase=false,
                                      color=green_4,
                                      bumper_top_plate=false,
                                      bumper_foam=false,
-                                     bumper_pl=front_bumper_plist) {
+                                     bumper_pl=front_bumper_plist,
+                                     rear_reference=undef) {
   d = chassis_dimensions(bumper_top_plate=bumper_top_plate,
                          bumper_foam=bumper_foam,
-                         bumper_pl=bumper_pl);
+                         bumper_pl=bumper_pl,
+                         rear_reference=rear_reference);
   envelope = bumper_top_plate || bumper_foam
     ? "deck/tires/bumper"
     : "deck/tires";
@@ -142,7 +154,7 @@ module chassis_dimension_annotations(wheelbase=false,
         translate([half_w + 15, plist_get("rear_axle_y", d), z]) {
           rotate([0, 0, 90]) {
             _chassis_dimension_line(plist_get("wheelbase", d),
-                                    "Wheelbase (rear preview)",
+                                    "Wheelbase (reference)",
                                     text_size);
           }
         }

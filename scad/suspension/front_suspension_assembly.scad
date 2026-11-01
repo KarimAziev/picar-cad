@@ -75,12 +75,12 @@ module front_suspension_assembly(show_front_lower_arm=show_front_lower_arm,
   assert(!solve_linkage || (knuckle_angles == [0, 0, 0] && knuckle_z_shift == 0),
          "Solved linkage owns the knuckle pose; reset legacy angles and Z shift");
   poses = solve_linkage
-    ? [for (side = [-1, 1])
-      front_linkage_pose(lower_angle=lower_arm_angle,
-                         bellcrank_angle=bellcrank_angle,
-                         side=side,
-                         hole=steering_hole)]
-    : [undef, undef];
+          ? [for (side = [-1, 1])
+            front_linkage_pose(lower_angle=lower_arm_angle,
+                               bellcrank_angle=bellcrank_angle,
+                               side=side,
+                               hole=steering_hole)]
+          : [undef, undef];
   barrel_size = front_lower_arm_mount_cutout_size();
   barrel_y_start = front_bulkhead_len - front_bulkhead_barrel_y_offset
                    - barrel_size[1];
