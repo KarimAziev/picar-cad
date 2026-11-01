@@ -1,4 +1,5 @@
 include <colors.scad>
+include <placeholders/hsp_shock_params.scad>
 include <parameters.scad>
 
 
@@ -1712,3 +1713,23 @@ rc_wheel_hex_h                                     = 5;
 rc_rear_wheel_preview_track                        = undef;
 rc_rear_wheel_preview_axis_z                       = undef;
 rc_rear_wheel_preview_y_offset                     = 0;
+
+// Front shocks: page 13 of the HSP on-road assembly diagram selects upper #3.
+// The lower attachment is the single bore in the modeled lower-arm boss.
+front_shock_spec = hsp_onroad_shock_spec;
+front_shock_settings = ["upper_position", 3,
+                        "mount_gap", 0.5,
+                        "require_travel", false,
+                        "show_spring", true,
+                        "show_fasteners", true,
+                        "bolt_d", 3,
+                        "head_d", 5.5,
+                        "head_h", 3,
+                        "spacer_d", 6,
+                        "lower_engagement", 6,
+                        "nut_af", 5.5,
+                        "nut_h", 2.4,
+                        "thread_projection", 1,
+                        "csg_epsilon", 0.02,
+                        "fn", 48,
+                        "hardware_color", "silver"];

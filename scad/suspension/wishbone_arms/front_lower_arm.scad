@@ -66,8 +66,6 @@ module front_lower_arm(color=cobalt_blue_dark_1,
   hinge_cutout_len = hinge_cutout_size[0];
   hinge_cutout_h = hinge_cutout_size[1];
 
-  boss_rad = front_lower_arm_damper_boss_d / 2;
-
   cutout_depth = front_lower_arm_damper_boss_h + front_lower_arm_upper_boss_y_offset;
 
   hole_start_x = hinge_cutout_len + front_lower_arm_leg_width;
@@ -189,13 +187,7 @@ module front_lower_arm(color=cobalt_blue_dark_1,
                 }
               }
             }
-            translate([front_lower_arm_len
-                       - boss_rad
-                       - front_lower_arm_upper_boss_x_offset,
-                       front_lower_arm_h
-                       - cutout_depth
-                       + front_lower_arm_damper_boss_h,
-                       front_lower_arm_thickness / 2]) {
+            translate(front_lower_arm_shock_mount()) {
               rotate([90, 0, 0]) {
                 damper_boss();
               }
@@ -222,9 +214,7 @@ module front_lower_arm(color=cobalt_blue_dark_1,
         }
 
         // The hole on the damper boss
-        translate([front_lower_arm_len - boss_rad - front_lower_arm_upper_boss_x_offset,
-                   front_lower_arm_h - cutout_depth + front_lower_arm_damper_boss_h,
-                   front_lower_arm_thickness / 2]) {
+        translate(front_lower_arm_shock_mount()) {
 
           rotate([90, 0, 0]) {
             cylinder(d=front_lower_arm_damper_boss_hole_d,

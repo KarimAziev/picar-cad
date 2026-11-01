@@ -18,8 +18,8 @@ use <spring.scad>
   ─────────────────────────────────────────────────────────────────────────────
   Return the shock envelope `[width, length, height]` along positive Z.
   **Parameters:**
-  - `pl`: Shock dimensions and travel settings: `rear_shock_spec` from
-    `scad/suspension/rear_axle/hardware_params.scad`.
+  - `pl`: Shock dimensions and travel settings: `hsp_onroad_shock_spec` from
+    `scad/placeholders/hsp_shock_params.scad`.
   - `eye_distance`: Required distance between the mounting-eye centers.
  */
 function hsp_shock_size(pl, eye_distance) =
@@ -34,8 +34,8 @@ function hsp_shock_size(pl, eye_distance) =
   ─────────────────────────────────────────────────────────────────────────────
   Return the two shock eye centers in unanchored coordinates.
   **Parameters:**
-  - `pl`: Shock dimensions and travel settings: `rear_shock_spec` from
-    `scad/suspension/rear_axle/hardware_params.scad`.
+  - `pl`: Shock dimensions and travel settings: `hsp_onroad_shock_spec` from
+    `scad/placeholders/hsp_shock_params.scad`.
   - `eye_distance`: Required distance between mounting-eye centers.
   **Returns:** Two vec3 positions ordered along positive Z.
  */
@@ -51,12 +51,15 @@ function hsp_shock_eye_positions(pl, eye_distance) =
   ─────────────────────────────────────────────────────────────────────────────
   Model a shock at an explicit eye-center distance, with transverse Y eye bores.
   **Parameters:**
-  - `pl`: Shock dimensions and travel settings: `rear_shock_spec` from
-    `scad/suspension/rear_axle/hardware_params.scad`.
-  - `eye_distance`: Required eye-center distance within the configured travel.
+  - `pl`: Shock dimensions and travel settings: `hsp_onroad_shock_spec` from
+    `scad/placeholders/hsp_shock_params.scad`.
+  - `eye_distance`: Required eye-center distance; `require_travel` controls
+    stroke validation.
   - `anchor`: Reference-box anchor, using the complete outside envelope.
   - `slot_mode`: Emit eye bores along Y at the same mounting centers.
   - `show_spring`: Display the helical spring; seats and piston remain visible.
+  - `require_travel`: Reject eye distances outside the configured stroke. When
+    false, render the requested distance and echo any travel mismatch.
   **Behavior:** The bottom eye's piston rod extends toward the top-eye cylinder.
   Slot-mode bore depth equals the configured eye width; consumers may extend
   the cutter along Y when cutting wider mounting tabs.
@@ -64,19 +67,21 @@ function hsp_shock_eye_positions(pl, eye_distance) =
   **Examples:**
   Save this example at the repository root.
   ```scad
-  include <scad/suspension/rear_axle/hardware_params.scad>
+  include <scad/placeholders/hsp_shock_params.scad>
   use <scad/lib/plist.scad>
   use <scad/placeholders/hsp_shock_absorber.scad>
-  hsp_shock_absorber(pl=rear_shock_spec,
-                     eye_distance=plist_get("eye_distance", rear_shock_spec),
-                     anchor=[1, 1, 1], slot_mode=false, show_spring=true);
+  hsp_shock_absorber(pl=hsp_onroad_shock_spec,
+                     eye_distance=plist_get("eye_distance", hsp_onroad_shock_spec),
+                     anchor=[1, 1, 1], slot_mode=false, show_spring=true,
+                     require_travel=true);
   ```
  */
 module hsp_shock_absorber(pl,
                           eye_distance,
                           anchor=[1, 1, 1],
                           slot_mode=false,
-                          show_spring=true) {
+                          show_spring=true,
+                          require_travel=true) {
   size = hsp_shock_size(pl, eye_distance);
   eye_d = _hsp_value(pl, "eye_d");
   eye_w = _hsp_value(pl, "eye_w");
@@ -94,9 +99,15 @@ module hsp_shock_absorber(pl,
   spring_start = neck_l + seat_h + wire / 2;
   spring_end = upper_seat_z - seat_h - wire / 2;
   spring_l = spring_end - spring_start;
-  assert(eye_distance >= _hsp_value(pl, "eye_distance_min")
-         && eye_distance <= _hsp_value(pl, "eye_distance_max"),
+  travel_ok = eye_distance >= _hsp_value(pl, "eye_distance_min")
+                && eye_distance <= _hsp_value(pl, "eye_distance_max");
+  assert(!require_travel || travel_ok,
          "Shock eye distance exceeds the configured stroke");
+  if (!travel_ok) {
+    echo(str("Shock fit: required eye distance ", eye_distance,
+             " mm; configured travel ", _hsp_value(pl, "eye_distance_min"),
+             " to ", _hsp_value(pl, "eye_distance_max"), " mm"));
+  }
   assert(eye_d > eye_bore_d && eye_bore_d > 0 && eye_w > 0);
   assert(body_d > shaft_d && shaft_d > 0 && body_l > 0);
   assert(upper_seat_z - body_l >= neck_l);
@@ -184,14 +195,20 @@ module hsp_shock_absorber(pl,
   **Parameters:**
   - `start`: Piston-side eye center `[x, y, z]`.
   - `end`: Cylinder-side eye center `[x, y, z]`.
-  - `pl`: Shock dimensions and travel settings: `rear_shock_spec` from
-    `scad/suspension/rear_axle/hardware_params.scad`.
+  - `pl`: Shock dimensions and travel settings: `hsp_onroad_shock_spec` from
+    `scad/placeholders/hsp_shock_params.scad`.
   - `show_spring`: Display the helical spring.
-  **Behavior:** The center distance follows the supplied endpoints and must
-  remain inside the configured travel. For endpoints in the XZ plane, the
+  - `require_travel`: Reject travel mismatches; false renders the mounting
+    distance with an echoed fit diagnostic.
+  **Behavior:** The center distance follows the supplied endpoints. Travel is
+  checked when `require_travel=true`. For endpoints in the XZ plane, the
   mounting-eye axes remain parallel to Y.
  */
-module hsp_shock_between(start, end, pl, show_spring=true) {
+module hsp_shock_between(start,
+                         end,
+                         pl,
+                         show_spring=true,
+                         require_travel=true) {
   direction = end - start;
   eye_distance = norm(direction);
   assert(eye_distance > 0, "Shock endpoints must differ");
@@ -204,7 +221,8 @@ module hsp_shock_between(start, end, pl, show_spring=true) {
                           eye_distance=eye_distance,
                           anchor=[1, 1, 1],
                           slot_mode=false,
-                          show_spring=show_spring);
+                          show_spring=show_spring,
+                          require_travel=require_travel);
       }
     }
   }

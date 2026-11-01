@@ -99,6 +99,7 @@ show_upper_arm_ball_stud                    = true;
 show_front_upper_arm_pin                    = true;
 
 show_front_shock_tower                      = true;
+show_front_shocks                           = true;
 show_front_suspension_arm_pad               = true;
 
 show_left_knuckle                           = true;
@@ -178,6 +179,7 @@ module rc_robot_assembly(show_bellcrank_drive=show_bellcrank_drive,
                          show_upper_arm_ball_stud=show_upper_arm_ball_stud,
                          show_front_upper_arm_pin=show_front_upper_arm_pin,
                          show_front_shock_tower=show_front_shock_tower,
+                         show_front_shocks=show_front_shocks,
                          show_front_suspension_arm_pad=show_front_suspension_arm_pad,
                          show_left_knuckle=show_left_knuckle,
                          show_right_knuckle=show_right_knuckle,
@@ -284,6 +286,7 @@ module rc_robot_assembly(show_bellcrank_drive=show_bellcrank_drive,
              show_upper_arm_ball_stud=show_upper_arm_ball_stud,
              show_front_upper_arm_pin=show_front_upper_arm_pin,
              show_front_shock_tower=show_front_shock_tower,
+             show_front_shocks=show_front_shocks,
              show_front_suspension_arm_pad=show_front_suspension_arm_pad,
              show_left_knuckle=show_left_knuckle,
              show_right_knuckle=show_right_knuckle,

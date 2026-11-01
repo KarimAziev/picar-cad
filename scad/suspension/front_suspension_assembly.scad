@@ -9,6 +9,9 @@
   * see steering_characterization/README.md for mounting assumptions and limits.
   * show_wheels attaches touring-wheel placeholders to each visible knuckle;
   * show_tires controls the rubber while retaining the same mounting frame.
+  * show_front_shocks displays shocks at the tower and lower-arm bore centers.
+  * shock_settings and shock are complete plists: front_shock_settings and
+  * front_shock_spec in scad/rc_params.scad. The shocks follow the solved arms.
   *
   * Author: Karim Aziiev <karim.aziiev@gmail.com>
   * License: GPL-3.0-or-later
@@ -18,6 +21,7 @@ include <../rc_params.scad>
 use <bulkhead/front_bulkhead.scad>
 use <bulkhead/front_bulkhead_housing.scad>
 use <front_linkage.scad>
+use <front_shocks.scad>
 use <knuckle/knuckle.scad>
 use <rc_wheels.scad>
 use <wishbone_arms/util.scad>
@@ -36,6 +40,7 @@ show_upper_arm_ball_stud                    = true;
 show_front_upper_arm_pin                    = true;
 
 show_front_shock_tower                      = true;
+show_front_shocks                           = true;
 show_front_suspension_arm_pad               = true;
 
 show_left_knuckle                           = true;
@@ -71,7 +76,10 @@ module front_suspension_assembly(show_front_lower_arm=show_front_lower_arm,
                                  bellcrank_angle=0,
                                  steering_hole=0,
                                  show_wheels=false,
-                                 show_tires=true) {
+                                 show_tires=true,
+                                 show_front_shocks=show_front_shocks,
+                                 shock_settings=front_shock_settings,
+                                 shock=front_shock_spec) {
   assert(!solve_linkage || (knuckle_angles == [0, 0, 0] && knuckle_z_shift == 0),
          "Solved linkage owns the knuckle pose; reset legacy angles and Z shift");
   poses = solve_linkage
@@ -112,6 +120,10 @@ module front_suspension_assembly(show_front_lower_arm=show_front_lower_arm,
     }
 
     for (i = [0:1]) {
+      if (show_front_shocks) {
+        front_suspension_shock(settings=shock_settings, shock=shock,
+                               side=i == 0 ? -1 : 1, pose=poses[i]);
+      }
       if (solve_linkage) {
         if (show_front_lower_arm && show_front_bulkhead_housing) {
           front_linkage_arm(poses[i], show_ball=show_front_lower_arm_ball_stud);

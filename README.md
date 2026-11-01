@@ -134,6 +134,22 @@ and follow its hub and shaft datums. `show_rear_wheels_preview` and
 rim, tire grooves, and hub section; it is not a printable wheel or a verified
 fit for a specific purchased wheel.
 
+Front shock placeholders are controlled by `show_front_shocks` in
+`rc_robot_assembly.scad` and `rc_chassis.scad`. Their configuration is
+`front_shock_settings` and `front_shock_spec` in [rc_params.scad](scad/rc_params.scad).
+Upper mounting positions use the HSP manual's page 13 numbering: 1 is outer/high,
+3 is inner/low, and the preset selects 3. The lower eye attaches to the modeled
+arm's single shock bore. Both eyes follow their mounting points during linkage
+solving. Spacer and bolt placeholders expose the mounting stack.
+
+The neutral front mounts require about 56.95 mm between eye centers. The shared
+[shock packaging preset](scad/placeholders/hsp_shock_params.scad) specifies an
+estimated 42–55 mm travel range; it is not a measured 02175 travel specification.
+With `require_travel=false`, the front placeholder renders the required mounting
+distance and echoes the mismatch. Set `require_travel=true` to reject a pose
+outside the configured range. Actual extended and compressed eye distances are
+needed to establish hardware fit.
+
 The [rear suspension prototype](scad/suspension/rear_axle/README.md) is enabled by
 `show_rear_suspension` in both vehicle entry points. Its complete
 `rear_suspension_settings` plist controls component visibility and fit inspection.

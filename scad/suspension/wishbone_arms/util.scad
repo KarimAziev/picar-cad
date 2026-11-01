@@ -52,3 +52,17 @@ function front_bulkhead_base_size(outer_spacing=front_bulkhead_mount_bolt_spacin
   let (size_x=outer_spacing[0] + d + padding_x,
        size_y=outer_spacing[1] + d + padding_y)
   [size_x, size_y];
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_lower_arm_shock_mount
+  ─────────────────────────────────────────────────────────────────────────────
+  Return the forward face center of the lower-arm shock bore.
+  **Returns:** XYZ point in the unrotated arm's local coordinates. The bore
+  extends along -Y into the boss; the shock mounts on its +Y face.
+ */
+function front_lower_arm_shock_mount() =
+  [front_lower_arm_len - front_lower_arm_damper_boss_d / 2
+     - front_lower_arm_upper_boss_x_offset,
+   front_lower_arm_h - front_lower_arm_upper_boss_y_offset,
+   front_lower_arm_thickness / 2];
