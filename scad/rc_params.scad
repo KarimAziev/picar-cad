@@ -1,6 +1,6 @@
 include <colors.scad>
-include <placeholders/hsp_shock_params.scad>
 include <parameters.scad>
+include <placeholders/hsp_shock_params.scad>
 
 
 /* [Chassis splits] */
@@ -860,6 +860,11 @@ front_upper_suspension_holder_pin_barrel_h         = 6.6;
 
 front_upper_suspension_holder_grab_screw_d         = 3.1;
 
+// Steering-plate lugs: radial wall, through-hole diameter, and X center spacing.
+front_upper_suspension_holder_steering_mount_pad   = 2.25;
+front_upper_suspension_holder_steering_bolt_d      = m3_hole_dia;
+front_upper_suspension_holder_steering_bolt_spacing = 48;
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Knuckle
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1306,6 +1311,7 @@ upper_steering_panel_boss_od                       = 6;
 upper_steering_panel_bulkhead_bore_d               = 4.6;
 upper_steering_panel_bulkhead_bore_h               = 1;
 upper_steering_panel_bulkhead_spacing              = 21;
+upper_steering_panel_bulkhead_edge_distance              = 1.86;
 
 // Sculpted bridge: stationary contact feet and clearance above rotating parts.
 upper_steering_plate_thickness                     = 3;
@@ -1569,7 +1575,7 @@ multi_lipo_packs_case                              = ["lipo_packs", lipo_packs,
                                                       "wiring", ["enabled", multi_lipo_lid_equipment_preset == "dual_wago",
                                                                  "d", 3.8,
                                                                  "cut_allowance", 20],
-                                                      "color", cobalt_blue_metallic,
+                                                      "color", "white",
                                                       "corner_r", 3,
                                                       "inner_corner_r", 0, // clearance for the pack's square end
                                                       "orientation", "wlh",
@@ -1600,7 +1606,7 @@ multi_lipo_packs_case                              = ["lipo_packs", lipo_packs,
                                                                           "standoff_h", 0],
                                                               "side_t", 2,
                                                               "headroom", "auto",
-                                                              "color", cobalt_blue_metallic,
+                                                              "color", "white",
                                                               "lidar", rplidar_c1_plist,
                                                               "lidar_target_h", 17,
                                                               "vents", ["vent_w", "12%",

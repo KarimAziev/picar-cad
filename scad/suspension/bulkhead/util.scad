@@ -73,6 +73,52 @@ function front_bulkhead_bbox_size(bulkhead_w=front_bulkhead_w,
        z = shock_tower_mount_offset + shock_tower_y + pad_y_top)
   [x, y, z];
 
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_bulkhead_upper_holder_position
+  ─────────────────────────────────────────────────────────────────────────────
+  Return the upper holder origin in the bulkhead frame.
+  **Parameters:**
+  - `bulkhead_l`: Bulkhead length along Y.
+  - `barrel_h`: Holder pin-barrel length.
+  - `extra_rear_len`: Bulkhead rear extension.
+  - `mount_offset`: Shock-tower mounting height.
+  - `pin_y_offset`: Upper hinge-pin offset in the tower plane.
+  - `pin_d`: Upper hinge-pin hole diameter.
+  **Returns:** [x, y, z] translation; apply rotate([90, 0, 180]) afterward.
+ */
+function front_bulkhead_upper_holder_position(
+  bulkhead_l=front_bulkhead_len,
+  barrel_h=front_upper_suspension_holder_pin_barrel_h,
+  extra_rear_len=front_bulkhead_extra_len,
+  mount_offset=front_bulkhead_shock_tower_mount_offset,
+  pin_y_offset=front_shock_tower_pin_y_offset,
+  pin_d=front_upper_arm_hinge_barrel_hole_d) =
+  [0, -bulkhead_l / 2 - barrel_h - extra_rear_len,
+   mount_offset + pin_y_offset + pin_d / 2];
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  front_bulkhead_upper_steering_mount_y
+  ─────────────────────────────────────────────────────────────────────────────
+  Return the steering-plate hole center along Y in the bulkhead frame.
+  **Parameters:**
+  - `bulkhead_l`: Bulkhead length.
+  - `extra_rear_len`: Bulkhead rear extension.
+  - `holder_mount_thickness`: Upper-holder mounting shelf thickness.
+  - `bolt_d`: Steering mounting hole diameter.
+  - `edge_distance`: Gap from the shelf's rear edge to the hole edge.
+ */
+function front_bulkhead_upper_steering_mount_y(
+  bulkhead_l=front_bulkhead_len,
+  extra_rear_len=front_bulkhead_extra_len,
+  holder_mount_thickness=front_upper_suspension_holder_pin_barrel_h
+                         - front_upper_suspension_holder_thickness,
+  bolt_d=upper_steering_panel_bolt_d,
+  edge_distance=upper_steering_panel_bulkhead_edge_distance) =
+  -bulkhead_l / 2 - extra_rear_len - holder_mount_thickness
+  + bolt_d / 2 + edge_distance;
+
 function front_bulkhead_upper_suspension_holder_z_pos(tower_pin_hole_y_offset=front_shock_tower_pin_y_offset,
                                                       shock_tower_mount_offset=front_bulkhead_shock_tower_mount_offset,
                                                       upper_holder_bore_y_offset=front_upper_suspension_holder_bolt_y_offset,

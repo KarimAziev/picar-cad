@@ -117,6 +117,7 @@ module rear_lower_arm(pl,
   outer_gap = _rear_arm_value(pl, "outer_gap");
   shoulder_span = _rear_arm_value(pl, "shoulder_span");
   shoulder_x = _rear_arm_value(pl, "shoulder_x");
+
   root_depth = _rear_arm_value(pl, "inner_fork_depth");
   tip_depth = _rear_arm_value(pl, "outer_fork_depth");
   rib = _rear_arm_value(pl, "rib_w");

@@ -4,6 +4,7 @@
   * Author: Karim Aziiev <karim.aziiev@gmail.com>
   * License: GPL-3.0-or-later
   */
+include <../../colors.scad>
 include <../../rc_params.scad>
 
 use <../../head/head_neck.scad>
@@ -80,13 +81,14 @@ module front_bumper_assembly(pl=front_bumper_plist,
                              foam_z_offset=foam_z_offset,
                              foam_alpha=foam_alpha,
                              top_plate_z_offset=top_plate_z_offset,
-                             reverse_bolts=front_bumper_reverse_bolts) {
+                             reverse_bolts=front_bumper_reverse_bolts,
+                             color=white_smoke_1) {
   size = front_bumper_size(pl);
   plate_size = front_bumper_size(pl, "plate");
   with_anchor(size=size, anchor=anchor) {
     if (show_foam) {
       translate([0, 0, foam_z_offset]) {
-        color([0.18, 0.20, 0.23], alpha=foam_alpha) {
+        color(color, alpha=foam_alpha) {
           front_bumper_foam(pl);
         }
       }
@@ -96,7 +98,7 @@ module front_bumper_assembly(pl=front_bumper_plist,
         front_bumper_top_plate(pl,
                                show_bolts=show_bolts,
                                reverse_bolts=reverse_bolts,
-                               color=[0.14, 0.52, 0.72]);
+                               color=color);
       }
     }
   }

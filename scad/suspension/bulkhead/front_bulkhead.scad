@@ -96,6 +96,7 @@ module front_bulkhead(color=cobalt_blue_light_1,
                       upper_bolt_d=upper_steering_panel_bolt_d,
                       upper_bolt_spacing=upper_steering_panel_bulkhead_spacing,
                       upper_bolt_boss_od=upper_steering_panel_boss_od,
+                      upper_panel_bulkhead_edge_distance=upper_steering_panel_bulkhead_edge_distance,
                       upper_bolt_bore_h=upper_steering_panel_bulkhead_bore_h,
                       upper_bolt_bore_d=upper_steering_panel_bulkhead_bore_d,
                       shoulder_h=bellcrank_post_flang_h,
@@ -116,7 +117,13 @@ module front_bulkhead(color=cobalt_blue_light_1,
 
   arm_pin_d = snap_bolt_d(pin_d);
 
-  upper_suspension_holder_y = -l2 - upper_holder_barrel_h - extra_rear_len;
+  upper_holder_position = front_bulkhead_upper_holder_position(bulkhead_l=bulkhead_l,
+                                                               barrel_h=upper_holder_barrel_h,
+                                                               extra_rear_len=extra_rear_len,
+                                                               mount_offset=shock_tower_mount_offset,
+                                                               pin_y_offset=tower_pin_hole_y_offset,
+                                                               pin_d=pin_d);
+  upper_suspension_holder_y = upper_holder_position[1];
 
   bellcrank_z_end = bellcrank_idler_arm_z_end();
 
@@ -144,23 +151,46 @@ module front_bulkhead(color=cobalt_blue_light_1,
                                                  upper_holder_bolt_d=upper_holder_bolt_d);
   upper_suspension_holes_z = upper_suspension_holder_z_pos[1];
 
+  upper_steering_plate_bolt_pos_y = front_bulkhead_upper_steering_mount_y(
+    bulkhead_l=bulkhead_l,
+    extra_rear_len=extra_rear_len,
+    holder_mount_thickness=upper_holder_mount_thickness,
+    bolt_d=upper_bolt_d,
+    edge_distance=upper_panel_bulkhead_edge_distance);
+
+  module _upper_steering_plate_bolts(boss_mode=false) {
+    let (fn = is_undef(quality_fn) ? ($preview ? 20 : 360) : quality_fn) {
+      mirror_copy([1, 0, 0]) {
+        translate([upper_bolt_spacing / 2,
+                   upper_steering_plate_bolt_pos_y,
+                   bellcrank_z_end]) {
+          if (boss_mode) {
+            translate([0, 0, rear_h]) {
+              cylinder(d=upper_bolt_boss_od,
+                       h=upper_panel_boss_h,
+                       $fn=fn);
+            }
+          } else {
+            counterbore(d=upper_bolt_d,
+                        h=upper_panel_hole_depth,
+                        bore_h=upper_bolt_bore_h,
+                        bore_d=upper_bolt_bore_d,
+                        fn=fn);
+          }
+        }
+      }
+    }
+  }
+
   union() {
     maybe_color(color) {
       difference() {
         union() {
-          translate([-bulkhead_w / 2, -l2, bulkhead_h]) {
-            rotate([0, 90, 0]) {
-              linear_extrude(height=bulkhead_w,
-                             center=false) {
-                rounded_rect([bulkhead_h,
-                              bulkhead_l],
-                             center=false,
-                             side="left",
-                             fn=is_undef(quality_fn) ? ($preview ? 6 : 360) : quality_fn,
-                             r_factor=0.5);
-              }
-            }
-          }
+          cuboid(size=[bulkhead_w, bulkhead_l, bulkhead_h],
+                 fn=is_undef(quality_fn) ? ($preview ? 6 : 360) : quality_fn,
+                 r_factor=0.5,
+                 side="top",
+                 axis="x");
           // fill gap between rear support and the main part
           translate([0, -l2, 0]) {
             cuboid(size=[bulkhead_w,
@@ -170,20 +200,7 @@ module front_bulkhead(color=cobalt_blue_light_1,
           }
 
           // bosses for the upper steering panel
-          let (fn = is_undef(quality_fn) ? ($preview ? 30 : 360) : quality_fn) {
-            translate([0, -l2, bellcrank_z_end + rear_h]) {
-              cylinder(d=upper_bolt_boss_od,
-                       h=upper_panel_boss_h,
-                       $fn=fn);
-              mirror_copy([1, 0, 0]) {
-                translate([upper_bolt_spacing / 2, 0, 0]) {
-                  cylinder(d=upper_bolt_boss_od,
-                           h=upper_panel_boss_h,
-                           $fn=fn);
-                }
-              }
-            }
-          }
+          _upper_steering_plate_bolts(boss_mode=true);
 
           // front lower protrusion for the arm pad
           translate([0, l2 - join_overlap, 0]) {
@@ -225,24 +242,7 @@ module front_bulkhead(color=cobalt_blue_light_1,
         }
 
         // holes for the upper steering panel
-        let (fn = is_undef(quality_fn) ? ($preview ? 20 : 360) : quality_fn) {
-          translate([0, -l2, bellcrank_z_end]) {
-            counterbore(d=upper_bolt_d,
-                        h=upper_panel_hole_depth,
-                        bore_h=upper_bolt_bore_h,
-                        bore_d=upper_bolt_bore_d,
-                        fn=fn);
-            mirror_copy([1, 0, 0]) {
-              translate([upper_bolt_spacing / 2, 0, 0]) {
-                counterbore(d=upper_bolt_d,
-                            h=upper_panel_hole_depth,
-                            bore_h=upper_bolt_bore_h,
-                            bore_d=upper_bolt_bore_d,
-                            fn=fn);
-              }
-            }
-          }
-        }
+        _upper_steering_plate_bolts(boss_mode=false);
 
         // rear holes for the upper suspension holder
         translate([0, -l2 + upper_holder_hole_depth, 0]) {
@@ -268,9 +268,10 @@ module front_bulkhead(color=cobalt_blue_light_1,
 
       translate([0, -l2, 0]) {
         front_bulkhead_mount_hinges(cut_mount_holes=cut_mount_holes,
-                                     quality_fn=quality_fn);
-        front_bulkhead_mount_hinges(rear=true, cut_mount_holes=cut_mount_holes,
-                                     quality_fn=quality_fn);
+                                    quality_fn=quality_fn);
+        front_bulkhead_mount_hinges(rear=true,
+                                    cut_mount_holes=cut_mount_holes,
+                                    quality_fn=quality_fn);
       }
     }
 
@@ -305,9 +306,7 @@ module front_bulkhead(color=cobalt_blue_light_1,
     }
 
     if (show_upper_suspension_holder) {
-      translate([0,
-                 upper_suspension_holder_y,
-                 shock_tower_mount_offset + common_pin_y]) {
+      translate(upper_holder_position) {
         rotate([90, 0, 180]) {
           front_upper_suspension_holder();
         }
@@ -486,7 +485,6 @@ module front_bulkhead_mount_hinges(bolt_d=front_bulkhead_mount_bolt_d,
           counterbore(d=d, h=h, sink=true);
         }
       }
-
     }
   }
 }
@@ -595,4 +593,4 @@ module front_bulkhead_support(bulkhead_w=front_bulkhead_w,
   }
 }
 
-front_bulkhead(motor_shaft_bearing_d=10);
+front_bulkhead();
