@@ -173,8 +173,8 @@ module loft_polyhedron(pts1, pts2, h, steps=1) {
     X=0 always retains the drive-shaft center, not the asymmetric box center.
     On X/Y, -1 selects the minimum and 1 the maximum reference coordinate.
     The mounting plane remains Z=0.
-  - `anchor_mode`: `"holes_center"` selects hole-center extents; `"size"` selects
-    bracket footprint extents for nonzero X/Y anchor components.
+  - `anchor_mode`: `"holes_center"` selects chassis hole-center extents;
+    `"size"` selects bracket footprint extents for nonzero X/Y anchor components.
   - `debug_circle_color`: Vertex-label marker color.
   - `show_min_parent_surface_width`: Display the symmetric parent reference.
   - `slot_mode`: Emit parent mounting cutters instead of solids.
@@ -192,6 +192,17 @@ module loft_polyhedron(pts1, pts2, h, steps=1) {
   - `boss_pocket_depth`: Boss engagement below the top of the base.
   - `boss_h_clearances`: Front/rear gaps below the gearbox ears.
   - `show_encoder_sleeve`: Display the printed shaft-end magnet holder.
+  - `bolt_dist_from_cap`: Gap between the motor cap and its chassis hole.
+  - `nut_pocket_clearance`: Allowance around the chassis mounting nuts.
+  - `nut_pocket_h_clearance`: Additional depth for the chassis nut pockets.
+  - `chassis_cbore_h`: Parent mounting cutter's counterbore depth.
+  - `chassis_cbore_d`: Bracket-to-chassis counterbore diameter.
+  - `chassis_use_countersunk`: Use countersinks for parent mounting cutters.
+  - `use_polyhedron`: Construct the base with an unrounded polygon loft.
+  - `rear_mount_hole_y_offset`: Signed native Y offset of the rear chassis
+    hole from the rear gearbox bolt; positive points toward the motor.
+  - `use_boss_pockets`: Cut boss sockets into the bracket. When false, the
+    removable bosses seat on its top face without an engagement below it.
  */
 module gearmotor_bracket(plist,
                          color=white_off_1,
@@ -237,26 +248,30 @@ module gearmotor_bracket(plist,
                          chassis_cbore_h=gearbox_bracket_chassis_cbore_h,
                          chassis_cbore_d=gearbox_bracket_chassis_cbore_d,
                          chassis_use_countersunk=gearbox_bracket_chassis_use_countersunk,
-                         use_polyhedron=false) {
+                         use_polyhedron=false,
+                         rear_mount_hole_y_offset=gearbox_bracket_rear_mount_hole_y_offset,
+                         use_boss_pockets=gearbox_bracket_use_boss_pockets) {
   resolved = is_undef(params)
-    ? gearmotor_bracket_compute_params(plist=plist,
-                                       bolt_pad_x=bolt_pad_x,
-                                       bolt_pad_y=bolt_pad_y,
-                                       ear_bolt_pad=ear_bolt_pad,
-                                       bolt_d=bolt_d,
-                                       bracket_thickness=bracket_thickness,
-                                       corner_r=corner_r,
-                                       fillet_x_w=fillet_x_w,
-                                       fillet_y_w=fillet_y_w,
-                                       encoder_plist=encoder_plist,
-                                       boss_wall_thickness=boss_wall_thickness,
-                                       boss_pocket_clearance=boss_pocket_clearance,
-                                       boss_pocket_depth=boss_pocket_depth,
-                                       boss_h_clearances=boss_h_clearances,
-                                       motor_carrier_clearance=motor_carrier_clearance,
-                                       bolt_dist_from_cap=bolt_dist_from_cap,
-                                       nut_pocket_clearance=nut_pocket_clearance)
-    : params;
+             ? gearmotor_bracket_compute_params(plist=plist,
+                                                bolt_pad_x=bolt_pad_x,
+                                                bolt_pad_y=bolt_pad_y,
+                                                ear_bolt_pad=ear_bolt_pad,
+                                                bolt_d=bolt_d,
+                                                bracket_thickness=bracket_thickness,
+                                                corner_r=corner_r,
+                                                fillet_x_w=fillet_x_w,
+                                                fillet_y_w=fillet_y_w,
+                                                encoder_plist=encoder_plist,
+                                                boss_wall_thickness=boss_wall_thickness,
+                                                boss_pocket_clearance=boss_pocket_clearance,
+                                                boss_pocket_depth=boss_pocket_depth,
+                                                boss_h_clearances=boss_h_clearances,
+                                                motor_carrier_clearance=motor_carrier_clearance,
+                                                bolt_dist_from_cap=bolt_dist_from_cap,
+                                                nut_pocket_clearance=nut_pocket_clearance,
+                                                rear_mount_hole_y_offset=rear_mount_hole_y_offset,
+                                                use_boss_pockets=use_boss_pockets)
+             : params;
   motor = plist_get("motor", resolved);
   encoder_mount = plist_get("encoder_mount", resolved);
   resolved_bolt_d = plist_get("bolt_d", resolved);
@@ -390,8 +405,8 @@ module gearmotor_bracket(plist,
             let (sleeve_origin = plist_get("sleeve_origin",
                                            with_default(encoder_mount, [])),
                  body_support_l = is_undef(sleeve_origin)
-                 ? body_h
-                 : sleeve_origin[1],
+                                  ? body_h
+                                  : sleeve_origin[1],
                  size_z = resolved_bracket_thickness + motor_shaft_y,
                  eps = 1) {
               difference() {
@@ -400,7 +415,7 @@ module gearmotor_bracket(plist,
 
                 translate([0, -0.5, size_z]) {
                   rotate([-90, 0, 0]) {
-                    cylinder(d=motor_d + carrier_clearance,
+                    cylinder(d=motor_d + eps / 2,
                              h=body_h + eps,
                              $fn=$preview ? 30 : 300);
                   }
@@ -542,4 +557,4 @@ gearmotor_bracket(plist=motor_plist,
                   anchor=[0, 0, 1],
                   debug=false,
                   slot_mode=false,
-                  show_motor=true);
+                  show_motor=false);

@@ -61,6 +61,7 @@ use <{ROOT}/scad/lib/plist.scad>
 use <{ROOT}/scad/motor_brackets/rc/driveshaft_magnet_sleeve.scad>
 use <{ROOT}/scad/motor_brackets/rc/gearbox_boss.scad>
 p=gearmotor_bracket_compute_params();
+p_flat = gearmotor_bracket_compute_params(use_boss_pockets=false);
 e=plist_get("encoder_mount",p);
 assert(plist_get("pcb_back",e)[0] == motor_encoder_x_offset);
 e_zero=gearmotor_encoder_params(plist_get("motor",p),
@@ -88,6 +89,18 @@ module sleeve(magnet=false, body=true) {{
   }}
 }}
 module bosses() {{ gearbox_bosses(params=p); }}
+module boss_seat_probe() {{
+  xy = plist_get("gearbox_hole_positions", p)[0];
+  depth = plist_get("boss_pocket_depth", p);
+  translate(concat(xy, [plist_get("bracket_thickness", p) - depth / 2])) {{
+    difference() {{
+      cylinder(d=4.4, h=depth / 4, $fn=48);
+      translate([0, 0, -0.1]) {{
+        cylinder(d=4, h=depth / 4 + 0.2, $fn=48);
+      }}
+    }}
+  }}
+}}
 module hole_probe() {{
   tip=plist_get("shaft_tip",e);
   shaft=plist_get("drive_shaft",plist_get("motor",p));
@@ -113,6 +126,14 @@ module fasteners() {{
         ("sleeve", "sleeve();", False),
         ("front-boss", 'gearbox_boss("front",params=p,anchor=[0,0,1]);', False),
         ("rear-boss", 'gearbox_boss("rear",params=p,anchor=[0,0,1]);', False),
+        ("flat-base", "base(p_flat);", False),
+        ("flat-front-boss", 'gearbox_boss("front",params=p_flat,anchor=[0,0,1]);', False),
+        ("flat-rear-boss", 'gearbox_boss("rear",params=p_flat,anchor=[0,0,1]);', False),
+        ("flat-boss-slots", "gearbox_bosses(params=p_flat,slot_mode=true);", True),
+        ("flat-boss-base", "intersection() { gearbox_bosses(params=p_flat); base(p_flat); }", True),
+        ("flat-boss-hardware", "intersection() { gearbox_bosses(params=p_flat); hardware(); }", True),
+        ("flat-boss-seat", "intersection() { base(p_flat); boss_seat_probe(); }", False),
+        ("pocket-boss-seat", "intersection() { base(); boss_seat_probe(); }", True),
         ("sleeve-shaft", "intersection() { sleeve(); hardware(); }", True),
         ("sleeve-magnet", "intersection() { sleeve(); sleeve(true,false); }", True),
         ("sleeve-electronics", "intersection() { sleeve(); fasteners(); }", True),

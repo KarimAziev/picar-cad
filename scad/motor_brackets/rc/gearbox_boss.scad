@@ -31,6 +31,8 @@ use <util.scad>
   A relief follows the gearbox bearing housing with 0.1 mm radial clearance.
   Slot mode uses the solid's anchor reference and extends 0.1 mm above the
   seating plane. A zero boss wall in `params` disables both modes.
+  With `use_boss_pockets=false` in `params`, the support seats at Z=0 and
+  slot mode emits no geometry.
  */
 module gearbox_boss(type="front",
                     slot_mode=false,
@@ -49,10 +51,12 @@ module gearbox_boss(type="front",
   if (od > d) {
     translate(shift) {
       if (slot_mode) {
-        translate([0, 0, -depth]) {
-          cylinder(d=plist_get("boss_pocket_od", p),
-                   h=depth + 0.1,
-                   $fn=$preview ? 48 : 300);
+        if (depth > 0) {
+          translate([0, 0, -depth]) {
+            cylinder(d=plist_get("boss_pocket_od", p),
+                     h=depth + 0.1,
+                     $fn=$preview ? 48 : 300);
+          }
         }
       } else {
         difference() {

@@ -20,11 +20,11 @@ include <suspension/rear_axle/structure_params.scad>
 
 use <rc_chassis.scad>
 
-show_wheelbase                              = false;
-show_track_width                            = false;
-show_ground_clearance                       = false;
-show_overall_length                         = false;
-show_chassis_width                          = false;
+show_wheelbase                              = true;
+show_track_width                            = true;
+show_ground_clearance                       = true;
+show_overall_length                         = true;
+show_chassis_width                          = true;
 
 show_head_frame                             = true;
 show_chassis_front_frame                    = true;

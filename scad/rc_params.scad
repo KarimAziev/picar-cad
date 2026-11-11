@@ -1327,15 +1327,15 @@ upper_steering_plate_rear_scallop                  = 0.22;
 // Set the plist to undef to omit the encoder mounting feature entirely.
 motor_encoder_plist                                = as5048A_encoder_plist;
 // Upright and encoder displacement along the motor bracket's local X, in millimeters.
-motor_encoder_x_offset                             = 1.5;
+motor_encoder_x_offset                             = 1.0;
 motor_encoder_bottom_thickness                     = 2;
-motor_encoder_side_thickness                       = 1.0;
+motor_encoder_side_thickness                       = 1.5;
 motor_encoder_pcb_padding                          = 1;
 motor_encoder_mount_bolt_d                         = m3_hole_dia;
 motor_encoder_mount_wall                           = 1.5;
-motor_encoder_nut_clearance                        = 0.4; // radial and axial pocket clearance
+motor_encoder_nut_clearance                        = 0.2; // radial and axial pocket clearance
 motor_encoder_clearance                            = 0.6; // bolt-head and PCB clearance
-motor_encoder_magnet_distance                      = 2.5; // IC package face to magnet face
+motor_encoder_magnet_distance                      = 2.0; // IC package face to magnet face
 motor_encoder_magnet_d                             = 5;
 motor_encoder_magnet_h                             = 2;
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1417,11 +1417,9 @@ motor_plist                                        = ["body", ["d", 24.3,
                                                                                  "rear_boss_h", 1.0,
                                                                                  "front_boss_h", 0.0],
                                                                   "mount_ear_x_dist", 3.2,
-                                                                  // "mount_ear_x_dist", 13.0,
                                                                   "mount_ear_y_shift", 1.8,
-                                                                  "mount_ear_y_spacing", 26.0,
-                                                                  // "mount_ear_y_spacing", 25.6,
-                                                                  "mount_ear_x_spacing", 19.8,
+                                                                  "mount_ear_y_spacing", 27.6,
+                                                                  "mount_ear_x_spacing", 21.2,
                                                                   "mount_cbore_h", 4,
                                                                   "mount_cbore_d", 6.8, // 6.6
                                                                   "upper_gear", ["x", 1.46,
@@ -1668,8 +1666,8 @@ chassis_body_min_w                                 = 0;
 gearbox_bracket_thickness                          = 8.5 - suspension_chassis_mount_recess;
 
 gearbox_bracket_bolt_d                             = m3_hole_dia;
-gearbox_bracket_bolt_pad_x                         = 2.4;
-gearbox_bracket_bolt_pad_y                         = 2.5;
+gearbox_bracket_bolt_pad_x                         = 2.5;
+gearbox_bracket_bolt_pad_y                         = 2.4;
 gearbox_bracket_ear_bolt_pad                       = 3;
 gearbox_bracket_corner_r                           = 1;
 gearbox_bracket_fillet_x_w                         = 0.5;
@@ -1678,7 +1676,10 @@ gearbox_bracket_bolt_dist_from_cap                 = 2.6;
 
 gearbox_bracket_bolt_dist_y_ear_bolt               = 3.0;
 
-gearbox_bracket_nut_pocket_clearance               = 0.3;
+// Native +Y offset of the rear chassis hole from the rear gearbox bolt.
+gearbox_bracket_rear_mount_hole_y_offset           = 1.6;
+
+gearbox_bracket_nut_pocket_clearance               = 0.2;
 gearbox_bracket_nut_pocket_h_clearance             = 0.5;
 
 gearbox_bracket_chassis_use_countersunk            = false;
@@ -1698,6 +1699,7 @@ gearbox_bracket_motor_carrier_clearance            = 2.0;
 
 gearbox_bracket_boss_pocket_clearance              = 2.0; // Diametral socket allowance
 gearbox_bracket_boss_pocket_depth                  = 2.0;
+gearbox_bracket_use_boss_pockets                   = false;
 gearbox_bracket_boss_pocket_h_clearances           = ["front", 0.1,
                                                       "rear", 0.2];
 

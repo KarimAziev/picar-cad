@@ -38,6 +38,13 @@ use <gearmotor_encoder_bracket.scad>
   - `boss_h_clearances`: Front/rear gaps below the gearbox ears.
   - `motor_carrier_clearance`: Added diameter of the motor cradle cutout and
     extra vertical relief below its open top.
+  - `bolt_dist_from_cap`: Gap between the motor cap and its chassis hole.
+  - `nut_pocket_clearance`: Nut-pocket allowance used in chassis-hole placement.
+  - `bolt_dist_y_ear_bolt`: Gap beyond the padded front ear to the chassis hole.
+  - `rear_mount_hole_y_offset`: Signed native Y offset of the rear chassis
+    hole from the rear gearbox bolt; positive points toward the motor.
+  - `use_boss_pockets`: Cut locating sockets into the base. When false, bosses
+    sit on the base top with zero engagement depth and matching heights.
 
   **Returns:**
   A plist shared by the renderer and its consumers. Coordinates are native,
@@ -55,6 +62,8 @@ use <gearmotor_encoder_bracket.scad>
   - `drive_end_y`: Sleeve's outer end; without a sleeve, the start of the
     output shaft's end flat (`shaft_end - pad_l`), expressed in native Y.
   - `mount_hole_positions`, `gearbox_hole_positions`: Native XY hole centers.
+  - `min_hole_x`, `max_hole_x`, `min_hole_y`, `max_hole_y`: Chassis mounting
+    hole-center extents, used by the bracket's `"holes_center"` anchor mode.
   - `pts`, `pts_2`: Top and flared-base outline points.
   - Resolved sizing inputs and `motor` permit rendering with `params=...`.
  */
@@ -75,12 +84,16 @@ function gearmotor_bracket_compute_params(plist=motor_plist,
                                           motor_carrier_clearance=gearbox_bracket_motor_carrier_clearance,
                                           bolt_dist_from_cap=gearbox_bracket_bolt_dist_from_cap,
                                           nut_pocket_clearance=gearbox_bracket_nut_pocket_clearance,
-                                          bolt_dist_y_ear_bolt=gearbox_bracket_bolt_dist_y_ear_bolt) =
+                                          bolt_dist_y_ear_bolt=gearbox_bracket_bolt_dist_y_ear_bolt,
+                                          rear_mount_hole_y_offset=gearbox_bracket_rear_mount_hole_y_offset,
+                                          use_boss_pockets=gearbox_bracket_use_boss_pockets) =
   assert(bolt_d > 0 && bracket_thickness > 0,
          "Bracket hole diameter and thickness must be positive")
   assert(min(bolt_pad_x, bolt_pad_y, ear_bolt_pad, corner_r,
              fillet_x_w, fillet_y_w) >= 0,
          "Bracket padding, rounding and flare must be nonnegative")
+  assert(is_num(rear_mount_hole_y_offset), "Rear chassis hole offset must be numeric")
+  assert(is_bool(use_boss_pockets), "Boss pocket toggle must be boolean")
   let (bolt_r = bolt_d / 2,
        gearbox_params = gearbox_compute_params(plist),
        gearbox_thickness = plist_get("thickness", gearbox_params),
@@ -106,6 +119,7 @@ function gearmotor_bracket_compute_params(plist=motor_plist,
        rear_bolt_pos_x_center = rear_mount_hole[0],
        front_ear_bolt_y_center = -front_mount_hole[2],
        rear_ear_bolt_y_center = -rear_mount_hole[2],
+       rear_mount_hole_y = rear_ear_bolt_y_center + rear_mount_hole_y_offset,
 
        contact_cup = plist_get("contact_cup", plist),
        contact_cup_h = plist_get("h", contact_cup),
@@ -141,7 +155,9 @@ function gearmotor_bracket_compute_params(plist=motor_plist,
 
        bolt_mount_near_rear_gearbox_left_x = min(motor_cap_bolt_left_x,
                                                  x_end - bolt_pad_x),
-       rear_ear_bolt_y_end = rear_ear_bolt_y_center - mount_cbore_d / 2 - ear_bolt_pad,
+       rear_ear_bolt_y_end = min(rear_mount_hole_y - mount_cbore_d / 2 - ear_bolt_pad,
+                                 rear_mount_hole_y - bolt_r - bolt_pad_y,
+                                 rear_ear_bolt_y_center - mount_bolt_d / 2 - ear_bolt_pad),
 
        bracket_gearbox_bolt_right_center = [mid_bolt_x_center,
                                             front_ear_bolt_y_center,
@@ -157,14 +173,13 @@ function gearmotor_bracket_compute_params(plist=motor_plist,
        bracket_mount_holes = [[mid_bolt_x_center, mid_mount_hole_center_y,
                                "Mid mount hole"],
                               [bolt_mount_near_rear_gearbox_left_x,
-                               rear_ear_bolt_y_center,
+                               rear_mount_hole_y,
                                "Rear mount bolt", ["rotation", [0, 0, 50]]],
                               concat(motor_cap_bolt_left, ["Back motor bolt left",
                                                            ["rotation", [0, 0, 40]]])],
        // holes for gearbox to bracket itself
        gearbox_mount_holes = [bracket_gearbox_bolt_left_center,
                               bracket_gearbox_bolt_right_center],
-       all_holes = concat(bracket_mount_holes, gearbox_mount_holes),
 
        x_right_bolt_x_end = x_right_1 - mount_ear_boss_d,
        cap_bolt_y_end = motor_cap_bolt_left_y + bolt_r + bolt_pad_y,
@@ -191,11 +206,11 @@ function gearmotor_bracket_compute_params(plist=motor_plist,
                                  ? y + fillet_y_w
                                  : y - fillet_y_w]],
 
-       min_hole_x = polygon_min_x(all_holes),
-       max_hole_x = polygon_max_x(all_holes),
+       min_hole_x = polygon_min_x(bracket_mount_holes),
+       max_hole_x = polygon_max_x(bracket_mount_holes),
 
-       min_hole_y = polygon_min_y(all_holes),
-       max_hole_y = polygon_max_y(all_holes),
+       min_hole_y = polygon_min_y(bracket_mount_holes),
+       max_hole_y = polygon_max_y(bracket_mount_holes),
 
        base_min_y = polygon_min_y(pts_2),
        base_max_y = polygon_max_y(pts_2),
@@ -240,16 +255,20 @@ function gearmotor_bracket_compute_params(plist=motor_plist,
        surface_min_y = min(min_y, drive_end_y),
        surface_max_y = max(max_y, drive_end_y),
        boss_od = mount_bolt_d + (boss_wall_thickness * 2),
-       boss_pocket_od = boss_pocket_clearance + boss_od)
+       boss_pocket_od = boss_pocket_clearance + boss_od,
+       pocket_depth = use_boss_pockets ? boss_pocket_depth : 0)
   assert(min(boss_wall_thickness, boss_pocket_clearance, motor_carrier_clearance) >= 0,
          "Boss walls and fit clearances must be nonnegative")
-  assert(boss_pocket_depth > 0 && boss_pocket_depth < bracket_thickness
+  assert((!use_boss_pockets || (boss_pocket_depth > 0
+                               && boss_pocket_depth < bracket_thickness))
          && min(front_boss_h, rear_boss_h) > 0,
          "Boss pockets must leave a base floor and bosses must reach the gearbox")
   ["motor", plist,
-   "boss_pocket_depth", boss_pocket_depth,
-   "boss_heights", ["front", front_boss_h + boss_pocket_depth,
-                    "rear", rear_boss_h + boss_pocket_depth],
+   "rear_mount_hole_y_offset", rear_mount_hole_y_offset,
+   "use_boss_pockets", use_boss_pockets,
+   "boss_pocket_depth", pocket_depth,
+   "boss_heights", ["front", front_boss_h + pocket_depth,
+                    "rear", rear_boss_h + pocket_depth],
    "motor_carrier_clearance", motor_carrier_clearance,
    "encoder_mount", encoder_mount,
    "base_bounds", [[base_min_x, base_min_y, 0], [base_max_x, base_max_y, base_height]],
