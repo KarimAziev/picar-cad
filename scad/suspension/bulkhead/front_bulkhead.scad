@@ -151,12 +151,11 @@ module front_bulkhead(color=cobalt_blue_light_1,
                                                  upper_holder_bolt_d=upper_holder_bolt_d);
   upper_suspension_holes_z = upper_suspension_holder_z_pos[1];
 
-  upper_steering_plate_bolt_pos_y = front_bulkhead_upper_steering_mount_y(
-    bulkhead_l=bulkhead_l,
-    extra_rear_len=extra_rear_len,
-    holder_mount_thickness=upper_holder_mount_thickness,
-    bolt_d=upper_bolt_d,
-    edge_distance=upper_panel_bulkhead_edge_distance);
+  upper_steering_plate_bolt_pos_y = front_bulkhead_upper_steering_mount_y(bulkhead_l=bulkhead_l,
+                                                                          extra_rear_len=extra_rear_len,
+                                                                          holder_mount_thickness=upper_holder_mount_thickness,
+                                                                          bolt_d=upper_bolt_d,
+                                                                          edge_distance=upper_panel_bulkhead_edge_distance);
 
   module _upper_steering_plate_bolts(boss_mode=false) {
     let (fn = is_undef(quality_fn) ? ($preview ? 20 : 360) : quality_fn) {

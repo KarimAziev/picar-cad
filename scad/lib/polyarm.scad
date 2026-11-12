@@ -124,8 +124,8 @@ function add_bbox(spec=[], w=0, thickness=0) =
        w = plist_get("w", spec, w),
        t = plist_get("thickness", spec, thickness),
        bbox = is_num(angle)
-       ? rot_x_bbox_align([w, l, t], angle=angle)
-       : [],
+              ? rot_x_bbox_align([w, l, t], angle=angle)
+              : [],
        bbox_l = bbox[0],
        bbox_h = bbox[1],
        y = is_num(bbox_l) ? bbox_l : l,
@@ -259,8 +259,8 @@ module polyarm(specs, thickness, w=7, type="cube", debug, debug_hull) {
          t     = plist_get("thickness", spec, with_default(thickness, w)),
          angle = plist_get("angle", spec, 0))
     is_num(angle)
-        ? rot_x_bbox_align([ww, l, t], angle=angle)
-        : [l, t, 0, 0, l, t]];
+    ? rot_x_bbox_align([ww, l, t], angle=angle)
+    : [l, t, 0, 0, l, t]];
 
   function tf_point(tf, p) =
     [tf[0][0]*p[0] + tf[0][1]*p[1] + tf[0][2]*p[2] + tf[0][3],

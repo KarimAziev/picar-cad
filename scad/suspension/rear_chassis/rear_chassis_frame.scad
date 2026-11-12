@@ -96,7 +96,8 @@ module rear_chassis_frame(debug=false,
               if (!suspension_joint) {
                 eps = front_chassis_joint_boolean_overlap;
                 translate([-rear_suspension_joint_width(layout) / 2 - eps,
-                           joint_y[0] - eps, 0]) {
+                           joint_y[0] - eps,
+                           0]) {
                   cube([rear_suspension_joint_width(layout) + 2 * eps,
                         joint_y[1] - joint_y[0] + 2 * eps,
                         chassis_thickness]);

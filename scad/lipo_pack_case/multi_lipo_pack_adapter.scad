@@ -84,11 +84,11 @@ function multi_lipo_pack_adapter_props(spec, lid) =
        spacing = plist_get("bolt_spacing", spec,
                            [for (i=[0:1])
                              i == cross
-                                 ? min(pitch[i] * 0.65,
-                                       safe_half * 2,
-                                       (pattern_half -abs(sensor_offset[cross])
-                                        -pocket_d / 2 - sensor_head_r - edge) * 2)
-                                 : pitch[i]]),
+                             ? min(pitch[i] * 0.65,
+                                   safe_half * 2,
+                                   (pattern_half -abs(sensor_offset[cross])
+                                    -pocket_d / 2 - sensor_head_r - edge) * 2)
+                             : pitch[i]]),
        holes = [for (x=[-1, 1], y=[-1, 1]) [x*spacing[0]/2, y*spacing[1]/2]],
        radius = maybe_percent_string_to_num(plist_get("corner_r", spec, 3), min(dims)),
        r = calc_corner_rad(dims, radius))

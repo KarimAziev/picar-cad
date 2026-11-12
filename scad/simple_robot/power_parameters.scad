@@ -164,10 +164,10 @@ power_socket_case_jack_plist            = ["type", "custom",
                                            "round_side", "bottom",
                                            "gnd_wiring_color", matte_black,
                                            "gnd_wiring", [[3, 0, 70],
-                                                                       [0, 0, 138],
-                                                                       [-40, 0, 138]],
+                                                          [0, 0, 138],
+                                                          [-40, 0, 138]],
                                            "vcc_wiring", [[0, 0, 20],
-                                                                       [0, -20, 70]],
+                                                          [0, -20, 70]],
                                            "vcc_wiring_color", red_1];
 
 power_socket_case_side_panel_slots      = [["placeholder", "atm_fuse_holder",
@@ -177,16 +177,16 @@ power_socket_case_side_panel_slots      = [["placeholder", "atm_fuse_holder",
                                             "y_offset", 2,
                                             "rotation", 0,
                                             "slot_size", [atm_fuse_holder_mounting_hole_l + 1,
-                                                                       atm_fuse_holder_mounting_hole_h + 2],
+                                                          atm_fuse_holder_mounting_hole_h + 2],
                                             "corner_rad", atm_fuse_holder_mounting_hole_r,
                                             "placeholder_size", [max(atm_fuse_holder_body_top_l,
-                                                                                  atm_fuse_holder_body_bottom_l)
-                                                                              + 40,
-                                                                              atm_fuse_holder_body_thickness],
+                                                                     atm_fuse_holder_body_bottom_l)
+                                                                 + 40,
+                                                                 atm_fuse_holder_body_thickness],
                                             "body", ["size", [atm_fuse_holder_body_bottom_l,
-                                                                           atm_fuse_holder_body_thickness,
-                                                                           atm_fuse_holder_body_h,
-                                                                           atm_fuse_holder_body_top_l],
+                                                              atm_fuse_holder_body_thickness,
+                                                              atm_fuse_holder_body_h,
+                                                              atm_fuse_holder_body_top_l],
                                                      "corner_rad", 2,
                                                      "round_side", "bottom",
                                                      "rib", ["h", atm_fuse_holder_body_rib_h,
@@ -200,15 +200,15 @@ power_socket_case_side_panel_slots      = [["placeholder", "atm_fuse_holder",
                                                        "color", red_1,
                                                        "cut_len", 3,
                                                        "left_pts", [[20, 0, 0],
-                                                                                 [-25, 0, -45]],
+                                                                    [-25, 0, -45]],
                                                        "right_pts", [[10, 0, 0],
-                                                                                  [25, 2, -6]]],
+                                                                     [25, 2, -6]]],
                                             "color", matte_black_2,
                                             "show_cap", false,
                                             "show_body", true,
                                             "cap_collar", ["size", [atm_fuse_holder_mounting_hole_l - 2,
-                                                                                 atm_fuse_holder_mounting_hole_h,
-                                                                                 atm_fuse_holder_mounting_hole_depth],
+                                                                    atm_fuse_holder_mounting_hole_h,
+                                                                    atm_fuse_holder_mounting_hole_depth],
                                                            "r", atm_fuse_holder_mounting_hole_r,
                                                            "fuse_holes_spacing", [8, 4],
                                                            "fuse_hole_size", [6.0, 1.82],
@@ -220,9 +220,9 @@ power_socket_case_side_panel_slots      = [["placeholder", "atm_fuse_holder",
                                                            "rib_colr", matte_black_2,
                                                            "rib_positions", [0.5]],
                                             "cap", ["size", [atm_fuse_holder_cap_top_l,
-                                                                          atm_fuse_holder_cap_thickness,
-                                                                          atm_fuse_holder_cap_h,
-                                                                          atm_fuse_holder_cap_bottom_l,],
+                                                             atm_fuse_holder_cap_thickness,
+                                                             atm_fuse_holder_cap_h,
+                                                             atm_fuse_holder_cap_bottom_l,],
                                                     "corner_rad", 2,
                                                     "round_side", "top",
                                                     "color", matte_black_2,
@@ -233,14 +233,14 @@ power_socket_case_side_panel_slots      = [["placeholder", "atm_fuse_holder",
                                                             "distance_from_top", atm_fuse_holder_cap_rib_distance]]]];
 
 power_socket_case_mounting_panel_size   = plist_get("placeholder_size",
-                                                                 power_socket_case_jack_plist,
-                                                                 xt60be_mounting_panel_size);
+                                                    power_socket_case_jack_plist,
+                                                    xt60be_mounting_panel_size);
 power_socket_case_mounting_panel_h      = power_socket_case_mounting_panel_size[0];
 power_socket_case_size                  = [power_case_width,
-                                                        power_case_length,
-                                                        power_socket_case_mounting_panel_h
-                                                        + power_socket_case_bottom_thickness
-                                                        + power_socket_case_rim_h];
+                                           power_case_length,
+                                           power_socket_case_mounting_panel_h
+                                           + power_socket_case_bottom_thickness
+                                           + power_socket_case_rim_h];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Power module case dovetail rail parameters

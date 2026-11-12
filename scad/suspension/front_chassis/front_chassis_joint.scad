@@ -66,8 +66,8 @@ function front_chassis_body_joint_bolt_xs(w) =
   let (xs = [for (i = [0:n - 1])
     let (x = -edge_x + i * 2 * edge_x / (n - 1))
     abs(abs(x) - pin_x) < separation
-          ? sign(x) * (pin_x + separation)
-          : x])
+    ? sign(x) * (pin_x + separation)
+    : x])
   assert(max([for (x = xs) abs(x)]) <= edge_x,
          "Wide joint bolt and pin lands must fit the chassis width")
   assert(min([for (x = xs) abs(abs(x) - pin_x)]) >= separation - 0.000001,
@@ -128,8 +128,8 @@ module front_chassis_joint(mode="male",
                            countersink_fallback=false) {
   anchor = normalize_anchor(anchor);
   spacing = is_undef(pin_spacing)
-    ? front_chassis_joint_pin_spacing
-    : pin_spacing;
+            ? front_chassis_joint_pin_spacing
+            : pin_spacing;
 
   module _profile() {
     // Keep the established explicit bolt pattern below; the shared
@@ -179,7 +179,10 @@ module front_chassis_joint(mode="male",
                                include_pin_holes=true,
                                pin_spacing=spacing,
                                pin_d=front_chassis_joint_pin_d);
-    chassis_joint_bolt_holes(p, mode=mode, bolt_xs=bolt_xs, anchor=anchor,
+    chassis_joint_bolt_holes(p,
+                             mode=mode,
+                             bolt_xs=bolt_xs,
+                             anchor=anchor,
                              countersink_fallback=countersink_fallback);
   }
 
@@ -246,8 +249,8 @@ module front_chassis_pin_joint_holes(direction=-1,
                                      l=joint_l,
                                      pin_spacing) {
   spacing = is_undef(pin_spacing)
-    ? front_chassis_joint_pin_spacing
-    : pin_spacing;
+            ? front_chassis_joint_pin_spacing
+            : pin_spacing;
   // The +Y entry is referenced from the other end of the joint.
   translate([0, center && direction == 1 ? l : 0, 0]) {
     plate_joint_pin_holes(d=front_chassis_joint_pin_d,

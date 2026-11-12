@@ -188,8 +188,8 @@ module toggle_switch_counterbore(thread_d                           = toggle_swi
                                  center) {
 
   total_thickness = is_undef(total_thickness)
-    ? extra_thickness + nut_bore_h
-    : total_thickness;
+                    ? extra_thickness + nut_bore_h
+                    : total_thickness;
   dia = d_tolerance + thread_d;
   cbore_d = nut_d + bore_tolerance;
   counterbore(h=total_thickness,

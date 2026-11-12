@@ -98,8 +98,8 @@ module slot_renderer(plist,
            sink = plist_get("sink", plist, false),
            reverse = plist_get("bore_reverse", plist, false),
            size = is_no_bore(bore_h=bore_h, bore_d=bore_d)
-           ? [d, d]
-           : [max(bore_d, d), max(bore_d, d)],
+                  ? [d, d]
+                  : [max(bore_d, d), max(bore_d, d)],
            parent_size = is_undef(cell_size) ? size : cell_size) {
 
         align_children_with_spin(parent_size=parent_size,

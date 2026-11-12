@@ -72,7 +72,7 @@ function wago_bracket_props(pl=[]) =
    "wago_size", ws,
    "wago_pos", [(sides ? ear : 0) + wall + c, wall + c, t],
    "mount_holes", sides ? [[ear/2, l/2], [ear + tray_w + ear/2, l/2]]
-   : [[ear/2, l + ear/2], [tray_w-ear/2, l + ear/2]],
+                  : [[ear/2, l + ear/2], [tray_w-ear/2, l + ear/2]],
    "mount_side", mount_side,
    "tray_l", l,
    "tray_x", sides ? ear : 0,
@@ -162,10 +162,10 @@ module wago_bracket(pl=[],
               for (xy = plist_get("mount_holes", p)) {
                 hull() {
                   for (point = [xy, sides
-                                ? [xy[0] < size[0] / 2
-                                   ? ear + wall
-                                   : ear + tw - wall, xy[1]]
-                                : [xy[0], tl-wall]]) {
+                                    ? [xy[0] < size[0] / 2
+                                       ? ear + wall
+                                       : ear + tw - wall, xy[1]]
+                                    : [xy[0], tl-wall]]) {
                     translate(concat(point, [0])) {
                       cylinder(d=ear, h=t, $fn=48);
                     }

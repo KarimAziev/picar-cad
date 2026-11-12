@@ -28,8 +28,8 @@ module motor_driver_hat(plist=motor_driver_grid,
   l = motor_driver_hat_size[1];
   h = motor_driver_hat_size[2];
   max_pad_hole = len(motor_driver_hat_mounting_hole_pad_spec) > 0
-    ? max([for (v = motor_driver_hat_mounting_hole_pad_spec) v[0]])
-    : motor_driver_hat_bolt_dia;
+                 ? max([for (v = motor_driver_hat_mounting_hole_pad_spec) v[0]])
+                 : motor_driver_hat_bolt_dia;
 
   translate([center ? -w / 2 : 0, center ? l / 2 : l, 0]) {
     union() {

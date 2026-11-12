@@ -145,10 +145,10 @@ module power_case_assembly(slot_mode=slot_mode,
                show_power_case
                ? power_case_height + power_lid_height
                : show_lipo_pack
-               ? lipo_pack_height + power_lid_height
-               : show_standoffs && !show_socket_case
-               ? power_lid_thickness
-               : power_lid_height]) {
+                 ? lipo_pack_height + power_lid_height
+                 : show_standoffs && !show_socket_case
+                   ? power_lid_thickness
+                   : power_lid_height]) {
       rotate([180, 0, 0]) {
         power_lid(show_switch_button=show_lid_switch_button,
                   show_dc_regulator=show_lid_dc_regulator,
@@ -167,9 +167,9 @@ module power_case_assembly(slot_mode=slot_mode,
 
   module _bottom_bolts() {
     bolt_h = show_socket_case
-      ? round(full_socket_h
-              + power_case_bottom_thickness) + 1
-      : power_case_bottom_thickness + 2;
+             ? round(full_socket_h
+                     + power_case_bottom_thickness) + 1
+             : power_case_bottom_thickness + 2;
 
     d = power_case_bottom_bolt_dia;
 

@@ -30,18 +30,18 @@ bulkhead_base_size = front_bulkhead_base_size(outer_spacing=front_bulkhead_mount
                                               padding_x=front_chassis_bulkhead_padding_x,
                                               padding_y=front_chassis_bulkhead_padding_y);
 bellcrank_mount_d                        = assert(front_chassis_joint_root_land > 0,
-                                                 "Joint root land must be positive")
-                                          max(bellcrank_idler_od,
-                                               front_chassis_bellcrank_bolt_d,
-                                               front_chassis_bellcrank_bolt_bore_d)
+                                                  "Joint root land must be positive")
+                                            max(bellcrank_idler_od,
+                                            front_chassis_bellcrank_bolt_d,
+                                            front_chassis_bellcrank_bolt_bore_d)
                                             + 2 * (suspension_chassis_mount_clearance
-                                                   + front_chassis_joint_root_land);
+                                            + front_chassis_joint_root_land);
 
 bellcrank_mount_r                        = bellcrank_mount_d / 2;
 
 servo_chassis_reach                      = steering_encoder_plist
                                             ? max(dsservo_height_after_flange(),
-                                                  steering_servo_encoder_chassis_reach())
+                                                 steering_servo_encoder_chassis_reach())
                                             : dsservo_height_after_flange();
 
 servo_slot_min_w                         = servo_chassis_reach + bellcrank_x_dist;

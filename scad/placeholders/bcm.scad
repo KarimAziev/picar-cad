@@ -46,8 +46,8 @@ module bcm_processor_base(size=rpi_processor_size,
 
       if (!is_undef(txt)) {
         text_size = is_undef(txt_size)
-          ? min(small_size_x, small_size_y) / len(txt)
-          : txt_size;
+                    ? min(small_size_x, small_size_y) / len(txt)
+                    : txt_size;
         tm = textmetrics(text=txt,
                          spacing=txt_spacing,
                          font=txt_font,

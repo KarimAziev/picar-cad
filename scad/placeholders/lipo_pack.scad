@@ -345,9 +345,9 @@ module lipo_pack_from_pl(plist, anchor=[0, 1, 1], show_wiring=true) {
     if (v) v];
 
   function _from_percent_val(val, total) = is_string(val)
-    ? percent_to_mm(parse_percent(val),
-                    total=total)
-    : val;
+                                           ? percent_to_mm(parse_percent(val),
+                                                           total=total)
+                                           : val;
 
   module _cube() {
     rotate([0, 90, 0]) {

@@ -31,14 +31,14 @@ function chassis_joint_recess(p, x, mode, countersink_fallback=false) =
        bore_d = plist_get("bolt_bore_d", p),
        bore_h = plist_get("bolt_bore_h", p))
   !countersink_fallback || depth >= bore_h
-    ? [bore_d, depth, false]
-    : let (sink_p = plist_merge(p,
-                               ["bolt_bore_d", chassis_countersunk_bore_d,
-                                "bolt_bore_h", chassis_countersunk_bore_h]),
-           sink_depth = chassis_joint_bore_depth(sink_p, x, mode))
-      sink_depth > 0 && sink_depth >= chassis_countersunk_bore_h
-        ? [chassis_countersunk_bore_d, sink_depth, true]
-        : [bore_d, 0, false];
+  ? [bore_d, depth, false]
+  : let (sink_p = plist_merge(p,
+                              ["bolt_bore_d", chassis_countersunk_bore_d,
+                               "bolt_bore_h", chassis_countersunk_bore_h]),
+         sink_depth = chassis_joint_bore_depth(sink_p, x, mode))
+    sink_depth > 0 && sink_depth >= chassis_countersunk_bore_h
+    ? [chassis_countersunk_bore_d, sink_depth, true]
+    : [bore_d, 0, false];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -71,12 +71,13 @@ function chassis_joint_bore_depth(p, x, mode) =
                   - r - plist_get("pin_d", p) / 2,
        pins_clear = !plist_get("include_pin_holes", p)
                     || pin_land >= max(wall, suspension_chassis_joint_bore_pin_land)
-                                   - 0.000001)
+                    - 0.000001)
   !suspension_chassis_joint_counterbores || !thick_side
   || edge_land < wall || end_land < wall || !pins_clear
-    ? 0
-    : max(0, min(plist_get("bolt_bore_h", p),
-                 thickness - suspension_chassis_joint_bore_floor));
+  ? 0
+  : max(0,
+        min(plist_get("bolt_bore_h", p),
+            thickness - suspension_chassis_joint_bore_floor));
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -101,7 +102,8 @@ module chassis_joint_bolt_holes(p,
   l = plist_get("l", p);
   h = plist_get("plate_h", p);
   with_anchor(anchor=is_undef(anchor) ? [0, -1, 1] : anchor,
-              size=[plist_get("w", p), l, h], centered=true) {
+              size=[plist_get("w", p), l, h],
+              centered=true) {
     translate([0, l / 2, 0]) {
       for (x = xs) {
         recess = chassis_joint_recess(p, x, mode, countersink_fallback);

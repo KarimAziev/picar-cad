@@ -31,10 +31,9 @@ use <../../lib/trapezoids.scad>
   **Returns:** Two [x, y, z] points on Y=0. The holes run along local Y;
   the lugs project toward negative Z from the holder body at Z=0.
  */
-function front_upper_suspension_holder_steering_mounts(
-  bolt_spacing=front_upper_suspension_holder_steering_bolt_spacing,
-  bolt_d=front_upper_suspension_holder_steering_bolt_d,
-  mount_pad=front_upper_suspension_holder_steering_mount_pad) =
+function front_upper_suspension_holder_steering_mounts(bolt_spacing=front_upper_suspension_holder_steering_bolt_spacing,
+                                                       bolt_d=front_upper_suspension_holder_steering_bolt_d,
+                                                       mount_pad=front_upper_suspension_holder_steering_mount_pad) =
   [for (side = [-1, 1])
     [side * bolt_spacing / 2, 0, -mount_pad - bolt_d / 2]];
 
@@ -49,13 +48,11 @@ function front_upper_suspension_holder_steering_mounts(
   - `mount_pad`: Radial material around the holes, setting their Z offset.
   - `bolt_spacing`: X center-to-center spacing.
  */
-module front_upper_suspension_holder_steering_slots(
-  w=front_upper_suspension_w,
-  bolt_d=front_upper_suspension_holder_steering_bolt_d,
-  mount_pad=front_upper_suspension_holder_steering_mount_pad,
-  bolt_spacing=front_upper_suspension_holder_steering_bolt_spacing) {
-  for (p = front_upper_suspension_holder_steering_mounts(
-    bolt_spacing=bolt_spacing, bolt_d=bolt_d, mount_pad=mount_pad)) {
+module front_upper_suspension_holder_steering_slots(w=front_upper_suspension_w,
+                                                    bolt_d=front_upper_suspension_holder_steering_bolt_d,
+                                                    mount_pad=front_upper_suspension_holder_steering_mount_pad,
+                                                    bolt_spacing=front_upper_suspension_holder_steering_bolt_spacing) {
+  for (p = front_upper_suspension_holder_steering_mounts(bolt_spacing=bolt_spacing, bolt_d=bolt_d, mount_pad=mount_pad)) {
     translate(p + [0, 0.01, 0]) {
       rotate([90, 0, 0]) {
         cylinder(d=bolt_d, h=w + 0.02, $fn=$preview ? 48 : 120);
@@ -108,11 +105,10 @@ module front_upper_suspension_holder(l=front_upper_suspension_holder_l,
                        anchor=[0, -1, -1]);
               }
             }
-            front_upper_suspension_holder_steering_slots(
-              w=w,
-              bolt_d=steering_bolt_d,
-              mount_pad=steering_mount_pad,
-              bolt_spacing=steering_bolt_spacing);
+            front_upper_suspension_holder_steering_slots(w=w,
+                                                         bolt_d=steering_bolt_d,
+                                                         mount_pad=steering_mount_pad,
+                                                         bolt_spacing=steering_bolt_spacing);
           }
           difference() {
             linear_extrude(height=thickness, center=false, convexity=3) {
@@ -187,7 +183,8 @@ module front_upper_suspension_holder(l=front_upper_suspension_holder_l,
       }
       mirror_copy([1, 0, 0]) {
         translate([pin_hole_spacing / 2, pin_d / 2, -thickness - 0.01]) {
-          cylinder(d=pin_d, h=max(thickness, barrel_h) + 0.02,
+          cylinder(d=pin_d,
+                   h=max(thickness, barrel_h) + 0.02,
                    $fn=$preview ? 100 : 360);
         }
         translate([pin_hole_spacing / 2,

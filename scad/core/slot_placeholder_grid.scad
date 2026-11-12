@@ -179,8 +179,8 @@ module slot_placeholder_grid_builder(grid,
                       thickness=thickness,
                       placeholder=placeholder,
                       placeholder_size=is_undef(placeholder)
-                      ? placeholder
-                      : plist_get("placeholder_size", placeholder),
+                                       ? placeholder
+                                       : plist_get("placeholder_size", placeholder),
                       spin=spin,
                       align_x=align_x,
                       align_y=align_y,

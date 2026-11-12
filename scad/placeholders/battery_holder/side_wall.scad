@@ -17,11 +17,11 @@ side_wall_h    = 18;
 function side_wall_get_depth_factors(side_wall_type) =
   let (is_skeleton = side_wall_type == "skeleton",
        center_cutout_depth_factor = is_skeleton
-       ? 0.45
-       : 0.25,
+                                    ? 0.45
+                                    : 0.25,
        edge_depth_cutout_factor = is_skeleton
-       ? 0.4
-       : 0.2)
+                                  ? 0.4
+                                  : 0.2)
 
   [edge_depth_cutout_factor, center_cutout_depth_factor]
   ;
@@ -65,11 +65,11 @@ module battery_holder_side_wall_2d(length=side_wall_len,
                [-h, 0]];
 
   edge_cutout_pts = edge_cutout_len > 0 ?
-    [[-h, edge_cutout_start],  // 3
-     [-edge_cutout_h, edge_cutout_end],
-     [-edge_cutout_h, edge_cutout_len],
-     [-h, edge_cutout_len]]
-    : [];
+                    [[-h, edge_cutout_start],  // 3
+                     [-edge_cutout_h, edge_cutout_end],
+                     [-edge_cutout_h, edge_cutout_len],
+                     [-h, edge_cutout_len]]
+                    : [];
 
   pts = concat(pts_start,
                // 3
@@ -100,12 +100,12 @@ module battery_holder_side_wall(type=side_wall_type,
 
   center_cutout_upper_len_factor = is_skeleton ? 0.4 : 0.35;
   center_cutout_lower_len_factor = is_skeleton
-    ? center_cutout_upper_len_factor
-    : 0.3;
+                                   ? center_cutout_upper_len_factor
+                                   : 0.3;
 
   edge_cutout_start = is_skeleton
-    ? front_rear_thickness
-    : front_rear_thickness + 0.4;
+                      ? front_rear_thickness
+                      : front_rear_thickness + 0.4;
   edge_cutout_len_factor = is_skeleton ? 0.12 : 0.09;
   edge_cutout_len = edge_cutout_len_factor * battery_len;
 

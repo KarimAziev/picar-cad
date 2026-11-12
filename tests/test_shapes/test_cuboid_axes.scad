@@ -7,7 +7,7 @@
 use <../../scad/lib/shapes3d.scad>
 use <fixtures.scad>
 
-axes = ["z", "y", "x"];
+axes  = ["z", "y", "x"];
 sizes = [[30, 10, 2], [30, 2, 10], [2, 30, 10]];
 
 for (i = [0:2]) {

@@ -19,12 +19,12 @@ use <../../placeholders/differential.scad>
 // assumptions. The 10 mm bearing bore exceeds the measured 9.17 mm journal.
 rear_differential_measurements = differential_spec();
 rear_differential_spec         = plist_merge(rear_differential_measurements,
-                                     ["bearing_d", 15,
-                                      "bearing_id", 10,
-                                      "bearing_h", 4,
-                                      "bearing_shoulder_gap", 0,
-                                      "cup_ball_depth", 3,
-                                      "bearing_color", "silver"]);
+                                             ["bearing_d", 15,
+                                              "bearing_id", 10,
+                                              "bearing_h", 4,
+                                              "bearing_shoulder_gap", 0,
+                                              "cup_ball_depth", 3,
+                                              "bearing_color", "silver"]);
 
 // HSP pinion shaft is 5 mm; its bearings are HSP 02139 (5x10x4).
 // OD14 and total31 appear in an aftermarket 02030 dimensioned listing;
@@ -111,4 +111,4 @@ rear_motor_sleeve_spec         = ["d", 12,
                                   "fn", 64,
                                   "color", "silver"];
 
-rear_shock_spec = hsp_onroad_shock_spec;
+rear_shock_spec                = hsp_onroad_shock_spec;

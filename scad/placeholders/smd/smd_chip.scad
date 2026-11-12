@@ -174,8 +174,8 @@ module smd_chip_from_plist(plist,
               if (count > 0 && thickness > 0) {
                 let (y_axle = member(side, ["top", "bottom"]),
                      pair_side = y_axle
-                     ? (side == "top" ? "bottom" : "top")
-                     : (side == "left" ? "right" : "left"),
+                                 ? (side == "top" ? "bottom" : "top")
+                                 : (side == "left" ? "right" : "left"),
                      pair = plist_get(pair_side, j_leads_by_side, []),
                      pair_thickness = plist_get("thickness", pair, 0),
                      pair_count = plist_get("count", pair, 0),
@@ -195,19 +195,19 @@ module smd_chip_from_plist(plist,
                                                     pin_w=thickness,
                                                     count=count),
                      factor = y_axle
-                     ? (side == "top" ? 1 : -1)
-                     : (side == "left" ? 1 : -1),
+                              ? (side == "top" ? 1 : -1)
+                              : (side == "left" ? 1 : -1),
                      pos = y_axle
-                     ? (factor * (chip_val / 2))
-                     : (factor * -(chip_val / 2 - full_len / 2 + full_len))) {
+                           ? (factor * (chip_val / 2))
+                           : (factor * -(chip_val / 2 - full_len / 2 + full_len))) {
                   translate([y_axle ? 0 : pos,
                              y_axle ? pos + (factor * full_len / 2) : 0,
                              0]) {
                     color(plist_get("color", pl, metallic_silver_1),
                           alpha=1) {
                       rotate([0, 0, y_axle
-                              ? (side == "top" ? 0 : 180)
-                              : factor * 90]) {
+                                    ? (side == "top" ? 0 : 180)
+                                    : factor * 90]) {
                         j_leads_centered(base_h=base_h,
                                          lower_len=lower_len,
                                          upper_len=upper_len,

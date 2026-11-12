@@ -135,20 +135,20 @@ module wire_path(points,
                  step,
                  colr) {
   smooth_points = mode == "none" || is_undef(mode)
-    ? points
-    : smooth_path(points=points,
-                  mode=mode,
-                  quality=quality,
-                  step=step,
-                  d=d);
+                  ? points
+                  : smooth_path(points=points,
+                                mode=mode,
+                                quality=quality,
+                                step=step,
+                                d=d);
   n = len(smooth_points);
   suf = suffix_lengths(smooth_points);
 
   for (i = [0 : len(smooth_points) -  2]) {
     let (remaining_cut =
          (!is_num(cut_len) || cut_len <= 0) ? 0 :
-// distance that should be cut starting from the very end, measured backward
-// For segment i, the part within cut_len is: clamp(cut_len - length_after_this_segment, 0..seglen)
+         // distance that should be cut starting from the very end, measured backward
+         // For segment i, the part within cut_len is: clamp(cut_len - length_after_this_segment, 0..seglen)
          max(0, cut_len - (i + 1 <= n-2 ? suf[i + 1] : 0))) {
       wire_segment_capsule(smooth_points[i],
                            smooth_points[i + 1],

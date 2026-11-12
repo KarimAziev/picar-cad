@@ -44,8 +44,9 @@ for (lever_z = [28, 30.2, 34]) {
     pose = steering_servo_neutral_pose(lever_z, offset=offset);
     near(norm(pose[3] - pose[2]), rod_l);
     near(pose[2], rotate_euler_xyz(origin, [0, 0, pose[0]]));
-    near(pose[3], pose[2] + rotate_euler_xyz([-rod_l, 0, 0],
-                                            [0, 0, pose[1]]));
+    near(pose[3],
+         pose[2] + rotate_euler_xyz([-rod_l, 0, 0],
+                                    [0, 0, pose[1]]));
     near(pose[3] - upright[3], [offset, 0, 0]);
   }
 }

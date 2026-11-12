@@ -74,8 +74,8 @@ module bearing(rings = [[0]],
       for (i = [1 : num_rings]) {
 
         d_ring = (num_rings > 1)
-          ? d_first + (d_last - d_first) * ((i - 1) / (num_rings - 1))
-          : d_first;
+                 ? d_first + (d_last - d_first) * ((i - 1) / (num_rings - 1))
+                 : d_first;
 
         col_ring = ring_colors[i - 1];
         w_ring   = ring_widths[i - 1];

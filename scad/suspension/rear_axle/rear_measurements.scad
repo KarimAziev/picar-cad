@@ -388,10 +388,8 @@ module _hub_link_card() {
   bearing_r = plist_get("inner_bearing_od", rear_hub_spec) / 2;
   _card("H   UPPER LINK: AXIAL OFFSET",
         "Side view; use the large bearing opening as the reference",
-        ["H = hole-center X minus orange-face X.",
-         "Positive toward wheel; negative toward differential.",
-         "Measure PARALLEL to axle, not along the sloping arm.",
-         "Use the opening face, not the internal shoulder."]) {
+        ["H = hole-center X minus orange-face X.", "Positive toward wheel; negative toward differential.",
+         "Measure PARALLEL to axle, not along the sloping arm.", "Use the opening face, not the internal shoulder."]) {
     translate(link_card_origin) {
       _ink(body_color, layer=1) {
         projection(cut=false) {
@@ -451,8 +449,10 @@ module _legend_card() {
       _label([card_margin, 62], "Dashed circle = ball hidden inside socket.");
       _label([card_margin, 54], "Orange = physical reference FACE.");
       _label([card_margin, 42], "A / B: shared housing and fixed motor datums");
-      _label([card_margin, 36], "C / D: measured hub center heights; G: crown OD");
-      _label([card_margin, 30], "E / F / H: axial positions, parallel to wheel axle");
+      _label([card_margin, 36],
+             "C / D: measured hub center heights; G: crown OD");
+      _label([card_margin, 30],
+             "E / F / H: axial positions, parallel to wheel axle");
     }
   }
 }
@@ -467,7 +467,7 @@ for (i = [0 : len(card_names) - 1]) {
     position = view == "all"
                ? [i % 3 * (card_size[0] + card_gap),
                   (ceil(len(card_names) / 3) - 1 - floor(i / 3))
-                    * (card_size[1] + card_gap)]
+                  * (card_size[1] + card_gap)]
                : [0, 0];
     translate(position) {
       if (i == 0) {

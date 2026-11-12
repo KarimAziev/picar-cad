@@ -5,8 +5,8 @@
   * License: GPL-3.0-or-later
   */
 use <../../lib/plist.scad>
-use <../../lib/transforms.scad>
 use <../../lib/shapes2d.scad>
+use <../../lib/transforms.scad>
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -101,7 +101,8 @@ module rear_shock_tower(pl, anchor=[1, 1, 1], slot_mode=false) {
     }
     for (side = [-1, 1]) {
       translate([w / 2 + side * plist_get("link_x", pl),
-                 plist_get("link_z", pl), -e]) {
+                 plist_get("link_z", pl),
+                 -e]) {
         cylinder(d=plist_get("link_bolt_d", pl), h=size[2] + 2 * e);
       }
     }
@@ -137,10 +138,12 @@ module rear_shock_tower(pl, anchor=[1, 1, 1], slot_mode=false) {
           for (side = [-1, 1]) {
             window_w = (plist_get("window_w", pl) - plist_get("rib_w", pl)) / 2;
             translate([w / 2 + side * (window_w + plist_get("rib_w", pl)) / 2,
-                       plist_get("window_z", pl), -e]) {
+                       plist_get("window_z", pl),
+                       -e]) {
               linear_extrude(height=t + 2 * e) {
                 rounded_rect([window_w, plist_get("window_h", pl)],
-                             r=plist_get("corner_r", pl), center=true);
+                             r=plist_get("corner_r", pl),
+                             center=true);
               }
             }
           }

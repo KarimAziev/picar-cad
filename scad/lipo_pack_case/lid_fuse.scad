@@ -203,10 +203,10 @@ function lid_fuse_validate(props, lid, equipment, obstacles=[]) =
        bands = _lid_fuse_tie_bounds(props),
        adapter = plist_get("adapter_props", lid),
        adapter_cuts = !plist_get("enabled", adapter, false) ? []
-           : [for (xy = plist_get("holes", adapter))
-             _wago_bounds(concat(xy + plist_get("lidar_offset", lid), [0]),
-                          [plist_get("access_d", adapter),
-                           plist_get("access_d", adapter), 0], 0.8)],
+                      : [for (xy = plist_get("holes", adapter))
+                        _wago_bounds(concat(xy + plist_get("lidar_offset", lid), [0]),
+                                     [plist_get("access_d", adapter),
+                                      plist_get("access_d", adapter), 0], 0.8)],
        cuts = concat(adapter_cuts, [for (m = equipment, b = _lid_equipment_cuts(m))
          _lid_move_bounds(b, plist_get("pos", m), 0.8)]),
        occupied = concat(obstacles, [for (m = equipment) plist_get("bounds", m)]))

@@ -33,13 +33,14 @@ near(plist_get("base_bounds", p)[0], [-28.65, -29, 0]);
 // Hardware spacing and chassis offset are independent dimensions.
 g = plist_get("gearbox", motor_plist);
 aligned_motor = plist_put("gearbox",
-                           plist_put("mount_ear_y_spacing",
-                                     plist_get("mount_ear_y_spacing", g)
-                                     - gearbox_bracket_rear_mount_hole_y_offset, g),
-                           motor_plist);
+                          plist_put("mount_ear_y_spacing",
+                                    plist_get("mount_ear_y_spacing", g)
+                                    - gearbox_bracket_rear_mount_hole_y_offset, g),
+                          motor_plist);
 aligned = gearmotor_bracket_compute_params(plist=aligned_motor,
                                            rear_mount_hole_y_offset=0);
-for (key = ["pts", "pts_2", "bounds", "mount_hole_positions"]) {
+for (key = ["pts", "pts_2",
+            "bounds", "mount_hole_positions"]) {
   assert(plist_get(key, p) == plist_get(key, aligned),
          str("Rear bolt adjustment must preserve ", key));
 }
@@ -48,16 +49,16 @@ for (delta = [-2, 0, 3]) {
                     plist_put("mount_ear_y_spacing",
                               plist_get("mount_ear_y_spacing", g) + delta, g),
                     motor_plist);
-  changed = gearmotor_bracket_compute_params(
-    plist=motor,
-    rear_mount_hole_y_offset=gearbox_bracket_rear_mount_hole_y_offset + delta);
+  changed = gearmotor_bracket_compute_params(plist=motor,
+                                             rear_mount_hole_y_offset=gearbox_bracket_rear_mount_hole_y_offset + delta);
   for (i = [0:2]) {
     near(plist_get("mount_hole_positions", changed)[i], holes[i]);
   }
   near(plist_get("gearbox_hole_positions", changed)[0],
        gearbox_holes[0] - [0, delta]);
   near(plist_get("gearbox_hole_positions", changed)[1], gearbox_holes[1]);
-  for (key = ["min_hole_x", "max_hole_x", "min_hole_y", "max_hole_y"]) {
+  for (key = ["min_hole_x", "max_hole_x",
+              "min_hole_y", "max_hole_y"]) {
     near(plist_get(key, changed), plist_get(key, p));
   }
 }

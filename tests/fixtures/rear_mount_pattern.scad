@@ -11,16 +11,19 @@ use <../../scad/suspension/rear_chassis/computed_params.scad>
 use <../../scad/suspension/rear_suspension/rear_suspension_mount.scad>
 use <../../scad/suspension/rear_suspension/rear_suspension_slots.scad>
 
-part = "plate";
-radial_land = 1;
-top_land_h = 1;
+part            = "plate";
+radial_land     = 1;
+top_land_h      = 1;
 probe_clearance = 0.01;
-layout = rear_chassis_layout();
-mounts = rear_suspension_bulkhead_mount_positions(layout);
+layout          = rear_chassis_layout();
+mounts          = rear_suspension_bulkhead_mount_positions(layout);
 $fn = 64;
 
 module plate() {
-  rear_suspension_mount(layout=layout, debug=false, slot_mode=false, joint=true);
+  rear_suspension_mount(layout=layout,
+                        debug=false,
+                        slot_mode=false,
+                        joint=true);
 }
 
 if (part == "plate") {

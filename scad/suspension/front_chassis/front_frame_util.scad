@@ -47,8 +47,7 @@ use <head_frame/head_slots.scad>
   clearance `front_chassis_bumper_extension` beyond the ribbon-passage padding.
   The head mount and chassis joints retain their vehicle datums.
  */
-function front_chassis_front_frame_start_y(
-  extension=front_chassis_bumper_extension) =
+function front_chassis_front_frame_start_y(extension=front_chassis_bumper_extension) =
   assert(extension == "auto" || (is_num(extension) && extension >= 0),
          "Bumper extension must be auto or a non-negative length")
   front_chassis_head_center_y() + front_chassis_head_front_ribbon_y()
@@ -78,15 +77,14 @@ function front_chassis_front_frame_start_y(
   boxes around small hardware make the result conservative relative to meshes.
   Preview poses and visibility toggles do not affect the calculation.
  */
-function front_chassis_bumper_min_extension(
-  pl=front_bumper_plist,
-  clearance=front_chassis_bumper_head_clearance,
-  tilt_range=front_chassis_bumper_tilt_range) =
+function front_chassis_bumper_min_extension(pl=front_bumper_plist,
+                                            clearance=front_chassis_bumper_head_clearance,
+                                            tilt_range=front_chassis_bumper_tilt_range) =
   assert(is_num(clearance) && clearance >= 0,
          "Bumper head clearance must be a non-negative length")
   assert(tilt_range == "auto" || (is_list(tilt_range) && len(tilt_range) == 2
-         && is_num(tilt_range[0]) && is_num(tilt_range[1])
-         && tilt_range[0] <= tilt_range[1]),
+                                  && is_num(tilt_range[0]) && is_num(tilt_range[1])
+                                  && tilt_range[0] <= tilt_range[1]),
          "Bumper tilt range must be auto or ordered numeric limits")
   let (p=front_bumper_params(pl),
        travel=tilt_range == "auto"
@@ -96,10 +94,8 @@ function front_chassis_bumper_min_extension(
        foam_h=plist_get("foam_h", p),
        top=front_bumper_size(p)[2],
        z=front_chassis_head_pan_servo_slot_recess,
-       foam_reach=head_neck_swept_front_reach(
-         [z - clearance, z + foam_h + clearance], [-180, 180], travel),
-       plate_reach=head_neck_swept_front_reach(
-         [z + foam_h - clearance, z + top + clearance], [-180, 180], travel),
+       foam_reach=head_neck_swept_front_reach([z - clearance, z + foam_h + clearance], [-180, 180], travel),
+       plate_reach=head_neck_swept_front_reach([z + foam_h - clearance, z + top + clearance], [-180, 180], travel),
        foam=front_bumper_foam_profile(p),
        foam_w=front_bumper_size(p, "foam")[0],
        plate_w=front_bumper_size(p, "plate")[0],
@@ -121,16 +117,14 @@ function front_chassis_bumper_min_extension(
                         head_z + (front_bumper_reverse_bolts ? 0 : head_h)),
        hardware_r=max(find_bolt_head_prop("dia", front_bumper_bolt_d, head_type),
                       find_nut_prop("outer_dia", front_bumper_bolt_d) / cos(30)) / 2,
-       hardware_reach=head_neck_swept_front_reach(
-         [z + bottom - clearance, z + hardware_top + clearance], [-180, 180], travel),
-       required_y=max(concat(
-         [front_bumper_profile_front_y(foam_path, foam_reach + clearance + foam[1]),
-          front_bumper_profile_front_y(plate_path,
-            plate_reach + clearance + plist_get("rib_w", p) / 2)],
-         [for (v=mounts)
-           max(front_bumper_profile_front_y([v], plate_reach + clearance + post_r + 2),
-               front_bumper_profile_front_y([v], foam_reach + clearance + post_r),
-               front_bumper_profile_front_y([v], hardware_reach + clearance + hardware_r))])),
+       hardware_reach=head_neck_swept_front_reach([z + bottom - clearance, z + hardware_top + clearance], [-180, 180], travel),
+       required_y=max(concat([front_bumper_profile_front_y(foam_path, foam_reach + clearance + foam[1]),
+                              front_bumper_profile_front_y(plate_path,
+                                                           plate_reach + clearance + plist_get("rib_w", p) / 2)],
+                             [for (v=mounts)
+                               max(front_bumper_profile_front_y([v], plate_reach + clearance + post_r + 2),
+                                   front_bumper_profile_front_y([v], foam_reach + clearance + post_r),
+                                   front_bumper_profile_front_y([v], hardware_reach + clearance + hardware_r))])),
        rear_y=front_chassis_front_frame_start_y(extension=0)
               - front_chassis_head_center_y()
               - front_bumper_bolt_d / 2 - front_bumper_bolt_pad_y
@@ -387,7 +381,7 @@ module front_chassis_front_frame_unsplit(debug=false,
     union() {
       difference() {
         front_chassis_front_frame_blank(color=color,
-                                         rear_joint=rear_joint);
+                                        rear_joint=rear_joint);
         front_chassis_front_frame_head_slots(show_access_slots=show_access_slots);
 
         // The bulkhead slots

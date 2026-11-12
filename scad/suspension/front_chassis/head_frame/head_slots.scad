@@ -84,7 +84,8 @@ module front_chassis_servo_cable_slot(thickness=chassis_thickness,
   with_anchor(size=size, anchor=anchor) {
     translate([0, 0, -eps]) {
       cuboid([size[0], size[1], thickness + eps * 2],
-             r=head_servo_cable_corner_r, anchor=[1, 1, 1]);
+             r=head_servo_cable_corner_r,
+             anchor=[1, 1, 1]);
     }
   }
 }
@@ -126,8 +127,10 @@ module front_chassis_head_slots(thickness=chassis_thickness,
 
       mirror_copy([1, 0, 0]) {
         translate([pan_servo_slot_r + head_servo_cable_slot_offsets[0],
-                   -pan_servo_slot_r - head_servo_cable_slot_offsets[1], 0]) {
-          front_chassis_servo_cable_slot(thickness=thickness, anchor=[1, -1, 1]);
+                   -pan_servo_slot_r - head_servo_cable_slot_offsets[1],
+                   0]) {
+          front_chassis_servo_cable_slot(thickness=thickness,
+                                         anchor=[1, -1, 1]);
         }
       }
 

@@ -47,7 +47,7 @@ module gearbox_boss(type="front",
   depth = plist_get("boss_pocket_depth", p);
   h = plist_get(type, plist_get("boss_heights", p));
   shift = is_undef(anchor) ? [0, 0, 0]
-    : to_anchor(normalize_anchor(anchor), [od, od, h], centered=true) + [0, 0, depth];
+          : to_anchor(normalize_anchor(anchor), [od, od, h], centered=true) + [0, 0, depth];
   if (od > d) {
     translate(shift) {
       if (slot_mode) {

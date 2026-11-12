@@ -67,8 +67,8 @@ module ball_bearing(bore_d,
   module _rubber_seal() {
     let (h = 0.2,
          od = rubber_seal_covers_outer_recess
-         ? outer_recess_d
-         : (outer_recess_d - ball_rad)) {
+              ? outer_recess_d
+              : (outer_recess_d - ball_rad)) {
 
       translate([0, 0, -0.1]) {
         ring(d=shoulder_d,

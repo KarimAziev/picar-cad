@@ -6,10 +6,10 @@
 include <../../scad/rc_params.scad>
 
 use <../../scad/suspension/bellcrank_steering_assembly.scad>
+use <../../scad/suspension/bulkhead/front_bulkhead.scad>
+use <../../scad/suspension/bulkhead/front_upper_suspension_holder.scad>
 use <../../scad/suspension/front_suspension_assembly.scad>
 use <../../scad/suspension/upper_steering_plate.scad>
-use <../../scad/suspension/bulkhead/front_upper_suspension_holder.scad>
-use <../../scad/suspension/bulkhead/front_bulkhead.scad>
 
 part           = "plate";
 arm_angle      = 0;
@@ -43,7 +43,8 @@ if (part == "holder") {
         upper_steering_plate();
       }
     }
-    translate([0, bellcrank_y_distance_from_bulkhead + front_bulkhead_len / 2,
+    translate([0,
+               bellcrank_y_distance_from_bulkhead + front_bulkhead_len / 2,
                front_bulkhead_housing_h]) {
       front_bulkhead();
     }
@@ -55,7 +56,8 @@ if (part == "holder") {
           translate([0, 0, -0.01]) {
             cylinder(d=max(upper_steering_panel_bolt_d,
                            upper_steering_panel_bulkhead_bore_d) + 0.1,
-                     h=0.32, $fn=120);
+                     h=0.32,
+                     $fn=120);
           }
         }
       }
@@ -79,10 +81,12 @@ if (part == "holder") {
             difference() {
               cylinder(d=front_upper_suspension_holder_steering_bolt_d
                          + 2 * front_upper_suspension_holder_steering_mount_pad - 0.1,
-                       h=0.2, $fn=120);
+                       h=0.2,
+                       $fn=120);
               translate([0, 0, -0.01]) {
                 cylinder(d=front_upper_suspension_holder_steering_bolt_d + 0.1,
-                         h=0.22, $fn=120);
+                         h=0.22,
+                         $fn=120);
               }
             }
           }
@@ -133,7 +137,8 @@ if (part == "holder") {
                    - front_upper_suspension_holder_steering_bolt_d / 2,
                    0]) {
           cylinder(d=front_upper_suspension_holder_steering_bolt_d - 0.05,
-                   h=50, $fn=40);
+                   h=50,
+                   $fn=40);
         }
       }
       for (side = [-1, 1]) {

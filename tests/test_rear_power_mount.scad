@@ -45,7 +45,7 @@ echo("PASS: fixed rear battery mounting centers, recess settings and case orient
 for (bore_d = [6, 10, 14]) {
   layout = rear_chassis_layout(equipment=[],
                                power_case=plist_merge(rear_power_case_plist,
-                                                       ["bore_d", bore_d]));
+                                                      ["bore_d", bore_d]));
   payload = plist_get("power_case", layout);
   support_w = expected_spacing[0] + 2 * (plist_get("radius", payload)
                                          + rear_chassis_edge_pad);

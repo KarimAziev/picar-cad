@@ -68,8 +68,8 @@ function multi_lipo_pack_lid_props(pl, l_clearance=0.4, w_clearance=0.4) =
   let (case_props = multi_lipo_pack_props(pl, l_clearance, w_clearance),
        native_rails = plist_get("rail_props", case_props),
        rails = plist_get("power_rotation", pl, 0) == 180
-           ? multi_lipo_pack_rail_half_turn(native_rails, plist_get("body_size", case_props))
-           : native_rails,
+               ? multi_lipo_pack_rail_half_turn(native_rails, plist_get("body_size", case_props))
+               : native_rails,
        spec = plist_get("lid", pl, []))
   assert(plist_get("enabled", rails),
          "A sliding lid requires enabled case rails")
@@ -81,18 +81,18 @@ function multi_lipo_pack_lid_props(pl, l_clearance=0.4, w_clearance=0.4) =
        side_t = plist_get("side_t", spec, 2),
        requested_headroom = plist_get("headroom", spec, 10),
        headroom = requested_headroom == "auto"
-           ? max(lid_fuse_headroom(plist_get("fuse", spec), case_props, side_t),
-                 lid_voltmeter_headroom(plist_get("voltmeters", spec,
-                                                  [plist_get("voltmeter", spec)]),
-                                        rails, side_t, t))
-           : requested_headroom,
+                  ? max(lid_fuse_headroom(plist_get("fuse", spec), case_props, side_t),
+                        lid_voltmeter_headroom(plist_get("voltmeters", spec,
+                                                         [plist_get("voltmeter", spec)]),
+                                               rails, side_t, t))
+                  : requested_headroom,
        lidar_pl = plist_get("lidar", spec),
        lidar_orientation = plist_get("lidar_orientation", spec, "wlh"),
        lidar_offset = plist_get("lidar_offset", spec, [0, 0]),
        lidar_pad = plist_get("lidar_pad", spec, 2),
        lidar_dims = is_undef(lidar_pl)
-       ? [0, 0, 0]
-       : orientation_size(lidar_orientation, lidar_size(lidar_pl)),
+                    ? [0, 0, 0]
+                    : orientation_size(lidar_orientation, lidar_size(lidar_pl)),
        footprint = [for (i = [0:1]) max(body[i] + (i == (axis == "x" ? 1 : 0)
                                                    ? 2 * (side_t + channel_pad)
                                                    : 0),
@@ -161,7 +161,7 @@ function multi_lipo_pack_lid_wago_mounts(pl, props) =
        sensor = plist_get("lidar", props),
        adapter = plist_get("adapter_props", props),
        sensor_size = is_undef(sensor) ? [0, 0, 0]
-       : orientation_size(plist_get("lidar_orientation", props), lidar_size(sensor)),
+                     : orientation_size(plist_get("lidar_orientation", props), lidar_size(sensor)),
        adapter_size = plist_get("size", adapter, [0, 0, 0]),
        occupied = [for (i=[0:2]) max(sensor_size[i], adapter_size[i])],
        sensor_box = _wago_bounds(concat(plist_get("lidar_offset", props), [0]), occupied),
@@ -338,14 +338,14 @@ module multi_lipo_pack_lid(pl,
     cross = plist_get("cross", rail) - depth / 2 - 0.1;
     perfboard_exclusions = plist_get("enabled", perfboard, false)
                            && rail == plist_get("rails", rails)[0]
-        ? [for (hole = plist_get("holes", perfboard))
-          let (pos = plist_get("pos", perfboard),
-               r = plist_get("land_r", perfboard),
-               center = [size[slide_axis] / 2
-                         + (axis == "x" ? 1 : -1) * (pos[0] - hole[1]),
-                         pos[1] + hole[0] - z])
-          [center - [r, r], center + [r, r]]]
-        : [];
+                           ? [for (hole = plist_get("holes", perfboard))
+                             let (pos = plist_get("pos", perfboard),
+                                  r = plist_get("land_r", perfboard),
+                                  center = [size[slide_axis] / 2
+                                            + (axis == "x" ? 1 : -1) * (pos[0] - hole[1]),
+                                            pos[1] + hole[0] - z])
+                             [center - [r, r], center + [r, r]]]
+                           : [];
     difference() {
       translate([axis == "x" ? along : cross, axis == "x" ? cross : along, z]) {
         multi_lipo_pack_vents(vent,

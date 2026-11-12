@@ -129,12 +129,12 @@ function full_rect_slot_size(size, recess_size) =
        slot_y = size[1],
        recess_enabled = rect_recess_enabled(size=size, recess_size=recess_size),
        x = recess_enabled
-       ? max(with_default(recess_size[0], 0), slot_x)
-       : slot_x,
+           ? max(with_default(recess_size[0], 0), slot_x)
+           : slot_x,
 
        y = recess_enabled
-       ? max(with_default(recess_size[1], 0), slot_y)
-       : slot_y)
+           ? max(with_default(recess_size[1], 0), slot_y)
+           : slot_y)
   [x, y];
 
 /**
@@ -265,8 +265,8 @@ module counterbore(h,
 
   module main_slot() {
     let (height = auto_scale
-         ? h + (autoscale_step * 2)
-         : h) {
+                  ? h + (autoscale_step * 2)
+                  : h) {
       if (is_teardrop) {
         assert(is_num(teardrop_angle), "Teardop angle should be a number! ");
         teardrop(h=height,
@@ -345,8 +345,8 @@ module counterbore(h,
                  0,
                  !reverse ? h - bore_h
                  : auto_scale
-                 ? -autoscale_step
-                 : 0]) {
+                   ? -autoscale_step
+                   : 0]) {
         cbore_hole();
       }
     }
@@ -419,25 +419,25 @@ module rect_slot(h,
   recess_enabled = rect_recess_enabled(size=size, recess_size=recess_size);
 
   recess_x = recess_enabled
-    ? max(with_default(recess_size[0], 0), slot_x)
-    : recess_size[0];
+             ? max(with_default(recess_size[0], 0), slot_x)
+             : recess_size[0];
 
   recess_y = recess_enabled
-    ? max(with_default(recess_size[1], 0), slot_y)
-    : recess_size[1];
+             ? max(with_default(recess_size[1], 0), slot_y)
+             : recess_size[1];
 
   recess_base_h = with_default(recess_h, max(1, h / 2.2));
 
   recess_z = !reverse
-    ? h - recess_base_h
-    : auto_scale
-    ? -autoscale_step
-    : 0;
+             ? h - recess_base_h
+             : auto_scale
+               ? -autoscale_step
+               : 0;
 
   module main_slot() {
     linear_extrude(height=auto_scale
-                   ? h + (autoscale_step * 2)
-                   : h,
+                          ? h + (autoscale_step * 2)
+                          : h,
                    center=false) {
       rounded_rect(size=[slot_x, slot_y],
                    r_factor=r_factor,

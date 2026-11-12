@@ -8,20 +8,20 @@
 include <../scad/suspension/rear_axle/hardware_params.scad>
 
 use <../scad/lib/plist.scad>
-use <../scad/placeholders/hsp_rear_drivetrain.scad>
 use <../scad/placeholders/differential.scad>
+use <../scad/placeholders/hsp_rear_drivetrain.scad>
 use <../scad/placeholders/hsp_shock_absorber.scad>
 
-diff_size = hsp_rear_differential_size(rear_differential_spec);
-diff_axis = hsp_rear_differential_axis(rear_differential_spec);
-diff_bearings = hsp_rear_differential_bearing_positions(rear_differential_spec);
-diff_outputs = hsp_rear_differential_output_positions(rear_differential_spec);
-diff_gear = hsp_rear_differential_gear_position(rear_differential_spec);
-bearing_h = plist_get("bearing_h", rear_differential_spec);
-body_l = differential_case_span(rear_differential_spec);
-support_l = plist_get("support_l", rear_differential_spec);
-tolerance = 0.000001;
-cup_l = plist_get("cup_l", rear_differential_spec);
+diff_size       = hsp_rear_differential_size(rear_differential_spec);
+diff_axis       = hsp_rear_differential_axis(rear_differential_spec);
+diff_bearings   = hsp_rear_differential_bearing_positions(rear_differential_spec);
+diff_outputs    = hsp_rear_differential_output_positions(rear_differential_spec);
+diff_gear       = hsp_rear_differential_gear_position(rear_differential_spec);
+bearing_h       = plist_get("bearing_h", rear_differential_spec);
+body_l          = differential_case_span(rear_differential_spec);
+support_l       = plist_get("support_l", rear_differential_spec);
+tolerance       = 0.000001;
+cup_l           = plist_get("cup_l", rear_differential_spec);
 
 assert(norm(diff_size - [45.1, 38, 38]) < tolerance,
        "Measured differential overall envelope");
@@ -45,23 +45,24 @@ assert(norm(diff_outputs[0] + diff_outputs[1] - 2 * diff_axis) < tolerance);
 assert(diff_gear[0] - plist_get("gear_h", rear_differential_spec) / 2
        == cup_l + support_l);
 
-wide_cup = plist_put("cup_l", cup_l + 2, rear_differential_spec);
+wide_cup        = plist_put("cup_l", cup_l + 2, rear_differential_spec);
 assert(abs(hsp_rear_differential_size(wide_cup)[0] - diff_size[0] - 4)
        < tolerance,
        "Cup changes must propagate to the hardware bounds");
 assert(abs(hsp_rear_differential_bearing_positions(wide_cup)[0][0]
            - diff_bearings[0][0] - 2) < tolerance);
 
-long_support = plist_put("support_l", support_l + 1, rear_differential_spec);
+long_support    = plist_put("support_l", support_l + 1, rear_differential_spec);
 assert(abs(hsp_rear_differential_size(long_support)[0] - diff_size[0] - 2)
-       < tolerance, "Journal length must drive the overall stack");
+       < tolerance,
+       "Journal length must drive the overall stack");
 assert(abs(hsp_rear_differential_bearing_positions(long_support)[0][0]
            - diff_bearings[0][0] - 1) < tolerance);
 assert(plist_get("bearing_h", long_support) == bearing_h,
        "Support length and bearing width are independent");
 
 pinion_bearings = hsp_rear_pinion_bearing_positions(rear_pinion_spec);
-pinion_end = hsp_rear_pinion_shaft_end(rear_pinion_spec);
+pinion_end      = hsp_rear_pinion_shaft_end(rear_pinion_spec);
 assert(pinion_end[2] > pinion_bearings[1][2]
        + plist_get("bearing_h", rear_pinion_spec) / 2);
 assert(plist_get("motor_bore_d", rear_motor_sleeve_spec) == 4);
@@ -69,8 +70,8 @@ assert(plist_get("pinion_bore_d", rear_motor_sleeve_spec)
        == plist_get("shaft_d", rear_pinion_spec));
 assert(hsp_motor_sleeve_size(rear_motor_sleeve_spec)[2]
        == plist_get("motor_engagement", rear_motor_sleeve_spec)
-         + plist_get("pinion_engagement", rear_motor_sleeve_spec)
-         + plist_get("shaft_end_gap", rear_motor_sleeve_spec));
+       + plist_get("pinion_engagement", rear_motor_sleeve_spec)
+       + plist_get("shaft_end_gap", rear_motor_sleeve_spec));
 assert(abs(plist_get("pin_center_l", rear_dogbone_spec) - 55.4) < 0.000001);
 assert(abs(plist_get("pin_center_l", rear_dogbone_spec)
            + plist_get("ball_d", rear_dogbone_spec) - 61.2) < 0.000001);
@@ -80,10 +81,10 @@ assert(plist_get("ball_d", rear_dogbone_spec) == 5.8
        && plist_get("pin_d", rear_dogbone_spec) == 2,
        "Dogbone dimensions follow the caliper reference model");
 
-wheel_bearings = hsp_rear_wheel_axle_bearing_positions(rear_wheel_axle_spec);
-wheel_ball = hsp_rear_wheel_axle_ball_position(rear_wheel_axle_spec);
+wheel_bearings  = hsp_rear_wheel_axle_bearing_positions(rear_wheel_axle_spec);
+wheel_ball      = hsp_rear_wheel_axle_ball_position(rear_wheel_axle_spec);
 wheel_bearing_h = plist_get("bearing_h", rear_wheel_axle_spec);
-wheel_pin_z = plist_get("pin_center_z", rear_wheel_axle_spec);
+wheel_pin_z     = plist_get("pin_center_z", rear_wheel_axle_spec);
 assert(hsp_rear_wheel_axle_size(rear_wheel_axle_spec)[2] == 31,
        "02168 reference overall length");
 assert(wheel_ball[2] + plist_get("ball_d", rear_dogbone_spec) / 2

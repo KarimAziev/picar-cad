@@ -31,10 +31,10 @@ module smd_resistor(size=[3.2, 1.4, 0.4],
                     center=false) {
   has_border = !is_undef(border_w) && !is_undef(border_p);
   adjusted_size = !has_border
-    ? size
-    : [size[0] - border_w - border_p,
-       size[1] - border_w - border_p,
-       size[2]];
+                  ? size
+                  : [size[0] - border_w - border_p,
+                     size[1] - border_w - border_p,
+                     size[2]];
 
   body_size = [adjusted_size[0] * pad_factor_x,
                adjusted_size[1] * pad_factor_y,
@@ -52,8 +52,8 @@ module smd_resistor(size=[3.2, 1.4, 0.4],
           }
           if (!is_undef(marking)) {
             text_size = is_undef(mark_size)
-              ? min(bsize[0], bsize[1]) / len(marking)
-              : mark_size;
+                        ? min(bsize[0], bsize[1]) / len(marking)
+                        : mark_size;
             tm = textmetrics(text=marking,
                              spacing=mark_spacing,
                              font=mark_font,
@@ -148,13 +148,13 @@ module smd_resistors_row(size,
   translate([!center
              ? 0
              : y_axle
-             ? -size[0] / 2
-             : -total_w / 2,
+               ? -size[0] / 2
+               : -total_w / 2,
              !center
              ? 0
              : y_axle
-             ? -total_w / 2
-             : -size[1] / 2,
+               ? -total_w / 2
+               : -size[1] / 2,
              0]) {
     if (amount > 0) {
       for (i = [0:amount - 1]) {
@@ -182,32 +182,32 @@ module smd_resistors_row(size,
             if (!is_undef(prefix)) {
               let (txt = str(prefix, i),
                    rotation = !is_undef(text_rotation)
-                   ? text_rotation
-                   : y_axle
-                   ? [0, 0, 90]
-                   : [0, 0, 0],
+                              ? text_rotation
+                              : y_axle
+                                ? [0, 0, 90]
+                                : [0, 0, 0],
                    text_metrics = textmetrics(text=txt,
                                               size=text_size,
                                               font=text_font,
                                               spacing=text_spacing),
                    translation = !is_undef(text_translation)
 
-                   ? text_translation
-                   : y_axle
-                   ? [(text_valign == "top"
-                       ? -text_gap
-                       : text_valign == "bottom"
-                       ? size[0] + text_size + text_gap
-                       : 0),
-                      size[1] / 2 - text_metrics.size[0] / 2,
-                      0]
-                   : [size[0] / 2 - text_metrics.size[0] / 2,
-                      (text_valign == "top"
-                       ? (size[1] + text_gap)
-                       : text_valign == "bottom"
-                       ? -(text_size + text_gap)
-                       : 0),
-                      0]) {
+                                 ? text_translation
+                                 : y_axle
+                                   ? [(text_valign == "top"
+                                       ? -text_gap
+                                       : text_valign == "bottom"
+                                         ? size[0] + text_size + text_gap
+                                         : 0),
+                                      size[1] / 2 - text_metrics.size[0] / 2,
+                                      0]
+                                   : [size[0] / 2 - text_metrics.size[0] / 2,
+                                      (text_valign == "top"
+                                       ? (size[1] + text_gap)
+                                       : text_valign == "bottom"
+                                         ? -(text_size + text_gap)
+                                         : 0),
+                                      0]) {
 
                 translate(translation) {
                   rotate(rotation) {

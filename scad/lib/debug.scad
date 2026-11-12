@@ -63,18 +63,18 @@ module debug_polygon_text(points,
     let (pt = points[i],
          txt_or_pl = pt[2],
          label = is_string(txt_or_pl)
-         ? pt[2]
-         : is_list(pt[2])
-         ? plist_get("text", pt[2])
-         : pt[2],
+                 ? pt[2]
+                 : is_list(pt[2])
+                   ? plist_get("text", pt[2])
+                   : pt[2],
          txt = is_string(label) ? str(i, ". ", label) : str(i),
          txt_props = plist_merge(plist_merge(default_txt_plist, ["size", font_size,
                                                                  "font", font]),
                                  is_list(pt[2])
                                  ? pt[2]
                                  : is_list(pt[3])
-                                 ? pt[3]
-                                 : []),
+                                   ? pt[3]
+                                   : []),
 
          offst_x = plist_get("offset_x", txt_props),
          offst_y = plist_get("offset_y", txt_props),
@@ -82,14 +82,14 @@ module debug_polygon_text(points,
          dir = auto_offset_direction ? polygon_vertex_outward_dir(points, i) : [1, 1],
 
          dx = is_num(offst_x)
-         ? offst_x
-         : maybe_exclude(i, offset_x_exclude,
-                         auto_offset_direction ? abs(offset_x) * dir[0] : offset_x),
+              ? offst_x
+              : maybe_exclude(i, offset_x_exclude,
+                              auto_offset_direction ? abs(offset_x) * dir[0] : offset_x),
 
          dy = is_num(offst_y)
-         ? offst_y
-         : maybe_exclude(i, offset_y_exclude,
-                         auto_offset_direction ? abs(offset_y) * dir[1] : offset_y),
+              ? offst_y
+              : maybe_exclude(i, offset_y_exclude,
+                              auto_offset_direction ? abs(offset_y) * dir[1] : offset_y),
 
          x = pt[0],
          y = pt[1],
@@ -136,7 +136,7 @@ module debug_polygon_arrows(points,
                             paths=undef,
                             arrow_size=1) {
   all_paths = paths == undef ?
-    [[for (i = [0 : len(points)-1]) i]] : paths;
+              [[for (i = [0 : len(points)-1]) i]] : paths;
 
   for (path = all_paths)
     for (i = [0 : len(path) - 1]) {

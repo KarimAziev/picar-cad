@@ -72,8 +72,8 @@ module l_bracket(size,
   ur = (y_r == undef) ? 0 : y_r;
   lr = (z_r == undef) ? 0 : z_r;
   vertical_thickness = is_undef(vertical_thickness)
-    ? thickness
-    : vertical_thickness;
+                       ? thickness
+                       : vertical_thickness;
 
   function children_for(mode, target) =
     [for (i = [0:len(children_modes) - 1])

@@ -77,15 +77,15 @@ function get_spec_base_size(spec, parent_direction="btt") =
   : let (type = plist_get("type", spec),
          fallback_size = get_placeholder_size(spec))
     type == "rect" || type == "custom"
-  ? [get_rect_max_size_at(0, spec),
-     get_rect_max_size_at(1, spec)]
-  : type == "counterbore"
-  ? [get_counterbore_size_at(0, spec),
-     get_counterbore_size_at(1, spec)]
-  : type == "four_corner_holes"
-  ? [get_four_corner_hole_size_at(0, spec),
-     get_four_corner_hole_size_at(1, spec)]
-  : fallback_size;
+    ? [get_rect_max_size_at(0, spec),
+       get_rect_max_size_at(1, spec)]
+    : type == "counterbore"
+      ? [get_counterbore_size_at(0, spec),
+         get_counterbore_size_at(1, spec)]
+      : type == "four_corner_holes"
+        ? [get_four_corner_hole_size_at(0, spec),
+           get_four_corner_hole_size_at(1, spec)]
+        : fallback_size;
 
 function get_size_at(i, spec, parent_direction="btt") =
   get_spec_base_size(spec, parent_direction)[i];
@@ -151,14 +151,14 @@ function get_total_size(specs, direction) =
   ? [0, 0]
   : (direction == "ltr"
      || direction == "rtl")
-  ? [sum(concat(get_x_sizes(specs, direction),
-                get_gaps_before(specs),
-                get_gaps_after(specs))),
-     get_max_y(specs, direction),]
-  : [get_max_x(specs, direction),
-     sum(concat(get_y_sizes(specs, direction),
-                get_gaps_before(specs),
-                get_gaps_after(specs)))];
+    ? [sum(concat(get_x_sizes(specs, direction),
+                  get_gaps_before(specs),
+                  get_gaps_after(specs))),
+       get_max_y(specs, direction),]
+    : [get_max_x(specs, direction),
+       sum(concat(get_y_sizes(specs, direction),
+                  get_gaps_before(specs),
+                  get_gaps_after(specs)))];
 
 /**
  *
@@ -343,24 +343,24 @@ module slot_layout(specs,
   total_y = total_size[1];
 
   group_x = y_axle
-    ? (max_x_size / 2 * align_to_axle)
-    : center
-    ? total_x / 2
-    : align_on_primary_axle == 1
-    ? (is_ltr ? 0 : total_x)
-    : align_on_primary_axle == -1
-    ? (is_ltr ? -total_x : 0)
-    : 0;
+            ? (max_x_size / 2 * align_to_axle)
+            : center
+              ? total_x / 2
+              : align_on_primary_axle == 1
+                ? (is_ltr ? 0 : total_x)
+                : align_on_primary_axle == -1
+                  ? (is_ltr ? -total_x : 0)
+                  : 0;
 
   group_y = x_axle
-    ? (max_y_size / 2 * align_to_axle)
-    : center
-    ? total_y / 2
-    : align_on_primary_axle == 1
-    ? (is_btt ? 0 : total_y)
-    : align_on_primary_axle == -1
-    ? (is_btt ? -total_y : 0)
-    : 0;
+            ? (max_y_size / 2 * align_to_axle)
+            : center
+              ? total_y / 2
+              : align_on_primary_axle == 1
+                ? (is_btt ? 0 : total_y)
+                : align_on_primary_axle == -1
+                  ? (is_btt ? -total_y : 0)
+                  : 0;
 
   ratio = (is_ltr || is_btt) ? 1 : -1;
 

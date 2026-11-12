@@ -121,8 +121,10 @@ module front_suspension_assembly(show_front_lower_arm=show_front_lower_arm,
 
     for (i = [0:1]) {
       if (show_front_shocks) {
-        front_suspension_shock(settings=shock_settings, shock=shock,
-                               side=i == 0 ? -1 : 1, pose=poses[i]);
+        front_suspension_shock(settings=shock_settings,
+                               shock=shock,
+                               side=i == 0 ? -1 : 1,
+                               pose=poses[i]);
       }
       if (solve_linkage) {
         if (show_front_lower_arm && show_front_bulkhead_housing) {

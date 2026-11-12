@@ -75,13 +75,12 @@ module front_bulkhead_chassis_mount_slots(outer_spacing=front_bulkhead_mount_bol
   - `padding`: Edge gap between the upper outer and inner rows.
   - `center_x`, `center_y`: Center the reference outer pattern on each axis.
  */
-function front_bulkhead_chassis_mount_positions(
-  outer_spacing=front_bulkhead_mount_bolt_spacing_1,
-  inner_spacing=front_bulkhead_mount_bolt_spacing_2,
-  d=front_bulkhead_mount_bolt_d,
-  padding=front_bulkhead_mount_bolt_padding,
-  center_x=true,
-  center_y=true) =
+function front_bulkhead_chassis_mount_positions(outer_spacing=front_bulkhead_mount_bolt_spacing_1,
+                                                inner_spacing=front_bulkhead_mount_bolt_spacing_2,
+                                                d=front_bulkhead_mount_bolt_d,
+                                                padding=front_bulkhead_mount_bolt_padding,
+                                                center_x=true,
+                                                center_y=true) =
   let (origin = [center_x ? -outer_spacing[0] / 2 - d / 2 : 0,
                  center_y ? -outer_spacing[1] / 2 - d / 2 : 0, 0],
        inner_y = outer_spacing[1] - inner_spacing[1] - d - padding)
@@ -99,11 +98,11 @@ function front_bulkhead_chassis_mount_positions(
   - `barrel_y_offset`, `hinge_clearance`: Hinge placement values from `scad/rc_params.scad`.
   **Returns:** Eight XYZ points shared by the housing and its chassis plate.
  */
-function front_bulkhead_housing_mount_positions(
-  barrel_y_offset=front_bulkhead_barrel_y_offset,
-  hinge_clearance=front_bulkhead_barrel_hinge_clearance) =
+function front_bulkhead_housing_mount_positions(barrel_y_offset=front_bulkhead_barrel_y_offset,
+                                                hinge_clearance=front_bulkhead_barrel_hinge_clearance) =
   [for (p = front_bulkhead_chassis_mount_positions(center_y=false))
-    p + [0, front_bulkhead_chassis_mount_origin_y(barrel_y_offset, hinge_clearance)
+    p + [0, front_bulkhead_chassis_mount_origin_y(barrel_y_offset,
+                                                  hinge_clearance)
             - front_bulkhead_len / 2, 0]];
 
 module front_bulkhead_chassis_with_slots_positions(outer_spacing=front_bulkhead_mount_bolt_spacing_1,
@@ -112,8 +111,12 @@ module front_bulkhead_chassis_with_slots_positions(outer_spacing=front_bulkhead_
                                                    padding=front_bulkhead_mount_bolt_padding,
                                                    center_x=true,
                                                    center_y=true) {
-  points = front_bulkhead_chassis_mount_positions(outer_spacing, inner_spacing,
-                                                 d, padding, center_x, center_y);
+  points = front_bulkhead_chassis_mount_positions(outer_spacing,
+                                                  inner_spacing,
+                                                  d,
+                                                  padding,
+                                                  center_x,
+                                                  center_y);
   for (i = [0 : len(points) - 1]) {
     $outer = i < 4;
     $x_i = floor((i % 4) / 2);
@@ -123,7 +126,9 @@ module front_bulkhead_chassis_with_slots_positions(outer_spacing=front_bulkhead_
     $full_x = spacing[0] + d;
     $full_y = spacing[1] + d;
     $full_size = [$full_x, $full_y];
-    translate(points[i]) { children(); }
+    translate(points[i]) {
+      children();
+    }
   }
 }
 

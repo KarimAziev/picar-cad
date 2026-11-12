@@ -14,8 +14,8 @@ use <../lib/plist.scad>
 use <../placeholders/bolt.scad>
 use <../placeholders/hsp_shock_absorber.scad>
 use <bulkhead/util.scad>
-use <wishbone_arms/util.scad>
 use <front_linkage.scad>
+use <wishbone_arms/util.scad>
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -42,22 +42,21 @@ function front_shock_mounts(settings, shock, side, pose=undef) =
          "Front shock upper position must select a numbered tower hole")
   let (holes = front_shock_damper_holes_poses(),
        hole = holes[count - position],
-       lower_y = lower_damper_hole_y_pos(
-         front_shock_tower_damper_holes_angle, count, front_shock_tower_h,
-         front_shock_tower_shock_damper_bolt_d, front_shock_tower_damper_holes_gap,
-         front_shock_tower_damper_holes_pad_x, front_shock_tower_damper_holes_pad_y),
+       lower_y = lower_damper_hole_y_pos(front_shock_tower_damper_holes_angle, count, front_shock_tower_h,
+                                         front_shock_tower_shock_damper_bolt_d, front_shock_tower_damper_holes_gap,
+                                         front_shock_tower_damper_holes_pad_x, front_shock_tower_damper_holes_pad_y),
        upper_face = [front_shock_tower_damper_spacing_x / 2 - hole[0],
                      front_bulkhead_len / 2
-                       + front_bulkhead_shock_tower_mount_thickness / 2
-                       + front_shock_tower_thickness,
+                     + front_bulkhead_shock_tower_mount_thickness / 2
+                     + front_shock_tower_thickness,
                      front_bulkhead_housing_h + front_bulkhead_shock_tower_mount_offset
-                       + lower_y + front_shock_tower_damper_holes_pad_y + hole[1]],
+                     + lower_y + front_shock_tower_damper_holes_pad_y + hole[1]],
        datums = is_undef(pose) ? front_linkage_datums() : plist_get("datums", pose),
        arm = plist_get("lower", datums),
        hinge = plist_get("hinge", arm),
        angle = is_undef(pose) ? 0 : plist_get("lower_angle", pose),
        lower_face = hinge + rotY(plist_get("origin", arm)
-                                  + front_lower_arm_shock_mount() - hinge, angle),
+                                 + front_lower_arm_shock_mount() - hinge, angle),
        faces = [for (p = [lower_face, upper_face]) [side * p[0], p[1], p[2]]],
        gap = plist_get("mount_gap", settings),
        eye_w = plist_get("eye_w", shock),
@@ -65,7 +64,9 @@ function front_shock_mounts(settings, shock, side, pose=undef) =
        eyes = [for (p = faces) [p[0], eye_y, p[2]]],
        spacers = [for (p = faces) eye_y - eye_w / 2 - p[1]])
   assert(gap >= 0 && eye_w > 0, "Shock mounting gap and eye width are invalid")
-  ["faces", faces, "eyes", eyes, "spacers", spacers,
+  ["faces", faces,
+   "eyes", eyes,
+   "spacers", spacers,
    "eye_distance", norm(eyes[1] - eyes[0])];
 
 /**
@@ -88,13 +89,13 @@ module front_shock_mount_hardware(mounts, settings, shock) {
   nut_h = plist_get("nut_h", settings);
   $fn = plist_get("fn", settings);
   assert(d <= front_lower_arm_damper_boss_hole_d
-           && d <= front_shock_tower_shock_damper_bolt_d
-           && d <= plist_get("eye_bore_d", shock));
+         && d <= front_shock_tower_shock_damper_bolt_d
+         && d <= plist_get("eye_bore_d", shock));
   for (i = [0:1]) {
     engagement = i == 0
-        ? plist_get("lower_engagement", settings)
-        : front_shock_tower_thickness + nut_h
-            + plist_get("thread_projection", settings);
+                 ? plist_get("lower_engagement", settings)
+                 : front_shock_tower_thickness + nut_h
+                   + plist_get("thread_projection", settings);
     assert(engagement > 0);
     if (spacers[i] > 0) {
       color(hardware_color) {
@@ -112,12 +113,19 @@ module front_shock_mount_hardware(mounts, settings, shock) {
     }
     translate(faces[i] - [0, engagement, 0]) {
       rotate([-90, 0, 0]) {
-        bolt(d=d, h=engagement + spacers[i] + eye_w,
-             head_type="socket", head_d=plist_get("head_d", settings),
-             head_h=plist_get("head_h", settings), threaded=false,
-             thread_depth=0, thread_clearance=0,
-             show_nut=false, bolt_color=hardware_color, head_color=hardware_color,
-             anchor=[0, 0, 1], $fn=plist_get("fn", settings));
+        bolt(d=d,
+             h=engagement + spacers[i] + eye_w,
+             head_type="socket",
+             head_d=plist_get("head_d", settings),
+             head_h=plist_get("head_h", settings),
+             threaded=false,
+             thread_depth=0,
+             thread_clearance=0,
+             show_nut=false,
+             bolt_color=hardware_color,
+             head_color=hardware_color,
+             anchor=[0, 0, 1],
+             $fn=plist_get("fn", settings));
       }
     }
     if (i == 1) {
@@ -125,7 +133,9 @@ module front_shock_mount_hardware(mounts, settings, shock) {
         translate(faces[i] - [0, front_shock_tower_thickness + nut_h, 0]) {
           rotate([-90, 0, 0]) {
             difference() {
-              cylinder(d=plist_get("nut_af", settings) / cos(30), h=nut_h, $fn=6);
+              cylinder(d=plist_get("nut_af", settings) / cos(30),
+                       h=nut_h,
+                       $fn=6);
               translate([0, 0, -epsilon]) {
                 cylinder(d=d, h=nut_h + 2 * epsilon);
               }
@@ -152,7 +162,9 @@ module front_shock_mount_hardware(mounts, settings, shock) {
 module front_suspension_shock(settings, shock, side, pose=undef) {
   mounts = front_shock_mounts(settings, shock, side, pose);
   eyes = plist_get("eyes", mounts);
-  hsp_shock_between(start=eyes[0], end=eyes[1], pl=shock,
+  hsp_shock_between(start=eyes[0],
+                    end=eyes[1],
+                    pl=shock,
                     show_spring=plist_get("show_spring", settings),
                     require_travel=plist_get("require_travel", settings));
   if (plist_get("show_fasteners", settings)) {

@@ -94,16 +94,18 @@ assert(multi_lipo_pack_mount_height(multi_lipo_packs_case, 70.2, 6) == 71);
 echo("PASS: standalone panel references, independent panels, tall columns, payload clearance and support layout");
 
 // Only the tall lever needs to clear the overhead case and cover.
-control_specs = [["type", "control", "side", "right"],
-                 ["type", "fuse", "side", "left"]];
+control_specs = [["type", "control",
+                  "side", "right"],
+                 ["type", "fuse",
+                  "side", "left"]];
 control_layout = rear_chassis_layout(equipment=[],
                                      panels=control_specs,
                                      power_case=multi_lipo_packs_case);
 control_payload = plist_get("power_case", control_layout);
 under_payload = plist_get("power_case",
                           rear_chassis_layout(equipment=[], panels=control_specs,
-                                               power_case=multi_lipo_packs_case,
-                                               control_outside=false));
+                                              power_case=multi_lipo_packs_case,
+                                              control_outside=false));
 assert(len(control_panel_switch_button_specs) == 1);
 assert(plist_get("standoff_h", control_payload) < plist_get("standoff_h", under_payload));
 assert(near(plist_get("pos", control_payload)[0], 0));
@@ -116,7 +118,8 @@ for (panel = plist_get("panels", control_layout)) {
 }
 // Per-panel placement overrides take precedence over the layout default.
 for (outside = [false, true]) {
-  custom = rear_chassis_layout(equipment=[], power_case=multi_lipo_packs_case,
+  custom = rear_chassis_layout(equipment=[],
+                               power_case=multi_lipo_packs_case,
                                panels=[["type", "control",
                                         "outside_case", outside]],
                                control_outside=!outside);
@@ -149,13 +152,16 @@ assert(near(plist_get("size", control_layout), plist_get("size", under_layout)))
 assert(near(plist_get("transition_y_end", control_layout), plist_get("transition_y_end", under_layout)));
 assert(plist_get("standoff_h", control_payload) == 47);
 // With more longitudinal room the whole panel clears. With less, the case stays high.
-roomy = rear_chassis_layout(equipment=[], panels=control_specs,
-                             power_case=multi_lipo_packs_case, motor_dist=20);
+roomy = rear_chassis_layout(equipment=[],
+                            panels=control_specs,
+                            power_case=multi_lipo_packs_case,
+                            motor_dist=20);
 roomy_payload = plist_get("power_case", roomy);
 assert(plist_get("bounds", plist_get("panels", roomy)[0])[0][1]
        >= plist_get("pos", roomy_payload)[1] + plist_get("lid_size", roomy_payload)[1]/2
        + rear_control_case_gap - 0.00001);
-tight = rear_chassis_layout(equipment=[], power_case=multi_lipo_packs_case,
+tight = rear_chassis_layout(equipment=[],
+                            power_case=multi_lipo_packs_case,
                             motor_dist=-5,
                             panels=[["type", "control",
                                      "orientation", "lwh"],

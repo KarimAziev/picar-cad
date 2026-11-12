@@ -65,8 +65,8 @@ module tie_rod_shaft(body_len,
   if (show_len) {
     let (body_l_txt = str("Body: ", body_len, "mm"),
          full_l_txt = is_string(extra_text)
-         ? extra_text
-         : str("Full: ", body_len + thread_len * 2, "mm"),
+                      ? extra_text
+                      : str("Full: ", body_len + thread_len * 2, "mm"),
          txt_h=0.01,
          face_w = body_d / 2,
          texts_1=[full_l_txt, body_l_txt],

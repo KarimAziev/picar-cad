@@ -95,7 +95,7 @@ function hsp_rear_differential_output_positions(pl) =
 function hsp_rear_differential_gear_position(pl) =
   let (size = hsp_rear_differential_size(pl))
   [_hsp_value(pl, "cup_l") + _hsp_value(pl, "support_l")
-     + _hsp_value(pl, "gear_h") / 2, size[1] / 2, size[2] / 2];
+   + _hsp_value(pl, "gear_h") / 2, size[1] / 2, size[2] / 2];
 
 module _hsp_bearing(d, id, h, epsilon) {
   assert(d > id && id > 0 && h > 0);
@@ -164,7 +164,8 @@ module hsp_rear_differential(pl,
   $fn = _hsp_value(pl, "fn");
   with_anchor(size=size, anchor=anchor) {
     // Native Z becomes axle X; cup slots open along vehicle Z for the pins.
-    translate([0, (size[1] - native_size[0]) / 2,
+    translate([0,
+               (size[1] - native_size[0]) / 2,
                (size[2] - native_size[1]) / 2]) {
       multmatrix([[0, 0, 1, 0], [1, 0, 0, 0],
                   [0, 1, 0, 0], [0, 0, 0, 1]]) {
@@ -178,7 +179,8 @@ module hsp_rear_differential(pl,
             rotate([0, 90, 0]) {
               if (slot_mode) {
                 cylinder(d=bearing_d + 2 * radial,
-                         h=bearing_h + 2 * axial, center=true);
+                         h=bearing_h + 2 * axial,
+                         center=true);
               } else {
                 _hsp_bearing(bearing_d, bearing_id, bearing_h, epsilon);
               }
@@ -311,7 +313,8 @@ module hsp_rear_pinion(pl,
       translate(p) {
         if (slot_mode) {
           cylinder(d=bearing_d + 2 * radial,
-                   h=bearing_h + 2 * axial, center=true);
+                   h=bearing_h + 2 * axial,
+                   center=true);
         } else if (show_bearings) {
           color(_hsp_value(pl, "bearing_color")) {
             _hsp_bearing(bearing_d, bearing_id, bearing_h, epsilon);
@@ -334,7 +337,7 @@ module hsp_rear_pinion(pl,
 function hsp_motor_sleeve_size(pl) =
   [_hsp_value(pl, "d"), _hsp_value(pl, "d"),
    _hsp_value(pl, "motor_engagement") + _hsp_value(pl, "pinion_engagement")
-     + _hsp_value(pl, "shaft_end_gap")];
+   + _hsp_value(pl, "shaft_end_gap")];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -360,8 +363,8 @@ function hsp_motor_sleeve_size(pl) =
   ```
  */
 module hsp_motor_sleeve(pl,
-                       anchor=[1, 1, 1],
-                       slot_mode=false) {
+                        anchor=[1, 1, 1],
+                        slot_mode=false) {
   size = hsp_motor_sleeve_size(pl);
   motor_d = _hsp_value(pl, "motor_bore_d");
   pinion_d = _hsp_value(pl, "pinion_bore_d");
@@ -601,7 +604,8 @@ module hsp_rear_wheel_axle(pl,
                   cylinder(d=_hsp_value(pl, "cup_bore_d"),
                            h=flange_h + 2 * epsilon);
                   translate([-flange_d / 2,
-                             -_hsp_value(pl, "cup_slot_w") / 2, 0]) {
+                             -_hsp_value(pl, "cup_slot_w") / 2,
+                             0]) {
                     cube([flange_d, _hsp_value(pl, "cup_slot_w"),
                           flange_h + 2 * epsilon]);
                   }
@@ -646,7 +650,8 @@ module hsp_rear_wheel_axle(pl,
       translate(bearings[i]) {
         if (slot_mode) {
           cylinder(d=bearing_ds[i] + 2 * radial,
-                   h=bearing_h + 2 * axial, center=true);
+                   h=bearing_h + 2 * axial,
+                   center=true);
         } else if (show_bearings) {
           color(_hsp_value(pl, "bearing_color")) {
             _hsp_bearing(bearing_ds[i], bearing_ids[i], bearing_h, epsilon);

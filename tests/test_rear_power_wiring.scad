@@ -14,9 +14,11 @@ use <../scad/placeholders/crimp_terminals/ring_terminal.scad>
 use <../scad/suspension/rear_chassis/rear_power_wiring.scad>
 
 layout        = rear_chassis_layout(equipment=[["kind", "step_down",
-                                               "component", step_down_voltage_plist,
-                                               "rotation", -90]]);
-config        = plist_merge(rear_power_wiring, ["enabled", true, "fuse_outlet", false]);
+                                                "component", step_down_voltage_plist,
+                                                "rotation", -90]]);
+config        = plist_merge(rear_power_wiring,
+                            ["enabled", true,
+                             "fuse_outlet", false]);
 assert(!plist_get("enabled", rear_power_wiring_props(layout)));
 payload       = plist_get("power_case", layout);
 pl            = plist_get("plist", payload);
@@ -43,7 +45,7 @@ assert(norm(rotZ([0, 1, 0], plist_get("rotation", button)) - [0, 1, 0]) < 1e-6);
 assert(plist_get("pos", button)[1] > 0);
 wire_slot     = concat(plist_get("pos", button), [0])
                  + rotZ(concat(plist_get("wire_pos", plist_get("props", button)), [0]),
-                   plist_get("rotation", button));
+                       plist_get("rotation", button));
 assert(wire_slot[1] < 0);
 old_routes    = plist_get("routes", lid_wiring_props(original));
 routes        = plist_get("routes", lid_wiring_props(pl));

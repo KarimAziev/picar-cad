@@ -6,19 +6,24 @@
   */
 include <../scad/suspension/rear_chassis/computed_params.scad>
 
-use <../scad/suspension/rear_chassis/rear_power_wiring.scad>
 use <../scad/suspension/front_chassis/front_chassis_joint.scad>
+use <../scad/suspension/rear_chassis/rear_power_wiring.scad>
 
 layout      = rear_chassis_layout(equipment=[["kind", "step_down",
-                                             "component", step_down_voltage_plist,
-                                             "rotation", -90]]);
-config      = plist_merge(rear_power_wiring, ["enabled", true, "fuse_outlet", false]);
+                                              "component", step_down_voltage_plist,
+                                              "rotation", -90]]);
+config      = plist_merge(rear_power_wiring,
+                          ["enabled", true,
+                           "fuse_outlet", false]);
 assert(!plist_get("enabled", rear_power_wiring_props(layout)));
 wiring      = rear_power_wiring_props(layout, config);
 // Check outlet sizing on an obstacle-free deck footprint.
-passages    = rear_fuse_wire_passages(
-  layout, plist_get("panels", layout)[0], plist_get("holes", wiring),
-  plist_get("hole_d", wiring), [], plist_put("fuse_outlet", true, config));
+passages    = rear_fuse_wire_passages(layout,
+                                      plist_get("panels", layout)[0],
+                                      plist_get("holes", wiring),
+                                      plist_get("hole_d", wiring),
+                                      [],
+                                      plist_put("fuse_outlet", true, config));
 holes       = plist_get("holes", passages);
 assert(norm(plist_get("size", layout) - [151.26, 153.49, 6]) < 1e-6);
 assert(len(holes) == 4);
@@ -46,8 +51,8 @@ assert(norm(mounts[0] - [-69.2254, -132.49]) < 0.0001);
 assert(norm(mounts[3] - [69.2254, -97.89]) < 0.0001);
 
 disabled    = rear_power_wiring_props(layout,
-                                   plist_merge(config, ["fuse_hole_columns", 0,
-                                                                   "fuse_outlet", false]));
+                                      plist_merge(config, ["fuse_hole_columns", 0,
+                                                           "fuse_outlet", false]));
 assert(plist_get("holes", disabled) == plist_get("holes", wiring));
 assert(plist_get("converter_path", disabled) == plist_get("converter_path", wiring));
 assert(plist_get("holes", plist_get("fuse_passages", disabled)) == []);
@@ -56,9 +61,9 @@ assert(plist_get("outlet_size", plist_get("fuse_passages", disabled)) == [0, 0, 
 // An occupied outer column retains the inner pair of wire passages.
 obstacle    = [holes[2] - [6, 6, 0], holes[3] + [6, 6, 0]];
 limited     = rear_fuse_wire_passages(layout,
-                                  panel,
-                                  plist_get("holes", wiring),
-                                  plist_get("hole_d", wiring),
-                                  [obstacle]);
+                                      panel,
+                                      plist_get("holes", wiring),
+                                      plist_get("hole_d", wiring),
+                                      [obstacle]);
 assert(plist_get("holes", limited) == [holes[0], holes[1]]);
 echo("PASS four 12 mm passages, two-hole fallback, rounded outlet and fixed mount datums");

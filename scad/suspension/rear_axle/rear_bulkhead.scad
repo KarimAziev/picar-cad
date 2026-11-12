@@ -17,11 +17,11 @@ use <../../lib/plist.scad>
 use <../../lib/transforms.scad>
 use <../../placeholders/differential.scad>
 use <../../placeholders/hsp_rear_drivetrain.scad>
-use <rear_lower_arm.scad>
-use <rear_shock_tower.scad>
 use <../bulkhead/front_bulkhead.scad>
 use <../bulkhead/front_bulkhead_chassis.scad>
 use <../bulkhead/front_bulkhead_housing.scad>
+use <rear_lower_arm.scad>
+use <rear_shock_tower.scad>
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -124,8 +124,8 @@ function rear_bulkhead_pinion_neck_end(pl, pinion) =
 function rear_bulkhead_size(pl, differential, pinion, tower) =
   [plist_get("body_w", pl) + 2 * plist_get("barrel_w", pl),
    2 * max(plist_get("body_l", pl) / 2
-             + front_bulkhead_suspension_pad_thickness
-             + front_suspension_arm_pad_thickness,
+           + front_bulkhead_suspension_pad_thickness
+           + front_suspension_arm_pad_thickness,
            rear_bulkhead_pinion_neck_end(pl, pinion)),
    plist_get("base_h", pl) + plist_get("upper_h", pl)];
 
@@ -158,7 +158,6 @@ function rear_bulkhead_fastener_positions(pl, mounts) =
     assert(is_num(i) && i == floor(i) && i >= 0 && i < len(mounts),
            "Mount fastener index must select a supplied mounting center")
     mounts[i]];
-
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -229,31 +228,35 @@ module rear_bulkhead(pl,
   bearing_clearance = plist_get("bearing_clearance", pl);
   bearing_axial = plist_get("bearing_axial_clearance", pl);
   gear = hsp_rear_differential_gear_position(differential)
-           - hsp_rear_differential_axis(differential) + a;
+         - hsp_rear_differential_axis(differential) + a;
   crown_wall = plist_get("crown_cover_wall", pl);
   crown_edge_r = plist_get("crown_cover_edge_r", pl);
   crown_cover_r = plist_get("gear_d", differential) / 2
-                   + plist_get("gear_clearance", pl) + crown_wall;
+                  + plist_get("gear_clearance", pl) + crown_wall;
   crown_cover_l = plist_get("gear_h", differential)
-                   + 2 * (bearing_axial + crown_wall);
+                  + 2 * (bearing_axial + crown_wall);
   $fn = plist_get("fn", pl);
   assert(part == "lower" || part == "lid");
   assert(base_h > 0 && plist_get("input_support_wall", pl) > 0);
   assert(crown_wall > 0 && crown_edge_r > 0 && crown_edge_r <= crown_wall,
          "Crown edge radius must be positive and at most the cover wall");
   assert(abs(gear[0]) + crown_cover_l / 2 <= size[0] / 2
-           && abs(gear[1]) + crown_cover_r <= size[1] / 2
-           && gear[2] + crown_cover_r <= size[2],
+         && abs(gear[1]) + crown_cover_r <= size[1] / 2
+         && gear[2] + crown_cover_r <= size[2],
          "Crown cover must fit within the housing reference box");
 
   module x_bore(pos, d, length) {
     translate(pos) {
-      rotate([0, 90, 0]) { cylinder(d=d, h=length, center=true); }
+      rotate([0, 90, 0]) {
+        cylinder(d=d, h=length, center=true);
+      }
     }
   }
   module y_bore(pos, d, length) {
     translate(pos) {
-      rotate([90, 0, 0]) { cylinder(d=d, h=length, center=true); }
+      rotate([90, 0, 0]) {
+        cylinder(d=d, h=length, center=true);
+      }
     }
   }
   module mounting_tabs(z, h) {
@@ -261,11 +264,13 @@ module rear_bulkhead(pl,
       hull() {
         translate(p + [0, 0, z]) {
           cylinder(d=plist_get("mount_bolt_d", pl)
-                     + 2 * plist_get("mount_pad", pl), h=h);
+                     + 2 * plist_get("mount_pad", pl),
+                   h=h);
         }
         translate([0, p[1], z]) {
           cylinder(d=plist_get("mount_bolt_d", pl)
-                     + 2 * plist_get("mount_pad", pl), h=h);
+                     + 2 * plist_get("mount_pad", pl),
+                   h=h);
         }
       }
     }
@@ -275,7 +280,8 @@ module rear_bulkhead(pl,
       rotate([0, 90, 0]) {
         minkowski() {
           cylinder(r=crown_cover_r - crown_edge_r,
-                   h=crown_cover_l - 2 * crown_edge_r, center=true);
+                   h=crown_cover_l - 2 * crown_edge_r,
+                   center=true);
           sphere(r=crown_edge_r);
         }
       }
@@ -287,7 +293,8 @@ module rear_bulkhead(pl,
                              barrel_w=plist_get("barrel_w", pl),
                              barrel_thickness=base_h,
                              lower_pin_hole_d=plist_get("hinge_pin_d", pl),
-                             center_y=true, center_by_hinges=false,
+                             center_y=true,
+                             center_by_hinges=false,
                              cut_hinge_holes=false,
                              cut_mount_holes=false,
                              quality_fn=plist_get("fn", pl),
@@ -296,7 +303,6 @@ module rear_bulkhead(pl,
                              show_front_lower_arm_pin=false,
                              show_front_lower_pin_e_clip=false,
                              show_front_lower_arm_ball_stud=false);
-
     } else {
       translate([0, 0, base_h]) {
         mirror([0, 1, 0]) {
@@ -312,8 +318,10 @@ module rear_bulkhead(pl,
                          quality_fn=plist_get("fn", pl),
                          join_overlap=e,
                          show_upper_suspension_holder=false,
-                         show_shock_tower=false, show_suspension_arm_pad=false,
-                         show_front_upper_arm=false, show_upper_arm_ball_stud=false,
+                         show_shock_tower=false,
+                         show_suspension_arm_pad=false,
+                         show_front_upper_arm=false,
+                         show_upper_arm_ball_stud=false,
                          show_front_upper_arm_pin=false,
                          show_front_upper_pin_e_clip=false);
         }
@@ -328,17 +336,21 @@ module rear_bulkhead(pl,
   }
   module cutters() {
     // The output casing and crown have independent swept envelopes.
-    x_bore(gear, plist_get("gear_d", differential)
-                   + 2 * plist_get("gear_clearance", pl),
+    x_bore(gear,
+           plist_get("gear_d", differential)
+           + 2 * plist_get("gear_clearance", pl),
            plist_get("gear_h", differential) + 2 * bearing_axial);
     case_l = plist_get("case_size", differential)[2];
     case_center = gear + [(plist_get("gear_h", differential) + case_l) / 2, 0, 0];
-    x_bore(case_center, differential_case_swept_d(differential)
-                        + 2 * plist_get("gear_clearance", pl),
+    x_bore(case_center,
+           differential_case_swept_d(differential)
+           + 2 * plist_get("gear_clearance", pl),
            case_l + 2 * bearing_axial);
-    x_bore(a, max(plist_get("support_d", differential),
-                  plist_get("cup_d", differential))
-               + plist_get("shaft_clearance", pl), size[0] + 2 * e);
+    x_bore(a,
+           max(plist_get("support_d", differential),
+               plist_get("cup_d", differential))
+           + plist_get("shaft_clearance", pl),
+           size[0] + 2 * e);
     for (p = hsp_rear_differential_bearing_positions(differential)) {
       x_bore(a + p - hsp_rear_differential_axis(differential),
              plist_get("bearing_d", differential) + bearing_clearance,
@@ -351,7 +363,8 @@ module rear_bulkhead(pl,
            plist_get("gear_d", pinion) + 2 * plist_get("gear_clearance", pl),
            plist_get("gear_h", pinion) + 2 * plist_get("gear_clearance", pl));
     for (z = plist_get("bearing_centers_z", pinion)) {
-      y_bore(pinion_pos + [0, z, 0], plist_get("bearing_d", pinion) + bearing_clearance,
+      y_bore(pinion_pos + [0, z, 0],
+             plist_get("bearing_d", pinion) + bearing_clearance,
              plist_get("bearing_h", pinion) + 2 * bearing_axial);
     }
     for (p = part == "lower" ? mounts : fastener_positions) {
@@ -362,13 +375,15 @@ module rear_bulkhead(pl,
     for (p = fastener_positions) {
       translate(p + [0, 0, plist_get("mount_nut_floor", pl)]) {
         cylinder(d=plist_get("mount_nut_af", pl) / cos(30),
-                 h=plist_get("mount_nut_h", pl) + e, $fn=6);
+                 h=plist_get("mount_nut_h", pl) + e,
+                 $fn=6);
       }
     }
     for (side = [-1, 1]) {
       hinge = rear_bulkhead_hinge_axis(pl, arm);
       y_bore([side * hinge[0], hinge[1], hinge[2]],
-             plist_get("hinge_pin_d", pl), plist_get("barrel_l", pl) + 2 * e);
+             plist_get("hinge_pin_d", pl),
+             plist_get("barrel_l", pl) + 2 * e);
     }
     for (p = rear_shock_tower_mounts(tower)) {
       y_bore(tower_pos + [p[0], plist_get("tower_mount_thickness", pl) / 2, p[1]],
@@ -396,7 +411,8 @@ module rear_bulkhead(pl,
         difference() {
           intersection() {
             blank();
-            translate([-size[0] / 2, -size[1] / 2,
+            translate([-size[0] / 2,
+                       -size[1] / 2,
                        part == "lower" ? 0 : base_h]) {
               cube([size[0], size[1], part == "lower" ? base_h : size[2]]);
             }

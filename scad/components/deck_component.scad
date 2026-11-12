@@ -4,12 +4,12 @@
   * Author: Karim Aziiev <karim.aziiev@gmail.com>
   * License: GPL-3.0-or-later
   */
-use <step_down_enclosure/step_down_voltage_enclosure.scad>
 use <../lib/plist.scad>
 use <../lib/transforms.scad>
 use <../placeholders/perfboard.scad>
 use <../placeholders/step-down-voltage-d24vxf5.scad>
 use <../placeholders/voltmeter.scad>
+use <step_down_enclosure/step_down_voltage_enclosure.scad>
 
 function _deck_component_props(kind, pl=[]) =
   kind == "voltmeter" ? voltmeter_mount_props(pl) :
@@ -72,9 +72,9 @@ module deck_component(kind,
     } else if (kind == "step_down_enclosure") {
       if (slot_mode || show_hardware) {
         step_down_voltage_enclosure(pl,
-                                     anchor=[0, 0, 1],
-                                     parent_t=parent_t,
-                                     slot_mode=slot_mode);
+                                    anchor=[0, 0, 1],
+                                    parent_t=parent_t,
+                                    slot_mode=slot_mode);
       }
     } else if (kind == "perf_board") {
       perf_board_mount(pl, parent_t, [0, 0, 1], slot_mode, show_hardware);

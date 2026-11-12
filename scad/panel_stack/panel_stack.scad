@@ -162,11 +162,11 @@ module panel_stack(show_fuses=true,
   size = panel_stack_size();
   bolt_spacing = panel_stack_bolt_spacing();
   reference_size = anchor_mode == "bolts"
-    ? concat(bolt_spacing, [0])
-    : panel_stack_oriented_size("wlh",
-                                show_buttons_panel,
-                                show_fuse_panel,
-                                show_standoff);
+                   ? concat(bolt_spacing, [0])
+                   : panel_stack_oriented_size("wlh",
+                                               show_buttons_panel,
+                                               show_fuse_panel,
+                                               show_standoff);
 
   with_orientation(from="wlh",
                    to=orientation,
@@ -321,23 +321,23 @@ function panel_component_size(type, orientation="wlh") =
          "Unknown panel type")
   type == "control" ? control_panel_oriented_size(orientation)
   : type == "fuse" ? fuse_panel_oriented_size(orientation)
-  : panel_stack_oriented_size(orientation);
+    : panel_stack_oriented_size(orientation);
 
 function panel_component_bolt_spacing(type, orientation="wlh") =
   assert(type == "control" || type == "fuse" || type == "stack",
          "Unknown panel type")
   type == "control" ? control_panel_oriented_bolt_spacing(orientation)
   : type == "fuse" ? fuse_panel_oriented_bolt_spacing(orientation)
-  : panel_stack_oriented_bolt_spacing(orientation);
+    : panel_stack_oriented_bolt_spacing(orientation);
 
 function panel_component_height(type) =
   assert(type == "control" || type == "fuse" || type == "stack",
          "Unknown panel type")
   type == "control" ? control_panel_clearance_height()
   : type == "fuse" ? fuse_panel_clearance_height()
-  : max(fuse_panel_clearance_height(),
-        fuse_panel_height() + fuse_panel_standoff_upper_height()
-        + control_panel_clearance_height());
+    : max(fuse_panel_clearance_height(),
+          fuse_panel_height() + fuse_panel_standoff_upper_height()
+          + control_panel_clearance_height());
 
 /**
   ─────────────────────────────────────────────────────────────────────────────

@@ -70,9 +70,9 @@ knuckle_shaft_bolts_distance                  = 3;
 // The length of the vertical part of the (curved) axle shaft that connects the
 // steering knuckle to the wheel hub
 knuckle_shaft_vertical_len                    = knuckle_height +
-                                                       (motor_type == "n20"
-                                                        ? 21.5
-                                                        : 26.5);
+                                                 (motor_type == "n20"
+                                                 ? 21.5
+                                                 : 26.5);
 
 // The additional length of the connector for the shaft in the knuckle and the
 // corresponding curved axle shaft
@@ -82,10 +82,10 @@ knuckle_shaft_connector_extra_arm_len         = 1;
 
 // The additional length of the for the shaft itself
 knuckle_shaft_extra_len                       = assembly_shaft_use_front_steering
-                                                       &&
-                                                       assembly_use_front_steering
-                                                        ? 5
-                                                        : 0;
+                                                 &&
+                                                 assembly_use_front_steering
+                                                 ? 5
+                                                 : 0;
 
 // The length of the lower horizontal part of the (curved) axle shaft that is
 // inserted into the wheel hub
@@ -143,10 +143,10 @@ steering_servo_text_plist                     = pan_servo_text_plist;
 steering_servo_text_size                      = 3;
 steering_servo_gearbox_h                      = 4;
 steering_servo_gearbox_size                   = [[0.4, 6.09, matte_black],
-                                                        [0.5, 4.35, dark_gold_2, 8],
-                                                        [0.8, 2, dark_gold_2],
-                                                        [2.45, 4, dark_gold_2, 10],
-                                                        [0.05, 2.6, licorice, 8]];
+                                                 [0.5, 4.35, dark_gold_2, 8],
+                                                 [0.8, 2, dark_gold_2],
+                                                 [2.45, 4, dark_gold_2, 10],
+                                                 [0.05, 2.6, licorice, 8]];
 steering_servo_gearbox_d1                     = 8;
 
 steering_servo_gearbox_d2                     = 6;
@@ -277,13 +277,13 @@ steering_rack_link_linkage_thickness          = steering_rack_link_bearing_beari
 
 // The length of the rail in the center of the steering panel that holds the rack
 steering_panel_rail_len                       = steering_panel_length
-                                                       - knuckle_dia * 2;
+                                                 - knuckle_dia * 2;
 
 steering_panel_rail_rad                       = 0.5;
 
 // The height of the rails at the center of the steering panel that holds the rack
 steering_panel_rail_height                    = min(4,
-                                                           steering_rack_base_height - 1);
+                                                    steering_rack_base_height - 1);
 
 // The tolerance to add to the hole for the rail
 steering_rack_rail_tolerance                  = 0.7;
@@ -318,7 +318,7 @@ steering_servo_mount_connector_bolt_head_type = "pan";
 
 // Knuckle center along X. Do not edit, used for Ackermann geometry calculations
 steering_x_left_knuckle                       = -steering_panel_length / 2
-                                                       + knuckle_dia / 2;
+                                                 + knuckle_dia / 2;
 
 // Diameter and width of the tie rod
 tie_rod_outer_dia                             = 14.0;
@@ -364,13 +364,13 @@ tie_rod_shaft_bearing_pin_chamfer_height      = 1.5;
 
 // center of the left wheel
 wheel_center_offset                           = wheel_w / 2 +
-                                                       (wheel_rear_shaft_protrusion_height
-                                                        - (knuckle_shaft_dia / 2));
+                                                 (wheel_rear_shaft_protrusion_height
+                                                 - (knuckle_shaft_dia / 2));
 
 // distance between centers of the front wheels
 wheels_track_width                            = steering_panel_length
-                                                       + (wheel_center_offset * 2)
-                                                       - knuckle_shaft_dia / 2;
+                                                 + (wheel_center_offset * 2)
+                                                 - knuckle_shaft_dia / 2;
 
 // The full lateral length of the knuckle tie-rod arm.
 // This value is used as the side length of the Ackermann trapezoid when computing
@@ -385,37 +385,37 @@ steering_arm_full_len = calc_knuckle_connector_full_len(length=knuckle_tie_rod_s
 
 // Do not edit, used for Ackermann geometry calculations
 steering_rack_link_bearing_border_w           = (steering_rack_link_bearing_outer_d
-                                                        - steering_rack_link_bearing_d)
-                                                       / 2;
+                                                 - steering_rack_link_bearing_d)
+                                                 / 2;
 
 // X-coordinate of the steering-rack bearing connector center
 steering_rack_connector_x_pos                 = -steering_rack_teethed_length
-                                                        / 2
-                                                       - steering_rack_link_bearing_outer_d
-                                                       / 2
-                                                       + steering_rack_link_bearing_border_w;
+                                                 / 2
+                                                 - steering_rack_link_bearing_outer_d
+                                                 / 2
+                                                 + steering_rack_link_bearing_border_w;
 
 // X-axis distance between the kingpin post and the steering-rack bearing connector center
 steering_distance_between_kingpin_and_rack    = abs(steering_x_left_knuckle)
-                                                       - abs(steering_rack_connector_x_pos);
+                                                 - abs(steering_rack_connector_x_pos);
 
 // The length of the L-bracket part that is connected to the rack
 steering_rack_link_rack_side_h_length         = knuckle_shaft_connector_extra_len
-                                                       + knuckle_shaft_connector_dia
-                                                       + knuckle_shaft_connector_extra_arm_len
-                                                       + steering_rack_link_bearing_outer_d / 2
-                                                       + steering_rack_link_bearing_border_w;
+                                                 + knuckle_shaft_connector_dia
+                                                 + knuckle_shaft_connector_extra_arm_len
+                                                 + steering_rack_link_bearing_outer_d / 2
+                                                 + steering_rack_link_bearing_border_w;
 
 // The length of the L-shaped rack link that is connected to the knuckle
 steering_rack_link_rack_side_w_length         = steering_distance_between_kingpin_and_rack
-                                                       - steering_rack_link_bearing_d
-                                                       - steering_rack_link_bearing_border_w;
+                                                 - steering_rack_link_bearing_d
+                                                 - steering_rack_link_bearing_border_w;
 
 // wheelbase, calculated from the center of the rear axle
 steering_wheelbase_effective                  = abs(chassis_len
-                                                           - steering_panel_distance_from_top
-                                                           - n20_motor_bolts_panel_len / 2
-                                                           - n20_motor_chassis_y_distance);
+                                                    - steering_panel_distance_from_top
+                                                    - n20_motor_bolts_panel_len / 2
+                                                    - n20_motor_chassis_y_distance);
 
 // The angle of the tie-rod arms that forms the Ackermann trapezoid
 steering_angle_deg                            = atan(abs(steering_x_left_knuckle / steering_wheelbase_effective));
@@ -426,10 +426,10 @@ steering_alpha_deg                            = steering_angle_deg + 90;
 // Length of the tie rod
 // Distance between the bearing centers on the tie rod (Ackermann top width)
 tie_rod_bearing_center_distance               = calc_isosceles_trapezoid_top_width(steering_panel_length - knuckle_dia,
-                                                                                          steering_arm_full_len,
-                                                                                          steering_angle_deg);
+                                                                                   steering_arm_full_len,
+                                                                                   steering_angle_deg);
 
 // Overall tie rod length including bearing landings and offsets
 tie_rod_len                                   = tie_rod_bearing_center_distance
-                                                       + tie_rod_bearing_outer_dia
-                                                       + tie_rod_bearing_x_offset * 2;
+                                                 + tie_rod_bearing_outer_dia
+                                                 + tie_rod_bearing_x_offset * 2;

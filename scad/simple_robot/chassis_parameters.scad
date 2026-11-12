@@ -41,8 +41,8 @@ chassis_offset_rad                               = 3;   // [0.0:5]
 
 /* [Hidden] */
 chassis_len                                      = sum([chassis_upper_len,
-                                                            chassis_transition_len,
-                                                            chassis_body_len]);
+                                                        chassis_transition_len,
+                                                        chassis_body_len]);
 chassis_body_half_w                              = chassis_body_w / 2;
 chassis_transition_half_w                        = chassis_transition_w / 2;
 chassis_upper_half_w                             = chassis_upper_w / 2;
@@ -60,22 +60,22 @@ chassis_connector_edge_distance                  = 1.5;
 chassis_connector_bolt_positions                 = [50, 25, 0];
 
 chassis_lower_cutout_pts                         = [[0, 0],
-                                                        [26, 0],
-                                                        [38.25, 5],
-                                                        [44.25, 5],
-                                                        [chassis_body_half_w - 10, 0],
-                                                        [chassis_body_half_w, 5],
-                                                        [chassis_body_half_w, 6]];
+                                                    [26, 0],
+                                                    [38.25, 5],
+                                                    [44.25, 5],
+                                                    [chassis_body_half_w - 10, 0],
+                                                    [chassis_body_half_w, 5],
+                                                    [chassis_body_half_w, 6]];
 
 chassis_upper_pts                                = [[0, 0],
-                                                        [chassis_transition_half_w, 0],
-                                                        [chassis_upper_half_w, chassis_upper_len],
-                                                        [0, chassis_upper_len]];
+                                                    [chassis_transition_half_w, 0],
+                                                    [chassis_upper_half_w, chassis_upper_len],
+                                                    [0, chassis_upper_len]];
 
 chassis_transition_pts                           = [[0, 0],
-                                                        [chassis_body_half_w, 0],
-                                                        [chassis_transition_half_w, chassis_transition_len],
-                                                        [0, chassis_transition_len]];
+                                                    [chassis_body_half_w, 0],
+                                                    [chassis_transition_half_w, chassis_transition_len],
+                                                    [0, chassis_transition_len]];
 
 chassis_counterbore_h                            = 2.2; // The depth of counterbores on the chassis
 
@@ -100,11 +100,11 @@ chassis_pan_servo_slot_dia                       = 6.5;
 // The depth of the cross-shaped recess in the chassis for mounting the steering
 // servo and its horn (either a vertical one or also cross-shaped).
 chassis_pan_servo_slot_recess                    = constraint(2.0,
-                                                                  0,
-                                                                  chassis_thickness - 1);
+                                                              0,
+                                                              chassis_thickness - 1);
 
 chassis_pan_servo_top_ribbon_cuttout_len         = min(18,
-                                                           chassis_upper_w * 0.8);
+                                                       chassis_upper_w * 0.8);
 chassis_pan_servo_top_ribbon_cuttout_h           = 2;
 
 chassis_upper_holes_border_w                     = chassis_side_hole_border_w;
@@ -143,38 +143,38 @@ chassis_upper_side_hole_margin                   = 2;
 chassis_upper_side_hole_start                    = 14;
 
 chassis_upper_rect_holes_specs                   = [[[[32, 5, 1.0], [0, -8, 7]],  // camera ribbon holes
-                                                         [[32, 5, 1.0], [0, -8, 8]],
-                                                         [[32, 5, 1.0], [0, -8, 9]]]];
+                                                     [[32, 5, 1.0], [0, -8, 8]],
+                                                     [[32, 5, 1.0], [0, -8, 9]]]];
 
 chassis_upper_front_pan_slot_depth               = chassis_thickness / 2;
 
 chassis_body_battery_holders_specs               = ["type", "grid",
                                                     "size", [chassis_body_w, chassis_body_len],
                                                     "rows", maybe_add_battery_holders_rows_h([["cells",
-                                                                                           [["w", 0.5,
-                                                                                             "align_y", 0,
-                                                                                             "align_x", 0,
-                                                                                             "placeholder", ["y_offset", -7.5,
-                                                                                                             "x_offset", 1.5,
-                                                                                                             "placeholder_type", "battery_holder",
-                                                                                                             "battery_len", battery_length,
-                                                                                                             "battery_dia", battery_dia,
-                                                                                                             "mount_type", battery_holder_mount_type,
-                                                                                                             "reverse", true,
-                                                                                                             "terminal_type", battery_holder_terminal_type,
-                                                                                                             "side_wall_cutout_type", battery_holder_side_wall_type]],
-                                                                                            ["w", 0.5,
-                                                                                             "align_y", 0,
-                                                                                             "align_x", 0,
-                                                                                             "placeholder", ["placeholder_type", "battery_holder",
-                                                                                                             "y_offset", -7.5,
-                                                                                                             "x_offset", 4.0,
-                                                                                                             "reverse", true,
-                                                                                                             "battery_len", battery_length,
-                                                                                                             "battery_dia", battery_dia,
-                                                                                                             "mount_type", battery_holder_mount_type,
-                                                                                                             "terminal_type", battery_holder_terminal_type,
-                                                                                                             "side_wall_cutout_type", battery_holder_side_wall_type]]]]])];
+                                                                                               [["w", 0.5,
+                                                                                                 "align_y", 0,
+                                                                                                 "align_x", 0,
+                                                                                                 "placeholder", ["y_offset", -7.5,
+                                                                                                                 "x_offset", 1.5,
+                                                                                                                 "placeholder_type", "battery_holder",
+                                                                                                                 "battery_len", battery_length,
+                                                                                                                 "battery_dia", battery_dia,
+                                                                                                                 "mount_type", battery_holder_mount_type,
+                                                                                                                 "reverse", true,
+                                                                                                                 "terminal_type", battery_holder_terminal_type,
+                                                                                                                 "side_wall_cutout_type", battery_holder_side_wall_type]],
+                                                                                                ["w", 0.5,
+                                                                                                 "align_y", 0,
+                                                                                                 "align_x", 0,
+                                                                                                 "placeholder", ["placeholder_type", "battery_holder",
+                                                                                                                 "y_offset", -7.5,
+                                                                                                                 "x_offset", 4.0,
+                                                                                                                 "reverse", true,
+                                                                                                                 "battery_len", battery_length,
+                                                                                                                 "battery_dia", battery_dia,
+                                                                                                                 "mount_type", battery_holder_mount_type,
+                                                                                                                 "terminal_type", battery_holder_terminal_type,
+                                                                                                                 "side_wall_cutout_type", battery_holder_side_wall_type]]]]])];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Front panel dimensions
@@ -194,18 +194,18 @@ front_panel_connector_bolt_dia                   = m25_hole_dia;
 
 front_panel_connector_bolt_bore_dia              = front_panel_connector_bolt_dia * 2.5;
 front_panel_connector_bolt_bore_h                = min(1.5,
-                                                           front_panel_thickness * 0.7);
+                                                       front_panel_thickness * 0.7);
 
 front_panel_connector_len                        = 15;
 
 front_panel_connector_width                      = constraint(chassis_upper_w - 2,
-                                                                  10,
-                                                                  30);
+                                                              10,
+                                                              30);
 front_panel_connector_bolts_padding_y            = 1;
 
 front_panel_connector_bolt_spacing               = [constraint(10,
-                                                                   front_panel_connector_bolt_bore_dia * 2 + 3,
-                                                                   front_panel_connector_width), 0];
+                                                               front_panel_connector_bolt_bore_dia * 2 + 3,
+                                                               front_panel_connector_width), 0];
 
 front_panel_bolt_dia                             = m25_hole_dia;
 
@@ -237,44 +237,44 @@ front_panel_ultrasonic_cutout_depth              = 0.8;
 
 front_panel_rear_panel_ring_width                = 2;
 chassis_single_holes_specs                       = [[[8, 0, -5, 0]],
-                                                        [[8, 0, 5, 0]],
-                                                        [[6, 0,
-                                                          chassis_body_w / 2 - n20_motor_bolts_panel_offset
-                                                          - n20_can_height, -40]],
-                                                        [[6, 30.2,
-                                                          chassis_body_w / 2 - n20_motor_bolts_panel_offset
-                                                          - n20_can_height, -30]],
-                                                        [[6.0, 30.2,
-                                                          -chassis_body_w / 2 + n20_motor_bolts_panel_offset
-                                                          + n20_can_height, -40]],
-                                                        [[6.0, 30.2,
-                                                          -chassis_body_w / 2 + n20_motor_bolts_panel_offset
-                                                          + n20_can_height, -30]]];
+                                                    [[8, 0, 5, 0]],
+                                                    [[6, 0,
+                                                      chassis_body_w / 2 - n20_motor_bolts_panel_offset
+                                                      - n20_can_height, -40]],
+                                                    [[6, 30.2,
+                                                      chassis_body_w / 2 - n20_motor_bolts_panel_offset
+                                                      - n20_can_height, -30]],
+                                                    [[6.0, 30.2,
+                                                      -chassis_body_w / 2 + n20_motor_bolts_panel_offset
+                                                      + n20_can_height, -40]],
+                                                    [[6.0, 30.2,
+                                                      -chassis_body_w / 2 + n20_motor_bolts_panel_offset
+                                                      + n20_can_height, -30]]];
 
 chassis_rect_holes_specs                         = [[[[10, 20, 4.0], [10, 0, 40]], // third in the center
-                                                         [[10, 20, 4.0], [10, 0, 38]], // second in the center
-                                                         [[10, 20, 4.0], [10, 0, 35]]], // first in the center
-                                                        // side holes
-                                                        [[[10, 15, 4.0], [10,
-                                                                          chassis_body_w / 2 - 6.5,
-                                                                          40]],
-                                                         [[10, 15, 4.0], [10,
-                                                                          chassis_body_w / 2 - 6.5,
-                                                                          40]]],
-                                                        [[[10, 15, 4.0], [10,
-                                                                          -chassis_body_w / 2 + 6.5,
-                                                                          40],],
-                                                         [[10, 15, 4.0], [10,
-                                                                          -chassis_body_w / 2 + 6.5,
-                                                                          40]]]];
+                                                     [[10, 20, 4.0], [10, 0, 38]], // second in the center
+                                                     [[10, 20, 4.0], [10, 0, 35]]], // first in the center
+                                                    // side holes
+                                                    [[[10, 15, 4.0], [10,
+                                                                      chassis_body_w / 2 - 6.5,
+                                                                      40]],
+                                                     [[10, 15, 4.0], [10,
+                                                                      chassis_body_w / 2 - 6.5,
+                                                                      40]]],
+                                                    [[[10, 15, 4.0], [10,
+                                                                      -chassis_body_w / 2 + 6.5,
+                                                                      40],],
+                                                     [[10, 15, 4.0], [10,
+                                                                      -chassis_body_w / 2 + 6.5,
+                                                                      40]]]];
 
 chassis_panel_stack_slot_specs                   = [[[[15, 30, 6.0], [14, 35, 0]],  // side hole near fuse stack
-                                                         // [[32, 15, 3.0], [0, 47.2, 0]]
+                                                     // [[32, 15, 3.0], [0, 47.2, 0]]
                                                     ], // hole under left smd battery
-                                                        [[[25, 14, 3.0], [10, -4, 0]], // upper hole under fuse stack
-                                                         [[25, 14, 3.0], [10, -4, 0]], // lower hole under fuse stack
-                                                         // [[35, 14, 3.0], [10, -22, 0]]
-                                                        ], // hole under right smd battery
+                                                    [[[25, 14, 3.0], [10, -4, 0]], // upper hole under fuse stack
+                                                     [[25, 14, 3.0], [10, -4, 0]], // lower hole under fuse stack
+                                                     // [[35, 14, 3.0], [10, -22, 0]]
+                                                    ], // hole under right smd battery
                                                     ];
 // ─────────────────────────────────────────────────────────────────────────────
 // Rear panel: A vertical rear plate with dimensions including two mounting

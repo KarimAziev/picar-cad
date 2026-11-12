@@ -8,15 +8,15 @@
   * License: GPL-3.0-or-later
   */
 include <../rc_params.scad>
-include <rear_axle/structure_params.scad>
-include <rear_axle/hardware_params.scad>
 include <rear_axle/arm_hub_params.scad>
+include <rear_axle/hardware_params.scad>
+include <rear_axle/structure_params.scad>
 
 use <../lib/plist.scad>
 use <../placeholders/hsp_rear_drivetrain.scad>
 use <../placeholders/rc_touring_wheel.scad>
-use <rear_chassis/computed_params.scad>
 use <rear_axle/rear_axle_assembly.scad>
+use <rear_chassis/computed_params.scad>
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -31,7 +31,11 @@ use <rear_axle/rear_axle_assembly.scad>
   `settings`: `rear_axle_settings` in `rear_axle/structure_params.scad`.
   **Returns:** [x, y, z] translation before a +90 degree rotation about Y.
  */
-function rear_suspension_wheel_origin(housing, arm, hub, axle, wheel,
+function rear_suspension_wheel_origin(housing,
+                                      arm,
+                                      hub,
+                                      axle,
+                                      wheel,
                                       settings=rear_axle_settings) =
   rear_axle_wheel_shaft_origin(housing, arm, hub, axle, settings)
   + [hsp_rear_wheel_axle_mount_z(axle) - plist_get("mount_z", wheel), 0, 0];
@@ -61,15 +65,14 @@ function rear_suspension_chassis_datum(layout, mount_h, joint_spacing) =
   `wheel`: `rc_wheel_plist` in `../rc_params.scad`.
   **Behavior:** Uses the assembled reference pose, with zero joint separation.
  */
-function rear_suspension_wheel_reference_center(
-    layout,
-    mount_h,
-    housing=rear_housing_spec,
-    arm=rear_lower_arm_spec,
-    hub=rear_hub_spec,
-    axle=rear_wheel_axle_spec,
-    wheel=rc_wheel_plist,
-    settings=rear_axle_settings) =
+function rear_suspension_wheel_reference_center(layout,
+                                                mount_h,
+                                                housing=rear_housing_spec,
+                                                arm=rear_lower_arm_spec,
+                                                hub=rear_hub_spec,
+                                                axle=rear_wheel_axle_spec,
+                                                wheel=rc_wheel_plist,
+                                                settings=rear_axle_settings) =
   let (p = rear_suspension_wheel_origin(housing, arm, hub, axle, wheel, settings)
            + [plist_get("width", wheel) / 2, 0, 0],
        datum = rear_suspension_chassis_datum(layout, mount_h, 0))
@@ -109,17 +112,29 @@ module rear_suspension_assembly(layout=rear_chassis_layout(),
                                 wheel=rc_wheel_plist,
                                 show_wheels=false,
                                 show_tires=true) {
-  rear_axle_assembly(settings=settings, housing=housing, arm=arm, hub=hub,
-                     tower=tower, differential=differential, pinion=pinion,
-                     dogbone=dogbone, axle=axle, sleeve=sleeve, shock=shock,
-                     fastener=fastener, layout=layout);
+  rear_axle_assembly(settings=settings,
+                     housing=housing,
+                     arm=arm,
+                     hub=hub,
+                     tower=tower,
+                     differential=differential,
+                     pinion=pinion,
+                     dogbone=dogbone,
+                     axle=axle,
+                     sleeve=sleeve,
+                     shock=shock,
+                     fastener=fastener,
+                     layout=layout);
   if (show_wheels) {
     p = rear_suspension_wheel_origin(housing, arm, hub, axle, wheel, settings);
     for (side = [-1, 1]) {
       translate([side * p[0], p[1], p[2]]) {
         rotate([0, side * 90, 0]) {
-          rc_touring_wheel(pl=wheel, anchor=[0, 0, 1], show_tire=show_tires,
-                           slot_mode=false, clearance=0);
+          rc_touring_wheel(pl=wheel,
+                           anchor=[0, 0, 1],
+                           show_tire=show_tires,
+                           slot_mode=false,
+                           clearance=0);
         }
       }
     }

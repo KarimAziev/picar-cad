@@ -30,12 +30,12 @@ module grid(grid_spec,
 
     is_pair = (len(inner_wall_thickness) == 2);
     row_wall_spec = is_pair
-      ? inner_wall_thickness[0]
-      : inner_wall_thickness;
+                    ? inner_wall_thickness[0]
+                    : inner_wall_thickness;
 
     col_wall_spec = is_pair
-      ? inner_wall_thickness[1]
-      : inner_wall_thickness;
+                    ? inner_wall_thickness[1]
+                    : inner_wall_thickness;
 
     row_prefix = cumsums(row_heights);
     row_bottoms = [for (i = [0 : len(row_heights) - 1])

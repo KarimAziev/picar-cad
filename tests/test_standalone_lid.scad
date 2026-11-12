@@ -30,19 +30,19 @@ assert(plist_get("adapter_gap", lid) == 0);
 assert(plist_get("bolt_l", plist_get("adapter_props", lid)) == 8);
 assert(plist_get("lidar_offset", lid) == [0, 0]);
 fuse         = lid_fuse_validate(lid_fuse_props(plist_get("fuse", spec), lid),
-                         lid,
-                         mounts);
+                                 lid,
+                                 mounts);
 assert(plist_get("enabled", fuse));
 assert(len(plist_get("slots", fuse)) == 4);
 echo("PASS: standalone equipment fits the unchanged roof with centered flush adapter");
 
 // Swapping sides changes component placement without moving mechanical datums.
 swapped      = [plist_merge(standalone_lid_equipment[0],
-                       ["placement", "right",
-                        "rotation", 180]),
+                            ["placement", "right",
+                             "rotation", 180]),
                 plist_merge(standalone_lid_equipment[1],
-                       ["placement", "left",
-                        "rotation", 0])];
+                            ["placement", "left",
+                             "rotation", 0])];
 mirrored     = lid_equipment_layout(swapped, lid);
 assert(len(mirrored) == 2);
 assert(plist_get("pos", mirrored[0])[0] < 0);
@@ -53,14 +53,14 @@ fixed        = lid_equipment_layout([for (m = mounts)
                                 "rotation", plist_get("rotation", m)
                               - plist_get("power_rotation", lid, 0),
                                 "count", 1])],
-                             lid);
+                                    lid);
 assert([for (m = fixed) plist_get("pos", m)] == [for (m = mounts) plist_get("pos", m)]);
 echo("PASS: swapped sides and explicit XY placements use shared geometry");
 
 // With no lidar, fill more of the available roof with meters.
 plain        = plist_merge(standalone_lipo_case,
-                    ["lid", plist_merge(spec, ["lidar", undef,
-                                               "fuse", undef])]);
+                           ["lid", plist_merge(spec, ["lidar", undef,
+                                                      "fuse", undef])]);
 plain_props  = multi_lipo_pack_lid_props(plain);
 meter_specs  = plist_get("meter", multi_lipo_lid_equipment_presets);
 meter_mounts = lid_equipment_layout(meter_specs, lid);

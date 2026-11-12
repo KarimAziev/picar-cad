@@ -150,11 +150,11 @@ module sliding_lid(size=[86, 90, 35],
           let (th = plist_get("height", pl),
                translation = plist_get("translation", pl),
                updated_translation = is_list(translation)
-                 ? [translation[0],
-                    translation[1],
-                    translation[2]
-                    - th]
-                 : [0, 0, -th],
+                                     ? [translation[0],
+                                        translation[1],
+                                        translation[2]
+                                        - th]
+                                     : [0, 0, -th],
                merged = plist_merge(pl,
                                     ["translation", updated_translation,
                                      "height", th + 0.1]))
@@ -176,8 +176,8 @@ module sliding_lid(size=[86, 90, 35],
         debug_highlight(debug=debug) {
           color(hook_color, alpha=1) {
             cylinder(h=is_undef(hook_l)
-                     ? min(w / 2, 4)
-                     : hook_l,
+                       ? min(w / 2, 4)
+                       : hook_l,
                      r=hook_h,
                      center=true,
                      $fn=18);

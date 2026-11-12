@@ -53,8 +53,8 @@ function rear_power_case_mount(pl,
        occupied_x = max(concat([abs(motor_bounds[0][0]), abs(motor_bounds[1][0])],
                                [for (p = panels, b = plist_get("bounds", p)) abs(b[0])])),
        span = is_undef(plist_get("bolt_spacing", pl))
-         ? [2 * (occupied_x + radius + clearance), max_span[1]]
-         : [requested_span[0], requested_span[1]],
+              ? [2 * (occupied_x + radius + clearance), max_span[1]]
+              : [requested_span[0], requested_span[1]],
        center = [0,
                  (motor_bounds[0][1] + motor_bounds[1][1]) / 2 + y_offset, 0],
        canonical_span = orientation == "lwh" ? [span[1], span[0]] : span,

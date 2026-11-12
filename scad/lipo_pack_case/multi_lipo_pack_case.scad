@@ -68,12 +68,12 @@ function _multi_lipo_pack_positions(pack_sizes,
        y_steps = [for (size = pack_sizes) size[1] + l_clearance + inner_t])
   [for (i = [0 : len(pack_sizes) - 1])
     layout_axis == "x"
-        ? [left_t + w_clearance / 2 + _multi_lipo_pack_sum_before(x_steps, i),
-           rear_t + (inner_size[1] - lengths[i]) / 2,
-           bottom_t]
-        : [left_t + (inner_size[0] - widths[i]) / 2,
-           rear_t + l_clearance / 2 + _multi_lipo_pack_sum_before(y_steps, i),
-           bottom_t]];
+    ? [left_t + w_clearance / 2 + _multi_lipo_pack_sum_before(x_steps, i),
+       rear_t + (inner_size[1] - lengths[i]) / 2,
+       bottom_t]
+    : [left_t + (inner_size[0] - widths[i]) / 2,
+       rear_t + l_clearance / 2 + _multi_lipo_pack_sum_before(y_steps, i),
+       bottom_t]];
 
 // Match rounded_rect's percentage basis and clamp while rejecting negative radii.
 function _multi_lipo_pack_corner_r(spec, length, height) =
@@ -107,7 +107,7 @@ function _multi_lipo_pack_slots(slots, size) =
            "slot size must be [length, height]")
     let (d = is_undef(d_spec) ? 0 : maybe_percent_string_to_num(d_spec, min(size)),
          dims = is_undef(size_spec) ? [d, d]
-             : [for (i = [0 : 1]) maybe_percent_string_to_num(size_spec[i], size[i])],
+                : [for (i = [0 : 1]) maybe_percent_string_to_num(size_spec[i], size[i])],
          pos = [for (i = [0 : 1]) maybe_percent_string_to_num(pos_spec[i], size[i])])
     assert(is_num(d) && d >= 0 && is_num(dims[0]) && is_num(dims[1])
            && min(dims) > 0,
@@ -151,8 +151,8 @@ function _multi_lipo_pack_shape_props(wall, length, base_h) =
          requested_r = _multi_lipo_pack_corner_r(plist_get("corner_r", spec,
                                                            plist_get("corner_r", wall, 0)), length, h),
          r = kind == "trapezoid_rounded_top"
-       ? (length == 0 ? 0 : min(requested_r, top / 2, top * h / (top + length)))
-       : requested_r,
+             ? (length == 0 ? 0 : min(requested_r, top / 2, top * h / (top + length)))
+             : requested_r,
          vents = plist_get("vent_props", spec, []),
          debug = plist_get("debug", spec, false),
          round_bottom = plist_get("round_bottom", spec, true),
@@ -171,7 +171,7 @@ function _multi_lipo_pack_shape_props(wall, length, base_h) =
       assert(is_num(radius) && radius >= 0,
              "custom corner radii must be nonnegative numbers or percentages")
       !round_bottom && abs(pts[i][1] - polygon_min_y(pts)) < 0.000001
-             ? 0 : radius])
+      ? 0 : radius])
     ["kind", kind,
      "h", h,
      "t", top,
@@ -383,11 +383,11 @@ function multi_lipo_pack_vent_props(wall, span, wall_h) =
     assert(vent_w >= 0 && vent_h >= 0 && col_gap >= 0 && row_gap >= 0,
            "vent sizes and gaps must not be negative")
     let (cols = vent_w > 0 && vent_w <= available_span
-                                                              ? max(1, floor((available_span + col_gap) / (vent_w + col_gap)))
-                                                              : 0,
+                ? max(1, floor((available_span + col_gap) / (vent_w + col_gap)))
+                : 0,
          rows = vent_h > 0 && vent_h <= available_h
-                                                              ? max(1, floor((available_h + row_gap) / (vent_h + row_gap)))
-                                                              : 0,
+                ? max(1, floor((available_h + row_gap) / (vent_h + row_gap)))
+                : 0,
          used_span = cols > 0 ? cols * vent_w + (cols - 1) * col_gap : 0,
          used_h = rows > 0 ? rows * vent_h + (rows - 1) * row_gap : 0,
          span_start = left_pad + (available_span - used_span) / 2,
@@ -547,9 +547,9 @@ function multi_lipo_pack_props(plist,
   assert(in_list(requested_layout, ["auto", "x", "y"]),
          "pack_layout must be \"auto\", \"x\", or \"y\"")
   let (layout_axis = requested_layout == "auto"
-       ? (_multi_lipo_pack_layout_score(x_inner_size)
-          <= _multi_lipo_pack_layout_score(y_inner_size) ? "x" : "y")
-       : requested_layout,
+                     ? (_multi_lipo_pack_layout_score(x_inner_size)
+                        <= _multi_lipo_pack_layout_score(y_inner_size) ? "x" : "y")
+                     : requested_layout,
        inner_size_2d = layout_axis == "x" ? x_inner_size : y_inner_size,
        top_clearance = plist_get("top_clearance", plist, 0),
        base_h = assert(top_clearance >= 0, "top_clearance must be nonnegative")
@@ -566,7 +566,7 @@ function multi_lipo_pack_props(plist,
        wall_h = max([for (name = ["front", "rear", "left", "right", "inner"])
          let (wall = plist_get(name, wall_props))
          (name != "inner" || pack_n > 1) && plist_get("l", wall) > 0
-                          ? plist_get("h", wall) : 0]),
+         ? plist_get("h", wall) : 0]),
        wall_size = [body_w, body_l, bottom_t + wall_h],
        rail_props = multi_lipo_pack_rail_props(plist, wall_size, wall_props),
        canonical_size = [body_w, body_l,
@@ -617,9 +617,9 @@ function multi_lipo_pack_props(plist,
                                                    max_bolt_spacing[1])])
   let (ear_d = plist_get("mount_ear_d", plist, 0),
        envelope = ear_d > 0
-       ? [max(canonical_size[0], bolt_spacing[0] + ear_d),
-          max(canonical_size[1], bolt_spacing[1] + ear_d), canonical_size[2]]
-       : canonical_size)
+                  ? [max(canonical_size[0], bolt_spacing[0] + ear_d),
+                     max(canonical_size[1], bolt_spacing[1] + ear_d), canonical_size[2]]
+                  : canonical_size)
   assert(ear_d >= 0, "Mounting ear diameter must be nonnegative")
   ["size", orientation_size(case_orientation, envelope),
    "canonical_size", envelope,
@@ -1152,9 +1152,9 @@ module multi_lipo_pack_case(pl,
           wall = plist_get("inner", wall_props);
           axis = layout_axis == "x" ? "y" : "x";
           x = layout_axis == "x"
-            ? pack_position[0] + pack_size[0] + w_clearance / 2 : left_t;
+              ? pack_position[0] + pack_size[0] + w_clearance / 2 : left_t;
           y = layout_axis == "y"
-            ? pack_position[1] + pack_size[1] + l_clearance / 2 : rear_t;
+              ? pack_position[1] + pack_size[1] + l_clearance / 2 : rear_t;
           _wall_debug(wall, inner_t, axis, x, y);
           if (plist_get("h", wall) > 0 && plist_get("l", wall) > 0) {
             color(case_color, alpha=1) {

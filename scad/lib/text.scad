@@ -389,16 +389,16 @@ function normalize_texts(texts = [],
                          default_translation,
                          default_color) =
   let (texts = is_string(texts) || is_num(texts)
-       ? [is_num(texts) ? str(texts) : texts]
-       : [for (v = with_default(texts, []))
-         if (!is_undef(v) &&
-             (is_string(v) || is_num(v) ||
-              is_list(v) && !plist_is(v) && is_string(v[1])
-              || is_num(v[1]) ||
-              (is_list(v) &&
+               ? [is_num(texts) ? str(texts) : texts]
+               : [for (v = with_default(texts, []))
+                 if (!is_undef(v) &&
+                     (is_string(v) || is_num(v) ||
+                      is_list(v) && !plist_is(v) && is_string(v[1])
+                      || is_num(v[1]) ||
+                      (is_list(v) &&
 
-               is_string(plist_get("text", v))
-               || is_num(plist_get("text", v)))))
+                       is_string(plist_get("text", v))
+                       || is_num(plist_get("text", v)))))
              (is_list(v) && !plist_is(v)) ? concat(["text"], v) : v],
        gap = with_default(gap, 0),
        default_plist = plist_merge(["font", default_font,
@@ -412,19 +412,19 @@ function normalize_texts(texts = [],
                                     "color", default_color],
                                    with_default(plist, [])),
        text_strings = [for (v = texts) let (txt = is_string(v) || is_num(v)
-                                            ? v : plist_get("text", v, ""))
+                                                  ? v : plist_get("text", v, ""))
          is_num(txt) ? str(txt) : txt],
        text_plists = [for (v = texts) is_string(v) || is_num(v)
-                                        ?
-                                        plist_merge(default_plist,
-                                                    ["text", is_num(v)
-                                                     ? str(v)
-                                                     : v])
-                                        : plist_merge(should_swap_size(v)
-                                                      ? plist_merge(default_plist,
-                                                                    ["valign", "center",
-                                                                     "halign", "center",])
-                                                      : default_plist, v)],
+                                      ?
+                                      plist_merge(default_plist,
+                                                  ["text", is_num(v)
+                                                           ? str(v)
+                                                           : v])
+                                      : plist_merge(should_swap_size(v)
+                                                    ? plist_merge(default_plist,
+                                                                  ["valign", "center",
+                                                                   "halign", "center",])
+                                                    : default_plist, v)],
 
        text_sizes = [for (v = text_plists) get_text_size(plist_get("text", v),
                                                          v)],
@@ -572,12 +572,12 @@ module text_rows(texts = [],
                // ? -x_size / 2
                // : 0,
                x_offset = halign == "right"
-               ? (max_x_size - x_size)
-               : halign == "left"
-               ? 0
-               : halign == "center"
-               ? (max_x_size / 2) - (x_size / 2)
-               : 0) {
+                          ? (max_x_size - x_size)
+                          : halign == "left"
+                            ? 0
+                            : halign == "center"
+                              ? (max_x_size / 2) - (x_size / 2)
+                              : 0) {
 
             translate([x_offset, final_y, 0]) {
               if (!is_undef(bg_color)) {

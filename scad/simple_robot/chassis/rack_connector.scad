@@ -48,8 +48,8 @@ module rack_connector_assembly(bracket_color=blue_grey_carbon,
     rack_connector();
   }
   angle = rotation_dir > 0 ?
-    ($t < 0.5 ? -(pinion_angle_sync($t)) : 0) :
-    ($t > 0.5 ? -(pinion_angle_sync($t)) : 0);
+          ($t < 0.5 ? -(pinion_angle_sync($t)) : 0) :
+          ($t > 0.5 ? -(pinion_angle_sync($t)) : 0);
 
   rotate([0, 0, rotation_dir * angle]) {
     translate([-steering_rack_link_rack_side_w_length / 2,

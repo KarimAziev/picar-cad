@@ -24,12 +24,12 @@ power_case_printable_grid = ["type", "grid",
                              "rows", [["h", 1,
                                        "cells", [["w", 0.25,
                                                   "placeholder", ["type", "power_case_lid"]],
-                                         ["w", 0.25,
-                                          "placeholder", ["type", "power_case"]],
-                                         ["w", 0.25,
-                                          "placeholder", ["type", "power_socket_lid"]],
-                                         ["w", 0.25,
-                                          "placeholder", ["type", "power_socket_case"]]]]]];
+                                                 ["w", 0.25,
+                                                  "placeholder", ["type", "power_case"]],
+                                                 ["w", 0.25,
+                                                  "placeholder", ["type", "power_socket_lid"]],
+                                                 ["w", 0.25,
+                                                  "placeholder", ["type", "power_socket_case"]]]]]];
 
 module power_case_printable_stack(grid=power_case_printable_grid,
                                   color="white",

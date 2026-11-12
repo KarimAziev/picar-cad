@@ -20,11 +20,13 @@ use <shapes2d.scad>
  */
 function enclosure_dimension(value, total) =
   let (n = maybe_percent_string_to_num(value, total))
-  assert(is_num(n) && n >= 0, "Dimension must be nonnegative mm or a percentage")
+  assert(is_num(n) && n >= 0,
+         "Dimension must be nonnegative mm or a percentage")
   n;
 
 function enclosure_dimensions(spec, size) =
-  assert(is_list(spec) && len(spec) == len(size), "Dimension vector has wrong length")
+  assert(is_list(spec) && len(spec) == len(size),
+         "Dimension vector has wrong length")
   [for (i = [0 : len(size) - 1]) enclosure_dimension(spec[i], size[i])];
 
 function _enclosure_overlap(a, b, gap=0) =
@@ -37,14 +39,14 @@ function _enclosure_opening(spec, size, references, top) =
   let (dims = top
               ? [enclosure_dimension(plist_get("l", spec), size[0]),
                  enclosure_dimension(plist_get("h", spec,
-                    size[1] - enclosure_dimension(plist_get("bottom", spec, 0), size[1])), size[1])]
+                                               size[1] - enclosure_dimension(plist_get("bottom", spec, 0), size[1])), size[1])]
               : enclosure_dimensions(plist_get("size", spec), size),
        at = plist_get("at", spec),
        ref = is_undef(at) ? undef : plist_get(at, references),
        pos = top
              ? [is_undef(at)
-                 ? enclosure_dimension(plist_get("offset", spec, (size[0] - dims[0]) / 2), size[0])
-                 : ref[0] - dims[0] / 2,
+                ? enclosure_dimension(plist_get("offset", spec, (size[0] - dims[0]) / 2), size[0])
+                : ref[0] - dims[0] / 2,
                 size[1] - dims[1]]
              : is_undef(at)
                ? enclosure_dimensions(plist_get("pos", spec, [0, 0]), size)
@@ -55,22 +57,24 @@ function _enclosure_opening(spec, size, references, top) =
          && pos[0] + dims[0] <= size[0] + 0.000001
          && pos[1] + dims[1] <= size[1] + 0.000001,
          "Panel opening must fit its reference box")
-  plist_merge(spec, concat(["pos", pos, "size", dims,
+  plist_merge(spec,
+              concat(["pos", pos,
+                      "size", dims,
                       "corner_r", min(r, min(dims) / 2),
                       "side", plist_get("side", spec, top ? "bottom" : "all"),
                       "top", top,
                       "rim_chamfer", enclosure_dimension(plist_get("rim_chamfer", spec, 0), min(dims))],
-                           plist_has("vent_gap", spec)
-                             ? ["vent_gap", enclosure_dimension(plist_get("vent_gap", spec), min(size))] : []));
+                     plist_has("vent_gap", spec)
+                     ? ["vent_gap", enclosure_dimension(plist_get("vent_gap", spec), min(size))] : []));
 
 function _enclosure_vent_rect(rect, openings, gap, mode) =
   let (hits = [for (o = openings)
-         let (chamfer = plist_get("rim_chamfer", o, 0))
+    let (chamfer = plist_get("rim_chamfer", o, 0))
          if (_enclosure_overlap(rect, [plist_get("pos", o) - [chamfer, 0],
                                        plist_get("size", o) + [2 * chamfer, chamfer]],
                                 plist_get("vent_gap", o, gap))) o],
        stop = min(concat([rect[0][1] + rect[1][1]],
-                        [for (o = hits) plist_get("pos", o)[1] - plist_get("vent_gap", o, gap)])),
+                         [for (o = hits) plist_get("pos", o)[1] - plist_get("vent_gap", o, gap)])),
        h = max(0, stop - rect[0][1]))
   len(hits) == 0 || mode == "clip"
   ? rect
@@ -106,34 +110,40 @@ function _enclosure_vent_rect(rect, openings, gap, mode) =
   **Returns:** Resolved `size`, `openings`, `vents`, and `vent_rects`.
  */
 function enclosure_panel_props(pl,
-                                size,
-                                references=[],
-                                keepouts=[]) =
-  let (openings = concat(
-         [for (c = plist_get("cutouts", pl, [])) _enclosure_opening(c, size, references, true)],
-         [for (s = plist_get("slots", pl, [])) _enclosure_opening(s, size, references, false)]),
+                               size,
+                               references=[],
+                               keepouts=[]) =
+  let (openings = concat([for (c = plist_get("cutouts", pl, [])) _enclosure_opening(c, size, references, true)],
+                         [for (s = plist_get("slots", pl, [])) _enclosure_opening(s, size, references, false)]),
        v = plist_get("vents", pl, []),
        enabled = len(v) > 0 && plist_get("enabled", v, true),
        margin = enclosure_dimensions(plist_get("margin", v, [0, 0, 0, 0]),
-                                      [size[0], size[0], size[1], size[1]]),
+                                     [size[0], size[0], size[1], size[1]]),
        available = size - [margin[0] + margin[1], margin[2] + margin[3]],
        slot = enclosure_dimensions(plist_get("size", v, [0, 0]), size),
        gap = enclosure_dimensions(plist_get("gap", v, [0, 0]), size),
        count = [for (i = [0, 1]) !enabled || slot[i] <= 0 || available[i] < slot[i]
-                  ? 0 : floor((available[i] + gap[i]) / (slot[i] + gap[i]))],
+                                 ? 0 : floor((available[i] + gap[i]) / (slot[i] + gap[i]))],
        start = [margin[0], margin[2]]
-                + (available - [for (i = [0, 1]) count[i] * (slot[i] + gap[i]) - gap[i]]) / 2,
+               + (available - [for (i = [0, 1]) count[i] * (slot[i] + gap[i]) - gap[i]]) / 2,
        opening_gap = enclosure_dimension(plist_get("opening_gap", v, 0), min(size)),
        mode = plist_get("opening_mode", v, "shorten"),
        obstacles = concat(openings, [for (k = keepouts)
-          ["pos", k[0], "size", k[1], "corner_r", 0, "side", "all", "top", false,
-           "rim_chamfer", 0]]))
-  assert(member(mode, ["shorten", "omit", "clip"]), "Invalid vent opening_mode")
+         ["pos", k[0],
+          "size", k[1],
+          "corner_r", 0,
+          "side", "all",
+          "top", false,
+          "rim_chamfer", 0]]))
+  assert(member(mode, ["shorten", "omit", "clip"]),
+         "Invalid vent opening_mode")
   ["size", size,
    "openings", openings,
    "vent_obstacles", obstacles,
-   "vents", plist_merge(v, ["opening_gap", opening_gap, "opening_mode", mode,
-                              "corner_r", enclosure_dimension(plist_get("corner_r", v, 0), min(slot))]),
+   "vents", plist_merge(v,
+                        ["opening_gap", opening_gap,
+                         "opening_mode", mode,
+                         "corner_r", enclosure_dimension(plist_get("corner_r", v, 0), min(slot))]),
    "vent_rects", [for (x = [0 : 1 : count[0] - 1], y = [0 : 1 : count[1] - 1])
      let (rect = [start + [x * (slot[0] + gap[0]), y * (slot[1] + gap[1])], slot],
           trimmed = _enclosure_vent_rect(rect, obstacles, opening_gap, mode))
@@ -180,15 +190,23 @@ module _enclosure_opening_shape(o) {
 module enclosure_panel_vents(p, keepouts=[]) {
   v = plist_get("vents", p);
   obstacles = [for (k = keepouts)
-    ["pos", k[0], "size", k[1], "corner_r", 0, "side", "all",
-     "top", false, "rim_chamfer", 0]];
+    ["pos", k[0],
+     "size", k[1],
+     "corner_r", 0,
+     "side", "all",
+     "top", false,
+     "rim_chamfer", 0]];
   difference() {
     for (rect = plist_get("vent_rects", p)) {
-      trimmed = _enclosure_vent_rect(rect, obstacles, plist_get("opening_gap", v),
+      trimmed = _enclosure_vent_rect(rect,
+                                     obstacles,
+                                     plist_get("opening_gap", v),
                                      plist_get("opening_mode", v));
       if (!is_undef(trimmed)) {
         translate(trimmed[0]) {
-          rounded_rect(trimmed[1], r=min(plist_get("corner_r", v), min(trimmed[1]) / 2), fn=24);
+          rounded_rect(trimmed[1],
+                       r=min(plist_get("corner_r", v), min(trimmed[1]) / 2),
+                       fn=24);
         }
       }
     }

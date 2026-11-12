@@ -81,18 +81,18 @@ function wago_chassis_mounts(specs,
        service = plist_get("service_h", spec, 12),
        pb = is_undef(payload) ? undef : plist_get("bounds", payload),
        columns = is_undef(payload) ? []
-       : [for (xy = plist_get("mount_holes", payload))
-         _wago_bounds(concat(xy, [0]),
-                      [2 * plist_get("radius", payload),
-                       2 * plist_get("radius", payload), 0])],
+                 : [for (xy = plist_get("mount_holes", payload))
+                   _wago_bounds(concat(xy, [0]),
+                                [2 * plist_get("radius", payload),
+                                 2 * plist_get("radius", payload), 0])],
        exclusions = concat(obstacles, columns,
                            [for (p = placed) plist_get("bounds", p)]),
        explicit = plist_get("pos", spec),
        headroom = is_undef(payload) ? 0 : plist_get("mount_z", payload)-plate_t,
        candidates = is_undef(pb) || headroom < size[2] + service ? []
-       : !is_undef(explicit) ? [concat(explicit, [plate_t])]
-       : [for (y = [pb[0][1] + size[1]/2 + gap:2:pb[1][1]-size[1]/2-gap],
-               x = [pb[0][0] + size[0]/2 + gap:2:pb[1][0]-size[0]/2-gap]) [x, y, plate_t]],
+                    : !is_undef(explicit) ? [concat(explicit, [plate_t])]
+                      : [for (y = [pb[0][1] + size[1]/2 + gap:2:pb[1][1]-size[1]/2-gap],
+                              x = [pb[0][0] + size[0]/2 + gap:2:pb[1][0]-size[0]/2-gap]) [x, y, plate_t]],
        fits = [for (pos = candidates)
          let (b = _wago_bounds(pos, size, gap))
              if (_wago_inside(b, pb) && _wago_clear(b, exclusions)) pos],

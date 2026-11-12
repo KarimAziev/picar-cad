@@ -10,9 +10,9 @@ include <../../parameters.scad>
 use <../../lib/functions.scad>
 use <step_down_voltage_enclosure.scad>
 
-panel = "both"; // [both, main, text]
+panel        = "both"; // [both, main, text]
 text_panel_t = 1;
-gap = 6;
+gap          = 6;
 
 /**
   ─────────────────────────────────────────────────────────────────────────────

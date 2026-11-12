@@ -16,8 +16,8 @@ include <colors.scad>
 include <parameters.scad>
 include <rc_params.scad>
 include <suspension/front_chassis/computed_params.scad>
-include <suspension/rear_axle/structure_params.scad>
 include <suspension/rear_axle/hardware_params.scad>
+include <suspension/rear_axle/structure_params.scad>
 
 use <head/head_neck.scad>
 use <lib/plist.scad>
@@ -33,11 +33,11 @@ use <suspension/front_chassis/front_frame_util.scad>
 use <suspension/front_chassis/head_frame/head_joint.scad>
 use <suspension/front_suspension_assembly.scad>
 use <suspension/rc_wheels.scad>
-use <suspension/rear_suspension_assembly.scad>
 use <suspension/rear_axle/motor_fit.scad>
 use <suspension/rear_chassis/computed_params.scad>
 use <suspension/rear_chassis/rear_chassis.scad>
 use <suspension/rear_suspension/rear_suspension_joint.scad>
+use <suspension/rear_suspension_assembly.scad>
 use <suspension/upper_steering_plate.scad>
 
 /* [Chassis Parts] */
@@ -343,10 +343,9 @@ module rc_chassis(show_bellcrank_drive=show_bellcrank_drive,
                                 bumper_foam=show_front_bumper_foam,
                                 bumper_pl=front_bumper_plist,
                                 rear_reference=show_rear_suspension
-                                  ? rear_suspension_wheel_reference_center(
-                                      rear_layout, suspension_chassis_mount_h,
-                                      settings=rear_suspension_settings)
-                                  : rc_rear_wheel_reference_center(rear_layout));
+                                               ? rear_suspension_wheel_reference_center(rear_layout, suspension_chassis_mount_h,
+                                                                                        settings=rear_suspension_settings)
+                                               : rc_rear_wheel_reference_center(rear_layout));
   resolved_front_chassis_joint_spacing = split_front_chassis
                                          ? front_chassis_joint_spacing
                                          : 0;
@@ -572,35 +571,30 @@ module rc_chassis(show_bellcrank_drive=show_bellcrank_drive,
                        show_drive_shaft_encoder_sleeve=show_drive_shaft_encoder_sleeve,
                        show_motor_gearbox_bosses=show_motor_gearbox_bosses) {
             if (show_rear_suspension) {
-              motor_fit = rear_axle_motor_fit(
-                layout=rear_layout, housing=rear_housing_spec,
-                differential=rear_differential_spec, pinion=rear_pinion_spec,
-                sleeve=rear_motor_sleeve_spec,
-                mount_h=suspension_chassis_mount_h,
-                joint_spacing=resolved_rear_suspension_joint_spacing);
-              reference_dimensions = chassis_dimensions(
-                layout=rear_layout,
-                rear_reference=rear_suspension_wheel_reference_center(
-                  rear_layout, suspension_chassis_mount_h,
-                  settings=rear_suspension_settings));
-              echo(rear_front_axle_height_delta=plist_get(
-                "rear_front_axle_height_delta", reference_dimensions),
-                   rear_front_ground_height_delta=plist_get(
-                "rear_front_ground_height_delta", reference_dimensions));
+              motor_fit = rear_axle_motor_fit(layout=rear_layout,
+                                              housing=rear_housing_spec,
+                                              differential=rear_differential_spec,
+                                              pinion=rear_pinion_spec,
+                                              sleeve=rear_motor_sleeve_spec,
+                                              mount_h=suspension_chassis_mount_h,
+                                              joint_spacing=resolved_rear_suspension_joint_spacing);
+              reference_dimensions = chassis_dimensions(layout=rear_layout,
+                                                        rear_reference=rear_suspension_wheel_reference_center(rear_layout, suspension_chassis_mount_h,
+                                                                                                              settings=rear_suspension_settings));
+              echo(rear_front_axle_height_delta=plist_get("rear_front_axle_height_delta", reference_dimensions),
+                   rear_front_ground_height_delta=plist_get("rear_front_ground_height_delta", reference_dimensions));
               echo(rear_motor_radial_offset=plist_get("radial_offset", motor_fit),
                    rear_motor_engagement=plist_get("engagement_available", motor_fit),
                    rear_motor_engagement_deficit=plist_get("engagement_deficit", motor_fit));
-              translate(rear_suspension_chassis_datum(
-                  rear_layout, suspension_chassis_mount_h,
-                  resolved_rear_suspension_joint_spacing)) {
+              translate(rear_suspension_chassis_datum(rear_layout, suspension_chassis_mount_h,
+                                                      resolved_rear_suspension_joint_spacing)) {
                 rotate([0, 0, 180]) {
-                  rear_suspension_assembly(
-                    layout=rear_layout,
-                    settings=plist_put("show_mount", false,
-                                        rear_suspension_settings),
-                    wheel=rc_wheel_plist,
-                    show_wheels=show_rear_wheels_preview,
-                    show_tires=show_wheel_tires);
+                  rear_suspension_assembly(layout=rear_layout,
+                                           settings=plist_put("show_mount", false,
+                                                              rear_suspension_settings),
+                                           wheel=rc_wheel_plist,
+                                           show_wheels=show_rear_wheels_preview,
+                                           show_tires=show_wheel_tires);
                 }
               }
             } else if (show_rear_wheels_preview) {

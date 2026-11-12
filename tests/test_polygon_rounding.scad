@@ -34,8 +34,8 @@ wall            = multi_lipo_pack_wall_props(["shape", "custom",
                                                               "debug", true,
                                                               "corner_radii", [5, 5, undef,"20%"],
                                                               "points", [[0, 0,"base"], ["100%", 0], ["100%","100%"], [0,"100%"]]]],
-                                  40,
-                                  20);
+                                             40,
+                                             20);
 shape           = plist_get("shape_props", wall);
 assert(plist_get("corner_radii", shape) == [0, 0, 2, 4]);
 assert(plist_get("debug", shape));

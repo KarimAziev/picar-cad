@@ -21,10 +21,10 @@ function pinion_angle(t,
                       r=steering_pinion_d / 2,
                       min_dist=rack_offset_default_min_dist) =
   let (offst = (t < 0.25) ?
-       ((t / 0.25) * min_dist) :
-       (t < 0.5) ?
-       (min_dist*(1 - ((t - 0.25) / 0.25))) :
-       (t < 0.75) ?
-       (- min_dist * ((t - 0.5) / 0.25)) :
-       (- min_dist*(1 - ((t - 0.75) / 0.25))))
+               ((t / 0.25) * min_dist) :
+               (t < 0.5) ?
+               (min_dist*(1 - ((t - 0.25) / 0.25))) :
+               (t < 0.75) ?
+               (- min_dist * ((t - 0.5) / 0.25)) :
+               (- min_dist*(1 - ((t - 0.75) / 0.25))))
   offst / r * (180 / PI);

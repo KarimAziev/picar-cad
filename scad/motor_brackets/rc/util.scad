@@ -92,7 +92,8 @@ function gearmotor_bracket_compute_params(plist=motor_plist,
   assert(min(bolt_pad_x, bolt_pad_y, ear_bolt_pad, corner_r,
              fillet_x_w, fillet_y_w) >= 0,
          "Bracket padding, rounding and flare must be nonnegative")
-  assert(is_num(rear_mount_hole_y_offset), "Rear chassis hole offset must be numeric")
+  assert(is_num(rear_mount_hole_y_offset),
+         "Rear chassis hole offset must be numeric")
   assert(is_bool(use_boss_pockets), "Boss pocket toggle must be boolean")
   let (bolt_r = bolt_d / 2,
        gearbox_params = gearbox_compute_params(plist),
@@ -196,15 +197,15 @@ function gearmotor_bracket_compute_params(plist=motor_plist,
 
        pts_2 = [for (v = pts) let (x = v[0], y = v[1])
          [x == 0
-                                 ? fillet_x_w
-                                 : x > 0
-                                 ? x + fillet_x_w
-                                 : x - fillet_x_w,
+          ? fillet_x_w
+          : x > 0
+            ? x + fillet_x_w
+            : x - fillet_x_w,
           y == 0
-                                 ? 0
-                                 : y > 0
-                                 ? y + fillet_y_w
-                                 : y - fillet_y_w]],
+          ? 0
+          : y > 0
+            ? y + fillet_y_w
+            : y - fillet_y_w]],
 
        min_hole_x = polygon_min_x(bracket_mount_holes),
        max_hole_x = polygon_max_x(bracket_mount_holes),
@@ -243,8 +244,8 @@ function gearmotor_bracket_compute_params(plist=motor_plist,
                                                   [p[0], p[1]]],
                                                 chassis_bolt_d=bolt_d),
        encoder_bounds = is_undef(encoder_mount)
-       ? [[base_min_x, base_min_y, 0], [base_max_x, base_max_y, base_height]]
-       : plist_get("bounds", encoder_mount),
+                        ? [[base_min_x, base_min_y, 0], [base_max_x, base_max_y, base_height]]
+                        : plist_get("bounds", encoder_mount),
        min_x = min(base_min_x, encoder_bounds[0][0]),
        max_x = max(base_max_x, encoder_bounds[1][0]),
        min_y = min(base_min_y, encoder_bounds[0][1]),
@@ -260,7 +261,7 @@ function gearmotor_bracket_compute_params(plist=motor_plist,
   assert(min(boss_wall_thickness, boss_pocket_clearance, motor_carrier_clearance) >= 0,
          "Boss walls and fit clearances must be nonnegative")
   assert((!use_boss_pockets || (boss_pocket_depth > 0
-                               && boss_pocket_depth < bracket_thickness))
+                                && boss_pocket_depth < bracket_thickness))
          && min(front_boss_h, rear_boss_h) > 0,
          "Boss pockets must leave a base floor and bosses must reach the gearbox")
   ["motor", plist,

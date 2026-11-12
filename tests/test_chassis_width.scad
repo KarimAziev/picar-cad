@@ -2,8 +2,8 @@ include <../scad/suspension/computed.scad>
 
 use <../scad/suspension/rear_chassis/computed_params.scad>
 
-rear        = rear_chassis_layout();
-width       = suspension_chassis_width();
+rear  = rear_chassis_layout();
+width = suspension_chassis_width();
 assert(width == front_chassis_rear_frame_w);
 assert(width == plist_get("join_w", rear));
 assert(width >= front_chassis_required_width());

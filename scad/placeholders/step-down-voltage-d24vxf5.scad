@@ -526,12 +526,12 @@ function step_down_component_footprints(pl=[]) =
                           step_down_voltage_regulator_thickness]),
        inductor = plist_get("inductor", pl, []))
   concat(len(inductor) > 0
-           ? [let (size = plist_get("size", inductor),
-                   offsets = plist_get("offsets", inductor, [0, 0]))
-               [[with_default(offsets[0], 0) + size[0] / 2,
-                 -board[1] / 2 + with_default(offsets[1], 0) + size[1] / 2],
-                [size[0], size[1]]]]
-           : [],
+         ? [let (size = plist_get("size", inductor),
+                 offsets = plist_get("offsets", inductor, [0, 0]))
+           [[with_default(offsets[0], 0) + size[0] / 2,
+             -board[1] / 2 + with_default(offsets[1], 0) + size[1] / 2],
+            [size[0], size[1]]]]
+         : [],
          [for (cap = plist_get("can_capacitors", pl, []))
            let (pos = plist_get("position", cap), d = plist_get("d", cap))
            [[pos[0], pos[1]], [d, d]]],

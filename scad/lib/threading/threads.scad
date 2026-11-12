@@ -100,8 +100,8 @@ module close_points(pointarrays) {
   faces_loop = [for (j=[0:N-2], i=[0:P-1], t=[0:1])
     [loop_offset, loop_offset, loop_offset] +
     (t==0
-         ? [j * P + i, (j + 1) * P + i, (j + 1) * P + (i + 1) % P]
-         : [j * P + i, (j + 1) * P + (i + 1) % P, j * P + (i + 1) % P])];
+     ? [j * P + i, (j + 1) * P + i, (j + 1) * P + (i + 1) % P]
+     : [j * P + i, (j + 1) * P + (i + 1) % P, j * P + (i + 1) % P])];
 
   top_offset = loop_offset + NP - P;
 
@@ -113,10 +113,10 @@ module close_points(pointarrays) {
 
   points = [for (i=[-1:NP])
     (i < 0)
-        ? midbot
-        : ((i == NP)
-           ? midtop
-           : pointarrays[floor(i / P)][i % P])];
+    ? midbot
+    : ((i == NP)
+       ? midtop
+       : pointarrays[floor(i / P)][i % P])];
 
   faces = concat(faces_bot, faces_loop, faces_top);
 
@@ -192,31 +192,31 @@ module screw_thread(od,
   tooth_angle = !is_num(tooth_angle) ? tooth_angle : 30;
   tolerance = !is_num(tolerance) ? 0 : tolerance;
   tooth_height = (!is_num(tooth_height) || tooth_height == 0)
-    ? pitch
-    : tooth_height;
+                 ? pitch
+                 : tooth_height;
 
   tip_min_fract = !is_num(tip_min_fract) || tip_min_fract < 0
-    ? 0
-    : ((tip_min_fract > 0.9999)
-       ? 0.9999
-       : tip_min_fract);
+                  ? 0
+                  : ((tip_min_fract > 0.9999)
+                     ? 0.9999
+                     : tip_min_fract);
 
   outer_diam_cor = od + 0.25 * tolerance; // Plastic shrinkage correction
 
   inner_diam = od - tooth_height / tan(tooth_angle);
 
   or = (outer_diam_cor < screw_resolution)
-    ? screw_resolution / 2
-    : outer_diam_cor / 2;
+       ? screw_resolution / 2
+       : outer_diam_cor / 2;
 
   ir = (inner_diam < screw_resolution)
-    ? screw_resolution / 2
-    : inner_diam / 2;
+       ? screw_resolution / 2
+       : inner_diam / 2;
 
   height = (is_num(height) && height < screw_resolution)
-    ? screw_resolution
-    : is_num(height)
-    ? height : 0;
+           ? screw_resolution
+           : is_num(height)
+             ? height : 0;
 
   steps_per_loop_try = ceil(2 * PI * or / screw_resolution);
 
@@ -236,8 +236,8 @@ module screw_thread(od,
   tooth_h_half = tooth_height / 2;
 
   tip_height_ir = (tip_height_sc > tooth_h_half)
-    ? tip_height_sc - tooth_h_half
-    : tip_height_sc;
+                  ? tip_height_sc - tooth_h_half
+                  : tip_height_sc;
 
   tip_height_w = (tip_height_sc > tooth_height) ? tooth_height : tip_height_sc;
   tip_wstart = height + tip_height_sc - tip_height - tip_height_w;
@@ -464,7 +464,7 @@ module recessed_clearance_hole(d,
                                recessed_height=-1,
                                tolerance=0.4) {
   recessed_diam = (recessed_diam < 0) ?
-    hex_across_corners(d) : recessed_diam;
+                  hex_across_corners(d) : recessed_diam;
   recessed_height = (recessed_height < 0) ? d : recessed_height;
   extra_height = 0.001 * height;
 
@@ -617,8 +617,8 @@ module metric_wood_screw(d, l, tolerance=0.4) {
 // Create a standard sized metric hex nut.
 module metric_nut(d, thickness, tolerance=0.4) {
   thickness = (is_undef(thickness) || thickness==0)
-    ? nut_thickness(d)
-    : thickness;
+              ? nut_thickness(d)
+              : thickness;
   screw_hole(d, thickness, tolerance=tolerance) {
     cylinder(h=thickness,
              r=hex_across_corners(d) / 2 - 0.5 * tolerance,

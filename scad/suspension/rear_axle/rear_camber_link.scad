@@ -29,8 +29,8 @@ function _rear_link_value(pl, key) =
  */
 function rear_camber_link_ball_spacing(pl) =
   steering_link_ball_spacing(eye_od=_rear_link_value(pl, "eye_od"),
-                            shank_len=_rear_link_value(pl, "shank_len"),
-                            center_link_len=_rear_link_value(pl, "center_link_len"));
+                             shank_len=_rear_link_value(pl, "shank_len"),
+                             center_link_len=_rear_link_value(pl, "center_link_len"));
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -48,7 +48,8 @@ function rear_camber_link_frame(start, end) =
   let (delta = end - start, distance = norm(delta))
   assert(distance > 0, "Camber-link mounting centers must differ")
   let (along = delta / distance, lateral = cross([0, 1, 0], along))
-  assert(norm(lateral) > 0, "Camber link cannot run along its mounting-bolt axis")
+  assert(norm(lateral) > 0,
+         "Camber link cannot run along its mounting-bolt axis")
   let (side = lateral / norm(lateral))
   [along, side, cross(along, side)];
 
@@ -154,7 +155,9 @@ module rear_camber_link_between(start, end, pl) {
                 [0, 0, 0, 1]]) {
       _rear_camber_link_end(pl, direction="right", bushing_angle=bushing_angle);
       translate([length, 0, 0]) {
-        _rear_camber_link_end(pl, direction="left", bushing_angle=bushing_angle);
+        _rear_camber_link_end(pl,
+                              direction="left",
+                              bushing_angle=bushing_angle);
       }
       translate([eye_od / 2 + shank_len - thread_l, 0, 0]) {
         rotate([0, 90, 0]) {

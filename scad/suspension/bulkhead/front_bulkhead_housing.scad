@@ -138,7 +138,9 @@ module front_bulkhead_housing(color=cobalt_blue_metallic,
                            - barrel_len / 2
                            - barrel_y_offset,
                            0]) {
-                  cylinder(d=dia, h=barrel_w, $fn=is_undef(quality_fn) ? ($preview ? 40 : 360) : quality_fn);
+                  cylinder(d=dia,
+                           h=barrel_w,
+                           $fn=is_undef(quality_fn) ? ($preview ? 40 : 360) : quality_fn);
                 }
               }
             }

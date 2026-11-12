@@ -36,8 +36,8 @@ module trapezoid(b=20, t=10, h=15, center=false) {
          [m, h]];
 
   polygon(points = center ?
-          [for (p = pts) [p[0] - b/2, p[1] - h/2]] :
-          pts);
+                   [for (p = pts) [p[0] - b/2, p[1] - h/2]] :
+                   pts);
 }
 
 /**

@@ -31,13 +31,15 @@ module micro_sd_card(size=[11, 15, 1],
   assert(len(size) == 3 && min(size) > 0, "Card size must be positive XYZ");
   with_anchor(size=size, anchor=anchor) {
     color(matte_black) {
-      cuboid(size=size, r=min(size[0], size[1]) * 0.025,
+      cuboid(size=size,
+             r=min(size[0], size[1]) * 0.025,
              anchor=[1, 1, 1]);
     }
     if (show_contacts) {
       for (i = [0:7]) {
         translate([size[0] * (0.08 + i * 0.105),
-                   size[1] * 0.73, size[2] - 0.01]) {
+                   size[1] * 0.73,
+                   size[2] - 0.01]) {
           color(metallic_yellow_1) {
             cube([size[0] * 0.075, size[1] * 0.23, 0.01]);
           }
@@ -60,8 +62,8 @@ module micro_sd_card(size=[11, 15, 1],
 module micro_sd_card_from_plist(plist=[], anchor) {
   micro_sd_card(size=plist_get("size", plist, [11, 15, 1]),
                 anchor=is_undef(anchor)
-                ? plist_get("anchor", plist, [1, 1, 1])
-                : anchor,
+                       ? plist_get("anchor", plist, [1, 1, 1])
+                       : anchor,
                 show_contacts=plist_get("show_contacts", plist, true));
 }
 
@@ -80,7 +82,8 @@ module micro_sd_card_from_plist(plist=[], anchor) {
  */
 function micro_sd_card_position(size, card_size, insertion) =
   assert(min(card_size) > 0 && size[0] > card_size[0]
-         && size[2] > card_size[2], "Card must fit inside its socket")
+         && size[2] > card_size[2],
+         "Card must fit inside its socket")
   assert(insertion > 0 && insertion <= min(size[1], card_size[1]),
          "Card insertion must fit inside the socket and card length")
   [(size[0] - card_size[0]) / 2,

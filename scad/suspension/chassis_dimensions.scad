@@ -11,8 +11,8 @@ include <front_chassis/computed_params.scad>
 use <../lib/plist.scad>
 use <../placeholders/rc_touring_wheel.scad>
 use <computed.scad>
-use <front_chassis/front_frame_util.scad>
 use <front_bumper/common.scad>
+use <front_chassis/front_frame_util.scad>
 use <rc_wheels.scad>
 use <rear_chassis/computed_params.scad>
 
@@ -35,8 +35,7 @@ use <rear_chassis/computed_params.scad>
   Chassis-only bounds include the head-frame extension. Elevated payloads,
   other accessories, exploded spacing and articulated poses are excluded.
  */
-function chassis_dimensions(layout=rear_chassis_layout(
-                              min_width=suspension_chassis_width()),
+function chassis_dimensions(layout=rear_chassis_layout(min_width=suspension_chassis_width()),
                             bumper_top_plate=false,
                             bumper_foam=false,
                             bumper_pl=front_bumper_plist,
@@ -44,8 +43,8 @@ function chassis_dimensions(layout=rear_chassis_layout(
   let (front = rc_front_wheel_reference_center()
                + [0, 0, suspension_chassis_mount_h],
        rear = is_undef(rear_reference)
-         ? rc_rear_wheel_reference_center(layout)
-         : rear_reference,
+              ? rc_rear_wheel_reference_center(layout)
+              : rear_reference,
        rear_y = front_chassis_y_joint_2_end + plist_get("min_y", layout) - rear[1],
        wheel = rc_touring_wheel_spec(rc_wheel_plist),
        radius = plist_get("tire_d", wheel) / 2,
@@ -142,8 +141,8 @@ module chassis_dimension_annotations(wheelbase=false,
                          bumper_pl=bumper_pl,
                          rear_reference=rear_reference);
   envelope = bumper_top_plate || bumper_foam
-    ? "deck/tires/bumper"
-    : "deck/tires";
+             ? "deck/tires/bumper"
+             : "deck/tires";
   half_w = plist_get("overall_width", d) / 2;
   z = chassis_thickness + 2;
   front_y = plist_get("front_y", d);
@@ -199,8 +198,8 @@ module chassis_dimension_annotations(wheelbase=false,
           translate([-span / 2, front_y + 15 + i * 15, z]) {
             _chassis_dimension_line(span,
                                     i == 0
-                                      ? "Chassis width"
-                                      : str("Overall width (", envelope, ")"),
+                                    ? "Chassis width"
+                                    : str("Overall width (", envelope, ")"),
                                     text_size);
           }
         }

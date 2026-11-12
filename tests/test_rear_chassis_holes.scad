@@ -6,6 +6,7 @@
   */
 include <../scad/suspension/rear_chassis/computed_params.scad>
 
+
 function contains_point(points, p) =
   len([for (q = points) if (norm(q - p) < 0.000001) q]) > 0;
 

@@ -22,7 +22,7 @@ near(dsservo_magnet_sleeve_offset(), 7.5);
 near(steering_encoder_magnet_distance, 1.5);
 near(steering_encoder_magnet_distance + steering_encoder_side_thickness, 2.5);
 
-pcb = plist_get("size", steering_encoder_plist);
+pcb  = plist_get("size", steering_encoder_plist);
 chip = plist_get("chip_size", plist_get("sensor_ic", steering_encoder_plist));
 for (magnet_h = [1.5, 2.5, 3], arm_base_h = [5.5, 6, 7], wall = [1, 2, 3]) {
   // Physical stack from the gearbox attachment through the seated horn,
@@ -34,8 +34,9 @@ for (magnet_h = [1.5, 2.5, 3], arm_base_h = [5.5, 6, 7], wall = [1, 2, 3]) {
                 + steering_servo_arm_gear_bolt_head_h
                 + steering_magnet_sleeve_bolt_head_h_clearance
                 + magnet_h;
-  sensor_face = steering_servo_encoder_bracket_bend_reach(
-    magnet_h=magnet_h, arm_base_h=arm_base_h, side_thickness=wall)
+  sensor_face = steering_servo_encoder_bracket_bend_reach(magnet_h=magnet_h,
+                                                          arm_base_h=arm_base_h,
+                                                          side_thickness=wall)
                 - wall - pcb[2] - chip[2];
   near(sensor_face - magnet_face, steering_encoder_magnet_distance);
 }

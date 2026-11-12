@@ -4,8 +4,8 @@ use <../scad/core/grid.scad>
 use <../scad/core/pcb_placeholder_renderer.scad>
 use <../scad/lib/functions.scad>
 use <../scad/lib/plist.scad>
-use <../scad/placeholders/pin_header.scad>
 use <../scad/placeholders/micro_sd.scad>
+use <../scad/placeholders/pin_header.scad>
 use <../scad/placeholders/rpi_5.scad>
 use <../scad/placeholders/rpi_5_grid.scad>
 
@@ -15,9 +15,9 @@ function leaf_box(cell, cell_size, origin, thickness) =
   let (placeholder = plist_get("placeholder", cell),
        type = plist_get("type", placeholder),
        size = type == "pin_header"
-       ? concat(pin_header_size_from_plist(placeholder),
-                [plist_get("header_height", placeholder)])
-       : pcb_placeholder_size(placeholder),
+              ? concat(pin_header_size_from_plist(placeholder),
+                       [plist_get("header_height", placeholder)])
+              : pcb_placeholder_size(placeholder),
        rotated = calc_rotated_bbox(size[0], size[1], plist_get("spin", cell, 0)),
        alignment = [plist_get("align_x", cell, 0), plist_get("align_y", cell, 0)],
        offsets = [plist_get("x_offset", cell, 0), plist_get("y_offset", cell, 0)],
@@ -36,9 +36,9 @@ function row_boxes(row, size, origin, thickness) =
          cell_origin = origin + [sum_prefix(widths, ci), 0],
          nested = plist_get("grid", cell))
       each !is_undef(nested)
-      ? grid_boxes(nested, cell_size, cell_origin + [0, size[1]], thickness)
-      : is_undef(plist_get("placeholder", cell)) ? []
-      : [leaf_box(cell, cell_size, cell_origin, thickness)]];
+           ? grid_boxes(nested, cell_size, cell_origin + [0, size[1]], thickness)
+           : is_undef(plist_get("placeholder", cell)) ? []
+             : [leaf_box(cell, cell_size, cell_origin, thickness)]];
 
 function grid_boxes(grid, size, origin, thickness) =
   let (rows = plist_get("rows", grid),
@@ -207,8 +207,9 @@ accessory_boxes = board_boxes(accessories, rpi_thickness);
 assert(plist_get("show_usb_plug", of_type(accessory_boxes, "usb_socket")[0][0]));
 sd_socket = of_type(accessory_boxes, "micro_sd_socket")[0];
 card_size = plist_get("size", plist_get("card", sd_socket[0]));
-card_min = sd_socket[1] + micro_sd_card_position(sd_socket[2], card_size,
-                                               plist_get("insertion", sd_socket[0]));
+card_min = sd_socket[1] + micro_sd_card_position(sd_socket[2],
+                                                 card_size,
+                                                 plist_get("insertion", sd_socket[0]));
 assert(close(card_min, [22.415, -4, -1.24]));
 hidden = board_boxes(rpi_5_grid(show_sd_card=false), rpi_thickness);
 assert(!plist_get("show_card", of_type(hidden, "micro_sd_socket")[0][0]));

@@ -174,8 +174,8 @@ module battery_holder(battery_len=battery_length,
                                         battery_holder_tab_slot_extra_w);
 
   inner_cutout_size = is_intercell ?
-    [0.5 * battery_dia, 1.02 * battery_len]
-    : undef;
+                      [0.5 * battery_dia, 1.02 * battery_len]
+                      : undef;
 
   side_cutout_depths = side_wall_get_cutout_depths(battery_dia=battery_dia,
                                                    type=side_wall_type);

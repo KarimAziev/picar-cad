@@ -20,7 +20,8 @@ terminal_type        = "solder_tab"; // [coil_spring, solder_tab]
 
 function solder_tab_contact_mount_w(battery_dia,
                                     contact_hole_d=1)
-  = max(contact_width_factor * battery_dia, with_default(contact_hole_d, 1) + 2);
+  = max(contact_width_factor * battery_dia,
+        with_default(contact_hole_d, 1) + 2);
 
 function solder_tab_contact_mount_outer_size(battery_dia,
                                              contact_hole_d=1,

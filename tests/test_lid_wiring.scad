@@ -23,8 +23,8 @@ for (hole_z = [1.8, 5.8, undef]) {
   changed = plist_put("button", changed_button, toggle_switch_bracket_plist);
   changed_ports = button_bracket_wire_ports(changed);
   expected_y = is_undef(hole_z)
-      ? -31.63 + (9.7 - plist_get("terminal_hole_d", button)) / 2 - 3.8
-      : -31.63 + hole_z - 3.8;
+               ? -31.63 + (9.7 - plist_get("terminal_hole_d", button)) / 2 - 3.8
+               : -31.63 + hole_z - 3.8;
   for (i = [0:1]) {
     assert(norm(changed_ports[i] - [ports[i][0], expected_y, 12.35]) < 0.000001);
   }
@@ -34,8 +34,9 @@ assert(button_bracket_wire_ports(plist_put("button",
        == button_bracket_wire_ports(plist_put("button",
                                               plist_put("terminal_hole_z", undef, button), toggle_switch_bracket_plist)));
 ring = plist_get("crimp_terminal", button);
-changed_ring = plist_merge(ring, ["t", 1.02,
-                                  "l", 11.1]);
+changed_ring = plist_merge(ring,
+                           ["t", 1.02,
+                            "l", 11.1]);
 changed_ports = button_bracket_wire_ports(plist_put("button",
                                                     plist_put("crimp_terminal", changed_ring, button), toggle_switch_bracket_plist));
 assert(norm(changed_ports[0] - (ports[0] + [0.2, -2, 0])) < 0.000001);

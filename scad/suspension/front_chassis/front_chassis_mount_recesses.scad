@@ -46,7 +46,8 @@ module front_chassis_servo_mount_recesses() {
                 intersection() {
                   steering_servo_mount_envelope();
                   translate([-servo_clip_half_w,
-                             -dsservo_flange_w - 0.5, -0.01]) {
+                             -dsservo_flange_w - 0.5,
+                             -0.01]) {
                     cube([2 * servo_clip_half_w, dsservo_flange_w + 1,
                           depth + gap + 0.01]);
                   }
@@ -68,7 +69,8 @@ module front_chassis_servo_mount_recesses() {
               intersection() {
                 steering_servo_mount_envelope();
                 translate([-servo_clip_half_w,
-                           -dsservo_flange_w - 0.5, -0.25]) {
+                           -dsservo_flange_w - 0.5,
+                           -0.25]) {
                   cube([2 * servo_clip_half_w, dsservo_flange_w + 1, 0.249]);
                 }
               }

@@ -71,8 +71,8 @@ module j_lead(lower_len=5,
 
   x = center ? -thickness / 2 : 0;
   y = center
-    ? -full_w / 2
-    : 0;
+      ? -full_w / 2
+      : 0;
   z = 0;
   translate([x,
              y,

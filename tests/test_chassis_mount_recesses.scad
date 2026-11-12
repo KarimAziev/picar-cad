@@ -5,9 +5,10 @@
   * License: GPL-3.0-or-later
   */
 include <../scad/suspension/rear_chassis/computed_params.scad>
+
 use <../scad/suspension/front_chassis/head_frame/head_joint.scad>
 
-layout = rear_chassis_layout();
+layout  = rear_chassis_layout();
 joint_y = rear_suspension_joint_y_bounds(layout);
 assert(suspension_chassis_mount_recess == 2);
 assert(suspension_chassis_mount_h == 4);

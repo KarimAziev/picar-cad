@@ -33,8 +33,8 @@ module wheel(w=wheel_w,
     z_offset_parts = [w * 0.5, rim_w * 0.5];
     for (i = [0 : 1]) {
       z = i == 0
-        ? z_offset_parts[0] + z_offset_parts[1]
-        : -z_offset_parts[0] - z_offset_parts[1];
+          ? z_offset_parts[0] + z_offset_parts[1]
+          : -z_offset_parts[0] - z_offset_parts[1];
       bend_z = i == 0 ? -rim_bend : rim_bend;
       translate([0, 0, z]) {
         rad = inner_d / 2 + rim_h;

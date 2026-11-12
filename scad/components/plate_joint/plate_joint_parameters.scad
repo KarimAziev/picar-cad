@@ -38,7 +38,7 @@ function plate_joint_dimension(value, total, automatic, name="dimension") =
   assert(!is_string(value) || _plate_joint_percent_valid(value),
          str(name, " must be a non-negative decimal percentage"))
   let (num = is_undef(value) ? automatic
-       : is_string(value) ? percent_to_mm(parse_percent(value), total) : value)
+             : is_string(value) ? percent_to_mm(parse_percent(value), total) : value)
   assert(is_num(num) && num >= 0,
          str(name, " must resolve to a non-negative number"))
   num;
@@ -172,12 +172,12 @@ function plate_joint_parameters(plate_h,
   assert(!is_undef(w) || !include_pin_holes || is_num(pin_spacing) || pin_fraction < 1,
          "Automatic w needs pin spacing below 100% of the rail")
   let (pin_rail_min = !include_pin_holes ? 0 : is_num(pin_spacing)
-         ? pin_spacing + pin_x + 2 * margin + taper
-         : (pin_x + 2 * margin + taper) / max(0.001, 1 - pin_fraction),
+                                               ? pin_spacing + pin_x + 2 * margin + taper
+                                               : (pin_x + 2 * margin + taper) / max(0.001, 1 - pin_fraction),
        rail_min = max(taper + 2 * radius, pin_rail_min),
        side_space = want_side_bolts ? side_min : margin + gap,
        auto_w = !is_undef(w) ? w : is_num(rail_w) ? max(rail_w / 0.7, rail_w + 2 * side_space)
-         : max(rail_min / rail_fraction, 2 * side_space / (1 - rail_fraction)),
+                                   : max(rail_min / rail_fraction, 2 * side_space / (1 - rail_fraction)),
        w = with_default(w, auto_w),
        rail_limit = w - 2 * side_min,
        side_bolts_fit = rail_limit >= rail_min - 0.000001,
@@ -198,7 +198,7 @@ function plate_joint_parameters(plate_h,
        relief = plate_joint_dimension(relief_depth, rh, 0, "relief_depth"),
        bolt_eps = plate_joint_dimension(bolt_cut_overlap, plate_h, 0.1, "bolt_cut_overlap"),
        auto_n = !side_bolts_fit && is_undef(bolt_spacing_center) ? 1
-         : min(3, max(1, floor(span / (footprint + margin)) + 1)),
+                : min(3, max(1, floor(span / (footprint + margin)) + 1)),
        n = with_default(bolt_n_center, auto_n))
   assert(neck > 0, "angle collapses the rail neck")
   assert(is_num(n) && n >= 0 && floor(n) == n,

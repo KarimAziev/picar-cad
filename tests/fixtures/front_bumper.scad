@@ -18,21 +18,21 @@ use <../../scad/suspension/front_bumper/front_bumper_top_plate.scad>
 use <../../scad/suspension/front_chassis/front_frame_util.scad>
 use <../../scad/suspension/front_chassis/head_frame/front_chassis_head_frame.scad>
 
-part          = "plate";
-variant       = false;
-anchor        = [1, 1, 1];
-slot          = false;
-head_pan      = 0;
-head_tilt     = 0;
+part           = "plate";
+variant        = false;
+anchor         = [1, 1, 1];
+slot           = false;
+head_pan       = 0;
+head_tilt      = 0;
 head_clearance = 0;
-reverse_bolts = front_bumper_reverse_bolts;
-test_bolt_l   = undef;
-pl            = plist_merge(variant ? ["foam_h", 21,
-                                       "post_d", 9,
-                                       "bolt_l", 30] : [],
-                 is_undef(test_bolt_l) ? [] : ["bolt_l", test_bolt_l]);
-hardware_pl   = reverse_bolts ? pl : plist_merge(pl,
-                                               ["bolt_l", variant ? 40 : 35]);
+reverse_bolts  = front_bumper_reverse_bolts;
+test_bolt_l    = undef;
+pl             = plist_merge(variant ? ["foam_h", 21,
+                                        "post_d", 9,
+                                        "bolt_l", 30] : [],
+                            is_undef(test_bolt_l) ? [] : ["bolt_l", test_bolt_l]);
+hardware_pl    = reverse_bolts ? pl : plist_merge(pl,
+                                                 ["bolt_l", variant ? 40 : 35]);
 
 module placed_bumper() {
   translate(front_bumper_position(pl)) {

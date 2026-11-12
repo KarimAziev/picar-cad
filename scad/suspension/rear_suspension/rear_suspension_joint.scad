@@ -26,23 +26,22 @@ use <../front_chassis/front_chassis_joint.scad>
 function rear_suspension_chassis_joint_params(layout=rear_chassis_layout()) =
   let (ys = rear_suspension_joint_y_bounds(layout),
        w = rear_suspension_joint_width(layout),
-       nominal = plate_joint_parameters(
-         plate_h=chassis_thickness,
-         bolt_d=chassis_bolt_d,
-         bolt_bore_d=chassis_counterbore_bore_d,
-         bolt_bore_h=chassis_counterbore_h,
-         w=w,
-         rail_w=front_chassis_body_joint_rail_w(w),
-         l=ys[1] - ys[0],
-         bolt_n_center=5,
-         clearance=suspension_chassis_joint_layout_clearance,
-         axial_clearance=front_chassis_joint_axial_clearance,
-         pin_use_pad=false,
-         pin_d=front_chassis_joint_pin_d,
-         pin_l=rear_suspension_joint_pin_l
-               + 2 * front_chassis_joint_pin_end_clearance,
-         pin_spacing=rear_suspension_joint_pin_spacing,
-         include_pin_holes=true))
+       nominal = plate_joint_parameters(plate_h=chassis_thickness,
+                                        bolt_d=chassis_bolt_d,
+                                        bolt_bore_d=chassis_counterbore_bore_d,
+                                        bolt_bore_h=chassis_counterbore_h,
+                                        w=w,
+                                        rail_w=front_chassis_body_joint_rail_w(w),
+                                        l=ys[1] - ys[0],
+                                        bolt_n_center=5,
+                                        clearance=suspension_chassis_joint_layout_clearance,
+                                        axial_clearance=front_chassis_joint_axial_clearance,
+                                        pin_use_pad=false,
+                                        pin_d=front_chassis_joint_pin_d,
+                                        pin_l=rear_suspension_joint_pin_l
+                                              + 2 * front_chassis_joint_pin_end_clearance,
+                                        pin_spacing=rear_suspension_joint_pin_spacing,
+                                        include_pin_holes=true))
   plist_merge(nominal, ["clearance", front_chassis_joint_clearance]);
 
 /**

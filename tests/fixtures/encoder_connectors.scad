@@ -19,8 +19,8 @@ target_h     = 10;
 extra_left_w = 10;
 top_corner_r = 1;
 pl           = plist_merge(as5048A_encoder_plist,
-                 ["show_jst_shr", jst,
-                  "show_pins", pins]);
+                           ["show_jst_shr", jst,
+                            "show_pins", pins]);
 params = gearmotor_encoder_params(motor_plist,
                                   gearbox_bracket_thickness,
                                   encoder_plist=pl);
@@ -56,7 +56,7 @@ if (mode == "foot_gaps") {
                                                        1.6,
                                                        1.5,
                                                        0)
-                                ? 1 : 0];
+                                 ? 1 : 0];
   difference() {
     translate([-foot_w / 2 + 0.01, -2.99, 0.01]) {
       cube([foot_w - 0.02, 2.98, 1.58]);

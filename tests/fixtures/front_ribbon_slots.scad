@@ -6,10 +6,10 @@
   */
 include <../../scad/suspension/front_chassis/computed_params.scad>
 
+use <../../scad/lib/shapes3d.scad>
 use <../../scad/suspension/bellcrank_steering_slots.scad>
 use <../../scad/suspension/front_chassis/front_chassis_access_slots.scad>
 use <../../scad/suspension/front_chassis/head_frame/head_slots.scad>
-use <../../scad/lib/shapes3d.scad>
 use <../../scad/suspension/front_chassis/rear_frame/front_chassis_rear_frame.scad>
 use <../../scad/suspension/front_chassis/rear_frame/front_chassis_ribbon_slots.scad>
 use <../../scad/suspension/steering_servo_bracket/steering_servo_bracket_assembly.scad>
@@ -103,9 +103,9 @@ if (part == "camera_frame" || part == "camera_baseline") {
 } else if (part == "camera_land") {
   difference() {
     translate(front_chassis_rear_camera_slot_pos()
-               - [front_chassis_head_pan_servo_top_ribbon_cutout_len / 2 + 2,
-                  front_chassis_head_pan_servo_top_ribbon_cutout_h / 2 + 2,
-                  -0.05]) {
+              - [front_chassis_head_pan_servo_top_ribbon_cutout_len / 2 + 2,
+                 front_chassis_head_pan_servo_top_ribbon_cutout_h / 2 + 2,
+                 -0.05]) {
       cube([front_chassis_head_pan_servo_top_ribbon_cutout_len + 4,
             front_chassis_head_pan_servo_top_ribbon_cutout_h + 4,
             chassis_thickness - 0.1]);

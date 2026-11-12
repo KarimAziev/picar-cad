@@ -43,8 +43,8 @@ for (orientation = ["wlh", "lwh"], reverse = [false, true]) {
                               mount_d=6,
                               pad=2);
   expected = orientation == "wlh"
-    ? (reverse ? [[10, 15, 0], [60, 95, 0]] : [[0, 0, 0], [50, 80, 0]])
-    : (reverse ? [[0, 10, 0], [80, 60, 0]] : [[15, 0, 0], [95, 50, 0]]);
+             ? (reverse ? [[10, 15, 0], [60, 95, 0]] : [[0, 0, 0], [50, 80, 0]])
+             : (reverse ? [[0, 10, 0], [80, 60, 0]] : [[15, 0, 0], [95, 50, 0]]);
   near(bounds[0], expected[0]);
   near(bounds[1], expected[1]);
   anchored = rpi_5_mount_bounds(orientation=orientation,

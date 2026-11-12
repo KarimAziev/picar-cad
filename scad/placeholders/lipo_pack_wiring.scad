@@ -58,8 +58,8 @@ function _lipo_top_solve(start,
        mid = (lo + upper) / 2,
        path = _lipo_top_path(start, end, s, d, mid, lane, count))
   n == 0 ? path : total_wire_length(path) > length
-  ? _lipo_top_solve(start, end, s, d, length, lane, count, lo, mid, n - 1)
-  : _lipo_top_solve(start, end, s, d, length, lane, count, mid, upper, n - 1);
+                  ? _lipo_top_solve(start, end, s, d, length, lane, count, lo, mid, n - 1)
+                  : _lipo_top_solve(start, end, s, d, length, lane, count, mid, upper, n - 1);
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -86,10 +86,10 @@ function lipo_pack_top_wiring_props(pl, key="power_lead") =
        plug = plist_get("connector", lead) == "t-plug",
        pos = plist_get("connector_pos", lead,
                        plug ? [s[0] / 6, -s[1] / 2 + 26, s[2] + 0.8]
-         : [s[0] / 2 - 6, -s[1] / 2 + 6, s[2] + d / 2 + 0.5]),
+                       : [s[0] / 2 - 6, -s[1] / 2 + 6, s[2] + d / 2 + 0.5]),
        ports = plug ? [for (p = plist_get("female_ports", t_plug_mated_props()))
          pos + rotZ(p, 180)]
-         : [for (i = [0:len(colors) - 1]) pos + [(i - (len(colors) - 1) / 2) * (d + 0.2), 0, 0]],
+               : [for (i = [0:len(colors) - 1]) pos + [(i - (len(colors) - 1) / 2) * (d + 0.2), 0, 0]],
        paths = [for (i = [0:len(colors) - 1])
          _lipo_top_solve(lipo_pack_lead_exit(pl, lead, i), ports[i], s, d, length, i, len(colors))])
   assert(plist_get("lead_exit", pl) == "rear_side",

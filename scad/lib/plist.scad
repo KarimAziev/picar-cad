@@ -195,10 +195,10 @@ function plist_key_idx(key, plist) =
 function plist_put(key, value, plist) =
   let (idx = plist_key_idx(key, plist),
        arr = is_undef(idx)
-       ? concat(plist, [key, value])
-       : concat(take(plist, idx + 1),
-                [value],
-                drop(plist, idx + 2)))
+             ? concat(plist, [key, value])
+             : concat(take(plist, idx + 1),
+                      [value],
+                      drop(plist, idx + 2)))
   arr
   ;
 
@@ -257,9 +257,9 @@ function plist_keys(plist) =
 function plist_remove(key, plist) =
   let (idx = plist_key_idx(key, plist),
        arr = is_undef(idx)
-       ? plist
-       : concat(take(plist, idx),
-                drop(plist, idx + 2)))
+             ? plist
+             : concat(take(plist, idx),
+                      drop(plist, idx + 2)))
   arr;
 
 /**
@@ -408,7 +408,7 @@ function _plist_merge_all(plists, idx, result) =
 function plist_maybe_from_percent(prop, plist, default, total) =
   let (val = plist_get(prop, plist, default),
        num = is_string(val)
-       ? percent_to_mm(percent=parse_percent(val),
-                       total=total)
-       : val)
+             ? percent_to_mm(percent=parse_percent(val),
+                             total=total)
+             : val)
   num;

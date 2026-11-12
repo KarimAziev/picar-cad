@@ -364,8 +364,8 @@ module steering_rack_support(show_rack=false,
           let (txt_size = 4,
                text_base_dist = d + bolt_h + bolt_head_type_h + txt_size,
                text_dist = fasten_panel_bolt
-               ? -text_base_dist - txt_size
-               : text_base_dist) {
+                           ? -text_base_dist - txt_size
+                           : text_base_dist) {
             translate([0,
                        text_dist,
                        steering_rack_support_thickness]) {
@@ -423,8 +423,8 @@ module steering_rack_support(show_rack=false,
         rotate([0, 0, 180]) {
           rack_mount(show_rack_link=show_rack_link,
                      rack_color=is_undef(rack_color) ?
-                     ppanel_color
-                     : rack_color);
+                                ppanel_color
+                                : rack_color);
         }
       }
     }

@@ -7,11 +7,11 @@
 include <../scad/rc_params.scad>
 
 use <../scad/lib/plist.scad>
-use <../scad/suspension/front_chassis/front_frame_util.scad>
 use <../scad/suspension/chassis_dimensions.scad>
 use <../scad/suspension/chassis_printable.scad>
 use <../scad/suspension/computed.scad>
 use <../scad/suspension/front_bumper/common.scad>
+use <../scad/suspension/front_chassis/front_frame_util.scad>
 use <../scad/suspension/rear_chassis/computed_params.scad>
 
 for (mask = [0:15]) {

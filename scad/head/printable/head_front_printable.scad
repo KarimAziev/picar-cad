@@ -10,7 +10,7 @@ use <../../lib/transforms.scad>
 use <../head_mount.scad>
 
 show_bolts = false;
-show_nuts = false;
+show_nuts  = false;
 
 /**
   ─────────────────────────────────────────────────────────────────────────────

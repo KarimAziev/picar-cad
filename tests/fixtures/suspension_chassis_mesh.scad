@@ -5,9 +5,9 @@ include <../../scad/suspension/front_chassis/computed_params.scad>
 
 use <../../scad/lib/shapes3d.scad>
 use <../../scad/suspension/front_chassis/front_chassis.scad>
-use <../../scad/suspension/front_chassis/suspension_frame/front_chassis_suspension_frame.scad>
 use <../../scad/suspension/front_chassis/front_chassis_joint.scad>
 use <../../scad/suspension/front_chassis/rear_frame/front_chassis_rear_frame.scad>
+use <../../scad/suspension/front_chassis/suspension_frame/front_chassis_suspension_frame.scad>
 
 part          = "front";
 wide          = true;

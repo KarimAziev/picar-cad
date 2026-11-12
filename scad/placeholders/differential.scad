@@ -9,8 +9,8 @@
   * License: GPL-3.0-or-later
   */
 use <../lib/plist.scad>
-use <../lib/transforms.scad>
 use <../lib/shapes3d.scad>
+use <../lib/transforms.scad>
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -89,8 +89,8 @@ function differential_size(pl) =
                _differential_value(pl, "support_d"),
                _differential_value(pl, "cup_d")))
   [d, d, differential_case_span(pl)
-    + 2 * (_differential_value(pl, "support_l")
-            + _differential_value(pl, "cup_l"))];
+         + 2 * (_differential_value(pl, "support_l")
+                + _differential_value(pl, "cup_l"))];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -175,23 +175,35 @@ module differential(pl, anchor=[1, 1, 1], slot_mode=false) {
         }
       } else {
         color(gear_color) {
-          translate([0, 0, crown_z]) { cylinder(d=gear_d, h=gear_h); }
-          translate([0, 0, cup_l]) { cylinder(d=support_d, h=support_l); }
+          translate([0, 0, crown_z]) {
+            cylinder(d=gear_d, h=gear_h);
+          }
+          translate([0, 0, cup_l]) {
+            cylinder(d=support_d, h=support_l);
+          }
         }
         color(body_color) {
           translate([0, 0, crown_z + gear_h]) {
-            cuboid(size=case_size, anchor=[0, 0, 1], center=false,
-                   r_factor=radius_factor, use_minkowski=false,
-                   fn=fn, axis="z");
+            cuboid(size=case_size,
+                   anchor=[0, 0, 1],
+                   center=false,
+                   r_factor=radius_factor,
+                   use_minkowski=false,
+                   fn=fn,
+                   axis="z");
           }
           translate([0, 0, crown_z + span]) {
             cylinder(d=support_d, h=support_l);
           }
         }
         translate([0, 0, cup_l]) {
-          rotate([180, 0, 0]) { cup(); }
+          rotate([180, 0, 0]) {
+            cup();
+          }
         }
-        translate([0, 0, size[2] - cup_l]) { cup(); }
+        translate([0, 0, size[2] - cup_l]) {
+          cup();
+        }
       }
     }
   }

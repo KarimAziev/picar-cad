@@ -314,10 +314,10 @@ module power_socket_case(jack_plist=power_socket_case_jack_plist,
                        (show_box && show_lid)
                        ? full_h
                        : show_box
-                       ? h
-                       : show_lid
-                       ? lid_thickness
-                       : 0]) {
+                         ? h
+                         : show_lid
+                           ? lid_thickness
+                           : 0]) {
               children();
             }
           }

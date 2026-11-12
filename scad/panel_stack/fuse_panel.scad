@@ -67,14 +67,14 @@ panel_bolt_spacing      = [full_panel_width
 lower_h                 = is_all_flipped
                            ? max_lid_height
                            : is_flipped
-                           ? max(max_body_height, max_lid_height)
-                           : max_body_height;
+                            ? max(max_body_height, max_lid_height)
+                            : max_body_height;
 
 upper_h                 = is_all_flipped
                            ? max_body_height
                            : is_flipped
-                           ? max(max_body_height, max_lid_height)
-                           : max_lid_height;
+                            ? max(max_body_height, max_lid_height)
+                            : max_lid_height;
 
 standoff_desired_body_h = lower_h + chassis_thickness + 2;
 standoff_bore_h         = fuse_panel_thickness / 2;
@@ -201,8 +201,8 @@ module fuse_panel_slots(slot_mode = true,
              flip = plist_get("cap_to_bottom", plist, false),
              body_h = with_default(body_size[2], atm_fuse_holder_body_h),
              merged_pl = show_cap == false
-             ? plist_merge(plist, ["show_cap", show_cap])
-             : plist) {
+                         ? plist_merge(plist, ["show_cap", show_cap])
+                         : plist) {
 
           if (flip) {
             translate([0, 0, body_h]) {
@@ -279,9 +279,9 @@ module fuse_panel(show_fuses=false,
                   slot_bore_h=chassis_counterbore_h) {
   assert(anchor_mode == "size" || anchor_mode == "bolts");
   resolved_anchor = is_undef(anchor)
-    ? (is_undef(center) || !center ? [1, 1, 1] : [0, 0, 1]) : anchor;
+                    ? (is_undef(center) || !center ? [1, 1, 1] : [0, 0, 1]) : anchor;
   reference = anchor_mode == "bolts" ? concat(bolt_spacing, [0])
-    : [size[0], size[1], fuse_panel_height(show_standoff)];
+              : [size[0], size[1], fuse_panel_height(show_standoff)];
   with_orientation(from="wlh",
                    to=orientation,
                    size=reference,

@@ -114,8 +114,8 @@ function maybe_add_battery_holders_rows_h(rows) =
                    battery_holder_full_size_from_plist(placeholder)],
          batt_holder_lengths = [for (v = batt_holder_sizes) v[1]],
          h = len(batt_holder_lengths) > 0
-           ? max(batt_holder_lengths)
-           : plist_get(row, "h", 0))
+             ? max(batt_holder_lengths)
+             : plist_get(row, "h", 0))
     plist_merge(["h", h], row)];
 
 // echo("ROWS",

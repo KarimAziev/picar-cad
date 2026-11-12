@@ -12,41 +12,41 @@ include <../rear_suspension/rear_suspension_params.scad>
 include <rear_camber_link_params.scad>
 
 use <../../lib/plist.scad>
-use <../rear_chassis/computed_params.scad>
-use <../rc_wheels.scad>
-use <../wishbone_arms/util.scad>
 use <../bulkhead/util.scad>
+use <../rc_wheels.scad>
+use <../rear_chassis/computed_params.scad>
+use <../wishbone_arms/util.scad>
 
 // The motor-side floor edge clears the raised suspension joint shoulder.
 rear_housing_chassis_layout = rear_chassis_layout();
 rear_housing_base_step_y    = plist_get("bulkhead_2_y",
-                                     rear_housing_chassis_layout)
+                                        rear_housing_chassis_layout)
                                - rear_suspension_mount_recess_end_y(rear_housing_chassis_layout);
 
-rear_housing_mount_nut_h = 2.6;
+rear_housing_mount_nut_h    = 2.6;
 
 rear_housing_spec = ["body_w", front_bulkhead_w,
                      "body_l", front_bulkhead_len,
                      "base_h", front_bulkhead_housing_h,
                      "barrel_w", front_bulkhead_barrel_hinge_w,
                      "barrel_l", front_lower_arm_mount_cutout_size()[1]
-                                   - front_bulkhead_barrel_hinge_clearance,
+                                 - front_bulkhead_barrel_hinge_clearance,
                      "hinge_axis_y", front_bulkhead_len / 2
-                                       - front_bulkhead_barrel_y_offset
-                                       - (front_lower_arm_mount_cutout_size()[1]
-                                          - front_bulkhead_barrel_hinge_clearance) / 2,
+                                     - front_bulkhead_barrel_y_offset
+                                     - (front_lower_arm_mount_cutout_size()[1]
+                                        - front_bulkhead_barrel_hinge_clearance) / 2,
                      "hinge_axis_z", front_bulkhead_housing_h / 2,
                      "differential_axis_z", 22.6,
                      "pinion_axis_z", 22.6,
                      "input_support_wall", 2,
                      "tower_mount_thickness", front_bulkhead_shock_tower_mount_thickness,
                      "tower_lower_bolt_z", front_bulkhead_housing_h
-                                             + front_bulkhead_shock_tower_mount_offset
-                                             + front_shock_tower_bolt_d / 2
-                                             + front_shock_tower_damper_holes_pad_y,
+                                           + front_bulkhead_shock_tower_mount_offset
+                                           + front_shock_tower_bolt_d / 2
+                                           + front_shock_tower_damper_holes_pad_y,
                      "upper_h", front_bulkhead_shock_tower_mount_offset
-                                  + shock_tower_mount_size_y()
-                                  + front_bulkhead_shock_tower_mount_pad_y_top,
+                                + shock_tower_mount_size_y()
+                                + front_bulkhead_shock_tower_mount_pad_y_top,
                      "mount_tab_h", front_bulkhead_hinge_thickness,
                      "base_step_y", rear_housing_base_step_y,
                      "base_step_h", suspension_chassis_mount_recess,
@@ -64,8 +64,8 @@ rear_housing_spec = ["body_w", front_bulkhead_w,
                      "mount_nut_af", 5.7,
                      "mount_nut_h", rear_housing_mount_nut_h,
                      "mount_nut_floor", front_bulkhead_housing_h
-                                         + front_bulkhead_hinge_thickness
-                                         - rear_housing_mount_nut_h,
+                                        + front_bulkhead_hinge_thickness
+                                        - rear_housing_mount_nut_h,
                      "hinge_axis_x", front_bulkhead_w / 2
                                      + front_bulkhead_barrel_hinge_w
                                      - front_bulkhead_barrel_pin_hole_offset

@@ -149,8 +149,8 @@ module chassis_transition_side_holes_2d(border_mode=false,
                                start = chassis_upper_side_hole_start,
                                parallelogram=parallelogram,
                                border_w = border_mode
-                               ? chassis_side_hole_border_w
-                               : undef);
+                                          ? chassis_side_hole_border_w
+                                          : undef);
 }
 module chassis_transition_side_holes(border_mode=false,
                                      parallelogram=false) {
@@ -181,8 +181,8 @@ module chassis_upper_side_rect_holes(start=0,
                                start = start,
                                parallelogram=parallelogram,
                                border_w = border_mode
-                               ? chassis_side_hole_border_w
-                               : undef);
+                                          ? chassis_side_hole_border_w
+                                          : undef);
 }
 
 module chassis_side_holes_3d(border_mode=false) {
@@ -192,8 +192,8 @@ module chassis_side_holes_3d(border_mode=false) {
              ? chassis_thickness
              : -0.5]) {
     linear_extrude(height=border_mode
-                   ? chassis_side_hole_border_h
-                   : chassis_thickness + 1,
+                          ? chassis_side_hole_border_h
+                          : chassis_thickness + 1,
                    center=false) {
 
       children();
@@ -334,8 +334,8 @@ module chassis_upper_rib_hole(border_mode=false) {
              ? chassis_thickness
              : -0.5]) {
     linear_extrude(height=border_mode
-                   ? chassis_side_hole_border_h
-                   : chassis_thickness + 1,
+                          ? chassis_side_hole_border_h
+                          : chassis_thickness + 1,
                    center=false,
                    convexity=2) {
 
@@ -372,9 +372,9 @@ module chassis_mid_side_trapezoids(border_mode=false) {
                ? chassis_thickness
                : -0.5]) {
       linear_extrude(height=border_mode
-                     ?
-                     chassis_side_hole_border_h
-                     : hole_h,
+                            ?
+                            chassis_side_hole_border_h
+                            : hole_h,
                      center=false) {
         for (i = [0 : chassis_pan_servo_side_trapezoid_rows - 1]) {
           let (by = i * trapezoid_step,

@@ -44,21 +44,21 @@ function merge_specs_rows_by_placeholder_types(grid,
                                                placeholder_types) =
   let (rows = [for (row = plist_get("rows", grid, []))
     let (mapped_row = grid_is(row)
-                ? merge_specs_rows_by_placeholder_types(row=row,
-                                                        plist=plist,
-                                                        override=override,
-                                                        placeholder_types=placeholder_types)
-                : plist_merge(row, ["cells", [for (cell = plist_get("cells", row, []))
-                  let (placeholder = plist_get("placeholder", cell, []),
-                       placeholder_type = plist_get("placeholder_type", placeholder),
-                       updated_cell =
+                      ? merge_specs_rows_by_placeholder_types(row=row,
+                                                              plist=plist,
+                                                              override=override,
+                                                              placeholder_types=placeholder_types)
+                      : plist_merge(row, ["cells", [for (cell = plist_get("cells", row, []))
+                        let (placeholder = plist_get("placeholder", cell, []),
+                             placeholder_type = plist_get("placeholder_type", placeholder),
+                             updated_cell =
                                          member(placeholder_type, placeholder_types)
                                          ? plist_merge(cell, ["placeholder",
                                                               (override
                                                                ? plist_merge(placeholder, plist)
                                                                : plist_merge(plist, placeholder))])
                                          : cell)
-                  updated_cell]]))
+                        updated_cell]]))
     mapped_row])
   plist_merge(grid, ["rows", rows]);
 
@@ -114,9 +114,9 @@ module grid_plist_render(size,
           } else {
             color(debug_color, alpha=1) {
               let (txt = is_undef(debug_row_text) ?
-                   str("L", level, " R", ri, "  ",
-                       truncate(h), "mm")
-                   : debug_row_text,
+                         str("L", level, " R", ri, "  ",
+                             truncate(h), "mm")
+                         : debug_row_text,
                    txt_len = len(txt)) {
                 translate([-debug_gap - txt_len, h / 2, 0]) {
                   text_fit(txt=txt,
@@ -164,7 +164,7 @@ module grid_plist_render(size,
                 } else {
                   color(debug_color, alpha=1)
                     text_fit(txt=is_string(cell_debug_text) ? cell_debug_text
-                             : str(truncate(w), "mm"),
+                                 : str(truncate(w), "mm"),
                              x=half_w,
                              y=half_h,
                              h=debug_text_h);

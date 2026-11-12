@@ -10,11 +10,11 @@ use <../scad/lib/plist.scad>
 use <../scad/suspension/rear_axle/rear_camber_link.scad>
 
 epsilon = 0.000001;
-length = rear_camber_link_ball_spacing(rear_camber_link_spec);
+length  = rear_camber_link_ball_spacing(rear_camber_link_spec);
 assert(abs(length - 39.7) < epsilon,
        "Camber link uses the steering hardware's installed ball spacing");
 
-start = [4, 8, 12];
+start   = [4, 8, 12];
 for (delta = [[50, 0, 0], [50, 7, 12], [-50, -7, -12]]) {
   frame = rear_camber_link_frame(start, start + delta);
   for (axis = frame) {
@@ -33,7 +33,9 @@ for (delta = [[50, 0, 0], [50, 7, 12], [-50, -7, -12]]) {
   assert(abs(plist_get("length_error", fit) - (length - norm(delta))) < epsilon);
 }
 
-fit = rear_camber_link_fit(start, start + [length, 0, 0], rear_camber_link_spec);
+fit = rear_camber_link_fit(start,
+                           start + [length, 0, 0],
+                           rear_camber_link_spec);
 assert(abs(plist_get("length_error", fit)) < epsilon);
 assert(norm(plist_get("hardware_end", fit) - (start + [length, 0, 0])) < epsilon);
 echo("Rear camber-link datum checks passed");

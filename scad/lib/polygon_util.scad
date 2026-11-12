@@ -143,8 +143,8 @@ function polygon_x_len(pts) = polygon_max_x(pts) - polygon_min_x(pts);
   `[width, height]` derived from the polygon extents.
  */
 function polygon_size(pts) = is_undef(pts) || len(pts) == 0
-  ? [0, 0]
-  : [polygon_x_len(pts), polygon_y_len(pts)];
+                             ? [0, 0]
+                             : [polygon_x_len(pts), polygon_y_len(pts)];
 
 // Compare two scalar values with direction.
 // Returns:

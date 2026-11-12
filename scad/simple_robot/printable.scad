@@ -80,7 +80,8 @@ module printable(spacing=5) {
     enclosure_size = plist_get("body_size", step_down_enclosure_props());
     translate([-half_of_chassis_width - front_panel_width
                - steering_panel_length - enclosure_size[0] / 2 - 3 * spacing,
-               -70, 0]) {
+               -70,
+               0]) {
       step_down_enclosure_printable();
     }
   }
@@ -197,7 +198,8 @@ module printable(spacing=5) {
              + ir_case_rail_h,
              0]) {
     rotate([0, 0, 90]) {
-      ir_case_printable(mount="top", show_case=show_ir_case,
+      ir_case_printable(mount="top",
+                        show_case=show_ir_case,
                         spacing=-2,
                         show_rail=show_ir_case_rail);
     }

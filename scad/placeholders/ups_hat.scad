@@ -43,11 +43,11 @@ module ups_hat(size=battery_ups_size,
   battery_step = 1 + battery_dia;
   batteries_amount = round(holder_size[1] / battery_step);
   max_cutout_len = is_undef(max_cutout_len)
-    ? holder_len - double_thickness - 4
-    : max_cutout_len;
+                   ? holder_len - double_thickness - 4
+                   : max_cutout_len;
   max_cutout_height = is_undef(max_cutout_height)
-    ? holder_h
-    : max_cutout_height;
+                      ? holder_h
+                      : max_cutout_height;
   cutout_thickness = holder_thickness + 2;
   points = ups_hat_polygon_cutout_points(max_len=max_cutout_len,
                                          max_height=max_cutout_height);
@@ -150,8 +150,8 @@ module ups_hat_wall_cutout(max_len=battery_ups_holder_size[0] - 4,
                            points) {
 
   pts = is_undef(points)
-    ? ups_hat_polygon_cutout_points(max_len=max_len, max_height=max_height)
-    : points;
+        ? ups_hat_polygon_cutout_points(max_len=max_len, max_height=max_height)
+        : points;
   rotate([90, 0, 0]) {
     mirror_copy([1, 0, 0]) {
       linear_extrude(height=thickness,

@@ -128,10 +128,10 @@ function steering_servo_tie_rod_origin() =
   nearest the upright pose. Steering input is relative to this neutral horn.
  */
 function steering_servo_neutral_pose(bellcrank_lever_z_end,
-                                      offset=steering_servo_neutral_offset) =
+                                     offset=steering_servo_neutral_offset) =
   let (lever_z = is_undef(bellcrank_lever_z_end)
-                  ? bellcrank_servo_lever_z_coords()[1]
-                  : bellcrank_lever_z_end,
+                 ? bellcrank_servo_lever_z_coords()[1]
+                 : bellcrank_lever_z_end,
        rod_l = steering_servo_tie_rod_length(),
        full_l = rod_l + (servo_tie_rod_a_eye_od + servo_tie_rod_b_eye_od) / 2,
        origin = steering_servo_tie_rod_origin(),
@@ -139,20 +139,20 @@ function steering_servo_neutral_pose(bellcrank_lever_z_end,
                 - servo_tie_rod_b_eye_h / 2 - lever_z,
        pitch = y_angle_from_zshift(height, full_l),
        rod_b = origin + [-rod_l * cos(pitch) + offset,
-                          -rod_l * sin(pitch), 0],
+                         -rod_l * sin(pitch), 0],
        radius = norm([origin[0], origin[1]]),
        reach = norm([rod_b[0], rod_b[1]]))
   assert(radius > 0 && reach > 0, "Neutral steering needs nonzero lever radii")
   let (cos_angle = (radius * radius + reach * reach - rod_l * rod_l)
-                  / (2 * radius * reach))
+                   / (2 * radius * reach))
   assert(abs(cos_angle) <= 1, "Neutral servo offset exceeds tie-rod reach")
   let (bearing = atan2(rod_b[1], rod_b[0]) - atan2(origin[1], origin[0]),
        candidates = [for (side = [-1, 1])
          let (angle = bearing + side * acos(cos_angle))
          atan2(sin(angle), cos(angle))],
        horn_angle = abs(candidates[0]) <= abs(candidates[1])
-                      ? candidates[0]
-                      : candidates[1],
+                    ? candidates[0]
+                    : candidates[1],
        rod_a = rotate_euler_xyz(origin, [0, 0, horn_angle]),
        rod_angle = atan2(rod_a[1] - rod_b[1], rod_a[0] - rod_b[0]))
   [horn_angle, rod_angle, rod_a, rod_b];
@@ -167,8 +167,8 @@ function steering_servo_bellcrank_y(center=false,
        horn_x_shift = pose[2][0] - steering_servo_tie_rod_origin()[0],
        flang_x = horn_x_shift - eye_center_spacing_x - dsservo_gearbox_d1 / 2,
        flang_x_adjusted = center
-                           ? flang_x + dsservo_size[0] / 2
-                           : flang_x,
+                          ? flang_x + dsservo_size[0] / 2
+                          : flang_x,
        flange_w = (dsservo_flange_w - dsservo_size[0]) / 2,
        bellcrank_distance = flang_x_adjusted + dsservo_size[0] + flange_w)
   bellcrank_distance;

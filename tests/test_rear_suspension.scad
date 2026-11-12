@@ -2,7 +2,9 @@ include <../scad/suspension/rear_chassis/computed_params.scad>
 
 use <../scad/lib/plist.scad>
 
-layout         = rear_chassis_layout(equipment=[], panels=undef, power_case=undef);
+layout         = rear_chassis_layout(equipment=[],
+                                     panels=undef,
+                                     power_case=undef);
 d              = rear_suspension_chassis_bolt_bore_d;
 bh_1           = plist_get("bulkhead_1_y", layout);
 bh_2           = plist_get("bulkhead_2_y", layout);
@@ -39,7 +41,8 @@ bracket        = gearmotor_bracket_compute_params(motor_plist);
 bounds         = plist_get("bounds", bracket);
 encoder_bounds = plist_get("bounds", plist_get("encoder_mount", bracket));
 near(plist_get("side_widths", bracket), [28.65, encoder_bounds[1][0]]);
-near(plist_get("base_bounds", bracket)[1], [11.825, 37.6, 20.44 - suspension_chassis_mount_recess]);
+near(plist_get("base_bounds", bracket)[1],
+     [11.825, 37.6, 20.44 - suspension_chassis_mount_recess]);
 near([plist_get("drive_end_y", bracket)], [-48]);
 near(plist_get("size", bracket), bounds[1] - bounds[0]);
 assert(plist_get("min_parent_surface_size", bracket)[0] == 57.3);
@@ -54,7 +57,8 @@ for (side = ["left", "right", "auto"],
      orientation = ["wlh", "lwh"],
      y_offset = [-20, 0, 15],
      gap = [0, 3, 8]) {
-  current = rear_chassis_layout(equipment=[], panels=undef,
+  current = rear_chassis_layout(equipment=[],
+                                panels=undef,
                                 power_case=undef,
                                 side=side,
                                 orientation=orientation,
@@ -93,7 +97,8 @@ changed_bracket = gearmotor_bracket_compute_params(changed_motor,
                                                    fillet_x_w=5,
                                                    bolt_pad_y=5,
                                                    bracket_thickness=8);
-changed = rear_chassis_layout(equipment=[], panels=undef,
+changed = rear_chassis_layout(equipment=[],
+                              panels=undef,
                               power_case=undef,
                               bracket=changed_bracket);
 assert(plist_get("panel_side", changed) == "right");
@@ -109,13 +114,17 @@ no_sleeve_motor = plist_remove("drive_seeve", motor_plist);
 no_sleeve = gearmotor_bracket_compute_params(no_sleeve_motor);
 near([plist_get("drive_end_y", no_sleeve)],
      [-18 - 14 + plist_get("pad_l", plist_get("drive_shaft", motor_plist))]);
-no_sleeve_layout = rear_chassis_layout(equipment=[], panels=undef,
+no_sleeve_layout = rear_chassis_layout(equipment=[],
+                                       panels=undef,
                                        power_case=undef,
                                        bracket=no_sleeve);
 near([plist_get("motor_pos", no_sleeve_layout)[1]
       - plist_get("drive_end_y", no_sleeve)],
      [maintenance_y - rc_motor_maintenance_hole_dist]);
-zero_gap = rear_chassis_layout(equipment=[], panels=undef, power_case=undef, motor_dist=0);
+zero_gap = rear_chassis_layout(equipment=[],
+                               panels=undef,
+                               power_case=undef,
+                               motor_dist=0);
 near([plist_get("motor_pos", zero_gap)[1] - plist_get("drive_end_y", bracket)],
      [maintenance_y]);
 no_sleeve_gap = plist_put("drive_seeve",

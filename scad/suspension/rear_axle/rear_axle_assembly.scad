@@ -57,8 +57,10 @@ function rear_axle_arm_origin(housing, arm) =
   their own dimensions, and their closure is evaluated separately.
  */
 function rear_axle_rest_pose(settings, housing, arm, hub) =
-  assert(plist_has("wheel_center_z", settings), "Missing rear wheel-center height")
-  assert(plist_has("hub_camber_angle", settings), "Missing rear hub camber setting")
+  assert(plist_has("wheel_center_z", settings),
+         "Missing rear wheel-center height")
+  assert(plist_has("hub_camber_angle", settings),
+         "Missing rear hub camber setting")
   assert(plist_get("hub_camber_angle", settings) == 0,
          "Rear upright rest pose requires zero hub camber")
   let (hinge = rear_bulkhead_hinge_axis(housing, arm),
@@ -68,7 +70,8 @@ function rear_axle_rest_pose(settings, housing, arm, hub) =
        axle_offset = rear_hub_axle(hub) - hub_pivot,
        radius = norm([delta[0], delta[2]]),
        rise = plist_get("wheel_center_z", settings) - axle_offset[2] - hinge[2])
-  assert(delta[0] > 0 && radius > 0, "Rear arm must extend outward from its hinge")
+  assert(delta[0] > 0 && radius > 0,
+         "Rear arm must extend outward from its hinge")
   assert(abs(rise) <= radius, "Rear wheel-center height is outside arm travel")
   let (angle = atan2(delta[2], delta[0]) - asin(rise / radius),
        rotation = [[cos(angle), 0, sin(angle)],
@@ -144,8 +147,11 @@ function rear_axle_hub_origin(housing, arm, hub, settings=rear_axle_settings) =
   - `axle`: `rear_wheel_axle_spec` in `hardware_params.scad`.
   - `settings`: `rear_axle_settings` in `structure_params.scad`.
  */
-function rear_axle_wheel_shaft_origin(housing, arm, hub, axle,
-                                     settings=rear_axle_settings) =
+function rear_axle_wheel_shaft_origin(housing,
+                                      arm,
+                                      hub,
+                                      axle,
+                                      settings=rear_axle_settings) =
   let (p = rear_axle_hub_origin(housing, arm, hub, settings),
        a = rear_hub_axle(hub),
        b = hsp_rear_wheel_axle_bearing_positions(axle)[0],
@@ -164,8 +170,12 @@ function rear_axle_wheel_shaft_origin(housing, arm, hub, axle,
     `hardware_params.scad`.
   - `settings`: `rear_axle_settings` in `structure_params.scad`.
  */
-function rear_axle_cup_centers(housing, arm, hub, differential, axle,
-                              settings=rear_axle_settings) =
+function rear_axle_cup_centers(housing,
+                               arm,
+                               hub,
+                               differential,
+                               axle,
+                               settings=rear_axle_settings) =
   let (d = hsp_rear_differential_output_positions(differential)[1]
            - hsp_rear_differential_axis(differential)
            + rear_bulkhead_axis(housing, differential),
@@ -186,7 +196,12 @@ function rear_axle_cup_centers(housing, arm, hub, differential, axle,
   **Returns:** Property list with required and stock pin-center lengths,
   signed length error (positive means stock too long) and joint angle degrees.
  */
-function rear_axle_fit(housing, arm, hub, differential, axle, dogbone,
+function rear_axle_fit(housing,
+                       arm,
+                       hub,
+                       differential,
+                       axle,
+                       dogbone,
                        settings=rear_axle_settings) =
   let (p = rear_axle_cup_centers(housing, arm, hub, differential, axle, settings),
        v = p[1] - p[0],
@@ -330,7 +345,10 @@ module rear_axle_assembly(settings,
   tower_thickness = plist_get("thickness", tower);
   pinion_pos = rear_bulkhead_pinion_origin(housing, differential, pinion);
   shock_p = rear_axle_arm_point(rear_lower_arm_shock_positions(arm)[0],
-                              settings, housing, arm, hub);
+                                settings,
+                                housing,
+                                arm,
+                                hub);
   shock_rail = (plist_get("outer_span", arm) - plist_get("outer_gap", arm)) / 2;
   shock_y = shock_p[1] - shock_rail / 2 - plist_get("eye_w", shock) / 2
             - plist_get("shock_mount_gap", settings);
@@ -381,8 +399,8 @@ module rear_axle_assembly(settings,
     for (p = rear_bulkhead_fastener_positions(housing, mounts)) {
       _rear_axle_fastener(p - [0, 0, suspension_chassis_mount_h],
                           p + [0, 0, plist_get("mount_nut_floor", housing)
-                                      + plist_get("nut_h", fastener)
-                                      + plist_get("thread_projection", fastener)],
+                                     + plist_get("nut_h", fastener)
+                                     + plist_get("thread_projection", fastener)],
                           fastener,
                           show_nut=false);
       translate(p + [0, 0, plist_get("mount_nut_floor", housing)]) {

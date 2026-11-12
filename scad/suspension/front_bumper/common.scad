@@ -229,7 +229,7 @@ function front_bumper_profile_front_y(points, radius) =
       : let (slope=(b[1] - a[1]) / dx,
              x=min(hi, max(lo, -slope * radius / sqrt(1 + slope * slope))),
              y=a[1] + slope * (x - a[0]))
-        sqrt(max(0, radius * radius - x * x)) - y]);
+      sqrt(max(0, radius * radius - x * x)) - y]);
 
 module _front_bumper_rail(points, d) {
   for (i = [0:len(points) - 2]) {

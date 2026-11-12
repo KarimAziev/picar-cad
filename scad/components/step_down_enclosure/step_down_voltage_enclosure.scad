@@ -195,8 +195,9 @@ function step_down_enclosure_props(plist=[]) =
          [(x == 0 ? -body[0] / 2 + boss_insets[0] : body[0] / 2 - boss_insets[1]),
           (y == 0 ? -body[1] / 2 + boss_insets[2] : body[1] / 2 - boss_insets[3]), 0]],
        lid_spec = plist_get("lid", pl),
-       lid = plist_merge(lid_spec, [for (key = ["t", "lip_h", "lip_w", "clearance",
-                                                        "text_depth", "text_height"])
+       lid = plist_merge(lid_spec, [for (key = ["t", "lip_h",
+                                                "lip_w", "clearance",
+                                                "text_depth", "text_height"])
          each [key, enclosure_dimension(plist_get(key, lid_spec),
                                         key == "t" || key == "lip_h" ? inner[2]
                                         : member(key, ["text_depth", "text_height"]) ? enclosure_dimension(plist_get("t", lid_spec), inner[2])
@@ -248,17 +249,15 @@ function step_down_enclosure_props(plist=[]) =
        header_pos = sensor_pos + rotZ(plist_get("header_pos", ip), 90),
        header_size = [plist_get("header_size", ip)[1], plist_get("header_size", ip)[0]],
        terminal_pos = sensor_pos + rotZ(plist_get("terminal_pos", ip), 90),
-       terminal_footprints = concat(
-         [for (input = [true, false])
-           let (tp = step_down_terminal_props(
-                  plist_get(input ? "vin" : "vout", regulator, []), rb, input),
-                pos = regulator_pos + plist_get("pos", tp))
-           [[pos[0], pos[1]], plist_get("size", tp)]],
-         min(plist_get("terminal_size", ip)) > 0
-           ? [[[terminal_pos[0], terminal_pos[1]],
-               [plist_get("terminal_size", ip)[1],
-                plist_get("terminal_size", ip)[0]]]]
-           : []),
+       terminal_footprints = concat([for (input = [true, false])
+         let (tp = step_down_terminal_props(plist_get(input ? "vin" : "vout", regulator, []), rb, input),
+              pos = regulator_pos + plist_get("pos", tp))
+         [[pos[0], pos[1]], plist_get("size", tp)]],
+                                    min(plist_get("terminal_size", ip)) > 0
+                                    ? [[[terminal_pos[0], terminal_pos[1]],
+                                        [plist_get("terminal_size", ip)[1],
+                                         plist_get("terminal_size", ip)[0]]]]
+                                    : []),
        component_footprints = [for (fp = step_down_component_footprints(regulator))
          [fp[0] + [regulator_pos[0], regulator_pos[1]], fp[1]]],
        refs = ["regulator", [regulator_pos[0], regulator_pos[1]],
@@ -279,22 +278,22 @@ function step_down_enclosure_props(plist=[]) =
          _power_enclosure_text(spec, plist_get("text_style", lid), lid_size, lid_refs,
                                lid)],
        lid_h = plist_get("text_mode", lid) == "raised"
-         ? max(concat([lid_t], [for (text = texts)
-             plist_get("translation", text)[2] + plist_get("height", text)]))
-         : lid_t,
+               ? max(concat([lid_t], [for (text = texts)
+                 plist_get("translation", text)[2] + plist_get("height", text)]))
+               : lid_t,
        header_slot = plist_get("header_slot", pl),
        terminal_slots = [for (footprint = terminal_footprints)
-         let (clearance = enclosure_dimensions(
-                plist_get("terminal_clearance", lid), footprint[1]),
+         let (clearance = enclosure_dimensions(plist_get("terminal_clearance", lid), footprint[1]),
               size = footprint[1] + 2 * clearance)
          ["pos", footprint[0] + lid_size / 2 - size / 2,
-          "size", size, "corner_r", min(clearance)]],
+          "size", size,
+          "corner_r", min(clearance)]],
        component_slots = [for (footprint = component_footprints)
-         let (clearance = enclosure_dimensions(
-                plist_get("component_clearance", lid), footprint[1]),
+         let (clearance = enclosure_dimensions(plist_get("component_clearance", lid), footprint[1]),
               size = footprint[1] + 2 * clearance)
          ["pos", footprint[0] + lid_size / 2 - size / 2,
-          "size", size, "corner_r", min(clearance)]],
+          "size", size,
+          "corner_r", min(clearance)]],
        lid_slots = concat(plist_get("slots", lid, []), terminal_slots,
                           component_slots,
                           plist_get("enabled", header_slot) && min(header_size) > 0
@@ -348,7 +347,7 @@ function step_down_enclosure_props(plist=[]) =
          "Mounts and their pockets must fit the enclosure footprint")
   ["plist", pl,
    "size", [body[0], body[1], body[2] + max(lid_h,
-     lid_t + find_bolt_head_h(plist_get("hole_d", insert), plist_get("bolt_head_type", insert)))],
+                                            lid_t + find_bolt_head_h(plist_get("hole_d", insert), plist_get("bolt_head_type", insert)))],
    "body_size", body,
    "inner_size", inner,
    "inner_center", center,
@@ -686,11 +685,12 @@ module _power_enclosure_lid_panel(p, text_panel=false, text_panel_t=1) {
          "Text panel thickness must be positive and less than lid thickness");
   intersection() {
     _power_enclosure_lid(p);
-    translate([-s[0] / 2, -s[1] / 2,
+    translate([-s[0] / 2,
+               -s[1] / 2,
                text_panel ? seam_z : -lip_h]) {
       cube([s[0], s[1], text_panel
-            ? plist_get("lid_h", p) - seam_z
-            : seam_z + lip_h]);
+                        ? plist_get("lid_h", p) - seam_z
+                        : seam_z + lip_h]);
     }
   }
 }
@@ -913,7 +913,8 @@ module step_down_enclosure_printable(part="both",
         translate([0,
                    lid_y + (part == "lid_text" ? 0 : s[1] + gap),
                    -seam_z]) {
-          _power_enclosure_lid_panel(p, text_panel=true,
+          _power_enclosure_lid_panel(p,
+                                     text_panel=true,
                                      text_panel_t=text_panel_t);
         }
       }

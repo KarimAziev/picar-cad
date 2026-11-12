@@ -104,8 +104,8 @@ function _rear_equipment_place(specs,
   let (spec = specs[i],
        kind = plist_get("kind", spec),
        component = kind == "perf_board"
-           ? plist_merge(perfboard_default_plist, plist_get("component", spec, []))
-           : plist_get("component", spec, []),
+                   ? plist_merge(perfboard_default_plist, plist_get("component", spec, []))
+                   : plist_get("component", spec, []),
        props = deck_component_props(kind, component),
        base = plist_get("size", props),
        rotation = plist_get("rotation", spec, 0),

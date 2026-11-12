@@ -84,7 +84,8 @@ function rc_front_wheel_reference_center(wheel_pl=rc_wheel_plist) =
 function rc_tire_vertical_half_extent(axle_direction,
                                       wheel_pl=rc_wheel_plist) =
   assert(is_list(axle_direction) && len(axle_direction) == 3
-         && norm(axle_direction) > 0, "A nonzero axle direction is required")
+         && norm(axle_direction) > 0,
+         "A nonzero axle direction is required")
   let (wheel = rc_touring_wheel_spec(wheel_pl),
        axial_z = min(1, abs(axle_direction[2]) / norm(axle_direction)),
        radial_z = sqrt(1 - axial_z * axial_z),
@@ -132,13 +133,13 @@ function rc_rear_level_wheel_center_z(wheel_pl=rc_wheel_plist,
 function rc_rear_wheel_reference_center(layout) =
   let (reference = rc_front_wheel_reference_center(),
        track = is_undef(rc_rear_wheel_preview_track)
-         ? 2 * reference[0]
-         : rc_rear_wheel_preview_track,
+               ? 2 * reference[0]
+               : rc_rear_wheel_preview_track,
        z = is_undef(rc_rear_wheel_preview_axis_z)
-         ? rc_rear_level_wheel_center_z()
-         : rc_rear_wheel_preview_axis_z,
+           ? rc_rear_level_wheel_center_z()
+           : rc_rear_wheel_preview_axis_z,
        y = (plist_get("bulkhead_1_y", layout) + plist_get("bulkhead_2_y", layout)) / 2
-      + rc_rear_wheel_preview_y_offset)
+           + rc_rear_wheel_preview_y_offset)
   [track / 2, y, suspension_chassis_mount_h + z];
 
 /**

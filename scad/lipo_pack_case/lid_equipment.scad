@@ -71,13 +71,13 @@ function lid_equipment_props(spec) =
   assert(is_num(a), "Equipment rotation must be numeric")
   let (p = kind == "button" ? button_bracket_props(pl)
            : kind == "wago" ? wago_bracket_props(pl)
-           : kind == "wago_pair" ? wago_pair_props(pl) : voltmeter_mount_props(pl),
+             : kind == "wago_pair" ? wago_pair_props(pl) : voltmeter_mount_props(pl),
        size = plist_get("size", p),
        b = kind == "button" ? plist_get("bounds", p)
            : _wago_bounds([0, 0, 0], size),
        roof = kind == "button"
-           ? [[b[0][0], b[0][1], 0], [b[1][0], size[1] / 2, size[2]]]
-           : kind == "wago_pair" ? plist_get("roof_bounds", p) : b,
+              ? [[b[0][0], b[0][1], 0], [b[1][0], size[1] / 2, size[2]]]
+              : kind == "wago_pair" ? plist_get("roof_bounds", p) : b,
        result = plist_merge(spec, ["bounds", _lid_rotate_bounds(b, a),
                                    "roof_bounds", _lid_rotate_bounds(roof, a),
                                    "props", p]),
@@ -93,22 +93,22 @@ function _lid_equipment_cuts(p) =
        size = plist_get("size", props),
        pl = plist_get("component", p, []),
        holes = kind == "button" || kind == "wago_pair"
-           ? plist_get("mount_holes", props)
-           : kind == "wago" ? [for (xy = plist_get("mount_holes", props))
-             xy - [size[0] / 2, size[1] / 2]]
-           : [for (x = [-1, 1], y = [-1, 1])
-             [x * plist_get("bolt_spacing", props)[0] / 2,
-              y * plist_get("bolt_spacing", props)[1] / 2]],
+               ? plist_get("mount_holes", props)
+               : kind == "wago" ? [for (xy = plist_get("mount_holes", props))
+                 xy - [size[0] / 2, size[1] / 2]]
+                 : [for (x = [-1, 1], y = [-1, 1])
+                   [x * plist_get("bolt_spacing", props)[0] / 2,
+                    y * plist_get("bolt_spacing", props)[1] / 2]],
        d = kind == "button" ? plist_get("bore_d", pl, 6.4)
            : kind == "wago_pair" ? plist_get("bore_d", props)
-           : kind == "wago" ? find_bolt_head_d(plist_get("bolt_d", props), "countersunk") + 0.3
-           : plist_get("bolt_d", props) * 2,
+             : kind == "wago" ? find_bolt_head_d(plist_get("bolt_d", props), "countersunk") + 0.3
+               : plist_get("bolt_d", props) * 2,
        wire_d = plist_get("wire_d", kind == "wago" ? p : pl, 4),
        wire_pos = kind == "button" ? plist_get("wire_pos", props)
-           : kind == "wago" ? _lid_wago_wire(props) : [0, 0],
+                  : kind == "wago" ? _lid_wago_wire(props) : [0, 0],
        wire_size = kind == "button" || kind == "wago_pair"
-           ? concat(plist_get("wire_size", props), [0])
-           : [wire_d, wire_d, 0],
+                   ? concat(plist_get("wire_size", props), [0])
+                   : [wire_d, wire_d, 0],
        cuts = concat([for (xy = holes) _wago_bounds(concat(xy, [0]), [d, d, 0])],
                      [_wago_bounds(concat(wire_pos, [0]), wire_size)]))
   [for (b = cuts) _lid_rotate_bounds(b, plist_get("rotation", p, 0))];
@@ -139,14 +139,14 @@ function _lid_equipment_roof_contains(p, pos, lid, gap) =
        r = plist_get("corner_r", lid),
        angle = plist_get("rotation", p, 0))
   plist_get("kind", p) != "button"
-      ? _lid_roof_contains(_lid_move_bounds(plist_get("roof_bounds", p), pos, gap),
-                           size,
-                           r)
-      : len([for (v = plist_get("footprint", plist_get("props", p)))
-        let (point = concat(_lid_rotate(v, angle), [0]))
+  ? _lid_roof_contains(_lid_move_bounds(plist_get("roof_bounds", p), pos, gap),
+                       size,
+                       r)
+  : len([for (v = plist_get("footprint", plist_get("props", p)))
+    let (point = concat(_lid_rotate(v, angle), [0]))
                  if (!_lid_roof_contains(_lid_move_bounds([point, point], pos, gap), size, r)) 1]) == 0
-        && len([for (cut = _lid_equipment_cuts(p))
-          if (!_lid_roof_contains(_lid_move_bounds(cut, pos, gap), size, r)) 1]) == 0;
+    && len([for (cut = _lid_equipment_cuts(p))
+      if (!_lid_roof_contains(_lid_move_bounds(cut, pos, gap), size, r)) 1]) == 0;
 
 function _lid_equipment_place(spec, lid, obstacles) =
   let (p = lid_equipment_props(spec),
@@ -171,19 +171,19 @@ function _lid_equipment_place(spec, lid, obstacles) =
                    [for (o = obstacles) each [o[0][1] - b[1][1] - gap,
                                               o[1][1] - b[0][1] + gap]]),
        candidates = !is_undef(pos) ? [pos]
-           : mode == "left" || mode == "right"
-           ? [for (y = ys)
-             let (edge = _lid_edge_limit(y + roof[0][1] - gap,
-                                         y + roof[1][1] + gap, size[0], size[1], r))
-             [mode == "left" ? max(lo[0], -edge - roof[0][0] + gap)
-                 : min(hi[0], edge - roof[1][0] - gap), y]]
-           : mode == "front" || mode == "rear"
-           ? [for (x = xs)
-             let (edge = _lid_edge_limit(x + roof[0][0] - gap,
-                                         x + roof[1][0] + gap, size[1], size[0], r))
-             [x, mode == "front" ? min(hi[1], edge - roof[1][1] - gap)
-                 : max(lo[1], -edge - roof[0][1] + gap)]]
-           : [for (x = xs, y = ys) [x, y]],
+                    : mode == "left" || mode == "right"
+                      ? [for (y = ys)
+                        let (edge = _lid_edge_limit(y + roof[0][1] - gap,
+                                                    y + roof[1][1] + gap, size[0], size[1], r))
+                        [mode == "left" ? max(lo[0], -edge - roof[0][0] + gap)
+                         : min(hi[0], edge - roof[1][0] - gap), y]]
+                      : mode == "front" || mode == "rear"
+                        ? [for (x = xs)
+                          let (edge = _lid_edge_limit(x + roof[0][0] - gap,
+                                                      x + roof[1][0] + gap, size[1], size[0], r))
+                          [x, mode == "front" ? min(hi[1], edge - roof[1][1] - gap)
+                              : max(lo[1], -edge - roof[0][1] + gap)]]
+                        : [for (x = xs, y = ys) [x, y]],
        fits = [for (xy = candidates)
          if (_lid_equipment_roof_contains(p, xy, lid, gap)
              && _lid_cut_access(cuts, xy, lid)
@@ -220,9 +220,9 @@ function _lid_button_advance(m, lid, obstacles) =
        cuts = _lid_equipment_cuts(m),
        mount_bounds = _lid_union_bounds([for (i = [0:len(cuts) - 2]) cuts[i]]),
        advance = max(0, min(sign > 0 ? limits[2] - pos[cross] - mount_bounds[1][cross]
-                  : pos[cross] + mount_bounds[0][cross] - limits[1],
+                            : pos[cross] + mount_bounds[0][cross] - limits[1],
                             sign > 0 ? size[cross] / 2 - gap - roof[1][cross]
-                  : roof[0][cross] + size[cross] / 2 - gap)),
+                            : roof[0][cross] + size[cross] / 2 - gap)),
        component = plist_merge(plist_get("component", m),
                                ["wire_pos", plist_get("wire_pos", p) - [0, advance]]),
        moved = lid_equipment_props(plist_merge(m, ["component", component])),
@@ -253,11 +253,11 @@ function _lid_equipment_layout(specs, lid, obstacles, i=0, placed=[]) =
            : initial)
     assert(count == 1 || count == "fit", "Equipment count must be 1 or fit")
     is_undef(p) ? _lid_equipment_layout(specs, lid, obstacles, i + 1, placed)
-  : _lid_equipment_layout(specs,
-                          lid,
-                          concat(obstacles, [plist_get("bounds", p)]),
-                          count == "fit" ? i : i + 1,
-                          concat(placed, [p]));
+    : _lid_equipment_layout(specs,
+                            lid,
+                            concat(obstacles, [plist_get("bounds", p)]),
+                            count == "fit" ? i : i + 1,
+                            concat(placed, [p]));
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -281,12 +281,12 @@ function lid_equipment_layout(specs, lid, obstacles=[]) =
   let (sensor = plist_get("lidar", lid),
        adapter = plist_get("adapter_props", lid),
        sensor_size = is_undef(sensor) ? [0, 0, 0]
-           : orientation_size(plist_get("lidar_orientation", lid),
-                              concat(plist_get("size", sensor), [0])),
+                     : orientation_size(plist_get("lidar_orientation", lid),
+                                        concat(plist_get("size", sensor), [0])),
        plate_size = plist_get("size", adapter, [0, 0, 0]),
        occupied = [for (i = [0:2]) max(sensor_size[i], plate_size[i])],
        sensor_boxes = occupied[0] == 0 ? []
-           : [_wago_bounds(concat(plist_get("lidar_offset", lid), [0]), occupied)])
+                      : [_wago_bounds(concat(plist_get("lidar_offset", lid), [0]), occupied)])
   let (a = plist_get("power_rotation", lid, 0),
        local_obstacles = [for (b = concat(obstacles, sensor_boxes))
          _lid_rotate_bounds(b, -a)],
@@ -386,8 +386,8 @@ function lid_voltmeter_headroom(specs, rails, side_t, roof_t) =
            z = plist_get("pos", s, [0, undef])[1],
            rail_top = plist_get("h", rails) + plist_get("clearance", rails))
       is_undef(z)
-          ? side_t + max(cut_h + 2 * edge, display_h - 2 * roof_t)
-          : max(z + cut_h / 2 + edge, z + display_h / 2 - roof_t) - rail_top]));
+      ? side_t + max(cut_h + 2 * edge, display_h - 2 * roof_t)
+      : max(z + cut_h / 2 + edge, z + display_h / 2 - roof_t) - rail_top]));
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -528,28 +528,28 @@ module lid_voltmeter(props, slot_mode=false, reserve_mode=false) {
  */
 function lid_perfboard_props(spec, lid) =
   is_undef(spec) || !plist_get("enabled", spec, true)
-      ? ["enabled", false]
-      : let (input = plist_get("component", spec),
-             hardware = perf_board_mount_props(input),
-             rails = plist_get("rail_props", lid),
-             axis = plist_get("axis", rails),
-             cross = axis == "x" ? 1 : 0,
-             rail = plist_get("rails", rails)[0],
-             depth = plist_get("locking_depth", rail),
-             body = plist_get("body_size", plist_get("case_props", lid)),
-             outer = plist_get("cross", rail) - body[cross] / 2 - depth / 2,
-             roof = plist_get("canonical_size", lid),
-             pl = plist_merge(input,
-                              ["standoff_h", max(plist_get("standoff_h", input),
-                                                 roof[cross] / 2 + outer + 0.5)]),
-             p = perf_board_mount_props(pl),
-             holes = plist_get("bolt_positions", p),
-             edge = plist_get("edge_pad", spec, 1.25),
-             radius = plist_get("mount_d", p) / 2 + edge,
-             bottom = plist_get("h", rails) + plist_get("clearance", rails)
-                      + plist_get("side_t", lid),
-             top = plist_get("roof_z", lid),
-             requested = plist_get("pos", spec, [0, undef]))
+  ? ["enabled", false]
+  : let (input = plist_get("component", spec),
+         hardware = perf_board_mount_props(input),
+         rails = plist_get("rail_props", lid),
+         axis = plist_get("axis", rails),
+         cross = axis == "x" ? 1 : 0,
+         rail = plist_get("rails", rails)[0],
+         depth = plist_get("locking_depth", rail),
+         body = plist_get("body_size", plist_get("case_props", lid)),
+         outer = plist_get("cross", rail) - body[cross] / 2 - depth / 2,
+         roof = plist_get("canonical_size", lid),
+         pl = plist_merge(input,
+                          ["standoff_h", max(plist_get("standoff_h", input),
+                                             roof[cross] / 2 + outer + 0.5)]),
+         p = perf_board_mount_props(pl),
+         holes = plist_get("bolt_positions", p),
+         edge = plist_get("edge_pad", spec, 1.25),
+         radius = plist_get("mount_d", p) / 2 + edge,
+         bottom = plist_get("h", rails) + plist_get("clearance", rails)
+                  + plist_get("side_t", lid),
+         top = plist_get("roof_z", lid),
+         requested = plist_get("pos", spec, [0, undef]))
     assert(len(holes) > 0, "Lid perfboard needs selected mounting holes")
     let (pos = [requested[0],
                 with_default(requested[1], top - radius

@@ -15,10 +15,15 @@ function overlap(a, b, gap=0) =
   && a[0][1] < b[1][1] + gap - 0.00001
   && a[1][1] > b[0][1] - gap + 0.00001;
 
-module check_equipment(specs, panels=rear_panel_specs,
+module check_equipment(specs,
+                       panels=rear_panel_specs,
                        power_case=rear_power_case_plist) {
-  base = rear_chassis_layout(equipment=[], panels=panels, power_case=power_case);
-  layout = rear_chassis_layout(equipment=specs, panels=panels, power_case=power_case);
+  base = rear_chassis_layout(equipment=[],
+                             panels=panels,
+                             power_case=power_case);
+  layout = rear_chassis_layout(equipment=specs,
+                               panels=panels,
+                               power_case=power_case);
   for (key = ["size", "bounds",
               "min_y", "max_y",
               "transition_y_end", "power_case"]) {
@@ -49,18 +54,18 @@ check_equipment(rear_equipment_specs);
 
 // Alternate electronics layouts use a deck without panels or a raised payload.
 variants = [rear_equipment_mixed, rear_equipment_meters,
-              [["kind", "voltmeter",
-                "zone", "left",
-                "rotation", 37],
-               ["kind", "voltmeter",
-                "zone", "right",
-                "rotation", 270]],
-              [["kind", "step_down",
-                "zone", "left",
-                "position", [0.5, 1]]],
-              [["kind", "perf_board",
-                "zone", "auto",
-                "count", 2]], []];
+            [["kind", "voltmeter",
+              "zone", "left",
+              "rotation", 37],
+             ["kind", "voltmeter",
+              "zone", "right",
+              "rotation", 270]],
+            [["kind", "step_down",
+              "zone", "left",
+              "position", [0.5, 1]]],
+            [["kind", "perf_board",
+              "zone", "auto",
+              "count", 2]], []];
 
 for (specs = variants) {
   check_equipment(specs, panels=[], power_case=undef);

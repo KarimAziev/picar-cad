@@ -60,18 +60,27 @@ function heat_insert_nut_props(plist) =
   assert(min([flang_h, top_h, flat_h, inner_h, clearance, knurl_clearance]) >= 0,
          "Insert segments must fit h and clearances must be nonnegative")
   assert(!taper || h > bore_h + flat_h, "Insert taper needs positive height")
-  plist_merge(plist, ["h", h, "d", d, "hole_d", hole_d,
-                      "flang_d", flang_d, "flang_h", flang_h,
-                      "top_flang_h", top_h, "bottom_flat_h", flat_h,
-                      "clearance", clearance, "knurl_clearance", knurl_clearance,
-                      "use_taper", taper,
-                      "bolt_head_type", with_default(plist_get("bolt_head_type", plist), "pan"),
-                      "outer_d", max(d, flang_d), "inner_h", inner_h,
-                      "slot_d", max(d + clearance, bore_h > 0 || taper ? bore_d : 0),
-                      "bore_d", bore_d, "bore_h", bore_h,
-                      "slot_offset", slot_offset, "slot_overshoot", overshoot,
-                      "slot_bottom", slot_offset - overshoot,
-                      "slot_top", h + slot_offset + overshoot]);
+  plist_merge(plist,
+              ["h", h,
+               "d", d,
+               "hole_d", hole_d,
+               "flang_d", flang_d,
+               "flang_h", flang_h,
+               "top_flang_h", top_h,
+               "bottom_flat_h", flat_h,
+               "clearance", clearance,
+               "knurl_clearance", knurl_clearance,
+               "use_taper", taper,
+               "bolt_head_type", with_default(plist_get("bolt_head_type", plist), "pan"),
+               "outer_d", max(d, flang_d),
+               "inner_h", inner_h,
+               "slot_d", max(d + clearance, bore_h > 0 || taper ? bore_d : 0),
+               "bore_d", bore_d,
+               "bore_h", bore_h,
+               "slot_offset", slot_offset,
+               "slot_overshoot", overshoot,
+               "slot_bottom", slot_offset - overshoot,
+               "slot_top", h + slot_offset + overshoot]);
 
 module heat_insert_nut(h,
                        d,
@@ -93,12 +102,17 @@ module heat_insert_nut(h,
                        anchor=[0, 0, 1],
                        bolt_l,
                        bolt_head_offset=0) {
-  props = heat_insert_nut_props(["h", h, "d", d, "hole_d", hole_d,
-                                 "flang_d", flang_d, "flang_h", flang_h,
+  props = heat_insert_nut_props(["h", h,
+                                 "d", d,
+                                 "hole_d", hole_d,
+                                 "flang_d", flang_d,
+                                 "flang_h", flang_h,
                                  "top_flang_h", top_flang_h,
                                  "bottom_flat_h", bottom_flat_h,
-                                 "clearance", clearance, "knurl_clearance", knurl_clearance,
-                                 "use_taper", use_taper, "bolt_head_type", bolt_head_type]);
+                                 "clearance", clearance,
+                                 "knurl_clearance", knurl_clearance,
+                                 "use_taper", use_taper,
+                                 "bolt_head_type", bolt_head_type]);
   bottom_flat_h = plist_get("bottom_flat_h", props);
   flang_d = plist_get("flang_d", props);
   flang_h = plist_get("flang_h", props);

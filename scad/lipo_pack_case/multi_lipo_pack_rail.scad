@@ -19,12 +19,12 @@ function _lipo_rail_segments(segments, cuts, i=0) =
   ? segments
   : _lipo_rail_segments([for (s = segments)
     each cuts[i][1] <= s[0] || cuts[i][0] >= s[1]
-                              ? [s]
-                              : concat(cuts[i][0] > s[0]
-                                       ? [[s[0], cuts[i][0]]]
-                                       : [], cuts[i][1] < s[1]
-                                       ? [[cuts[i][1], s[1]]]
-                                       : [])],
+         ? [s]
+         : concat(cuts[i][0] > s[0]
+                  ? [[s[0], cuts[i][0]]]
+                  : [], cuts[i][1] < s[1]
+                        ? [[cuts[i][1], s[1]]]
+                        : [])],
                         cuts,
                         i + 1);
 
@@ -76,10 +76,10 @@ function multi_lipo_pack_rail_props(pl, size, walls) =
     assert(in_list(request, ["auto", "x", "y"]),
            "rail axis must be auto, x, or y")
     let (axis = request != "auto"
-       ? request
-       : x_h > y_h || (x_h == y_h && min(lengths[0], lengths[1]) >= min(lengths[2], lengths[3]))
-       ? "x"
-       : "y",
+                ? request
+                : x_h > y_h || (x_h == y_h && min(lengths[0], lengths[1]) >= min(lengths[2], lengths[3]))
+                  ? "x"
+                  : "y",
          chosen = axis == "x" ? ["rear", "front"] : ["left", "right"],
          wall_h = axis == "x" ? x_h : y_h,
          all_walls = plist_get("walls", pl),
@@ -120,7 +120,7 @@ function multi_lipo_pack_rail_props(pl, size, walls) =
             top_profile = plist_get("h", shape, 0) > 0 ? shape : wall,
             sides = plist_get("side", top_profile),
             top_r = is_undef(sides) ? plist_get("corner_r", top_profile, 0)
-             : max(sides[2][1], sides[3][1]),
+                    : max(sides[2][1], sides[3][1]),
             inset = max(pad, top_r),
             start = plist_get("offset", wall) + inset,
             end = plist_get("offset", wall) + plist_get("l", wall) - inset,

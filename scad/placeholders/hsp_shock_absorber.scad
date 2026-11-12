@@ -100,7 +100,7 @@ module hsp_shock_absorber(pl,
   spring_end = upper_seat_z - seat_h - wire / 2;
   spring_l = spring_end - spring_start;
   travel_ok = eye_distance >= _hsp_value(pl, "eye_distance_min")
-                && eye_distance <= _hsp_value(pl, "eye_distance_max");
+              && eye_distance <= _hsp_value(pl, "eye_distance_max");
   assert(!require_travel || travel_ok,
          "Shock eye distance exceeds the configured stroke");
   if (!travel_ok) {
@@ -218,11 +218,11 @@ module hsp_shock_between(start,
             atan2(direction[1], direction[0])]) {
       translate(-first_eye) {
         hsp_shock_absorber(pl=pl,
-                          eye_distance=eye_distance,
-                          anchor=[1, 1, 1],
-                          slot_mode=false,
-                          show_spring=show_spring,
-                          require_travel=require_travel);
+                           eye_distance=eye_distance,
+                           anchor=[1, 1, 1],
+                           slot_mode=false,
+                           show_spring=show_spring,
+                           require_travel=require_travel);
       }
     }
   }

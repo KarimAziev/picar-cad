@@ -94,7 +94,8 @@ function upper_steering_plate_size() =
  */
 module upper_steering_plate_position() {
   size = upper_steering_plate_size();
-  translate([-size[0] / 2, -upper_steering_plate_pad_d / 2,
+  translate([-size[0] / 2,
+             -upper_steering_plate_pad_d / 2,
              upper_steering_plate_base_z()]) {
     children();
   }
@@ -206,7 +207,8 @@ module upper_steering_plate(anchor=[1, 1, 1],
       p = mounts[i];
       translate([p[0], p[1], -0.01]) {
         cylinder(d=i < 4 ? bolt_d : front_upper_suspension_holder_steering_bolt_d,
-                 h=h + 0.02, $fn=fn);
+                 h=h + 0.02,
+                 $fn=fn);
       }
     }
   }
@@ -229,10 +231,10 @@ module upper_steering_plate(anchor=[1, 1, 1],
                 start_z = p[2] - upper_steering_plate_base_z();
                 translate([p[0], p[1], start_z]) {
                   foot_d = i < 2
-                             ? bellcrank_post_od
-                             : i < 4
-                               ? upper_steering_panel_boss_od
-                               : holder_d;
+                           ? bellcrank_post_od
+                           : i < 4
+                             ? upper_steering_panel_boss_od
+                             : holder_d;
                   cylinder(d=foot_d,
                            h=web_z - start_z + 0.01,
                            $fn=fn);

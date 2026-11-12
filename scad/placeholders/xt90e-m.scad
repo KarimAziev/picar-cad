@@ -185,7 +185,7 @@ module xt90e(shell_size=xt90e_size,
                          contact_h=contact_h + max_h - pin_length,
                          contact_wall_h=contact_wall_h,
                          wiring_color=round_side == "bottom" ? vcc_wiring_color
-                         : gnd_wiring_color,
+                                      : gnd_wiring_color,
                          wiring=round_side == "bottom" ? vcc_wiring : gnd_wiring,
                          contact_base_h=contact_base_h);
       }
@@ -199,8 +199,8 @@ module xt90e(shell_size=xt90e_size,
                          contact_h=contact_h + max_h - pin_length,
                          contact_wall_h=contact_wall_h,
                          wiring_color=round_side == "bottom"
-                         ? gnd_wiring_color
-                         : vcc_wiring_color,
+                                      ? gnd_wiring_color
+                                      : vcc_wiring_color,
                          wiring=round_side == "bottom" ? gnd_wiring : vcc_wiring,
                          contact_base_h=contact_base_h);
       }

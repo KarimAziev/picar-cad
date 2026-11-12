@@ -40,7 +40,8 @@ assert(plist_get("bounds", a[1])[1][1] <= plist_get("bounds", a[0])[0][1]);
 
 // Adding mounts must preserve every existing mechanical placement.
 base    = rear_chassis_layout(equipment=[], wago_mounts=[]);
-changed = rear_chassis_layout(equipment=[], wago_mounts=[["placement", "after",
+changed = rear_chassis_layout(equipment=[],
+                              wago_mounts=[["placement", "after",
                                             "rotation", 90]]);
 for (key=["motor_pos","motor_rotation","panels","power_case","bulkhead_1_y","bulkhead_2_y","maintenance_y"]) {
   assert(plist_get(key, base) == plist_get(key, changed),

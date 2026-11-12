@@ -13,7 +13,7 @@ use <../../scad/suspension/front_chassis/rear_frame/front_chassis_rear_frame.sca
 use <../../scad/suspension/steering_servo_bracket/helpers.scad>
 use <../../scad/suspension/steering_servo_bracket/steering_servo_bracket_assembly.scad>
 
-mode = "bracket";
+mode         = "bracket";
 show_encoder = false;
 
 module upright(x_offset) {

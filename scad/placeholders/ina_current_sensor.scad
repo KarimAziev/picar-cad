@@ -54,12 +54,13 @@ function _ina_terminal(pl) =
                "contact_h", 4.47,
                "pitch", 4.5,
                "colr", medium_blue_2,
-               "pin_h", 0], _ina_defined(pl));
+               "pin_h", 0],
+              _ina_defined(pl));
 
 module _ina_texts(texts, style) {
   for (spec = with_default(texts, [])) {
     text_from_plist(plist=plist_merge(_ina_defined(style),
-                                     _ina_defined(with_default(spec, []))),
+                                      _ina_defined(with_default(spec, []))),
                     default_font="Liberation Sans:style=Bold",
                     default_color="white",
                     default_size=1,
@@ -230,39 +231,39 @@ function ina_current_sensor_props(plist=ina_plist) =
        terminal_pl = _ina_terminal(terminal),
        header_enabled = len(header) > 0 && _ina_get("cols", pin, 0) > 0,
        header_size = header_enabled
-           ? pin_header_size(header_width=_ina_get("header_width", header, 2.45),
-                              header_y_width=_ina_get("pitch", pin, 2.54),
-                              cols=_ina_get("cols", pin, 0), rows=1)
-           : [0, 0],
+                     ? pin_header_size(header_width=_ina_get("header_width", header, 2.45),
+                                       header_y_width=_ina_get("pitch", pin, 2.54),
+                                       cols=_ina_get("cols", pin, 0), rows=1)
+                     : [0, 0],
        chip = _ina_get("size", _ina_get("chip", plist, []), []),
        chip_h = len(chip) == 3 ? chip[2] : 0,
        pin_h = _ina_get("cols", pin, 0) > 0 && len(header) > 0
-           ? _ina_get("pin_height", header, 11.45)
-             - _ina_get("z_offset", header, 0)
-           : 0,
+               ? _ina_get("pin_height", header, 11.45)
+                 - _ina_get("z_offset", header, 0)
+               : 0,
        terminal_h = len(terminal) > 0
-           ? _ina_get("base_h", terminal, 6.8) + _ina_get("top_h", terminal, 3.2)
-           : 0,
+                    ? _ina_get("base_h", terminal, 6.8) + _ina_get("top_h", terminal, 3.2)
+                    : 0,
        bottom_h = max(0,
-                       _ina_get("cols", pin, 0) > 0
-                       ? _ina_get("z_offset", header, 0) : 0,
-                       _ina_get("pin_h", terminal, 0) - size[2]),
+                      _ina_get("cols", pin, 0) > 0
+                      ? _ina_get("z_offset", header, 0) : 0,
+                      _ina_get("pin_h", terminal, 0) - size[2]),
        standoff = standoff_h_spec(min_h=bottom_h, d=bolt_d))
   ["size", size,
    "bolt_spacing", bolt_spacing,
    "bolt_d", bolt_d,
    "mounting_y", bolt_spacing[1] == 0
-     ? size[1] / 2 - bolt_d / 2 - _ina_get("mount_hole_dist", plist, 0)
-     : 0,
+                 ? size[1] / 2 - bolt_d / 2 - _ina_get("mount_hole_dist", plist, 0)
+                 : 0,
    "bottom_h", bottom_h,
    "standoff_h", standoff[0],
    "standoff_thread_h", with_default(standoff[1], 0),
    "header_pos", [0, -size[1] / 2 + _ina_get("y_offset", pin, 0), 0],
    "header_size", [header_size[1], header_size[0]],
    "terminal_size", len(terminal) > 0
-     ? [screw_terminal_width_from_plist(terminal_pl),
-        plist_get("thickness", terminal_pl)]
-     : [0, 0],
+                    ? [screw_terminal_width_from_plist(terminal_pl),
+                       plist_get("thickness", terminal_pl)]
+                    : [0, 0],
    "terminal_pos", [0, size[1] / 2 - plist_get("thickness", terminal_pl) / 2
                        - _ina_get("y_offset", terminal, 0), size[2]],
    "populated_h", max(pin_h, size[2] + max(chip_h, terminal_h))];
@@ -373,11 +374,11 @@ module ina_current_sensor(plist=ina_plist,
   standoff_h = plist_get("standoff_h", props);
   standoff_thread_h = plist_get("standoff_thread_h", props);
   initial_z = anchor_z_mode == "pin"
-    ? bottom_h
-    : anchor_z_mode == "standoff" ? standoff_h : 0;
+              ? bottom_h
+              : anchor_z_mode == "standoff" ? standoff_h : 0;
   anchor_h = anchor_z_mode == "pin"
-    ? size[2] + bottom_h
-    : anchor_z_mode == "standoff" ? standoff_h : size[2];
+             ? size[2] + bottom_h
+             : anchor_z_mode == "standoff" ? standoff_h : size[2];
   standoff_z = thread_at_top ? -standoff_h : size[2] - standoff_thread_h;
 
   with_orientation(to=orientation,
@@ -447,15 +448,16 @@ module ina_current_sensor(plist=ina_plist,
       }
 
       if (show_standoffs) {
-        translate([0, mounting_y,
+        translate([0,
+                   mounting_y,
                    standoff_z - (slot_mode
                                  ? with_default(parent_thickness, 0) : 0)]) {
           four_corner_standoffs(bolt_d=bolt_d,
                                 bolt_spacing=bolt_spacing,
                                 h=bottom_h,
                                 parent_thickness=slot_mode
-                                  ? with_default(parent_thickness, 0)
-                                  : parent_thickness,
+                                                 ? with_default(parent_thickness, 0)
+                                                 : parent_thickness,
                                 cbore_d=with_default(cbore_d, 0),
                                 cbore_h=with_default(cbore_h, 0),
                                 thread_at_top=thread_at_top,

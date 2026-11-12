@@ -51,20 +51,21 @@ function pcb_placeholder_size(plist) =
   type == "pci_connector" ? pci_connector_size_from_plist(plist)
   : type == "pcb_button" ? pcb_button_size_from_plist(plist)
     : type == "usb_socket"
-      ? usb_socket_size(plist, plist_get("usb_plist", plist, usb_c_plist),
-                         plist_get("orientation", plist, "wlh"))
-    : type == "pcb_text"
-      ? let (tm = _pcb_text_metrics(plist))
-      [tm.size[0], tm.size[1], plist_get("height", plist, 0.1)]
-      : member(type,
-               ["cuboid", "bcm_processor",
-                "ethernet_socket", "board_edge_socket",
-                "shrouded_connector", "multi_usb_socket", "micro_sd_socket"])
-        ? assert(is_list(size) && len(size) == 3
-                 && len([for (v = size) if (is_num(v) && v > 0) v]) == 3,
-                 str("PCB component ", type, " requires positive size=[w,l,h]"))
-        size
-        : undef;
+      ? usb_socket_size(plist,
+                        plist_get("usb_plist", plist, usb_c_plist),
+                        plist_get("orientation", plist, "wlh"))
+      : type == "pcb_text"
+        ? let (tm = _pcb_text_metrics(plist))
+        [tm.size[0], tm.size[1], plist_get("height", plist, 0.1)]
+        : member(type,
+                 ["cuboid", "bcm_processor",
+                  "ethernet_socket", "board_edge_socket",
+                  "shrouded_connector", "multi_usb_socket", "micro_sd_socket"])
+          ? assert(is_list(size) && len(size) == 3
+                   && len([for (v = size) if (is_num(v) && v > 0) v]) == 3,
+                   str("PCB component ", type, " requires positive size=[w,l,h]"))
+          size
+          : undef;
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -149,17 +150,17 @@ module pcb_placeholder_renderer(plist,
           }
         } else if (type == "usb_socket") {
           usb_socket(plist=plist,
-                      usb_plist=plist_get("usb_plist", plist, usb_c_plist),
-                      orientation=plist_get("orientation", plist, "wlh"),
-                      rotate_z_180=plist_get("rotate_z_180", plist, false),
-                      show_usb_plug=plist_get("show_usb_plug", plist, false),
-                      anchor=[1, 1, 1]);
+                     usb_plist=plist_get("usb_plist", plist, usb_c_plist),
+                     orientation=plist_get("orientation", plist, "wlh"),
+                     rotate_z_180=plist_get("rotate_z_180", plist, false),
+                     show_usb_plug=plist_get("show_usb_plug", plist, false),
+                     anchor=[1, 1, 1]);
         } else if (type == "micro_sd_socket") {
           micro_sd_socket(size=reference_size,
-                           card=plist_get("card", plist, []),
-                           insertion=plist_get("insertion", plist, 10.75),
-                           show_card=plist_get("show_card", plist, true),
-                           anchor=[1, 1, 1]);
+                          card=plist_get("card", plist, []),
+                          insertion=plist_get("insertion", plist, 10.75),
+                          show_card=plist_get("show_card", plist, true),
+                          anchor=[1, 1, 1]);
         } else if (type == "multi_usb_socket") {
           multi_usb_socket(size=reference_size,
                            usb_rows=plist_get("usb_rows", plist, 2),

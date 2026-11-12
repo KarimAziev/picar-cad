@@ -17,9 +17,9 @@ p       = perfboard_props(minimal);
 assert([plist_get("cols", p), plist_get("rows", p), plist_get("bus_pad_cols", p)]
        == [6, 28, 4]);
 custom  = perfboard_props(plist_merge(minimal,
-                                     ["rows", 0,
-                                      "cols", 3,
-                                      "bus_pad_cols", 0]));
+                                      ["rows", 0,
+                                       "cols", 3,
+                                       "bus_pad_cols", 0]));
 assert(plist_get("rows", custom) == 0 && plist_get("cols", custom) == 3
        && plist_get("bus_pad_cols", custom) == 0);
 wide    = perfboard_props(["size", [30, 100, 1.6],

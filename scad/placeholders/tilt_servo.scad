@@ -60,8 +60,8 @@ module tilt_servo(center=false,
         gearbox_x_offset=tilt_servo_gearbox_x_offset,
         gearbox_mode=tilt_servo_gearbox_mode,
         servo_horn_rotation=is_undef(rotation_angle) ?
-        (($t * ($t > 0.5 ? -90 : 45)) + 45) :
-        rotation_angle,
+                            (($t * ($t > 0.5 ? -90 : 45)) + 45) :
+                            rotation_angle,
         show_servo_horn_screws=show_servo_horn_screws,
         show_servo_horn_bolt=show_servo_horn_bolt,
         servo_horn_single=servo_horn_single,
