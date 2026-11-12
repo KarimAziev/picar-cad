@@ -222,6 +222,16 @@ if (part == "lower" || part == "lid") {
     arms();
     hubs();
   }
+} else if (part == "hub_shock_collision") {
+  intersection() {
+    hubs();
+    assembly_hardware("shocks");
+  }
+} else if (part == "hub_link_collision") {
+  intersection() {
+    hubs();
+    assembly_hardware("links");
+  }
 } else if (part == "fastener_housing_collision") {
   intersection() {
     all_housing();

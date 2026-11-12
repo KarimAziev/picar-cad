@@ -13,6 +13,7 @@
 use <../../lib/plist.scad>
 use <../../lib/threading/threads.scad>
 use <../../lib/transforms.scad>
+use <../knuckle/knuckle_steering_arm.scad>
 
 function _rear_hub_value(pl, key) =
   assert(plist_is(pl), "rear_hub requires a complete property list")
@@ -24,6 +25,8 @@ function _rear_hub_value(pl, key) =
   rear_hub_size
   ─────────────────────────────────────────────────────────────────────────────
   Return the hub's `[X width, Y length, Z height]` reference box.
+  The X reference spans the socket barrels; the camber arm extends inboard
+  into negative X. X=0 is the inner bearing face for all mechanical datums.
   **Parameters:**
   - `pl`: Hub dimensions and display settings: `rear_hub_spec` from
     `scad/suspension/rear_axle/arm_hub_params.scad`.
@@ -33,7 +36,9 @@ function rear_hub_size(pl) =
    _rear_hub_value(pl, "ball_spacing") + _rear_hub_value(pl, "socket_d"),
    _rear_hub_value(pl, "socket_d") / 2
    + _rear_hub_value(pl, "link_pivot_height")
-   + _rear_hub_value(pl, "link_boss_d") / 2];
+   + _rear_hub_value(pl, "link_edge_gap")
+   + (_rear_hub_value(pl, "link_bolt_d")
+      + _rear_hub_value(pl, "link_d_clearance")) / 2];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -113,19 +118,63 @@ function rear_hub_bearing_positions(pl) =
    [_rear_hub_value(pl, "inner_bearing_w")
     + _rear_hub_value(pl, "bearing_separation"), p[1], p[2]]];
 
+function _rear_hub_arm_rise(pl) =
+  _rear_hub_value(pl, "link_pivot_height")
+  - _rear_hub_value(pl, "axle_pivot_height")
+  - _rear_hub_value(pl, "link_l")
+  - _rear_hub_value(pl, "link_ear_l")
+  + _rear_hub_value(pl, "link_edge_gap")
+  + (_rear_hub_value(pl, "link_bolt_d")
+     + _rear_hub_value(pl, "link_d_clearance")) / 2;
+
+function _rear_hub_arm_reach(pl) =
+  _rear_hub_value(pl, "link_base_w")
+  - _rear_hub_value(pl, "socket_l") / 2
+  + _rear_hub_value(pl, "link_inboard_offset")
+  - _rear_hub_value(pl, "link_narrow_w") / 2;
+
+function _rear_hub_arm_length(pl) =
+  norm([_rear_hub_arm_reach(pl), _rear_hub_arm_rise(pl)]);
+
+function _rear_hub_arm_angle(pl) =
+  atan2(_rear_hub_arm_reach(pl), _rear_hub_arm_rise(pl));
+
+/**
+  ─────────────────────────────────────────────────────────────────────────────
+  rear_hub_link_positions
+  ─────────────────────────────────────────────────────────────────────────────
+  Return the camber-arm bore centers, ordered from highest to lowest Z.
+  **Parameters:**
+  - `pl`: Hub dimensions and display settings from `arm_hub_params.scad`.
+  **Behavior:** Bores run along Y. The top hole uses `link_pivot_height` above
+  the lower-ball pivot. `link_inboard_offset` measures the bore's inward X
+  offset from the socket-length midpoint.
+ */
+function rear_hub_link_positions(pl) =
+  let (x = _rear_hub_value(pl, "socket_l") / 2
+           - _rear_hub_value(pl, "link_inboard_offset"),
+       pitch = _rear_hub_value(pl, "link_bolt_d")
+               + _rear_hub_value(pl, "link_d_clearance")
+               + _rear_hub_value(pl, "link_holes_gap"))
+  [for (i = [0:_rear_hub_value(pl, "link_holes_n") - 1])
+    [x, rear_hub_pivot(pl)[1],
+     rear_hub_pivot(pl)[2] + _rear_hub_value(pl, "link_pivot_height") - i * pitch]];
+
 /**
   ─────────────────────────────────────────────────────────────────────────────
   rear_hub_link
   ─────────────────────────────────────────────────────────────────────────────
-  Return the upper camber-link eye center `[x, y, z]`, with its bore along Y.
+  Return the selected camber-link bore center `[x, y, z]`, with its bore along Y.
   **Parameters:**
-  - `pl`: Hub dimensions and display settings: `rear_hub_spec` from
-    `scad/suspension/rear_axle/arm_hub_params.scad`.
+  - `pl`: Hub dimensions and display settings from `arm_hub_params.scad`;
+    `link_hole` selects an index in `rear_hub_link_positions`, starting at zero.
  */
 function rear_hub_link(pl) =
-  let (s = rear_hub_size(pl))
-  [s[0] / 2 - _rear_hub_value(pl, "link_inboard_offset"),
-   s[1] / 2, rear_hub_pivot(pl)[2] + _rear_hub_value(pl, "link_pivot_height")];
+  let (holes = rear_hub_link_positions(pl),
+       i = _rear_hub_value(pl, "link_hole"))
+  assert(i >= 0 && i < len(holes) && floor(i) == i,
+         "link_hole must select a camber-arm bore")
+  holes[i];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -222,7 +271,7 @@ module rear_hub(pl,
                 show_socket_hardware=false) {
   s = rear_hub_size(pl);
   axle = rear_hub_axle(pl);
-  link = rear_hub_link(pl);
+  links = rear_hub_link_positions(pl);
   balls = rear_hub_ball_positions(pl);
   socket_d = _rear_hub_value(pl, "socket_d");
   ball_d = _rear_hub_value(pl, "ball_d");
@@ -240,11 +289,14 @@ module rear_hub(pl,
   bearing_l = bearing_xs[1] + bearing_ws[1];
   clearance = _rear_hub_value(pl, "bearing_d_clearance");
   barrel_d = _rear_hub_value(pl, "bearing_housing_d");
-  link_d = _rear_hub_value(pl, "link_boss_d");
   link_l = _rear_hub_value(pl, "link_l");
   web_w = _rear_hub_value(pl, "web_w");
-  web_l = _rear_hub_value(pl, "web_l");
-  rib = _rear_hub_value(pl, "rib_w");
+  web_d = _rear_hub_value(pl, "web_d");
+  chamfer = _rear_hub_value(pl, "socket_edge_chamfer");
+  bearing_wall = rear_hub_bearing_wall(pl);
+  outer_d = bearing_ods[1] + clearance + 2 * bearing_wall;
+  link_bore_d = _rear_hub_value(pl, "link_bolt_d")
+                + _rear_hub_value(pl, "link_d_clearance");
   eps = _rear_hub_value(pl, "cut_eps");
   fn = _rear_hub_value(pl, "fn");
   assert(socket_d > plug_d && plug_l > 0);
@@ -262,9 +314,18 @@ module rear_hub(pl,
          plug_x - _rear_hub_value(pl, "ball_x") - ball_d / 2);
   assert(_rear_hub_value(pl, "ball_spacing") > socket_d);
   assert(axle[2] - barrel_d / 2 > balls[0][2]);
-  assert(link[0] >= link_d / 2 && link[0] + link_d / 2 <= s[0]);
-  assert(link[2] - link_d / 2 > axle[2] + barrel_d / 2);
-  assert(web_w > 0 && web_w < s[0] && web_l > 0 && rib > 0);
+  assert(_rear_hub_arm_rise(pl) > 0 && _rear_hub_arm_reach(pl) > 0,
+         "Camber arm needs a positive rise and inboard reach");
+  assert(_rear_hub_value(pl, "link_narrow_w") > link_bore_d);
+  assert(_rear_hub_value(pl, "link_ear_l")
+         >= 2 * _rear_hub_value(pl, "link_edge_gap")
+            + len(links) * link_bore_d
+            + (len(links) - 1) * _rear_hub_value(pl, "link_holes_gap"));
+  assert(web_w > 0 && web_w <= bearing_l && web_d > 0);
+  assert(chamfer > 0 && 2 * chamfer < s[0]);
+  assert(socket_d - 2 * chamfer
+         > plug_d + 2 * _rear_hub_value(pl, "socket_thread_tolerance"),
+         "Socket end chamfers must leave material around the thread");
   assert(_rear_hub_value(pl, "inner_shoulder_d") > bearing_ids[0]);
   assert(_rear_hub_value(pl, "inner_shoulder_d") < bearing_ods[0]);
   assert(_rear_hub_value(pl, "outer_shoulder_d") > bearing_ids[1]);
@@ -300,10 +361,9 @@ module rear_hub(pl,
     along_x([-eps, axle[1], axle[2]],
             _rear_hub_value(pl, "inner_shoulder_d"),
             bearing_ws[0] + _rear_hub_value(pl, "bearing_separation") / 2 + eps);
-    link_barrel(link,
-                _rear_hub_value(pl, "link_bolt_d")
-                + _rear_hub_value(pl, "link_d_clearance"),
-                link_l + 2 * eps);
+    for (p = links) {
+      link_barrel(p, link_bore_d, link_l + 2 * eps);
+    }
     for (p = balls) {
       translate(p) {
         sphere(d=ball_d + ball_clearance, $fn=fn);
@@ -334,24 +394,54 @@ module rear_hub(pl,
       color(_rear_hub_value(pl, "body_color")) {
         difference() {
           union() {
-            along_x([0, axle[1], axle[2]], barrel_d, bearing_l);
-            for (p = balls) {
-              along_x([0, p[1], p[2]], socket_d, s[0]);
-              hull() {
-                along_x([0, p[1], p[2]], socket_d, web_w);
-                along_x([0, axle[1], axle[2]], barrel_d, web_w);
+            translate([0, axle[1], axle[2]]) {
+              rotate([0, 90, 0]) {
+                cylinder(d=barrel_d, h=bearing_ws[0], $fn=fn);
+                translate([0, 0, bearing_ws[0]]) {
+                  cylinder(d1=barrel_d, d2=outer_d,
+                           h=bearing_l - bearing_ws[0], $fn=fn);
+                }
               }
             }
-            hull() {
-              link_barrel(axle, web_w, web_l);
-              link_barrel(link, link_d, link_l);
-            }
-            for (side = [-1, 1]) {
+            for (p = balls) {
+              translate([0, p[1], p[2]]) {
+                rotate([0, 90, 0]) {
+                  cylinder(d1=socket_d - 2 * chamfer, d2=socket_d,
+                           h=chamfer, $fn=fn);
+                  translate([0, 0, chamfer]) {
+                    cylinder(d=socket_d, h=s[0] - 2 * chamfer, $fn=fn);
+                  }
+                  translate([0, 0, s[0] - chamfer]) {
+                    cylinder(d1=socket_d, d2=socket_d - 2 * chamfer,
+                             h=chamfer, $fn=fn);
+                  }
+                }
+              }
               hull() {
-                link_barrel(link, rib, web_l);
-                link_barrel(axle + [0, side * (barrel_d - rib) / 2, 0],
-                            rib,
-                            rib);
+                along_x([0, p[1], p[2]], web_d, web_w);
+                along_x([0, axle[1], axle[2]], web_d, web_w);
+              }
+            }
+            translate([_rear_hub_value(pl, "link_base_w"),
+                       axle[1] - link_l / 2, axle[2] + link_l]) {
+              mirror([1, 0, 0]) {
+                rotate([-90, 0, 0]) {
+                  linear_extrude(height=link_l) {
+                    knuckle_arm_profile(
+                      w_base=_rear_hub_value(pl, "link_base_w"),
+                      w_narrow=_rear_hub_value(pl, "link_narrow_w"),
+                      l1=_rear_hub_arm_length(pl),
+                      l2=_rear_hub_value(pl, "link_connector_l"),
+                      angle=_rear_hub_arm_angle(pl),
+                      ear_len=_rear_hub_value(pl, "link_ear_l"),
+                      bolt_d=link_bore_d,
+                      bolt_edge_offset=_rear_hub_value(pl, "link_edge_gap"),
+                      holes_n=0,
+                      holes_gap=_rear_hub_value(pl, "link_holes_gap"),
+                      corner_r=_rear_hub_value(pl, "link_corner_r"),
+                      outer_bearing_seat_od=barrel_d);
+                  }
+                }
               }
             }
           }

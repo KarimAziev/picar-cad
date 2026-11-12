@@ -23,12 +23,11 @@ rear_arm_photo_outer_bolt_spacing = 21;
 rear_arm_photo_outer_gap          = 11;
 rear_arm_photo_shoulder_span      = 29.5;
 
-// Carrier measurements. Overall width and height are approximate envelopes;
+// Carrier measurements. Overall width is an approximate envelope;
 // the lower ball spacing is derived from the width and socket boss diameter.
 rear_hub_measured_carrier_d       = 18.3;
 rear_hub_measured_socket_d        = 12;
 rear_hub_measured_width           = 33.4;
-rear_hub_measured_height          = 50.4;
 rear_hub_measured_axle_pivot_h    = 10;
 rear_hub_measured_link_axle_range = [28, 29];
 rear_hub_nominal_link_axle_h      = (rear_hub_measured_link_axle_range[0]
@@ -37,9 +36,7 @@ rear_hub_lower_ball_spacing       = rear_hub_measured_width
                                      - rear_hub_measured_socket_d;
 rear_hub_link_pivot_h             = rear_hub_measured_axle_pivot_h
                                      + rear_hub_nominal_link_axle_h;
-rear_hub_link_boss_d              = 2 * (rear_hub_measured_height
-                                         - rear_hub_measured_socket_d / 2
-                                         - rear_hub_link_pivot_h);
+
 
 rear_lower_arm_spec               = ["w", rear_arm_photo_length,
                                      "inner_span", rear_arm_photo_inner_span,
@@ -83,6 +80,8 @@ rear_lower_arm_spec               = ["w", rear_arm_photo_length,
 // layout. The carrier barrel and lower socket outer diameters are measured.
 // Axle-to-ball height is 10 mm; link-eye height above the axle is 28–29 mm.
 // Axial socket position, socket length and plug engagement are design estimates.
+// A 16 mm camber-eye offset from the socket midpoint fits the 39.7 mm link
+// at the nominal upright pose; the arm angle follows its height and reach.
 
 rear_hub_spec                     = ["inner_bearing_od", 15,
                                      "inner_bearing_id", 10,
@@ -117,14 +116,22 @@ rear_hub_spec                     = ["inner_bearing_od", 15,
                                      "bushing_hole_d", 4,
                                      "axle_pivot_height", rear_hub_measured_axle_pivot_h,
                                      "link_pivot_height", rear_hub_link_pivot_h,
-                                     "link_inboard_offset", 2,
-                                     "link_boss_d", rear_hub_link_boss_d,
-                                     "link_l", 6,
+                                     "link_base_w", knuckle_arm_base_w,
+                                     "link_narrow_w", knuckle_arm_narrow_w,
+                                     "link_connector_l", knuckle_arm_ring_connector_l,
+                                     "link_inboard_offset", 16,
+                                     "link_ear_l", knuckle_arm_ear_len,
+                                     "link_corner_r", knuckle_arm_corner_r,
+                                     "link_edge_gap", knuckle_arm_bolt_hole_offset,
+                                     "link_holes_n", knuckle_arm_holes_n,
+                                     "link_holes_gap", knuckle_arm_holes_gap,
+                                     "link_hole", 0,
+                                     "link_l", knuckle_arm_thickness,
                                      "link_bolt_d", 3,
                                      "link_d_clearance", 0.2,
-                                     "web_l", 5,
-                                     "web_w", 5,
-                                     "rib_w", 3,
+                                     "web_w", 8,
+                                     "web_d", 8,
+                                     "socket_edge_chamfer", 0.25,
                                      "cut_eps", 0.02,
                                      "fn", 64,
                                      "print_part_gap", 8,

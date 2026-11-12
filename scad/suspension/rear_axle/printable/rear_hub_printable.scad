@@ -13,9 +13,9 @@ gap       = plist_get("print_part_gap", rear_hub_spec);
 plug_d    = plist_get("socket_plug_d", rear_hub_spec);
 bushing_d = plist_get("bushing_d", rear_hub_spec);
 
-// Put the inboard face on the bed so bearing and socket axes print vertically.
-translate([size[2], 0, 0]) {
-  rotate([0, -90, 0]) {
+// Put the outboard socket faces on the bed; the camber arm rises above them.
+translate([0, 0, size[0]]) {
+  rotate([0, 90, 0]) {
     rear_hub(pl=rear_hub_spec,
              anchor=[1, 1, 1],
              slot_mode=false,

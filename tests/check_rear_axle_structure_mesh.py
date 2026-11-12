@@ -32,6 +32,7 @@ def main() -> None:
     # Assembly intersections use the neutral ride-height placement.
     for part in ("blocked_tower_holes", "blocked_nut_insertion", "split_collision",
                  "housing_arm_collision", "arm_hub_collision", "link_shock_collision",
+                 "hub_shock_collision", "hub_link_collision",
                  "fastener_housing_collision", "chassis_axle_collision",
                  "wheel_shaft_collision"):
         checks.assert_no_interference(checks.export(part, empty=True), part)
