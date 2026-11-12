@@ -1485,7 +1485,7 @@ rpi_chassis_x_position                               = -32.5;
 
 // The X and Y dimensions of the bolt positions for the Raspberry Pi 5 slot.
 // This forms a square with a bolt hole centered on each corner.
-rpi_bolt_spacing                                     = [50, 58];
+rpi_bolt_spacing                                     = [49, 58];
 
 // The diameter of the bolt holes for the Raspberry Pi 5 slot.
 rpi_bolt_hole_dia                                    = m2_hole_dia;
