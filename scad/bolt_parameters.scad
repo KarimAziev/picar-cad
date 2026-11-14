@@ -83,6 +83,23 @@ m6_lock_nut_h               = 8.92;
 m2_pan_counterbore_d        = 4;
 m2_pan_counterbore_h        = 1.58;
 
+m2_countersunk_bore_d       = 3.9;
+m2_countersunk_bore_h       = m25_countersunk_head_h + 0.5;
+
+m25_countersunk_bore_d      = m25_countersunk_head_dia + 0.2;
+m25_countersunk_bore_h      = m25_countersunk_head_h + 0.4;
+
+m25_counterbore_bore_d      = max(m25_pan_head_dia,
+                                  m25_round_head_dia,
+                                  m25_socket_head_dia,
+                                  m25_countersunk_head_dia,
+                                  m25_hex_head_dia) + 0.2;
+m25_counterbore_bore_h      = max(m25_pan_head_h,
+                                  m25_round_head_h,
+                                  m25_socket_head_h,
+                                  m25_countersunk_head_h,
+                                  m25_hex_head_h) + 0.4;
+
 m3_socket_counterbore_d     = 6.0;
 m3_socket_counterbore_h     = 3.3;
 

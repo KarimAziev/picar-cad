@@ -1131,11 +1131,28 @@ n20_motor_bolts_panel_len                            = n20_can_dia
 rpi_bolt_spacing                                     = [49, 58];
 
 // The diameter of the bolt holes for the Raspberry Pi 5 slot.
-rpi_bolt_hole_dia                                    = m2_hole_dia;
-rpi_bolt_cbore_dia                                   = m2_pan_counterbore_d;
-rpi_chassis_cbore_h                                  = m2_pan_counterbore_h;
-rpi_bolt_head_type                                   = "pan";
+rpi_bolt_hole_dia                                    = m25_hole_dia;
 rpi_use_countersunk                                  = false;
+rpi_bolt_head_type                                   = rpi_use_countersunk ? "countersunk" : "pan"; // "pan" | "socket" | "hex" | "round" | "countersunk"
+rpi_bolt_cbore_dia                                   = rpi_use_countersunk
+                                                        ? plist_get(rpi_bolt_hole_dia,
+                                                                   [m2_hole_dia, m2_countersunk_bore_d,
+                                                                    m25_hole_dia, m25_countersunk_bore_d],
+                                                                   rpi_bolt_hole_dia * 2)
+                                                        : plist_get(rpi_bolt_hole_dia,
+                                                                   [m2_hole_dia, m2_pan_counterbore_d,
+                                                                    m25_hole_dia, m25_counterbore_bore_d],
+                                                                   rpi_bolt_hole_dia * 2);
+
+rpi_chassis_cbore_h                                  = rpi_use_countersunk
+                                                        ? plist_get(rpi_bolt_hole_dia,
+                                                                   [m2_hole_dia, m2_countersunk_bore_h,
+                                                                    m25_hole_dia, m25_countersunk_bore_h],
+                                                                   1.6)
+                                                        : plist_get(rpi_bolt_hole_dia,
+                                                                   [m2_hole_dia, m2_pan_counterbore_h,
+                                                                    m25_hole_dia, m25_counterbore_bore_h],
+                                                                   1.6);
 
 rpi_bolts_offset                                     = 3.5;
 rpi_pin_headers_cols                                 = 20;
