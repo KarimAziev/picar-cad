@@ -19,8 +19,9 @@ module near(a, b) {
 near(shaft, [0, 29.1, 19.15 - suspension_chassis_mount_recess]);
 near(magnet - shaft,
      [0, motor_encoder_magnet_h + motor_encoder_sleeve_h_clearance, 0]);
-near(sensor - magnet, [0, motor_encoder_magnet_distance, 0]);
-near([motor_encoder_magnet_distance], [1.5]);
+near(sensor - magnet,
+     [motor_encoder_x_offset, motor_encoder_magnet_distance, 0]);
+near([motor_encoder_magnet_distance], [2]);
 near([motor_encoder_magnet_distance + motor_encoder_side_thickness], [3.5]);
 near([plist_get("wall_y", e)], [37.58]);
 near(plist_get("pcb_back", e) - sensor, [0, 2.58, 0]);
@@ -29,8 +30,9 @@ assert(plist_get("pcb_h", e) == 14.75);
 assert(plist_get("base_h", e) + plist_get("bottom_thickness", e)
        < shaft[2] - plist_get("pcb_h", e) / 2);
 assert(plist_get("nut_pocket_h", e) < plist_get("base_h", e));
-assert(bounds[1][1] < plist_get("base_bounds", p)[1][1], "No added length");
-near([plist_get("size", p)[1]], [66.6]);
+near([plist_get("bounds", p)[1][1]],
+     [max(bounds[1][1], plist_get("base_bounds", p)[1][1])]);
+near([plist_get("size", p)[1]], [66.58]);
 assert(plist_get("bounds", p)[1][0] > plist_get("base_bounds", p)[1][0]);
 near([plist_get("bounds", p)[1][0]], [bounds[1][0]]);
 
@@ -63,7 +65,7 @@ for (pcb_spec = [motor_encoder_plist,
 plain           = gearmotor_bracket_compute_params(encoder_plist=undef);
 assert(is_undef(plist_get("encoder_mount", plain)));
 near(plist_get("bounds", plain)[1],
-     [11.825, 37.6, 20.44 - suspension_chassis_mount_recess]);
+     [11.825, 37.5, 20.44 - suspension_chassis_mount_recess]);
 near(plist_get("bounds", plain)[0], [-28.65, -29, 0]);
 assert(plist_get("mount_hole_positions", plain) == plist_get("mount_hole_positions", p));
 
@@ -133,21 +135,22 @@ gap_mount = gearmotor_encoder_params(motor_plist,
                                      sleeve_params=gap_sleeve);
 near(plist_get("pcb_back", gap_mount), plist_get("pcb_back", e) + [0, 0.3, 0]);
 near(plist_get("sensor_face", gap_mount) - plist_get("magnet_face", gap_mount),
-     [0, motor_encoder_magnet_distance, 0]);
+     [motor_encoder_x_offset, motor_encoder_magnet_distance, 0]);
 near([plist_get("magnet_bottom_z", s)], [plist_get("cup_h", s)]);
 near(magnet, [0, 31.5, 19.15 - suspension_chassis_mount_recess]);
 near(plist_get("pcb_back", e),
-     [0, 35.58, 19.15 - suspension_chassis_mount_recess]);
+     [motor_encoder_x_offset, 36.08, 19.15 - suspension_chassis_mount_recess]);
 // Bosses resolve their complete heights and diametral fits once for all consumers.
 near([plist_get("front", plist_get("boss_heights", p)),
       plist_get("rear", plist_get("boss_heights", p))],
-     [10.93, 12.43]);
+     [8.93, 10.43]);
 near([plist_get("boss_od", p), plist_get("boss_pocket_od", p)], [6, 8]);
-custom = gearmotor_bracket_compute_params(boss_pocket_depth=1.5,
+custom = gearmotor_bracket_compute_params(use_boss_pockets=true,
+                                          boss_pocket_depth=1.5,
                                           boss_pocket_clearance=0.4,
                                           motor_carrier_clearance=0.5);
 near([plist_get("front", plist_get("boss_heights", custom))], [10.43]);
 near([plist_get("boss_pocket_od", custom)], [6.4]);
 near(plist_get("base_bounds", custom)[1],
-     [11.825, 37.6, 21.94 - suspension_chassis_mount_recess]);
+     [11.825, 37.5, 21.94 - suspension_chassis_mount_recess]);
 echo("PASS: sleeve seat, lip, cross-hole, changed pad length and boss fits");

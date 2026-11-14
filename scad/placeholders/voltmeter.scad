@@ -267,6 +267,7 @@ module voltmeter_from_plist(plist,
                             debug=false,
                             stand_up=false,
                             show_standoffs=true) {
+  assert(plist_is(plist) && len(plist) > 0, "Supply a hardware specification");
   if (debug) {
     echo("voltmeter_from_plist plist: ", plist);
   }
@@ -379,11 +380,13 @@ voltmeter_from_plist(center=false,
   Resolve a surface-mounted meter from its hardware plist.
   **Parameters:**
   - `pl`: Voltmeter plist; defaults to the project's meter. `standoff_body_h`
-    is the minimum clearance below its PCB; `wire_d` defaults to 4 mm.
+    is the minimum clearance below its PCB.
   **Returns:** `size`, `bolt_spacing`, `bolt_d`, actual `standoff_h`, and `pin_h`.
-  Bounds include the mounting ears and display, centered on XY at Z=0.
+  Bounds include the mounting ears, display and raised label, centered on XY
+  at Z=0. Label height accounts for its Z translation with an upright display.
  */
-function voltmeter_mount_props(pl=[]) =
+function voltmeter_mount_props(pl=voltmeter_default_spec) =
+  assert(plist_is(pl) && len(pl) > 0, "Supply a hardware specification")
   let (board = plist_get("placeholder_size", pl,
                          [voltmeter_board_w, voltmeter_board_len, voltmeter_board_h]),
        display = plist_get("size", plist_get("display", pl, []),
@@ -398,10 +401,18 @@ function voltmeter_mount_props(pl=[]) =
                 - plist_get("distance", wiring, voltmeter_wiring_distance),
        wire_y2 = wire_y - 2 * wire_r
                  - plist_get("gap", wiring, voltmeter_wiring_gap),
+       text_props = plist_get("text_props", pl),
+       text = with_default(plist_get("text", pl), plist_get("text", text_props)),
+       text_translation = plist_get("translation", text_props, [0, 0, 0]),
+       // Both the label placement and its text renderer apply this translation.
+       label_h = plist_get("hide_display", pl, false) || is_undef(text) || text == ""
+                 ? 0
+                 : max(0, with_default(plist_get("height", text_props), 0.1)
+                          + 2 * text_translation[2]),
        size = [max(board[0] + 0.4 * wire_r, display[0], pitch[0] + d + pad),
                max(board[1], display[1], pitch[1] + d + pad,
                    2 * (max(abs(wire_y), abs(wire_y2)) + 1.2 * wire_r)),
-               h + board[2] + display[2]])
+               h + board[2] + display[2] + label_h])
   assert(min(size) > 0 && min(pitch) >= 0 && d > 0,
          "Voltmeter dimensions must be positive")
   ["size", size,
@@ -424,7 +435,7 @@ function voltmeter_mount_props(pl=[]) =
   - `slot_mode`: Emit parent holes, underside countersinks and a wire passage.
   - `show_hardware`: Display the board, display and standoffs.
  */
-module voltmeter_mount(pl=[],
+module voltmeter_mount(pl=voltmeter_default_spec,
                        parent_t=3,
                        anchor=[0, 0, 1],
                        slot_mode=false,

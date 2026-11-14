@@ -94,6 +94,7 @@ module bearing_from_plist(plist,
                           fn=100,
                           anchor=[0, 0, 1],
                           orientation="wlh") {
+  assert(plist_is(plist) && len(plist) > 0, "Supply a hardware specification");
   rings = plist_get("rings", plist, [[0]]);
   d = plist_get("d", plist, outer_bearing_d);
   outer_ring_w = plist_get("outer_ring_w", plist, outer_ring_w);

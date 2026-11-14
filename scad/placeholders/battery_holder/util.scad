@@ -8,6 +8,7 @@
 
 include <../../colors.scad>
 include <../../parameters.scad>
+include <../presets.scad>
 
 use <../../lib/plist.scad>
 use <contact.scad>
@@ -79,7 +80,9 @@ function battery_holder_full_size(inner_thickness,
 
   [full_w, full_len];
 
-function battery_holder_full_size_from_plist(plist = []) =
+function battery_holder_full_size_from_plist(plist=battery_holder_plist) =
+  assert(plist_is(plist) && len(plist) > 0,
+         "Supply a battery-holder specification")
   battery_holder_full_size(inner_thickness=plist_get("inner_thickness",
                                                      plist,
                                                      battery_holder_inner_thickness),

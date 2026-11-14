@@ -7,6 +7,7 @@
   */
 include <../../colors.scad>
 include <../../parameters.scad>
+include <../presets.scad>
 
 use <../../lib/functions.scad>
 use <../../lib/plist.scad>
@@ -26,9 +27,9 @@ use <../../lib/transforms.scad>
 
   The projecting button is excluded from the reference box.
  */
-function pcb_button_size_from_plist(plist, orientation) =
-  let (plist = with_default(plist, []),
-       size = plist_get("size", plist, [4.5, 3.3, 3]),
+function pcb_button_size_from_plist(plist=pcb_button_plist, orientation) =
+  assert(plist_is(plist) && len(plist) > 0, "Supply a hardware specification")
+  let (size = plist_get("size", plist, [4.5, 3.3, 3]),
        orientation = with_default(orientation,
                                   plist_get("orientation", plist, "wlh")))
   orientation_size(orientation, size);
@@ -83,8 +84,8 @@ module pcb_button(size=[4.5, 3.3, 3],
 
   Anchoring uses the nominal body box, excluding the projecting button.
  */
-module pcb_button_from_plist(plist, orientation, anchor) {
-  plist = with_default(plist, []);
+module pcb_button_from_plist(plist=pcb_button_plist, orientation, anchor) {
+  assert(plist_is(plist) && len(plist) > 0, "Supply a hardware specification");
   size = plist_get("size", plist, [4.5, 3.3, 3]);
   button_h = plist_get("button_h", plist, 1.36);
   button_d = plist_get("button_d", plist, 1.8);

@@ -61,8 +61,16 @@ def empty(folder: Path, body: str,
 def main() -> None:
     with tempfile.TemporaryDirectory(prefix="servo-horn-") as directory:
         folder = Path(directory)
+        horn_dimensions: dict[str, str | float] = {
+            "shape": "cross", "cross_side_holes": "all", "arm_len": 14,
+            "arm_bottom_width": 5.25, "arm_top_width": 4.03,
+            "center_ring_dia": 7.05, "center_ring_inner_dia": 3.87,
+            "center_hole_dia": 2, "horn_height": 5.6, "thickness": 2,
+            "arm_z_offset": 2.5, "screw_d": 0.8, "initial_screws_gap": 3.94,
+            "screws_gap": 1.5, "screw_holes_count": 3, "color": "black"}
         # Measured edge gaps produce these centers, independently of cutout clearance.
         expected = [7.865, 10.165, 12.465]
+        test_horn = json.dumps([item for pair in horn_dimensions.items() for item in pair])
         for shape, sides, count in [("cross", "all", 12),
                                     ("cross", "vertical", 6),
                                     ("cross", "horizontal", 6),
@@ -71,7 +79,8 @@ def main() -> None:
             for clearance in [0, 0.25]:
                 mesh = render(folder, f"""
 linear_extrude(height=1) {{
-  servo_horn_profile_from_plist(pl=["shape", "{shape}", "cross_side_holes", "{sides}"],
+  servo_horn_profile_from_plist(pl=plist_merge({test_horn},
+                                   ["shape", "{shape}", "cross_side_holes", "{sides}"]),
                                mode="holes", screw_clearance={clearance});
 }}
 """)
@@ -101,7 +110,7 @@ linear_extrude(height=1) {
 """)
         # Custom children retain their hole index and placement through both wrappers.
         mesh = render(folder, """
-servo_horn_profile_from_plist(pl=["shape", "single"], mode="holes") {
+servo_horn_profile_from_plist(pl=plist_merge(servo_horn_default_plist, ["shape", "single"]), mode="holes") {
   translate([0, 0, $i]) { cylinder(d=0.2, h=0.2, $fn=12); }
 }
 """)
@@ -109,13 +118,6 @@ servo_horn_profile_from_plist(pl=["shape", "single"], mode="holes") {
         assert np.allclose(sorted(piece.centroid[2] for piece in mesh.split()), [0.1, 1.1, 2.1])
         print("PASS: horn shapes, hole selection, measured centers, clearance and child placement", flush=True)
 
-        horn_dimensions: dict[str, str | float] = {
-            "shape": "cross", "cross_side_holes": "all", "arm_len": 14,
-            "arm_bottom_width": 5.25, "arm_top_width": 4.03,
-            "center_ring_dia": 7.05, "center_ring_inner_dia": 3.87,
-            "center_hole_dia": 2, "horn_height": 5.6, "thickness": 2,
-            "arm_z_offset": 2.5, "screw_d": 0.8, "initial_screws_gap": 3.94,
-            "screws_gap": 1.5, "screw_holes_count": 3, "color": "black"}
         pan_dimensions = dict(horn_dimensions, shape="double", arm_len=16, screws_gap=2)
         tilt_dimensions = dict(horn_dimensions, shape="single", arm_len=15, screws_gap=1.8)
         configurations = [{},

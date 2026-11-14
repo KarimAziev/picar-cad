@@ -172,7 +172,10 @@ function rear_chassis_layout(bracket=gearmotor_bracket_compute_params(motor_plis
        panel_specs = is_undef(panels)
                      ? [["type", "stack",
                          "side", side,
-                         "orientation", orientation]] : panels,
+                         "orientation", orientation,
+                         "gap", panel_gap,
+                         "y_offset", panel_y_offset,
+                         "outside_case", control_outside]] : panels,
        close_panels = _rear_panel_layout(panel_specs, motor_bounds, motor_bounds,
                                          panel_gap, panel_y_offset, orientation),
        mount = rear_power_case_mount(power_case,
@@ -430,7 +433,7 @@ function rear_chassis_mount_holes(layout=rear_chassis_layout()) =
            let (pl = plist_get("plist", payload))
            [p[0], p[1], max(plist_get("bolt_d", pl), plist_get("bore_d", pl))]],
          [for (mount = plist_get("wago_mounts", layout, []))
-           let (props = wago_bracket_props(plist_get("bracket", mount, [])),
+           let (props = wago_bracket_props(plist_get("bracket", mount)),
                 size = plist_get("size", props))
              for (p = plist_get("mount_holes", props))
              _rear_hole_position(p - [size[0], size[1]] / 2,

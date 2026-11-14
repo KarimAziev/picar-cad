@@ -105,7 +105,7 @@ module pin_header(cols,
 }
 
 module pin_header_from_plist(plist, center=false) {
-  plist = with_default(plist, []);
+  assert(plist_is(plist) && len(plist) > 0, "Supply a hardware specification");
   cols = plist_get("cols", plist, undef);
   rows = plist_get("rows", plist, undef);
   pin_colr = plist_get("pin_colr", plist, metallic_yellow_1);

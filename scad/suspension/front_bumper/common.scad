@@ -18,7 +18,7 @@ use <../front_chassis/front_frame_util.scad>
   Resolve and validate the bumper's shared dimensions in millimeters.
   The complete configuration is `front_bumper_plist` in `rc_params.scad`.
   **Parameters:**
-  - `pl`: Overrides for `foam_w`, `foam_l`, `foam_h`, `plate_w`, `plate_l`,
+  - `pl`: Complete configuration for `foam_w`, `foam_l`, `foam_h`, `plate_w`, `plate_l`,
     `plate_h`, `rib_w`, `post_d`, `post_clearance`, `bolt_l`, `nut_depth`,
     `nut_clearance`, and `bolt_tip_clearance`.
     `post_clearance` is diametral clearance in the TPU passages.
@@ -28,7 +28,9 @@ use <../front_chassis/front_frame_util.scad>
   from the head frame. The top plate includes three integral compression posts.
  */
 function front_bumper_params(pl=front_bumper_plist) =
-  let (p = plist_merge(front_bumper_plist, pl),
+  assert(plist_is(pl) && len(pl) > 0,
+         "Supply front_bumper_plist or a complete custom bumper specification")
+  let (p = pl,
        fw = plist_get("foam_w", p),
        fl = plist_get("foam_l", p),
        fh = plist_get("foam_h", p),
@@ -71,7 +73,7 @@ function front_bumper_params(pl=front_bumper_plist) =
   ─────────────────────────────────────────────────────────────────────────────
   Resolve and validate the mounting bolt stack in the retainer's coordinates.
   **Parameters:**
-  - `pl`: Bumper dimension overrides.
+  - `pl`: Complete bumper configuration.
   - `reverse_bolts`: True seats heads in the chassis recess and nuts in the
     retainer pockets. False seats heads on the flat retainer and nuts below
     the chassis.
@@ -117,7 +119,7 @@ function front_bumper_bolt_params(pl=front_bumper_plist,
   ─────────────────────────────────────────────────────────────────────────────
   Return a component's canonical reference box `[w, l, h]`.
   **Parameters:**
-  - `pl`: Bumper dimension overrides; see `front_bumper_params`.
+  - `pl`: Complete bumper configuration; see `front_bumper_params`.
   - `part`: `"foam"`, `"plate"` (including posts), or `"assembly"`.
  */
 function front_bumper_size(pl=front_bumper_plist, part="assembly") =
@@ -137,7 +139,7 @@ function front_bumper_size(pl=front_bumper_plist, part="assembly") =
   ─────────────────────────────────────────────────────────────────────────────
   Return `[left, center, right]` bolt centers in a component's canonical box.
   **Parameters:**
-  - `pl`: Bumper dimension overrides.
+  - `pl`: Complete bumper configuration.
   - `part`: `"foam"`, `"plate"`, or `"assembly"` reference box.
   **Returns:** XYZ points at the bottom of the posts, with +Y facing forward.
  */
@@ -155,7 +157,7 @@ function front_bumper_mount_positions(pl=front_bumper_plist, part="assembly") =
   ─────────────────────────────────────────────────────────────────────────────
   Place a canonical bumper component on the head frame.
   **Parameters:**
-  - `pl`: Bumper dimension overrides.
+  - `pl`: Complete bumper configuration.
   - `part`: `"foam"`, `"plate"`, or `"assembly"` reference box.
   **Returns:** XYZ translation for the default `[1, 1, 1]` anchor.
  */
@@ -175,7 +177,7 @@ function _front_bumper_bow(w, l, r, sweep, steps=48) =
   ─────────────────────────────────────────────────────────────────────────────
   Return `[polygon, radius]` for the TPU body's rounded XY outline.
   **Parameters:**
-  - `pl`: Bumper dimension overrides.
+  - `pl`: Complete bumper configuration.
  */
 function front_bumper_foam_profile(pl=front_bumper_plist) =
   let (size=front_bumper_size(pl, "foam"),
@@ -193,7 +195,7 @@ function front_bumper_foam_profile(pl=front_bumper_plist) =
   ─────────────────────────────────────────────────────────────────────────────
   Return the rear retainer rail's XY centerline in canonical plate coordinates.
   **Parameters:**
-  - `pl`: Bumper dimension overrides.
+  - `pl`: Complete bumper configuration.
  */
 function front_bumper_plate_rear_path(pl=front_bumper_plist) =
   let (p=front_bumper_params(pl),

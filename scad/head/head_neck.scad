@@ -53,38 +53,38 @@ use <../placeholders/tilt_servo.scad>
 use <head_mount.scad>
 use <ir_case.scad>
 
-pan_servo_rotation          = 0; // [-179:179]
-tilt_servo_rotation         = 0; // [-90:90]
+pan_servo_rotation               = 0; // [-179:179]
+tilt_servo_rotation              = 0; // [-90:90]
 
-show_bbox                   = false;
+show_bbox                        = false;
 
-show_frame_bolts            = true;
-show_frame_nuts             = true;
-show_camera                 = true;
-show_camera_bolts           = true;
-show_camera_nuts            = true;
-show_ir_case                = true;
-show_ir_case_bolts          = true;
-show_ir_case_nuts           = true;
-show_ir_led                 = true;
-show_ir_case_rail           = true;
-show_ir_case_rail_bolts     = true;
-show_ir_case_rail_nuts      = true;
+show_frame_bolts                 = true;
+show_frame_nuts                  = true;
+show_camera                      = true;
+show_camera_bolts                = true;
+show_camera_nuts                 = true;
+show_ir_case                     = true;
+show_ir_case_bolts               = true;
+show_ir_case_nuts                = true;
+show_ir_led                      = true;
+show_ir_case_rail                = true;
+show_ir_case_rail_bolts          = true;
+show_ir_case_rail_nuts           = true;
 
-show_pan_servo_horn         = true;
+show_pan_servo_horn              = true;
 
-show_tilt_servo_horn_screws = true;
-show_tilt_servo_horn_bolt   = true;
-head_servo_horn_cross_side_holes  = undef; // undef uses the horn plist; vertical, horizontal, or all.
+show_tilt_servo_horn_screws      = true;
+show_tilt_servo_horn_bolt        = true;
+head_servo_horn_cross_side_holes = undef; // undef uses the horn plist; vertical, horizontal, or all.
 
-show_tilt_servo_horn        = true;
-show_tilt_servo_bolts       = true;
-show_tilt_servo_nuts        = true;
+show_tilt_servo_horn             = true;
+show_tilt_servo_bolts            = true;
+show_tilt_servo_nuts             = true;
 
-show_pan_servo_bolts        = true;
-show_pan_servo_nuts         = true;
+show_pan_servo_bolts             = true;
+show_pan_servo_nuts              = true;
 
-echo_bolts_length           = true;
+echo_bolts_length                = true;
 
 function head_neck_full_w(base_width=max(head_neck_pan_servo_slot_width,
                                          head_neck_tilt_servo_slot_width),

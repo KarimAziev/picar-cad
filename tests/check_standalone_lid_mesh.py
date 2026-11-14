@@ -228,8 +228,9 @@ intersection() {
   }
 }''', empty=True)
         # Probe both faces slightly beyond the roof: cutters need real overlap.
-        for kind in ("wago", "wago_pair"):
-            render(f'''m=lid_equipment_props(["kind","{kind}"]);
+        for kind, component in (("wago", "wago_bracket_plist"),
+                                ("wago_pair", "wago_pair_plist")):
+            render(f'''m=lid_equipment_props(["kind","{kind}","component",{component}]);
 q="{kind}"=="wago" ? _lid_wago_wire(plist_get("props",m)) : [0,0];
 difference() {{
   for(z=[-3.005,0.005]) {{
@@ -261,13 +262,13 @@ multi_lipo_pack_lid_printable(no_sensor);''')
         print("PASS switch slot and solid anchors agree in six orientations", flush=True)
 
         render('''bad=plist_merge(pl,["lid",plist_merge(spec,
-  ["equipment",[["kind","wago","pos",[0,0]]]])]);
+  ["equipment",[plist_merge(multi_lipo_lid_wago_mount,["pos",[0,0]])]])]);
 multi_lipo_pack_lid(bad);''', reject=True)
         render('''bad=plist_merge(pl,["lid",plist_merge(spec,
   ["headroom",5])]);
 multi_lipo_pack_lid(bad);''', reject=True)
         render('''bad=plist_merge(pl,["lid",plist_merge(spec,
-  ["fuse",["pos",[0,25]]])]);
+  ["fuse",plist_merge(plist_get("fuse",spec),["pos",[0,25]])])]);
 multi_lipo_pack_lid(bad);''', reject=True)
         print("PASS overlapping equipment and insufficient fuse clearance are rejected", flush=True)
 

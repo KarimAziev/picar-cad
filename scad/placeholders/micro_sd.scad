@@ -5,6 +5,7 @@
   * License: GPL-3.0-or-later
   */
 include <../colors.scad>
+include <../parameters.scad>
 
 use <../lib/plist.scad>
 use <../lib/shapes3d.scad>
@@ -59,7 +60,8 @@ module micro_sd_card(size=[11, 15, 1],
   - `plist`: Optional `size`, `anchor` and `show_contacts` card properties.
   - `anchor`: Placement override; `undef` uses the plist or `[1, 1, 1]`.
  */
-module micro_sd_card_from_plist(plist=[], anchor) {
+module micro_sd_card_from_plist(plist=micro_sd_card_plist, anchor) {
+  assert(plist_is(plist) && len(plist) > 0, "Supply a hardware specification");
   micro_sd_card(size=plist_get("size", plist, [11, 15, 1]),
                 anchor=is_undef(anchor)
                        ? plist_get("anchor", plist, [1, 1, 1])
@@ -104,10 +106,11 @@ function micro_sd_card_position(size, card_size, insertion) =
   - `anchor`: Placement against the socket body, excluding card overhang.
  */
 module micro_sd_socket(size=[11.95, 11.4, 1.42],
-                       card=[],
+                       card=micro_sd_card_plist,
                        insertion=10.75,
                        show_card=true,
                        anchor=[1, 1, 1]) {
+  assert(plist_is(card) && len(card) > 0, "Supply a hardware specification");
   card_size = plist_get("size", card, [11, 15, 1]);
   card_pos = micro_sd_card_position(size, card_size, insertion);
   wall = min((size[0] - card_size[0]) / 3,

@@ -76,11 +76,15 @@ intersection() {{
             ('echo(perfboard_props(["size",[20,80,1.6]]));', "bolt_spacing"),
             ('perf_board_mount(pl,parent_t=1,slot_mode=true);', "leave material"),
             ('echo(perfboard_props(plist_merge(pl,["rows",1000])));', "copper grid"),
+            ('echo(rear_chassis_layout(equipment=[["kind","perf_board"]]));',
+             "explicit component preset"),
+            ('echo(rear_chassis_layout(equipment=[["kind","perf_board","component",[]]]));',
+             "explicit component preset"),
         ]:
             render(code, reject=message)
         print("PASS missing mounting inputs and invalid copper/recess dimensions are rejected", flush=True)
 
-        render('''layout=rear_chassis_layout(equipment=[["kind","perf_board"]]);
+        render('''layout=rear_chassis_layout(equipment=[["kind","perf_board","component",perfboard_default_plist]]);
 assert(len(plist_get("equipment",layout))==1);
 base=rear_chassis_layout(equipment=[]);
 assert(plist_get("size",layout)==plist_get("size",base));

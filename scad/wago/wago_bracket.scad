@@ -19,7 +19,7 @@ use <../placeholders/wago/wago_221.scad>
   ─────────────────────────────────────────────────────────────────────────────
   Resolve the cradle and its mounting pattern from the measured connector.
   **Parameters:**
-  - `pl`: Bracket plist. `wago` is the hardware plist for wago_from_plist.
+  - `pl`: Complete wago_bracket_plist from parameters.scad. `wago` is the hardware plist for wago_from_plist.
     `clearance` = 0.25 per XY side; `top_clearance` = 0.25 above the body;
     `base_t` = 2.4; `wall_t` = 1.6; `clip_l` = 8; `clip_overlap` = 0.5;
     `clip_rise` = 0.8; `flex_gap` = 0.8; `stop_h` = 2.5;
@@ -30,9 +30,10 @@ use <../placeholders/wago/wago_221.scad>
   two XY `mount_holes`, `tray_w`, and the resolved construction dimensions.
   The clip overlap must stay within the measured outer side shoulders.
  */
-function wago_bracket_props(pl=[]) =
-  assert(plist_is(pl), "Wago bracket parameters must be a plist")
-  let (hardware = plist_get("wago", pl, []),
+function wago_bracket_props(pl=wago_bracket_plist) =
+  assert(plist_is(pl) && len(pl) > 0,
+         "Wago bracket parameters require a complete wago_bracket_plist")
+  let (hardware = plist_get("wago", pl),
        n = plist_get("n", hardware, wago_n),
        conductor = plist_get("conductor_size", hardware, wago_conductor_size),
        ws = wago_size(n, conductor, plist_get("total_w", hardware, wago_total_w)),
@@ -55,6 +56,8 @@ function wago_bracket_props(pl=[]) =
        h = t + ws[2] + zc + rise,
        shoulder = (ws[0] - n*conductor[0])/2,
        head_d = find_bolt_head_d(d, "pan"))
+  assert(plist_is(hardware) && len(hardware) > 0,
+         "Wago bracket requires a complete wago_plist hardware specification")
   assert(c >= 0 && zc >= 0 && t > 0 && wall > 0 && rise > 0 && flex > 0,
          "Wago clearances must be nonnegative and material dimensions positive")
   assert(clip_l > 0 && clip_l + 2*flex < ws[1] && stop > 0 && stop <= ws[2],
@@ -110,7 +113,7 @@ function wago_bracket_props(pl=[]) =
   and lever bank remain open; the small front stops only touch side shoulders.
   Flexible clip fit requires a physical coupon; lever details are approximate.
  */
-module wago_bracket(pl=[],
+module wago_bracket(pl=wago_bracket_plist,
                     anchor=[1, 1, 1],
                     slot_mode=false,
                     slot_h=undef,

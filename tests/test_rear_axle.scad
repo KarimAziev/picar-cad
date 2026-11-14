@@ -19,8 +19,8 @@ use <../scad/suspension/rear_chassis/computed_params.scad>
 
 layout       = rear_chassis_layout();
 mounts       = rear_bulkhead_mount_positions(layout,
-                                       rear_bulkhead_bolt_spacing_x,
-                                       rear_bulkhead_bolt_spacing_2[1]);
+                                             rear_bulkhead_bolt_spacing_x,
+                                             rear_bulkhead_bolt_spacing_2[1]);
 front_mounts = front_bulkhead_housing_mount_positions();
 assert(len(mounts) == 8);
 for (i = [0 : len(mounts) - 1]) {

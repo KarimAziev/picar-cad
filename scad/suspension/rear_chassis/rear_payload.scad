@@ -112,7 +112,7 @@ function rear_motor_clearance_height(bracket) =
  */
 function rear_power_lid_plist(pl, lidar_pl) =
   plist_merge(pl,
-              ["lid", plist_merge(plist_get("lid", pl, []),
+              ["lid", plist_merge(plist_get("lid", pl),
                                   ["lidar", lidar_pl])]);
 
 /**

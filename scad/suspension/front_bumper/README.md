@@ -120,9 +120,10 @@ The complete, commented configuration is `front_bumper_plist` in
 [`scad/rc_params.scad`](../../rc_params.scad). It controls both parts, their
 printable entries, the vehicle assembly and bumper-aware chassis measurements.
 
-`front_bumper_params(pl)` validates the configuration and merges any per-call
-overrides with that shared plist. Pass the same property list to the plate,
-TPU body, placement helper and assembly. For example:
+`front_bumper_params(pl)` validates a complete configuration. Compose a custom
+variant with `plist_merge(front_bumper_plist, overrides)` at the call site, then
+pass that property list to the plate, TPU body, placement helper and assembly.
+For example:
 
 ```scad
 include <../../rc_params.scad>

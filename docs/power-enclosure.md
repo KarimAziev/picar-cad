@@ -15,12 +15,21 @@ apply afterward.
 
 ## Configuration and percentage references
 
-Pass a partial plist to `step_down_voltage_enclosure` or
-`step_down_enclosure_printable`. The `insert`, `insert_mount`, `mount`, `fit`, `lid`, `wall_vents`,
-`header_slot`, `cable_tie`, and `parent_slots` groups merge by key. Each wall,
-its vents, the lid vents, and the lid text style merge independently. Lists of
-openings or texts replace their complete list; `[]` clears it. Use
-`"vents", ["enabled", false]` to disable a vent grid.
+Pass the complete `step_down_enclosure_plist` to `step_down_voltage_enclosure`
+or `step_down_enclosure_printable`. Their omitted argument uses that named preset.
+Compose a variation with `plist_merge(step_down_enclosure_plist, overrides)`.
+Each nested group is a complete plist: merge its existing value explicitly when
+changing one field. Lists of openings or texts are complete lists; `[]` clears
+one. The following aliases make nested customizations easy to read:
+
+```scad
+enclosure_walls = plist_get("walls", step_down_enclosure_plist);
+enclosure_lid = plist_get("lid", step_down_enclosure_plist);
+front_wall = plist_get("front", enclosure_walls);
+rear_wall = plist_get("rear", enclosure_walls);
+left_wall = plist_get("left", enclosure_walls);
+right_wall = plist_get("right", enclosure_walls);
+```
 
 Dimensions accept numbers in millimeters or percentage strings. Plain numbers
 are always millimeters, including values smaller than one. Percentage positions
@@ -62,11 +71,17 @@ enough room for tie bridges and insert bosses.
 
 ```scad
 step_down_voltage_enclosure(
-  plist=["inner_size", ["110%", "120%", "130%"],
-         "walls", ["left", ["t", 6],
-                   "right", ["t", 3],
-                   "front", ["t", 5],
-                   "rear", ["t", 4]]],
+  plist=plist_merge(step_down_enclosure_plist,
+                    ["inner_size", ["110%", "120%", "130%"],
+                     "walls", plist_merge(enclosure_walls,
+                                          ["left", plist_merge(left_wall,
+                                                               ["t", 6]),
+                                           "right", plist_merge(right_wall,
+                                                                ["t", 3]),
+                                           "front", plist_merge(front_wall,
+                                                                ["t", 5]),
+                                           "rear", plist_merge(rear_wall,
+                                                               ["t", 4])])]),
   anchor=[0, 0, 1], exploded=18);
 ```
 
@@ -81,14 +96,15 @@ a screw recess, or a screw bottoming in a blind insert pocket.
 `insert` is a hardware plist accepted by `heat_insert_nut_from_plist`:
 
 ```scad
-step_down_voltage_enclosure(plist=[
-  "insert", ["h", 5,
-             "d", 3.2,
-             "flang_d", 4,
-             "flang_h", 1.6,
-             "top_flang_h", 1.3,
-             "bottom_flat_h", 1.6,
-             "hole_d", 2]]);
+step_down_voltage_enclosure(plist=plist_merge(step_down_enclosure_plist,
+                                              ["insert", plist_merge(plist_get("insert", step_down_enclosure_plist),
+                                                                     ["h", 5,
+                                                                      "d", 3.2,
+                                                                      "flang_d", 4,
+                                                                      "flang_h", 1.6,
+                                                                      "top_flang_h", 1.3,
+                                                                      "bottom_flat_h", 1.6,
+                                                                      "hole_d", 2])]));
 ```
 
 The hardware body diameter is `d`; `flang_d` specifies the flange diameter and
@@ -122,9 +138,15 @@ assembly. The screw must reach the insert without exceeding the pocket depth.
 
 ```scad
 step_down_voltage_enclosure(
-  plist=["inner_size", ["110%", "110%", "100%"],
-         "insert", ["d", 4.6, "flang_d", 5.6, "h", 8, "hole_d", 3],
-         "insert_mount", ["bolt_l", 10]]);
+  plist=plist_merge(step_down_enclosure_plist,
+                    ["inner_size", ["110%", "110%", "100%"],
+                     "insert", plist_merge(plist_get("insert", step_down_enclosure_plist),
+                                           ["d", 4.6,
+                                            "flang_d", 5.6,
+                                            "h", 8,
+                                            "hole_d", 3]),
+                     "insert_mount", plist_merge(plist_get("insert_mount", step_down_enclosure_plist),
+                                                 ["bolt_l", 10])]));
 ```
 
 Insert diameter has no fixed maximum. A larger boss must still fit between the
@@ -180,18 +202,27 @@ These locations follow board placement and placeholder geometry.
 
 ```scad
 step_down_voltage_enclosure(
-  plist=["walls", [
-    "front", ["t", 5,
-              "cutouts", [["at", "sensor_terminal", "l", 11,
-                           "bottom", "40%", "corner_r", "25%",
-                           "rim_chamfer", 1]],
-              "vents", ["opening_gap", 2, "opening_mode", "omit"]],
-    "rear", ["slots", [["pos", ["40%", "35%"],
-                         "size", ["20%", "20%"], "corner_r", 1]]]]]);
+  plist=plist_merge(step_down_enclosure_plist,
+                    ["walls", plist_merge(enclosure_walls,
+                                          ["front", plist_merge(front_wall,
+                                                                ["t", 5,
+                                                                 "cutouts", [["at", "sensor_terminal",
+                                                                              "l", 11,
+                                                                              "bottom", "40%",
+                                                                              "corner_r", "25%",
+                                                                              "rim_chamfer", 1]],
+                                                                 "vents", plist_merge(plist_get("vents", front_wall),
+                                                                                      ["opening_gap", 2,
+                                                                                       "opening_mode", "omit"])]),
+                                           "rear", plist_merge(rear_wall,
+                                                               ["slots", [["pos", ["40%", "35%"],
+                                                                           "size", ["20%", "20%"],
+                                                                           "corner_r", 1]]])])]));
 ```
 
-`wall_vents` supplies shared defaults; each face can override them. The lid has
-its own `lid.vents` group. The grid uses `size`, edge-to-edge `gap`, four-edge
+`step_down_enclosure_wall_vents_plist` specifies the shared wall vent pattern.
+Each wall names that preset or an explicit variation in its `vents` field.
+The lid has its own complete `lid.vents` group. The grid uses `size`, edge-to-edge `gap`, four-edge
 `margin`, and `corner_r`. Slots are centered in the remaining panel area. A grid
 with no room for a complete slot emits no vents.
 
@@ -207,16 +238,28 @@ with no room for a complete slot emits no vents.
 actual measured and rotated text bounds.
 
 ```scad
+front_vents = plist_merge(step_down_enclosure_wall_vents_plist,
+                          ["size", [2, "60%"],
+                           "gap", [3, 2]]);
 step_down_voltage_enclosure(
-  plist=["wall_vents", ["size", [2, "60%"], "gap", [3, 2]],
-         "walls", ["rear", ["vents", ["enabled", false]]],
-         "lid", ["vents", ["size", [4, 5], "gap", [3, 5]]]]);
+  plist=plist_merge(step_down_enclosure_plist,
+                    ["walls", plist_merge(enclosure_walls,
+                                          ["front", plist_merge(front_wall,
+                                                                ["vents", front_vents]),
+                                           "rear", plist_merge(rear_wall,
+                                                               ["vents", plist_merge(plist_get("vents", rear_wall),
+                                                                                     ["enabled", false])])]),
+                     "lid", plist_merge(enclosure_lid,
+                                        ["vents", plist_merge(plist_get("vents", enclosure_lid),
+                                                              ["size", [4, 5],
+                                                               "gap", [3, 5]])])]));
 ```
 
 ## Labels
 
-All label strings, positions and typography belong to `lid.texts` and
-`lid.text_style`. Each text plist supplies `text_from_plist` typography and
+All label strings, positions and typography belong to `lid.texts`.
+`step_down_enclosure_text_plist` is the complete reusable typography and placement
+preset; compose each label with an explicit `plist_merge` in the configuration. Each text plist supplies `text_from_plist` typography and
 rotation, plus `pos` or `at` for placement. `pos` is measured from the lid's minimum XY corner;
 `at` follows a hardware reference. An optional numeric `translation` adds a
 local XYZ adjustment. `text_mode="engraved"` cuts labels into the outer face by
@@ -229,14 +272,22 @@ labels describe its regulated-output wiring arrangement.
 
 ```scad
 step_down_voltage_enclosure(
-  plist=["lid", ["texts", [["text", "POWER MODULE",
-                            "pos", ["50%", "50%"], "size", 2.2]],
-                  "text_style", ["font", "Liberation Sans:style=Bold"],
-                  "text_depth", 0.4]]);
+  plist=plist_merge(step_down_enclosure_plist,
+                    ["lid", plist_merge(enclosure_lid,
+                                        ["texts", [plist_merge(step_down_enclosure_text_plist,
+                                                               ["text", "POWER MODULE",
+                                                                "pos", ["50%", "50%"],
+                                                                "size", 2.2,
+                                                                "font", "Liberation Sans:style=Bold"])],
+                                         "text_depth", 0.4])]));
 // Raised labels:
-step_down_voltage_enclosure(plist=["lid", ["text_mode", "raised",
-                                          "text_height", 0.8]]);
-// A plain lid: plist=["lid", ["texts", []]].
+step_down_voltage_enclosure(plist=plist_merge(step_down_enclosure_plist,
+                                              ["lid", plist_merge(enclosure_lid,
+                                                                  ["text_mode", "raised",
+                                                                   "text_height", 0.8])]));
+// A plain lid: plist=plist_merge(step_down_enclosure_plist,
+                                  ["lid", plist_merge(enclosure_lid,
+                                                      ["texts", []])]).
 ```
 
 ## Tie bridges and parent wiring slots
@@ -263,13 +314,18 @@ produces no wiring opening. The resolved cutters are available through
 
 ```scad
 step_down_voltage_enclosure(
-  plist=["parent_slots", ["enabled", true, "slots", "auto"]]);
+  plist=plist_merge(step_down_enclosure_plist,
+                    ["parent_slots", plist_merge(plist_get("parent_slots", step_down_enclosure_plist),
+                                                 ["enabled", true,
+                                                  "slots", "auto"])]));
 
 step_down_voltage_enclosure(
-  plist=["parent_slots", ["enabled", true,
-                          "slots", [["pos", ["10%", "20%"],
-                                     "size", ["80%", "60%"],
-                                     "corner_r", 1]]]]);
+  plist=plist_merge(step_down_enclosure_plist,
+                    ["parent_slots", plist_merge(plist_get("parent_slots", step_down_enclosure_plist),
+                                                 ["enabled", true,
+                                                  "slots", [["pos", ["10%", "20%"],
+                                                             "size", ["80%", "60%"],
+                                                             "corner_r", 1]]])]));
 ```
 
 The default floor is 3.2 mm thick and holds captive M3 nuts. Chassis mounting
@@ -329,7 +385,9 @@ It must be positive and less than `lid.t`.
 
 ```scad
 step_down_enclosure_printable(
-  part="lid_text", plist=["lid", ["text_mode", "raised"]], text_panel_t=1);
+  part="lid_text", plist=plist_merge(step_down_enclosure_plist,
+                                     ["lid", plist_merge(enclosure_lid,
+                                                         ["text_mode", "raised"])]), text_panel_t=1);
 ```
 
 Preview hardware includes inserts,

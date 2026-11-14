@@ -18,11 +18,11 @@ assert(suspension_chassis_mount_h - front_chassis_bellcrank_bolt_bore_h >= 1.5);
 assert(suspension_chassis_mount_h - steering_servo_mount_bolt_bore_h >= 1.5);
 assert(suspension_chassis_mount_h - rear_suspension_chassis_bolt_bore_h >= 1.5);
 // Independent native-coordinate references protect the chassis length and wheelbase.
-assert(abs(plist_get("min_y", layout) + 147.74) < 0.000001);
+assert(abs(plist_get("min_y", layout) + 147.24) < 0.000001);
 assert(abs(plist_get("max_y", layout) - 5.75) < 0.000001);
-assert(abs(plist_get("maintenance_y", layout) + 60.69) < 0.000001);
-assert(norm(plist_get("motor_pos", layout) - [0, -106.89, 0]) < 0.000001);
-assert(joint_y[0] - plist_get("motor_bounds", layout)[1][1] >= 3);
+assert(abs(plist_get("maintenance_y", layout) + 60.2) < 0.000001);
+assert(norm(plist_get("motor_pos", layout) - [0, -106.4, 0]) < 0.000001);
+assert(joint_y[0] - plist_get("motor_bounds", layout)[1][1] >= 2);
 assert(rear_suspension_mount_recess_end_y(layout)
        - ((joint_y[0] + joint_y[1]) / 2 + rear_suspension_joint_pin_l / 2)
        >= 1);

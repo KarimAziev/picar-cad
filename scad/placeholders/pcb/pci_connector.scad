@@ -7,6 +7,7 @@
 
 include <../../colors.scad>
 include <../../parameters.scad>
+include <../presets.scad>
 
 use <../../lib/functions.scad>
 use <../../lib/plist.scad>
@@ -26,9 +27,9 @@ use <../../lib/transforms.scad>
 
   Latch overhang and latch thickness are excluded from this reference box.
  */
-function pci_connector_size_from_plist(plist, orientation) =
-  let (plist = with_default(plist, []),
-       size = plist_get("size", plist, [16, 2, 2.5]),
+function pci_connector_size_from_plist(plist=pci_connector_plist, orientation) =
+  assert(plist_is(plist) && len(plist) > 0, "Supply a hardware specification")
+  let (size = plist_get("size", plist, [16, 2, 2.5]),
        orientation = with_default(orientation,
                                   plist_get("orientation", plist, "lwh")))
   orientation_size(orientation, size);
@@ -112,8 +113,8 @@ module pci_connector(size=[16.0, 2, 2.5],
 
   Anchoring uses the nominal body box. The latch extends beyond that box.
  */
-module pci_connector_from_plist(plist, anchor, orientation) {
-  plist = with_default(plist, []);
+module pci_connector_from_plist(plist=pci_connector_plist, anchor, orientation) {
+  assert(plist_is(plist) && len(plist) > 0, "Supply a hardware specification");
   size = plist_get("size", plist, [16, 2, 2.5]);
   latch_pad = plist_get("latch_pad", plist, 3.66);
   color = plist_get("color", plist, metallic_yellow_silver_2);

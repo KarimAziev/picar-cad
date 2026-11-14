@@ -9,6 +9,8 @@
   * Author: Karim Aziiev <karim.aziiev@gmail.com>
   * License: GPL-3.0-or-later
   */
+include <../parameters.scad>
+
 use <../lib/plist.scad>
 use <../lib/transforms.scad>
 
@@ -18,20 +20,14 @@ use <../lib/transforms.scad>
   ─────────────────────────────────────────────────────────────────────────────
   Resolve and validate the visual wheel's hardware dimensions.
   **Parameters:**
-  - `pl`: Overrides: tire_d, width, tire_bevel, rim_d, hex_af, hex_depth,
+  - `pl`: Specification: tire_d, width, tire_bevel, rim_d, hex_af, hex_depth,
     axle_d, mount_z. `tire_bevel` is the radial and axial sidewall chamfer.
   **Returns:** A plist. mount_z is the hex contact plane measured from the
   inboard tire face; it is explicit backspacing, not a vendor offset number.
  */
-function rc_touring_wheel_spec(pl=[]) =
-  let (p = plist_merge(["tire_d", 65,
-                        "width", 26,
-                        "tire_bevel", 2,
-                        "rim_d", 52,
-                        "hex_af", 12,
-                        "hex_depth", 3,
-                        "axle_d", 4.2,
-                        "mount_z", 15], pl),
+function rc_touring_wheel_spec(pl=rc_touring_wheel_plist) =
+  assert(plist_is(pl) && len(pl) > 0, "Supply a hardware specification")
+  let (p = pl,
        d = plist_get("tire_d", p),
        w = plist_get("width", p),
        rim = plist_get("rim_d", p),
@@ -55,7 +51,7 @@ function rc_touring_wheel_spec(pl=[]) =
   **Returns:** Polygon vertices `[radius, axial_z]` in millimeters. Axial zero
   is the inboard tire face; the profile is symmetric about half its width.
  */
-function rc_touring_tire_profile(pl=[]) =
+function rc_touring_tire_profile(pl=rc_touring_wheel_plist) =
   let (p = rc_touring_wheel_spec(pl),
        radius = plist_get("tire_d", p) / 2,
        rim_radius = plist_get("rim_d", p) / 2,
@@ -69,9 +65,9 @@ function rc_touring_tire_profile(pl=[]) =
   rc_touring_wheel_size
   ─────────────────────────────────────────────────────────────────────────────
   Return [diameter, diameter, width] for the complete tire envelope.
-  **Parameters:** `pl`: Wheel dimension overrides.
+  **Parameters:** `pl`: Wheel specification.
  */
-function rc_touring_wheel_size(pl=[]) =
+function rc_touring_wheel_size(pl=rc_touring_wheel_plist) =
   let (p = rc_touring_wheel_spec(pl), d = plist_get("tire_d", p))
   [d, d, plist_get("width", p)];
 
@@ -81,7 +77,7 @@ function rc_touring_wheel_size(pl=[]) =
   ─────────────────────────────────────────────────────────────────────────────
   Render a six-spoke rim with an optional tire, or its cylindrical envelope.
   **Parameters:**
-  - `pl`: Wheel dimension overrides accepted by rc_touring_wheel_spec().
+  - `pl`: Wheel specification accepted by rc_touring_wheel_spec().
   - `anchor`: Tire-envelope anchor; default [0, 0, 1] keeps its axis on X=Y=0.
   - `show_tire`: Show the black tire with three shallow circumferential grooves.
   - `slot_mode`: Emit the complete tire envelope for packaging checks.
@@ -89,7 +85,7 @@ function rc_touring_wheel_size(pl=[]) =
   **Behavior:** Z=0 is the inboard tire face, +Z is outboard. Anchors retain the
   same full-tire reference box when the tire is hidden.
  */
-module rc_touring_wheel(pl=[],
+module rc_touring_wheel(pl=rc_touring_wheel_plist,
                         anchor=[0, 0, 1],
                         show_tire=true,
                         slot_mode=false,

@@ -1594,11 +1594,22 @@ voltmeter_default_spec                               = ["display", ["size", [vol
                                                                     "upper_thickness", 1,
                                                                     "upper_color", matte_black,
                                                                     "bottom_color", "white"],
+                                                        "bolt_padding", 2,
+                                                        "standoff_body_h", voltmeter_pin_h,
+                                                        "wire_d", 4,
+                                                        "show_standoffs", true,
                                                         "hide_board", false,
                                                         "hide_display", false,
                                                         "text", "8.8.8",
                                                         "text_props", ["font", "DSEG14 Classic:style=Italic",
-                                                                       "size", 6],
+                                                                       "size", 6,
+                                                                       "height", 0.1,
+                                                                       "color", red_1,
+                                                                       "spacing", 1,
+                                                                       "halign", "center",
+                                                                       "valign", "center",
+                                                                       "rotation", [0, 0, 0],
+                                                                       "translation", [0, 0, 0]],
                                                         "slot_size", [0, 27.70],
                                                         "d", m3_hole_dia,
                                                         "pins", ["size", [voltmeter_pin_thickness,
@@ -1607,6 +1618,7 @@ voltmeter_default_spec                               = ["display", ["size", [vol
                                                                  "total_len", voltmeter_pins_len],
                                                         "wiring", ["d", voltmeter_wiring_d,
                                                                    "distance", voltmeter_wiring_distance,
+                                                                   "gap", voltmeter_wiring_gap,
                                                                    "path", [[-5, -5, -2],
                                                                             [-15, -10, -1],
                                                                             [10, -15, -2],
@@ -1929,6 +1941,13 @@ step_down_voltage_regulator_cbore_d                  = m2_pan_counterbore_d;
 step_down_voltage_regulator_cbore_h                  = m2_pan_counterbore_h;
 
 step_down_voltage_plist                              = ["d", step_down_voltage_bolt_hole_dia,
+                                                        "standoff_h", step_down_voltage_regulator_standoff_h,
+                                                        "wire_d", 0,
+                                                        "vin_slot_round_side", "right",
+                                                        "vout_slot_round_side", "all",
+                                                        "terminal_hole_d", step_down_voltage_bolt_hole_dia + 0.4,
+                                                        "show_terminal_vin", false,
+                                                        "show_terminal_vout", true,
                                                         "size", [step_down_voltage_regulator_len,
                                                                  step_down_voltage_regulator_w,
                                                                  step_down_voltage_regulator_thickness],
@@ -2030,7 +2049,10 @@ step_down_voltage_plist                              = ["d", step_down_voltage_b
                                                                                  [-6.0, -1.5, 0], brown_2],
                                                                                 [1.70, 1.10, 1.6, 0.5,
                                                                                  [-5.55, -0.2, 0], brown_2]],
-                                                        "vin", ["thickness", step_down_voltage_screw_terminal_thickness,
+                                                        "vin", ["rotation_z", 90,
+                                                                "x_offset", 0,
+                                                                "y_offset", 0,
+                                                                "thickness", step_down_voltage_screw_terminal_thickness,
                                                                 "isosceles_trapezoid", step_down_voltage_screw_terminal_isosceles_trapezoid,
                                                                 "base_h", step_down_voltage_screw_terminal_base_h,
                                                                 "top_l", step_down_voltage_screw_terminal_top_l,
@@ -2044,7 +2066,10 @@ step_down_voltage_plist                              = ["d", step_down_voltage_b
                                                                 "pin_thickness", step_down_voltage_screw_terminal_pin_thickness,
                                                                 "pin_h", step_down_voltage_screw_terminal_pin_h,
                                                                 "wall_thickness", step_down_voltage_screw_terminal_wall_thickness,],
-                                                        "vout", ["thickness", step_down_voltage_screw_terminal_thickness,
+                                                        "vout", ["rotation_z", -90,
+                                                                 "x_offset", 0,
+                                                                 "y_offset", 0,
+                                                                 "thickness", step_down_voltage_screw_terminal_thickness,
                                                                  "isosceles_trapezoid", step_down_voltage_screw_terminal_isosceles_trapezoid,
                                                                  "base_h", step_down_voltage_screw_terminal_base_h,
                                                                  "top_l", step_down_voltage_screw_terminal_top_l,
@@ -2060,6 +2085,29 @@ step_down_voltage_plist                              = ["d", step_down_voltage_b
                                                                  "wall_thickness", step_down_voltage_screw_terminal_wall_thickness]];
 
 // End-to-end D24V90F5 regulator and INA260 current-monitor enclosure.
+
+step_down_enclosure_wall_vents_plist                 = ["size", [3, 14],
+                                                        "gap", [2, 2],
+                                                        "margin", ["12%", "12%", 2.5, 2.5],
+                                                        "corner_r", "50%",
+                                                        "opening_gap", 1.6,
+                                                        "opening_mode", "shorten",
+                                                        "enabled", true];
+
+step_down_enclosure_text_plist                       = ["size", 1.5,
+                                                        "halign", "center",
+                                                        "valign", "center",
+                                                        "spacing", 1,
+                                                        "font", "Arial Black:style=Regular",
+                                                        "at", undef,
+                                                        "pos", ["50%", "50%"],
+                                                        "translation", [0, 0, 0],
+                                                        "rotation", [0, 0, 0],
+                                                        "text", ""];
+
+// Face coordinates: left -X, right +X, rear -Y, front +Y.
+// Wall t=undef uses side_thickness; insert_mount.bolt_l=undef follows the lid.
+// color_alpha and lid_color_alpha use the renderer arguments when undef.
 
 step_down_enclosure_plist                            = ["step_down_voltage", step_down_voltage_plist,
                                                         "sensor_current", ina_plist,
@@ -2078,11 +2126,19 @@ step_down_enclosure_plist                            = ["step_down_voltage", ste
                                                                    "flang_h", 1.6,
                                                                    "top_flang_h", 1.3,
                                                                    "bottom_flat_h", 1.6,
-                                                                   "hole_d", 2],
+                                                                   "hole_d", 2,
+                                                                   "clearance", 0.2,
+                                                                   "knurl_clearance", 0.6,
+                                                                   "use_taper", false,
+                                                                   "bolt_head_type", "pan",
+                                                                   "fn1", 60,
+                                                                   "fn2", 20,
+                                                                   "color", metallic_gold_2],
                                                         "insert_mount", ["wall", 1.2,
                                                                          "floor", 1.2,
                                                                          "depth_clearance", 0.2,
-                                                                         "bolt_clearance", 0.2],
+                                                                         "bolt_clearance", 0.2,
+                                                                         "bolt_l", undef],
                                                         "mount", ["d", 3.2,
                                                                   "pos", ["50%", "50%"],
                                                                   "spacing", [48.2, 20.3]],
@@ -2091,29 +2147,34 @@ step_down_enclosure_plist                            = ["step_down_voltage", ste
                                                                 "head_depth", 0.2,
                                                                 "nut", 0.25,
                                                                 "nut_depth", 0.15],
-                                                        "wall_vents", ["size", [3, 14],
-                                                                       "gap", [2, 2],
-                                                                       "margin", ["12%", "12%", 2.5, 2.5],
-                                                                       "corner_r", "50%",
-                                                                       "opening_gap", 1.6,
-                                                                       "opening_mode", "shorten"],
-                                                        // Face names use the enclosure frame: left -X, right +X, rear -Y, front +Y.
-                                                        "walls", ["left", ["vents", ["enabled", false],
+                                                        "walls", ["left", ["vents", plist_merge(step_down_enclosure_wall_vents_plist,
+                                                                                                ["enabled", false]),
                                                                            "cutouts", [["l", 13,
                                                                                         "bottom", 7,
                                                                                         "corner_r", "20%",
-                                                                                        "rim_chamfer", 1]]],
-                                                                  "right", ["vents", ["enabled", false],
+                                                                                        "rim_chamfer", 1]],
+                                                                           "t", undef,
+                                                                           "slots", []],
+                                                                  "right", ["vents", plist_merge(step_down_enclosure_wall_vents_plist,
+                                                                                                 ["enabled", false]),
                                                                             "cutouts", [["l", 13,
                                                                                          "bottom", 7,
                                                                                          "corner_r", "20%",
-                                                                                         "rim_chamfer", 1]]],
+                                                                                         "rim_chamfer", 1]],
+                                                                            "t", undef,
+                                                                            "slots", []],
                                                                   "front", ["cutouts", [["at", "sensor_terminal",
                                                                                          "l", 9,
                                                                                          "bottom", 8,
                                                                                          "corner_r", "30%",
-                                                                                         "rim_chamfer", 1]]],
-                                                                  "rear", []],
+                                                                                         "rim_chamfer", 1]],
+                                                                            "t", undef,
+                                                                            "slots", [],
+                                                                            "vents", step_down_enclosure_wall_vents_plist],
+                                                                  "rear", ["t", undef,
+                                                                           "slots", [],
+                                                                           "cutouts", [],
+                                                                           "vents", step_down_enclosure_wall_vents_plist]],
                                                         "lid", ["t", 2.4,
                                                                 "lip_h", 1.5,
                                                                 "lip_w", 0.8,
@@ -2125,29 +2186,30 @@ step_down_enclosure_plist                            = ["step_down_voltage", ste
                                                                           "margin", ["12%", "13%", 2, 3],
                                                                           "corner_r", "50%",
                                                                           "opening_gap", 1,
-                                                                          "opening_mode", "omit"],
-                                                                "text_mode", "raised", // [engraved, raised]
+                                                                          "opening_mode", "omit",
+                                                                          "enabled", true],
+                                                                "text_mode", "raised",
                                                                 "text_depth", 0.8,
                                                                 "text_height", 0.8,
-                                                                "text_style", ["size", 1.5,
-                                                                               "halign", "center",
-                                                                               "valign", "center",
-                                                                               "spacing", 1,
-                                                                               "font", "Arial Black:style=Regular"],
-                                                                "texts", [["text", "-IN+",
-                                                                           "pos", ["4%", "50%"],
-                                                                           "rotation", [0, 0, -90],
-                                                                           "size", 3.5,
-                                                                           "spacing", 1.6],
-                                                                          ["text", "3V SCL SDA",
-                                                                           "pos", ["96%", "50%"],
-                                                                           "rotation", [0, 0, 90],
-                                                                           "size", 2.1],
-                                                                          ["text", "OUT",
-                                                                           "pos", ["68%", "90%"],
-                                                                           "rotation", [0, 0, 180],
-                                                                           "size", 3.0,
-                                                                           "spacing", 1.4]]],
+                                                                "texts", [plist_merge(step_down_enclosure_text_plist,
+                                                                                      ["text", "-IN+",
+                                                                                       "pos", ["4%", "50%"],
+                                                                                       "rotation", [0, 0, -90],
+                                                                                       "size", 3.5,
+                                                                                       "spacing", 1.6]),
+                                                                          plist_merge(step_down_enclosure_text_plist,
+                                                                                      ["text", "3V SCL SDA",
+                                                                                       "pos", ["96%", "50%"],
+                                                                                       "rotation", [0, 0, 90],
+                                                                                       "size", 2.1]),
+                                                                          plist_merge(step_down_enclosure_text_plist,
+                                                                                      ["text", "OUT",
+                                                                                       "pos", ["68%", "90%"],
+                                                                                       "rotation", [0, 0, 180],
+                                                                                       "size", 3.0,
+                                                                                       "spacing", 1.4])],
+                                                                "slots", [],
+                                                                "cutouts", []],
                                                         "header_slot", ["enabled", true,
                                                                         "clearance", [1.775, 0.5],
                                                                         "corner_r", 1],
@@ -2168,7 +2230,9 @@ step_down_enclosure_plist                            = ["step_down_voltage", ste
                                                                          "min_width", 3,
                                                                          "corner_r", 1],
                                                         "color", "#293943",
-                                                        "lid_color", "#c3ccd2"];
+                                                        "lid_color", "#c3ccd2",
+                                                        "color_alpha", undef,
+                                                        "lid_color_alpha", undef];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Servo horn
@@ -2247,14 +2311,13 @@ head_servo_mount_dia                                 = plist_get("center_ring_di
                                                                  tilt_servo_horn_slot_plist)
                                                         + 2 * tilt_servo_horn_recess_clearance;
 
-// A bare PCB needs only size and bolt_spacing. Rows, cols and bus_pad_cols
-// are calculated from the available pad area when omitted (see perfboard_props).
-// Mount consumers receive their hardware and clearance defaults through this plist.
+// Undef pad counts are calculated from the available pad area.
+// Mount consumers share the board hardware and clearance specification.
 perfboard_default_plist                              = ["size", [20, 80, 1.6],
                                                         "bolt_spacing", [16, 76],
-                                                        // "rows", 28,        // optional calculated-count override
-                                                        // "cols", 6,         // optional calculated-count override
-                                                        // "bus_pad_cols", 4, // optional calculated-count override
+                                                        "rows", undef,
+                                                        "cols", undef,
+                                                        "bus_pad_cols", undef,
                                                         "bolt_d", m2_hole_dia - 0.1,
                                                         "corner_r", 1,
                                                         "pad_d", 1.9,
@@ -2392,14 +2455,25 @@ rc_driveshaft_plist = [// Selected assembly pivot spacing, not a hardware measur
                        "dogbone_pin_l", 8,
                        "max_angle", 30];
 
+// Undef radii keep square corners; undef strain length follows its size.
 usb_a_plist = ["plug_shell", ["size", [12.0, 12.52, 4.4],
-                              "color", metallic_silver_3],
+                              "color", metallic_silver_3,
+                              "round_axis", "y",
+                              "corner_r", undef],
                "plug_body", ["size", [15.46, 15.35, 8.08],
-                             "color", matte_black],
-               "strain_relief", ["size", [5.9, 7, 5.8]]];
+                             "color", matte_black,
+                             "round_axis", "y",
+                             "corner_r", "50%"],
+               "strain_relief", ["size", [5.9, 7, 5.8],
+                                 "d", 0,
+                                 "l", undef,
+                                 "corner_r_factor", 0.5,
+                                 "color", matte_black]];
 
 usb_a_socket_plist = ["size", [rpi_usb_a_size[0], rpi_usb_a_size[1], rpi_usb_a_size[2] / 2],
                       "color", metallic_yellow_silver,
+                      "round_axis", "z",
+                      "corner_r", undef,
                       "offsets", [0, 0, 1]];
 
 usb_c_plist = ["plug_shell", ["size", [8.2, 7.4, 2.4],
@@ -2411,8 +2485,10 @@ usb_c_plist = ["plug_shell", ["size", [8.2, 7.4, 2.4],
                              "round_axis", "y",
                              "corner_r", "50%"],
                "strain_relief", ["size", [5.9, 7, 5.8],
-                                 "round_axis", "y",
-                                 "corner_r", "50%"]];
+                                 "d", 0,
+                                 "l", undef,
+                                 "corner_r_factor", 0.5,
+                                 "color", matte_black]];
 
 usb_c_socket_plist = ["size", rpi_usb_c_jack_size,
                       "corner_r", "50%",
@@ -2429,19 +2505,70 @@ wago_thickness      = 0.7;
 wago_n              = 5;
 wago_total_w        = 36.0;
 
+wago_plist = ["n", wago_n,
+              "conductor_size", wago_conductor_size,
+              "total_w", wago_total_w,
+              "hole_size_xz", wago_hole_size_xz,
+              "lid_l", wago_lid_l,
+              "lid_t", wago_lid_t,
+              "thickness", wago_thickness];
+
+wago_bracket_plist = ["wago", wago_plist,
+                      "clearance", 0.25,
+                      "top_clearance", 0.25,
+                      "base_t", 2.4,
+                      "wall_t", 1.6,
+                      "clip_l", 8,
+                      "clip_overlap", 0.5,
+                      "clip_rise", 0.8,
+                      "flex_gap", 0.8,
+                      "stop_h", 2.5,
+                      "bolt_d", 3,
+                      "bolt_clearance", 0.3,
+                      "ear_d", 10,
+                      "mount_side", "rear",
+                      "color", "SlateGray"];
+
+wago_pair_plist = ["bracket", wago_bracket_plist,
+                   "spacing", 2,
+                   "wire_pad", 1.5,
+                   "overhang", 0,
+                   "wire_size", undef, // Maximum opening between the cradles.
+                   "wire_r", undef];   // Radius derived from the opening size.
+
+rc_touring_wheel_plist = ["tire_d", 65,
+                          "width", 26,
+                          "tire_bevel", 2,
+                          "rim_d", 52,
+                          "hex_af", 12,
+                          "hex_depth", 3,
+                          "axle_d", 4.2,
+                          "mount_z", 15];
+
+micro_sd_card_plist = ["size", [11, 15, 1],
+                       "anchor", [1, 1, 1],
+                       "show_contacts", true];
+
 // Rear deck electronics. Zone sides use native rear coordinates: left=-X, right=+X.
 // See docs/rear-equipment.md for placement, clearance and custom hardware.
 // The combined power enclosure follows the regulator's -90 degree orientation.
 rear_equipment_mixed = [["kind", "step_down_enclosure",
                          "zone", "auto",
                          "component", step_down_enclosure_plist,
+                         "position", undef, // Automatic placement within the zone.
+                         "count", 1,
                          "rotation", -90]];
 
 rear_equipment_meters = [["kind", "voltmeter",
+                          "component", voltmeter_default_spec,
+                          "position", undef, // Automatic placement within the zone.
                           "zone", "auto",
                           "rotation", 90,
                           "count", 2],
                          ["kind", "step_down",
+                          "component", step_down_voltage_plist,
+                          "position", undef,
+                          "count", 1,
                           "zone", "left",
                           "rotation", 0]];
 // Choose [], rear_equipment_mixed, rear_equipment_meters, or a custom list.

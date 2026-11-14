@@ -22,6 +22,7 @@
 
 include <../../colors.scad>
 include <../../parameters.scad>
+include <../presets.scad>
 
 use <../../lib/functions.scad>
 use <../../lib/plist.scad>
@@ -486,7 +487,7 @@ module battery_holder_single_cell(full_width,
   }
 }
 
-module battery_holder_cell(plist,
+module battery_holder_cell(plist=battery_holder_plist,
                            align_x = -1,
                            align_y = -1,
                            thickness=2,
@@ -494,7 +495,7 @@ module battery_holder_cell(plist,
                            spin,
                            slot_mode=false,
                            center=false) {
-  plist = with_default(plist, []);
+  assert(plist_is(plist) && len(plist) > 0, "Supply a hardware specification");
   battery_len = plist_get("battery_len", plist, battery_length);
   battery_dia = plist_get("battery_dia", plist, default_battery_dia);
   count = plist_get("count", plist, batteries_count);

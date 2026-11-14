@@ -2,17 +2,15 @@
 
 The rear frame is configured in
 [`rear_chassis_params.scad`](rear_chassis_params.scad).
-The default has one standalone control panel and one standalone fuse panel on
-opposite sides of the motor, with the LiPo case and lidar above them.
+The default selects `rear_fuse_panel_plist` on the left of the motor, with the
+LiPo case and lidar above it. Complete control, fuse and combined-stack placement
+presets are declared beside `rear_panel_specs`. Select a preset directly or
+customize it with an explicit merge:
 
 ```scad
 rear_panel_specs = [
-  ["type", "control",
-  "side", "left",
-  "orientation", "wlh"],
-  ["type", "fuse",
-  "side", "right",
-  "orientation", "lwh"]
+  plist_merge(rear_control_panel_plist, ["side", "left"]),
+  plist_merge(rear_fuse_panel_plist, ["side", "right"])
 ];
 ```
 
@@ -23,10 +21,11 @@ Each entry accepts:
   Auto selects the smaller occupied side. Later entries include previously
   placed panels in that decision; repeated sides are placed successively outward.
 - `orientation`: `wlh` or `lwh` for a horizontal panel.
-- `gap`: Optional edge-to-edge gap from occupied space; defaults to
+- `gap`: Edge-to-edge gap from occupied space. Presets use
   `panel_stack_side_x_dist_from_motor`.
-- `outside_case`: Optional control-only override of `rear_control_outside_case`.
-- `y_offset`: Optional displacement from the motor footprint center; defaults to
+- `outside_case`: Move standalone controls beyond the case when possible.
+  The control preset uses `rear_control_outside_case`; other panel types use false.
+- `y_offset`: Displacement from the motor footprint center. Presets use
   `panel_stack_y_offset`.
 
 Use `rear_panel_specs=[]` for no panels. Two combined stacks are simply two
@@ -157,7 +156,8 @@ on the existing full-width deck. When the whole panel cannot clear the cover,
 the low panel can overlap the case: only the levers must clear the cover edge by
 `rear_control_case_gap`. The default control orientation is `wlh` to keep its
 shorter dimension along Y. Fuse panels and combined stacks stay beside the motor.
-A control entry can override the default with `"outside_case", false`.
+A control entry can select placement beneath the case with
+`plist_merge(rear_control_panel_plist, ["outside_case", false])`.
 Setting `rear_control_outside_case=false` restores placement under the case.
 
 Each control has separate clearance regions for its low panel/stems and each

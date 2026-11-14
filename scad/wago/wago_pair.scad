@@ -7,6 +7,8 @@
   * Author: Karim Aziiev <karim.aziiev@gmail.com>
   * License: GPL-3.0-or-later
   */
+include <../parameters.scad>
+
 use <../lib/functions.scad>
 use <../lib/plist.scad>
 use <../lib/shapes3d.scad>
@@ -26,7 +28,7 @@ use <wago_bracket.scad>
   - `side`: +1 selects the positive lid connector; -1 selects GND.
   **Returns:** XYZ points in the connector's local conductor order.
  */
-function wago_pair_wire_ports(pl=[], side=1) =
+function wago_pair_wire_ports(pl=wago_pair_plist, side=1) =
   let (p = wago_pair_props(pl),
        b = plist_get("bracket_props", p),
        bs = plist_get("size", b),
@@ -44,7 +46,7 @@ function wago_pair_wire_ports(pl=[], side=1) =
   ─────────────────────────────────────────────────────────────────────────────
   Resolve two opposing cradles and the available wiring space between them.
   **Parameters:**
-  - `pl`: `bracket` is a wago_bracket_props plist with rear ears. `spacing`
+  - `pl`: Complete wago_pair_plist from parameters.scad. `bracket` is a wago_bracket_props plist with rear ears. `spacing`
     is the gap between opposing ear tips (default 2 mm). `wire_pad` preserves
     material beside the ears and trays (default 1.5 mm). Optional `wire_size`
     reduces the derived maximum opening; `wire_r` defaults to up to 3 mm.
@@ -55,8 +57,10 @@ function wago_pair_wire_ports(pl=[], side=1) =
   bearing envelope. `mount_holes`, `wire_pos`, and `wire_size` share the pair's
   centered mounting frame, independent of its parent placement or rotation.
  */
-function wago_pair_props(pl=[]) =
-  let (bracket = plist_get("bracket", pl, []),
+function wago_pair_props(pl=wago_pair_plist) =
+  assert(plist_is(pl) && len(pl) > 0,
+         "Wago pair requires a complete wago_pair_plist")
+  let (bracket = plist_get("bracket", pl),
        p = wago_bracket_props(bracket),
        s = plist_get("size", p),
        e = plist_get("ear_d", p),
@@ -66,8 +70,8 @@ function wago_pair_props(pl=[]) =
        offset = (s[1] + spacing) / 2,
        size = [s[0], 2 * s[1] + spacing, s[2]],
        max_wire = [s[0] - 2 * e - 2 * pad, 2 * e + spacing - 2 * pad],
-       wire = plist_get("wire_size", pl, max_wire),
-       r = plist_get("wire_r", pl, min(3, min(wire) / 2)),
+       wire = with_default(plist_get("wire_size", pl), max_wire),
+       r = with_default(plist_get("wire_r", pl), min(3, min(wire) / 2)),
        d = plist_get("bolt_d", p),
        bore_d = find_bolt_head_d(d, "countersunk") + 0.3,
        bore_h = find_bolt_head_h(d, "countersunk") + 0.15,
@@ -117,7 +121,7 @@ function wago_pair_props(pl=[]) =
   Both cradles print base-down. The wire opening passes 0.01 mm beyond both
   parent faces, avoiding coincident surfaces in preview and Boolean cuts.
  */
-module wago_pair(pl=[],
+module wago_pair(pl=wago_pair_plist,
                  anchor=[0, 0, 1],
                  parent_t=3,
                  slot_mode=false,

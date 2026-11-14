@@ -27,12 +27,13 @@ head_tilt      = 0;
 head_clearance = 0;
 reverse_bolts  = front_bumper_reverse_bolts;
 test_bolt_l    = undef;
-pl             = plist_merge(variant ? ["foam_h", 21,
-                                        "post_d", 9,
-                                        "bolt_l", 30] : [],
-                            is_undef(test_bolt_l) ? [] : ["bolt_l", test_bolt_l]);
+pl             = plist_merge(plist_merge(front_bumper_plist,
+                                         variant ? ["foam_h", 21,
+                                                    "post_d", 9,
+                                                    "bolt_l", 30] : []),
+                             is_undef(test_bolt_l) ? [] : ["bolt_l", test_bolt_l]);
 hardware_pl    = reverse_bolts ? pl : plist_merge(pl,
-                                                 ["bolt_l", variant ? 40 : 35]);
+                                                  ["bolt_l", variant ? 40 : 35]);
 
 module placed_bumper() {
   translate(front_bumper_position(pl)) {

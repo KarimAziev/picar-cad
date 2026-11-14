@@ -37,7 +37,6 @@ rear_hub_lower_ball_spacing       = rear_hub_measured_width
 rear_hub_link_pivot_h             = rear_hub_measured_axle_pivot_h
                                      + rear_hub_nominal_link_axle_h;
 
-
 rear_lower_arm_spec               = ["w", rear_arm_photo_length,
                                      "inner_span", rear_arm_photo_inner_span,
                                      "inner_gap", rear_arm_photo_inner_gap,

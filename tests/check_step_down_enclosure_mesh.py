@@ -22,6 +22,20 @@ use <{ROOT}/scad/lib/slots.scad>
 use <{ROOT}/scad/placeholders/heat_insert_nut.scad>
 use <{ROOT}/scad/lib/transforms.scad>
 use <{ROOT}/scad/components/step_down_enclosure/step_down_voltage_enclosure.scad>
+lid_preset = plist_get("lid", step_down_enclosure_plist);
+walls_preset = plist_get("walls", step_down_enclosure_plist);
+insert_preset = plist_get("insert", step_down_enclosure_plist);
+insert_mount_preset = plist_get("insert_mount", step_down_enclosure_plist);
+mount_preset = plist_get("mount", step_down_enclosure_plist);
+fit_preset = plist_get("fit", step_down_enclosure_plist);
+header_slot_preset = plist_get("header_slot", step_down_enclosure_plist);
+cable_tie_preset = plist_get("cable_tie", step_down_enclosure_plist);
+parent_slots_preset = plist_get("parent_slots", step_down_enclosure_plist);
+front_wall_preset = plist_get("front", walls_preset);
+rear_wall_preset = plist_get("rear", walls_preset);
+left_wall_preset = plist_get("left", walls_preset);
+right_wall_preset = plist_get("right", walls_preset);
+
 p=step_down_enclosure_props();
 s=plist_get("size",p);
 b=plist_get("body_size",p);
@@ -78,18 +92,48 @@ def main() -> None:
               flush=True)
 
         for config in (
-            '[]',
-            '["lid",["slots",[],"texts",[],"vents",["enabled",false]],'
-            '"header_slot",["enabled",false]]',
-            '["inner_size",["120%","150%","100%"],"board_pos",["60%","40%"],'
-            '"cable_tie",["enabled",false],'
-            '"walls",["left",["t",6],"right",["t",3],'
-            '"rear",["t",4],"front",["t",5]]]',
-            '["step_down_voltage",plist_merge(step_down_voltage_plist,'
-            '["vin",["rotation_z",0,"base_w",12,"thickness",7,"x_offset",1,"y_offset",2],'
-            '"vout",["rotation_z",45,"base_w",10,"thickness",6,"x_offset",2,"y_offset",3]]),'
-            '"sensor_current",plist_merge(ina_plist,'
-            '["screw_terminal",["base_w",12,"thickness",7,"y_offset",1]])]',
+            'step_down_enclosure_plist',
+            '''plist_merge(step_down_enclosure_plist,
+            ["lid", plist_merge(lid_preset,
+                                ["slots", [],
+                                 "texts", [],
+                                 "vents", plist_merge(plist_get("vents", lid_preset),
+                                                      ["enabled", false])]),
+             "header_slot", plist_merge(header_slot_preset,
+                                        ["enabled", false])])''',
+            '''plist_merge(step_down_enclosure_plist,
+            ["inner_size", ["120%", "150%", "100%"],
+             "board_pos", ["60%", "40%"],
+             "cable_tie", plist_merge(cable_tie_preset,
+                                      ["enabled", false]),
+             "walls", plist_merge(walls_preset,
+                                  ["left", plist_merge(left_wall_preset,
+                                                       ["t", 6]),
+                                   "right", plist_merge(right_wall_preset,
+                                                        ["t", 3]),
+                                   "rear", plist_merge(rear_wall_preset,
+                                                       ["t", 4]),
+                                   "front", plist_merge(front_wall_preset,
+                                                        ["t", 5])])])''',
+            '''plist_merge(step_down_enclosure_plist,
+            ["step_down_voltage", plist_merge(step_down_voltage_plist,
+                                              ["vin", plist_merge(plist_get("vin", step_down_voltage_plist),
+                                                                  ["rotation_z", 0,
+                                                                   "base_w", 12,
+                                                                   "thickness", 7,
+                                                                   "x_offset", 1,
+                                                                   "y_offset", 2]),
+                                               "vout", plist_merge(plist_get("vout", step_down_voltage_plist),
+                                                                   ["rotation_z", 45,
+                                                                    "base_w", 10,
+                                                                    "thickness", 6,
+                                                                    "x_offset", 2,
+                                                                    "y_offset", 3])]),
+             "sensor_current", plist_merge(ina_plist,
+                                           ["screw_terminal", plist_merge(plist_get("screw_terminal", ina_plist),
+                                                                          ["base_w", 12,
+                                                                           "thickness", 7,
+                                                                           "y_offset", 1])])])''',
         ):
             setup = f'q=step_down_enclosure_props({config});\n'
             render(setup + '''intersection() {
@@ -106,7 +150,7 @@ def main() -> None:
               "including shifted boards, resized/rotated terminals and disabled vents", flush=True)
 
         for mode in ("engraved", "raised"):
-            config = f'["lid",["text_mode","{mode}","vents",["enabled",false]]]'
+            config = f'plist_merge(step_down_enclosure_plist, ["lid", plist_merge(lid_preset, ["text_mode", "{mode}",\n  "vents", plist_merge(plist_get("vents", lid_preset), ["enabled", false])])])'
             setup = f'q=step_down_enclosure_props({config});\n'
             render(setup + '''intersection() {
   _power_enclosure_lid(q);
@@ -127,11 +171,28 @@ def main() -> None:
               "engraved/raised lids are connected and print on Z=0", flush=True)
 
         for config, panel_t in (
-            ('["lid",["text_mode","raised"]]', 1),
-            ('["lid",["text_mode","raised","t",3.6,"lip_h",0]]', 0.8),
-            ('["lid",["text_mode","raised","t",3,"text_height",1.2],'
-             '"walls",["left",["t",6],"right",["t",3],'
-             '"rear",["t",4],"front",["t",5]]]', 1),
+            ('''plist_merge(step_down_enclosure_plist,
+            ["lid", plist_merge(lid_preset,
+                                ["text_mode", "raised"])])''', 1),
+            ('''plist_merge(step_down_enclosure_plist,
+            ["lid", plist_merge(lid_preset,
+                                ["text_mode", "raised",
+                                 "t", 3.6,
+                                 "lip_h", 0])])''', 0.8),
+            ('''plist_merge(step_down_enclosure_plist,
+            ["lid", plist_merge(lid_preset,
+                                ["text_mode", "raised",
+                                 "t", 3,
+                                 "text_height", 1.2]),
+             "walls", plist_merge(walls_preset,
+                                  ["left", plist_merge(left_wall_preset,
+                                                       ["t", 6]),
+                                   "right", plist_merge(right_wall_preset,
+                                                        ["t", 3]),
+                                   "rear", plist_merge(rear_wall_preset,
+                                                       ["t", 4]),
+                                   "front", plist_merge(front_wall_preset,
+                                                        ["t", 5])])])''', 1),
         ):
             setup = f'q=step_down_enclosure_props({config});\n'
             for part in ("lid_main", "lid_text"):
@@ -160,12 +221,25 @@ step_down_enclosure_printable(part="{part}",plist={config},text_panel_t={panel_t
         print("PASS raised panels are connected and bed-flat; assembled printable panels "
               "exactly preserve lid geometry, holes, openings and lip, including asymmetric walls", flush=True)
 
-        render('''q=step_down_enclosure_props([
-  "step_down_voltage",plist_merge(step_down_voltage_plist,
-    ["inductor",["size",[8,6,4],"offsets",[2,2]],
-     "can_capacitors",[["d",8,"h",7,"base_h",2,"position",[-10,4,0]]],
-     "smd_chip_specs",[[4,3,1.5,0.8,[-1,-7,0],[0,0,30]]]]),
-  "lid",["text_mode","raised","text_height",4,"vents",["enabled",false]]]);
+        render('''q=step_down_enclosure_props(plist_merge(step_down_enclosure_plist,
+                                        ["step_down_voltage", plist_merge(step_down_voltage_plist,
+                                                                          ["inductor", ["size", [8, 6, 4],
+                                                                                        "offsets", [2, 2]],
+                                                                           "can_capacitors", [["d", 8,
+                                                                                               "h", 7,
+                                                                                               "base_h", 2,
+                                                                                               "position", [-10, 4, 0]]],
+                                                                           "smd_chip_specs", [[4,
+                                                                                               3,
+                                                                                               1.5,
+                                                                                               0.8,
+                                                                                               [-1, -7, 0],
+                                                                                               [0, 0, 30]]]]),
+                                         "lid", plist_merge(lid_preset,
+                                                            ["text_mode", "raised",
+                                                             "text_height", 4,
+                                                             "vents", plist_merge(plist_get("vents", lid_preset),
+                                                                                  ["enabled", false])])]));
 intersection() {
   _power_enclosure_lid(q);
   for(fp=plist_get("component_footprints",q)) {
@@ -176,9 +250,14 @@ intersection() {
 }''', empty=True)
         print("PASS resized inductor/capacitor and rotated chip footprints retain lid access", flush=True)
 
-        render('''q=step_down_enclosure_props(["lid",["text_mode","raised",
-  "texts",[["text","MMMMMMMM","at","regulator","size",8]],
-  "text_height",2]]);
+        render('''q=step_down_enclosure_props(plist_merge(step_down_enclosure_plist,
+                                        ["lid", plist_merge(lid_preset,
+                                                            ["text_mode", "raised",
+                                                             "texts", [plist_merge(step_down_enclosure_text_plist,
+                                                                                   ["text", "MMMMMMMM",
+                                                                                    "at", "regulator",
+                                                                                    "size", 8])],
+                                                             "text_height", 2])]));
 intersection() {
   _power_enclosure_lid(q);
   for(fp=concat(plist_get("terminal_footprints",q),
@@ -240,16 +319,26 @@ intersection() {
         print("PASS chassis mounting holes remain open through the captive-nut floor", flush=True)
 
         for slot in ([3.2, 1.6], [4.2, 2], [5.2, 2]):
-            render(f'''q=step_down_enclosure_props(["cable_tie",["slot_size",{slot}]]);
+            render(f'''q=step_down_enclosure_props(plist_merge(step_down_enclosure_plist, ["cable_tie", plist_merge(cable_tie_preset, ["slot_size", {slot}])]));
 intersection() {{
   _power_enclosure_tie_slots(q);
   union() {{_power_enclosure_boards(q); _power_enclosure_fasteners(q);}}
 }}''', empty=True)
         print("PASS 3, 4 and 5 mm cable-tie paths clear PCB screws and chassis nuts", flush=True)
 
-        for config in ('[]', '["walls",["front",["vents",["opening_mode","omit"]]]]',
-                       '["walls",["front",["t",6,"cutouts",'
-                       '[["at","sensor_terminal","l",11,"bottom",10,"corner_r",2]]]]]'):
+        for config in ('step_down_enclosure_plist', '''plist_merge(step_down_enclosure_plist,
+            ["walls", plist_merge(walls_preset,
+                                  ["front", plist_merge(front_wall_preset,
+                                                        ["vents", plist_merge(plist_get("vents", front_wall_preset),
+                                                                              ["opening_mode", "omit"])])])])''',
+                       '''plist_merge(step_down_enclosure_plist,
+            ["walls", plist_merge(walls_preset,
+                                  ["front", plist_merge(front_wall_preset,
+                                                        ["t", 6,
+                                                         "cutouts", [["at", "sensor_terminal",
+                                                                      "l", 11,
+                                                                      "bottom", 10,
+                                                                      "corner_r", 2]]])])])'''):
             render(f'''q=step_down_enclosure_props({config});
 wall=plist_get("front",plist_get("walls",q));
 panel=plist_get("front",plist_get("panels",q));
@@ -267,10 +356,11 @@ difference() {{
         print("PASS outlet margins survive independent vent modes and 6 mm front walls", flush=True)
 
         for mode in ("shorten", "omit", "clip"):
-            render(f'''q=step_down_enclosure_props(["walls",["front",[
-  "cutouts",[["at","sensor_terminal","l",11,"bottom",8,
+            render(f'''q=step_down_enclosure_props(plist_merge(step_down_enclosure_plist, ["walls", plist_merge(walls_preset, ["front", plist_merge(front_wall_preset, ["cutouts", [["at","sensor_terminal","l",11,"bottom",8,
               "corner_r",3,"rim_chamfer",4,"vent_gap","10%"]],
-  "vents",["size",[3,17],"margin",[10,10,2,1],"opening_mode","{mode}"]]]]);
+  "vents", plist_merge(plist_get("vents", front_wall_preset), ["size", [3,17],
+  "margin", [10,10,2,1],
+  "opening_mode", "{mode}"])])])]));
 panel=plist_get("front",plist_get("panels",q));
 gap=plist_get("vent_gap",plist_get("openings",panel)[0]);
 intersection() {{
@@ -283,14 +373,36 @@ intersection() {{
               flush=True)
 
         for config in (
-            '["inner_size",["110%","110%","100%"],'
-            '"insert",["d",4.6,"flang_d",5.6,"h",8,"hole_d",3]]',
-            '["insert",["use_taper",true]]',
-            '["insert",["h",24]]',
-            '["walls",["left",["t",6],"right",["t",3],'
-            '"rear",["t",4],"front",["t",5]]]',
-            '["inner_size",["110%","120%","130%"],'
-            '"lid",["texts",[],"vents",["size",[2,4],"gap",[3,3]]]]',
+            '''plist_merge(step_down_enclosure_plist,
+            ["inner_size", ["110%", "110%", "100%"],
+             "insert", plist_merge(insert_preset,
+                                   ["d", 4.6,
+                                    "flang_d", 5.6,
+                                    "h", 8,
+                                    "hole_d", 3])])''',
+            '''plist_merge(step_down_enclosure_plist,
+            ["insert", plist_merge(insert_preset,
+                                   ["use_taper", true])])''',
+            '''plist_merge(step_down_enclosure_plist,
+            ["insert", plist_merge(insert_preset,
+                                   ["h", 24])])''',
+            '''plist_merge(step_down_enclosure_plist,
+            ["walls", plist_merge(walls_preset,
+                                  ["left", plist_merge(left_wall_preset,
+                                                       ["t", 6]),
+                                   "right", plist_merge(right_wall_preset,
+                                                        ["t", 3]),
+                                   "rear", plist_merge(rear_wall_preset,
+                                                       ["t", 4]),
+                                   "front", plist_merge(front_wall_preset,
+                                                        ["t", 5])])])''',
+            '''plist_merge(step_down_enclosure_plist,
+            ["inner_size", ["110%", "120%", "130%"],
+             "lid", plist_merge(lid_preset,
+                                ["texts", [],
+                                 "vents", plist_merge(plist_get("vents", lid_preset),
+                                                      ["size", [2, 4],
+                                                       "gap", [3, 3]])])])''',
         ):
             setup = f'''q=step_down_enclosure_props({config});
 qb=plist_get("body_size",q);
@@ -318,9 +430,19 @@ module case_shell() {{
         print("PASS larger/longer inserts, asymmetric walls and percentage-sized cavities fit hardware/lids",
               flush=True)
 
-        thick = '''q=step_down_enclosure_props([
-  "walls",["left",["t",6],"right",["t",3],"rear",["t",4,
-    "cutouts",[["l",13,"bottom",7,"corner_r",2]]],"front",["t",5]]]);
+        thick = '''q=step_down_enclosure_props(plist_merge(step_down_enclosure_plist,
+                                        ["walls", plist_merge(walls_preset,
+                                                              ["left", plist_merge(left_wall_preset,
+                                                                                   ["t", 6]),
+                                                               "right", plist_merge(right_wall_preset,
+                                                                                    ["t", 3]),
+                                                               "rear", plist_merge(rear_wall_preset,
+                                                                                   ["t", 4,
+                                                                                    "cutouts", [["l", 13,
+                                                                                                 "bottom", 7,
+                                                                                                 "corner_r", 2]]]),
+                                                               "front", plist_merge(front_wall_preset,
+                                                                                    ["t", 5])])]));
 '''
         render(thick + '''intersection() {
   union() {
@@ -367,7 +489,7 @@ module case_shell() {{
 }''', empty=True)
 
         for slots in ('"auto"', '[["pos",["10%","20%"],"size",["80%","60%"],"corner_r",1]]'):
-            config = f'["parent_slots",["enabled",true,"slots",{slots}]]'
+            config = f'plist_merge(step_down_enclosure_plist, ["parent_slots", plist_merge(parent_slots_preset, ["enabled", true,\n  "slots", {slots}])])'
             setup = f'q=step_down_enclosure_props({config});\n'
             render(setup + 'step_down_enclosure_parent_slots(q,6);')
             assert mesh_volume(mesh) > 50, slots

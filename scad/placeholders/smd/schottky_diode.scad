@@ -6,13 +6,14 @@
  */
 
 include <../../colors.scad>
+include <../presets.scad>
 
 use <../../lib/functions.scad>
 use <../../lib/plist.scad>
 use <smd_resistor.scad>
 
-module schottky_diode(plist, center=false) {
-  plist = with_default(plist, []);
+module schottky_diode(plist=schottky_diode_plist, center=false) {
+  assert(plist_is(plist) && len(plist) > 0, "Supply a hardware specification");
   size = plist_get("placeholder_size", plist, [3.4, 1.4, 0.4]);
   x = size[0];
   y = size[1];

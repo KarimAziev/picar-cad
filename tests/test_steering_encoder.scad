@@ -15,12 +15,12 @@ module near(a, b) {
 }
 
 // Preserve the mating width of the printed chassis and the servo datum.
-near(front_chassis_rear_frame_w, 151.26);
+near(front_chassis_rear_frame_w, 152.26);
 near(bellcrank_params[0], -9.85);
-near(steering_servo_encoder_chassis_reach(), 65.78);
+near(steering_servo_encoder_chassis_reach(), 66.28);
 near(dsservo_magnet_sleeve_offset(), 7.5);
 near(steering_encoder_magnet_distance, 1.5);
-near(steering_encoder_magnet_distance + steering_encoder_side_thickness, 2.5);
+near(steering_encoder_magnet_distance + steering_encoder_side_thickness, 3);
 
 pcb  = plist_get("size", steering_encoder_plist);
 chip = plist_get("chip_size", plist_get("sensor_ic", steering_encoder_plist));
@@ -47,4 +47,4 @@ foot_l = steering_encoder_bottom_pan_bolt_pad
 near((foot_l - steering_encoder_bottom_pan_bolt_d) / 2, 1.95);
 near((foot_l - steering_servo_mount_bolt_bore_d) / 2, 0.5);
 near(steering_servo_encoder_chassis_reach(plist=undef), 0);
-echo("PASS: steering encoder gap, mounting margins, and 151.26 mm chassis width");
+echo("PASS: steering encoder gap, mounting margins, and 152.26 mm chassis width");

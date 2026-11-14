@@ -27,9 +27,10 @@ assert(abs(front_chassis_front_frame_start_y()
            - (115.825 + extension)) < 1e-6);
 assert(norm(front_bumper_position()
             - [-81.5, 97.225 + extension, 6]) < 1e-6);
-for (pl = [[], ["foam_h", 21,
-                "post_d", 9,
-                "bolt_l", 30]]) {
+for (pl = [front_bumper_plist,
+           plist_merge(front_bumper_plist, ["foam_h", 21,
+                                            "post_d", 9,
+                                            "bolt_l", 30])]) {
   for (part = ["plate", "foam", "assembly"]) {
     pos = front_bumper_position(pl, part);
     holes = front_bumper_mount_positions(pl, part);
@@ -44,7 +45,8 @@ for (pl = [[], ["foam_h", 21,
   assert(abs(top_z - plist_get("nut_z", hardware) - 2.49) < 1e-8);
   assert(abs(plist_get("head_z", hardware) + 2.7) < 1e-8);
 }
-forward = front_bumper_bolt_params(["bolt_l", 35], reverse_bolts=false);
+forward = front_bumper_bolt_params(plist_merge(front_bumper_plist, ["bolt_l", 35]),
+                                   reverse_bolts=false);
 assert(abs(plist_get("head_z", forward) - 22.4) < 1e-8);
 assert(plist_get("nut_z", forward) == -chassis_thickness);
 echo("PASS: bumper mounting datums, reference sizes and shared fit parameters");
@@ -64,7 +66,7 @@ assert(abs(front_bumper_profile_front_y([[-4, -4], [4, 4]], 5)
 assert(front_chassis_bumper_min_extension(clearance=0) < required);
 assert(front_chassis_bumper_min_extension(clearance=4) > required);
 assert(front_chassis_bumper_min_extension(tilt_range=[0, 20]) < required);
-assert(front_chassis_bumper_min_extension(["post_d", 10]) > required);
-assert(front_chassis_bumper_min_extension(["foam_h", 30,
-                                           "bolt_l", 39]) >= required);
+assert(front_chassis_bumper_min_extension(plist_merge(front_bumper_plist, ["post_d", 10])) > required);
+assert(front_chassis_bumper_min_extension(plist_merge(front_bumper_plist, ["foam_h", 30,
+                                                                           "bolt_l", 39])) >= required);
 echo("PASS: bumper extension follows travel, height, mounting pads and clearance");

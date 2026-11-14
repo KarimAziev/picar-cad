@@ -13,11 +13,10 @@ use <wago_bracket.scad>
   ─────────────────────────────────────────────────────────────────────────────
   Return a rotated bracket's axis-aligned envelope.
   **Parameters:**
-  - `spec`: Mount plist with optional `bracket` plist and Z `rotation` in degrees.
+  - `spec`: Mount plist with a complete `bracket` plist and Z `rotation` in degrees.
  */
 function wago_mount_size(spec) =
-  let (s = plist_get("size", wago_bracket_props(plist_get("bracket", spec,
-                                                          []))),
+  let (s = plist_get("size", wago_bracket_props(plist_get("bracket", spec))),
        a = plist_get("rotation", spec, 0))
   assert(is_num(a), "Wago rotation must be a numeric Z angle")
   [abs(cos(a)) * s[0] + abs(sin(a)) * s[1],
@@ -144,7 +143,7 @@ module wago_mounts(mounts=[],
                    show_bolts=false) {
   for (spec = mounts) {
     let (pos = plist_get("pos", spec, [0, 0]),
-         bracket_props = wago_bracket_props(plist_get("bracket", spec, [])),
+         bracket_props = wago_bracket_props(plist_get("bracket", spec)),
          base_t = plist_get("base_t", bracket_props),
          bolt_l_default = 2 * ceil((parent_t + base_t + 3) / 2)) {
       assert(is_list(pos) && (len(pos) == 2 || len(pos) == 3),
@@ -152,7 +151,7 @@ module wago_mounts(mounts=[],
       translate(len(pos) == 2 ? concat(pos, [z]) : pos) {
         rotate([0, 0, plist_get("rotation", spec, 0)]) {
           translate([0, 0, slot_mode ? -parent_t : 0]) {
-            wago_bracket(pl=plist_get("bracket", spec, []),
+            wago_bracket(pl=plist_get("bracket", spec),
                          anchor=[0, 0, 1],
                          slot_mode=slot_mode,
                          slot_h=parent_t,

@@ -201,19 +201,19 @@ module knuckle_steering_arm(w_base=knuckle_arm_base_w,
             linear_extrude(height=thickness, center=false) {
               translate([0, -l2, 0]) {
                 knuckle_arm_profile(w_base=w_base,
-                                     w_narrow=w_narrow,
-                                     l1=l1,
-                                     l2=l2,
-                                     angle=angle,
-                                     ear_len=ear_len,
-                                     bolt_d=bolt_d,
-                                     bolt_edge_offset=bolt_edge_offset,
-                                     holes_n=holes_n,
-                                     holes_gap=holes_gap,
-                                     corner_r=corner_r,
-                                     lower_height=lower_height,
-                                     outer_bearing_seat_od=outer_bearing_seat_od,
-                                     debug=debug);
+                                    w_narrow=w_narrow,
+                                    l1=l1,
+                                    l2=l2,
+                                    angle=angle,
+                                    ear_len=ear_len,
+                                    bolt_d=bolt_d,
+                                    bolt_edge_offset=bolt_edge_offset,
+                                    holes_n=holes_n,
+                                    holes_gap=holes_gap,
+                                    corner_r=corner_r,
+                                    lower_height=lower_height,
+                                    outer_bearing_seat_od=outer_bearing_seat_od,
+                                    debug=debug);
               }
             }
           }
@@ -245,7 +245,6 @@ module knuckle_steering_arm(w_base=knuckle_arm_base_w,
   render() {
     _main();
   }
-
 }
 
 knuckle_steering_arm(debug=false);

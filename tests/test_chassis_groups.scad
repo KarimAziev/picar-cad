@@ -44,8 +44,9 @@ echo("PASS: all 16 split configurations and reference measurement datums");
 assert(abs(plist_get("chassis_front_y", d)
            - front_chassis_front_frame_start_y()) < 1e-6);
 for (plate = [false, true], foam = [false, true]) {
-  for (pl = [[], ["foam_w", 210,
-                  "foam_l", 48]]) {
+  for (pl = [front_bumper_plist,
+             plist_merge(front_bumper_plist, ["foam_w", 210,
+                                              "foam_l", 48])]) {
     measured = chassis_dimensions(layout=layout,
                                   bumper_top_plate=plate,
                                   bumper_foam=foam,

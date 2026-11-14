@@ -325,10 +325,10 @@ module servo_gearbox(h,
                      - plist_get("arm_z_offset", servo_horn_plist, servo_horn_arm_z_offset)]) {
             rotate([0, 0, servo_horn_rotation]) {
               servo_horn_from_plist(pl=servo_horn_plist,
-                                   shape=servo_horn_shape,
-                                   cross_side_holes=servo_horn_cross_side_holes,
-                                   show_bolt=show_servo_horn_bolt,
-                                   show_screws=show_servo_horn_screws);
+                                    shape=servo_horn_shape,
+                                    cross_side_holes=servo_horn_cross_side_holes,
+                                    show_bolt=show_servo_horn_bolt,
+                                    show_screws=show_servo_horn_screws);
             }
           }
         }

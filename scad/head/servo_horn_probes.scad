@@ -21,7 +21,7 @@ use <../placeholders/servo_horn.scad>
 
   **Parameters:**
   - `initial_screws_gaps`: Edge-to-edge hub-to-first-hole gaps in millimeters.
-  - `pl`: Horn dimensions; missing properties use servo_horn_default_plist.
+  - `pl`: Complete horn specification; defaults to pan_servo_horn_slot_plist.
     Each coupon uses shape="single" and its labeled initial_screws_gap.
   - `seat_h`: Material thickness beneath the horn-arm recess.
   - `clearance`: XY recess allowance per side, including the hub opening.
@@ -50,7 +50,7 @@ module servo_horn_probes(initial_screws_gaps=[1.8, 1.9, 2.0],
   assert(plist_is(pl));
   assert(seat_h > 0 && clearance >= 0 && screw_clearance >= 0 && gap > 0);
 
-  props = plist_merge(servo_horn_default_plist, pl);
+  props = pl;
   arm_l = plist_get("arm_len", props);
   recess_h = plist_get("thickness", props);
   hub_r = plist_get("center_ring_dia", props) / 2 + clearance;

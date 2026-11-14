@@ -4,7 +4,7 @@
   * Author: Karim Aziiev <karim.aziiev@gmail.com>
   * License: GPL-3.0-or-later
   */
-include <../scad/rc_params.scad>
+include <../scad/suspension/rear_chassis/rear_chassis_params.scad>
 
 use <../scad/lib/plist.scad>
 use <../scad/lipo_pack_case/multi_lipo_pack_lid.scad>
@@ -16,33 +16,37 @@ use <../scad/wago/wago_mounts.scad>
 assert(wago_size() == [36.0, 20.2, 9.8]);
 p       = wago_bracket_props();
 assert(norm(plist_get("size", p)-[39.7, 33.9, 13.25]) < 0.00001);
-assert(norm(plist_get("size", wago_bracket_props(["mount_side","sides"]))-[59.7, 23.9, 13.25]) < 0.00001);
-assert(plist_get("wago_size", wago_bracket_props(["wago",["n", 3,
-                                                          "total_w", 22.7]]))[0] == 22.7);
-assert(norm(wago_mount_size(["rotation", 90])-[33.9, 39.7, 13.25]) < 0.00001);
+assert(norm(plist_get("size", wago_bracket_props(plist_merge(wago_bracket_plist, ["mount_side", "sides"])))-[59.7, 23.9, 13.25]) < 0.00001);
+assert(plist_get("wago_size", wago_bracket_props(plist_merge(wago_bracket_plist, ["wago", plist_merge(wago_plist, ["n", 3,
+                                                                                                                   "total_w", 22.7])])))[0] == 22.7);
+assert(norm(wago_mount_size(["bracket", wago_bracket_plist,
+                             "rotation", 90])-[33.9, 39.7, 13.25]) < 0.00001);
 
 // A roomy payload must accept a bracket without changing its datums.
 payload = ["bounds", [[-70,-60, 0],[70, 60, 20]],
            "mount_z", 50,
            "mount_holes", [[-60,-50],[60,-50],[-60, 50],[60, 50]],
            "radius", 3];
-u       = wago_chassis_mounts([["placement", "under",
-                                "pos", [0, 0]]],
+u       = wago_chassis_mounts([plist_merge(rear_wago_mount_plist, ["placement", "under",
+                                                                   "pos", [0, 0]])],
                               payload,
                               [],
                               6);
 assert(plist_get("placement", u[0]) == "under");
 assert(plist_get("pos", u[0]) == [0, 0, 6]);
 low     = plist_merge(payload,["mount_z", 10]);
-a       = wago_chassis_mounts([[],[]], low,[], 6);
+a       = wago_chassis_mounts([rear_wago_mount_plist, rear_wago_mount_plist],
+                              low,
+                              [],
+                              6);
 assert(plist_get("placement", a[0]) == "after");
 assert(plist_get("bounds", a[1])[1][1] <= plist_get("bounds", a[0])[0][1]);
 
 // Adding mounts must preserve every existing mechanical placement.
 base    = rear_chassis_layout(equipment=[], wago_mounts=[]);
 changed = rear_chassis_layout(equipment=[],
-                              wago_mounts=[["placement", "after",
-                                            "rotation", 90]]);
+                              wago_mounts=[plist_merge(rear_wago_mount_plist, ["placement", "after",
+                                                                               "rotation", 90])]);
 for (key=["motor_pos","motor_rotation","panels","power_case","bulkhead_1_y","bulkhead_2_y","maintenance_y"]) {
   assert(plist_get(key, base) == plist_get(key, changed),
          str("Moved existing datum: ", key));
@@ -51,8 +55,10 @@ assert(plist_get("min_y", changed) < plist_get("min_y", base));
 assert(plist_get("max_y", changed) == plist_get("max_y", base));
 
 lid     = plist_merge(plist_get("lid", multi_lipo_packs_case),
-                      ["wago_mounts",[["pos",[-54, 0]],["pos", [54, 0],
-                                                        "rotation", 180]]]);
+                      ["wago_mounts",[["bracket", wago_bracket_plist,
+                                       "pos", [-54, 0]],["bracket", wago_bracket_plist,
+                                                         "pos", [54, 0],
+                                                         "rotation", 180]]]);
 lpl     = plist_merge(multi_lipo_packs_case,["lid", lid]);
 lprops  = multi_lipo_pack_lid_props(lpl);
 assert(len(multi_lipo_pack_lid_wago_mounts(lpl, lprops)) == 2);

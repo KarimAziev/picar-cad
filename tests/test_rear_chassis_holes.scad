@@ -43,10 +43,11 @@ for (panels = [[], rear_panel_specs],
 // Wago canonical centers are centered on the bracket before assembly rotation.
 for (angle = [0, 90, 37]) {
   layout = rear_chassis_layout(equipment=[],
-                               wago_mounts=[["rotation", angle]]);
+                               wago_mounts=[plist_merge(rear_wago_mount_plist,
+                                                        ["rotation", angle])]);
   holes = rear_chassis_mount_holes(layout);
   mount = plist_get("wago_mounts", layout)[0];
-  props = wago_bracket_props([]);
+  props = wago_bracket_props(wago_bracket_plist);
   size = plist_get("size", props);
   pos = plist_get("pos", mount);
   for (p = plist_get("mount_holes", props)) {
@@ -63,10 +64,11 @@ for (angle = [0, 90, 37]) {
 layout = rear_chassis_layout(panels=[],
                              equipment=[["kind", "perf_board",
                                          "rotation", 90,
-                                         "component", ["size", [16, 20, 1.6],
-                                                       "bolt_spacing", [10, 14],
-                                                       "bolt_idxes", [[0, 1]],
-                                                       "slot_bore_d", 8]]]);
+                                         "component", plist_merge(perfboard_default_plist,
+                                                                  ["size", [16, 20, 1.6],
+                                                                   "bolt_spacing", [10, 14],
+                                                                   "bolt_idxes", [[0, 1]],
+                                                                   "slot_bore_d", 8])]]);
 item = plist_get("equipment", layout)[0];
 pos = plist_get("pos", item);
 assert(contains_point(rear_chassis_mount_holes(layout),

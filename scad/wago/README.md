@@ -1,7 +1,7 @@
 # Wago 221 mounting bracket
 
 `wago_bracket.scad` is a reusable cradle for the measured five-conductor connector
-in `scad/placeholders/wago/wago_221.scad`. The defaults use **36.5 × 21.1 × 9.8 mm**
+in `scad/placeholders/wago/wago_221.scad`. The defaults use **36.0 × 20.2 × 9.8 mm**
 for the connector body. Wire-hole and lever details remain visual approximations;
 they do not determine the cradle cavity.
 
@@ -34,12 +34,14 @@ make build/export/3mf/wago_bracket_printable.3mf
 ## Component interface
 
 ```scad
+include <scad/parameters.scad>
+use <scad/lib/plist.scad>
 use <scad/wago/wago_bracket.scad>
 
 wago_bracket(
-  pl=["clearance", 0.25,
-      "mount_side", "rear",
-      "clip_overlap", 0.5],
+  pl=plist_merge(wago_bracket_plist, ["clearance", 0.25,
+  "mount_side", "rear",
+  "clip_overlap", 0.5]),
   anchor=[0, 0, 1],
   show_wago=true,
   show_bolts=true);
@@ -50,7 +52,7 @@ than `include`, when importing the component's modules without its demo geometry
 
 | Property         |       Default | Meaning                                                   |
 | ---------------- | ------------: | --------------------------------------------------------- |
-| `wago`           |          `[]` | Hardware plist; shared measured defaults when omitted     |
+| `wago`           | `wago_plist` | Complete hardware preset from `scad/parameters.scad` |
 | `clearance`      |       0.25 mm | Additional cavity clearance on each X/Y side              |
 | `top_clearance`  |       0.25 mm | Space between housing top and lip underside               |
 | `base_t`         |        2.4 mm | Flat floor and mounting-ear thickness                     |
@@ -66,9 +68,9 @@ than `include`, when importing the component's modules without its demo geometry
 | `mount_side`     |      `"rear"` | `"rear"` or `"sides"`; rear keeps the footprint compact   |
 | `color`          | `"SlateGray"` | Preview color                                             |
 
-Default rear-ear envelope: **40.2 × 34.8 × 13.25 mm**. Its mounting-hole centers
-are `[5, 29.8]` and `[35.2, 29.8]` in canonical coordinates, a **30.2 mm** pitch.
-The side-ear envelope is **60.2 × 24.8 × 13.25 mm**.
+Default rear-ear envelope: **39.7 × 33.9 × 13.25 mm**. Its mounting-hole centers
+are `[5, 28.9]` and `[34.7, 28.9]` in canonical coordinates, a **29.7 mm** pitch.
+The side-ear envelope is **59.7 × 23.9 × 13.25 mm**.
 
 The wire face points toward **−Y**. The default `[1,1,1]` anchor places the full
 printed envelope in positive X/Y/Z. `[0,0,1]` centers the footprint, with its
@@ -85,9 +87,9 @@ For another connector, supply its measured width explicitly:
 
 ```scad
 // 22.7 is an illustrative value: replace it with your measurement.
-wago_bracket(pl=["wago", ["n", 3,
-                          "conductor_size", [6.9, 21.1, 9.8],
-                          "total_w", 22.7]]);
+wago_bracket(pl=plist_merge(wago_bracket_plist, ["wago", plist_merge(wago_plist, ["n", 3,
+  "conductor_size", [6.9, 21.1, 9.8],
+  "total_w", 22.7])]));
 ```
 
 The optional placeholder detail keys are `hole_size_xz`, `lid_l`, `lid_t`, and
@@ -104,9 +106,11 @@ Configure `rear_wago_mounts` in
 assemblies keep their current geometry until mounts are enabled.
 
 ```scad
+include <scad/suspension/rear_chassis/rear_chassis_params.scad>
+
 rear_wago_mounts = [
-  ["placement", "auto", "rotation", 270],
-  ["placement", "after", "rotation", 180]
+  plist_merge(rear_wago_mount_plist, ["placement", "auto", "rotation", 270]),
+  plist_merge(rear_wago_mount_plist, ["placement", "after", "rotation", 180])
 ];
 ```
 
@@ -146,8 +150,8 @@ Put a list under `lid.wago_mounts` in the case plist:
 
 ```scad
 lid_spec = plist_merge(plist_get("lid", multi_lipo_packs_case),
-  ["wago_mounts", [["pos", [-54, 0]],
-                   ["pos", [54, 0], "rotation", 180]]]);
+  ["wago_mounts", [["bracket", wago_bracket_plist, "pos", [-54, 0]],
+                   ["bracket", wago_bracket_plist, "pos", [54, 0], "rotation", 180]]]);
 case_spec = plist_merge(multi_lipo_packs_case, ["lid", lid_spec]);
 
 multi_lipo_pack_lid(case_spec,

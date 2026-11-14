@@ -28,7 +28,8 @@ use <generic_usb_plug.scad>
   **Returns:** Oriented `[x, y, z]` body dimensions, excluding an inserted plug.
   Local width is across the opening on X; depth follows insertion along +Y.
  */
-function usb_socket_size(plist=[], usb_plist=[], orientation="wlh") =
+function usb_socket_size(plist, usb_plist, orientation="wlh") =
+  assert(plist_is(plist) && len(plist) > 0, "Supply a hardware specification")
   let (shell = plist_get("plug_shell_size", usb_plug_params(usb_plist)),
        size = plist_get("size", plist,
                         [shell[0] + 0.5, shell[1] + 2, shell[2] + 3]))
@@ -59,8 +60,10 @@ module usb_socket(plist,
                   anchor=[0, 1, 1],
                   show_usb_plug=false,
                   rotate_z_180=false) {
-  plist = with_default(plist, []);
-  usb_params = usb_plug_params(with_default(usb_plist, []));
+  assert(plist_is(plist) && len(plist) > 0, "Supply a socket specification");
+  assert(plist_is(usb_plist) && len(usb_plist) > 0,
+         "Supply a plug specification");
+  usb_params = usb_plug_params(usb_plist);
 
   plug_shell_size = plist_get("plug_shell_size", usb_params);
   plug_shell_round_axis = plist_get("plug_shell_round_axis", usb_params);
@@ -71,7 +74,7 @@ module usb_socket(plist,
   corner_r = plist_get("corner_r", plist);
   round_axis = plist_get("round_axis", plist, "z");
 
-  size = usb_socket_size(plist, with_default(usb_plist, []));
+  size = usb_socket_size(plist, usb_plist);
 
   color = plist_get("color", plist, metallic_silver_4);
 

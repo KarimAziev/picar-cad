@@ -18,13 +18,13 @@ module atm_fuse_holder_cap(size=[atm_fuse_holder_cap_top_l,
                                  atm_fuse_holder_cap_thickness,
                                  atm_fuse_holder_cap_h,
                                  atm_fuse_holder_cap_bottom_l],
-                           rib,
+                           rib=plist_get("rib", plist_get("cap", atm_fuse_default_plist)),
                            round_side="top",
                            corner_rad=2,
                            hole_size,
                            color=matte_black_2) {
 
-  rib = with_default(rib, []);
+  assert(plist_is(rib) && len(rib) > 0, "Supply a cap-rib specification");
 
   rib_colr = plist_get("color", rib, matte_black);
   rib_thickness = plist_get("thickness",
@@ -78,21 +78,16 @@ module atm_fuse_holder_cap(size=[atm_fuse_holder_cap_top_l,
   }
 }
 
-module atm_fuse_holder_cap_from_plist(plist) {
-  plist = with_default(plist, []);
+module atm_fuse_holder_cap_from_plist(plist=plist_get("cap", atm_fuse_default_plist)) {
+  assert(plist_is(plist) && len(plist) > 0,
+         "Supply a fuse-holder cap specification");
   size = plist_get("size",
                    plist,
                    [atm_fuse_holder_cap_top_l,
                     atm_fuse_holder_cap_thickness,
                     atm_fuse_holder_cap_h,
                     atm_fuse_holder_cap_bottom_l]);
-  rib = plist_get("rib",
-                  plist,
-                  ["h", atm_fuse_holder_cap_rib_h,
-                   "l", atm_fuse_holder_cap_rib_l,
-                   "n", atm_fuse_holder_cap_rib_n,
-                   "thickness", atm_fuse_holder_cap_rib_thickness,
-                   "distance_from_top", atm_fuse_holder_cap_rib_distance]);
+  rib = plist_get("rib", plist);
   round_side = plist_get("round_side", plist, "top");
   corner_rad = plist_get("corner_rad", plist, 2);
   cap_hole_size = plist_get("hole_size", plist);

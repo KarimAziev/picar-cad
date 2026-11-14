@@ -44,19 +44,6 @@ function _ina_power_positions(size, pad) =
        y = size[1] / 2 - (l + d) / 2 - _ina_get("y_offset", pad, 0))
   d > 0 ? [[-x, y, 0], [x, y, 0]] : [];
 
-function _ina_terminal(pl) =
-  plist_merge(["thickness", 7.6,
-               "base_h", 6.8,
-               "top_l", 5.5,
-               "top_h", 3.2,
-               "contacts_n", 2,
-               "contact_w", 3.5,
-               "contact_h", 4.47,
-               "pitch", 4.5,
-               "colr", medium_blue_2,
-               "pin_h", 0],
-              _ina_defined(pl));
-
 module _ina_texts(texts, style) {
   for (spec = with_default(texts, [])) {
     text_from_plist(plist=plist_merge(_ina_defined(style),
@@ -228,7 +215,7 @@ function ina_current_sensor_props(plist=ina_plist) =
   let (pin = _ina_get("pin", plist, []),
        header = _ina_get("header", pin, []),
        terminal = _ina_get("screw_terminal", plist, []),
-       terminal_pl = _ina_terminal(terminal),
+       terminal_pl = terminal,
        header_enabled = len(header) > 0 && _ina_get("cols", pin, 0) > 0,
        header_size = header_enabled
                      ? pin_header_size(header_width=_ina_get("header_width", header, 2.45),
@@ -253,7 +240,9 @@ function ina_current_sensor_props(plist=ina_plist) =
    "bolt_spacing", bolt_spacing,
    "bolt_d", bolt_d,
    "mounting_y", bolt_spacing[1] == 0
-                 ? size[1] / 2 - bolt_d / 2 - _ina_get("mount_hole_dist", plist, 0)
+                 ? size[1] / 2 - bolt_d / 2 - _ina_get("mount_hole_dist",
+                                                       plist,
+                                                       0)
                  : 0,
    "bottom_h", bottom_h,
    "standoff_h", standoff[0],
@@ -264,8 +253,10 @@ function ina_current_sensor_props(plist=ina_plist) =
                     ? [screw_terminal_width_from_plist(terminal_pl),
                        plist_get("thickness", terminal_pl)]
                     : [0, 0],
-   "terminal_pos", [0, size[1] / 2 - plist_get("thickness", terminal_pl) / 2
-                       - _ina_get("y_offset", terminal, 0), size[2]],
+   "terminal_pos", len(terminal) > 0
+                   ? [0, size[1] / 2 - plist_get("thickness", terminal_pl) / 2
+                         - _ina_get("y_offset", terminal, 0), size[2]]
+                   : undef,
    "populated_h", max(pin_h, size[2] + max(chip_h, terminal_h))];
 
 /**
@@ -366,7 +357,7 @@ module ina_current_sensor(plist=ina_plist,
   header = _ina_get("header", pin, []);
   power_pad = _ina_get("power_pad", plist, []);
   terminal = _ina_get("screw_terminal", plist, []);
-  terminal_pl = _ina_terminal(terminal);
+  terminal_pl = terminal;
   style = _ina_get("text_style", plist, []);
   mounting_pads = _ina_get("pad_hole_spec", plist, []);
   mounting_y = plist_get("mounting_y", props);

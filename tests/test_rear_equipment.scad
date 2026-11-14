@@ -31,9 +31,12 @@ module check_equipment(specs,
            str("Equipment changed the fixed chassis/payload: ", key));
   }
   parts = plist_get("equipment", layout);
-  assert(len(parts) == sum([for (s = specs) plist_get("count", s, 1)]));
+  expanded = [for (s = specs) each repeat(s, plist_get("count", s, 1))];
+  assert(len(parts) == len(expanded));
   for (i = [0:1:len(parts) - 1]) {
     p = parts[i];
+    assert(plist_get("component", p) == plist_get("component", expanded[i]),
+           "Equipment must retain the selected component preset");
     b = plist_get("bounds", p);
     zone = [for (z = plist_get("equipment_zones", layout))
       if (plist_get("name", z) == plist_get("zone", p))
@@ -52,19 +55,52 @@ module check_equipment(specs,
 }
 check_equipment(rear_equipment_specs);
 
+// Upright display labels contribute their rendered height to the envelope.
+plain_meter = deck_component_props("voltmeter",
+                                   plist_merge(voltmeter_default_spec, ["text", undef]));
+plain_meter_h = plist_get("size", plain_meter)[2];
+default_meter = deck_component_props("voltmeter", voltmeter_default_spec);
+assert(abs(plist_get("size", default_meter)[2] - plain_meter_h - 0.1) < 0.000001);
+for (override = [["text", ""], ["hide_display", true]]) {
+  hidden_label = deck_component_props("voltmeter",
+                                      plist_merge(voltmeter_default_spec, override));
+  assert(plist_get("size", hidden_label)[2] == plain_meter_h);
+}
+for (translation_z = [0, 0.2]) {
+  raised_meter = deck_component_props("voltmeter",
+                                      plist_merge(voltmeter_default_spec,
+                                                  ["text_props", plist_merge(plist_get("text_props", voltmeter_default_spec),
+                                                                             ["height", 0.35,
+                                                                              "translation", [0, 0, translation_z]])]));
+  assert(abs(plist_get("size", raised_meter)[2] - plain_meter_h
+             - 0.35 - 2 * translation_z) < 0.000001);
+}
+
 // Alternate electronics layouts use a deck without panels or a raised payload.
 variants = [rear_equipment_mixed, rear_equipment_meters,
             [["kind", "voltmeter",
+              "component", voltmeter_default_spec,
               "zone", "left",
-              "rotation", 37],
+              "rotation", 37,
+              "count", 1,
+              "position", undef],
              ["kind", "voltmeter",
+              "component", voltmeter_default_spec,
               "zone", "right",
-              "rotation", 270]],
+              "rotation", 270,
+              "count", 1,
+              "position", undef]],
             [["kind", "step_down",
+              "component", step_down_voltage_plist,
               "zone", "left",
+              "rotation", 0,
+              "count", 1,
               "position", [0.5, 1]]],
             [["kind", "perf_board",
+              "component", perfboard_default_plist,
               "zone", "auto",
+              "rotation", 0,
+              "position", undef,
               "count", 2]], []];
 
 for (specs = variants) {
@@ -85,5 +121,11 @@ assert(plist_get("size", custom)[1] >= 50);
 assert(plist_get("size", custom)[2] > 18);
 // No battery and no panels are valid, independently of the shared preset.
 plain = rear_chassis_layout(power_case=undef, panels=[], equipment=[]);
-assert(len(rear_equipment_layout([["kind", "voltmeter"]], plain)) == 1);
+single_meter = ["kind", "voltmeter",
+                "component", voltmeter_default_spec,
+                "zone", "auto",
+                "rotation", 0,
+                "position", undef,
+                "count", 1];
+assert(len(rear_equipment_layout([single_meter], plain)) == 1);
 echo("PASS: rear equipment counts, rotations, placement, obstacles and fixed dimensions");

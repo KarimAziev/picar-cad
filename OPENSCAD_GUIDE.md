@@ -211,6 +211,20 @@ translate(coords) {
 
 ### Property lists
 
+Every configurable component has a complete named preset in a parameter file.
+That preset lists its supported properties, including nested hardware and mounting
+specifications, so a reader can copy and customize it directly. Select the preset
+at the configuration site; use `plist_merge(preset, overrides)` there for a custom
+variant. For a nested override, merge the nested preset explicitly as well.
+
+Component-specific interfaces may default to that named preset. A generic
+`kind` dispatcher requires an explicit `component` plist. Do not use an empty or
+partial plist as an implicit declaration backed by scattered getter fallbacks,
+or merge hidden defaults into inputs inside a renderer or property resolver.
+Getter fallbacks remain useful when the complete preset already documents the
+contract. Empty collections that mean “no items” and merges that calculate
+derived output remain valid.
+
 Format plists so keys, values, and nested entries are readable, as with a formatted dictionary or JSON object. The following are fragments of a containing plist.
 
 Avoid:

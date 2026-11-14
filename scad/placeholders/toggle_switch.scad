@@ -210,6 +210,7 @@ module toggle_switch_from_plist(plist,
                                 orientation="wlh",
                                 size_prop="placeholder_size",
                                 show_crimp_terminal) {
+  assert(plist_is(plist) && len(plist) > 0, "Supply a hardware specification");
   size = plist_get(size_prop, plist, toggle_switch_size);
   thread_h = plist_get("thread_h", plist, toggle_switch_thread_h);
   thread_d = plist_get("thread_d", plist, toggle_switch_thread_d);

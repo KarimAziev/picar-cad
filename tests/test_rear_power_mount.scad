@@ -52,5 +52,5 @@ for (bore_d = [6, 10, 14]) {
   assert(abs(plist_get("join_w", layout)
              - max(front_chassis_required_width(), support_w)) < 0.000001);
   assert(plist_get("mount_holes", payload) == plist_get("mount_holes", reference));
-  assert(abs(plist_get("size", layout)[1] - 153.49) < 0.000001);
+  assert(abs(plist_get("size", layout)[1] - 152.99) < 0.000001);
 }

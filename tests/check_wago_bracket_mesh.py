@@ -13,7 +13,7 @@ from check_panel_stack_mesh import bounds, close, vertices
 
 ROOT = Path(__file__).resolve().parents[1]
 COMMON = f'''
-include <{ROOT}/scad/rc_params.scad>
+include <{ROOT}/scad/suspension/rear_chassis/rear_chassis_params.scad>
 use <{ROOT}/scad/lib/plist.scad>
 use <{ROOT}/scad/wago/wago_bracket.scad>
 use <{ROOT}/scad/wago/wago_mounts.scad>
@@ -48,15 +48,15 @@ def main() -> None:
                 assert mesh_volume(mesh) < 0.00001, log
 
         for pl in ('[]', '["mount_side","sides"]',
-                   '["wago",["n",3,"total_w",22.7]]',
+                   '["wago",plist_merge(wago_plist,["n",3,"total_w",22.7])]',
                    '["clearance",0.4,"base_t",3,"clip_overlap",0.35]',
                    '["top_clearance",0]'):
-            render(f'wago_bracket(pl={pl});')
+            render(f'wago_bracket(pl=plist_merge(wago_bracket_plist, {pl}));')
             assert connected_components(mesh) == 1
             close([bounds(vertices(mesh))[0][2]], [0])
             render(f'''intersection() {{
-  wago_bracket(pl={pl});
-  wago_bracket(pl={pl},show_bracket=false,show_wago=true,show_bolts=true);
+  wago_bracket(pl=plist_merge(wago_bracket_plist, {pl}));
+  wago_bracket(pl=plist_merge(wago_bracket_plist, {pl}),show_bracket=false,show_wago=true,show_bolts=true);
 }}''', empty=True)
         print("PASS five bracket variants are connected, base-down and clear of hardware", flush=True)
 
@@ -75,7 +75,7 @@ def main() -> None:
 
         for angle in (0, 90, 180, 37):
             render(f'''
-mounts=[["pos",[0,0],"rotation",{angle}]];
+mounts=[["bracket", wago_bracket_plist, "pos",[0,0],"rotation",{angle}]];
 intersection() {{
   difference() {{
     translate([-50,-50,0]) {{ cube([100,100,3]); }}
@@ -88,7 +88,7 @@ intersection() {{
         lid_common = '''
 lid=plist_merge(plist_get("lid",multi_lipo_packs_case),
  ["equipment",[],"fuse",undef,
-  "wago_mounts",[["pos",[-54,0]],["pos",[54,0],"rotation",180]]]);
+  "wago_mounts",[["bracket", wago_bracket_plist, "pos",[-54,0]],["bracket", wago_bracket_plist, "pos",[54,0],"rotation",180]]]);
 pl=plist_merge(multi_lipo_packs_case,["lid",lid]);
 '''
         render(lid_common + 'multi_lipo_pack_lid_printable(pl);')
@@ -105,7 +105,7 @@ pl=plist_merge(multi_lipo_packs_case,["lid",lid]);
         print("PASS lid remains printable with aligned Wago holes and mounting hardware", flush=True)
 
         render('''
-layout=rear_chassis_layout(equipment=[], wago_mounts=[["placement","after","rotation",90]]);
+layout=rear_chassis_layout(equipment=[], wago_mounts=[plist_merge(rear_wago_mount_plist, ["placement", "after", "rotation", 90])]);
 intersection() {
   rear_chassis_frame(layout=layout);
   wago_mounts(plist_get("wago_mounts",layout),show_bolts=true,parent_t=6);
@@ -113,7 +113,7 @@ intersection() {
         print("PASS chassis bracket hardware clears the extended mounting plate", flush=True)
 
         render('''
-layout=rear_chassis_layout(equipment=[], wago_mounts=[["placement","auto","rotation",270]]);
+layout=rear_chassis_layout(equipment=[], wago_mounts=[plist_merge(rear_wago_mount_plist, ["placement", "auto", "rotation", 270])]);
 intersection() {
   rear_chassis(layout=layout,anchor=undef,show_wago_brackets=false);
   wago_mounts(plist_get("wago_mounts",layout),parent_t=6);
@@ -121,12 +121,12 @@ intersection() {
         print("PASS automatic bracket placement clears the assembled rear hardware", flush=True)
 
         for bad in ('["clip_overlap",1.5]', '["clearance",-0.1]',
-                    '["ear_d",3]', '["wago",["n",6]]'):
-            render(f'wago_bracket(pl={bad});', reject=True)
+                    '["ear_d",3]', '["wago",plist_merge(wago_plist,["n",6])]'):
+            render(f'wago_bracket(pl=plist_merge(wago_bracket_plist, {bad}));', reject=True)
         render(lid_common.replace('[-54,0]', '[0,0]') + 'multi_lipo_pack_lid(pl);', reject=True)
         rounded = lid_common.replace('"wago_mounts",', '"corner_r",25,"wago_mounts",')
         render(rounded.replace('[-54,0]', '[-54,10]') + 'multi_lipo_pack_lid(pl);', reject=True)
-        render('''echo(wago_chassis_mounts([["placement","under"]],undef,[],3)); cube(1);''', reject=True)
+        render('''echo(wago_chassis_mounts([plist_merge(rear_wago_mount_plist, ["placement", "under"])],undef,[],3)); cube(1);''', reject=True)
         print("PASS invalid fits and colliding placements fail explicitly", flush=True)
 
 

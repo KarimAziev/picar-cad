@@ -31,14 +31,15 @@ nut_wall_probe_w      = 0.5;
 nut_wall_probe_offset = 0.5;
 layout                = rear_chassis_layout();
 mounts                = rear_bulkhead_mount_positions(layout,
-                                       rear_bulkhead_bolt_spacing_x,
-                                       rear_bulkhead_bolt_spacing_2[1]);
+                                                      rear_bulkhead_bolt_spacing_x,
+                                                      rear_bulkhead_bolt_spacing_2[1]);
 assert(len(mounts) == 8,
        "Rear bulkhead requires the eight shared front mounting datums");
-arm_position          = rear_axle_arm_origin(rear_housing_spec, rear_lower_arm_spec);
+arm_position          = rear_axle_arm_origin(rear_housing_spec,
+                                             rear_lower_arm_spec);
 hub_position          = rear_axle_hub_origin(rear_housing_spec,
-                                    rear_lower_arm_spec,
-                                    rear_hub_spec);
+                                             rear_lower_arm_spec,
+                                             rear_hub_spec);
 
 module housing(which) {
   rear_bulkhead(pl=rear_housing_spec,

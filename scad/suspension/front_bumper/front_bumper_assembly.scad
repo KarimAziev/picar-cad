@@ -15,44 +15,44 @@ use <common.scad>
 use <front_bumper_foam.scad>
 use <front_bumper_top_plate.scad>
 
-show_foam                   = true;
-show_top_plate              = false;
-show_bolts                  = false;
-foam_alpha                  = 1.0; // [0:0.1:1]
-foam_z_offset               = 0; // [-200:1:200]
-top_plate_z_offset          = 0; // [-200:1:200]
+show_foam                        = true;
+show_top_plate                   = false;
+show_bolts                       = false;
+foam_alpha                       = 1.0; // [0:0.1:1]
+foam_z_offset                    = 0; // [-200:1:200]
+top_plate_z_offset               = 0; // [-200:1:200]
 
 /* [Head] */
-show_head                   = false;
-tilt_servo_rotation         = 0; // [-90:90]
-pan_servo_rotation          = 0; // [-179:179]
+show_head                        = false;
+tilt_servo_rotation              = 0; // [-90:90]
+pan_servo_rotation               = 0; // [-179:179]
 
-show_frame_bolts            = false;
-show_frame_nuts             = false;
-show_camera                 = true;
-show_camera_bolts           = true;
-show_camera_nuts            = true;
+show_frame_bolts                 = false;
+show_frame_nuts                  = false;
+show_camera                      = true;
+show_camera_bolts                = true;
+show_camera_nuts                 = true;
 
-show_pan_servo              = true;
-show_pan_servo_horn         = true;
-show_pan_servo_bolts        = true;
-show_pan_servo_nuts         = true;
+show_pan_servo                   = true;
+show_pan_servo_horn              = true;
+show_pan_servo_bolts             = true;
+show_pan_servo_nuts              = true;
 
-show_tilt_servo             = true;
-show_tilt_servo_horn_screws = true;
-show_tilt_servo_horn_bolt   = true;
-head_servo_horn_cross_side_holes  = undef; // undef uses the horn plist; vertical, horizontal, or all.
-show_tilt_servo_horn        = true;
-show_tilt_servo_bolts       = true;
-show_tilt_servo_nuts        = true;
+show_tilt_servo                  = true;
+show_tilt_servo_horn_screws      = true;
+show_tilt_servo_horn_bolt        = true;
+head_servo_horn_cross_side_holes = undef; // undef uses the horn plist; vertical, horizontal, or all.
+show_tilt_servo_horn             = true;
+show_tilt_servo_bolts            = true;
+show_tilt_servo_nuts             = true;
 
-show_ir_case                = true;
-show_ir_case_bolts          = true;
-show_ir_case_nuts           = true;
-show_ir_led                 = true;
-show_ir_case_rail           = true;
-show_ir_case_rail_bolts     = true;
-show_ir_case_rail_nuts      = true;
+show_ir_case                     = true;
+show_ir_case_bolts               = true;
+show_ir_case_nuts                = true;
+show_ir_led                      = true;
+show_ir_case_rail                = true;
+show_ir_case_rail_bolts          = true;
+show_ir_case_rail_nuts           = true;
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -60,7 +60,7 @@ show_ir_case_rail_nuts      = true;
   ─────────────────────────────────────────────────────────────────────────────
   Assemble the top retainer and TPU body in a canonical positive reference box.
   **Parameters:**
-  - `pl`: Shared bumper dimension overrides.
+  - `pl`: Complete shared bumper configuration.
   - `anchor`: Anchor for the complete assembly, excluding hardware.
   - `show_top_plate`: Show the rigid retainer and posts.
   - `show_foam`: Show the TPU body.

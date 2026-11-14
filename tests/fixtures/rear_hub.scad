@@ -9,10 +9,10 @@ use <../../scad/lib/plist.scad>
 use <../../scad/lib/transforms.scad>
 use <../../scad/suspension/rear_axle/rear_hub.scad>
 
-part = "hub";
+part   = "hub";
 anchor = [1, 1, 1];
-pl = rear_hub_spec;
-eps = 0.05;
+pl     = rear_hub_spec;
+eps    = 0.05;
 
 module hub() {
   rear_hub(pl, anchor=anchor);

@@ -81,11 +81,11 @@ assert(close(_head_neck_pan_front([[3, 4, 0]], [360, 720]), 5));
 // Exact cylinder-section radius of a fully revolved rectangular envelope.
 orbit_box    = _head_neck_box([10, -5, -2], [20, 5, 2]);
 orbit_reach  = _head_neck_tilt_box_front(orbit_box,
-                                        [8, 9],
-                                        [-180, 180],
-                                        [-180, 180],
-                                        [0, 0, 0],
-                                        [0, 0, 0]);
+                                         [8, 9],
+                                         [-180, 180],
+                                         [-180, 180],
+                                         [0, 0, 0],
+                                         [0, 0, 0]);
 assert(close(orbit_reach, sqrt(20 * 20 + 5 * 5 + 2 * 2 - 8 * 8)));
 
 // Endpoint poses, fractional travel limits and slab crossings must all fit.

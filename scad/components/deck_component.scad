@@ -11,7 +11,7 @@ use <../placeholders/step-down-voltage-d24vxf5.scad>
 use <../placeholders/voltmeter.scad>
 use <step_down_enclosure/step_down_voltage_enclosure.scad>
 
-function _deck_component_props(kind, pl=[]) =
+function _deck_component_props(kind, pl) =
   kind == "voltmeter" ? voltmeter_mount_props(pl) :
   kind == "step_down" ? step_down_mount_props(pl) :
   kind == "step_down_enclosure" ? step_down_enclosure_props(pl) :
@@ -26,12 +26,15 @@ function _deck_component_props(kind, pl=[]) =
   **Parameters:**
   - `kind`: voltmeter | step_down | step_down_enclosure | perf_board.
   - `pl`: Hardware-specific plist, passed unchanged to its mounting interface.
-    Perfboards require the explicit mounting values from perfboard_default_plist.
+    Use voltmeter_default_spec, step_down_voltage_plist,
+    step_down_enclosure_plist, or perfboard_default_plist from parameters.scad.
   **Returns:** Component props including `size`, centered on XY above Z=0.
   Add future types here and in deck_component; placement needs no type branches.
  */
 // Include underside screw heads even when the hardware's PCB ears are smaller.
-function deck_component_props(kind, pl=[]) =
+function deck_component_props(kind, pl) =
+  assert(plist_is(pl) && len(pl) > 0,
+         "Deck component requires a complete hardware preset in component")
   let (p = _deck_component_props(kind, pl),
        s = plist_get("size", p),
        pitch = plist_get("bolt_spacing", p),
@@ -58,7 +61,7 @@ function deck_component_props(kind, pl=[]) =
   - `show_hardware`: Display component and its mounting hardware in solid mode.
  */
 module deck_component(kind,
-                      pl=[],
+                      pl,
                       parent_t=3,
                       anchor=[0, 0, 1],
                       slot_mode=false,

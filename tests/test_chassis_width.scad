@@ -16,7 +16,7 @@ echo("PASS: front/rear common width and wider hardware requirements");
 // Front hardware sets the width while the battery case overhangs its supports.
 assert(abs(width - front_chassis_required_width()) < 0.000001);
 assert(width < plist_get("size", plist_get("power_case", rear))[0]);
-assert(abs(plist_get("size", rear)[1] - 153.49) < 0.000001);
+assert(abs(plist_get("size", rear)[1] - 152.99) < 0.000001);
 assert(front_rpi_bounds[1][0] > width / 2);
 assert(front_rpi_mount_bounds[1][0] < width / 2);
 

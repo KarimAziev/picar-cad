@@ -11,19 +11,19 @@ use <../scad/lipo_pack_case/multi_lipo_pack_case.scad>
 use <../scad/lipo_pack_case/multi_lipo_pack_lid.scad>
 use <../scad/placeholders/perfboard.scad>
 
-minimal = ["size", [20, 80, 1.6],
-           "bolt_spacing", [16, 76]];
-p       = perfboard_props(minimal);
+board_spec = perfboard_default_plist;
+p          = perfboard_props(board_spec);
 assert([plist_get("cols", p), plist_get("rows", p), plist_get("bus_pad_cols", p)]
        == [6, 28, 4]);
-custom  = perfboard_props(plist_merge(minimal,
+custom     = perfboard_props(plist_merge(board_spec,
                                       ["rows", 0,
                                        "cols", 3,
                                        "bus_pad_cols", 0]));
 assert(plist_get("rows", custom) == 0 && plist_get("cols", custom) == 3
        && plist_get("bus_pad_cols", custom) == 0);
-wide    = perfboard_props(["size", [30, 100, 1.6],
-                           "bolt_spacing", [26, 96]]);
+wide       = perfboard_props(plist_merge(board_spec,
+                                      ["size", [30, 100, 1.6],
+                                       "bolt_spacing", [26, 96]]));
 assert(plist_get("cols", wide) > plist_get("cols", p)
        && plist_get("rows", wide) > plist_get("rows", p)
        && plist_get("bus_pad_cols", wide) > plist_get("bus_pad_cols", p));
@@ -31,7 +31,7 @@ assert(perfboard_bolt_positions(p, [[1, 0], [1, 1]]) == [[8, -38], [8, 38]]);
 assert(perfboard_bolt_positions(p, []) == []);
 assert(len(perfboard_bolt_positions(p)) == 4);
 
-spec    = plist_get("lid", standalone_lipo_case);
+spec       = plist_get("lid", standalone_lipo_case);
 for (orientation = ["wlh", "lwh"], turn = [0, 180]) {
   pl = plist_merge(standalone_lipo_case,
                    ["orientation", orientation,

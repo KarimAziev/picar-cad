@@ -13,6 +13,7 @@
 
 include <../colors.scad>
 include <../parameters.scad>
+include <presets.scad>
 
 use <../lib/plist.scad>
 use <../lib/shapes2d.scad>
@@ -237,7 +238,7 @@ module xt_90_slot(spec, thickness=parent_thickness, center=false) {
   }
 }
 
-module xt90e_m_from_plist(plist,
+module xt90e_m_from_plist(plist=xt90e_m_plist,
                           standup=false,
                           show_bolt=true,
                           bolt_visible_h=4,
@@ -245,7 +246,7 @@ module xt90e_m_from_plist(plist,
                           echo_bolts_info=false,
                           show_nut=true,
                           center=true) {
-  plist = with_default(plist,[]);
+  assert(plist_is(plist) && len(plist) > 0, "Supply a hardware specification");
   shell_size = plist_get("shell_size", plist, xt90e_size);
   mounting_panel_size = plist_get("placeholder_size",
                                   plist,
@@ -341,73 +342,4 @@ module xt_90_slot_or_placeholder(spec,
   }
 }
 
-// xt90e_m_from_plist(plist=["type", "custom",
-//                           "placeholder", "xt90e_m",
-//                           "placeholder_size", xt90e_mounting_panel_size,
-//                           "slot_size", xt_90_size,
-//                           "shell_size", xt90e_size,
-//                           "mounting_panel_size", xt90e_mounting_panel_size,
-//                           "bolt_spacing", xt_90_bolt_spacing,
-//                           "align", 1,
-//                           "gap_before", 5,
-//                           "mount_spacing", xt90e_mount_spacing,
-//                           "mount_dia", xt90e_mount_dia,
-//                           "mount_bore_dia", xt90e_mount_cbore_dia,
-//                           "mount_bore_h", xt90e_mount_cbore_h,
-//                           "r_factor", 0.3,
-//                           "shell_r_factor", 0.5,
-//                           "contact_d", xt90e_contact_dia,
-//                           "contact_h", xt90e_contact_h,
-//                           "contact_wall_h", xt90e_contact_wall_h,
-//                           "contact_base_h", xt90e_contact_base_h,
-//                           "contact_thickness", xt90e_contact_thickness,
-//                           "pin_color", xt90e_pin_color,
-//                           "pin_spacing", xt90e_pin_spacing,
-//                           "pin_dia", xt90e_pin_dia,
-//                           "pin_length", xt90e_pin_length,
-//                           "pin_thickness", xt90e_pin_thickness,
-//                           "shell_color", xt90e_shell_color,
-//                           "bolt_head_type", "pan",
-//                           "round_side", "bottom",
-//                           "gnd_wiring_color", matte_black,
-//                           "gnd_wiring", [[0, 0, 40]],
-//                           "vcc_wiring", [[0, 0, 40]],
-//                           "vcc_wiring_color", red_1],
-//                    standup=false,
-//                    bolt_visible_h=10,
-//                    center=false,
-//                    bolt_through_h=5);
-
-// xt_90_slot(["type", "custom",
-//             "placeholder", "xt90e_m",
-//             "placeholder_size", xt90e_mounting_panel_size,
-//             "slot_size", xt_90_size,
-//             "shell_size", xt90e_size,
-//             "mounting_panel_size", xt90e_mounting_panel_size,
-//             "bolt_spacing", xt_90_bolt_spacing,
-//             "align", 1,
-//             "gap_before", 5,
-//             "mount_spacing", xt90e_mount_spacing,
-//             "mount_dia", xt90e_mount_dia,
-//             "mount_bore_dia", xt90e_mount_cbore_dia,
-//             "mount_bore_h", xt90e_mount_cbore_h,
-//             "r_factor", 0.3,
-//             "shell_r_factor", 0.5,
-//             "contact_d", xt90e_contact_dia,
-//             "contact_h", xt90e_contact_h,
-//             "contact_wall_h", xt90e_contact_wall_h,
-//             "contact_base_h", xt90e_contact_base_h,
-//             "contact_thickness", xt90e_contact_thickness,
-//             "pin_color", xt90e_pin_color,
-//             "pin_spacing", xt90e_pin_spacing,
-//             "pin_dia", xt90e_pin_dia,
-//             "pin_length", xt90e_pin_length,
-//             "pin_thickness", xt90e_pin_thickness,
-//             "shell_color", xt90e_shell_color,
-//             "bolt_head_type", "pan",
-//             "round_side", "bottom",
-//             "gnd_wiring_color", matte_black,
-//             "gnd_wiring", [[0, 0, 40]],
-//             "vcc_wiring", [[0, 0, 40]],
-//             "vcc_wiring_color", red_1]);
-xt90e();
+xt90e_m_from_plist(bolt_visible_h=parent_thickness + 4);

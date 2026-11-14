@@ -42,7 +42,7 @@ assembly rotations before interpreting PCB directions.
 | Key | Default | Meaning |
 | --- | --- | --- |
 | `kind` | Required | `voltmeter`, `step_down`, `step_down_enclosure`, or `perf_board` |
-| `component` | `[]` | The component's hardware or enclosure plist |
+| `component` | Required | Complete hardware or enclosure preset from `scad/parameters.scad` |
 | `zone` | `"auto"` | `"left"`, `"right"`, or first available zone |
 | `rotation` | `0` | Any Z rotation in degrees; 90/270 exchange width and length |
 | `count` | `1` | Positive integer; repeated copies are placed independently |
@@ -62,11 +62,26 @@ Non-right-angle rotations use conservative axis-aligned envelopes.
 
 ```scad
 rear_equipment_specs = [
-  ["kind", "perf_board", "zone", "left", "rotation", 0],
-  ["kind", "step_down", "zone", "left", "rotation", 90,
-   "component", ["standoff_h", 8, "wire_d", 4]],
-  ["kind", "voltmeter", "zone", "right", "rotation", 90,
-   "component", ["text", "12.6"]]
+  ["kind", "perf_board",
+   "component", perfboard_default_plist,
+   "zone", "left",
+   "position", undef,
+   "rotation", 0,
+   "count", 1],
+  ["kind", "step_down",
+   "component", plist_merge(step_down_voltage_plist,
+                             ["standoff_h", 8,
+                              "wire_d", 4]),
+   "zone", "left",
+   "position", undef,
+   "rotation", 90,
+   "count", 1],
+  ["kind", "voltmeter",
+   "component", plist_merge(voltmeter_default_spec, ["text", "12.6"]),
+   "zone", "right",
+   "position", undef,
+   "rotation", 90,
+   "count", 1]
 ];
 ```
 
@@ -76,6 +91,12 @@ least the chassis corner radius. Fit includes mounting screw heads and actual
 standoff heights. A populated perf board can reserve additional height via
 `component_h`. Failed XY placement or height clearance produces an assertion
 identifying the entry, dimensions, zone and rotation.
+
+Each `component` names a complete preset: `voltmeter_default_spec`,
+`step_down_voltage_plist`, `step_down_enclosure_plist`, or
+`perfboard_default_plist`. Copy that declaration to define another hardware
+variant, or use `plist_merge(preset, overrides)` beside the equipment entry.
+For a nested hardware plist, merge that nested preset explicitly as well.
 
 ## Hardware and holes
 
@@ -138,7 +159,7 @@ placeholder. The black return is deferred; its adjacent passages are present.
 
 The holes are checked against the existing deck boundary, motor, panel,
 electronics and support columns. Invalid placements assert without enlarging
-the chassis. The default plate envelope remains 160.4 × 153.49 × 6 mm.
+the chassis. The default plate envelope remains 152.26 × 152.99 × 6 mm.
 
 The converter currently has 5 mm input-hole spacing; two 6.61 mm outer-diameter
 ring terminals cannot lie beside each other on the same PCB face. The red ring

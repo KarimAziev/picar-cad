@@ -103,10 +103,11 @@ function _rear_equipment_place(specs,
   i >= len(specs) ? placed :
   let (spec = specs[i],
        kind = plist_get("kind", spec),
-       component = kind == "perf_board"
-                   ? plist_merge(perfboard_default_plist, plist_get("component", spec, []))
-                   : plist_get("component", spec, []),
-       props = deck_component_props(kind, component),
+       component = plist_get("component", spec),
+       checked_component = assert(plist_is(component) && len(component) > 0,
+                                  "Rear equipment requires an explicit component preset")
+         component,
+       props = deck_component_props(kind, checked_component),
        base = plist_get("size", props),
        rotation = plist_get("rotation", spec, 0),
        side = plist_get("zone", spec, "auto"),
@@ -156,6 +157,8 @@ function _rear_equipment_place(specs,
   Place a list of electronics without changing the chassis or battery height.
   **Parameters:**
   - `specs`: Plists with kind, component, zone, rotation, count and position.
+    Component is a complete hardware preset from scad/parameters.scad; customize
+    it with plist_merge at the configuration site.
     Position is optional [0..1, 0..1] alignment within the selected zone; omitted
     positions use automatic first-fit placement. Rotation is degrees about Z.
   - `layout`: Existing rear layout, with motor, panels and battery supports.

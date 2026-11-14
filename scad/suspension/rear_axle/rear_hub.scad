@@ -319,8 +319,8 @@ module rear_hub(pl,
   assert(_rear_hub_value(pl, "link_narrow_w") > link_bore_d);
   assert(_rear_hub_value(pl, "link_ear_l")
          >= 2 * _rear_hub_value(pl, "link_edge_gap")
-            + len(links) * link_bore_d
-            + (len(links) - 1) * _rear_hub_value(pl, "link_holes_gap"));
+         + len(links) * link_bore_d
+         + (len(links) - 1) * _rear_hub_value(pl, "link_holes_gap"));
   assert(web_w > 0 && web_w <= bearing_l && web_d > 0);
   assert(chamfer > 0 && 2 * chamfer < s[0]);
   assert(socket_d - 2 * chamfer
@@ -398,22 +398,28 @@ module rear_hub(pl,
               rotate([0, 90, 0]) {
                 cylinder(d=barrel_d, h=bearing_ws[0], $fn=fn);
                 translate([0, 0, bearing_ws[0]]) {
-                  cylinder(d1=barrel_d, d2=outer_d,
-                           h=bearing_l - bearing_ws[0], $fn=fn);
+                  cylinder(d1=barrel_d,
+                           d2=outer_d,
+                           h=bearing_l - bearing_ws[0],
+                           $fn=fn);
                 }
               }
             }
             for (p = balls) {
               translate([0, p[1], p[2]]) {
                 rotate([0, 90, 0]) {
-                  cylinder(d1=socket_d - 2 * chamfer, d2=socket_d,
-                           h=chamfer, $fn=fn);
+                  cylinder(d1=socket_d - 2 * chamfer,
+                           d2=socket_d,
+                           h=chamfer,
+                           $fn=fn);
                   translate([0, 0, chamfer]) {
                     cylinder(d=socket_d, h=s[0] - 2 * chamfer, $fn=fn);
                   }
                   translate([0, 0, s[0] - chamfer]) {
-                    cylinder(d1=socket_d, d2=socket_d - 2 * chamfer,
-                             h=chamfer, $fn=fn);
+                    cylinder(d1=socket_d,
+                             d2=socket_d - 2 * chamfer,
+                             h=chamfer,
+                             $fn=fn);
                   }
                 }
               }
@@ -423,23 +429,23 @@ module rear_hub(pl,
               }
             }
             translate([_rear_hub_value(pl, "link_base_w"),
-                       axle[1] - link_l / 2, axle[2] + link_l]) {
+                       axle[1] - link_l / 2,
+                       axle[2] + link_l]) {
               mirror([1, 0, 0]) {
                 rotate([-90, 0, 0]) {
                   linear_extrude(height=link_l) {
-                    knuckle_arm_profile(
-                      w_base=_rear_hub_value(pl, "link_base_w"),
-                      w_narrow=_rear_hub_value(pl, "link_narrow_w"),
-                      l1=_rear_hub_arm_length(pl),
-                      l2=_rear_hub_value(pl, "link_connector_l"),
-                      angle=_rear_hub_arm_angle(pl),
-                      ear_len=_rear_hub_value(pl, "link_ear_l"),
-                      bolt_d=link_bore_d,
-                      bolt_edge_offset=_rear_hub_value(pl, "link_edge_gap"),
-                      holes_n=0,
-                      holes_gap=_rear_hub_value(pl, "link_holes_gap"),
-                      corner_r=_rear_hub_value(pl, "link_corner_r"),
-                      outer_bearing_seat_od=barrel_d);
+                    knuckle_arm_profile(w_base=_rear_hub_value(pl, "link_base_w"),
+                                        w_narrow=_rear_hub_value(pl, "link_narrow_w"),
+                                        l1=_rear_hub_arm_length(pl),
+                                        l2=_rear_hub_value(pl, "link_connector_l"),
+                                        angle=_rear_hub_arm_angle(pl),
+                                        ear_len=_rear_hub_value(pl, "link_ear_l"),
+                                        bolt_d=link_bore_d,
+                                        bolt_edge_offset=_rear_hub_value(pl, "link_edge_gap"),
+                                        holes_n=0,
+                                        holes_gap=_rear_hub_value(pl, "link_holes_gap"),
+                                        corner_r=_rear_hub_value(pl, "link_corner_r"),
+                                        outer_bearing_seat_od=barrel_d);
                   }
                 }
               }

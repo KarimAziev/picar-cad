@@ -14,8 +14,8 @@ use <../scad/placeholders/hsp_rear_drivetrain.scad>
 use <../scad/suspension/rc_wheels.scad>
 use <../scad/suspension/rear_axle/rear_axle_assembly.scad>
 use <../scad/suspension/rear_axle/rear_bulkhead.scad>
-use <../scad/suspension/rear_axle/rear_hub.scad>
 use <../scad/suspension/rear_axle/rear_camber_link.scad>
+use <../scad/suspension/rear_axle/rear_hub.scad>
 use <../scad/suspension/rear_axle/rear_lower_arm.scad>
 use <../scad/suspension/rear_suspension_assembly.scad>
 
@@ -97,7 +97,8 @@ link_points = rear_axle_camber_link_centers(rear_axle_settings,
                                             rear_hub_spec,
                                             rear_differential_spec,
                                             rear_tower_spec);
-link_fit = rear_camber_link_fit(link_points[0], link_points[1],
+link_fit = rear_camber_link_fit(link_points[0],
+                                link_points[1],
                                 plist_get("camber_link", rear_axle_settings));
 assert(abs(plist_get("length_error", link_fit)) < 0.05,
        "Nominal camber-arm reach must close the fixed-length link within 0.05 mm");

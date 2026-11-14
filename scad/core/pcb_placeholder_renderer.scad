@@ -157,7 +157,7 @@ module pcb_placeholder_renderer(plist,
                      anchor=[1, 1, 1]);
         } else if (type == "micro_sd_socket") {
           micro_sd_socket(size=reference_size,
-                          card=plist_get("card", plist, []),
+                          card=plist_get("card", plist, micro_sd_card_plist),
                           insertion=plist_get("insertion", plist, 10.75),
                           show_card=plist_get("show_card", plist, true),
                           anchor=[1, 1, 1]);

@@ -47,25 +47,8 @@ function _power_enclosure_rect_distance(pos, size, point) =
   norm([for (axis = [0, 1])
     max(0, abs(point[axis] - pos[axis]) - size[axis] / 2)]);
 
-function _power_enclosure_config(overrides) =
-  let (base = plist_merge(step_down_enclosure_plist, overrides),
-       groups = ["insert", "insert_mount", "mount", "fit", "lid", "wall_vents",
-                 "header_slot", "cable_tie", "parent_slots"],
-       merged = plist_merge(base, [for (key = groups)
-         each [key, plist_merge(plist_get(key, step_down_enclosure_plist, []),
-                                plist_get(key, overrides, []))]]),
-       lid = plist_get("lid", merged),
-       lid_defaults = plist_get("lid", step_down_enclosure_plist),
-       lid_override = plist_get("lid", overrides, []))
-  plist_merge(merged,
-              ["lid", plist_merge(lid,
-                                  [for (key = ["vents", "text_style"])
-                                    each [key, plist_merge(plist_get(key, lid_defaults, []),
-                                                           plist_get(key, lid_override, []))]])]);
-
-function _power_enclosure_text(spec, style, size, refs, lid) =
-  let (pl = plist_merge(style, spec),
-       at = plist_get("at", pl),
+function _power_enclosure_text(pl, size, refs, lid) =
+  let (at = plist_get("at", pl),
        xy = is_undef(at)
             ? enclosure_dimensions(plist_get("pos", pl, ["50%", "50%"]), size)
             : plist_get(at, refs),
@@ -104,9 +87,9 @@ function _power_enclosure_text_bounds(pl) =
    Resolve the two-board layout, shell, faces, fasteners and wiring interface.
 
    **Parameters:**
-   - `plist`: Overrides for step_down_enclosure_plist. Groups merge by key;
-     wall faces and their vents, lid vents and text styles merge independently.
-     Opening/text lists replace the corresponding list; [] clears it.
+   - `plist`: Complete step_down_enclosure_plist from parameters.scad. Compose
+     changes with plist_merge at the call site, including each nested group.
+     Opening/text lists are complete lists; [] clears them.
 
    `inner_size` accepts mm or percentages of the automatically padded board
    envelope. `board_pos` positions the board group within the remaining XY
@@ -128,8 +111,10 @@ function _power_enclosure_text_bounds(pl) =
    `size` includes the closed lid, raised labels and screw heads.
    Slot mode uses the same frame.
  */
-function step_down_enclosure_props(plist=[]) =
-  let (pl = _power_enclosure_config(plist),
+function step_down_enclosure_props(plist=step_down_enclosure_plist) =
+  assert(plist_is(plist) && len(plist) > 0,
+         "Enclosure requires a complete step_down_enclosure_plist")
+  let (pl = plist,
        regulator = plist_get("step_down_voltage", pl),
        sensor = plist_get("sensor_current", pl),
        rp = step_down_mount_props(regulator),
@@ -165,19 +150,13 @@ function step_down_enclosure_props(plist=[]) =
        automatic = [board_span[0] + 2 * (clear + end), board_span[1] + 2 * clear,
                     max(board_h + top, insert_depth + plist_get("floor", insert_mount))],
        inner = enclosure_dimensions(plist_get("inner_size", pl), automatic),
-       wall_defaults = plist_get("walls", step_down_enclosure_plist),
-       wall_overrides = plist_get("walls", plist, []),
        walls = [for (name = ["left", "right",
                              "rear", "front"])
-         let (w = plist_merge(plist_get(name, wall_defaults, []),
-                              plist_get(name, wall_overrides, [])),
-              v = plist_merge_all([plist_get("wall_vents", pl, []),
-                                   plist_get("vents", plist_get(name, wall_defaults, []), []),
-                                   plist_get("vents", plist_get(name, wall_overrides, []), [])]))
-           each [name, plist_merge(w, ["t", enclosure_dimension(plist_get("t", w,
-                                                                          plist_get("side_thickness", pl)),
-                                                                inner[member(name, ["left", "right"]) ? 0 : 1]),
-                                       "vents", v])]],
+         let (w = plist_get(name, plist_get("walls", pl)),
+              t = with_default(plist_get("t", w), plist_get("side_thickness", pl)))
+           each [name, plist_merge(w,
+                                   ["t", enclosure_dimension(t,
+                                                             inner[member(name, ["left", "right"]) ? 0 : 1])])]],
        ts = [for (name = ["left", "right",
                           "rear", "front"])
          plist_get("t", plist_get(name, walls))],
@@ -204,7 +183,8 @@ function step_down_enclosure_props(plist=[]) =
                                           : min(inner[0], inner[1]))]]),
        lid_t = plist_get("t", lid),
        lid_d = plist_get("hole_d", insert) + plist_get("bolt_clearance", insert_mount),
-       lid_bolt_l = plist_get("bolt_l", insert_mount, lid_t + plist_get("h", insert)),
+       lid_bolt_l = with_default(plist_get("bolt_l", insert_mount),
+                                 lid_t + plist_get("h", insert)),
        mount = plist_get("mount", pl),
        mount_d = plist_get("d", mount),
        mount_pitch = enclosure_dimensions(plist_get("spacing", mount), [inner[0], inner[1]]),
@@ -248,9 +228,11 @@ function step_down_enclosure_props(plist=[]) =
                                 ? [[regulator_pos[0] + rb[0] / 2 + gap / 2, regulator_pos[1], 0]] : []),
        header_pos = sensor_pos + rotZ(plist_get("header_pos", ip), 90),
        header_size = [plist_get("header_size", ip)[1], plist_get("header_size", ip)[0]],
-       terminal_pos = sensor_pos + rotZ(plist_get("terminal_pos", ip), 90),
+       terminal_pos = is_undef(plist_get("terminal_pos", ip))
+                      ? sensor_pos
+                      : sensor_pos + rotZ(plist_get("terminal_pos", ip), 90),
        terminal_footprints = concat([for (input = [true, false])
-         let (tp = step_down_terminal_props(plist_get(input ? "vin" : "vout", regulator, []), rb, input),
+         let (tp = step_down_terminal_props(plist_get(input ? "vin" : "vout", regulator), rb, input),
               pos = regulator_pos + plist_get("pos", tp))
          [[pos[0], pos[1]], plist_get("size", tp)]],
                                     min(plist_get("terminal_size", ip)) > 0
@@ -275,7 +257,7 @@ function step_down_enclosure_props(plist=[]) =
        lid_size = [body[0], body[1]],
        lid_refs = [for (key = plist_keys(refs)) each [key, plist_get(key, refs) + lid_size / 2]],
        texts = [for (spec = plist_get("texts", lid, []))
-         _power_enclosure_text(spec, plist_get("text_style", lid), lid_size, lid_refs,
+         _power_enclosure_text(spec, lid_size, lid_refs,
                                lid)],
        lid_h = plist_get("text_mode", lid) == "raised"
                ? max(concat([lid_t], [for (text = texts)
@@ -785,7 +767,7 @@ module _power_enclosure_fasteners(p, show_lid=true, exploded=0) {
    Render the enclosed power module or its chassis mounting cutouts.
 
    **Parameters:**
-   - `plist`: Enclosure overrides; see `step_down_enclosure_props`.
+   - `plist`: Complete enclosure preset; see `step_down_enclosure_props`.
    - `anchor`: Closed envelope including raised labels; default positive XYZ.
    - `orientation`: Logical axis order accepted by `with_orientation`.
    - `parent_t`: Chassis thickness below the enclosure's mounting surface.
@@ -803,7 +785,7 @@ module _power_enclosure_fasteners(p, show_lid=true, exploded=0) {
    The regulator's input is -X and its output is +X. The INA's terminal faces
    the regulator; its pin header faces +X. Mounting and slot modes share datums.
  */
-module step_down_voltage_enclosure(plist=[],
+module step_down_voltage_enclosure(plist=step_down_enclosure_plist,
                                    anchor=[1, 1, 1],
                                    orientation="wlh",
                                    parent_t=6,
@@ -835,7 +817,7 @@ module step_down_voltage_enclosure(plist=[],
     } else {
       if (show_enclosure) {
         color(plist_get("color", pl),
-              alpha=plist_get("color_alpha", pl, color_alpha)) {
+              alpha=with_default(plist_get("color_alpha", pl), color_alpha)) {
           _power_enclosure_base(p);
         }
       }
@@ -843,7 +825,7 @@ module step_down_voltage_enclosure(plist=[],
       if (show_lid) {
         translate([0, 0, plist_get("body_size", p)[2] + exploded]) {
           color(plist_get("lid_color", pl),
-                alpha=plist_get("lid_color_alpha", pl, lid_color_alpha)) {
+                alpha=with_default(plist_get("lid_color_alpha", pl), lid_color_alpha)) {
             _power_enclosure_lid(p);
           }
         }
@@ -873,7 +855,7 @@ module step_down_voltage_enclosure(plist=[],
    **Parameters:**
    - `part`: `"base"`, `"lid"`, or `"both"` for separated parts. Raised lids
      also accept `"lid_main"` and `"lid_text"` for individual panel exports.
-   - `plist`: Enclosure overrides accepted by `step_down_enclosure_props`.
+   - `plist`: Complete enclosure preset accepted by `step_down_enclosure_props`.
    - `gap`: Edge gap between printable parts along Y.
    - `text_panel_t`: Raised lid's outer panel thickness, excluding lettering;
      positive mm less than the lid thickness. Defaults to 1 mm.
@@ -884,7 +866,7 @@ module step_down_voltage_enclosure(plist=[],
    holes. The assembled lid thickness, openings and locating lip are preserved.
  */
 module step_down_enclosure_printable(part="both",
-                                     plist=[],
+                                     plist=step_down_enclosure_plist,
                                      gap=6,
                                      text_panel_t=1) {
   p = step_down_enclosure_props(plist);

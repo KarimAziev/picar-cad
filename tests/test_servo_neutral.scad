@@ -29,9 +29,9 @@ near(steering_servo_bellcrank_y(center=true),
 
 layout = rear_chassis_layout(min_width=suspension_chassis_width());
 dimensions = chassis_dimensions(layout=layout);
-near(plist_get("chassis_length", dimensions), 399.144, 0.001);
-near(plist_get("wheelbase", dimensions), 263.976, 0.001);
-near(plist_get("chassis_width", dimensions), 151.26);
+near(plist_get("chassis_length", dimensions), 398.921, 0.001);
+near(plist_get("wheelbase", dimensions), 263.966, 0.001);
+near(plist_get("chassis_width", dimensions), 152.26);
 
 origin = steering_servo_tie_rod_origin();
 rod_l = steering_servo_tie_rod_length();

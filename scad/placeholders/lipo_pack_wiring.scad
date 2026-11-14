@@ -58,8 +58,26 @@ function _lipo_top_solve(start,
        mid = (lo + upper) / 2,
        path = _lipo_top_path(start, end, s, d, mid, lane, count))
   n == 0 ? path : total_wire_length(path) > length
-                  ? _lipo_top_solve(start, end, s, d, length, lane, count, lo, mid, n - 1)
-                  : _lipo_top_solve(start, end, s, d, length, lane, count, mid, upper, n - 1);
+                  ? _lipo_top_solve(start,
+                                    end,
+                                    s,
+                                    d,
+                                    length,
+                                    lane,
+                                    count,
+                                    lo,
+                                    mid,
+                                    n - 1)
+                  : _lipo_top_solve(start,
+                                    end,
+                                    s,
+                                    d,
+                                    length,
+                                    lane,
+                                    count,
+                                    mid,
+                                    upper,
+                                    n - 1);
 
 /**
   ─────────────────────────────────────────────────────────────────────────────

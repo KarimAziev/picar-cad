@@ -63,11 +63,13 @@ function _lid_roof_contains(b, size, r) =
  */
 function lid_equipment_props(spec) =
   let (kind = plist_get("kind", spec),
-       pl = plist_get("component", spec, []),
+       pl = plist_get("component", spec),
        a = plist_get("rotation", spec, 0))
   assert(kind == "button" || kind == "wago" || kind == "wago_pair"
          || kind == "voltmeter",
          str("Unknown lid equipment: ", kind))
+  assert(plist_is(pl) && len(pl) > 0,
+         "Lid equipment requires an explicit component preset")
   assert(is_num(a), "Equipment rotation must be numeric")
   let (p = kind == "button" ? button_bracket_props(pl)
            : kind == "wago" ? wago_bracket_props(pl)
@@ -91,7 +93,7 @@ function _lid_equipment_cuts(p) =
   let (kind = plist_get("kind", p),
        props = plist_get("props", p),
        size = plist_get("size", props),
-       pl = plist_get("component", p, []),
+       pl = plist_get("component", p),
        holes = kind == "button" || kind == "wago_pair"
                ? plist_get("mount_holes", props)
                : kind == "wago" ? [for (xy = plist_get("mount_holes", props))
@@ -312,7 +314,7 @@ function lid_equipment_layout(specs, lid, obstacles=[]) =
 module lid_equipment(mounts, parent_t, slot_mode=false, show_hardware=true) {
   for (m = mounts) {
     kind = plist_get("kind", m);
-    pl = plist_get("component", m, []);
+    pl = plist_get("component", m);
     p = plist_get("props", m);
     translate(concat(plist_get("pos", m), [0])) {
       rotate([0, 0, plist_get("rotation", m, 0)]) {
@@ -378,7 +380,7 @@ function lid_voltmeter_headroom(specs, rails, side_t, roof_t) =
   assert(is_list(specs), "lid.voltmeters must be a list")
   max(concat([side_t], [for (s = specs)
     if (!is_undef(s) && plist_get("enabled", s, true))
-      let (pl = plist_get("component", s, []),
+      let (pl = plist_get("component", s),
            p = voltmeter_mount_props(pl),
            cut_h = _lid_voltmeter_cut_h(pl, p),
            edge = plist_get("edge_pad", s, 1.5),
@@ -406,7 +408,7 @@ function lid_voltmeter_headroom(specs, rails, side_t, roof_t) =
  */
 function lid_voltmeter_props(spec, lid) =
   is_undef(spec) || !plist_get("enabled", spec, true) ? ["enabled", false] :
-  let (input = plist_get("component", spec, []),
+  let (input = plist_get("component", spec),
        hardware = voltmeter_mount_props(input),
        rails = plist_get("rail_props", lid),
        axis = plist_get("axis", rails),

@@ -118,7 +118,7 @@ function normalize_j_leads(j_lead_plists) =
 
 module smd_chip_from_plist(plist,
                            center=true) {
-  plist = with_default(plist, []);
+  assert(plist_is(plist) && len(plist) > 0, "Supply a hardware specification");
   placeholder_size = plist_get("placeholder_size", plist, []);
   chip_color = plist_get("color", plist, black_1);
   chip_size = plist_get("chip_size", plist, []);

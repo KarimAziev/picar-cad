@@ -61,6 +61,7 @@ use <{ROOT}/scad/lib/functions.scad>
 use <{ROOT}/scad/motor_brackets/rc/gearbox_bracket.scad>
 use <{ROOT}/scad/panel_stack/panel_stack.scad>
 use <{ROOT}/scad/suspension/rear_chassis/rear_chassis_frame.scad>
+use <{ROOT}/scad/suspension/rear_suspension/rear_suspension_slots.scad>
 
 changed = false;
 side = "auto";
@@ -89,11 +90,8 @@ holes = concat(
       panel_stack_bolt_cbore_dia/2+0.5]],
   [for (x=[-1,1]) [x*rear_suspension_holder_bolt_spacing_x/2, 0,
                    rear_suspension_chassis_bolt_bore_d/2+0.5]],
-  [for (x=[-1,1]) [x*rear_bulkhead_bolt_spacing_1[0]/2,
-                   plist_get("bulkhead_1_y",layout), rear_suspension_chassis_bolt_bore_d/2+0.5]],
-  [for (x=[-1,1], y=[-1,1]) [x*rear_bulkhead_bolt_spacing_2[0]/2,
-      plist_get("bulkhead_2_y",layout)+y*rear_bulkhead_bolt_spacing_2[1]/2,
-      rear_suspension_chassis_bolt_bore_d/2+0.5]],
+  [for (p=rear_suspension_bulkhead_mount_positions(layout))
+     [p[0], p[1], rear_suspension_chassis_bolt_bore_d/2+0.5]],
   [[0, plist_get("maintenance_y",layout), rear_chassis_maintenance_hole_d/2+0.5]]);
 echo(size=size, shift=shift, holes=holes);
 rear_chassis_frame(anchor=anchor, layout=layout, front_joint=false,

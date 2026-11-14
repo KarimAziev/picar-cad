@@ -6,6 +6,7 @@
   */
 
 include <../../colors.scad>
+include <../presets.scad>
 
 use <../../lib/functions.scad>
 use <../../lib/plist.scad>
@@ -329,8 +330,8 @@ module smd_resistors_from_specs(specs=[[[2.0, 3.3, 2.5, 0.1, false],
   }
 }
 
-module smd_resistor_from_plist(plist, center=true) {
-  plist = with_default(plist, []);
+module smd_resistor_from_plist(plist=smd_resistor_plist, center=true) {
+  assert(plist_is(plist) && len(plist) > 0, "Supply a hardware specification");
   size = plist_get("placeholder_size", plist, [3.2, 1.4, 0.4]);
   x = size[0];
   y = size[1];

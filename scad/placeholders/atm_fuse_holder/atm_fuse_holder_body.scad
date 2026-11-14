@@ -29,12 +29,12 @@ module atm_fuse_holder_body(size=[atm_fuse_holder_body_bottom_l,
                                     "left_pts", [[25, 0, 0]],
                                     "right_pts", [[-25, 0, 0]]],
                             corner_rad,
-                            rib,
-                            cap_collar) {
+                            rib=plist_get("rib", plist_get("body", atm_fuse_default_plist)),
+                            cap_collar=plist_get("cap_collar", atm_fuse_default_plist)) {
 
-  wiring = with_default(wiring, []);
-  rib = with_default(rib, []);
-  cap_collar_plist = with_default(cap_collar, []);
+  assert(plist_is(wiring) && len(wiring) > 0, "Supply a wiring specification");
+  assert(plist_is(rib) && len(rib) > 0, "Supply a body-rib specification");
+  cap_collar_plist = cap_collar;
 
   rib_colr = plist_get("color", rib, matte_black);
   rib_thickness = plist_get("thickness",

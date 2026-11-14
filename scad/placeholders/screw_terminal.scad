@@ -6,6 +6,7 @@
  */
 
 include <../colors.scad>
+include <presets.scad>
 
 use <../lib/functions.scad>
 use <../lib/plist.scad>
@@ -27,7 +28,8 @@ function screw_terminal_width(base_w,
   ? (needed_contacts_span + 2 * side_margin)
   : base_w;
 
-function screw_terminal_width_from_plist(plist=[]) =
+function screw_terminal_width_from_plist(plist=screw_terminal_plist) =
+  assert(plist_is(plist) && len(plist) > 0, "Supply a hardware specification")
   let (base_w = plist_get("base_w", plist),
        pitch = plist_get("pitch", plist, 4.5),
        contacts_n = plist_get("contacts_n", plist, 2),
@@ -153,10 +155,11 @@ module screw_terminal(base_w = undef,            // overall base width (optional
   }
 }
 
-module screw_terminal_from_plist(plist,
+module screw_terminal_from_plist(plist=screw_terminal_plist,
                                  center=false,
                                  slot_thickness=2,
                                  slot_mode=false) {
+  assert(plist_is(plist) && len(plist) > 0, "Supply a hardware specification");
   thickness = plist_get("thickness", plist);
   isosceles_trapezoid = plist_get("isosceles_trapezoid", plist, false);
   base_h = plist_get("base_h", plist);

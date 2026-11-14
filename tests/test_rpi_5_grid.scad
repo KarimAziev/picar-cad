@@ -36,7 +36,10 @@ function row_boxes(row, size, origin, thickness) =
          cell_origin = origin + [sum_prefix(widths, ci), 0],
          nested = plist_get("grid", cell))
       each !is_undef(nested)
-           ? grid_boxes(nested, cell_size, cell_origin + [0, size[1]], thickness)
+           ? grid_boxes(nested,
+                        cell_size,
+                        cell_origin + [0, size[1]],
+                        thickness)
            : is_undef(plist_get("placeholder", cell)) ? []
              : [leaf_box(cell, cell_size, cell_origin, thickness)]];
 

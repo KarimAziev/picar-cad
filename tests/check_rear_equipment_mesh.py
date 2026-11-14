@@ -24,6 +24,18 @@ use <{ROOT}/scad/suspension/rear_chassis/rear_chassis_frame.scad>
 use <{ROOT}/scad/suspension/rear_chassis/rear_equipment.scad>
 use <{ROOT}/scad/suspension/rear_chassis/rear_chassis.scad>
 use <{ROOT}/scad/components/deck_component.scad>
+meter_spec = ["kind", "voltmeter",
+              "component", voltmeter_default_spec,
+              "zone", "auto",
+              "rotation", 0,
+              "position", undef,
+              "count", 1];
+board_spec = ["kind", "perf_board",
+              "component", perfboard_default_plist,
+              "zone", "auto",
+              "rotation", 0,
+              "position", undef,
+              "count", 1];
 '''
 
         def render(code: str, *, empty: bool = False) -> str:
@@ -41,9 +53,12 @@ use <{ROOT}/scad/components/deck_component.scad>
                 assert mesh_volume(mesh) < 0.00001, log
             return log
 
-        for kind in ("voltmeter", "step_down", "step_down_enclosure", "perf_board"):
+        for kind, preset in (("voltmeter", "voltmeter_default_spec"),
+                             ("step_down", "step_down_voltage_plist"),
+                             ("step_down_enclosure", "step_down_enclosure_plist"),
+                             ("perf_board", "perfboard_default_plist")):
             log = render(f'''
-component="{kind}"=="perf_board" ? perfboard_default_plist : [];
+component={preset};
 p=deck_component_props("{kind}",component);
 echo(size=plist_get("size",p));
 deck_component("{kind}",component);
@@ -116,15 +131,17 @@ for(p=parts) {
                   flush=True)
 
         invalid = [
-            ('[["kind","missing"]]', "Unknown deck component"),
-            ('[["kind","voltmeter","zone","middle"]]', "zone must be"),
-            ('[["kind","voltmeter","count",0]]', "count must be"),
-            ('[["kind","voltmeter","count",100]]', "does not fit"),
-            ('[["kind","perf_board","component",["size",[200,200,1.6]]]]', "does not fit"),
-            ('[["kind","perf_board","zone","left","position",[0.5,0.5],'
-             '"component",["component_h",100]]]', "does not fit"),
-            ('[["kind","voltmeter","zone","left","position",[0.5,0.5]],'
-             '["kind","voltmeter","zone","left","position",[0.5,0.5]]]', "does not fit"),
+            ('[plist_merge(meter_spec,["kind","missing"])]', "Unknown deck component"),
+            ('[plist_merge(meter_spec,["zone","middle"])]', "zone must be"),
+            ('[plist_merge(meter_spec,["count",0])]', "count must be"),
+            ('[plist_merge(meter_spec,["count",100])]', "does not fit"),
+            ('[plist_merge(board_spec,["component",'
+             'plist_merge(perfboard_default_plist,["size",[200,200,1.6]])])]', "does not fit"),
+            ('[plist_merge(board_spec,["zone","left","position",[0.5,0.5],'
+             '"component",plist_merge(perfboard_default_plist,["component_h",100])])]',
+             "does not fit"),
+            ('[plist_merge(meter_spec,["zone","left","position",[0.5,0.5]]),'
+             'plist_merge(meter_spec,["zone","left","position",[0.5,0.5]])]', "does not fit"),
         ]
         for specs, message in invalid:
             source.write_text(preamble + f'echo(rear_chassis_layout(equipment={specs}));')

@@ -83,9 +83,9 @@ module multi_lipo_pack_printable(pl=multi_lipo_packs_case, spacing=8) {
       if (plist_get("kind", m) == "button") {
         button_bracket(plist_get("component", m), show_button=false);
       } else if (plist_get("kind", m) == "wago_pair") {
-        wago_pair(plist_get("component", m, []));
+        wago_pair(plist_get("component", m));
       } else {
-        wago_bracket(plist_get("component", m, []), anchor=[0, 0, 1]);
+        wago_bracket(plist_get("component", m), anchor=[0, 0, 1]);
       }
     }
   }

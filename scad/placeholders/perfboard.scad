@@ -6,6 +6,7 @@
   */
 include <../bolt_parameters.scad>
 include <../colors.scad>
+include <../parameters.scad>
 
 use <../lib/functions.scad>
 use <../lib/plist.scad>
@@ -15,12 +16,8 @@ use <../lib/slots.scad>
 use <../lib/transforms.scad>
 use <standoff.scad>
 
-// Minimal board: ["size", [20, 80, 1.6], "bolt_spacing", [16, 76]].
-// Omitted rows/cols fit the pad grid between mounting rows and bus pads;
-// omitted bus_pad_cols fits the bus pads between the corner mounting holes.
-// Explicit zero counts hide the corresponding pads.
-perfboard_plist_example = ["size", [20, 80, 1.6],
-                           "bolt_spacing", [16, 76]];
+// Undef pad counts fit the available board area; zero hides the pads.
+perfboard_plist_example = perfboard_default_plist;
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -28,8 +25,9 @@ perfboard_plist_example = ["size", [20, 80, 1.6],
   ─────────────────────────────────────────────────────────────────────────────
   Resolve a PCB and its automatically fitted pad counts.
   **Parameters:**
-  - `pl`: Required `size` and `bolt_spacing`. Optional pad dimensions and colors
-    describe the copper pattern; rows, cols and bus_pad_cols override its counts.
+  - `pl`: Board specification, such as `perfboard_default_plist`. Pad dimensions
+    and colors describe the copper pattern; undef rows, cols and bus_pad_cols
+    fit the available area automatically.
   **Returns:** Plist containing the board dimensions and resolved pad properties.
   `cols` fits bolt_spacing[0]; `rows` fits bolt_spacing[1] minus two bus-pad
   end margins (bus_pad_rx + bus_pad_ry + bus_pad_offset). `bus_pad_cols` fits
@@ -42,18 +40,7 @@ function perfboard_props(pl) =
          "Perfboard size must contain three positive dimensions")
   assert(is_list(pitch) && len(pitch) == 2 && min(pitch) > 0,
          "Perfboard bolt_spacing must contain two positive dimensions")
-  let (p = plist_merge(["bolt_d", m2_hole_dia,
-                        "corner_r", 1,
-                        "pad_d", 1.9,
-                        "perf_grid_d", 1,
-                        "spacing", 0.54,
-                        "bus_pad_rx", 1.9,
-                        "bus_pad_ry", 1,
-                        "bus_pad_offset", 0.8,
-                        "bus_pad_spacing", 0.8,
-                        "board_color", "green",
-                        "pin_color", "silver",
-                        "bus_pad_color", "silver"], pl),
+  let (p = pl,
        d = plist_get("bolt_d", p),
        pad = plist_get("pad_d", p),
        gap = plist_get("spacing", p),
@@ -66,11 +53,11 @@ function perfboard_props(pl) =
          "Invalid perfboard pad dimensions")
   assert(pitch[0] + d <= size[0] && pitch[1] + d <= size[1],
          "Perfboard mounting holes must fit inside its PCB")
-  let (cols = plist_get("cols", p, max(0, floor((pitch[0] + gap) / (pad + gap)))),
-       rows = plist_get("rows", p,
-                        max(0, floor((pitch[1] - 2 * (rx + ry + offset) + gap) / (pad + gap)))),
-       bus_cols = plist_get("bus_pad_cols", p,
-                            max(0, floor((pitch[0] - 2 * d + bus_gap) / (rx + bus_gap)))))
+  let (cols = with_default(plist_get("cols", p), max(0, floor((pitch[0] + gap) / (pad + gap)))),
+       rows = with_default(plist_get("rows", p),
+                           max(0, floor((pitch[1] - 2 * (rx + ry + offset) + gap) / (pad + gap)))),
+       bus_cols = with_default(plist_get("bus_pad_cols", p),
+                               max(0, floor((pitch[0] - 2 * d + bus_gap) / (rx + bus_gap)))))
   assert(len([for (n = [rows, cols, bus_cols])
     if (!is_num(n) || n < 0 || n != floor(n)) n]) == 0,
          "Perfboard pad counts must be nonnegative integers")

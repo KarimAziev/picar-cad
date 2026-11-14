@@ -14,6 +14,7 @@ use <../../lib/shapes3d.scad>
 use <../../lib/transforms.scad>
 
 function usb_plug_params(plist) =
+  assert(plist_is(plist) && len(plist) > 0, "Supply a hardware specification")
   let (plug_shell=plist_get("plug_shell", plist, []),
        plug_shell_size=plist_get("size", plug_shell, [0, 0, 0]),
        plug_shell_color=plist_get("color", plug_shell, metallic_silver_3),

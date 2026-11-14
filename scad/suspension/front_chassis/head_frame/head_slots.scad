@@ -12,11 +12,11 @@ include <../../../parameters.scad>
 include <../../../rc_params.scad>
 
 use <../../../head/head_neck.scad>
-use <../../../placeholders/servo_horn.scad>
 use <../../../lib/functions.scad>
 use <../../../lib/placement.scad>
 use <../../../lib/shapes3d.scad>
 use <../../../lib/transforms.scad>
+use <../../../placeholders/servo_horn.scad>
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -116,8 +116,8 @@ module front_chassis_head_slots(thickness=chassis_thickness,
       translate([0, 0, thickness - recess_h]) {
         linear_extrude(height=recess_h + eps, center=false) {
           servo_horn_profile_from_plist(pl=pan_servo_horn_slot_plist,
-                                           mode="shape",
-                                           clearance=pan_servo_horn_recess_clearance);
+                                        mode="shape",
+                                        clearance=pan_servo_horn_recess_clearance);
         }
       }
 
@@ -139,8 +139,8 @@ module front_chassis_head_slots(thickness=chassis_thickness,
       translate([0, 0, -eps]) {
         linear_extrude(height=thickness + eps * 2) {
           servo_horn_profile_from_plist(pl=pan_servo_horn_slot_plist,
-                                       mode="holes",
-                                       screw_clearance=pan_servo_horn_screw_clearance);
+                                        mode="holes",
+                                        screw_clearance=pan_servo_horn_screw_clearance);
         }
       }
     }

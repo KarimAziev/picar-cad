@@ -16,12 +16,12 @@ layout         = rear_chassis_layout();
 tolerance      = 0.000001;
 joint_spacing  = 0;
 fit            = rear_axle_motor_fit(layout,
-                          rear_housing_spec,
-                          rear_differential_spec,
-                          rear_pinion_spec,
-                          rear_motor_sleeve_spec,
-                          suspension_chassis_mount_h,
-                          joint_spacing);
+                                     rear_housing_spec,
+                                     rear_differential_spec,
+                                     rear_pinion_spec,
+                                     rear_motor_sleeve_spec,
+                                     suspension_chassis_mount_h,
+                                     joint_spacing);
 assert(norm(plist_get("motor_tip", fit) - [0, -74.4, 23.15]) < tolerance);
 assert(norm(plist_get("required_motor_tip", fit) - [0, -71.45, 26.6])
        < tolerance);
@@ -42,12 +42,12 @@ aligned_layout = plist_put("motor_pos",
                            + plist_get("tip_delta", fit),
                            layout);
 aligned        = rear_axle_motor_fit(aligned_layout,
-                              rear_housing_spec,
-                              rear_differential_spec,
-                              rear_pinion_spec,
-                              rear_motor_sleeve_spec,
-                              suspension_chassis_mount_h,
-                              joint_spacing);
+                                     rear_housing_spec,
+                                     rear_differential_spec,
+                                     rear_pinion_spec,
+                                     rear_motor_sleeve_spec,
+                                     suspension_chassis_mount_h,
+                                     joint_spacing);
 assert(plist_get("radial_offset", aligned) < tolerance);
 assert(plist_get("engagement_deficit", aligned) < tolerance);
 assert(abs(plist_get("engagement_available", aligned)
@@ -55,12 +55,12 @@ assert(abs(plist_get("engagement_available", aligned)
 
 separation     = 5;
 separated      = rear_axle_motor_fit(layout,
-                                rear_housing_spec,
-                                rear_differential_spec,
-                                rear_pinion_spec,
-                                rear_motor_sleeve_spec,
-                                suspension_chassis_mount_h,
-                                separation);
+                                     rear_housing_spec,
+                                     rear_differential_spec,
+                                     rear_pinion_spec,
+                                     rear_motor_sleeve_spec,
+                                     suspension_chassis_mount_h,
+                                     separation);
 assert(abs(plist_get("engagement_available", separated)
            - plist_get("engagement_available", fit) + separation) < tolerance);
 assert(plist_get("motor_tip", separated) == plist_get("motor_tip", fit),

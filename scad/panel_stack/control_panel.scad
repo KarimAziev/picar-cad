@@ -302,7 +302,8 @@ module control_panel(specs=control_panel_switch_button_specs,
   resolved_anchor = is_undef(anchor)
                     ? (is_undef(center) || !center ? [1, 1, 1] : [0, 0, 1]) : anchor;
   reference = anchor_mode == "bolts" ? concat(bolt_spacing, [0])
-              : [size[0], size[1], control_panel_height(show_standoff, min_standoff_h)];
+              : [size[0], size[1], control_panel_height(show_standoff,
+                                                        min_standoff_h)];
   with_orientation(from="wlh",
                    to=orientation,
                    size=reference,

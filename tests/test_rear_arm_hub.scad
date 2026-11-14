@@ -39,7 +39,7 @@ assert(plist_get("ball_spacing", hub) == plist_get("outer_bolt_spacing", arm),
        "The arm studs and lower hub sockets must use one shared spacing");
 assert(norm(rear_hub_axle(hub) - rear_hub_pivot(hub) - [0, 0, 10])
        < 0.00001);
-links = rear_hub_link_positions(hub);
+links           = rear_hub_link_positions(hub);
 assert(len(links) == 2);
 assert(links[0][0] < 0, "Camber arm must lean inboard of the bearing face");
 assert(norm(links[0] - links[1] - [0, 0, 5.2]) < 0.00001);

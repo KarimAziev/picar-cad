@@ -36,7 +36,7 @@ function atm_fuse_holder_size(pl=atm_fuse_default_plist) =
   [max(body[0], body[3], cap[0], cap[3]) + 2 * wire_l + (sphere ? wire_d : 0),
    max(body[1] + 2 * rib, cap[1] + 2 * cap_rib), body[2] + cap[2]];
 
-module atm_fuse_holder_from_spec(plist,
+module atm_fuse_holder_from_spec(plist=atm_fuse_default_plist,
                                  align_x = -1,
                                  align_y = -1,
                                  thickness=2,
@@ -44,8 +44,9 @@ module atm_fuse_holder_from_spec(plist,
                                  spin,
                                  slot_mode=false,
                                  center=true) {
-  plist = with_default(plist, []);
-  body_plist = plist_get("body", plist, []);
+  assert(plist_is(plist) && len(plist) > 0,
+         "Supply a fuse-holder specification");
+  body_plist = plist_get("body", plist);
   reverse = plist_get("reverse", plist, false);
   size = plist_get("size",
                    body_plist,
@@ -62,15 +63,7 @@ module atm_fuse_holder_from_spec(plist,
   show_body = plist_get("show_body",
                         plist,
                         true);
-  wiring = plist_get("wiring",
-                     plist,
-                     ["d", atm_fuse_holder_body_wiring_d,
-                      "socket_type", "sphere",
-                      "socket_type_len", 4,
-                      "color", red_1,
-                      "cut_len", 3,
-                      "left_pts", [[25, 0, 0]],
-                      "right_pts", [[25, 0, 0]]]);
+  wiring = plist_get("wiring", plist);
 
   wiring_base_d = plist_get("base_d", wiring, min(size[1], size[2]) * 0.8);
   socket_type_len = plist_get("socket_type_len", wiring, 4);
@@ -79,28 +72,8 @@ module atm_fuse_holder_from_spec(plist,
   body_corner_rad = plist_get("corner_rad", body_plist, 2);
   body_round_side = plist_get("round_side", body_plist, "bottom");
 
-  rib = plist_get("rib",
-                  body_plist,
-                  ["h", atm_fuse_holder_body_rib_h,
-                   "l", atm_fuse_holder_body_rib_l,
-                   "n", atm_fuse_holder_body_rib_n,
-                   "thickness", atm_fuse_holder_body_rib_thickness,
-                   "distance_from_top", 0]);
-  cap_collar = plist_get("cap_collar",
-                         plist,
-                         ["size", [atm_fuse_holder_mounting_hole_l,
-                                   atm_fuse_holder_mounting_hole_h,
-                                   atm_fuse_holder_mounting_hole_depth],
-                          "r", atm_fuse_holder_mounting_hole_r,
-                          "fuse_holes_spacing", [8, 4],
-                          "fuse_hole_size", [6.0, 1.82],
-                          "fuse_holes_pad_x", 4,
-                          "fuse_holes_pad_y", 0,
-                          "rib_thickness", 1,
-                          "rib_h", 0.8,
-                          "colr", matte_black,
-                          "rib_colr", matte_black_2,
-                          "rib_positions", [0.5]]);
+  rib = plist_get("rib", body_plist);
+  cap_collar = plist_get("cap_collar", plist);
 
   cap_collar_size = plist_get("size",
                               cap_collar,
@@ -116,21 +89,7 @@ module atm_fuse_holder_from_spec(plist,
                               plist,
                               min(slot_size[0], slot_size[1]) * 0.63);
 
-  cap_plist = plist_get("cap",
-                        plist,
-                        ["size", [atm_fuse_holder_cap_top_l,
-                                  atm_fuse_holder_cap_thickness,
-                                  atm_fuse_holder_cap_h,
-                                  atm_fuse_holder_cap_bottom_l,],
-                         "corner_rad", 2,
-                         "round_side", "top",
-                         "hole_size", atm_fuse_holder_cap_hole_size,
-                         "color", matte_black_2,
-                         "rib", ["h", atm_fuse_holder_cap_rib_h,
-                                 "l", atm_fuse_holder_cap_rib_l,
-                                 "n", atm_fuse_holder_cap_rib_n,
-                                 "thickness", atm_fuse_holder_cap_rib_thickness,
-                                 "distance_from_top", atm_fuse_holder_cap_rib_distance]]);
+  cap_plist = plist_get("cap", plist);
 
   module fuse_holder() {
     maybe_translate([0, 0, reverse ? body_h : 0]) {
@@ -204,11 +163,6 @@ module atm_fuse_holder_from_spec(plist,
 }
 
 spin = 0;
-// atm_fuse_holder_from_spec(plist=[],
-//                           spin=spin,
-//                           slot_mode=true,
-//                           center=false);
-
-atm_fuse_holder_from_spec(plist=["show_cap", true],
+atm_fuse_holder_from_spec(plist=atm_fuse_default_plist,
                           slot_mode=false,
                           center=false);

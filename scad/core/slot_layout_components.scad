@@ -85,7 +85,7 @@ module slot_placeholders_assembly(plist,
       }
     }
   } else if (show_atm_fuse_holders && placeholder == "atm_fuse_holder") {
-    let (body_size = plist_get("size", plist_get("body", plist, [])),
+    let (body_size = plist_get("size", plist_get("body", plist)),
          body_h = with_default(body_size[2], atm_fuse_holder_body_h)) {
       translate([0, 0, -body_h - thickness]) {
         atm_fuse_holder_from_spec(plist);

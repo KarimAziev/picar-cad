@@ -313,8 +313,8 @@ module servo_horn(shape="cross", // "cross" | "single" | "double"
   Draw the horn outline or mounting holes about the shaft axis in the XY plane.
 
   **Parameters:**
-  - `pl`: Horn dimensions keyed by servo_horn parameter names; missing keys use
-    servo_horn_default_plist. Shapes are "cross", "single" (+Y), or "double" (±Y).
+  - `pl`: Horn dimensions keyed by servo_horn parameter names; defaults to
+    `servo_horn_default_plist`. Shapes are "cross", "single" (+Y), or "double" (±Y).
   - `mode`: "shape" for a solid outline, "holes" for screw cutouts, "all" for
     the outline with screw cutouts.
   - `clearance`: Nonnegative XY outline offset per side.
@@ -326,16 +326,16 @@ module servo_horn(shape="cross", // "cross" | "single" | "double"
   `$i` identifying the hole along its arm. Screw clearance applies to the
   default circles only. The central shaft opening is supplied by the mount.
  */
-module servo_horn_profile_from_plist(pl=[],
+module servo_horn_profile_from_plist(pl=servo_horn_default_plist,
                                      mode="all",
                                      clearance=0,
                                      screw_clearance=0,
                                      shape=undef,
                                      cross_side_holes=undef) {
-  assert(plist_is(pl));
+  assert(plist_is(pl) && len(pl) > 0, "Supply a hardware specification");
   assert(clearance >= 0 && screw_clearance >= 0);
   assert(in_list(mode, ["all", "shape", "holes"]));
-  props = plist_merge(servo_horn_default_plist, pl);
+  props = pl;
   has_children = $children > 0;
   module profile(profile_mode) {
     servo_horn_profile(shape=with_default(shape, plist_get("shape", props)),
@@ -382,8 +382,8 @@ module servo_horn_profile_from_plist(pl=[],
   Draw a horn with its shaft axis at XY zero and its hub bottom at Z zero.
 
   **Parameters:**
-  - `pl`: Horn dimensions keyed by servo_horn parameter names; missing keys use
-    servo_horn_default_plist.
+  - `pl`: Horn dimensions keyed by servo_horn parameter names; defaults to
+    `servo_horn_default_plist`.
   - `show_bolt`: Display the central fastener.
   - `show_screws`: Display alternating arm fasteners.
   - `reverse_screws`: Reverse the arm fasteners.
@@ -392,7 +392,7 @@ module servo_horn_profile_from_plist(pl=[],
   - `shape`: Optional override of the plist's arm arrangement.
   - `cross_side_holes`: Optional override of the plist's screw-arm selection.
  */
-module servo_horn_from_plist(pl=[],
+module servo_horn_from_plist(pl=servo_horn_default_plist,
                              show_bolt=true,
                              show_screws=true,
                              reverse_screws=false,
@@ -400,8 +400,8 @@ module servo_horn_from_plist(pl=[],
                              center=true,
                              shape=undef,
                              cross_side_holes=undef) {
-  assert(plist_is(pl));
-  props = plist_merge(servo_horn_default_plist, pl);
+  assert(plist_is(pl) && len(pl) > 0, "Supply a hardware specification");
+  props = pl;
   servo_horn(shape=with_default(shape, plist_get("shape", props)),
              cross_side_holes=with_default(cross_side_holes,
                                            plist_get("cross_side_holes", props)),

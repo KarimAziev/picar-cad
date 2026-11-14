@@ -59,7 +59,7 @@ for (key = plist_keys(ina_plist)) {
     check(plist_merge(ina_plist, [key, undef]));
   }
 }
-for (key = ["chip", "pin", "power_pad", "i2c", "screw_terminal"]) {
+for (key = ["chip", "pin", "power_pad", "i2c"]) {
   group = plist_get(key, ina_plist);
   for (prop = plist_keys(group)) {
     check(plist_merge(ina_plist, [key, plist_remove(prop, group)]));
@@ -68,6 +68,19 @@ for (key = ["chip", "pin", "power_pad", "i2c", "screw_terminal"]) {
   for (value = [[], undef]) {
     check(plist_merge(ina_plist, [key, value]));
   }
+}
+for (value = [[], undef]) {
+  check(plist_merge(ina_plist, ["screw_terminal", value]));
+}
+for (depth = [5.8, 7.6]) {
+  terminal = plist_merge(plist_get("screw_terminal", ina_plist),
+                         ["thickness", depth]);
+  pl = plist_merge(ina_plist, ["screw_terminal", terminal]);
+  props = ina_current_sensor_props(pl);
+  assert(plist_get("terminal_size", props)[1] == depth);
+  assert(abs(plist_get("terminal_pos", props)[1] + depth / 2 - 10.45) < 0.00001,
+         "Terminal keeps its measured 1.1 mm gap from the board edge");
+  check(pl);
 }
 for (key = ["header", "text_style"]) {
   pin = plist_get("pin", ina_plist);
@@ -86,7 +99,8 @@ for (key = ["top_texts", "bottom_texts"]) {
 }
 check(minimal);
 ''', csg=True)
-        print("PASS optional groups and properties can be omitted", flush=True)
+        print("PASS optional features can be omitted and explicit terminal sizes retain edge clearance",
+              flush=True)
 
         for key in ("size", "bolt_spacing", "bolt_d"):
             render(f'ina_current_sensor(plist_remove("{key}", minimal));',

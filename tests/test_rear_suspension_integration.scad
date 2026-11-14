@@ -22,8 +22,8 @@ use <../scad/suspension/rear_suspension_assembly.scad>
 layout       = rear_chassis_layout();
 epsilon      = 0.000001;
 mounts       = rear_bulkhead_mount_positions(layout,
-                                       rear_bulkhead_bolt_spacing_x,
-                                       rear_bulkhead_bolt_spacing_2[1]);
+                                             rear_bulkhead_bolt_spacing_x,
+                                             rear_bulkhead_bolt_spacing_2[1]);
 plate_mounts = rear_suspension_bulkhead_mount_positions(layout);
 assert(len(mounts) == 8 && len(plate_mounts) == len(mounts));
 for (spacing = [0, 17]) {

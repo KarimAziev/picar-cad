@@ -46,7 +46,8 @@ function wago_size(n=wago_n,
   - `pl`: Hardware plist accepted by wago_from_plist. Entries face local -Y.
   **Returns:** XYZ points ordered from -X to +X.
  */
-function wago_wire_ports(pl=[]) =
+function wago_wire_ports(pl=wago_plist) =
+  assert(plist_is(pl) && len(pl) > 0, "Supply a hardware specification")
   let (n = plist_get("n", pl, wago_n),
        s = plist_get("conductor_size", pl, wago_conductor_size),
        hole = plist_get("hole_size_xz", pl, wago_hole_size_xz),
@@ -64,7 +65,8 @@ function wago_wire_ports(pl=[]) =
   - `orientation`: Axis permutation accepted by with_orientation.
   - `anchor`: Anchor on the body envelope; lever detail is approximate.
  */
-module wago_from_plist(pl=[], orientation="wlh", anchor=[1, 1, 1]) {
+module wago_from_plist(pl=wago_plist, orientation="wlh", anchor=[1, 1, 1]) {
+  assert(plist_is(pl) && len(pl) > 0, "Supply a hardware specification");
   size = wago_size(plist_get("n", pl, wago_n),
                    plist_get("conductor_size", pl, wago_conductor_size),
                    plist_get("total_w", pl, wago_total_w));

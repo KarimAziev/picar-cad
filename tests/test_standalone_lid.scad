@@ -74,16 +74,17 @@ echo("PASS: optional lidar, disabled equipment and fill-to-fit meters");
 
 for (edge = ["left", "right",
              "front", "rear"]) {
-  edge_mount = lid_equipment_layout([["kind", "voltmeter",
-                                      "component", voltmeter_default_spec,
-                                      "placement", edge]],
+  edge_mount = lid_equipment_layout([plist_merge(multi_lipo_lid_meter_mount,
+                                                 ["placement", edge,
+                                                  "count", 1])],
                                     plain_props);
   assert(len(edge_mount) == 1);
 }
-changed_wago = lid_equipment_layout([["kind", "wago",
-                                      "rotation", 90,
-                                      "component", ["wago", ["n", 3,
-                                                             "total_w", 22.7]]]],
+small_wago = plist_merge(wago_plist, ["n", 3,
+                                      "total_w", 22.7]);
+small_bracket = plist_merge(wago_bracket_plist, ["wago", small_wago]);
+changed_wago = lid_equipment_layout([plist_merge(multi_lipo_lid_wago_mount,
+                                                 ["component", small_bracket])],
                                     plain_props);
 assert(len(changed_wago) == 1);
 echo("PASS: all four named edges respect tool access and changed Wago dimensions");
@@ -143,10 +144,9 @@ echo("PASS: switch travel retains wire opening, automatic fuse clearance and sid
 pair = plist_get("props", mounts[1]);
 assert(norm(plist_get("wire_size", pair) - [16.7, 19]) < 0.000001);
 assert(len(plist_get("mount_holes", pair)) == 4);
-wide_pair = wago_pair_props(["spacing", 4]);
+wide_pair = wago_pair_props(plist_merge(wago_pair_plist, ["spacing", 4]));
 assert(plist_get("wire_size", wide_pair)[1] == plist_get("wire_size", pair)[1] + 2);
-small_pair = wago_pair_props(["bracket", ["wago", ["n", 3,
-                                                   "total_w", 22.7]]]);
+small_pair = wago_pair_props(plist_merge(wago_pair_plist, ["bracket", small_bracket]));
 assert(plist_get("wire_size", small_pair)[0] < plist_get("wire_size", pair)[0]);
 assert(plist_get("wire_r", small_pair) <= min(plist_get("wire_size", small_pair)) / 2);
 assert(_lid_roof_contains(plist_get("roof_bounds", mounts[1]),
