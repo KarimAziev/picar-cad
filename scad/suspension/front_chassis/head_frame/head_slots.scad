@@ -12,7 +12,7 @@ include <../../../parameters.scad>
 include <../../../rc_params.scad>
 
 use <../../../head/head_neck.scad>
-use <../../../head/servo_horn_recess.scad>
+use <../../../placeholders/servo_horn.scad>
 use <../../../lib/functions.scad>
 use <../../../lib/placement.scad>
 use <../../../lib/shapes3d.scad>
@@ -107,12 +107,6 @@ module front_chassis_head_slots(thickness=chassis_thickness,
                                 anchor=[0, 0, 1]) {
   size = front_chassis_head_mount_size();
   eps = front_chassis_joint_boolean_overlap;
-  screw_step = front_chassis_head_pan_servo_screw_d
-               + front_chassis_head_pan_servo_screws_gap;
-  slot_r = front_chassis_head_pan_servo_slot_dia / 2;
-  x_screw_cols = round((front_chassis_head_pan_servo_recess_x_len / 2) / screw_step);
-  y_screw_rows = round((front_chassis_head_pan_servo_recess_y_len / 2) / screw_step);
-
   pan_servo_slot_r = front_chassis_head_pan_servo_slot_dia / 2;
 
   with_anchor(anchor=anchor,
@@ -121,7 +115,9 @@ module front_chassis_head_slots(thickness=chassis_thickness,
     union() {
       translate([0, 0, thickness - recess_h]) {
         linear_extrude(height=recess_h + eps, center=false) {
-          head_servo_horn_recess_2d();
+          servo_horn_profile_from_plist(pl=pan_servo_horn_slot_plist,
+                                           mode="shape",
+                                           clearance=pan_servo_horn_recess_clearance);
         }
       }
 
@@ -135,33 +131,16 @@ module front_chassis_head_slots(thickness=chassis_thickness,
       }
 
       translate([0, 0, -eps]) {
-
         cylinder(d=front_chassis_head_pan_servo_slot_dia,
                  h=thickness + eps * 2,
                  $fn=$preview ? 40 : 120);
       }
 
-      mirror_copy([1, 0, 0]) {
-        translate([slot_r + front_chassis_head_pan_servo_screws_gap, 0, -eps]) {
-          columns_children(gap=front_chassis_head_pan_servo_screws_gap,
-                           cols=x_screw_cols,
-                           w=front_chassis_head_pan_servo_screw_d) {
-            cylinder(d=front_chassis_head_pan_servo_screw_d,
-                     h=thickness + eps * 2,
-                     $fn=$preview ? 24 : 80);
-          }
-        }
-      }
-
-      mirror_copy([0, 1, 0]) {
-        translate([0, slot_r + front_chassis_head_pan_servo_screws_gap, -eps]) {
-          rows_children(gap=front_chassis_head_pan_servo_screws_gap,
-                        rows=y_screw_rows,
-                        w=front_chassis_head_pan_servo_screw_d) {
-            cylinder(d=front_chassis_head_pan_servo_screw_d,
-                     h=thickness + eps * 2,
-                     $fn=$preview ? 24 : 80);
-          }
+      translate([0, 0, -eps]) {
+        linear_extrude(height=thickness + eps * 2) {
+          servo_horn_profile_from_plist(pl=pan_servo_horn_slot_plist,
+                                       mode="holes",
+                                       screw_clearance=pan_servo_horn_screw_clearance);
         }
       }
     }

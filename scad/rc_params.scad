@@ -280,9 +280,9 @@ front_chassis_ear_l                            = 5.1;
 // ─────────────────────────────────────────────────────────────────────────────
 // Bumper slot
 // ─────────────────────────────────────────────────────────────────────────────
-// "auto" sizes the mounting lands for the configured head travel and clearance.
-// A nonnegative number specifies a fixed extension in millimeters.
-front_chassis_bumper_extension                 = "auto";
+// Fixed forward extension of the bumper mounting lands in millimeters.
+// "auto" derives an extension from the configured head travel and clearance.
+front_chassis_bumper_extension                 = 13.776973;
 // Clearance to the populated head envelope throughout the joint travel.
 front_chassis_bumper_head_clearance            = 2;
 // "auto" covers upward travel and the camera-plate/neck stop. A numeric pair
@@ -391,22 +391,19 @@ front_chassis_head_side_slot_w                     = 7.5;
 front_chassis_head_side_slot_l                     = 11.0;
 front_chassis_head_side_slot_rows                  = 2;
 
-head_servo_cable_slot_size                         = [4, 8.8];
+head_servo_cable_slot_size                         = [5, 9];
 head_servo_cable_corner_r                          = "15%";
-head_servo_cable_slot_offsets                      = [2, 8]; // [x, y] offsets
+head_servo_cable_slot_offsets                      = [1, 8]; // [x, y] offsets
 
 // Pan-servo mounting interface retained from the proven head mount.
-front_chassis_head_pan_servo_slot_dia              = 6.5;
+front_chassis_head_pan_servo_slot_dia              = plist_get("center_ring_dia",
+                                                               pan_servo_horn_slot_plist)
+                                                     + 2 * pan_servo_horn_recess_clearance;
 front_chassis_head_pan_servo_slot_recess           = constraint(3.5,
                                                                 0,
                                                                 chassis_thickness - 1);
 front_chassis_head_pan_servo_top_ribbon_cutout_len = 18;
 front_chassis_head_pan_servo_top_ribbon_cutout_h   = 2;
-front_chassis_head_pan_servo_recess_y_len          = 18;
-front_chassis_head_pan_servo_recess_x_len          = 18;
-front_chassis_head_pan_servo_recess_thickness      = 5;
-front_chassis_head_pan_servo_screw_d               = 1.5;
-front_chassis_head_pan_servo_screws_gap            = 0.5;
 
 front_chassis_head_mount_padding                   = 2.0;
 // Solid transition behind the head mounting footprint.

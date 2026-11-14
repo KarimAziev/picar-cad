@@ -533,13 +533,6 @@ head_front_bolt_depth                                = 8;
 head_front_bolt_edge                                 = 9.5;
 head_ir_setback                                      = 10;
 
-// Diameter of the central hole in the side panel for mounting the servo motor.
-head_servo_mount_dia                                 = 6.5;
-
-// Diameter of the screws used to mount the servo motor.
-// The screws are placed radially around the main servo mounting hole.
-head_servo_horn_screw_dia                            = 1.5;
-
 // Height of the side panel of the head, matching the height of the front plate.
 head_side_panel_height                               = head_front_height;
 
@@ -2188,15 +2181,15 @@ servo_horn_starting_arm_w                            = 5.25;
 // This is the ending width of the arm trapezoid.
 servo_horn_ending_arm_w                              = 4.03;
 // A ring is placed at the center where the arms meet. This is the ring's outer diameter.
-servo_horn_center_ring_outer_dia                     = 5.90;
+servo_horn_center_ring_outer_dia                     = 7.05;
 // This is the ring's inner diameter.
 servo_horn_center_ring_inner_dia                     = 3.87;
 
 // This is the total height of the ring and the horn itself.
-servo_horn_ring_height                               = 4.54;
+servo_horn_ring_height                               = 5.6;
 
 // This is the thickness of each arm.
-servo_horn_arm_thickness                             = 1.5;
+servo_horn_arm_thickness                             = 2.0;
 
 // This is the Z offset (height) of the arms from the bottom of the ring.
 servo_horn_arm_z_offset                              = 2.5;
@@ -2204,19 +2197,55 @@ servo_horn_arm_z_offset                              = 2.5;
 // This is the through-hole diameter at the center for the servo motor.
 servo_horn_center_hole_dia                           = 2.0;
 
-// This is the total length of the horn (two arms + center ring).
-servo_horn_len                                       = 24;
+// Distance from the horn axis to the end of each arm.
+servo_horn_arm_len                                   = 14;
 
 // The diameter of fastening screw holes
-servo_horn_screw_d                                   = 0.8;
+servo_horn_screw_d                                   = 1.5;
 
-// This is the distance between screw hole and center ring
-servo_horn_screws_initital_distance                  = 3.45;
-// This is the distance between screw holes.
-servo_horn_screws_distance                           = 2.6;
+// Edge-to-edge gap between the first screw hole and the center ring.
+servo_horn_screws_initital_distance                  = 1.8;
+// Edge-to-edge gap between screw holes.
+servo_horn_screws_distance                           = 1.4;
 
 // This is the number of screw holes on each arm.
-servo_horn_holes_n                                   = 2;
+servo_horn_holes_n                                   = 3;
+
+// Color of the horn placeholder.
+servo_horn_color                                     = matte_black;
+
+// Horn property keys match the servo_horn module's dimension parameters.
+servo_horn_default_plist                             = ["shape", "single",
+                                                        "cross_side_holes", "all",
+                                                        "arm_len", servo_horn_arm_len,
+                                                        "arm_bottom_width", servo_horn_starting_arm_w,
+                                                        "arm_top_width", servo_horn_ending_arm_w,
+                                                        "center_ring_dia", servo_horn_center_ring_outer_dia,
+                                                        "center_ring_inner_dia", servo_horn_center_ring_inner_dia,
+                                                        "center_hole_dia", servo_horn_center_hole_dia,
+                                                        "horn_height", servo_horn_ring_height,
+                                                        "thickness", servo_horn_arm_thickness,
+                                                        "arm_z_offset", servo_horn_arm_z_offset,
+                                                        "screw_d", servo_horn_screw_d,
+                                                        "initial_screws_gap", servo_horn_screws_initital_distance,
+                                                        "screws_gap", servo_horn_screws_distance,
+                                                        "screw_holes_count", servo_horn_holes_n,
+                                                        "color", servo_horn_color];
+
+pan_servo_horn_slot_plist                            = servo_horn_default_plist;
+tilt_servo_horn_slot_plist                           = servo_horn_default_plist;
+
+// Recess clearance is an XY offset on each side of the horn outline.
+pan_servo_horn_recess_clearance                      = 0.25;
+tilt_servo_horn_recess_clearance                     = 0.25;
+// Radial screw clearance enlarges mounting holes without moving their centers.
+pan_servo_horn_screw_clearance                       = 0;
+tilt_servo_horn_screw_clearance                      = 0;
+
+// Diameter of the central hole in the side panel for mounting the servo motor.
+head_servo_mount_dia                                 = plist_get("center_ring_dia",
+                                                                 tilt_servo_horn_slot_plist)
+                                                        + 2 * tilt_servo_horn_recess_clearance;
 
 // A bare PCB needs only size and bolt_spacing. Rows, cols and bus_pad_cols
 // are calculated from the available pad area when omitted (see perfboard_props).

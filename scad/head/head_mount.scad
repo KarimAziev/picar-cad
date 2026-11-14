@@ -27,47 +27,52 @@ use <../placeholders/camera.scad>
 use <../placeholders/nut.scad>
 use <../placeholders/servo_horn.scad>
 use <ir_case.scad>
-use <servo_horn_recess.scad>
 
-show_frame_bolts        = false;
-show_frame_nuts         = true;
-show_camera             = false;
-show_camera_bolts       = false;
-show_camera_nuts        = false;
-show_ir_case            = false;
-show_ir_case_bolts      = false;
-show_ir_case_nuts       = false;
-show_ir_led             = false;
-show_ir_case_rail       = false;
-show_ir_case_rail_bolts = false;
-show_ir_case_rail_nuts  = false;
+show_frame_bolts            = false;
+show_frame_nuts             = true;
+show_camera                 = false;
+show_camera_bolts           = false;
+show_camera_nuts            = false;
+show_ir_case                = false;
+show_ir_case_bolts          = false;
+show_ir_case_nuts           = false;
+show_ir_led                 = false;
+show_ir_case_rail           = false;
+show_ir_case_rail_bolts     = false;
+show_ir_case_rail_nuts      = false;
 
-show_servo_horn         = false;
-show_servo_horn_screws  = false;
-show_servo_horn_bolt    = false;
-servo_horn_single       = false;
-servo_horn_screw_side   = "horizontal";  // [vertical, horizontal]
+show_servo_horn             = false;
+show_servo_horn_screws      = false;
+show_servo_horn_bolt        = false;
+servo_horn_shape            = "single"; // "cross" | "single" | "double" | undef. undef uses the horn plist.
+servo_horn_cross_side_holes = "horizontal";  // undef uses the horn plist; vertical, horizontal, or all.
 
-echo_bolts_info         = true;
+echo_bolts_info             = true;
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
   head_tilt_horn_angle
   ─────────────────────────────────────────────────────────────────────────────
   Return the horn rotation in the side panel's XY plane, in degrees.
- */
-function head_tilt_horn_angle() =
-  atan2(head_side_panel_bottom - head_side_panel_curve_end,
-        head_side_panel_curve_start - head_side_panel_depth);
 
-side_panel_points       = [[0, -head_side_panel_top],
-                           [head_side_panel_curve_start, -
-                            head_side_panel_notch_y],
-                           [head_side_panel_depth, -head_side_panel_notch_y],
-                           [head_side_panel_depth, -head_side_panel_bottom],
-                           [head_side_panel_curve_start,
-                            -head_side_panel_curve_end],
-                           [0, -head_side_panel_curve_end]];
+  **Parameters:**
+  - `shape`: Arm arrangement; undef uses the tilt horn plist. Single and double
+    arms run along the panel's sloping edge, with the single arm pointing inward.
+ */
+function head_tilt_horn_angle(shape=undef) =
+  let (shape = with_default(shape, plist_get("shape", tilt_servo_horn_slot_plist)))
+  atan2(head_side_panel_bottom - head_side_panel_curve_end,
+        head_side_panel_curve_start - head_side_panel_depth)
+  + (shape == "single" || shape == "double" ? 90 : 0);
+
+side_panel_points           = [[0, -head_side_panel_top],
+                               [head_side_panel_curve_start, -
+                               head_side_panel_notch_y],
+                               [head_side_panel_depth, -head_side_panel_notch_y],
+                               [head_side_panel_depth, -head_side_panel_bottom],
+                               [head_side_panel_curve_start,
+                                -head_side_panel_curve_end],
+                               [0, -head_side_panel_curve_end]];
 
 /**
   ─────────────────────────────────────────────────────────────────────────────
@@ -667,27 +672,29 @@ module at_head_tilt_axis() {
 
 module head_tilt_horn(show_servo_horn_screws=show_servo_horn_screws,
                       show_servo_horn_bolt=show_servo_horn_bolt,
-                      servo_horn_single=servo_horn_single,
-                      servo_horn_screw_side=servo_horn_screw_side) {
+                      servo_horn_shape=servo_horn_shape,
+                      servo_horn_cross_side_holes=servo_horn_cross_side_holes) {
   translate([0, 0, head_horn_seat_thickness]) {
 
     at_head_tilt_axis() {
-      rotate([0, 0, head_tilt_horn_angle()]) {
+      rotate([0, 0, head_tilt_horn_angle(servo_horn_shape)]) {
         translate([0,
                    0,
-                   -servo_horn_arm_z_offset]) {
-          servo_horn(center=true,
-                     show_screws=show_servo_horn_screws,
-                     single=servo_horn_single,
-                     show_bolt=false,
-                     screw_side=servo_horn_screw_side);
+                   -plist_get("arm_z_offset", tilt_servo_horn_slot_plist)]) {
+          servo_horn_from_plist(pl=tilt_servo_horn_slot_plist,
+                                center=true,
+                                show_screws=show_servo_horn_screws,
+                                shape=servo_horn_shape,
+                                show_bolt=false,
+                                cross_side_holes=servo_horn_cross_side_holes);
         }
 
         if (show_servo_horn_bolt) {
-          head_z = servo_horn_ring_height - servo_horn_arm_z_offset;
+          head_z = plist_get("horn_height", tilt_servo_horn_slot_plist)
+                   - plist_get("arm_z_offset", tilt_servo_horn_slot_plist);
           bolt_l = ceil(head_horn_seat_thickness + head_z);
           translate([0, 0, head_z - bolt_l]) {
-            bolt(d=servo_horn_center_hole_dia,
+            bolt(d=plist_get("center_hole_dia", tilt_servo_horn_slot_plist),
                  head_type="pan",
                  bolt_color=matte_black,
                  h=bolt_l);
@@ -702,22 +709,23 @@ module head_tilt_horn(show_servo_horn_screws=show_servo_horn_screws,
   ─────────────────────────────────────────────────────────────────────────────
   head_tilt_horn_holes
   ─────────────────────────────────────────────────────────────────────────────
-  Cut the hub opening and clearance holes matching the tilt horn's cross arm.
+  Cut the hub opening and clearance holes matching the tilt horn.
   Coordinates use the printable side panel's positive X/Y frame.
-  The fixed recess bounds the mounting holes independently of panel height.
+  The hole pattern and recess share the tilt horn dimensions.
+
+  **Parameters:**
+  - `shape`: Optional arm arrangement override; undef uses the tilt horn plist.
+  - `cross_side_holes`: Optional screw-arm selection override.
  */
-module head_tilt_horn_holes() {
-  offsets = servo_horn_hole_offsets();
-  recess = head_servo_horn_recess_size();
-  assert(len(offsets) > 0, "The tilt horn requires mounting holes");
-  assert(max(offsets) + head_servo_horn_screw_dia / 2 < recess[0] / 2,
-         "The tilt horn screw pattern must fit the fixed horn recess");
+module head_tilt_horn_holes(shape=undef, cross_side_holes=undef) {
   at_head_tilt_axis() {
     circle(d=head_servo_mount_dia, $fn=100);
-    rotate([0, 0, head_tilt_horn_angle() + 90]) {
-      with_servo_horn_holes() {
-        circle(d=head_servo_horn_screw_dia, $fn=40);
-      }
+    rotate([0, 0, head_tilt_horn_angle(shape)]) {
+      servo_horn_profile_from_plist(pl=tilt_servo_horn_slot_plist,
+                                    mode="holes",
+                                    screw_clearance=tilt_servo_horn_screw_clearance,
+                                    shape=shape,
+                                    cross_side_holes=cross_side_holes);
     }
   }
 }
@@ -769,7 +777,8 @@ module head_side_panel_profile() {
   - `with_horn_mount`: Include the hub hole, horn screw holes, and recess.
   - `show_servo_horn`, `show_servo_horn_screws`, `show_servo_horn_bolt`:
     Toggle hardware in solid mode when with_horn_mount is true.
-  - `servo_horn_single`, `servo_horn_screw_side`: Horn placeholder options.
+  - `servo_horn_shape`, `servo_horn_cross_side_holes`: Arm arrangement and screw-arm selection for hardware and cutouts;
+    undef uses the tilt horn plist.
   - `color`: Printed panel color.
   **Behavior:**
   X is head depth, Y is height, Z is outward thickness. The horn seat remains
@@ -782,8 +791,8 @@ module head_side_panel(anchor=[1, 1, 1],
                        show_servo_horn=false,
                        show_servo_horn_screws=false,
                        show_servo_horn_bolt=false,
-                       servo_horn_single=false,
-                       servo_horn_screw_side="horizontal",
+                       servo_horn_shape=undef,
+                       servo_horn_cross_side_holes=undef,
                        color="white") {
 
   size = head_side_panel_size();
@@ -792,6 +801,7 @@ module head_side_panel(anchor=[1, 1, 1],
   assert(head_side_panel_thickness >= head_horn_seat_thickness);
   assert(head_horn_seat_thickness > 0 && head_horn_seat_thickness <= 2,
          "The tilt horn requires at most 2 mm of material beneath its seat");
+
   module slots() {
     for (p=concat(head_front_joint_points(), head_bridge_joint_points())) {
       translate([p[0], p[1], 0]) {
@@ -807,15 +817,19 @@ module head_side_panel(anchor=[1, 1, 1],
     if (with_horn_mount) {
       translate([0, 0, -0.1]) {
         linear_extrude(height=h + 0.2) {
-          head_tilt_horn_holes();
+          head_tilt_horn_holes(shape=servo_horn_shape,
+                               cross_side_holes=servo_horn_cross_side_holes);
         }
       }
       if (head_side_panel_thickness > head_horn_seat_thickness) {
         translate([0, 0, head_horn_seat_thickness]) {
           at_head_tilt_axis() {
-            rotate([0, 0, head_tilt_horn_angle()]) {
+            rotate([0, 0, head_tilt_horn_angle(servo_horn_shape)]) {
               linear_extrude(height=h - head_horn_seat_thickness + 0.1) {
-                head_servo_horn_recess_2d();
+                servo_horn_profile_from_plist(pl=tilt_servo_horn_slot_plist,
+                                              mode="shape",
+                                              clearance=tilt_servo_horn_recess_clearance,
+                                              shape=servo_horn_shape);
               }
             }
           }
@@ -840,8 +854,8 @@ module head_side_panel(anchor=[1, 1, 1],
       if (with_horn_mount && show_servo_horn) {
         head_tilt_horn(show_servo_horn_screws=show_servo_horn_screws,
                        show_servo_horn_bolt=show_servo_horn_bolt,
-                       servo_horn_single=servo_horn_single,
-                       servo_horn_screw_side=servo_horn_screw_side);
+                       servo_horn_shape=servo_horn_shape,
+                       servo_horn_cross_side_holes=servo_horn_cross_side_holes);
       }
     }
   }
@@ -856,15 +870,16 @@ module head_side_panel(anchor=[1, 1, 1],
   - `is_left`: Left cover if true; right horn-mount panel if false.
   - `show_servo_horn`, `show_servo_horn_screws`, `show_servo_horn_bolt`:
     Hardware visibility on the horn-mount panel.
-  - `servo_horn_single`, `servo_horn_screw_side`: Horn placeholder options.
+  - `servo_horn_shape`, `servo_horn_cross_side_holes`: Arm arrangement and screw-arm selection for hardware and cutouts;
+    undef uses the tilt horn plist.
   - `color`: Printed panel color.
  */
 module head_side_panel_assembled(is_left=true,
                                  show_servo_horn=false,
                                  show_servo_horn_screws=false,
                                  show_servo_horn_bolt=false,
-                                 servo_horn_single=false,
-                                 servo_horn_screw_side="horizontal",
+                                 servo_horn_shape=undef,
+                                 servo_horn_cross_side_holes=undef,
                                  color="white") {
   side = is_left ? -1 : 1;
   translate([side * head_front_width / 2, -head_front_height / 2, 0]) {
@@ -874,8 +889,8 @@ module head_side_panel_assembled(is_left=true,
                         show_servo_horn=show_servo_horn,
                         show_servo_horn_screws=show_servo_horn_screws,
                         show_servo_horn_bolt=show_servo_horn_bolt,
-                        servo_horn_single=servo_horn_single,
-                        servo_horn_screw_side=servo_horn_screw_side,
+                        servo_horn_shape=servo_horn_shape,
+                        servo_horn_cross_side_holes=servo_horn_cross_side_holes,
                         color=color);
       }
     }
@@ -926,8 +941,8 @@ module head_mount(head_color="white",
                   show_servo_horn=show_servo_horn,
                   show_servo_horn_screws=show_servo_horn_screws,
                   show_servo_horn_bolt=show_servo_horn_bolt,
-                  servo_horn_single=servo_horn_single,
-                  servo_horn_screw_side=servo_horn_screw_side) {
+                  servo_horn_shape=servo_horn_shape,
+                  servo_horn_cross_side_holes=servo_horn_cross_side_holes) {
 
   module _head_ir_case() {
     head_ir_case(ir_rail_color=ir_rail_color,
@@ -965,8 +980,8 @@ module head_mount(head_color="white",
                                   show_servo_horn=show_servo_horn,
                                   show_servo_horn_screws=show_servo_horn_screws,
                                   show_servo_horn_bolt=show_servo_horn_bolt,
-                                  servo_horn_single=servo_horn_single,
-                                  servo_horn_screw_side=servo_horn_screw_side,
+                                  servo_horn_shape=servo_horn_shape,
+                                  servo_horn_cross_side_holes=servo_horn_cross_side_holes,
                                   color=head_color);
       }
     }

@@ -75,7 +75,7 @@ show_pan_servo_horn         = true;
 
 show_tilt_servo_horn_screws = true;
 show_tilt_servo_horn_bolt   = true;
-head_servo_horn_screw_side  = "horizontal"; // [vertical, horizontal]
+head_servo_horn_cross_side_holes  = undef; // undef uses the horn plist; vertical, horizontal, or all.
 
 show_tilt_servo_horn        = true;
 show_tilt_servo_bolts       = true;
@@ -141,7 +141,8 @@ function _head_neck_pan_offset() =
                  : pan_servo_gearbox_d1 / 2),
    pan_servo_gearbox_h + pan_servo_height_before_flange()
    - head_neck_pan_servo_slot_thickness + pan_servo_gear_height()
-   + servo_horn_ring_height - servo_horn_arm_z_offset];
+   + plist_get("horn_height", pan_servo_horn_slot_plist)
+   - plist_get("arm_z_offset", pan_servo_horn_slot_plist)];
 
 function _head_neck_tilt_pivot() =
   [head_neck_full_w() / 2 - tilt_servo_size[0] / 2 + tilt_servo_gearbox_d1 / 2,
@@ -247,14 +248,15 @@ function _head_neck_camera_points(i) =
 function _head_neck_head_points() =
   let (frame=_head_neck_frame_points(),
        // Horn coordinates before head_mount's outer Y rotation.
-       horn_r=max(servo_horn_center_ring_outer_dia / 2,
-                  servo_horn_ending_arm_w / 2
-                  + servo_horn_center_ring_outer_dia / 2 + servo_horn_len / 4),
-       horn_pad=_head_neck_fastener_padding(servo_horn_screw_d),
+       horn_r=max(plist_get("arm_len", tilt_servo_horn_slot_plist),
+                  plist_get("center_ring_dia", tilt_servo_horn_slot_plist) / 2,
+                  plist_get("arm_bottom_width", tilt_servo_horn_slot_plist) / 2,
+                  plist_get("arm_top_width", tilt_servo_horn_slot_plist) / 2),
+       horn_pad=_head_neck_fastener_padding(plist_get("screw_d", tilt_servo_horn_slot_plist)),
        horn_center=head_tilt_axis_position(),
-       horn=[for (p=_head_neck_box([-horn_r, -horn_r, -servo_horn_ring_height],
-                                   [horn_r, horn_r, servo_horn_arm_z_offset
-                                                    + servo_horn_arm_thickness], horn_pad))
+       horn=[for (p=_head_neck_box([-horn_r, -horn_r, -plist_get("horn_height", tilt_servo_horn_slot_plist)],
+                                   [horn_r, horn_r, plist_get("arm_z_offset", tilt_servo_horn_slot_plist)
+                                                    + plist_get("thickness", tilt_servo_horn_slot_plist)], horn_pad))
          rotY([head_front_width / 2,
                -head_front_height / 2, 0]
               + rotY([horn_center[0], horn_center[1], head_horn_seat_thickness] +
@@ -291,14 +293,15 @@ function _head_neck_fixed_points() =
        bracket=_head_neck_box([0, 0, 0], [w, l + vt / 2, h], pad),
        // Horn rotation is enclosed for all pan angles; its planar envelope
        // is deliberately conservative, including the arm screws.
-       horn_r=servo_horn_len / 2 + servo_horn_center_ring_outer_dia / 2,
+       horn_r=plist_get("arm_len", pan_servo_horn_slot_plist)
+              + plist_get("center_ring_dia", pan_servo_horn_slot_plist) / 2,
        pan_axis_x=pan_servo_size[0] / 2 - pan_servo_gearbox_d1 / 2,
        pan_z=pan_servo_size[2] + t - pan_servo_flange_z_offset
              + pan_servo_flange_thickness / 2,
        pan=[for (p=_head_neck_box([-max(pan_servo_size[0] / 2, pan_servo_flange_w / 2,
                                         horn_r - pan_axis_x),
                                    -max(pan_servo_size[1] / 2, pan_servo_flange_h / 2, horn_r),
-                                   pan_z - pan_servo_full_height() - servo_horn_ring_height],
+                                   pan_z - pan_servo_full_height() - plist_get("horn_height", pan_servo_horn_slot_plist)],
                                   [max(pan_servo_size[0] / 2, pan_servo_flange_w / 2,
                                        pan_axis_x + horn_r),
                                    max(pan_servo_size[1] / 2, pan_servo_flange_h / 2, horn_r),
@@ -621,7 +624,7 @@ module head_neck_base(show_tilt_servo=false,
                       show_tilt_servo_horn_bolt=show_tilt_servo_horn_bolt,
                       show_tilt_servo_horn=show_tilt_servo_horn,
                       show_pan_servo_horn=show_pan_servo_horn,
-                      head_servo_horn_screw_side=head_servo_horn_screw_side,
+                      head_servo_horn_cross_side_holes=head_servo_horn_cross_side_holes,
                       bracket_color=matte_black,
                       head_color="white") {
   pan_servo_h = pan_servo_size[2];
@@ -749,7 +752,7 @@ module head_neck_base(show_tilt_servo=false,
                                show_ir_case_rail_nuts=show_ir_case_rail_nuts,
                                show_servo_horn_screws=show_tilt_servo_horn_screws,
                                show_servo_horn_bolt=show_tilt_servo_horn_bolt,
-                               servo_horn_screw_side=head_servo_horn_screw_side);
+                               servo_horn_cross_side_holes=head_servo_horn_cross_side_holes);
                   }
                 }
               }
@@ -786,7 +789,7 @@ module head_neck(center_pan_servo_slot=false,
                  bracket_color="white",
                  show_tilt_servo_horn_screws=show_tilt_servo_horn_screws,
                  show_tilt_servo_horn_bolt=show_tilt_servo_horn_bolt,
-                 head_servo_horn_screw_side=head_servo_horn_screw_side,
+                 head_servo_horn_cross_side_holes=head_servo_horn_cross_side_holes,
                  tilt_servo_rotation=tilt_servo_rotation,
                  pan_servo_rotation=pan_servo_rotation,
                  head_color="white") {
@@ -819,7 +822,7 @@ module head_neck(center_pan_servo_slot=false,
                    show_pan_servo_nuts=show_pan_servo_nuts,
                    show_tilt_servo_horn_screws=show_tilt_servo_horn_screws,
                    show_tilt_servo_horn_bolt=show_tilt_servo_horn_bolt,
-                   head_servo_horn_screw_side=head_servo_horn_screw_side);
+                   head_servo_horn_cross_side_holes=head_servo_horn_cross_side_holes);
   }
 
   if (!center_pan_servo_slot) {

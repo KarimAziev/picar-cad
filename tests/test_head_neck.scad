@@ -7,6 +7,10 @@ use <../scad/lib/functions.scad>
 function close(a, b, tolerance=0.00001) =
   (is_num(a) ? abs(a - b) : norm(a - b)) < tolerance;
 
+for (shape=["single", "double"]) {
+  assert(close(head_tilt_horn_angle(shape), head_tilt_horn_angle("cross") + 90));
+}
+
 $t=0;
 bbox         = head_neck_bbox(0, 0);
 bounds       = head_neck_bounds(0, 0);

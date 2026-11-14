@@ -37,8 +37,8 @@ module pan_servo(center=false,
                  show_servo_horn=true,
                  show_servo_horn_screws,
                  show_servo_horn_bolt,
-                 servo_horn_single,
-                 servo_horn_screw_side,
+                 servo_horn_shape,
+                 servo_horn_cross_side_holes,
                  alpha=1) {
   servo(size=[pan_servo_size[0],
               pan_servo_size[1],
@@ -68,8 +68,9 @@ module pan_servo(center=false,
         gearbox_gear_size=pan_servo_gearbox_size,
         show_servo_horn_screws=show_servo_horn_screws,
         show_servo_horn_bolt=show_servo_horn_bolt,
-        servo_horn_single=servo_horn_single,
-        servo_horn_screw_side=servo_horn_screw_side) {
+        servo_horn_plist=pan_servo_horn_slot_plist,
+        servo_horn_shape=servo_horn_shape,
+        servo_horn_cross_side_holes=servo_horn_cross_side_holes) {
 
     children();
   }

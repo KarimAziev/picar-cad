@@ -23,7 +23,6 @@ use <{ROOT}/scad/lib/plist.scad>
 use <{ROOT}/scad/lib/transforms.scad>
 use <{ROOT}/scad/placeholders/bolt.scad>
 use <{ROOT}/scad/placeholders/servo_horn.scad>
-use <{ROOT}/scad/head/servo_horn_recess.scad>
 module ir_hardware() {{
   length = ir_case_mount_bolt_length(head_bridge_thickness);
   at_ir_case_mount_bolts() {{
@@ -36,11 +35,9 @@ module ir_hardware() {{
   }}
 }}
 module horn_screw_clearances() {{
-  rotate([0, 0, 90]) {{
-    with_servo_horn_holes() {{
-      circle(d=head_servo_horn_screw_dia, $fn=40);
-    }}
-  }}
+  servo_horn_profile_from_plist(pl=tilt_servo_horn_slot_plist,
+                               mode="holes",
+                               screw_clearance=tilt_servo_horn_screw_clearance);
 }}
 module front() {{
   translate([0, head_front_height / 2, 0]) {{
@@ -72,10 +69,9 @@ module frame() {{
   head_side_panel_assembled(is_left=false);
 }}
 module floor_probe(z) {{
-  angle = atan2(head_side_panel_bottom - head_side_panel_curve_end,
-                head_side_panel_curve_start - head_side_panel_depth);
+  angle = head_tilt_horn_angle();
   p = head_tilt_axis_position()
-      + [6 * sin(angle), -6 * cos(angle)];
+      + [-6 * sin(angle), 6 * cos(angle)];
   translate([p[0] - 0.25, p[1] - 0.25, z]) {{ cube([0.5, 0.5, 0.5]); }}
 }}
 module at_flange_probes(part, depth) {{
@@ -153,6 +149,24 @@ def no_overlap(folder: Path, body: str,
 def main() -> None:
     with tempfile.TemporaryDirectory(prefix="head-joints-") as directory:
         folder = Path(directory)
+        for shape in ["single", "double"]:
+            no_overlap(folder, f"""
+linear_extrude(height=1) {{
+  difference() {{
+    head_tilt_horn_holes(shape="{shape}");
+    polygon(head_side_panel_outline());
+  }}
+}}
+""")
+            no_overlap(folder, f"""
+intersection() {{
+  head_side_panel(with_horn_mount=true, servo_horn_shape="{shape}");
+  head_tilt_horn(servo_horn_shape="{shape}",
+                 show_servo_horn_screws=true, show_servo_horn_bolt=true);
+}}
+""")
+        print("PASS: single/double horn holes stay inside the panel and seated hardware clears it",
+              flush=True)
         for params in [{}, {"head_side_panel_thickness": 6},
                        {"head_front_width": 46, "head_bridge_depth": 38,
                         "head_mount_flange_thickness": 5, "head_frame_pocket_nut_h": 2}]:
@@ -221,12 +235,13 @@ intersection() {{
                        params)
             no_overlap(folder, 'intersection() { ir_case(mount="top"); ir_case_rail(); }',
                        params)
-            # The entire screw clearance circles must lie inside the fixed recess.
+            # The entire screw clearance circles must lie inside the horn recess.
             no_overlap(folder, """
 linear_extrude(height=1) {
   difference() {
     horn_screw_clearances();
-    head_servo_horn_recess_2d();
+    servo_horn_profile_from_plist(pl=tilt_servo_horn_slot_plist, mode="shape",
+                                 clearance=tilt_servo_horn_recess_clearance);
   }
 }
 """, params)
